@@ -1,11 +1,11 @@
 import ExpoModulesCore
 
-class AudioRecordingRequester: NSObject, EXPermissionsRequester {
-  static func permissionType() -> String! {
-    "audioRecording"
+public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
+  public static func permissionType() -> String {
+    return "audioRecording"
   }
   
-  func getPermissions() -> [AnyHashable : Any]! {
+  public func getPermissions() -> [AnyHashable : Any] {
     var systemStatus = AVAudioSession.sharedInstance().recordPermission
     var status: EXPermissionStatus
     
@@ -24,11 +24,11 @@ class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     }
     
     return [
-      "status": status
+      "status": status.rawValue
     ]
   }
   
-  func requestPermissions(resolver resolve: EXPromiseResolveBlock!, rejecter reject: EXPromiseRejectBlock!) {
+  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
     if #available(iOS 17.0, *) {
       AVAudioApplication.requestRecordPermission { granted in
         resolve(self.getPermissions())

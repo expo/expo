@@ -1,6 +1,11 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { AudioQuality, OutputFormat, useAudioRecorder, AudioModule } from 'expo-audio';
-import { Audio } from 'expo-av';
+import {
+  AudioQuality,
+  OutputFormat,
+  useAudioRecorder,
+  AudioModule,
+  RecordingStatus,
+} from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
   Alert,
@@ -14,16 +19,7 @@ import {
 } from 'react-native';
 
 import AudioInputSelector from './AudioInputSelector';
-import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
-
-interface State {
-  options?: Audio.RecordingOptions;
-  canRecord: boolean;
-  durationMillis: number;
-  isRecording: boolean;
-  errorMessage?: string;
-}
 
 type RecorderProps = {
   onDone?: (uri: string) => void;
@@ -31,11 +27,11 @@ type RecorderProps = {
 };
 
 export default function Recorder({ onDone, style }: RecorderProps) {
-  const [state, setState] = React.useState<State>({
-    canRecord: false,
-    durationMillis: 0,
-    isRecording: false,
-    errorMessage: '',
+  const [state, setState] = React.useState<RecordingStatus>({
+    id: 0,
+    hasError: false,
+    error: null,
+    isFinished: false,
   });
 
   useEffect(() => {
@@ -47,7 +43,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     })();
   }, []);
 
-  const audioRecorder = useAudioRecorder(
+  const [audioRecorder, audioState] = useAudioRecorder(
     {
       extension: '.caf',
       outputFormat: OutputFormat.MPEG4AAC,
@@ -60,19 +56,9 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       linearPCMIsFloat: false,
     },
     (status) => {
-      console.log(status);
+      setState(status);
     }
   );
-
-  const prepare = (options: Audio.RecordingOptions) => async () => {
-    try {
-      await AudioModule.requestRecordingPermissionsAsync();
-      const status = audioRecorder.getStatus();
-      setState({ ...status, options });
-    } catch (error) {
-      setState((state) => ({ ...state, errorMessage: error.message }));
-    }
-  };
 
   const record = () => audioRecorder.record();
 
@@ -86,6 +72,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const stopAndUnload = async () => {
     if (onDone) {
+      audioRecorder.stop();
       onDone(audioRecorder.uri!);
     }
     setState((state) => ({ ...state, options: undefined, durationMillis: 0 }));
@@ -96,35 +83,23 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   }, []);
 
   const maybeRenderErrorOverlay = () => {
-    if (state.errorMessage) {
+    if (state.error) {
       return (
         <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{state.errorMessage}</Text>
+          <Text style={styles.errorText}>{state.error}</Text>
         </ScrollView>
       );
     }
     return null;
   };
 
-  const renderPrepareButton = (title: string, options: Audio.RecordingOptions) => (
-    <Button
-      disabled={!!state.options}
-      onPress={prepare(options)}
-      title={`${state.options === options ? '✓ ' : ''}${title}`}
-    />
-  );
-
   const renderRecorderButtons = () => {
-    if (!state.isRecording && state.durationMillis === 0) {
+    if (!audioState.isRecording && audioState.durationMillis === 0) {
       return (
         <TouchableOpacity
           onPress={record}
-          disabled={state.canRecord}
-          style={[
-            styles.bigRoundButton,
-            { backgroundColor: 'gray' },
-            state.canRecord && { backgroundColor: 'red' },
-          ]}>
+          disabled={!audioState.canRecord}
+          style={[styles.bigRoundButton, { backgroundColor: 'red' }]}>
           <Ionicons name="mic" style={[styles.bigIcon, { color: 'white' }]} />
         </TouchableOpacity>
       );
@@ -136,7 +111,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
           onPress={togglePause}
           style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
           <Ionicons
-            name={`${state.isRecording ? 'pause' : 'mic'}` as any}
+            name={`${audioState.isRecording ? 'pause' : 'mic'}` as any}
             style={[styles.bigIcon, { color: 'red' }]}
           />
         </TouchableOpacity>
@@ -161,14 +136,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   return (
     <View style={style}>
-      <View style={styles.container}>
-        {renderPrepareButton('High quality', Audio.RecordingOptionsPresets.HIGH_QUALITY)}
-        {renderPrepareButton('Low quality', Audio.RecordingOptionsPresets.LOW_QUALITY)}
-      </View>
       <View style={styles.centerer}>
         {renderRecorderButtons()}
         <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
-          {_formatTime(state.durationMillis / 1000)}
+          {_formatTime(audioState.durationMillis)}
         </Text>
       </View>
       <AudioInputSelector recorder={audioRecorder} />

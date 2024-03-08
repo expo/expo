@@ -27,6 +27,12 @@ public class AudioModule: Module, RecordingResultHandler {
     
     Events(recordingStatus, playbackStatus)
     
+    OnCreate {
+      self.appContext?.permissions?.register([
+        AudioRecordingRequester(),
+      ])
+    }
+    
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
       try validateAudioMode(mode: mode)
       var category: AVAudioSession.Category = .soloAmbient
@@ -232,7 +238,6 @@ public class AudioModule: Module, RecordingResultHandler {
         
         let recorder = AudioRecorder(createRecorder(url: fileUrl, with: options))
         recorders[recorder.id] = recorder
-        recorder.pointer.prepareToRecord()
         return recorder
       }
       
@@ -276,7 +281,7 @@ public class AudioModule: Module, RecordingResultHandler {
       
       Function("getStatus") { recorder -> [String: Any] in
         let time = recorder.pointer.deviceCurrentTime * 1000
-        let duration = recorder.pointer.isRecording ? recorder.pointer.currentTime : 0
+        let duration = recorder.pointer.currentTime
         
         var result: [String: Any] = [
           "canRecord": true,
@@ -459,6 +464,7 @@ public class AudioModule: Module, RecordingResultHandler {
     case .denied, .undetermined:
       throw AudioPermissionsException()
     default:
+      // Do nothing
       break
     }
   }
