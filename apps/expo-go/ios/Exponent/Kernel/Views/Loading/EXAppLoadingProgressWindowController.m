@@ -57,7 +57,7 @@
 
       self.textLabel = [UILabel new];
       self.textLabel.frame = CGRectMake(10, 0, screenSize.width - 20, 36);
-      self.textLabel.font = [UIFont systemFontOfSize:12];
+      self.textLabel.font = [UIFont monospacedDigitSystemFontOfSize:12 weight:(UIFontWeightRegular)];
       self.textLabel.textAlignment = NSTextAlignmentLeft;
       self.textLabel.textColor = [EXUtil colorWithRGB:0xa7a7a7];
       [containerView addSubview:self.textLabel];
