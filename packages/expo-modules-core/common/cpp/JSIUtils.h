@@ -14,7 +14,9 @@ namespace expo::common {
 /**
  Gets the core Expo object, i.e. `global.expo`.
  */
-jsi::Object getCoreObject(jsi::Runtime &runtime);
+inline jsi::Object getCoreObject(jsi::Runtime &runtime) {
+  return runtime.global().getPropertyAsObject(runtime, "expo");
+}
 
 #pragma mark - Classes
 
