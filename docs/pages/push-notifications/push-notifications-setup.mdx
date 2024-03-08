@@ -7,8 +7,7 @@ description: Learn how to setup push notifications, get credentials for developm
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-
-> Expo Notifications only supports the **Cloud Messaging API (Legacy)** key at this time. This key is deprecated by Firebase. However, it will continue to work until June 20, 2024. We will provide information on migrating to the new v1 key in the future.
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
 
@@ -183,92 +182,27 @@ One advantage of attributing the Expo push token to your project's ID is that it
 
 <Step label="3">
 
-## Get Credentials for development builds
+## Get credentials for development builds
 
 For Android and iOS, there are different requirements to set up your credentials.
 
-### Android
+<Tabs tabs={["Android", "iOS"]}>
+  <Tab>
+    For Android, you need to configure **Firebase Cloud Messaging (FCM) V1** to get your credentials and set up your Expo project.
 
-For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get your credentials and set up your Expo project. It is required for all Android apps using Expo SDK.
+    Follow the steps in [Add Android FCM V1 credentials](/push-notifications/fcm-credentials) to set up your credentials.
+  </Tab>
+  <Tab>
+    > **warning** A paid Apple Developer Account is required to generate credentials.
 
-> **warning** FCM is not currently available for `expo-notifications` on iOS.
+    For iOS, make sure you have [registered your iOS device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) on which you want to test before running the `eas build` command for the first time.
 
-#### Setting up FCM
+    If you create a development build for the first time, you'll be asked to enable push notifications. Answer yes to the following questions when prompted by the EAS CLI:
 
-1. To create a Firebase project, go to the [Firebase console](https://console.firebase.google.com/) and click on **Add project**.
-
-2. In the console, click the setting icon next to **Project overview** and open **Project settings**. Then, under **Your apps**, click the Android icon to open **Add Firebase to your Android app** and follow the steps. **Make sure that the Android package name you enter is the same as the value of `android.package` from your app.json.**
-
-3. After registering the app, download the **google-services.json** file and place it in your project's root directory.
-
-   > The **google-services.json** file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
-
-4. In **app.json**, add an `android.googleServicesFile` field with the relative path to the downloaded **google-services.json** file. If you placed it in the root directory, the path is:
-
-   ```json app.json
-   {
-     "android": {
-       "googleServicesFile": "./google-services.json"
-     }
-   }
-   ```
-
-5. For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API) or have access to both **Firebase Cloud Messaging API** and **Firebase Installations API**. The API key is found under the `client.api_key.current_key` field in **google-services.json** file:
-
-   ```json google-services.json
-   {
-     "client": [
-       {
-         "api_key": [
-           {
-             "current_key": "<your Google Cloud Platform API key>"
-           }
-         ]
-       }
-     ]
-   }
-   ```
-
-6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto-created by Firebase)**. This could be a different key than the one found in **google-services.json**.
-
-7. To be sure that both the `current_key` and the **Android key** in the Credentials console are the same, go to the [Google Cloud API Credentials console](https://console.cloud.google.com/apis/credentials) and click on **Show key** to verify their value. It will be marked as **unrestricted**.
-
-   > Firebase projects with multiple Android apps might contain duplicated data under the `client` array in the **google-services.json**. This can cause issues when the app is fetching the push notification token. **Make sure to only have one client object with the correct keys and metadata in google-services.json**.
-
-Now you can re-build the development build using the `eas build` command. At this point, if you need to create a development build, see [create a development build for a device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device).
-
-#### Upload server credentials
-
-For Expo to send push notifications from our servers and use your credentials, you'll have to upload your secret server key to your project's Expo dashboard.
-
-1. In the Firebase console, next to **Project overview**, click gear icon to open **Project settings**.
-
-2. Click on the **Cloud Messaging** tab in the Settings pane.
-
-3. Copy the token from **Cloud Messaging API (Legacy)** > **Server key**.
-
-   > Server Key is only available in **Cloud Messaging API (Legacy)**, which is disabled by default. <br/> Enable it by clicking the three-dot menu > **Manage API in Google Cloud Console** and following the steps in the console. Once the legacy messaging API is enabled, you should see Server Key in that section.
-
-   <ImageSpotlight
-     alt="Getting the server key from Firebase console's Cloud messaging tab."
-     src="/static/images/notifications/server-key-from-fcm.png"
-     style={{ maxWidth: 760 }}
-   />
-
-4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern: `com.company.app`.
-
-5. Under **Service Credentials** > **FCM (Legacy) Server Key**, click **Add a FCM (Legacy) Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
-
-### iOS
-
-> **warning** A paid Apple Developer Account is required to generate credentials.
-
-For iOS, make sure you have [registered your iOS device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) on which you want to test before running the `eas build` command for the first time.
-
-If you create a development build for the first time, you'll be asked to enable push notifications. Answer yes to the following questions when prompted by the EAS CLI:
-
-- Setup Push Notifications for your project
-- Generating a new Apple Push Notifications service key
+    - Setup Push Notifications for your project
+    - Generating a new Apple Push Notifications service key
+  </Tab>
+</Tabs>
 
 <br />
 
@@ -277,7 +211,6 @@ If you create a development build for the first time, you'll be asked to enable 
 </Step>
 
 <Step label="4">
-
 ## Test using the push notifications tool
 
 After creating and installing the development build, you can use [Expo's push notifications tool](https://expo.dev/notifications) to quickly send a test notification to your device.
@@ -292,18 +225,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-<ImageSpotlight
-  alt="Expo push notifications tool overview."
-  src="/static/images/notifications/push-notifications-tool-overview.png"
-  style={{ maxWidth: 1200 }}
-/>
+    <ImageSpotlight
+      alt="Expo push notifications tool overview."
+      src="/static/images/notifications/push-notifications-tool-overview.png"
+      style={{ maxWidth: 1200 }}
+    />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
-<ImageSpotlight
-  alt="An Android device receiving a push notification."
-  src="/static/images/notifications/notification-on-android.png"
-  style={{ maxWidth: 360 }}
-/>
-
+  <ImageSpotlight
+    alt="An Android device receiving a push notification."
+    src="/static/images/notifications/notification-on-android.png"
+    style={{ maxWidth: 360 }}
+  />
 </Step>
