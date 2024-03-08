@@ -146,7 +146,7 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 598ca7a814..b1a1d9ad92 100644
+index ded06d0082..b1a1d9ad92 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -158,7 +158,7 @@ index 598ca7a814..b1a1d9ad92 100644
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,8 +10,8 @@
+@@ -10,10 +10,10 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -167,5 +167,8 @@ index 598ca7a814..b1a1d9ad92 100644
 +    "expo": "~50.0.0-preview.4",
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
-     "react-native": "0.73.4"
+-    "react-native": "0.73.5"
++    "react-native": "0.73.4"
    },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"
