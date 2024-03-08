@@ -90,9 +90,7 @@ void callObservingFunction(jsi::Runtime &runtime, jsi::Object &object, const cha
 }
 
 jsi::Function getClass(jsi::Runtime &runtime) {
-  return runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  return common::getCoreObject(runtime)
     .getPropertyAsFunction(runtime, "EventEmitter");
 }
 
@@ -170,9 +168,7 @@ void installClass(jsi::Runtime &runtime) {
   prototype.setProperty(runtime, removeAllListenersProp, jsi::Function::createFromHostFunction(runtime, removeAllListenersProp, 1, removeAllListeners));
   prototype.setProperty(runtime, emitProp, jsi::Function::createFromHostFunction(runtime, emitProp, 2, emit));
 
-  runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  common::getCoreObject(runtime)
     .setProperty(runtime, "EventEmitter", eventEmitterClass);
 }
 
