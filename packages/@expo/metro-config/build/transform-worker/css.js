@@ -20,7 +20,7 @@ exports.getHotReplaceTemplate = getHotReplaceTemplate;
 function wrapDevelopmentCSS(props) {
     const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
     return `(() => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return
   }
   const head = document.head || document.getElementsByTagName('head')[0];
