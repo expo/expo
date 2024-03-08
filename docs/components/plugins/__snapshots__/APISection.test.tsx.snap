@@ -4734,7 +4734,7 @@ OAuth 2.0 protocol
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
         >
           <svg
             class="icon-xs text-palette-blue12"
@@ -8302,7 +8302,8 @@ in order to enable/disable the permission.
         </a>
       </code>
        
-      extended by:
+      extended by
+      :
     </p>
     <br />
     <div
@@ -9281,8 +9282,11 @@ you don't get this value.
         >
           PermissionHookBehavior
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>
@@ -9759,7 +9763,7 @@ exports[`APISection expo-pedometer 1`] = `
          
       </span>
       <div
-        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
       >
         <svg
           class="icon-xs text-palette-blue12"
@@ -11206,8 +11210,11 @@ in order to enable/disable the permission.
         >
           'never'
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>

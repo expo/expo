@@ -59,9 +59,6 @@ async function getPermissionsAsync() {
 }
 let lastKnownPosition = null;
 export default {
-    get name() {
-        return 'ExpoLocation';
-    },
     async getProviderStatusAsync() {
         return {
             locationServicesEnabled: 'geolocation' in navigator,

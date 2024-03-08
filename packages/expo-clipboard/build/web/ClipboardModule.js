@@ -2,9 +2,6 @@ import { ClipboardUnavailableException, CopyFailureException, NoPermissionExcept
 import { base64toBlob, blobToBase64Async, findHtmlInClipboardAsync, findImageInClipboardAsync, getImageSizeFromBlobAsync, htmlToPlainText, isClipboardPermissionDeniedAsync, } from './Utils';
 import { StringFormat, } from '../Clipboard.types';
 export default {
-    get name() {
-        return 'ExpoClipboard';
-    },
     async getStringAsync(options) {
         if (!navigator.clipboard) {
             throw new ClipboardUnavailableException();

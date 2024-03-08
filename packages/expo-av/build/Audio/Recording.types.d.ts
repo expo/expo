@@ -56,7 +56,8 @@ export type RecordingOptionsAndroid = {
      * the sampling rate supported by AMRNB is 8kHz, and the sampling rate supported by AMRWB is 16kHz.
      * Please consult with the related audio coding standard for the supported audio sampling rate.
      *
-     * @example 44100
+     * @example
+     * 44100
      */
     sampleRate?: number;
     /**
@@ -65,7 +66,8 @@ export type RecordingOptionsAndroid = {
      * Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified
      * number of audio channels are applicable.
      *
-     * @example `1`, `2`
+     * @example
+     * `1`, `2`
      */
     numberOfChannels?: number;
     /**
@@ -75,14 +77,16 @@ export type RecordingOptionsAndroid = {
      * bit rate is applicable, and sometimes the passed bitRate will be clipped internally to ensure the audio recording
      * can proceed smoothly based on the capabilities of the platform.
      *
-     * @example `128000`
+     * @example
+     * `128000`
      */
     bitRate?: number;
     /**
      * The desired maximum file size in bytes, after which the recording will stop (but `stopAndUnloadAsync()` must still
      * be called after this point).
      *
-     * @example `65536`
+     * @example
+     * `65536`
      */
     maxFileSize?: number;
 };
@@ -90,7 +94,8 @@ export type RecordingOptionsIOS = {
     /**
      * The desired file extension.
      *
-     * @example `'.caf'`
+     * @example
+     * `'.caf'`
      */
     extension: string;
     /**
@@ -104,19 +109,22 @@ export type RecordingOptionsIOS = {
     /**
      * The desired sample rate.
      *
-     * @example `44100`
+     * @example
+     * `44100`
      */
     sampleRate: number;
     /**
      * The desired number of channels.
      *
-     * @example `1`, `2`
+     * @example
+     * `1`, `2`
      */
     numberOfChannels: number;
     /**
      * The desired bit rate.
      *
-     * @example `128000`
+     * @example
+     * `128000`
      */
     bitRate: number;
     /**
@@ -126,13 +134,15 @@ export type RecordingOptionsIOS = {
     /**
      * The desired bit depth hint.
      *
-     * @example `16`
+     * @example
+     * `16`
      */
     bitDepthHint?: number;
     /**
      * The desired PCM bit depth.
      *
-     * @example `16`
+     * @example
+     * `16`
      */
     linearPCMBitDepth?: number;
     /**

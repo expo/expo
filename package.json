@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies && ([ ! -f node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/ReanimatedUIManager/latest/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-reanimated+3.6.0.patch || true) && ([ ! -f node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaContextModule.kt.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-safe-area-context+4.8.2.patch || true)",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
@@ -19,7 +19,10 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.73.4",
+    "react-native": "0.74.0-rc.2",
+    "@react-native/assets-registry": "0.74.0",
+    "@react-native/babel-preset": "0.74.2",
+    "@react-native/dev-middleware": "0.74.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
     "**/util": "~0.12.4"

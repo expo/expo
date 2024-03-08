@@ -33,6 +33,10 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("sqlite3_open", NativeDatabaseBinding::sqlite3_open),
       makeNativeMethod("sqlite3_prepare_v2",
                        NativeDatabaseBinding::sqlite3_prepare_v2),
+      makeNativeMethod("sqlite3_serialize",
+                       NativeDatabaseBinding::sqlite3_serialize),
+      makeNativeMethod("sqlite3_deserialize",
+                       NativeDatabaseBinding::sqlite3_deserialize),
       makeNativeMethod("sqlite3_update_hook",
                        NativeDatabaseBinding::sqlite3_update_hook),
       makeNativeMethod("convertSqlLiteErrorToString",
@@ -99,6 +103,38 @@ int NativeDatabaseBinding::sqlite3_prepare_v2(
   NativeStatementBinding *cStatement = cthis(statement);
   return ::sqlite3_prepare_v2(db, source.c_str(), source.size(),
                               &cStatement->stmt, nullptr);
+}
+
+jni::local_ref<jni::JArrayByte>
+NativeDatabaseBinding::sqlite3_serialize(const std::string &databaseName) {
+  ::sqlite3_int64 size = 0;
+  unsigned char *bytes =
+      ::sqlite3_serialize(db, databaseName.c_str(), &size, 0);
+  if (!bytes) {
+    jni::throwNewJavaException(
+        SQLiteErrorException::create(convertSqlLiteErrorToString()).get());
+  }
+  auto byteArray = jni::JArrayByte::newArray(size);
+  byteArray->setRegion(0, size, reinterpret_cast<const signed char *>(bytes));
+  ::sqlite3_free(bytes);
+  return byteArray;
+}
+
+int NativeDatabaseBinding::sqlite3_deserialize(
+    const std::string &databaseName,
+    jni::alias_ref<jni::JArrayByte> serializedData) {
+  ::sqlite3_int64 size = serializedData->size();
+  void *buffer = ::sqlite3_malloc64(size);
+  if (!buffer) {
+    std::string message("Unable to allocate memory with size: ");
+    message += size;
+    jni::throwNewJavaException(SQLiteErrorException::create(message).get());
+  }
+  serializedData->getRegion(0, size, reinterpret_cast<signed char *>(buffer));
+  int flags = SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE;
+  return ::sqlite3_deserialize(db, databaseName.c_str(),
+                               reinterpret_cast<unsigned char *>(buffer), size,
+                               size, flags);
 }
 
 void NativeDatabaseBinding::sqlite3_update_hook(bool enabled) {

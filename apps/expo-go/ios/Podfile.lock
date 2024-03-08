@@ -21,8 +21,6 @@ PODS:
     - ZXingObjC/PDF417
   - EXConstants (15.4.1):
     - ExpoModulesCore
-  - EXContacts (12.8.1):
-    - ExpoModulesCore
   - EXFont (11.10.0):
     - ExpoModulesCore
   - EXImageLoader (4.6.0):
@@ -42,6 +40,8 @@ PODS:
   - Expo (50.0.0-preview.4):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
+    - ExpoModulesCore
+  - ExpoAsset (9.0.1):
     - ExpoModulesCore
   - ExpoBackgroundFetch (11.8.0):
     - ExpoModulesCore
@@ -64,6 +64,8 @@ PODS:
   - ExpoClipboard/Tests (5.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoContacts (12.8.1):
+    - ExpoModulesCore
   - ExpoCrypto (12.8.0):
     - ExpoModulesCore
   - ExpoDevice (5.9.0):
@@ -1498,7 +1500,6 @@ DEPENDENCIES:
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
-  - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -1509,6 +1510,7 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
@@ -1518,6 +1520,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
+  - ExpoContacts (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
@@ -1690,8 +1693,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
-  EXContacts:
-    :path: "../../../packages/expo-contacts/ios"
   EXFont:
     :path: "../../../packages/expo-font/ios"
   EXImageLoader:
@@ -1708,6 +1709,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoAsset:
+    :path: "../../../packages/expo-asset/ios"
   ExpoBackgroundFetch:
     :path: "../../../packages/expo-background-fetch/ios"
   ExpoBattery:
@@ -1724,6 +1727,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-cellular/ios"
   ExpoClipboard:
     :path: "../../../packages/expo-clipboard/ios"
+  ExpoContacts:
+    :path: "../../../packages/expo-contacts/ios"
   ExpoCrypto:
     :path: "../../../packages/expo-crypto/ios"
   ExpoDevice:
@@ -1952,7 +1957,6 @@ SPEC CHECKSUMS:
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
   EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
-  EXContacts: 2ef734aa7b13c8e5ff20fb77d04f1cb172b61456
   EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
@@ -1961,6 +1965,7 @@ SPEC CHECKSUMS:
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
+  ExpoAsset: 518654245b6a5f4d498b96d49eaa9888070e70e8
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
   ExpoBlur: af75411ec9ec077d5da8ff0b59d77701f9982c2a
@@ -1969,6 +1974,7 @@ SPEC CHECKSUMS:
   ExpoCamera: a3f3681963815533c24f698a22c239e68724fb99
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
+  ExpoContacts: f38a91d87fa5e5e25ef144f2619de24fdd0f9eb7
   ExpoCrypto: f1c0cbaa168759159e781abf16cf8055a9a1a624
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
@@ -1985,7 +1991,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
-  ExpoModulesCore: fdc0871aabd9a27e89849e809e5d3af520f10c9f
+  ExpoModulesCore: 7944dab86cc6d2cd3fd291293296aa33fd0d5b2c
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
@@ -2021,7 +2027,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 0933c22606de894dccc3248ae93129951a6e8e6b
+  hermes-engine: edaa73aaa4bc9d2db3c401ca8d8d1e8e1aeeafd3
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7

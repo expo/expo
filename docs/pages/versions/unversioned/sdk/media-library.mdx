@@ -4,6 +4,7 @@ description: A library that provides access to the device's media library.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-library'
 packageName: 'expo-media-library'
 iconUrl: '/static/images/packages/expo-media-library.png'
+platforms: ['android', 'ios']
 ---
 
 import {
@@ -14,13 +15,10 @@ import {
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `expo-media-library` provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
 > **warning** If your Android app created an album using SDK &lt;= 40 and you want to add more assets to this album, you may need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and `expo-media-library` won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

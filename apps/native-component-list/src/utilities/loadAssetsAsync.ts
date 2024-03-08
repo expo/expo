@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Assets as StackAssets } from '@react-navigation/elements';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';

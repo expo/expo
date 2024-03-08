@@ -67,57 +67,6 @@ describe('getRoutes', () => {
     });
   });
 
-  it(`should ensure grouped routes expanded to all possible routes`, () => {
-    expect(
-      getRoutes(
-        inMemoryContext({
-          './(a,b)/(c,d)/page': () => null,
-        }),
-        { internal_stripLoadRoute: true, skipGenerated: true }
-      )
-    ).toEqual({
-      children: [
-        {
-          type: 'route',
-          contextKey: './(a,b)/(c,d)/page.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
-          route: '(a)/(c)/page',
-          children: [],
-        },
-        {
-          type: 'route',
-          contextKey: './(a,b)/(c,d)/page.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
-          route: '(a)/(d)/page',
-          children: [],
-        },
-        {
-          type: 'route',
-          contextKey: './(a,b)/(c,d)/page.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
-          route: '(b)/(c)/page',
-          children: [],
-        },
-        {
-          type: 'route',
-          contextKey: './(a,b)/(c,d)/page.js',
-          dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/page.js'],
-          route: '(b)/(d)/page',
-          children: [],
-        },
-      ],
-      contextKey: 'expo-router/build/views/Navigator.js',
-      dynamic: null,
-      generated: true,
-      type: 'layout',
-      route: '',
-    });
-  });
-
   it(`should not append a _layout if there already is a top level layout`, () => {
     expect(
       getRoutes(
@@ -816,6 +765,185 @@ describe('api routes', () => {
       dynamic: null,
       generated: true,
       route: '',
+    });
+  });
+});
+
+describe('group expansion', () => {
+  it(`array syntax`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(single)/directory/(a,b)/mixed': () => null,
+        }),
+        { internal_stripLoadRoute: true, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(single)/directory/(a,b)/mixed.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(single)/directory/(a,b)/mixed.js',
+          ],
+          route: '(single)/directory/(a)/mixed',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(single)/directory/(a,b)/mixed.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(single)/directory/(a,b)/mixed.js',
+          ],
+          route: '(single)/directory/(b)/mixed',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it(`multiple arrays`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(a,b)/(c,d)/multiple-arrays': () => null,
+        }),
+        { internal_stripLoadRoute: true, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(a,b)/(c,d)/multiple-arrays.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-arrays.js'],
+          route: '(a)/(c)/multiple-arrays',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/(c,d)/multiple-arrays.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-arrays.js'],
+          route: '(a)/(d)/multiple-arrays',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/(c,d)/multiple-arrays.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-arrays.js'],
+          route: '(b)/(c)/multiple-arrays',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/(c,d)/multiple-arrays.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-arrays.js'],
+          route: '(b)/(d)/multiple-arrays',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it(`multiple arrays with brackets`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(a,b)/((c),d,(e))/multiple-arrays-with-brackets': () => null,
+        }),
+        { internal_stripLoadRoute: true, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(a)/((c))/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(a)/(d)/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(a)/((e))/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(b)/((c))/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(b)/(d)/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          dynamic: null,
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            './(a,b)/((c),d,(e))/multiple-arrays-with-brackets.js',
+          ],
+          route: '(b)/((e))/multiple-arrays-with-brackets',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
     });
   });
 });

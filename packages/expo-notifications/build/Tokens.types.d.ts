@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { type Platform } from 'expo-modules-core';
 export interface NativeDevicePushToken {
     type: 'ios' | 'android';
     data: string;
@@ -14,8 +14,8 @@ export type WebDevicePushTokenKeys = {
     p256dh: string;
     auth: string;
 };
-type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
-type ImplicitlySupportedDevicePushToken = {
+export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+export type ImplicitlySupportedDevicePushToken = {
     /**
      * Either `android`, `ios` or `web`.
      */
@@ -96,5 +96,4 @@ export interface ExpoPushTokenOptions {
      */
     devicePushToken?: DevicePushToken;
 }
-export {};
 //# sourceMappingURL=Tokens.types.d.ts.map
