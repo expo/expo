@@ -32,12 +32,12 @@ internal class RecordingDisabledException: Exception {
 
 internal class NoInputFoundException: Exception {
   override var reason: String {
-   "No input port found"
+    "No input port found"
   }
 }
 
 internal class PreferredInputFoundException: GenericException<String> {
   override var reason: String {
-   "Preferred input '\(param)' not found!"
+    "Preferred input '\(param)' not found!"
   }
 }
