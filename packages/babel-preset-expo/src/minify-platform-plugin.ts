@@ -22,6 +22,8 @@ export default function inlinePlugin({
         ) {
           return;
         }
+        // NOTE(EvanBacon): Upstream metro allows `Platform.OS` to be a global and doesn't check the scope.
+        // Skipping here would be safer but it would also be a breaking change.
         // Ensure path is not a global variable
         // if (path.scope.hasGlobal('Platform')) {
         //   return;

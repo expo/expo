@@ -56,6 +56,44 @@ it(`does not remove Platform module in development`, () => {
   );
 });
 
+describe('global scoping', () => {
+  // TODO: Maybe break this behavior and only allow Platform.OS if it's not a global.
+  it(`does remove Platform module without import (from global)`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(
+      `(function(){return console.log('web');});`
+    );
+    // expect(babel.transform(sourceCode, options)!.code!).toEqual(
+    //   `if(Platform.OS==='ios'){console.log('ios');}(function(){return console.log('web');});`
+    // );
+  });
+
+  it(`does remove Platform["OS"] usage in globals`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    expect(babel.transform(`Platform["OS"]`, options)!.code!).toBe('"web";');
+    // expect(babel.transform(`Platform["OS"]`, options)!.code!).toBe('Platform["OS"];');
+  });
+});
 // This is different to default Metro behavior.
 it(`does not remove React.Platform.OS module`, () => {
   const options = {
@@ -74,28 +112,6 @@ it(`does not remove React.Platform.OS module`, () => {
   );
 });
 
-it(`removes Platform module without import (undefined behavior)`, () => {
-  const options = {
-    ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
-  };
-
-  const sourceCode = `  
-    if (Platform.OS === 'ios') {
-      console.log('ios')
-    }
-    
-    Platform.select({
-      ios: () => console.log('ios'),
-      web: () => console.log('web'),
-      android: () => console.log('android'),
-    })
-    `;
-
-  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
-  );
-});
 it(`supports Platform module default fallback on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
@@ -161,6 +177,12 @@ it(`removes Platform["OS"] usage`, () => {
     ...DEFAULT_OPTS,
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
   };
+
+  expect(
+    stripReactNativeImport(
+      babel.transform(`import { Platform } from 'react-native';Platform["OS"]`, options)!.code!
+    )
+  ).toBe('"web";');
 
   const sourceCode = `
     import { Platform } from 'react-native';
