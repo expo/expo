@@ -52,8 +52,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             className={mergeClasses(
               'flex mb-1.5 truncate items-center justify-between !text-pretty',
               'focus-visible:relative focus-visible:z-10'
-            )}
-          >
+            )}>
             <TitleElement
               className={mergeClasses(
                 '!text-secondary hocus:!text-link',
