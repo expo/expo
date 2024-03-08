@@ -1,6 +1,7 @@
 import * as AllowBackup from './AllowBackup';
 import * as BuildProperties from './BuildProperties';
 import * as Colors from './Colors';
+import * as DeviceFamily from './DeviceFamily';
 import * as EasBuild from './EasBuild';
 import * as GoogleMapsApiKey from './GoogleMapsApiKey';
 import * as GoogleServices from './GoogleServices';
@@ -21,5 +22,5 @@ import * as Styles from './Styles';
 import * as Updates from './Updates';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
-export { Manifest, Colors, Paths, Permissions, Properties, Resources, Scheme, Strings, Styles };
+export { Manifest, Colors, Paths, Permissions, Properties, Resources, Scheme, Strings, Styles, DeviceFamily };
 export { AllowBackup, BuildProperties, EasBuild, GoogleMapsApiKey, GoogleServices, IntentFilters, Name, Orientation, Package, PrimaryColor, StatusBar, Updates, Version, WindowSoftInputMode, };
