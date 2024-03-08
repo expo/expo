@@ -17,7 +17,7 @@ enum PitchCorrectionQuality: String, Enumerable {
   case low
   case medium
   case high
-  
+
   func toPitchAlgorithm() -> AVAudioTimePitchAlgorithm {
     switch self {
     case .low:
@@ -49,7 +49,7 @@ enum BitRateStrategy: String, Enumerable {
   case longTermAverage
   case variableConstrained
   case variable
-  
+
   func toAVBitRateStrategy() -> String {
     switch self {
     case .constant:

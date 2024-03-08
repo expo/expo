@@ -26,7 +26,7 @@ func reasonForWaitingToPlayString(status: AVPlayer.WaitingReason?) -> String {
   guard let status else {
     return "unknown"
   }
-  
+
   switch status {
   case .evaluatingBufferingRate:
     return "evaluatingBufferingRate"
@@ -38,4 +38,3 @@ func reasonForWaitingToPlayString(status: AVPlayer.WaitingReason?) -> String {
     return "unknown"
   }
 }
-

@@ -12,33 +12,33 @@ public class AudioModule: Module, RecordingResultHandler {
   private lazy var recordingDelegate = {
     RecordingDelegate(resultHandler: self)
   }()
-  
+
   // MARK: Properties
   private var allowsRecording = false
-  private var recordingSettings = [String : Any]()
+  private var recordingSettings = [String: Any]()
   private var currentRate: Float = 0.0
-  
+
   // MARK: Observers
   private var cancellables = Set<AnyCancellable>()
   private var endObservers = [Int: NSObjectProtocol]()
-  
+
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
-    
+
     Events(recordingStatus, playbackStatus)
-    
+
     OnCreate {
       self.appContext?.permissions?.register([
-        AudioRecordingRequester(),
+        AudioRecordingRequester()
       ])
     }
-    
+
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
       try validateAudioMode(mode: mode)
       var category: AVAudioSession.Category = .soloAmbient
       var options: AVAudioSession.CategoryOptions = []
       allowsRecording = mode.allowsRecording
-      
+
       if !mode.allowsRecording {
         recorders.values.forEach { recorder in
           if recorder.pointer.isRecording {
@@ -46,7 +46,7 @@ public class AudioModule: Module, RecordingResultHandler {
           }
         }
       }
-      
+
       if !mode.playsInSilentMode {
         if mode.interruptionMode == .doNotMix {
           category = .soloAmbient
@@ -66,14 +66,14 @@ public class AudioModule: Module, RecordingResultHandler {
       }
       try AVAudioSession.sharedInstance().setCategory(category, options: options)
     }
-    
+
     AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
       if !isActive {
         for player in players.values {
           player.pointer.pause()
         }
       }
-      
+
       do {
         try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
         sessionIsActive = isActive
@@ -81,7 +81,7 @@ public class AudioModule: Module, RecordingResultHandler {
         throw AudioStateException(error.localizedDescription)
       }
     }
-    
+
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.askForPermission(
         usingRequesterClass: AudioRecordingRequester.self,
@@ -89,7 +89,7 @@ public class AudioModule: Module, RecordingResultHandler {
         reject: promise.legacyRejecter
       )
     }
-    
+
     AsyncFunction("getRecordingPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         AudioRecordingRequester.self,
@@ -97,7 +97,7 @@ public class AudioModule: Module, RecordingResultHandler {
         reject: promise.legacyRejecter
       )
     }
-    
+
     OnDestroy {
       for observer in endObservers.values {
         NotificationCenter.default.removeObserver(observer)
@@ -107,7 +107,7 @@ public class AudioModule: Module, RecordingResultHandler {
       timeTokens.removeAll()
       cancellables.removeAll()
     }
-    
+
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = AudioPlayer(createAVPlayer(source: source))
@@ -125,60 +125,60 @@ public class AudioModule: Module, RecordingResultHandler {
         }.store(in: &cancellables)
         return player
       }
-      
+
       // Needed to differentiate status updates when there is multiple player instances.
       Property("id") { player in
         player.sharedObjectId
       }
-      
+
       Property("isBuffering") { player in
         player.isBuffering
       }
-      
+
       Property("isLooping") { player in
         player.isLooping
       }.set { (player, isLooping: Bool) in
         player.isLooping = isLooping
       }
-      
+
       Property("isLoaded") { player in
         player.isLoaded
       }
-      
+
       Property("isPlaying") { player in
         player.isPlaying
       }
-      
+
       Property("isMuted") { player in
         player.pointer.isMuted
       }.set { (player, isMuted: Bool) in
         player.pointer.isMuted = isMuted
       }
-      
+
       Property("shouldCorrectPitch") { player in
         player.shouldCorrectPitch
       }.set { (player, shouldCorrectPitch: Bool) in
         player.shouldCorrectPitch = shouldCorrectPitch
       }
-      
+
       Property("currentPosition") { player in
         player.pointer.currentItem?.currentTime().seconds
       }
-      
+
       Property("totalDuration") { player in
         player.pointer.currentItem?.duration.seconds
       }
-      
+
       Property("rate") { player in
         player.pointer.rate
       }
-      
+
       Property("volume") { player in
         player.pointer.volume
       }.set { (player, volume: Double) in
         player.pointer.volume = Float(volume)
       }
-      
+
       Function("play") { player in
         guard sessionIsActive else {
           return
@@ -188,7 +188,7 @@ public class AudioModule: Module, RecordingResultHandler {
         registerTimeObserver(player: player, for: player.sharedObjectId)
         player.pointer.playImmediately(atRate: rate)
       }
-      
+
       Function("setRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         if player.isPlaying {
@@ -200,11 +200,11 @@ public class AudioModule: Module, RecordingResultHandler {
           player.pointer.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
       }
-      
+
       Function("pause") { player in
         player.pointer.pause()
       }
-      
+
       Function("release") { player in
         let id = player.sharedObjectId
         if let token = timeTokens[id] {
@@ -214,7 +214,7 @@ public class AudioModule: Module, RecordingResultHandler {
         players.removeValue(forKey: player.id)
         appContext?.sharedObjectRegistry.delete(id)
       }
-      
+
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.pointer.currentItem?.seek(
           to: CMTime(
@@ -224,105 +224,105 @@ public class AudioModule: Module, RecordingResultHandler {
         )
       }
     }
-    
+
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
         guard let cachesDir = appContext?.fileSystem?.cachesDirectory, var directory = URL(string: cachesDir) else {
           throw Exceptions.AppContextLost()
         }
-        
+
         directory.appendPathComponent("Audio")
         FileSystemUtilities.ensureDirExists(at: directory)
         let fileName = "recording-\(UUID().uuidString)\(options.extension)"
         let fileUrl = directory.appendingPathComponent(fileName)
-        
+
         let recorder = AudioRecorder(createRecorder(url: fileUrl, with: options))
         recorders[recorder.id] = recorder
         return recorder
       }
-      
+
       Property("id") { recorder in
         recorder.sharedObjectId
       }
-      
+
       Property("isRecording") { recorder in
         recorder.pointer.isRecording
       }
-      
+
       Property("currentTime") { recorder in
         recorder.pointer.currentTime
       }
-      
+
       Property("uri") { recorder in
         recorder.pointer.url.absoluteString
       }
-      
+
       Function("record") { recorder in
         try checkPermissions()
         recorder.pointer.record()
       }
-      
+
       Function("pause") { recorder in
         try checkPermissions()
         recorder.pointer.pause()
       }
-      
+
       Function("stop") { recorder in
         try checkPermissions()
         recorder.pointer.stop()
       }
-      
+
       Function("release") { recorder in
         let id = recorder.sharedObjectId
         recorder.pointer.stop()
         recorders.removeValue(forKey: recorder.id)
         appContext?.sharedObjectRegistry.delete(id)
       }
-      
+
       Function("getStatus") { recorder -> [String: Any] in
         let time = recorder.pointer.deviceCurrentTime * 1000
         let duration = recorder.pointer.currentTime
-        
+
         var result: [String: Any] = [
           "canRecord": true,
           "isRecording": recorder.pointer.isRecording,
           "durationMillis": duration,
           "mediaServicesDidReset": false
         ]
-        
+
         if recorder.pointer.isMeteringEnabled {
           recorder.pointer.updateMeters()
           let currentLevel = recorder.pointer.averagePower(forChannel: 0)
           result["metering"] = currentLevel
         }
-        
+
         return result
       }
-      
+
       Function("startRecordingAtTime") { (recorder, seconds: Double) in
         try checkPermissions()
         recorder.pointer.record(atTime: TimeInterval(seconds))
       }
-      
+
       Function("recordForDuration") { (recorder, seconds: Double) in
         try checkPermissions()
         recorder.pointer.record(forDuration: TimeInterval(seconds))
       }
-      
+
       Function("getAvailableInputs") {
         getAvailableInputs()
       }
-      
+
       Function("getCurrentInput") { () -> [String: Any] in
         try getCurrentInput()
       }
-      
+
       Function("setInput") { (input: String) in
         try setInput(input)
       }
     }
   }
-  
+
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
     sendEvent(recordingStatus, [
       "isFinished": true,
@@ -330,7 +330,7 @@ public class AudioModule: Module, RecordingResultHandler {
       "url": recorder.url
     ])
   }
-  
+
   func encodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
     sendEvent(recordingStatus, [
       "isFinished": true,
@@ -339,7 +339,7 @@ public class AudioModule: Module, RecordingResultHandler {
       "url": nil
     ])
   }
-  
+
   private func getAvailableInputs() -> [[String: Any]] {
     var inputs = [[String: Any]]()
     if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
@@ -351,22 +351,22 @@ public class AudioModule: Module, RecordingResultHandler {
         ])
       }
     }
-    
+
     return inputs
   }
-  
+
   private func getCurrentInput() throws -> [String: Any] {
     guard let desc = try? getCurrentInput() else {
       throw NoInputFoundException()
     }
-    
+
     return [
       "name": desc.portName,
       "type": desc.portType,
       "uid": desc.uid
     ]
   }
-  
+
   private func setInput(_ input: String) throws {
     var prefferedInput: AVAudioSessionPortDescription?
     if let currentInputs = AVAudioSession.sharedInstance().availableInputs {
@@ -376,19 +376,19 @@ public class AudioModule: Module, RecordingResultHandler {
         }
       }
     }
-    
+
     if let prefferedInput {
       try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
     }
-    
+
     throw PreferredInputFoundException(input)
   }
-  
+
   private func setRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
     let strategy = options.bitRateStrategy?.toAVBitRateStrategy() ?? AVAudioBitRateStrategy_Variable
-    
+
     var settings = [String: Any]()
-    
+
     if strategy == AVAudioBitRateStrategy_Variable {
       settings[AVEncoderAudioQualityForVBRKey] = strategy
     } else {
@@ -397,7 +397,7 @@ public class AudioModule: Module, RecordingResultHandler {
     settings[AVSampleRateKey] = options.sampleRate
     settings[AVNumberOfChannelsKey] = options.numberOfChannels
     settings[AVEncoderBitRateKey] = options.bitRate
-    
+
     if let bitDepthHint = options.bitDepthHint {
       settings[AVEncoderBitDepthHintKey] = bitDepthHint
     }
@@ -410,28 +410,28 @@ public class AudioModule: Module, RecordingResultHandler {
     if let linearPCMIsFloat = options.linearPCMIsFloat {
       settings[AVLinearPCMIsFloatKey] = linearPCMIsFloat
     }
-    
+
     if let formatKey = options.outputFormat {
       settings[AVFormatIDKey] = getFormatIDFromString(typeString: formatKey)
     }
-    
+
     return settings
   }
-  
+
   private func getCurrentInput() throws -> AVAudioSessionPortDescription? {
     let currentRoute = AVAudioSession.sharedInstance().currentRoute
     let inputs = currentRoute.inputs
-    
+
     if inputs.count > 0 {
       return inputs.first
     }
-    
+
     let preferredInput = AVAudioSession.sharedInstance().preferredInput
-    
+
     if let preferredInput {
       return preferredInput
     }
-    
+
     if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
       if availableInputs.count > 0 {
         let defaultInput = availableInputs.first
@@ -439,10 +439,10 @@ public class AudioModule: Module, RecordingResultHandler {
         return defaultInput
       }
     }
-    
+
     return nil
   }
-    
+
   private func createRecorder(url: URL?, with options: RecordingOptions) -> AVAudioRecorder {
     let recorder = {
       if let url {
@@ -454,11 +454,11 @@ public class AudioModule: Module, RecordingResultHandler {
       }
       return AVAudioRecorder()
     }()
-    
+
     recorder.delegate = recordingDelegate
     return recorder
   }
-  
+
   private func checkPermissions() throws {
     switch AVAudioSession.sharedInstance().recordPermission {
     case .denied, .undetermined:
@@ -468,7 +468,7 @@ public class AudioModule: Module, RecordingResultHandler {
       break
     }
   }
-  
+
   private func addPlaybackEndNotification(player: AudioPlayer) {
     if let previous = endObservers[player.sharedObjectId] {
       NotificationCenter.default.removeObserver(previous)
@@ -481,27 +481,27 @@ public class AudioModule: Module, RecordingResultHandler {
       guard let self else {
         return
       }
-      
+
       if player.isLooping {
         player.pointer.seek(to: CMTime.zero)
         player.pointer.play()
       } else {
         updatePlayerStatus(player: player, with: [
-          "isPlaying": false,
+          "isPlaying": false
         ])
       }
     }
   }
-  
+
   private func registerTimeObserver(player: AudioPlayer, for id: Int) {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.sharedObjectId] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
       self?.updatePlayerStatus(player: player, with: [
-        "currentPosition": time.seconds * 1000,
+        "currentPosition": time.seconds * 1000
       ])
     }
   }
-  
+
   private func updatePlayerStatus(player: AudioPlayer, with dict: [String: Any]) {
     let avPlayer = player.pointer
     var body: [String: Any] = [
@@ -519,13 +519,13 @@ public class AudioModule: Module, RecordingResultHandler {
       "shouldCorrectPitch": player.shouldCorrectPitch,
       "isBuffering": player.isBuffering
     ]
-    
+
     body.merge(dict) { _, new in
       new
     }
     sendEvent(playbackStatus, body)
   }
-  
+
   private func validateAudioMode(mode: AudioMode) throws {
     if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
@@ -536,4 +536,3 @@ public class AudioModule: Module, RecordingResultHandler {
     }
   }
 }
-
