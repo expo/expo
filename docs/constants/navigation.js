@@ -200,6 +200,7 @@ const general = [
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/not-found.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
@@ -468,7 +469,6 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
-    makePage('router/reference/not-found.mdx'),
     { expanded: true },
   ]),
 ];
