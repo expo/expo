@@ -9,7 +9,7 @@ exports.fetchThenEvalAsync = void 0;
  */
 // Basically `__webpack_require__.l`.
 function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
-    if (typeof document === 'undefined') {
+    if (typeof window === 'undefined') {
         return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
     }
     return new Promise((resolve, reject) => {

@@ -15,7 +15,7 @@ import {
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
-import { expoInlineEnvVars, expoInlineTransformEnvVars } from './inline-env-vars';
+import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 
@@ -168,6 +168,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platform,
       },
     ]);
+  }
+
+  if (platformOptions.useTransformReactJSXExperimental != null) {
+    throw new Error(
+      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
+    );
   }
 
   // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.

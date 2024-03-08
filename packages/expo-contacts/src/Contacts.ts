@@ -83,12 +83,14 @@ export type PhoneNumber = {
   isPrimary?: boolean;
   /**
    * Phone number without format.
-   * @example `8674305`
+   * @example
+   * `8674305`
    */
   digits?: string;
   /**
    * Country code.
-   * @example `us`
+   * @example
+   * `us`
    */
   countryCode?: string;
   /**

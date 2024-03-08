@@ -56,6 +56,87 @@ it(`does not remove Platform module in development`, () => {
   );
 });
 
+it(`does not remove Platform module in development`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
+    /_Platform\.default\.OS===/
+  );
+});
+
+it(`removes Platform module without import (undefined behavior)`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+it(`supports Platform module default fallback on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `      
+    Platform.select({
+      ios: () => console.log('ios'),
+      default: () => console.log('default'),
+    })`;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('default');});`
+  );
+});
+
+xit(`removes Platform module and native fallback on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `      
+    Platform.select({
+      native: () => console.log('native'),
+      default: () => console.log('default'),
+    })`;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `(function(){return console.log('web');});`
+  );
+});
+
 it(`removes Platform module usage on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
@@ -362,5 +443,60 @@ describe('process.env.EXPO_OS', () => {
     const results = babel.transform(src, options)!;
     const min = await minifyLikeMetroAsync(results);
     expect(min.code).toBe('0;');
+  });
+});
+
+describe('process.env.EXPO_OS', () => {
+  const originalEnv = process.env;
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  [true, false].forEach((isDev) => {
+    ['development', 'test', 'production'].forEach((env) => {
+      it(`inlines process.env.EXPO_OS usage in NODE_ENV=${env} when bundling for dev=${isDev}`, () => {
+        process.env.NODE_ENV = env;
+        const options = {
+          babelrc: false,
+          presets: [preset],
+          filename: 'unknown',
+          // Make the snapshot easier to read
+          retainLines: true,
+          caller: getCaller({ name: 'metro', platform: 'ios', isDev }),
+        };
+
+        expect(babel.transform('process.env.EXPO_OS', options)!.code).toBe('"ios";');
+        expect(
+          babel.transform('process.env.EXPO_OS', {
+            ...options,
+            caller: getCaller({ name: 'metro', platform: 'web', isDev }),
+          })!.code
+        ).toBe('"web";');
+      });
+    });
+  });
+
+  it(`can use process.env.EXPO_OS to minify`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'ios', isDev: false }),
+    };
+
+    const src = `
+    if (process.env.EXPO_OS === 'ios') {
+      console.log('ios');
+    }
+    `;
+
+    const results = babel.transform(src, options)!;
+    const min = await minifyLikeMetroAsync(results);
+    expect(min.code).toBe("console.log('ios');");
   });
 });

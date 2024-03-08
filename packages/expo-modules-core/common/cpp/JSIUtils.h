@@ -9,6 +9,15 @@ namespace jsi = facebook::jsi;
 
 namespace expo::common {
 
+#pragma mark - Helpers
+
+/**
+ Gets the core Expo object, i.e. `global.expo`.
+ */
+inline jsi::Object getCoreObject(jsi::Runtime &runtime) {
+  return runtime.global().getPropertyAsObject(runtime, "expo");
+}
+
 #pragma mark - Classes
 
 /**
