@@ -144,7 +144,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
   }
 
-  // if (!isDev) {
+  // if (isProduction) {
   //   inlines['process.env.NODE_ENV'] = 'production';
   //   inlines['__DEV__'] = false;
   // }
