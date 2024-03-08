@@ -127,7 +127,7 @@ const style = `
 }
 `;
 export default function loadStyle() {
-  if (typeof document !== 'undefined') {
+  if (typeof window !== 'undefined') {
     const styleTag = document.createElement('style');
     styleTag.innerHTML = style;
     styleTag.id = 'expo-image-styles';
