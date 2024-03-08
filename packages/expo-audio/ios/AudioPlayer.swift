@@ -23,14 +23,15 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
     
     if isPlaying {
       return false
-    } else if avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      return true
-    } else {
-      if let currentItem = avPlayer.currentItem {
-        return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
-      } else {
-        return true
-      }
     }
+    
+    if avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+      return true
+    }
+    
+    if let currentItem = avPlayer.currentItem {
+      return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+    }
+    return true
   }
 }
