@@ -26,6 +26,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
     import('./generateFingerprint.js').then((i) => i.generateFingerprint),
   'runtimeversion:resolve': () =>
     import('./resolveRuntimeVersion.js').then((i) => i.resolveRuntimeVersion),
+  'configuration:syncnative': () =>
+    import('./syncConfigurationToNative.js').then((i) => i.syncConfigurationToNative),
 };
 
 const args = arg(

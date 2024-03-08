@@ -52,16 +52,12 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
     }
   });
 
-  runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  common::getCoreObject(runtime)
     .setProperty(runtime, "SharedObject", klass);
 }
 
 jsi::Function getBaseClass(jsi::Runtime &runtime) {
-  return runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  return common::getCoreObject(runtime)
     .getPropertyAsFunction(runtime, "SharedObject");
 }
 
