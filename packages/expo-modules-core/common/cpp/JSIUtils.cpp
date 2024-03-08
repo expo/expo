@@ -122,6 +122,10 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
 
     jsDescriptor.setProperty(runtime, setPropName, set);
   }
+  if (!descriptor.value.isUndefined()) {
+    jsi::PropNameID valuePropName = jsi::PropNameID::forAscii(runtime, "value", 5);
+    jsDescriptor.setProperty(runtime, valuePropName, descriptor.value);
+  }
 
   defineProperty(runtime, object, name, std::move(jsDescriptor));
 }
