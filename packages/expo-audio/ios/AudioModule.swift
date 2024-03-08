@@ -122,7 +122,8 @@ public class AudioModule: Module, RecordingResultHandler {
               "isLoaded": true
             ])
           }
-        }.store(in: &cancellables)
+        }
+        .store(in: &cancellables)
         return player
       }
 
@@ -422,7 +423,7 @@ public class AudioModule: Module, RecordingResultHandler {
     let currentRoute = AVAudioSession.sharedInstance().currentRoute
     let inputs = currentRoute.inputs
 
-    if inputs.count > 0 {
+    if !inputs.isEmpty {
       return inputs.first
     }
 
@@ -433,7 +434,7 @@ public class AudioModule: Module, RecordingResultHandler {
     }
 
     if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      if availableInputs.count > 0 {
+      if !availableInputs.isEmpty {
         let defaultInput = availableInputs.first
         try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
         return defaultInput
