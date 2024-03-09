@@ -47,3 +47,25 @@
 }
 
 @end
+
+@implementation EXBridgeDelegateWithCustomBundleURL
+
+- (instancetype)initBridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate
+                     withBundleURL:(NSURL *)bundleURL
+{
+  if (self = [super initWithBridgeDelegate:bridgeDelegate interceptor:self]) {
+    self.bundleURL = bundleURL;
+  }
+  return self;
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+  return self.bundleURL;
+}
+
+- (BOOL)isInterceptedSelector:(SEL)selector
+{
+  return NO;
+}
+
+@end

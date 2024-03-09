@@ -10,9 +10,8 @@ import EXUpdatesInterface
  * RCTBridge and RCTRootView objects to return to the ReactDelegate, replacing them with the real
  * objects when expo-updates is ready.
  */
-public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate, RCTBridgeDelegate {
+public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
@@ -44,7 +43,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     return true
   }()
 
-  public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
+  public override func createReactHost(reactDelegate: ExpoReactDelegate, launchOptions: [AnyHashable : Any]?) -> ExpoReactHostWrapper? {
     if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
       // In development builds with expo-dev-client, completes the auto-setup for development
       // builds with the expo-updates integration by passing a reference to DevLauncherController
@@ -66,20 +65,19 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     // controller.startAndShowLaunchScreen(UIApplication.shared.delegate!.window!!)
     controller.start()
 
-    self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
     self.launchOptions = launchOptions
 
-    return EXDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
+    return EXDeferredReactHost()
   }
 
-  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
+  public override func createRootView(reactDelegate: ExpoReactDelegate, host: ExpoReactHostWrapper, moduleName: String, initialProperties: [AnyHashable : Any]?) -> UIView? {
     if !shouldEnableAutoSetup {
       return nil
     }
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
-    self.deferredRootView = EXDeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
+    self.deferredRootView = EXDeferredRCTRootView()
     return self.deferredRootView
   }
 
@@ -90,7 +88,8 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       fatalError("`reactDelegate` should not be nil")
     }
 
-    let rootView = EXCreateReactBindingRootView(self.bridgeDelegate, self.rootViewInitialProperties, self.launchOptions)
+    let rootViewFactory = ExpoReactRootViewFactory(rctAppDelegate: nil, bundleURL: AppController.sharedInstance.launchAssetUrl())
+    let rootView = rootViewFactory.view(withModuleName: nil, initialProperties: self.rootViewInitialProperties, launchOptions: self.launchOptions)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = UIApplication.shared.delegate!.window!!
     let rootViewController = reactDelegate.createRootViewController()
@@ -101,17 +100,10 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.cleanup()
   }
 
-  // MARK: RCTBridgeDelegate implementations
-
-  public func sourceURL(for bridge: RCTBridge!) -> URL! {
-    return AppController.sharedInstance.launchAssetUrl()
-  }
-
   // MARK: Internals
 
   /**
-   Cleanup unused resources after `RCTBridge` created.
-   We should keep `bridgeDelegate` alive because it's a wrapper of `RCTBridgeDelegate` from `AppDelegate` and somehow bridge may access it after.
+   Cleanup unused resources after react instance created.
    */
   private func cleanup() {
     self.reactDelegate = nil

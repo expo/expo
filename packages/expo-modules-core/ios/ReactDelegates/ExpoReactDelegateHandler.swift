@@ -18,12 +18,22 @@ open class ExpoReactDelegateHandler: NSObject {
     return nil
   }
 
+  @objc
+  open func createReactHost(reactDelegate: ExpoReactDelegate, launchOptions: [AnyHashable: Any]?) -> ExpoReactHostWrapper? {
+    return nil
+  }
+
   /**
    If this module wants to handle `RCTRootView` creation, it can return the instance.
    Otherwise return nil.
    */
   @objc
-  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
+  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> UIView? {
+    return nil
+  }
+
+  @objc
+  open func createRootView(reactDelegate: ExpoReactDelegate, host: ExpoReactHostWrapper, moduleName: String, initialProperties: [AnyHashable: Any]?) -> UIView? {
     return nil
   }
 
@@ -49,4 +59,16 @@ open class ExpoReactDelegateHandler: NSObject {
    */
   @objc
   open func bridgeDidCreate(bridge: RCTBridge) {}
+
+  /**
+   Callback before react host creation
+   */
+  @objc
+  open func hostWillCreate() {}
+
+  /**
+   Callback after react host creation
+   */
+  @objc
+  open func hostDidCreate(reactHost: ExpoReactHostWrapper) {}
 }

@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXDeferredRCTBridge.h>
+#import <EXUpdates/EXDeferredReactHost.h>
 
 @interface EXNoopNSObject : NSObject
 
@@ -25,17 +25,17 @@
 
 @end
 
-@implementation EXDeferredRCTBridge
+@implementation EXDeferredReactHost
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 
-- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+- (instancetype)init
 {
   // RCTBridge throws an exception for default initializer
   // and other designated initializers will create a real bridge.
   // We use a trick here to initialize a NoopNSObject and cast back to EXDeferredRCTBridge.
-  self = (EXDeferredRCTBridge *)[EXNoopNSObject new];
+  self = (EXDeferredReactHost *)[EXNoopNSObject new];
   return self;
 }
 

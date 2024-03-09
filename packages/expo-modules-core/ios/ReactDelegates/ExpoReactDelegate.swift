@@ -1,5 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+import React_RCTAppDelegate
+
 /**
  An extensible react instance creation delegate. This class will loop through each `ExpoReactDelegateHandler` to determine the winner to create the instance.
  */
@@ -12,25 +14,24 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
-  public func createBridge(delegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge {
-    self.handlers.forEach { $0.bridgeWillCreate() }
+  public func createReactHost(withBundleURL bundleURL: URL?, launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> ExpoReactHostWrapper {
+    self.handlers.forEach { $0.hostWillCreate() }
     let result = self.handlers.lazy
-      .compactMap { $0.createBridge(reactDelegate: self, bridgeDelegate: delegate, launchOptions: launchOptions) }
-      .first(where: { _ in true }) ?? RCTBridge(delegate: delegate, launchOptions: launchOptions)!
-    self.handlers.forEach { $0.bridgeDidCreate(bridge: result) }
+      .compactMap { $0.createReactHost(reactDelegate: self, launchOptions: launchOptions) }
+      .first(where: { _ in true }) ?? ExpoReactRootViewFactory.createReactHost(withBundleURL: bundleURL, launchOptions: launchOptions)
+    self.handlers.forEach { $0.hostDidCreate(reactHost: result) }
     return result
   }
 
   @objc
   public func createRootView(
-    bridge: RCTBridge,
+    host: ExpoReactHostWrapper,
     moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
+    initialProperties: [AnyHashable: Any]?
   ) -> UIView {
     return self.handlers.lazy
-      .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
-      .first(where: { _ in true }) ?? EXAppSetupDefaultRootView(bridge, moduleName, initialProperties, fabricEnabled)
+      .compactMap { $0.createRootView(reactDelegate: self, host: host, moduleName: moduleName, initialProperties: initialProperties) }
+      .first(where: { _ in true }) ?? ExpoReactRootViewFactory.createRootView(host, moduleName: moduleName, initialProperties: initialProperties)
   }
 
   @objc
