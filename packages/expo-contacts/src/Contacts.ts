@@ -942,6 +942,17 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
 }
 
 /**
+ * Presents a native contact picker to select a single contact from the system.
+ * @return A promise that fulfills with a `Contact` object if a contact was selected, or `null` if no contact was selected (picking was cancelled).
+ */
+export async function presentContactPickerAsync(): Promise<Contact | null> {
+  if (!ExpoContacts.presentContactPickerAsync) {
+    throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+  }
+  return await ExpoContacts.presentContactPickerAsync();
+}
+
+/**
  * Get the default container's ID.
  * @return A promise that fulfills with default container ID.
  * @example
