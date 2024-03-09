@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- It is now possible to select contacts using OS-provided native contact pickers. ([#27541](https://github.com/expo/expo/pull/27541) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
