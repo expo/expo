@@ -30,7 +30,6 @@ export interface RouteRegex {
     re: RegExp;
 }
 export declare function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1;
-export declare function getNamedRouteRegex(normalizedRoute: string, page: string): ExpoRouterServerManifestV1Route;
 export declare function parseParameter(param: string): {
     name: string;
     repeat: boolean;

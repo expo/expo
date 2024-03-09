@@ -4,6 +4,7 @@ description: 'A library that allows to create a development build.'
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-dev-client'
 packageName: 'expo-dev-client'
 iconUrl: '/static/images/packages/expo-dev-client.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -12,7 +13,6 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `expo-dev-client` adds various useful development tools to your debug builds:
 
@@ -21,8 +21,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 - [a powerful and extensible developer menu UI](/debugging/tools#developer-menu)
 
 Expo documentation refers to debug builds that include `expo-dev-client` as [development builds](/develop/development-builds/introduction/).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

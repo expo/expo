@@ -27,13 +27,14 @@ export default function DocumentationElements(props: DocumentationElementsProps)
         <PageMetadataContext.Provider value={props.meta}>
           <PageApiVersionProvider>
             <DocumentationPage
-              title={props.meta.title || ''}
-              description={props.meta.description || ''}
+              title={props.meta.title ?? ''}
+              description={props.meta.description ?? ''}
               sourceCodeUrl={props.meta.sourceCodeUrl}
-              tocVisible={!props.meta.hideTOC}
+              hideTOC={props.meta.hideTOC}
               hideFromSearch={props.meta.hideFromSearch}
               packageName={props.meta.packageName}
-              iconUrl={props.meta.iconUrl}>
+              iconUrl={props.meta.iconUrl}
+              platforms={props.meta.platforms}>
               {props.children}
             </DocumentationPage>
           </PageApiVersionProvider>

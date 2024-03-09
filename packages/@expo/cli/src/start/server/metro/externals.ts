@@ -26,6 +26,7 @@ export const EXTERNAL_REQUIRE_POLYFILL = '.expo/metro/polyfill.js';
 export const EXTERNAL_REQUIRE_NATIVE_POLYFILL = '.expo/metro/polyfill.native.js';
 export const METRO_EXTERNALS_FOLDER = '.expo/metro/externals';
 export const METRO_SHIMS_FOLDER = '.expo/metro/shims';
+export const REACT_CANARY_FOLDER = '.expo/metro/canary';
 
 export function getNodeExternalModuleId(fromModule: string, moduleId: string) {
   return path.relative(
@@ -34,15 +35,27 @@ export function getNodeExternalModuleId(fromModule: string, moduleId: string) {
   );
 }
 
-export async function setupShimFiles(projectRoot: string) {
-  await fs.promises.mkdir(path.join(projectRoot, METRO_SHIMS_FOLDER), { recursive: true });
-  // Copy the shims to the project folder in case we're running in a monorepo.
-  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
+export async function setupShimFiles(
+  projectRoot: string,
+  { shims, canary }: { shims: boolean; canary: boolean }
+) {
+  await Promise.all(
+    (
+      [
+        shims && [METRO_SHIMS_FOLDER, '../static/shims'],
+        canary && [REACT_CANARY_FOLDER, '../static/canary'],
+      ].filter(Boolean) as [string, string][]
+    ).map(async ([folder, shimsId]) => {
+      await fs.promises.mkdir(path.join(projectRoot, folder), { recursive: true });
+      // Copy the shims to the project folder in case we're running in a monorepo.
+      const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), shimsId);
 
-  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER), {
-    overwrite: false,
-    recursive: true,
-  });
+      await copyAsync(shimsFolder, path.join(projectRoot, folder), {
+        overwrite: false,
+        recursive: true,
+      });
+    })
+  );
 }
 
 export async function setupNodeExternals(projectRoot: string) {
@@ -60,7 +73,8 @@ async function tapExternalRequirePolyfill(projectRoot: string) {
   );
   await writeIfDifferentAsync(
     path.join(projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL),
-    'global.$$require_external = (moduleId) => {throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
+    // Wrap in try/catch to support Android.
+    'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }'
   );
 }
 

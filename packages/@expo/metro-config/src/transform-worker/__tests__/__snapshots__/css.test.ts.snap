@@ -10,7 +10,7 @@ exports[`getHotReplaceTemplate should generate the correct template 1`] = `
 
 exports[`wrapDevelopmentCSS should transform css in dev mode 1`] = `
 "(() => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return
   }
   const head = document.head || document.getElementsByTagName('head')[0];

@@ -13,7 +13,7 @@ export function fetchThenEvalAsync(
     crossOrigin,
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {
