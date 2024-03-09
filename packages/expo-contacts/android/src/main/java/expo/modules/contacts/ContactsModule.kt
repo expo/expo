@@ -684,10 +684,9 @@ class ContactsModule : Module() {
         pendingPromise.resolve(0)
       }
       if (requestCode == RC_PICK_CONTACT) {
-       if (resultCode == Activity.RESULT_CANCELED) {
-         pendingPromise.resolve(null)
-         return
-       }
+        if (resultCode == Activity.RESULT_CANCELED) {
+          pendingPromise.resolve(null)
+        }
 
         if (resultCode == Activity.RESULT_OK) {
           val contactId = intent?.data?.lastPathSegment
@@ -695,6 +694,8 @@ class ContactsModule : Module() {
           pendingPromise.resolve(contact?.toMap(defaultFields))
         }
       }
+
+      mPendingPromise = null
     }
 
     override fun onNewIntent(intent: Intent) = Unit
