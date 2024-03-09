@@ -207,10 +207,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
-      
+
       self.addErrorNotification()
       self.changePreviewOrientation()
-      
+
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
         self.barcodeScanner.maybeStartBarcodeScanning()
@@ -308,7 +308,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
       let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
-      
+
       var requestedFlashMode = AVCaptureDevice.FlashMode.off
 
       switch self.flashMode {
