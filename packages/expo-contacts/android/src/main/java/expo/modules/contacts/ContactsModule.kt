@@ -291,6 +291,18 @@ class ContactsModule : Module() {
        mPendingPromise = promise
        activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
+
+     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+       if (mPendingPromise != null) {
+         throw ContactPickingInProgressException()
+       }
+
+       val intent = Intent(Intent.ACTION_PICK)
+       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+
+       mPendingPromise = promise
+       activity.startActivityForResult(intent, RC_PICK_CONTACT)
+    }
   }
 
   private fun presentForm(contact: Contact) {
