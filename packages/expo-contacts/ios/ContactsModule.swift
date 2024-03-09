@@ -13,9 +13,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
-  private var contactPickerDelegate: ContactPickerControllerDelegate? = nil
+  private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var currentContactPickingContext: ContactPickingContext?
-
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
@@ -142,23 +141,22 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
-      
-      
+
     AsyncFunction("presentContactPickerAsync") { (promise: Promise) in
-      if (currentContactPickingContext != nil) {
+      if currentContactPickingContext != nil {
         throw ContactPickingInProgressException()
       }
-      
+
       let pickerController = CNContactPickerViewController()
-      
+
       contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
-      
+
       currentContactPickingContext = ContactPickingContext(promise: promise)
-      
+
       pickerController.delegate = self.contactPickerDelegate
-      
+
       let currentController = appContext?.utilities?.currentViewController()
-            
+
       currentController?.present(pickerController, animated: true)
     }.runOnQueue(.main)
 
@@ -324,20 +322,20 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       )
     }
   }
-  
+
   func didPickContact(contact: CNContact) {
     do {
       let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
-      
+
       currentContactPickingContext?.promise.resolve(serializedContact)
     } catch {
       // TODO: handle error
 
     }
-  
+
     currentContactPickingContext = nil
   }
-  
+
   func didCancelPickingContact() {
     currentContactPickingContext?.promise.resolve(nil)
     currentContactPickingContext = nil
