@@ -83,6 +83,7 @@ private val defaultFields = setOf(
 )
 
 const val RC_EDIT_CONTACT = 2137
+const val RC_PICK_CONTACT = 2138
 
 // TODO: Evan: default API is confusing. Duplicate data being requested.
 private val DEFAULT_PROJECTION = listOf(
@@ -283,6 +284,18 @@ class ContactsModule : Module() {
       // Create contact from supplied data.
       val contact = mutateContact(null, contactData)
       presentForm(contact)
+    }
+
+     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+       if (mPendingPromise != null) {
+         throw ContactPickingInProgressException()
+       }
+
+       val intent = Intent(Intent.ACTION_PICK)
+       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+
+       mPendingPromise = promise
+       activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
@@ -669,6 +682,18 @@ class ContactsModule : Module() {
       val pendingPromise = mPendingPromise ?: return
       if (requestCode == RC_EDIT_CONTACT) {
         pendingPromise.resolve(0)
+      }
+      if (requestCode == RC_PICK_CONTACT) {
+       if (resultCode == Activity.RESULT_CANCELED) {
+         pendingPromise.resolve(null)
+         return
+       }
+
+        if (resultCode == Activity.RESULT_OK) {
+          val contactId = intent?.data?.lastPathSegment
+          val contact = getContactById(contactId, defaultFields)
+          pendingPromise.resolve(contact?.toMap(defaultFields))
+        }
       }
     }
 
