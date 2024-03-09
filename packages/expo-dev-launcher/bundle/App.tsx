@@ -1,4 +1,4 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   ExtensionsFilledIcon,
@@ -7,7 +7,7 @@ import {
   SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
@@ -50,13 +50,32 @@ export function App(props: LauncherAppProps) {
 }
 
 const Main = () => {
+  const tabBarButton = (props: BottomTabBarButtonProps) => {
+    const style: any = props.style ?? {};
+    return (
+      <Pressable
+        {...props}
+        style={({ pressed, focused }) => [style, { opacity: pressed || focused ? 0.6 : 1.0 }]}
+      />
+    );
+  };
   return (
     <Tab.Navigator detachInactiveScreens={false}>
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerShown: false,
+          tabBarButton,
+          tabBarIcon: ({ focused }) => <SettingsFilledIcon focused={focused} />,
+        }}
+      />
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           headerShown: false,
+          tabBarButton,
           tabBarIcon: ({ focused }) => <HomeFilledIcon focused={focused} />,
         }}
       />
@@ -65,16 +84,9 @@ const Main = () => {
         component={ExtensionsStack}
         options={{
           headerShown: false,
+          tabBarButton,
           tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
           title: 'Extensions',
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused }) => <SettingsFilledIcon focused={focused} />,
         }}
       />
       {__DEV__ && (
@@ -83,6 +95,7 @@ const Main = () => {
           component={KitchenSinkScreen}
           options={{
             headerShown: false,
+            tabBarButton,
             tabBarIcon: () => <InfoIcon />,
           }}
         />

@@ -1,6 +1,7 @@
 export * from './icons';
 export * from './Button';
 export * from './Image';
+export * from './Switch';
 export * from './Text';
 export * from './theme';
 export * from './View';
