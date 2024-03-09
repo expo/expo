@@ -319,6 +319,18 @@ class ContactsModule : Module() {
        mPendingPromise = promise
        activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
+
+     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+       if (mPendingPromise != null) {
+         throw ContactPickingInProgressException()
+       }
+
+       val intent = Intent(Intent.ACTION_PICK)
+       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+
+       mPendingPromise = promise
+       activity.startActivityForResult(intent, RC_PICK_CONTACT)
+    }
   }
 
   private fun presentForm(contact: Contact) {
@@ -721,6 +733,18 @@ class ContactsModule : Module() {
         }
 
         contactPickingPromise = null
+      }
+      if (requestCode == RC_PICK_CONTACT) {
+       if (resultCode == Activity.RESULT_CANCELED) {
+         pendingPromise.resolve(null)
+         return
+       }
+
+        if (resultCode == Activity.RESULT_OK) {
+          val contactId = intent?.data?.lastPathSegment
+          val contact = getContactById(contactId, defaultFields)
+          pendingPromise.resolve(contact?.toMap(defaultFields))
+        }
       }
       if (requestCode == RC_PICK_CONTACT) {
        if (resultCode == Activity.RESULT_CANCELED) {
