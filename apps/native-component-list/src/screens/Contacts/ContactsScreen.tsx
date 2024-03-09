@@ -139,7 +139,9 @@ function ContactsView({ navigation }: Props) {
               onPress={async () => {
                 const contact = await Contacts.presentContactPickerAsync();
 
-                setSelectedContact(contact);
+                if (contact) {
+                  setSelectedContact(contact);
+                }
               }}>
               <Text>Select a contact</Text>
             </TouchableOpacity>
