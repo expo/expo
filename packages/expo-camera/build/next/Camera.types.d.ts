@@ -360,6 +360,7 @@ export type CameraNativeProps = {
     facing?: string;
     flashMode?: string;
     enableTorch?: boolean;
+    mute?: boolean;
     zoom?: number;
     barcodeScannerSettings?: BarcodeSettings;
     barcodeScannerEnabled?: boolean;
