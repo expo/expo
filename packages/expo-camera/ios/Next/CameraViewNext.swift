@@ -115,9 +115,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     #if !targetEnvironment(simulator)
     setupPreview()
     #endif
-    self.changePreviewOrientation(orientation: UIApplication.shared.statusBarOrientation)
-    self.initializeCaptureSessionInput()
-    self.startSession()
+    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+    initializeCaptureSessionInput()
+    startSession()
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(orientationChanged(notification:)),
@@ -199,10 +199,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     sessionQueue.async {
-      if self.presetCamera == .unspecified {
-        return
-      }
-
       self.session.beginConfiguration()
 
       let photoOutput = AVCapturePhotoOutput()
@@ -211,6 +207,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
+
+      self.addErrorNotification()
+      self.changePreviewOrientation()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
@@ -239,7 +238,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   private func addErrorNotification() {
     if self.errorNotification != nil {
-      NotificationCenter.default.removeObserver(self.errorNotification)
+      NotificationCenter.default.removeObserver(self.errorNotification as Any)
     }
 
     self.errorNotification = NotificationCenter.default.addObserver(
@@ -254,9 +253,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
 
       if error.code == .mediaServicesWereReset {
-        if self.session.isRunning {
+        if !self.session.isRunning {
           self.session.startRunning()
-          self.ensureSessionConfiguration()
+          self.updateSessionAudioIsMuted()
           self.onCameraReady()
         }
       }
@@ -308,11 +307,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
+      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
 
-      if photoOutput.isHighResolutionCaptureEnabled {
-        photoSettings.isHighResolutionPhotoEnabled = true
-      }
       var requestedFlashMode = AVCaptureDevice.FlashMode.off
 
       switch self.flashMode {
@@ -438,7 +434,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
         return
       }
-      var updatedExif = ExpoCameraUtils.updateExif(
+      let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
         with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
       )
@@ -610,7 +606,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if self.session.canAddOutput(output) {
       self.session.beginConfiguration()
       self.session.addOutput(output)
-      self.session.sessionPreset = .high
       self.videoFileOutput = output
       self.session.commitConfiguration()
     }
@@ -636,13 +631,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
     super.removeFromSuperview()
+    UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-  }
-
-  func ensureSessionConfiguration() {
-    sessionQueue.async {
-      self.updateSessionAudioIsMuted()
-    }
   }
 
   public func fileOutput(
@@ -691,16 +681,6 @@ func updateSessionPreset(preset: AVCaptureSession.Preset) {
   func initializeCaptureSessionInput() {
     if captureDeviceInput?.device.position == presetCamera {
       return
-    }
-
-    EXUtilities.performSynchronously {
-      var orientation: AVCaptureVideoOrientation = .portrait
-      if self.deviceOrientation != .unknown {
-        if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.deviceOrientation.rawValue) {
-          orientation = videoOrientation
-        }
-      }
-      self.previewLayer.videoPreviewLayer.connection?.videoOrientation = orientation
     }
 
     sessionQueue.async {
@@ -753,13 +733,13 @@ func updateSessionPreset(preset: AVCaptureSession.Preset) {
   }
 
   @objc func orientationChanged(notification: Notification) {
-    changePreviewOrientation(orientation: deviceOrientation)
+    changePreviewOrientation()
   }
 
-  func changePreviewOrientation(orientation: UIInterfaceOrientation) {
-    let videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-
+  func changePreviewOrientation() {
     EXUtilities.performSynchronously {
+      // We shouldn't access the device orientation anywhere but on the main thread
+      let videoOrientation = ExpoCameraUtils.videoOrientation(for: self.deviceOrientation)
       if (self.previewLayer.videoPreviewLayer.connection?.isVideoOrientationSupported) == true {
         self.previewLayer.videoPreviewLayer.connection?.videoOrientation = videoOrientation
       }
