@@ -128,7 +128,6 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
   async _queryFirstTypeScriptFileAsync(): Promise<null | string> {
     const results = await wrapGlobWithTimeout(
       () =>
-        // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
         anyMatchAsync('**/*.@(ts|tsx)', {
           cwd: this.projectRoot,
           ignore: [
