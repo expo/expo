@@ -415,6 +415,7 @@ export default class CameraScreen extends React.Component<object, State> {
         ratio={this.state.ratio}
         pictureSize={this.state.pictureSize}
         onMountError={this.handleMountError}
+        responsiveOrientationWhenOrientationLocked
         onFacesDetected={this.state.faceDetecting ? this.onFacesDetected : undefined}
         faceDetectorSettings={{
           tracking: true,

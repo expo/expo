@@ -293,6 +293,7 @@ export default class CameraScreen extends React.Component<object, State> {
         onCameraReady={() => {
           console.log('ready');
         }}
+        responsiveOrientationWhenOrientationLocked
         enableTorch={this.state.torchEnabled}
         facing={this.state.facing}
         flash={this.state.flash}
