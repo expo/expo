@@ -7,7 +7,7 @@ import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { memoize } from '../../../utils/fn';
-import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
+import { anyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 
@@ -129,7 +129,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     const results = await wrapGlobWithTimeout(
       () =>
         // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
-        everyMatchAsync('**/*.@(ts|tsx)', {
+        anyMatchAsync('**/*.@(ts|tsx)', {
           cwd: this.projectRoot,
           ignore: [
             '**/@(Carthage|Pods|node_modules)/**',
