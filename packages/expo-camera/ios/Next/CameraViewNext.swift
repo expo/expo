@@ -253,9 +253,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
 
       if error.code == .mediaServicesWereReset {
-        if self.session.isRunning {
+        if !self.session.isRunning {
           self.session.startRunning()
-          self.ensureSessionConfiguration()
+          self.updateSessionAudioIsMuted()
           self.onCameraReady()
         }
       }
@@ -633,10 +633,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     super.removeFromSuperview()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-  }
-
-  func ensureSessionConfiguration() {
-    self.updateSessionAudioIsMuted()
   }
 
   public func fileOutput(
