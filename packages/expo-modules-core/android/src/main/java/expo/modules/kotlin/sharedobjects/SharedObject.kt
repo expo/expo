@@ -7,14 +7,14 @@ import expo.modules.kotlin.logger
 import java.lang.ref.WeakReference
 
 @DoNotStrip
-open class SharedObject {
+open class SharedObject(appContext: AppContext? = null) {
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
    * When the object is not linked with any JavaScript object, its value is 0.
    */
   internal var sharedObjectId: SharedObjectId = SharedObjectId(0)
 
-  internal var appContextHolder = WeakReference<AppContext>(null)
+  internal var appContextHolder = WeakReference<AppContext>(appContext)
 
   val appContext: AppContext?
     get() = appContextHolder.get()

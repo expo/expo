@@ -25,11 +25,12 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, private val appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject() {
-  private val currentActivity: Activity by lazy {
-    appContext.activityProvider?.currentActivity
-      ?: throw Exceptions.MissingActivity()
-  }
+class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
+  private val currentActivity: Activity
+    get() {
+      return appContext?.activityProvider?.currentActivity
+        ?: throw Exceptions.MissingActivity()
+    }
 
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
@@ -128,8 +129,10 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
       }
     }
     intent.action = MediaSessionService.SERVICE_INTERFACE
-    currentActivity.startService(intent)
-    currentActivity.bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+    currentActivity.apply {
+      startService(intent)
+      bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+    }
     player.addListener(playerListener)
     VideoManager.registerVideoPlayer(this)
   }
