@@ -18,6 +18,7 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -158,23 +159,29 @@ class AppContext(
         val reactContext = reactContextHolder.get() ?: return@trace
         val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
 
-        val jsCallInvokerHolder = reactContext.catalystInstance?.jsCallInvokerHolder
-        if (jsCallInvokerHolder !is CallInvokerHolderImpl) {
-          logger.warn("⚠️ Cannot install JSI interop: CallInvokerHolderImpl is not available")
+        val jsRuntimePointer = jsContextHolder.takeIf { it != 0L }.ifNull {
+          logger.error("❌ Cannot install JSI interop - JS runtime pointer is null")
           return@trace
         }
 
-        jsContextHolder
-          .takeIf { it != 0L }
-          ?.let {
-            jsiInterop.installJSI(
-              this,
-              it,
-              jniDeallocator,
-              jsCallInvokerHolder
-            )
-            logger.info("✅ JSI interop was installed")
-          }
+        @Suppress("DEPRECATION")
+        if (reactContext.isBridgeless) {
+          jsiInterop.installJSIForBridless(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.runtimeExecutor!!
+          )
+        } else {
+          jsiInterop.installJSI(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl
+          )
+        }
+
+        logger.info("✅ JSI interop was installed")
       } catch (e: Throwable) {
         logger.error("❌ Cannot install JSI interop: $e", e)
       }

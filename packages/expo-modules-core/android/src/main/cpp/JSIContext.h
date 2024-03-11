@@ -15,6 +15,13 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+#include <ReactCommon/RuntimeExecutor.h>
+#include <react/jni/JRuntimeExecutor.h>
+
+#endif
+
 #if REACT_NATIVE_TARGET_VERSION >= 73
 
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
@@ -51,6 +58,19 @@ public:
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
   );
+
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+  /**
+     * Initializes the `ExpoModulesHostObject` and adds it to the global object.
+     */
+    void installJSIForBridgeless(
+      jlong jsRuntimePointer,
+      jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+      jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
+    );
+
+#endif
 
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
@@ -142,6 +162,12 @@ private:
   inline bool callHasModule(const std::string &moduleName) const;
 
   void jniWasDeallocated();
+
+  void prepareJSIInterop(
+    jlong jsRuntimePointer,
+    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+    std::shared_ptr<react::CallInvoker> callInvoker
+  );
 
   void prepareRuntime();
 
