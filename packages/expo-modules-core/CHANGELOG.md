@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Ensured that `onCreate` before `OnActivityEntersForeground` event. ([#26944](https://github.com/expo/expo/pull/26944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed activity contract registration after host destruction. ([#26881](https://github.com/expo/expo/pull/26881) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.11.10 — 2024-03-06

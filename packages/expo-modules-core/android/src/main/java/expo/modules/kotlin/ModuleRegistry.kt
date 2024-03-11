@@ -33,10 +33,6 @@ class ModuleRegistry(
       )
     }
 
-    holder.apply {
-      registerContracts()
-    }
-
     registry[holder.name] = holder
   }
 
@@ -113,13 +109,31 @@ class ModuleRegistry(
   }
 
   /**
+   * Post onCreate event to all modules. It has its own method to ensure that it’s called first.
+   */
+  fun postOnCreate() {
+    forEach {
+      it.post(EventName.MODULE_CREATE)
+    }
+    registerActivityContracts()
+    readyForPostingEvents()
+    flushTheEventQueue()
+  }
+
+  internal fun registerActivityContracts() {
+    forEach { holder ->
+      holder.registerContracts()
+    }
+  }
+
+  /**
    * Tell the modules registry it can handle events as they come, without adding them to the event queue.
    */
-  fun readyForPostingEvents() = synchronized(this) {
+  private fun readyForPostingEvents() = synchronized(this) {
     isReadyForPostingEvents = true
   }
 
-  fun flushTheEventQueue() = synchronized(this) {
+  private fun flushTheEventQueue() = synchronized(this) {
     eventQueue.forEach { event ->
       forEach {
         event.post(it)
