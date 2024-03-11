@@ -20,15 +20,15 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
   private func playerIsBuffering() -> Bool {
     let avPlayer = pointer
     let isPlaying = avPlayer.timeControlStatus == .playing
-    
+
     if isPlaying {
       return false
     }
-    
+
     if avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate {
       return true
     }
-    
+
     if let currentItem = avPlayer.currentItem {
       return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }

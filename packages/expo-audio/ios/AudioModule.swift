@@ -108,22 +108,25 @@ public class AudioModule: Module, RecordingResultHandler {
       cancellables.removeAll()
     }
 
+    // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
         let player = AudioPlayer(createAVPlayer(source: source))
         players[player.id] = player
         // Gets the duration of the item on load
-        player.pointer.publisher(for: \.currentItem?.status).sink { [weak self] status in
-          guard let self, let status else {
-            return
+        player.pointer
+          .publisher(for: \.currentItem?.status)
+          .sink { [weak self] status in
+            guard let self, let status else {
+              return
+            }
+            if status == .readyToPlay {
+              self.updatePlayerStatus(player: player, with: [
+                "isLoaded": true
+              ])
+            }
           }
-          if status == .readyToPlay {
-            self.updatePlayerStatus(player: player, with: [
-              "isLoaded": true
-            ])
-          }
-        }
-        .store(in: &cancellables)
+          .store(in: &cancellables)
         return player
       }
 
@@ -226,6 +229,7 @@ public class AudioModule: Module, RecordingResultHandler {
       }
     }
 
+    // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
         guard let cachesDir = appContext?.fileSystem?.cachesDirectory, var directory = URL(string: cachesDir) else {
@@ -363,7 +367,7 @@ public class AudioModule: Module, RecordingResultHandler {
 
     return [
       "name": desc.portName,
-      "type": desc.portType,
+      "type": desc.portType.rawValue,
       "uid": desc.uid
     ]
   }
@@ -371,18 +375,16 @@ public class AudioModule: Module, RecordingResultHandler {
   private func setInput(_ input: String) throws {
     var prefferedInput: AVAudioSessionPortDescription?
     if let currentInputs = AVAudioSession.sharedInstance().availableInputs {
-      for desc in currentInputs {
-        if desc.uid == input {
-          prefferedInput = desc
-        }
+      for desc in currentInputs where desc.uid == input {
+        prefferedInput = desc
       }
     }
 
-    if let prefferedInput {
-      try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
+    guard let prefferedInput else {
+      throw PreferredInputFoundException(input)
     }
-
-    throw PreferredInputFoundException(input)
+    
+    try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
   }
 
   private func setRecordingOptions(_ options: RecordingOptions) -> [String: Any] {

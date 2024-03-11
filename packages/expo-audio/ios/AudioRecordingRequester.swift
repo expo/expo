@@ -10,7 +10,10 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     var status: EXPermissionStatus
 
     guard let usageDescription = Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"] else {
-      EXFatal(EXErrorWithMessage("This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add one of these keys to your bundle's Info.plist."))
+      EXFatal(EXErrorWithMessage("""
+        This app is missing NSMicrophoneUsageDescription, so audio services will fail.
+        Add one of these keys to your bundle's Info.plist.
+      """))
       return ["status": EXPermissionStatusDenied]
     }
 
