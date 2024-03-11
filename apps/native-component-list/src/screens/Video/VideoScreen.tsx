@@ -1,5 +1,7 @@
 import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
+import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -27,6 +29,7 @@ const androidDrmSource: VideoSource = {
 };
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
 const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
+const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
@@ -43,18 +46,19 @@ export default function VideoScreen() {
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
-  const player = useVideoPlayer(videoSources[selectedSource]);
+  const [loop, setLoop] = React.useState(false);
+  const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
+  const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
+  const [volume, setVolume] = React.useState(1);
 
-  useEffect(() => {
-    player.staysActiveInBackground = true;
-  }, []);
+  const player = useVideoPlayer(videoSources[selectedSource]);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
   }, [ref]);
 
   const togglePlayer = useCallback(() => {
-    if (player.isPlaying) {
+    if (player.playing) {
       player.pause();
     } else {
       player.play();
@@ -69,8 +73,8 @@ export default function VideoScreen() {
     player.replay();
   }, []);
 
-  const toggleMuted = useCallback(() => {
-    player.isMuted = !player.isMuted;
+  const toggleMute = useCallback(() => {
+    player.muted = !player.muted;
   }, []);
 
   const togglePictureInPicture = useCallback(() => {
@@ -89,8 +93,22 @@ export default function VideoScreen() {
     [staysActiveInBackground]
   );
 
+  const updateLoop = useCallback(
+    (loop: boolean) => {
+      player.loop = loop;
+      setLoop(loop);
+    },
+    [loop]
+  );
+
+  const updatePreservesPitch = useCallback((correctPitch: boolean) => {
+    player.preservesPitch = correctPitch;
+    setCorrectsPitch(correctPitch);
+  }, []);
+
   useEffect(() => {
     player.play();
+    player.preservesPitch = shouldCorrectPitch;
   }, []);
 
   return (
@@ -116,7 +134,7 @@ export default function VideoScreen() {
           console.log('Exited Picture in Picture mode');
         }}
       />
-      <ScrollView>
+      <ScrollView style={styles.controlsContainer}>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>
         <Text>VideoSource:</Text>
         <Picker
@@ -135,12 +153,33 @@ export default function VideoScreen() {
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
         <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
         <Button style={styles.button} title="Replay" onPress={replay} />
-        <Button style={styles.button} title="Toggle mute" onPress={toggleMuted} />
+        <Button style={styles.button} title="Toggle mute" onPress={toggleMute} />
         <Button style={styles.button} title="Enter fullscreen" onPress={enterFullscreen} />
         <Button
           style={styles.button}
           title="Toggle picture in picture"
           onPress={togglePictureInPicture}
+        />
+        <Text>Playback Volume: </Text>
+        <Slider
+          style={{ alignSelf: 'stretch' }}
+          minimumValue={0}
+          maximumValue={1}
+          value={volume}
+          onValueChange={(value) => {
+            player.volume = value;
+            setVolume(value);
+          }}
+        />
+        <Text>Playback Speed: </Text>
+        <SegmentedControl
+          values={playbackRates.map((speed) => `${speed}x`)}
+          selectedIndex={playbackRateIndex}
+          onValueChange={(value) => {
+            player.playbackRate = parseFloat(value);
+            setPlaybackRateIndex(playbackRates.indexOf(parseFloat(value)));
+          }}
+          backgroundColor="#e5e5e5"
         />
         <View style={styles.row}>
           <TitledSwitch
@@ -182,6 +221,22 @@ export default function VideoScreen() {
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
+          <TitledSwitch
+            title="Loop playback"
+            value={loop}
+            setValue={updateLoop}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Should correct pitch"
+            value={shouldCorrectPitch}
+            setValue={updatePreservesPitch}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
         </View>
       </ScrollView>
     </View>
@@ -194,6 +249,10 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  controlsContainer: {
+    alignSelf: 'stretch',
   },
   row: {
     flexDirection: 'row',
@@ -204,6 +263,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
   },
   switch: {
+    flex: 1,
     flexDirection: 'column',
   },
   switchTitle: {

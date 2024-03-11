@@ -6,23 +6,49 @@ import { ViewProps } from 'react-native';
 export declare class VideoPlayer {
   /**
    * Boolean value whether the player is currently playing.
+   * > This property is get-only, use `play` and `pause` methods to control the playback.
    */
-  isPlaying: boolean;
+  playing: boolean;
+
+  /**
+   * Determines whether the player should automatically replay after reaching the end of the video.
+   * @default false
+   */
+  loop: boolean;
 
   /**
    * Boolean value whether the player is currently muted.
+   * @default false
    */
-  isMuted: boolean;
+  muted: boolean;
+
+  /**
+   * Integer value representing the current position in seconds.
+   */
+  currentTime: number;
 
   /**
    * Float value between 0 and 1 representing the current volume.
    * Muting the player doesn't affect the volume. In other words, when the player is muted, the volume is the same as
    * when unmuted. Similarly, setting the volume doesn't unmute the player.
-   *
-   * @platform android
-   * @platform web
+   * @default 1.0
    */
   volume: number;
+
+  /**
+   * Boolean value indicating if the player should correct audio pitch when the playback speed changes.
+   * > On web, changing this property is not supported, the player will always correct the pitch.
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  preservesPitch: boolean;
+
+  /**
+   * Float value between 0 and 16 indicating the current playback speed of the player.
+   * @default 1.0
+   */
+  playbackRate: number;
 
   /**
    * Determines whether the player should continue playing after the app enters the background.
@@ -69,34 +95,38 @@ type VideoContentFit = 'contain' | 'cover' | 'fill';
 export interface VideoViewProps extends ViewProps {
   /**
    * A player instance – use `useVideoPlayer()` to create one.
-   * @platform ios, web
    */
   player: VideoPlayer;
 
   /**
    * Determines whether native controls should be displayed or not.
+   * @default true
    */
   nativeControls: boolean | undefined;
 
   /**
    * Describes how the video should be scaled to fit in the container.
    * Options are 'contain', 'cover', and 'fill'.
+   * @default 'contain'
    */
   contentFit: VideoContentFit | undefined;
 
   /**
    * Determines whether fullscreen mode is allowed or not.
+   * @default true
    */
   allowsFullscreen: boolean | undefined;
 
   /**
    * Determines whether the timecodes should be displayed or not.
+   * @default true
    * @platform ios
    */
   showsTimecodes: boolean | undefined;
 
   /**
    * Determines whether the player allows the user to skip media content.
+   * @default false
    * @platform android
    * @platform ios
    */
@@ -104,6 +134,7 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines the position offset of the video inside the container.
+   * @default { dx: 0, dy: 0 }
    * @platform ios
    */
   contentPosition: { dx?: number; dy?: number } | undefined;
