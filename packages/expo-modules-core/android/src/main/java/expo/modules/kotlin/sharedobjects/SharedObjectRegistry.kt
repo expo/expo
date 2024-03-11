@@ -56,7 +56,9 @@ class SharedObjectRegistry(appContext: AppContext) {
       pairs[id] = native to jsWeakObject
     }
 
-    native.appContextHolder = WeakReference(appContext)
+    if (native.appContextHolder.get() == null) {
+      native.appContextHolder = WeakReference(appContext)
+    }
 
     return id
   }

@@ -7,19 +7,22 @@ import expo.modules.kotlin.logger
 import java.lang.ref.WeakReference
 
 @DoNotStrip
-open class SharedObject {
+open class SharedObject(appContext: AppContext? = null) {
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
    * When the object is not linked with any JavaScript object, its value is 0.
    */
   internal var sharedObjectId: SharedObjectId = SharedObjectId(0)
 
-  internal var appContextHolder = WeakReference<AppContext>(null)
+  internal var appContextHolder = WeakReference<AppContext>(appContext)
+
+  val appContext: AppContext?
+    get() = appContextHolder.get()
 
   private fun getJavaScriptObject(): JavaScriptObject? {
     return SharedObjectId(sharedObjectId.value)
       .toJavaScriptObject(
-        appContextHolder.get() ?: return null
+        appContext ?: return null
       )
   }
 
@@ -33,7 +36,7 @@ open class SharedObject {
           eventName,
           *args,
           thisValue = jsThis,
-          appContext = appContextHolder.get()
+          appContext = appContext
         )
     } catch (e: Throwable) {
       logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
