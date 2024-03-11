@@ -29,7 +29,7 @@ const androidDrmSource: VideoSource = {
 };
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
 const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
-const playbackSpeeds: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
+const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
@@ -47,7 +47,7 @@ export default function VideoScreen() {
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
   const [loop, setLoop] = React.useState(false);
-  const [playbackSpeedIndex, setPlaybackSpeedIndex] = React.useState(2);
+  const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
 
@@ -173,11 +173,11 @@ export default function VideoScreen() {
         />
         <Text>Playback Speed: </Text>
         <SegmentedControl
-          values={playbackSpeeds.map((speed) => `${speed}x`)}
-          selectedIndex={playbackSpeedIndex}
+          values={playbackRates.map((speed) => `${speed}x`)}
+          selectedIndex={playbackRateIndex}
           onValueChange={(value) => {
             player.playbackRate = parseFloat(value);
-            setPlaybackSpeedIndex(playbackSpeeds.indexOf(parseFloat(value)));
+            setPlaybackRateIndex(playbackRates.indexOf(parseFloat(value)));
           }}
           backgroundColor="#e5e5e5"
         />

@@ -184,9 +184,9 @@ class VideoModule : Module() {
             ref.player.currentPosition / 1000f
           }
         }
-        .set { ref: VideoPlayer, position: Double ->
+        .set { ref: VideoPlayer, currentTime: Double ->
           appContext.mainQueue.launch {
-            ref.player.seekTo((position * 1000).toLong())
+            ref.player.seekTo((currentTime * 1000).toLong())
           }
         }
 
@@ -194,10 +194,10 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           ref.playbackParameters.speed
         }
-        .set { ref: VideoPlayer, rate: Float ->
+        .set { ref: VideoPlayer, playbackRate: Float ->
           appContext.mainQueue.launch {
-            val pitch = if (ref.preservesPitch) 1f else rate
-            ref.playbackParameters = PlaybackParameters(rate, pitch)
+            val pitch = if (ref.preservesPitch) 1f else playbackRate
+            ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
           }
         }
 
@@ -205,9 +205,9 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           ref.preservesPitch
         }
-        .set { ref: VideoPlayer, shouldCorrectPitch: Boolean ->
+        .set { ref: VideoPlayer, preservesPitch: Boolean ->
           appContext.mainQueue.launch {
-            ref.preservesPitch = shouldCorrectPitch
+            ref.preservesPitch = preservesPitch
           }
         }
 
@@ -223,9 +223,9 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           ref.player.repeatMode == REPEAT_MODE_ONE
         }
-        .set { ref: VideoPlayer, isLooping: Boolean ->
+        .set { ref: VideoPlayer, loop: Boolean ->
           appContext.mainQueue.launch {
-            ref.player.repeatMode = if (isLooping) {
+            ref.player.repeatMode = if (loop) {
               REPEAT_MODE_ONE
             } else {
               REPEAT_MODE_OFF

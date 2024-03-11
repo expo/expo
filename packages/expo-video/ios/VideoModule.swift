@@ -117,8 +117,8 @@ public final class VideoModule: Module {
       Property("loop") { player -> Bool in
         return player.loop
       }
-      .set { (player, isLooping: Bool) in
-        player.loop = isLooping
+      .set { (player, loop: Bool) in
+        player.loop = loop
       }
 
       Property("currentTime") { player -> Double in
@@ -141,8 +141,8 @@ public final class VideoModule: Module {
       Property("preservesPitch") { player -> Bool in
         return player.preservesPitch
       }
-      .set { (player, shouldCorrectPitch: Bool) in
-        player.preservesPitch = shouldCorrectPitch
+      .set { (player, preservesPitch: Bool) in
+        player.preservesPitch = preservesPitch
       }
 
       Property("volume") { player -> Float in
