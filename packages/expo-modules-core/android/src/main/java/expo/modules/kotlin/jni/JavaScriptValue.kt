@@ -36,6 +36,7 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
 
   @PublishedApi
   internal fun <T : Any?> internalJniGetFunction(): JavaScriptFunction<T> = jniGetFunction()
+
   inline fun <reified ReturnType : Any?> getFunction(): JavaScriptFunction<ReturnType> {
     return internalJniGetFunction<ReturnType>().apply {
       returnType = typeOf<ReturnType>()

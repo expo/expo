@@ -4,6 +4,7 @@
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptWeakObject.h"
 #include "JavaScriptFunction.h"
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
@@ -28,6 +29,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
+    expo::JavaScriptWeakObject::registerNatives();
     expo::JavaScriptFunction::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
     expo::JavaCallback::registerNatives();
