@@ -383,7 +383,7 @@ public class AudioModule: Module, RecordingResultHandler {
     guard let prefferedInput else {
       throw PreferredInputFoundException(input)
     }
-    
+
     try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
   }
 
