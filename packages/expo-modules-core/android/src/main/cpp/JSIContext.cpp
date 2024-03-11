@@ -12,6 +12,12 @@
 
 #include <memory>
 
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+#include "BridgelessJSCallInvoker.h"
+
+#endif
+
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
