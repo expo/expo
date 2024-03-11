@@ -166,7 +166,7 @@ class AppContext(
 
         @Suppress("DEPRECATION")
         if (reactContext.isBridgeless) {
-          jsiInterop.installJSIForBridless(
+          jsiInterop.installJSIForBridgeless(
             this,
             jsRuntimePointer,
             jniDeallocator,
