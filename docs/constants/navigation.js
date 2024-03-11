@@ -356,6 +356,7 @@ const general = [
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
+    makePage('push-notifications/fcm-credentials.mdx'),
     makeGroup(
       'Reference',
       [
