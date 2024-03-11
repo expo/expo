@@ -18,6 +18,7 @@
 - [iOS] Implemented sending events from native shared objects. ([#27333](https://github.com/expo/expo/pull/27333) by [@tsapeta](https://github.com/tsapeta))
 - Added support for `startObserving` and `stopObserving` in the new `EventEmitter` class. ([#27393](https://github.com/expo/expo/pull/27393) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Implemented sending events from native shared objects. ([#27523](https://github.com/expo/expo/pull/27523) by [@lukmccall](https://github.com/lukmccall))
+- JS object of the native module is now an instance of the `NativeModule` class that inherits from `EventEmitter`. ([#27510](https://github.com/expo/expo/pull/27510) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
