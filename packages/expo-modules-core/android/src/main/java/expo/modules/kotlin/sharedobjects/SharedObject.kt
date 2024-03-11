@@ -16,10 +16,13 @@ open class SharedObject {
 
   internal var appContextHolder = WeakReference<AppContext>(null)
 
+  val appContext: AppContext?
+    get() = appContextHolder.get()
+
   private fun getJavaScriptObject(): JavaScriptObject? {
     return SharedObjectId(sharedObjectId.value)
       .toJavaScriptObject(
-        appContextHolder.get() ?: return null
+        appContext ?: return null
       )
   }
 
@@ -33,7 +36,7 @@ open class SharedObject {
           eventName,
           *args,
           thisValue = jsThis,
-          appContext = appContextHolder.get()
+          appContext = appContext
         )
     } catch (e: Throwable) {
       logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
