@@ -210,11 +210,11 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.addErrorNotification()
       self.changePreviewOrientation()
+      self.session.commitConfiguration()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
         self.barcodeScanner.maybeStartBarcodeScanning()
-        self.session.commitConfiguration()
         self.session.startRunning()
         self.onCameraReady()
       }
@@ -570,6 +570,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  // Must be called on the sessionQueue
   func updateSessionAudioIsMuted() {
     sessionQueue.async {
       self.session.beginConfiguration()
@@ -601,6 +602,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  // Must be called on the sessionQueue
   func setupMovieFileCapture() {
     let output = AVCaptureMovieFileOutput()
     if self.session.canAddOutput(output) {
@@ -611,6 +613,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  // Must be called on the sessionQueue
   func cleanupMovieFileCapture() {
     if let videoFileOutput {
       if session.outputs.contains(videoFileOutput) {
@@ -668,14 +671,15 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-func updateSessionPreset(preset: AVCaptureSession.Preset) {
-    #if !targetEnvironment(simulator)
+  // Must be called on the sessionQueue
+  func updateSessionPreset(preset: AVCaptureSession.Preset) {
+#if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
       self.session.beginConfiguration()
       self.session.sessionPreset = preset
       self.session.commitConfiguration()
     }
-    #endif
+#endif
   }
 
   func initializeCaptureSessionInput() {
