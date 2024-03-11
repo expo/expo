@@ -152,6 +152,7 @@ dependencies {
   }
 
   implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.soloader:soloader:0.11.0'
 
   implementation 'commons-io:commons-io:2.6'
 
