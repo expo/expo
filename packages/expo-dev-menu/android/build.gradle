@@ -166,6 +166,7 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.8.6'
 
   implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.soloader:soloader:0.11.0'
   implementation "androidx.transition:transition:1.1.0" // use by react-native-reanimated
 
   // Fixes
