@@ -38,4 +38,9 @@
  */
 + (void)installEventEmitterClass:(nonnull EXRuntime *)runtime;
 
+/**
+ Installs the NativeModule class in the given runtime as `global.expo.NativeModule`.
+ */
++ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime;
+
 @end

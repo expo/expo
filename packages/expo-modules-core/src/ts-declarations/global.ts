@@ -1,4 +1,5 @@
 import type { EventEmitter } from './EventEmitter';
+import type { NativeModule } from './NativeModule';
 import type { SharedObject } from './SharedObject';
 
 export interface ExpoGlobal {
@@ -18,6 +19,11 @@ export interface ExpoGlobal {
    * @see SharedObject
    */
   SharedObject: typeof SharedObject;
+
+  /**
+   * @see NativeModule
+   */
+  NativeModule: typeof NativeModule;
 
   // Utils
 

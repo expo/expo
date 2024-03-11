@@ -49,3 +49,13 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
 } // namespace expo
 
 #endif
+
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+
+NS_SWIFT_NAME(JSIUtils)
+@interface EXJSIUtils : NSObject
+
++ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime;
+
+@end

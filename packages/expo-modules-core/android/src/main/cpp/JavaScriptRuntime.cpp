@@ -169,7 +169,12 @@ void JavaScriptRuntime::drainJSEventLoop() {
 void JavaScriptRuntime::installMainObject() {
   auto coreModule = jsiInteropModuleRegistry->getCoreModule();
   coreModule->cthis()->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
-  mainObject = coreModule->cthis()->getJSIObject(*runtime);
+
+  // As opposed to other modules, the core module is represented by a raw JS object instead of an instance of NativeModule class.
+  mainObject = std::make_shared<jsi::Object>(*runtime);
+
+  // Decorate the core object based on the module definition.
+  coreModule->cthis()->decorate(*runtime, mainObject.get());
 
   auto global = runtime->global();
 
