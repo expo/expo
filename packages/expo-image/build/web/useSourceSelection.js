@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 function findBestSourceForSize(sources, size) {
     if (sources?.length === 1) {
@@ -59,39 +59,29 @@ function selectSource(sources, size, responsivePolicy) {
         type: 'srcset',
     };
 }
-export default function useSourceSelection(sources, responsivePolicy = 'static', measurementCallback = null) {
+export default function useSourceSelection(sources, responsivePolicy = 'static', containerRef, measurementCallback = null) {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
-    // null - not calculated yet, DOMRect - size available
-    const [size, setSize] = useState(null);
-    const resizeObserver = useRef(null);
+    const [size, setSize] = useState(containerRef.current?.getBoundingClientRect() ?? null);
+    if (size && containerRef.current) {
+        measurementCallback?.(containerRef.current, size);
+    }
     React.useEffect(() => {
-        return () => {
-            resizeObserver.current?.disconnect();
-        };
-    }, []);
-    const containerRef = React.useCallback((element) => {
-        if (!hasMoreThanOneSource && !measurementCallback) {
-            return;
+        if ((!hasMoreThanOneSource && !measurementCallback) || !containerRef.current) {
+            return () => { };
         }
-        const rect = element?.getBoundingClientRect();
-        measurementCallback?.(element, rect);
-        setSize(rect);
         if (responsivePolicy === 'live') {
-            resizeObserver.current?.disconnect();
-            if (!element) {
-                return;
-            }
-            resizeObserver.current = new ResizeObserver((entries) => {
+            const resizeObserver = new ResizeObserver((entries) => {
                 setSize(entries[0].contentRect);
                 measurementCallback?.(entries[0].target, entries[0].contentRect);
             });
-            resizeObserver.current.observe(element);
+            resizeObserver.observe(containerRef.current);
+            return () => {
+                resizeObserver.disconnect();
+            };
         }
-    }, [hasMoreThanOneSource, responsivePolicy, measurementCallback]);
+        return () => { };
+    }, [responsivePolicy, hasMoreThanOneSource, containerRef.current, measurementCallback]);
     const source = selectSource(sources, size, responsivePolicy);
-    return React.useMemo(() => ({
-        containerRef,
-        source,
-    }), [source]);
+    return React.useMemo(() => source, [source]);
 }
 //# sourceMappingURL=useSourceSelection.js.map
