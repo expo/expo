@@ -20,28 +20,28 @@ class VideoPlayerWeb {
     src = null;
     _mountedVideos = new Set();
     _audioNodes = new Set();
-    isPlaying = false;
-    _isMuted = false;
+    playing = false;
+    _muted = false;
     _volume = 1;
-    _isLooping = false;
+    _loop = false;
     _playbackRate = 1.0;
-    _shouldCorrectPitch = true;
+    _preservesPitch = true;
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
-    set isMuted(value) {
+    set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;
         });
-        this._isMuted = value;
+        this._muted = value;
     }
-    get isMuted() {
-        return this._isMuted;
+    get muted() {
+        return this._muted;
     }
-    set rate(value) {
+    set playbackRate(value) {
         this._mountedVideos.forEach((video) => {
             video.playbackRate = value;
         });
     }
-    get rate() {
+    get playbackRate() {
         return this._playbackRate;
     }
     set volume(value) {
@@ -56,32 +56,32 @@ class VideoPlayerWeb {
         });
         return this._volume;
     }
-    set isLooping(value) {
+    set loop(value) {
         this._mountedVideos.forEach((video) => {
             video.loop = value;
         });
-        this._isLooping = value;
+        this._loop = value;
     }
-    get isLooping() {
-        return this._isLooping;
+    get loop() {
+        return this._loop;
     }
-    get positionMillis() {
+    get currentTime() {
         // All videos should be synchronized, so we return the position of the first video.
-        return Math.round([...this._mountedVideos][0].currentTime * 1000);
+        return [...this._mountedVideos][0].currentTime;
     }
-    set positionMillis(value) {
+    set currentTime(value) {
         this._mountedVideos.forEach((video) => {
-            video.currentTime = value / 1000;
+            video.currentTime = value;
         });
     }
-    get shouldCorrectPitch() {
-        return this._shouldCorrectPitch;
+    get preservesPitch() {
+        return this._preservesPitch;
     }
-    set shouldCorrectPitch(value) {
+    set preservesPitch(value) {
         this._mountedVideos.forEach((video) => {
             video.preservesPitch = value;
         });
-        this._shouldCorrectPitch = value;
+        this._preservesPitch = value;
     }
     mountVideoView(video) {
         this._mountedVideos.add(video);
@@ -106,13 +106,13 @@ class VideoPlayerWeb {
         this._mountedVideos.forEach((video) => {
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     pause() {
         this._mountedVideos.forEach((video) => {
             video.pause();
         });
-        this.isPlaying = false;
+        this.playing = false;
     }
     replace(source) {
         this._mountedVideos.forEach((video) => {
@@ -121,7 +121,7 @@ class VideoPlayerWeb {
             video.load();
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     seekBy(seconds) {
         this._mountedVideos.forEach((video) => {
@@ -133,7 +133,7 @@ class VideoPlayerWeb {
             video.currentTime = 0;
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     _synchronizeWithFirstVideo(video) {
         const firstVideo = [...this._mountedVideos][0];
@@ -159,20 +159,20 @@ class VideoPlayerWeb {
             }
         };
         video.onplay = () => {
-            this.isPlaying = true;
+            this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
-            this.isPlaying = false;
+            this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
             this.volume = video.volume;
-            this.isMuted = video.muted;
+            this._muted = video.muted;
         };
         video.onseeking = () => {
             this._mountedVideos.forEach((mountedVideo) => {

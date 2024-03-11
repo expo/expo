@@ -7,21 +7,21 @@ export declare class VideoPlayer {
      * Boolean value whether the player is currently playing.
      * > This property is get-only, use `play` and `pause` methods to control the playback.
      */
-    isPlaying: boolean;
+    playing: boolean;
     /**
      * Determines whether the player should automatically replay after reaching the end of the video.
      * @default false
      */
-    isLooping: boolean;
+    loop: boolean;
     /**
      * Boolean value whether the player is currently muted.
      * @default false
      */
-    isMuted: boolean;
+    muted: boolean;
     /**
-     * Integer value representing the current position in milliseconds.
+     * Integer value representing the current position in seconds.
      */
-    positionMillis: number;
+    currentTime: number;
     /**
      * Float value between 0 and 1 representing the current volume.
      * Muting the player doesn't affect the volume. In other words, when the player is muted, the volume is the same as
@@ -36,12 +36,12 @@ export declare class VideoPlayer {
      * @platform android
      * @platform ios
      */
-    shouldCorrectPitch: boolean;
+    preservesPitch: boolean;
     /**
      * Float value between 0 and 16 indicating the current playback speed of the player.
      * @default 1.0
      */
-    rate: number;
+    playbackRate: number;
     /**
      * Determines whether the player should continue playing after the app enters the background.
      * @default false

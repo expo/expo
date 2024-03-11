@@ -46,17 +46,17 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
     .build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
-  var isPlaying = false
+  var playing = false
   var isLoading = true
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
-  var shouldCorrectPitch = false
-    set(shouldCorrectPitch) {
+  var preservesPitch = false
+    set(preservesPitch) {
       applyPitchCorrection()
-      field = shouldCorrectPitch
+      field = preservesPitch
     }
 
   private var serviceConnection: ServiceConnection
@@ -66,14 +66,14 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
   var volume = 1f
     set(volume) {
       if (player.volume == volume) return
-      player.volume = if (isMuted) 0f else volume
+      player.volume = if (muted) 0f else volume
       field = volume
     }
 
-  var isMuted = false
-    set(isMuted) {
-      field = isMuted
-      volume = if (isMuted) 0f else userVolume
+  var muted = false
+    set(muted) {
+      field = muted
+      volume = if (muted) 0f else userVolume
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
@@ -86,7 +86,7 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-      this@VideoPlayer.isPlaying = isPlaying
+      this@VideoPlayer.playing = isPlaying
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -162,7 +162,7 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
 
   private fun applyPitchCorrection() {
     val speed = playbackParameters.speed
-    val pitch = if (shouldCorrectPitch) 1f else speed
+    val pitch = if (preservesPitch) 1f else speed
     playbackParameters = PlaybackParameters(speed, pitch)
   }
 }

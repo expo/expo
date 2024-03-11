@@ -96,19 +96,15 @@ public final class VideoModule: Module {
         return videoPlayer
       }
 
-      Property("isPlaying") { player -> Bool in
+      Property("playing") { player -> Bool in
         return player.pointer.timeControlStatus == .playing
       }
 
-      Property("isMuted") { player -> Bool in
+      Property("muted") { player -> Bool in
         return player.pointer.isMuted
       }
-      .set { (player, isMuted: Bool) in
-        player.pointer.isMuted = isMuted
-      }
-
-      Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+      .set { (player, muted: Bool) in
+        player.pointer.isMuted = muted
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -118,36 +114,35 @@ public final class VideoModule: Module {
         player.staysActiveInBackground = staysActive
       }
 
-      Property("isLooping") { player -> Bool in
-        return player.isLooping
+      Property("loop") { player -> Bool in
+        return player.loop
       }
       .set { (player, isLooping: Bool) in
-        player.isLooping = isLooping
+        player.loop = isLooping
       }
 
-      Property("positionMillis") { player -> Int64 in
-        let time = player.pointer.currentTime().convertScale(1000, method: .roundHalfAwayFromZero)
-        return Int64(time.seconds * 1000.0)
+      Property("currentTime") { player -> Double in
+        return player.pointer.currentTime().seconds
       }
-      .set { (player, positionMillis: Int64) in
+      .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
-        let clampedMillis = max(0, positionMillis)
-        let timeToSeek = CMTimeMakeWithSeconds(Float64(clampedMillis) / 1000.0, preferredTimescale: .max)
+        let clampedTime = max(0, time)
+        let timeToSeek = CMTimeMakeWithSeconds(clampedTime, preferredTimescale: .max)
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
-      Property("rate") { player -> Float in
-        return player.desiredRate
+      Property("playbackRate") { player -> Float in
+        return player.playbackRate
       }
-      .set { (player, rate: Float) in
-        player.desiredRate = rate
+      .set { (player, playbackRate: Float) in
+        player.playbackRate = playbackRate
       }
 
-      Property("shouldCorrectPitch") { player -> Bool in
-        return player.shouldCorrectPitch
+      Property("preservesPitch") { player -> Bool in
+        return player.preservesPitch
       }
       .set { (player, shouldCorrectPitch: Bool) in
-        player.shouldCorrectPitch = shouldCorrectPitch
+        player.preservesPitch = shouldCorrectPitch
       }
 
       Property("volume") { player -> Float in

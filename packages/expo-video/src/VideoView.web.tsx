@@ -26,30 +26,31 @@ class VideoPlayerWeb implements VideoPlayer {
   src: string | null = null;
   _mountedVideos: Set<HTMLVideoElement> = new Set();
   _audioNodes: Set<MediaElementAudioSourceNode> = new Set();
-  isPlaying: boolean = false;
-  _isMuted: boolean = false;
+  playing: boolean = false;
+  _muted: boolean = false;
   _volume: number = 1;
-  _isLooping: boolean = false;
+  _loop: boolean = false;
   _playbackRate: number = 1.0;
-  _shouldCorrectPitch: boolean = true;
+  _preservesPitch: boolean = true;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
-  set isMuted(value: boolean) {
+  set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.muted = value;
     });
-    this._isMuted = value;
+    this._muted = value;
   }
-  get isMuted(): boolean {
-    return this._isMuted;
+  get muted(): boolean {
+    return this._muted;
   }
 
-  set rate(value: number) {
+  set playbackRate(value: number) {
     this._mountedVideos.forEach((video) => {
       video.playbackRate = value;
     });
   }
-  get rate(): number {
+
+  get playbackRate(): number {
     return this._playbackRate;
   }
 
@@ -67,36 +68,36 @@ class VideoPlayerWeb implements VideoPlayer {
     return this._volume;
   }
 
-  set isLooping(value: boolean) {
+  set loop(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.loop = value;
     });
-    this._isLooping = value;
+    this._loop = value;
   }
 
-  get isLooping(): boolean {
-    return this._isLooping;
+  get loop(): boolean {
+    return this._loop;
   }
 
-  get positionMillis(): number {
+  get currentTime(): number {
     // All videos should be synchronized, so we return the position of the first video.
-    return Math.round([...this._mountedVideos][0].currentTime * 1000);
+    return [...this._mountedVideos][0].currentTime;
   }
 
-  set positionMillis(value: number) {
+  set currentTime(value: number) {
     this._mountedVideos.forEach((video) => {
-      video.currentTime = value / 1000;
+      video.currentTime = value;
     });
   }
 
-  get shouldCorrectPitch(): boolean {
-    return this._shouldCorrectPitch;
+  get preservesPitch(): boolean {
+    return this._preservesPitch;
   }
-  set shouldCorrectPitch(value: boolean) {
+  set preservesPitch(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.preservesPitch = value;
     });
-    this._shouldCorrectPitch = value;
+    this._preservesPitch = value;
   }
 
   mountVideoView(video: HTMLVideoElement) {
@@ -125,13 +126,13 @@ class VideoPlayerWeb implements VideoPlayer {
     this._mountedVideos.forEach((video) => {
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
   pause(): void {
     this._mountedVideos.forEach((video) => {
       video.pause();
     });
-    this.isPlaying = false;
+    this.playing = false;
   }
   replace(source: string): void {
     this._mountedVideos.forEach((video) => {
@@ -140,7 +141,7 @@ class VideoPlayerWeb implements VideoPlayer {
       video.load();
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
@@ -152,7 +153,7 @@ class VideoPlayerWeb implements VideoPlayer {
       video.currentTime = 0;
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
 
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
@@ -179,14 +180,14 @@ class VideoPlayerWeb implements VideoPlayer {
     };
 
     video.onplay = () => {
-      this.isPlaying = true;
+      this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
       });
     };
 
     video.onpause = () => {
-      this.isPlaying = false;
+      this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
       });
@@ -194,7 +195,7 @@ class VideoPlayerWeb implements VideoPlayer {
 
     video.onvolumechange = () => {
       this.volume = video.volume;
-      this.isMuted = video.muted;
+      this._muted = video.muted;
     };
 
     video.onseeking = () => {

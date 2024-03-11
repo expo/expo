@@ -144,9 +144,9 @@ class VideoModule : Module() {
         VideoPlayer(activity.applicationContext, appContext, source.toMediaItem())
       }
 
-      Property("isPlaying")
+      Property("playing")
         .get { ref: VideoPlayer ->
-          ref.isPlaying
+          ref.playing
         }
 
       Property("isLoading")
@@ -154,13 +154,13 @@ class VideoModule : Module() {
           ref.isLoading
         }
 
-      Property("isMuted")
+      Property("muted")
         .get { ref: VideoPlayer ->
-          ref.isMuted
+          ref.muted
         }
-        .set { ref: VideoPlayer, isMuted: Boolean ->
+        .set { ref: VideoPlayer, muted: Boolean ->
           appContext.mainQueue.launch {
-            ref.isMuted = isMuted
+            ref.muted = muted
           }
         }
 
@@ -175,39 +175,39 @@ class VideoModule : Module() {
           }
         }
 
-      Property("positionMillis")
+      Property("currentTime")
         .get { ref: VideoPlayer ->
           // TODO: we shouldn't block the thread, but there are no events for the player position change,
           //  so we can't update the currentTime in a non-blocking way like the other properties.
           //  Until we think of something better we can temporarily do it this way
           runBlocking(appContext.mainQueue.coroutineContext) {
-            ref.player.currentPosition
+            ref.player.currentPosition / 1000f
           }
         }
-        .set { ref: VideoPlayer, position: Long ->
+        .set { ref: VideoPlayer, position: Double ->
           appContext.mainQueue.launch {
-            ref.player.seekTo(position)
+            ref.player.seekTo((position * 1000).toLong())
           }
         }
 
-      Property("rate")
+      Property("playbackRate")
         .get { ref: VideoPlayer ->
           ref.playbackParameters.speed
         }
         .set { ref: VideoPlayer, rate: Float ->
           appContext.mainQueue.launch {
-            val pitch = if (ref.shouldCorrectPitch) 1f else rate
+            val pitch = if (ref.preservesPitch) 1f else rate
             ref.playbackParameters = PlaybackParameters(rate, pitch)
           }
         }
 
-      Property("shouldCorrectPitch")
+      Property("preservesPitch")
         .get { ref: VideoPlayer ->
-          ref.shouldCorrectPitch
+          ref.preservesPitch
         }
         .set { ref: VideoPlayer, shouldCorrectPitch: Boolean ->
           appContext.mainQueue.launch {
-            ref.shouldCorrectPitch = shouldCorrectPitch
+            ref.preservesPitch = shouldCorrectPitch
           }
         }
 
@@ -219,7 +219,7 @@ class VideoModule : Module() {
           ref.staysActiveInBackground = staysActive
         }
 
-      Property("isLooping")
+      Property("loop")
         .get { ref: VideoPlayer ->
           ref.player.repeatMode == REPEAT_MODE_ONE
         }

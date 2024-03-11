@@ -46,9 +46,9 @@ export default function VideoScreen() {
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
-  const [isLooping, setIsLooping] = React.useState(false);
+  const [loop, setLoop] = React.useState(false);
   const [playbackSpeedIndex, setPlaybackSpeedIndex] = React.useState(2);
-  const [shouldCorrectPitch, setShouldCorrectPitch] = React.useState(true);
+  const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
 
   const player = useVideoPlayer(videoSources[selectedSource]);
@@ -58,7 +58,7 @@ export default function VideoScreen() {
   }, [ref]);
 
   const togglePlayer = useCallback(() => {
-    if (player.isPlaying) {
+    if (player.playing) {
       player.pause();
     } else {
       player.play();
@@ -73,8 +73,8 @@ export default function VideoScreen() {
     player.replay();
   }, []);
 
-  const toggleMuted = useCallback(() => {
-    player.isMuted = !player.isMuted;
+  const toggleMute = useCallback(() => {
+    player.muted = !player.muted;
   }, []);
 
   const togglePictureInPicture = useCallback(() => {
@@ -93,22 +93,22 @@ export default function VideoScreen() {
     [staysActiveInBackground]
   );
 
-  const updateIsLooping = useCallback(
-    (isLooping: boolean) => {
-      player.isLooping = isLooping;
-      setIsLooping(isLooping);
+  const updateLoop = useCallback(
+    (loop: boolean) => {
+      player.loop = loop;
+      setLoop(loop);
     },
-    [isLooping]
+    [loop]
   );
 
-  const updateShouldCorrectPitch = useCallback((correctPitch: boolean) => {
-    player.shouldCorrectPitch = correctPitch;
-    setShouldCorrectPitch(correctPitch);
+  const updatePreservesPitch = useCallback((correctPitch: boolean) => {
+    player.preservesPitch = correctPitch;
+    setCorrectsPitch(correctPitch);
   }, []);
 
   useEffect(() => {
     player.play();
-    player.shouldCorrectPitch = shouldCorrectPitch;
+    player.preservesPitch = shouldCorrectPitch;
   }, []);
 
   return (
@@ -153,7 +153,7 @@ export default function VideoScreen() {
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
         <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
         <Button style={styles.button} title="Replay" onPress={replay} />
-        <Button style={styles.button} title="Toggle mute" onPress={toggleMuted} />
+        <Button style={styles.button} title="Toggle mute" onPress={toggleMute} />
         <Button style={styles.button} title="Enter fullscreen" onPress={enterFullscreen} />
         <Button
           style={styles.button}
@@ -176,7 +176,7 @@ export default function VideoScreen() {
           values={playbackSpeeds.map((speed) => `${speed}x`)}
           selectedIndex={playbackSpeedIndex}
           onValueChange={(value) => {
-            player.rate = parseFloat(value);
+            player.playbackRate = parseFloat(value);
             setPlaybackSpeedIndex(playbackSpeeds.indexOf(parseFloat(value)));
           }}
           backgroundColor="#e5e5e5"
@@ -223,8 +223,8 @@ export default function VideoScreen() {
           />
           <TitledSwitch
             title="Loop playback"
-            value={isLooping}
-            setValue={updateIsLooping}
+            value={loop}
+            setValue={updateLoop}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
@@ -233,7 +233,7 @@ export default function VideoScreen() {
           <TitledSwitch
             title="Should correct pitch"
             value={shouldCorrectPitch}
-            setValue={updateShouldCorrectPitch}
+            setValue={updatePreservesPitch}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />

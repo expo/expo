@@ -7,19 +7,19 @@ import ExpoModulesCore
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
   lazy var contentKeyManager = ContentKeyManager()
 
-  var isLooping = false {
+  var loop = false {
     didSet {
       applyIsLooping()
     }
   }
 
-  var desiredRate: Float = 1.0 {
+  var playbackRate: Float = 1.0 {
     didSet {
       if #available(iOS 16.0, *) {
-        pointer.defaultRate = desiredRate
+        pointer.defaultRate = playbackRate
       }
       if pointer.rate != 0 {
-        pointer.rate = desiredRate
+        pointer.rate = playbackRate
       }
     }
   }
@@ -34,9 +34,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
     }
   }
 
-  var shouldCorrectPitch = true {
+  var preservesPitch = true {
     didSet {
-      pointer.currentItem?.audioTimePitchAlgorithm = shouldCorrectPitch ? .spectral : .varispeed
+      pointer.currentItem?.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     }
   }
 
@@ -54,13 +54,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
       }
 
       if #available(iOS 16.0, *) {
-        if self.pointer.defaultRate != desiredRate {
+        if self.pointer.defaultRate != playbackRate {
           // User changed the playback speed in the native controls. Update the desiredRate variable
-          self.desiredRate = self.pointer.defaultRate
+          self.playbackRate = self.pointer.defaultRate
         }
-      } else if newRate != 0 && newRate != desiredRate {
+      } else if newRate != 0 && newRate != playbackRate {
         // On iOS < 16 play() method always returns the reate to 1.0, we have to keep resetting it back to desiredRate
-        self.pointer.rate = desiredRate
+        self.pointer.rate = playbackRate
       }
     }
   }
@@ -82,7 +82,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
 
     let asset = AVURLAsset(url: url)
     let playerItem = AVPlayerItem(asset: asset)
-    playerItem.audioTimePitchAlgorithm = shouldCorrectPitch ? .spectral : .varispeed
+    playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
@@ -97,7 +97,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable {
     NotificationCenter.default.removeObserver(playerItemObserver)
     playerItemObserver = nil
 
-    if let currentItem = pointer.currentItem, isLooping {
+    if let currentItem = pointer.currentItem, loop {
       playerItemObserver = NotificationCenter.default.addObserver(
         forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
         object: pointer.currentItem,
