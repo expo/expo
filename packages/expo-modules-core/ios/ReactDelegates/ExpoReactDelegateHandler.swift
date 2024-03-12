@@ -1,7 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import React
-
 /**
  The handler for `ExpoReactDelegate`. A module can implement a handler to process react instance creation.
  */
@@ -10,30 +8,16 @@ open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 
   /**
-   If this module wants to handle `RCTBridge` creation, it can return the instance.
+   If this module wants to handle react instance and the root view creation, it can return the instance.
    Otherwise return nil.
    */
   @objc
-  open func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
-    return nil
-  }
-
-  @objc
-  open func createReactHost(reactDelegate: ExpoReactDelegate, launchOptions: [AnyHashable: Any]?) -> ExpoReactHostWrapper? {
-    return nil
-  }
-
-  /**
-   If this module wants to handle `RCTRootView` creation, it can return the instance.
-   Otherwise return nil.
-   */
-  @objc
-  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> UIView? {
-    return nil
-  }
-
-  @objc
-  open func createRootView(reactDelegate: ExpoReactDelegate, host: ExpoReactHostWrapper, moduleName: String, initialProperties: [AnyHashable: Any]?) -> UIView? {
+  open func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     return nil
   }
 
@@ -45,30 +29,4 @@ open class ExpoReactDelegateHandler: NSObject {
   open func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
     return nil
   }
-
-  // MARK: - event callbacks
-
-  /**
-   Callback before bridge creation
-   */
-  @objc
-  open func bridgeWillCreate() {}
-
-  /**
-   Callback after bridge creation
-   */
-  @objc
-  open func bridgeDidCreate(bridge: RCTBridge) {}
-
-  /**
-   Callback before react host creation
-   */
-  @objc
-  open func hostWillCreate() {}
-
-  /**
-   Callback after react host creation
-   */
-  @objc
-  open func hostDidCreate(reactHost: ExpoReactHostWrapper) {}
 }

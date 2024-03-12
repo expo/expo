@@ -66,33 +66,11 @@
 }
 #endif // !TARGET_OS_OSX
 
-- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
-{
-  return (RCTBridge*)[self.reactDelegate createReactHostWithBundleURL:nil launchOptions:launchOptions];
-}
-
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                           initProps:(NSDictionary *)initProps
-{
-  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
-                                                       moduleName:moduleName
-                                                initialProperties:initProps];
-#if TARGET_OS_IOS
-  rootView.backgroundColor = UIColor.systemBackgroundColor;
-#elif TARGET_OS_OSX
-  rootView.wantsLayer = YES;
-  rootView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
-#endif
-  return rootView;
-}
-
 - (UIViewController *)createRootViewController
 {
   return [self.reactDelegate createRootViewController];
 }
 
-#if REACT_NATIVE_TARGET_VERSION >= 74
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
   RCTRootViewFactoryConfiguration *configuration =
@@ -112,9 +90,7 @@
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
-  return [[EXReactRootViewFactory alloc] initWithReactDelegateWrapper:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
+  return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
-
-#endif
 
 @end

@@ -12,7 +12,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   private weak var reactDelegate: ExpoReactDelegate?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
-  private var rootViewInitialProperties: [AnyHashable : Any]?
+  private var rootViewInitialProperties: [AnyHashable: Any]?
   static var shouldEnableAutoSetup: Bool = {
     // if someone else has set this explicitly, use that value
     if !enableAutoSetup {
@@ -32,7 +32,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     return true
   }()
 
-  public override func createReactHost(reactDelegate: ExpoReactDelegate, launchOptions: [AnyHashable : Any]?) -> ExpoReactHostWrapper? {
+  public override func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
       return nil
     }
@@ -41,19 +46,11 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
-
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
-    }
-    return EXDevLauncherDeferredReactHost()
-  }
-
-  public override func createRootView(reactDelegate: ExpoReactDelegate, host: ExpoReactHostWrapper, moduleName: String, initialProperties: [AnyHashable : Any]?) -> UIView? {
-    if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
-      return nil
     }
 
     self.rootViewModuleName = moduleName
@@ -67,8 +64,10 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     developmentClientController.appBridge = RCTBridge.current()
 
-    let rootViewFactory = ExpoReactRootViewFactory(rctAppDelegate: nil, bundleURL: EXDevLauncherController.sharedInstance().sourceUrl())
-    let rootView = rootViewFactory.view(withModuleName: nil, initialProperties: self.rootViewInitialProperties, launchOptions: developmentClientController.getLaunchOptions())
+    let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
+      developmentClientController.sourceUrl(),
+      moduleName: self.rootViewModuleName,
+      initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 
@@ -89,9 +88,11 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: Internals
 
   private func getWindow() -> UIWindow {
-    var window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-    if (window == nil) {
-      window = UIApplication.shared.delegate?.window ?? nil
+    var window = UIApplication.shared.windows.filter {
+      $0.isKeyWindow
+    }.first
+    if window == nil, let mainWindow = UIApplication.shared.delegate?.window {
+      window = mainWindow
     }
     guard let window = window else {
       fatalError("Cannot find the current window.")

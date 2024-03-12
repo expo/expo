@@ -328,8 +328,7 @@
   }
 
   [self _removeInitModuleObserver];
-  EXReactRootViewFactory *factory = [[EXReactRootViewFactory alloc] initWithRCTAppDelegate:nil bundleURL:[self getSourceURL]];
-  UIView *rootView = [factory viewWithModuleName:nil initialProperties:nil launchOptions:_launchOptions];
+  UIView *rootView = [EXReactRootViewFactory createDefaultReactRootView:[self getSourceURL] moduleName:nil initialProperties:nil launchOptions:_launchOptions];
   _launcherBridge = _bridgeDelegate.bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self

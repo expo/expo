@@ -2,13 +2,7 @@
 
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
 
-#import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
-#import <ExpoModulesCore/EXReactHostWrapper+Private.h>
-#import <React/RCTBridge.h>
-#if RCT_NEW_ARCH_ENABLED
-#import <ReactCommon/RCTHost.h>
-#endif
 
 @interface EXReactDelegateWrapper()
 
@@ -26,33 +20,14 @@
   return self;
 }
 
-- (EXReactHostWrapper *)createReactHostWithBundleURL:(nullable NSURL *)bundleURL
-                                       launchOptions:(nullable NSDictionary *)launchOptions
+- (UIView *)createReactRootView:(NSString *)moduleName
+              initialProperties:(nullable NSDictionary *)initialProperties
+                  launchOptions:(nullable NSDictionary *)launchOptions
 {
-  return [_expoReactDelegate createReactHostWithBundleURL:bundleURL launchOptions:launchOptions];
+  return [_expoReactDelegate createReactRootViewWithModuleName:moduleName
+                                             initialProperties:initialProperties
+                                                 launchOptions:launchOptions];
 }
-
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                   initialProperties:(nullable NSDictionary *)initialProperties
-{
-  EXReactHostWrapper *host = [[EXReactHostWrapper alloc] initWithRCTBridge:bridge];
-  return [_expoReactDelegate createRootViewWithHost:host
-                                         moduleName:moduleName
-                                  initialProperties:initialProperties];
-}
-
-#if RCT_NEW_ARCH_ENABLED
-- (UIView *)createSurfaceViewWithReactHost:(RCTHost *)reactHost
-                                moduleName:(NSString *)moduleName
-                         initialProperties:(nullable NSDictionary *)initialProperties
-{
-  EXReactHostWrapper *host = [[EXReactHostWrapper alloc] initWithRCTHost:reactHost];
-  return [_expoReactDelegate createRootViewWithHost:host
-                                         moduleName:moduleName
-                                  initialProperties:initialProperties];
-}
-#endif
 
 - (UIViewController *)createRootViewController
 {

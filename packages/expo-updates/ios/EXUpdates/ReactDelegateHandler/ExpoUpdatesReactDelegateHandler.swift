@@ -12,7 +12,6 @@ import EXUpdatesInterface
  */
 public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
-  private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
@@ -43,7 +42,12 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     return true
   }()
 
-  public override func createReactHost(reactDelegate: ExpoReactDelegate, launchOptions: [AnyHashable : Any]?) -> ExpoReactHostWrapper? {
+  public override func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
       // In development builds with expo-dev-client, completes the auto-setup for development
       // builds with the expo-updates integration by passing a reference to DevLauncherController
@@ -59,21 +63,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     controller.delegate = self
-
-    // TODO: launch screen should move to expo-splash-screen
-    // or assuming expo-splash-screen KVO will make it works even we don't show it explicitly.
-    // controller.startAndShowLaunchScreen(UIApplication.shared.delegate!.window!!)
     controller.start()
-
-    self.launchOptions = launchOptions
-
-    return EXDeferredReactHost()
-  }
-
-  public override func createRootView(reactDelegate: ExpoReactDelegate, host: ExpoReactHostWrapper, moduleName: String, initialProperties: [AnyHashable : Any]?) -> UIView? {
-    if !shouldEnableAutoSetup {
-      return nil
-    }
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
@@ -88,10 +78,12 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       fatalError("`reactDelegate` should not be nil")
     }
 
-    let rootViewFactory = ExpoReactRootViewFactory(rctAppDelegate: nil, bundleURL: AppController.sharedInstance.launchAssetUrl())
-    let rootView = rootViewFactory.view(withModuleName: nil, initialProperties: self.rootViewInitialProperties, launchOptions: self.launchOptions)
+    let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
+      AppController.sharedInstance.launchAssetUrl(),
+      moduleName: self.rootViewModuleName,
+      initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
-    let window = UIApplication.shared.delegate!.window!!
+    let window = getWindow()
     let rootViewController = reactDelegate.createRootViewController()
     rootViewController.view = rootView
     window.rootViewController = rootViewController
@@ -107,9 +99,21 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
    */
   private func cleanup() {
     self.reactDelegate = nil
-    self.launchOptions = nil
     self.deferredRootView = nil
     self.rootViewModuleName = nil
     self.rootViewInitialProperties = nil
+  }
+
+  private func getWindow() -> UIWindow {
+    var window = UIApplication.shared.windows.filter {
+      $0.isKeyWindow
+    }.first
+    if window == nil, let mainWindow = UIApplication.shared.delegate?.window {
+      window = mainWindow
+    }
+    guard let window = window else {
+      fatalError("Cannot find the current window.")
+    }
+    return window
   }
 }
