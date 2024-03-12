@@ -73,7 +73,7 @@ NativeState::Shared NativeState::get(jsi::Runtime &runtime, jsi::Object &object,
 
 #pragma mark - SubscriptionNativeState
 
-SubscriptionNativeState::SubscriptionNativeState(jsi::Object &emitter, jsi::Function &listener)
+SubscriptionNativeState::SubscriptionNativeState(jsi::Object emitter, jsi::Function listener)
   : jsi::NativeState(), emitter(std::move(emitter)), listener(std::move(listener)) {}
 
 #pragma mark - Utils
@@ -136,10 +136,10 @@ void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventNam
   }
 }
 
-jsi::Object createEventSubscription(jsi::Runtime &runtime, std::string eventName, jsi::Object &emitter, jsi::Function &listener) {
+jsi::Object createEventSubscription(jsi::Runtime &runtime, std::string eventName, jsi::Object emitter, jsi::Function listener) {
   jsi::Object subscription(runtime);
   jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
-  SubscriptionNativeState::Shared nativeState = std::make_shared<SubscriptionNativeState>(emitter, listener);
+  SubscriptionNativeState::Shared nativeState = std::make_shared<SubscriptionNativeState>(std::move(emitter), std::move(listener));
   jsi::HostFunctionType removeSubscription = [eventName](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     jsi::Object thisObject = thisValue.getObject(runtime);
 
@@ -172,7 +172,7 @@ void installClass(jsi::Runtime &runtime) {
     jsi::Object thisObject = thisValue.getObject(runtime);
 
     addListener(runtime, thisObject, eventName, listener);
-    return createEventSubscription(runtime, eventName, thisObject, listener);
+    return createEventSubscription(runtime, eventName, std::move(thisObject), std::move(listener));
   };
 
   jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {

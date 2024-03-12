@@ -96,7 +96,7 @@ class JSI_EXPORT SubscriptionNativeState : public jsi::NativeState {
 public:
   using Shared = std::shared_ptr<SubscriptionNativeState>;
 
-  SubscriptionNativeState(jsi::Object &emitter, jsi::Function &listener);
+  SubscriptionNativeState(jsi::Object emitter, jsi::Function listener);
 
   jsi::Object emitter;
   const jsi::Function listener;
