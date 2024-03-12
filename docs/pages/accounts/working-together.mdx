@@ -11,7 +11,7 @@ You can grant other users access to the projects belonging to your Personal Acco
 
 You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.dev/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.dev/signup](https://expo.dev/signup) if they don't have an account yet. You may have up to 100 members and pending invitations combined for a single account.
 
-> When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../versions/latest/config/app.mdx#owner) property to your project's app config.
+> When adding new developers to your projects, who are publishing updates or creating new builds, make sure to add the [`owner`](../versions/latest/config/app.mdx#owner) property to your project's app config.
 
 ## Manage access
 
@@ -22,8 +22,12 @@ Access for members is managed through a role-based system. Users can have the _o
 | **Owner**     | Can take any action on an account or any projects, including deleting them. (Note: the Owner role is not available on your Personal Account)              |
 | **Admin**     | Can control most settings on your account, including signing up for paid services, changing permissions of other users, and managing programmatic access. |
 | **Developer** | Can create new projects, make new builds, release updates, and manage credentials.                                                                        |
-| **Viewer**    | Can only view your projects through Expo Go, but can't modify your projects in any way.                                                                   |
+| **Viewer**    | Can only view your projects through Expo Go or installed builds, but can't modify your projects in any way.                                               |
 
 ## Remove members
 
-To remove members, go to the [Members](https://expo.dev/settings/members) page and revoke access.
+To remove a member:
+
+- Navigate to [**Members**](https://expo.dev/settings/members) in Expo dashboard
+- Next to the member you want to remove, click on the three-dotted menu icon.
+- Click **Remove member**.
