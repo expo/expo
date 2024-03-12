@@ -81,7 +81,6 @@ export default function useSourceSelection(sources, responsivePolicy = 'static',
         }
         return () => { };
     }, [responsivePolicy, hasMoreThanOneSource, containerRef.current, measurementCallback]);
-    const source = selectSource(sources, size, responsivePolicy);
-    return React.useMemo(() => source, [source]);
+    return selectSource(sources, size, responsivePolicy);
 }
 //# sourceMappingURL=useSourceSelection.js.map

@@ -124,7 +124,5 @@ export default function useSourceSelection(
     return () => {};
   }, [responsivePolicy, hasMoreThanOneSource, containerRef.current, measurementCallback]);
 
-  const source = selectSource(sources, size, responsivePolicy);
-
-  return React.useMemo(() => source, [source]);
+  return selectSource(sources, size, responsivePolicy);
 }
