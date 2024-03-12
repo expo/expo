@@ -171,13 +171,10 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
 
   // Allow for code blocks without a language.
   if (lang) {
-    // sh isn't supported, use sh to match js, and ts
     if (lang in remapLanguages) {
       lang = remapLanguages[lang];
     }
 
-    // const grammar =
-    //   lang === 'bash' ? EXPO_BASH_LANG : Prism.languages[lang as keyof typeof Prism.languages];
     const grammar = Prism.languages[lang as keyof typeof Prism.languages];
     if (!grammar) {
       throw new Error(`docs currently do not support language: ${lang}`);
