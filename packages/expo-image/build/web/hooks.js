@@ -6,15 +6,23 @@ export function useThumbhash(source) {
     const isThumbhash = isThumbhashString(source?.uri || '');
     const strippedThumbhashString = source?.uri?.replace(/thumbhash:\//, '') ?? '';
     const thumbhashSource = useMemo(() => (isThumbhash ? { uri: thumbHashStringToDataURL(strippedThumbhashString) } : null), [strippedThumbhashString, isThumbhash]);
-    return thumbhashSource;
+    return useMemo(() => [thumbhashSource, isThumbhash], [thumbhashSource, isThumbhash]);
 }
 export function useImageHashes(source) {
-    const thumbhash = useThumbhash(source);
-    const blurhash = useBlurhash(source);
-    return useMemo(() => ({
-        resolvedSource: blurhash ?? thumbhash ?? source,
-        isImageHash: !!blurhash || !!thumbhash,
-    }), [blurhash, thumbhash]);
+    const [thumbhash, isThumbhashString] = useThumbhash(source);
+    const [blurhash, isBlurhashString] = useBlurhash(source);
+    return useMemo(() => {
+        if (!isThumbhashString && !isBlurhashString) {
+            return { resolvedSource: source, isImageHash: false };
+        }
+        if (!blurhash && !thumbhash) {
+            return { resolvedSource: null, isImageHash: true };
+        }
+        return {
+            resolvedSource: blurhash ?? thumbhash,
+            isImageHash: true,
+        };
+    }, [blurhash, thumbhash, isThumbhashString, isBlurhashString, source]);
 }
 export function useHeaders(source, cachePolicy, onError) {
     const [objectURL, setObjectURL] = useState(null);
