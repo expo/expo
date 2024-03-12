@@ -11,6 +11,7 @@ export const resolveRuntimeVersion: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--platform': String,
+      '--debug': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -28,6 +29,7 @@ Resolve expo-updates runtime version
 
   Options
   --platform <string>                  Platform to resolve runtime version for
+  --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,
       0
@@ -43,8 +45,11 @@ Resolve expo-updates runtime version
     throw new Error(`Invalid platform argument: ${platform}`);
   }
 
+  const debug = args['--debug'];
+
   const runtimeVersionInfo = await resolveRuntimeVersionAsync(getProjectRoot(args), platform, {
     silent: true,
+    debug,
   });
   console.log(JSON.stringify(runtimeVersionInfo));
 };

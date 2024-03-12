@@ -88,7 +88,7 @@ The `ExpoPushToken` will never expire. However, if one of your users uninstalls 
 
 This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. Expo Go uses Expo's credentials, which allows working on notifications in development.
 
-When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/push-notifications-setup/#android). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
+When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/fcm-credentials). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
 
 For more information, see [app signing](/app-signing/app-credentials).
 

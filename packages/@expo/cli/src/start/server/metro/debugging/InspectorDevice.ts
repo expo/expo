@@ -41,12 +41,14 @@ export function createInspectorDeviceClass(
     /** Hook into the message life cycle to answer more complex CDP messages */
     async _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerMetadata) {
       if (!this.onDeviceMessage(message, info)) {
+        // @ts-expect-error until we sort out an issue with private members
         await super._processMessageFromDevice(message, info);
       }
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */
     _interceptMessageFromDebugger(
+      // @ts-expect-error until we sort out an issue with private members
       request: Parameters<unstable_Device['_interceptMessageFromDebugger']>[0],
       info: DebuggerMetadata,
       socket: WS
@@ -55,7 +57,7 @@ export function createInspectorDeviceClass(
       if (this.onDebuggerMessage(request, info)) {
         return true;
       }
-
+      // @ts-expect-error until we sort out an issue with private members
       return super._interceptMessageFromDebugger(request, info, socket);
     }
 

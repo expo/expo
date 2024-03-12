@@ -39,7 +39,6 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       takesOwner,
-      argsCount,
       getCppRequiredTypes().toTypedArray(),
       getJNIFunctionBody(jsObject.name, appContext)
     )

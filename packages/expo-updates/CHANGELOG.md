@@ -13,6 +13,7 @@
 - Fix fingerprint runtime version policy. Calculate fingerprint at build time. ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
 - Add expo-updates cli fingerprint:generate command. ([#27119](https://github.com/expo/expo/pull/27119) by [@wschurman](https://github.com/wschurman))
 - Add expo-updates cli runtimeversion:resolve command. ([#27263](https://github.com/expo/expo/pull/27263) by [@wschurman](https://github.com/wschurman))
+- Add expo-updates cli configuration:syncnative command. ([#27511](https://github.com/expo/expo/pull/27511) by [@wschurman](https://github.com/wschurman))
 - Add --version top-level flag and also add handler for missing command in expo-update cli. ([#27296](https://github.com/expo/expo/pull/27296) by [@wschurman](https://github.com/wschurman))
 - Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323), [#27387](https://github.com/expo/expo/pull/27387) by [@wschurman](https://github.com/wschurman))
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
@@ -27,6 +28,7 @@
 
 ### 💡 Others
 
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
 - Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
@@ -37,6 +39,7 @@
 - Convert manifest creation scripts to typescript. ([#27082](https://github.com/expo/expo/pull/27082) by [@wschurman](https://github.com/wschurman))
 - Move cli and utils subpackages to new expo-module-scripts system. ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
 - Remove legacy expo bundle-assets utilities. ([#27123](https://github.com/expo/expo/pull/27123) by [@wschurman](https://github.com/wschurman))
+- [iOS] Moved expo-dev-client + expo-updates interop setup out from `application:willFinishLaunchingWithOptions:`. ([#27477](https://github.com/expo/expo/pull/27477) by [@kudo](https://github.com/kudo))
 
 ## 0.24.11 - 2024-02-16
 

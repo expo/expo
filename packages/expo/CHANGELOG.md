@@ -6,12 +6,15 @@
 
 ### 🎉 New features
 
+- Add global type for `process.env.EXPO_OS` value. ([#27509](https://github.com/expo/expo/pull/27509) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
 

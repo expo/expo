@@ -1,6 +1,4 @@
-import computeMd5 from 'blueimp-md5';
 import Constants, { AppOwnership } from 'expo-constants';
-import * as FileSystem from 'expo-file-system';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 import { getManifestBaseUrl } from './AssetUris';
 const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
@@ -27,25 +25,4 @@ export function getManifest2() {
 export const manifestBaseUrl = Constants.experienceUrl
     ? getManifestBaseUrl(Constants.experienceUrl)
     : null;
-/**
- * Downloads the asset from the given URL to a local cache and returns the local URL of the cached
- * file.
- *
- * If there is already a locally cached file and its MD5 hash matches the given `md5Hash` parameter,
- * if present, the remote asset is not downloaded. The `hash` property is included in Metro's asset
- * metadata objects when this module's `hashAssetFiles` plugin is used, which is the typical way the
- * `md5Hash` parameter of this function is provided.
- */
-export async function downloadAsync(url, md5Hash, type) {
-    if (url.startsWith('file://')) {
-        return url;
-    }
-    const cacheFileId = md5Hash ?? computeMd5(url);
-    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${type}`;
-    const fileInfo = await FileSystem.getInfoAsync(localUri, { md5: md5Hash !== null });
-    if (!fileInfo.exists || (md5Hash !== null && fileInfo.md5 !== md5Hash)) {
-        await FileSystem.downloadAsync(url, localUri);
-    }
-    return localUri;
-}
 //# sourceMappingURL=PlatformUtils.js.map

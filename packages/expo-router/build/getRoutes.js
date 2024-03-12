@@ -292,7 +292,7 @@ exports.getIgnoreList = getIgnoreList;
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
 function extrapolateGroups(key, keys = new Set()) {
-    const match = (0, matchers_1.matchArrayGroupName)(key)?.[0];
+    const match = (0, matchers_1.matchArrayGroupName)(key);
     if (!match) {
         keys.add(key);
         return keys;

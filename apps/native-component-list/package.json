@@ -6,14 +6,13 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build:web": "expo export:web",
-    "web": "expo start --web --https",
-    "eject": "SDK_VERSION=43.0.0 expo prebuild",
+    "build:web": "expo export -p web",
+    "web": "expo start --web",
     "lint": "eslint .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "start": "expo start",
-    "ios": "react-native run-ios",
-    "android": "react-native run-android"
+    "ios": "expo run:ios",
+    "android": "expo run:android"
   },
   "expo": {
     "autolinking": {
@@ -154,7 +153,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
-    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
@@ -162,7 +160,6 @@
     "@types/three": "^0.137.0",
     "@types/victory": "^31.0.14",
     "babel-jest": "^29.2.1",
-    "babel-preset-expo": "~10.0.0",
     "expo-module-scripts": "^3.0.0",
     "jest": "^29.2.1",
     "react-test-renderer": "18.2.0"

@@ -82,7 +82,7 @@ export async function getContactByIdAsync(id, fields) {
             pageSize: 1,
             pageOffset: 0,
             fields,
-            id,
+            id: Array.isArray(id) ? id : [id],
         });
         if (results && results.data && results.data.length > 0) {
             return results.data[0];

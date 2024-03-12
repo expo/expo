@@ -72,6 +72,11 @@ public:
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
 
   /**
+   * Decorates the given object with properties and functions provided in the module definition.
+   */
+  void decorate(jsi::Runtime &runtime, jsi::Object *moduleObject);
+
+  /**
    * Exports constants that will be assigned to the underlying HostObject.
    */
   void exportConstants(jni::alias_ref<react::NativeMap::javaobject> constants);
@@ -83,7 +88,6 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -95,7 +99,6 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
@@ -105,7 +108,6 @@ public:
     jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
     jboolean takesOwner,
     jni::alias_ref<jclass> ownerClass,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );

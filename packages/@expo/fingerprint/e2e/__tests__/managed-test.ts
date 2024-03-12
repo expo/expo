@@ -118,7 +118,7 @@ describe('managed project test', () => {
       [
         {
           "filePath": "node_modules/@react-native-community/netinfo",
-          "hash": "8a255b59e10118a8cf5c1660d12d6b2e9293ed5c",
+          "hash": "7a41febc80b298412c7dd08b77e243c7aadd5c4e",
           "reasons": [
             "bareRncliAutolinking",
           ],

@@ -62,7 +62,10 @@ public final class ModuleDefinition: ObjectDefinition {
   }
 
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
-    let object = try super.build(appContext: appContext)
+    // Create an instance of `global.expo.NativeModule`
+    let object = JSIUtils.createNativeModuleObject(try appContext.runtime)
+
+    try super.decorate(object: object, appContext: appContext)
 
     if let viewDefinition = view {
       let reactComponentPrototype = try viewDefinition.createReactComponentPrototype(appContext: appContext)

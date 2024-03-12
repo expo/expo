@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import ComponentListScreen from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
@@ -59,12 +57,12 @@ export const ScreenItems = screens.map((name) => ({
 }));
 
 export default function ExpoComponentsScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={ScreenItems}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

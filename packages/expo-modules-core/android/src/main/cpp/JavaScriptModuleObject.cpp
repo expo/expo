@@ -4,6 +4,7 @@
 #include "JSIInteropModuleRegistry.h"
 #include "JSIUtils.h"
 #include "SharedObject.h"
+#include "NativeModule.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -107,24 +108,31 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     return object;
   }
 
-  auto moduleObject = std::make_shared<jsi::Object>(runtime);
+  auto moduleObject = std::make_shared<jsi::Object>(NativeModule::createInstance(runtime));
 
+  decorate(runtime, moduleObject.get());
+
+  jsiObject = moduleObject;
+  return moduleObject;
+}
+
+void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *moduleObject) {
   decorateObjectWithConstants(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithProperties(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithFunctions(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
 
@@ -225,9 +233,6 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
       classObject
     );
   }
-
-  jsiObject = moduleObject;
-  return moduleObject;
 }
 
 void JavaScriptModuleObject::exportConstants(
@@ -244,7 +249,6 @@ void JavaScriptModuleObject::exportConstants(
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jboolean takesOwner,
-  jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
@@ -254,7 +258,6 @@ void JavaScriptModuleObject::registerSyncFunction(
     cName,
     cName,
     takesOwner,
-    args,
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
@@ -264,7 +267,6 @@ void JavaScriptModuleObject::registerSyncFunction(
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jboolean takesOwner,
-  jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
@@ -274,7 +276,6 @@ void JavaScriptModuleObject::registerAsyncFunction(
     cName,
     cName,
     takesOwner,
-    args,
     true,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
@@ -286,7 +287,6 @@ void JavaScriptModuleObject::registerClass(
   jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
   jboolean takesOwner,
   jni::alias_ref<jclass> ownerClass,
-  jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
@@ -294,7 +294,6 @@ void JavaScriptModuleObject::registerClass(
   MethodMetadata constructor(
     "constructor",
     takesOwner,
-    args,
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
@@ -332,7 +331,6 @@ void JavaScriptModuleObject::registerProperty(
   auto getterMetadata = MethodMetadata(
     cName,
     getterTakesOwner,
-    getterExpectedArgsTypes->size(),
     false,
     jni::make_local(getterExpectedArgsTypes),
     jni::make_global(getter)
@@ -341,7 +339,6 @@ void JavaScriptModuleObject::registerProperty(
   auto setterMetadata = MethodMetadata(
     cName,
     setterTakesOwner,
-    setterExpectedArgsTypes->size(),
     false,
     jni::make_local(setterExpectedArgsTypes),
     jni::make_global(setter)

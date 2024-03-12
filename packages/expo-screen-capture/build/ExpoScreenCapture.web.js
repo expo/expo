@@ -1,6 +1,2 @@
-export default {
-    get name() {
-        return 'ExpoScreenCapture';
-    },
-};
+export default {};
 //# sourceMappingURL=ExpoScreenCapture.web.js.map

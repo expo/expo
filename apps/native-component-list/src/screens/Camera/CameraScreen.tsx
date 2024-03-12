@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   AutoFocus,
@@ -415,6 +415,7 @@ export default class CameraScreen extends React.Component<object, State> {
         ratio={this.state.ratio}
         pictureSize={this.state.pictureSize}
         onMountError={this.handleMountError}
+        responsiveOrientationWhenOrientationLocked
         onFacesDetected={this.state.faceDetecting ? this.onFacesDetected : undefined}
         faceDetectorSettings={{
           tracking: true,

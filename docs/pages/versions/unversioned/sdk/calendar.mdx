@@ -3,11 +3,11 @@ title: Calendar
 description: A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-calendar'
 packageName: 'expo-calendar'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import {
   ConfigReactNative,
@@ -17,8 +17,6 @@ import {
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

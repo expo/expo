@@ -4,18 +4,16 @@ description: A library that provides an API to implement video playback and reco
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 iconUrl: '/static/images/packages/expo-av.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
 
 Much of Video and Audio have common APIs that are documented in [AV documentation](av.mdx). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](av.mdx) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](audio.mdx).
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

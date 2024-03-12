@@ -5,6 +5,8 @@ import { Platform, StatusBar } from 'react-native';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
+SplashScreen.preventAutoHideAsync();
+
 function useSplashScreen(loadingFunction: () => void) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
@@ -12,7 +14,6 @@ function useSplashScreen(loadingFunction: () => void) {
   React.useEffect(() => {
     async function loadAsync() {
       try {
-        await SplashScreen.preventAutoHideAsync();
         await loadingFunction();
       } catch (e) {
         // We might want to provide this error information to an error reporting service
