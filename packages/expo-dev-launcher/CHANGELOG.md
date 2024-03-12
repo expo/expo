@@ -21,6 +21,7 @@
 - Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 - Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Removed [Flipper workaround](https://github.com/expo/expo/pull/18105) on Android. ([#27508](https://github.com/expo/expo/pull/27508) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
