@@ -5,10 +5,10 @@ import { SharedObject } from '../ts-declarations/SharedObject';
 declare class WebEventEmitter implements EventEmitter {
     private listeners;
     constructor();
-    removeListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
-    removeAllListeners(eventName: never): void;
-    emit<EventName extends never>(eventName: EventName, ...args: Parameters<Record<never, never>[EventName]>): void;
-    addListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
+    removeListener<EventName, ListenerFunction extends Function>(eventName: EventName, listener: ListenerFunction): void;
+    removeAllListeners<EventName>(eventName: EventName): void;
+    emit<EventName, Arguments extends any[]>(eventName: EventName, ...args: Arguments): void;
+    addListener<EventName, ListenerFunction extends Function>(eventName: EventName, listener: ListenerFunction): void;
 }
 declare class CoreObject implements ExpoGlobal {
     modules: Record<string, any>;
