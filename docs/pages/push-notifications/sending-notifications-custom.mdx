@@ -26,7 +26,7 @@ After getting the native device token, you can start implementing the servers. B
 
 Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/push-notifications-setup/#android) to configure FCM and get your `FCM-SERVER-KEY`.
 
-> The following example uses FCM's legacy HTTP API, since the credentials setup for that is the same as it is for the Expo notifications service, so there's no additional work needed on your part. If you'd rather use FCM's HTTP v1 API, see [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
+> The following example uses FCM's legacy HTTP API, since the credentials setup for that is the same as it is for the Expo notifications service, so there's no additional work needed on your part. If you'd rather use FCM's HTTP V1 API, see [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
 
 ```js
 await fetch('https://fcm.googleapis.com/fcm/send', {

@@ -7,8 +7,11 @@ type NativeModule = {
   __expo_module_name__?: string;
   startObserving?: () => void;
   stopObserving?: () => void;
-  addListener: (eventName: string) => void;
-  removeListeners: (count: number) => void;
+
+  // Erase these types as they would conflict with the new NativeModule type.
+  // This EventEmitter is deprecated anyway.
+  addListener?: any;
+  removeListeners?: any;
 };
 
 // @needsAudit

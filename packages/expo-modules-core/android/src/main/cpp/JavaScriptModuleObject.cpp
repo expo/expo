@@ -4,6 +4,7 @@
 #include "JSIInteropModuleRegistry.h"
 #include "JSIUtils.h"
 #include "SharedObject.h"
+#include "NativeModule.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -107,24 +108,31 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     return object;
   }
 
-  auto moduleObject = std::make_shared<jsi::Object>(runtime);
+  auto moduleObject = std::make_shared<jsi::Object>(NativeModule::createInstance(runtime));
 
+  decorate(runtime, moduleObject.get());
+
+  jsiObject = moduleObject;
+  return moduleObject;
+}
+
+void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *moduleObject) {
   decorateObjectWithConstants(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithProperties(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithFunctions(
     runtime,
     jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
 
@@ -225,9 +233,6 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
       classObject
     );
   }
-
-  jsiObject = moduleObject;
-  return moduleObject;
 }
 
 void JavaScriptModuleObject::exportConstants(

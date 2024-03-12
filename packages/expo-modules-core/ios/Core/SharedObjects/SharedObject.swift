@@ -35,20 +35,26 @@ open class SharedObject: AnySharedObject {
   }
 
   /**
-   Sends an event with the given name and arguments to the associated JavaScript object.
-   NOTE: For now this must be run from the JavaScript thread!
-   TODO: Use the runtime executor to ensure running on the proper thread.
+   Schedules an event with the given name and arguments to be sent to the associated JavaScript object.
    */
   public func sendEvent(name eventName: String, args: AnyArgument...) {
-    let jsObject = self.getJavaScriptObject()
-
-    do {
-      try jsObject?
-        .getProperty("emit")
-        .asFunction()
-        .call(withArguments: [eventName] + args, thisObject: jsObject, asConstructor: false)
-    } catch {
-      log.error("Unable to send event '\(eventName)' by shared object of type \(String(describing: Self.self))", error)
+    guard let runtime = try? appContext?.runtime else {
+      log.warn("Trying to send event '\(eventName)' to \(type(of: self)), but the JS runtime has been lost")
+      return
+    }
+    runtime.schedule { [weak self] in
+      guard let self, let jsObject = self.getJavaScriptObject() else {
+        log.warn("Trying to send event '\(eventName)' to \(type(of: self)), but the JS object is no longer associated with the native instance")
+        return
+      }
+      do {
+        try jsObject
+          .getProperty("emit")
+          .asFunction()
+          .call(withArguments: [eventName] + args, thisObject: jsObject, asConstructor: false)
+      } catch {
+        log.error("Unable to send event '\(eventName)' to \(type(of: self)):", error)
+      }
     }
   }
 }
