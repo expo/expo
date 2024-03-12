@@ -8,11 +8,11 @@ import semver from 'semver';
 
 import { WarningBox } from './WarningBox';
 import { SectionHeader } from '../../components/SectionHeader';
-import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { ProjectsQuery } from '../../graphql/types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
 
-type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 function getSDKMajorVersionsForLegacyUpdates(app: ProjectPageApp): number | null {
   return app.sdkVersion ? semver.major(app.sdkVersion) : null;

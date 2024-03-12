@@ -12,7 +12,7 @@ import { ProjectHeader } from './ProjectHeader';
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
-import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { ProjectsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 const ERROR_TEXT = dedent`
@@ -23,10 +23,10 @@ const ERROR_TEXT = dedent`
 type Props = {
   loading: boolean;
   error?: Error;
-  data?: WebContainerProjectPage_Query;
+  data?: ProjectsQuery;
 } & StackScreenProps<HomeStackRoutes, 'ProjectDetails'>;
 
-type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 export function ProjectView({ loading, error, data, navigation }: Props) {
   const theme = useExpoTheme();
