@@ -71,6 +71,11 @@ NativeState::Shared NativeState::get(jsi::Runtime &runtime, jsi::Object &object,
   return nullptr;
 }
 
+#pragma mark - SubscriptionNativeState
+
+SubscriptionNativeState::SubscriptionNativeState(jsi::Object emitter, jsi::Function listener)
+  : jsi::NativeState(), emitter(std::move(emitter)), listener(std::move(listener)) {}
+
 #pragma mark - Utils
 
 void callObservingFunction(jsi::Runtime &runtime, jsi::Object &object, const char* functionName, std::string eventName) {
@@ -89,6 +94,69 @@ void callObservingFunction(jsi::Runtime &runtime, jsi::Object &object, const cha
     });
 }
 
+void addListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener) {
+  if (NativeState::Shared state = NativeState::get(runtime, emitter, true)) {
+    state->listeners.add(runtime, eventName, listener);
+
+    if (state->listeners.listenersCount(eventName) == 1) {
+      callObservingFunction(runtime, emitter, "startObserving", eventName);
+    }
+  }
+}
+
+void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener) {
+  if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
+    size_t listenersCountBefore = state->listeners.listenersCount(eventName);
+
+    state->listeners.remove(runtime, eventName, listener);
+
+    if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
+      callObservingFunction(runtime, emitter, "stopObserving", eventName);
+    }
+  }
+}
+
+void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName) {
+  if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
+    size_t listenersCountBefore = state->listeners.listenersCount(eventName);
+
+    state->listeners.removeAll(eventName);
+
+    if (listenersCountBefore >= 1) {
+      callObservingFunction(runtime, emitter, "stopObserving", eventName);
+    }
+  }
+}
+
+void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count) {
+  if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
+    // Pass the arguments without the first that is the event name.
+    const jsi::Value *payloadArgs = count > 1 ? &args[1] : nullptr;
+    state->listeners.call(runtime, eventName, emitter, payloadArgs, count - 1);
+  }
+}
+
+jsi::Object createEventSubscription(jsi::Runtime &runtime, const std::string &eventName, jsi::Object emitter, jsi::Function listener) {
+  jsi::Object subscription(runtime);
+  jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
+  SubscriptionNativeState::Shared nativeState = std::make_shared<SubscriptionNativeState>(std::move(emitter), std::move(listener));
+  jsi::HostFunctionType removeSubscription = [eventName](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    jsi::Object thisObject = thisValue.getObject(runtime);
+
+    if (SubscriptionNativeState::Shared state = thisObject.getNativeState<SubscriptionNativeState>(runtime)) {
+      removeListener(runtime, state->emitter, eventName, state->listener);
+    }
+    return jsi::Value::undefined();
+  };
+
+  subscription.setNativeState(runtime, nativeState);
+  subscription.setProperty(runtime, removeProp, jsi::Function::createFromHostFunction(runtime, removeProp, 0, removeSubscription));
+
+  return subscription;
+}
+
+#pragma mark - Public API
+
 jsi::Function getClass(jsi::Runtime &runtime) {
   return common::getCoreObject(runtime)
     .getPropertyAsFunction(runtime, "EventEmitter");
@@ -98,51 +166,29 @@ void installClass(jsi::Runtime &runtime) {
   jsi::Function eventEmitterClass = common::createClass(runtime, "EventEmitter");
   jsi::Object prototype = eventEmitterClass.getPropertyAsObject(runtime, "prototype");
 
-  jsi::HostFunctionType addListener = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+  jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
-    if (NativeState::Shared state = NativeState::get(runtime, thisObject, true)) {
-      state->listeners.add(runtime, eventName, listener);
-
-      if (state->listeners.listenersCount(eventName) == 1) {
-        callObservingFunction(runtime, thisObject, "startObserving", eventName);
-      }
-    }
-    return jsi::Value::undefined();
+    addListener(runtime, thisObject, eventName, listener);
+    return createEventSubscription(runtime, eventName, std::move(thisObject), std::move(listener));
   };
 
-  jsi::HostFunctionType removeListener = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+  jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
-    if (NativeState::Shared state = NativeState::get(runtime, thisObject, false)) {
-      size_t listenersCountBefore = state->listeners.listenersCount(eventName);
-
-      state->listeners.remove(runtime, eventName, listener);
-
-      if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
-        callObservingFunction(runtime, thisObject, "stopObserving", eventName);
-      }
-    }
+    removeListener(runtime, thisObject, eventName, listener);
     return jsi::Value::undefined();
   };
 
-  jsi::HostFunctionType removeAllListeners = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+  jsi::HostFunctionType removeAllListenersHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
-    if (NativeState::Shared state = NativeState::get(runtime, thisObject, false)) {
-      size_t listenersCountBefore = state->listeners.listenersCount(eventName);
-
-      state->listeners.removeAll(eventName);
-
-      if (listenersCountBefore >= 1) {
-        callObservingFunction(runtime, thisObject, "stopObserving", eventName);
-      }
-    }
+    removeAllListeners(runtime, thisObject, eventName);
     return jsi::Value::undefined();
   };
 
@@ -150,11 +196,7 @@ void installClass(jsi::Runtime &runtime) {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
-    if (NativeState::Shared state = NativeState::get(runtime, thisObject, false)) {
-      // Pass the arguments without the first that is the event name.
-      const jsi::Value *payloadArgs = count > 1 ? &args[1] : nullptr;
-      state->listeners.call(runtime, eventName, thisObject, payloadArgs, count - 1);
-    }
+    emitEvent(runtime, thisObject, eventName, args, count);
     return jsi::Value::undefined();
   };
 
@@ -163,9 +205,9 @@ void installClass(jsi::Runtime &runtime) {
   jsi::PropNameID removeAllListenersProp = jsi::PropNameID::forAscii(runtime, "removeAllListeners", 18);
   jsi::PropNameID emitProp = jsi::PropNameID::forAscii(runtime, "emit", 4);
 
-  prototype.setProperty(runtime, addListenerProp, jsi::Function::createFromHostFunction(runtime, addListenerProp, 2, addListener));
-  prototype.setProperty(runtime, removeListenerProp, jsi::Function::createFromHostFunction(runtime, removeListenerProp, 2, removeListener));
-  prototype.setProperty(runtime, removeAllListenersProp, jsi::Function::createFromHostFunction(runtime, removeAllListenersProp, 1, removeAllListeners));
+  prototype.setProperty(runtime, addListenerProp, jsi::Function::createFromHostFunction(runtime, addListenerProp, 2, addListenerHost));
+  prototype.setProperty(runtime, removeListenerProp, jsi::Function::createFromHostFunction(runtime, removeListenerProp, 2, removeListenerHost));
+  prototype.setProperty(runtime, removeAllListenersProp, jsi::Function::createFromHostFunction(runtime, removeAllListenersProp, 1, removeAllListenersHost));
   prototype.setProperty(runtime, emitProp, jsi::Function::createFromHostFunction(runtime, emitProp, 2, emit));
 
   common::getCoreObject(runtime)

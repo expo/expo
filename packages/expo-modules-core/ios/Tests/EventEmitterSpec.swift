@@ -134,6 +134,43 @@ final class EventEmitterSpec: ExpoSpec {
 
         expect(calls) == 1
       }
+
+      it("returns a subscription") {
+        let subscription = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "subscription = emitter.addListener('test', () => {})"
+        ])
+
+        expect(try subscription.asObject().getPropertyNames()).to(contain("remove"))
+        expect(try subscription.asObject().getProperty("remove").kind) == .function
+      }
+
+      it("removes a listener from subscription") {
+        let wasCalled = try runtime.eval([
+          "wasCalled = false",
+          "emitter = new expo.EventEmitter()",
+          "subscription = emitter.addListener('test', () => { wasCalled = true })",
+          "subscription.remove()",
+          "emitter.emit('test')",
+          "wasCalled"
+        ])
+
+        expect(try wasCalled.asBool()) == false
+      }
+
+      it("removes only related listener") {
+        let counter = try runtime.eval([
+          "counter = 0",
+          "emitter = new expo.EventEmitter()",
+          "subscription1 = emitter.addListener('test', () => { counter |= 1 })",
+          "subscription2 = emitter.addListener('test', () => { counter |= 2 })",
+          "subscription1.remove()",
+          "emitter.emit('test')",
+          "counter"
+        ])
+
+        expect(try counter.asInt()) == 2
+      }
     }
   }
 }

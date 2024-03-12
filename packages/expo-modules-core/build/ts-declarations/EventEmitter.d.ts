@@ -4,6 +4,16 @@
  */
 export type EventsMap = Record<string, (...args: any[]) => void>;
 /**
+ * A subscription object that allows to conveniently remove an event listener from the emitter.
+ */
+export type EventSubscription = {
+    /**
+     * Removes an event listener for which the subscription has been created.
+     * After calling this function, the listener will no longer receive any events from the emitter.
+     */
+    remove(): void;
+};
+/**
  * A class that provides a consistent API for emitting and listening to events.
  * It shares many concepts with other emitter APIs, such as Node's EventEmitter and `fbemitter`.
  * When the event is emitted, all of the functions attached to that specific event are called *synchronously*.
