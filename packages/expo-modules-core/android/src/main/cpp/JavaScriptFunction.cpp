@@ -4,6 +4,8 @@
 #include "types/JNIToJSIConverter.h"
 #include "types/AnyType.h"
 
+#include "JavaScriptObject.h"
+
 namespace expo {
 
 void JavaScriptFunction::registerNatives() {
@@ -31,6 +33,7 @@ std::shared_ptr<jsi::Function> JavaScriptFunction::get() {
 }
 
 jobject JavaScriptFunction::invoke(
+  jni::alias_ref<JavaScriptObject::javaobject> jsThis,
   jni::alias_ref<jni::JArrayClass<jni::JObject>> args,
   jni::alias_ref<ExpectedType::javaobject> expectedReturnType
 ) {
@@ -48,7 +51,19 @@ jobject JavaScriptFunction::invoke(
   }
 
   // TODO(@lukmccall): add better error handling
-  jsi::Value result = jsFunction->call(rt, (const jsi::Value *) convertedArgs.data(), size);
+  jsi::Value result = jsThis == nullptr ?
+    jsFunction->call(
+      rt,
+      (const jsi::Value *) convertedArgs.data(),
+      size
+    ) :
+    jsFunction->callWithThis(
+      rt,
+      *(jsThis->cthis()->get()),
+      (const jsi::Value *) convertedArgs.data(),
+      size
+    );
+
   auto converter = AnyType(jni::make_local(expectedReturnType)).converter;
   auto convertedResult = converter->convert(rt, env, moduleRegistry, result);
   return convertedResult;

@@ -1,6 +1,7 @@
 package expo.modules.kotlin.sharedobjects
 
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import java.lang.ref.WeakReference
@@ -43,15 +44,22 @@ class SharedObjectRegistry(appContext: AppContext) {
     // It's already defined in the JS base SharedObject class prototype,
     // but with the current implementation it's possible to use a raw object for registration.
     js.defineProperty(sharedObjectIdPropertyName, id.value)
-    appContextHolder
-      .get()
-      ?.jsiInterop
-      ?.setNativeStateForSharedObject(id.value, js)
+
+    val appContext = appContextHolder.get() ?: throw Exceptions.AppContextLost()
+
+    appContext
+      .jsiInterop
+      .setNativeStateForSharedObject(id.value, js)
 
     val jsWeakObject = js.createWeak()
     synchronized(this) {
       pairs[id] = native to jsWeakObject
     }
+
+    if (native.appContextHolder.get() == null) {
+      native.appContextHolder = WeakReference(appContext)
+    }
+
     return id
   }
 

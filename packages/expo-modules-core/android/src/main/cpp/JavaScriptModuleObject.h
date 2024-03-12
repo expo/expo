@@ -72,6 +72,11 @@ public:
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
 
   /**
+   * Decorates the given object with properties and functions provided in the module definition.
+   */
+  void decorate(jsi::Runtime &runtime, jsi::Object *moduleObject);
+
+  /**
    * Exports constants that will be assigned to the underlying HostObject.
    */
   void exportConstants(jni::alias_ref<react::NativeMap::javaobject> constants);

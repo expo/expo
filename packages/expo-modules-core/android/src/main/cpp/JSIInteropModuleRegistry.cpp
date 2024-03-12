@@ -5,6 +5,7 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "SharedObject.h"
+#include "NativeModule.h"
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -95,6 +96,8 @@ void JSIInteropModuleRegistry::prepareRuntime() {
       deleteSharedObject(objectId);
     }
   );
+
+  NativeModule::installClass(runtimeHolder->get());
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(

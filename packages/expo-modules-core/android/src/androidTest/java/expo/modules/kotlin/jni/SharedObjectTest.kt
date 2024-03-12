@@ -80,6 +80,35 @@ class SharedObjectTest {
     Truth.assertThat(releaseFunction.isFunction()).isTrue()
   }
 
+  @Test
+  fun sends_events() = withExampleSharedClass {
+    val jsObject = evaluateScript(
+      "sharedObject = new $moduleRef.SharedObjectExampleClass()"
+    ).getObject()
+
+    // Add a listener that adds three arguments
+    evaluateScript(
+      "total = 0",
+      "sharedObject.addListener('test event', (a, b, c) => { total = a + b + c })"
+    )
+
+    // Get the native instance
+    val nativeObject = jsiInterop
+      .appContextHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.toNativeObject(jsObject)
+
+    // Send an event from the native object to JS
+    nativeObject?.sendEvent("test event", 1, 2, 3)
+
+    // Check the value that is set by the listener
+    val total = evaluateScript("total")
+
+    Truth.assertThat(total.isNumber()).isTrue()
+    Truth.assertThat(total.getInt()).isEqualTo(6)
+  }
+
   private class SharedObjectExampleClass : SharedObject()
 
   private fun withExampleSharedClass(
