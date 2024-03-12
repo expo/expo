@@ -2,7 +2,7 @@ name: Issue Triage
 on:
   issues:
     types: [labeled]
-  pull_request:
+  pull_request_target:
     types: [labeled]
 
 jobs:
