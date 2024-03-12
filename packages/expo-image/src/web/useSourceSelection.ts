@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
 import { ImageProps, ImageSource } from '../Image.types';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
