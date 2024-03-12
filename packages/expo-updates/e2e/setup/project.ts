@@ -315,6 +315,8 @@ async function preparePackageJson(
     dependencies: {
       ...expoResolutions,
       ...packageJson.dependencies,
+      // FIXME: temp to test updates e2e from 0.74
+      'react-native': '0.74.0-rc.3',
     },
     devDependencies: {
       '@types/react': '~18.0.14',
@@ -329,6 +331,17 @@ async function preparePackageJson(
       ...packageJson.resolutions,
       typescript: '5.2.2',
       '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
+      // FIXME: temp to test updates e2e from 0.74
+      'react-native': '0.74.0-rc.3',
+      '@react-native/assets-registry': '0.74.0',
+      '@react-native/babel-preset': '0.74.2',
+      '@react-native/dev-middleware': '0.74.3',
+    },
+    expo: {
+      install: {
+        // FIXME: temp to test updates e2e from 0.74
+        exclude: ['react-native'],
+      },
     },
   };
 
@@ -692,6 +705,16 @@ export async function initAsync(
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
   packageJson.dependencies.expo = packageJson.resolutions.expo;
+
+  // FIXME: temp to test updates e2e from 0.74
+  packageJson.resolutions = {
+    ...packageJson.resolutions,
+    'react-native': '0.74.0-rc.3',
+    '@react-native/assets-registry': '0.74.0',
+    '@react-native/babel-preset': '0.74.2',
+    '@react-native/dev-middleware': '0.74.3',
+  };
+
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
