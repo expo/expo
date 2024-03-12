@@ -16,10 +16,10 @@ namespace expo::EventEmitter {
 class Listeners {
 private:
   friend class NativeState;
-  friend void addListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Function &listener);
-  friend void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Function &listener);
-  friend void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName);
-  friend void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Value *args, size_t count);
+  friend void addListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName);
+  friend void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
 
   /**
    Type of the list containing listeners for the specific event name.

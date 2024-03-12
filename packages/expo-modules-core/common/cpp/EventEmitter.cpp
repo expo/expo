@@ -94,7 +94,7 @@ void callObservingFunction(jsi::Runtime &runtime, jsi::Object &object, const cha
     });
 }
 
-void addListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Function &listener) {
+void addListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, true)) {
     state->listeners.add(runtime, eventName, listener);
 
@@ -104,7 +104,7 @@ void addListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventN
   }
 }
 
-void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Function &listener) {
+void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
     size_t listenersCountBefore = state->listeners.listenersCount(eventName);
 
@@ -116,7 +116,7 @@ void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, std::string eve
   }
 }
 
-void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName) {
+void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
     size_t listenersCountBefore = state->listeners.listenersCount(eventName);
 
@@ -128,7 +128,7 @@ void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, std::string
   }
 }
 
-void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventName, const jsi::Value *args, size_t count) {
+void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
     // Pass the arguments without the first that is the event name.
     const jsi::Value *payloadArgs = count > 1 ? &args[1] : nullptr;
@@ -136,7 +136,7 @@ void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, std::string eventNam
   }
 }
 
-jsi::Object createEventSubscription(jsi::Runtime &runtime, std::string eventName, jsi::Object emitter, jsi::Function listener) {
+jsi::Object createEventSubscription(jsi::Runtime &runtime, const std::string &eventName, jsi::Object emitter, jsi::Function listener) {
   jsi::Object subscription(runtime);
   jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
   SubscriptionNativeState::Shared nativeState = std::make_shared<SubscriptionNativeState>(std::move(emitter), std::move(listener));
