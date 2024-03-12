@@ -2,6 +2,8 @@ name: Issue Triage
 on:
   issues:
     types: [labeled]
+  pull_request:
+    types: [labeled]
 
 jobs:
   needs-repro:
