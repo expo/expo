@@ -43,18 +43,6 @@ open class ObjectDefinitionBuilder {
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
   fun buildObject(): ObjectDefinitionData {
-    // Register stub functions to bypass react-native `NativeEventEmitter` warnings
-    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
-    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
-    eventsDefinition?.run {
-      if (!containsFunction("addListener")) {
-        Function("addListener") { _: String -> { } }
-      }
-      if (!containsFunction("removeListeners")) {
-        Function("removeListeners") { _: Int -> { } }
-      }
-    }
-
     return ObjectDefinitionData(
       constantsProvider,
       syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
@@ -62,12 +50,6 @@ open class ObjectDefinitionBuilder {
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
-  }
-
-  private fun containsFunction(functionName: String): Boolean {
-    return syncFunctions.containsKey(functionName) ||
-      asyncFunctions.containsKey(functionName) ||
-      asyncFunctionBuilders.containsKey(functionName)
   }
 
   /**
