@@ -191,6 +191,7 @@ For Android and iOS, there are different requirements to set up your credentials
     For Android, you need to configure **Firebase Cloud Messaging (FCM) V1** to get credentials and set up your Expo project.
 
     Follow the steps in [Add Android FCM V1 credentials](/push-notifications/fcm-credentials) to set up your credentials.
+
   </Tab>
   <Tab>
     > **warning** A paid Apple Developer Account is required to generate credentials.
@@ -201,6 +202,7 @@ For Android and iOS, there are different requirements to set up your credentials
 
     - Setup Push Notifications for your project
     - Generating a new Apple Push Notifications service key
+
   </Tab>
 </Tabs>
 
@@ -217,7 +219,7 @@ After creating and installing the development build, you can use [Expo's push no
 
 1. Start the development server for your project:
 
-   <Terminal cmd={['$ npx expo start --dev-client']} />
+   <Terminal cmd={['$ npx expo start']} />
 
 2. Open the development build on your device.
 
@@ -225,17 +227,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-    <ImageSpotlight
-      alt="Expo push notifications tool overview."
-      src="/static/images/notifications/push-notifications-tool-overview.png"
-      style={{ maxWidth: 1200 }}
-    />
+   <ImageSpotlight
+     alt="Expo push notifications tool overview."
+     src="/static/images/notifications/push-notifications-tool-overview.png"
+     style={{ maxWidth: 1200 }}
+   />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
   <ImageSpotlight
     alt="An Android device receiving a push notification."
     src="/static/images/notifications/notification-on-android.png"
-    style={{ maxWidth: 360 }}
+    style={{ maxWidth: 280 }}
   />
 </Step>
