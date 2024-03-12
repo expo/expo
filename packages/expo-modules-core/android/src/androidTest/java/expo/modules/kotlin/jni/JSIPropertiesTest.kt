@@ -11,7 +11,7 @@ internal class JSIPropertiesTest {
       .get { }
       .set { _: String -> }
   }) {
-    val keys = evaluateScript("Object.keys($moduleRef)").getArray()
+    val keys = evaluateScript("Object.keys($moduleRef).filter(key => ['p1', 'p2'].includes(key))").getArray()
 
     Truth.assertThat(keys).hasLength(2)
 

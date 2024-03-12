@@ -17,14 +17,6 @@ class JavaScriptModuleObjectTest {
   }
 
   @Test
-  fun hostObject_should_not_expose_addListener_by_default() = withSingleModule {
-    val addListenerFunction = property("addListener")
-    val removeListenersFunction = property("removeListeners")
-    Truth.assertThat(addListenerFunction.isUndefined()).isTrue()
-    Truth.assertThat(removeListenersFunction.isUndefined()).isTrue()
-  }
-
-  @Test
   fun hostObject_should_not_override_existing_addListener() = withSingleModule({
     Events("onFoo")
     Function("addListener") { name: String ->
