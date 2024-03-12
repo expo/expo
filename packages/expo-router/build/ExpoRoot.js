@@ -35,6 +35,7 @@ const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
 const router_store_1 = require("./global-state/router-store");
+const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
@@ -87,9 +88,11 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <WrapperComponent>
-        <Component />
-      </WrapperComponent>
+      <serverLocationContext_1.ServerLocationContext.Provider value={initialLocation}>
+        <WrapperComponent>
+          <Component />
+        </WrapperComponent>
+      </serverLocationContext_1.ServerLocationContext.Provider>
     </NavigationContainer_1.default>);
 }
 let onUnhandledAction;
