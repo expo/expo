@@ -189,7 +189,7 @@ namespace ExpoRouter {
     replace: <T>(href: Href<T>) => void;
     /** Navigate to the provided href using a push operation if possible. */
     dismiss: (count?: number) => void;
-    /** Navigate to first screen within the lowest stack */
+    /** Navigate to first screen within the lowest stack. */
     dismissAll: () => void;
     /** If there's history that supports invoking the `dismiss` and `dismissAll` function. */
     canDismiss: () => boolean;
