@@ -34,7 +34,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         val configuration = appLoaderLocal.updatesConfiguration
 
         // keep these keys in sync with UpdatesModule
-        constants["isEmergencyLaunch"] = appLoaderLocal.isEmergencyLaunch
+        constants["isEmergencyLaunch"] = false
         constants["isEmbeddedLaunch"] = false
         constants["isEnabled"] = true
         constants["isUsingEmbeddedAssets"] = false

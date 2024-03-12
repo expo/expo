@@ -40,45 +40,6 @@ class ExponentManifest @Inject constructor(
 
   private val memoryCache: LruCache<String, Bitmap>
 
-  fun httpManifestUrl(manifestUrl: String): Uri {
-    return httpManifestUrlBuilder(manifestUrl).build()
-  }
-
-  private fun httpManifestUrlBuilder(manifestUrl: String): Uri.Builder {
-    var realManifestUrl = manifestUrl
-    if (manifestUrl.contains(REDIRECT_SNIPPET)) {
-      // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
-      // Android is crazy and catches this url with this intent filter:
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="http"/>
-      //  <data
-      //    android:host="*.exp.direct"
-      //    android:pathPattern=".*"
-      //    android:scheme="https"/>
-      // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
-      realManifestUrl = Uri.decode(
-        realManifestUrl.substring(
-          realManifestUrl.indexOf(
-            REDIRECT_SNIPPET
-          ) + REDIRECT_SNIPPET.length
-        )
-      )
-    }
-    val httpManifestUrl = ExponentUrls.toHttp(realManifestUrl)
-    val uri = Uri.parse(httpManifestUrl)
-    var newPath = uri.path
-    if (newPath == null) {
-      newPath = ""
-    }
-    val deepLinkIndex = newPath.indexOf(DEEP_LINK_SEPARATOR_WITH_SLASH)
-    if (deepLinkIndex > -1) {
-      newPath = newPath.substring(0, deepLinkIndex)
-    }
-    return uri.buildUpon().encodedPath(newPath)
-  }
-
   fun loadIconBitmap(iconUrl: String?, listener: BitmapListener) {
     val icon = getIconFromCache(iconUrl)
     if (icon != null) {
@@ -141,14 +102,6 @@ class ExponentManifest @Inject constructor(
       Color.parseColor(colorString)
     } else {
       R.color.colorPrimary
-    }
-  }
-
-  fun isAnonymousExperience(manifest: Manifest): Boolean {
-    return try {
-      manifest.getScopeKey().startsWith(ANONYMOUS_SCOPE_KEY_PREFIX)
-    } catch (e: JSONException) {
-      false
     }
   }
 
@@ -270,6 +223,53 @@ class ExponentManifest @Inject constructor(
     private const val EXPONENT_SERVER_HEADER = "Exponent-Server"
 
     private var hasShownKernelManifestLog = false
+
+    fun isAnonymousExperience(manifest: Manifest): Boolean {
+      return try {
+        manifest.getScopeKey().startsWith(ANONYMOUS_SCOPE_KEY_PREFIX)
+      } catch (e: JSONException) {
+        false
+      }
+    }
+
+    fun httpManifestUrl(manifestUrl: String): Uri {
+      return httpManifestUrlBuilder(manifestUrl).build()
+    }
+
+    private fun httpManifestUrlBuilder(manifestUrl: String): Uri.Builder {
+      var realManifestUrl = manifestUrl
+      if (manifestUrl.contains(REDIRECT_SNIPPET)) {
+        // Redirect urls look like "https://exp.host/--/to-exp/exp%3A%2F%2Fgj-5x6.jesse.internal.exp.direct%3A80".
+        // Android is crazy and catches this url with this intent filter:
+        //  <data
+        //    android:host="*.exp.direct"
+        //    android:pathPattern=".*"
+        //    android:scheme="http"/>
+        //  <data
+        //    android:host="*.exp.direct"
+        //    android:pathPattern=".*"
+        //    android:scheme="https"/>
+        // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
+        realManifestUrl = Uri.decode(
+          realManifestUrl.substring(
+            realManifestUrl.indexOf(
+              REDIRECT_SNIPPET
+            ) + REDIRECT_SNIPPET.length
+          )
+        )
+      }
+      val httpManifestUrl = ExponentUrls.toHttp(realManifestUrl)
+      val uri = Uri.parse(httpManifestUrl)
+      var newPath = uri.path
+      if (newPath == null) {
+        newPath = ""
+      }
+      val deepLinkIndex = newPath.indexOf(DEEP_LINK_SEPARATOR_WITH_SLASH)
+      if (deepLinkIndex > -1) {
+        newPath = newPath.substring(0, deepLinkIndex)
+      }
+      return uri.buildUpon().encodedPath(newPath)
+    }
   }
 
   init {
