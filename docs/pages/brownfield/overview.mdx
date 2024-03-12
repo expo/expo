@@ -1,0 +1,41 @@
+---
+title: Integrating Expo tools into existing native apps
+sidebar_title: Overview
+hideTOC: true
+description: An overview of how you can integrate Expo tools into existing native apps ("brownfield" apps).
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { DEMI, CODE } from '~/ui/components/Text';
+
+If you already have a native app for Android and/or iOS and want to learn how to use Expo and React Native in your project, perhaps on a single screen or feature to start, this guide is for you. This type of app is commonly referred to as a "brownfield" app in the React Native ecosystem (as opposed to "greenfield" apps, which are created from scratch using Expo and React Native).
+
+## Compatibility
+
+Expo is primarily built with greenfield apps in mind — not all Expo tools and services are compatible with existing native projects.
+
+| Tool/Service                                        | Supports brownfield? |
+| --------------------------------------------------- | -------------------- |
+| [Expo SDK](/versions/latest/)                       | Yes                  |
+| [Expo Modules API](/modules/overview/)              | Yes                  |
+| [Expo Router](/router/introduction/)                | No                   |
+| [Expo CLI](/more/expo-cli/)                         | No                   |
+| [Expo Dev Client](/versions/latest/sdk/dev-client/) | No                   |
+| [EAS Build](/build/introduction/)                   | Yes                  |
+| [EAS Submit](/submit/introduction/)                 | Yes                  |
+| [EAS Update](/eas-update/introduction/)             | No                   |
+
+## Next steps
+
+<BoxLink
+  title="Integrating your first React Native view"
+  description="Learn how to add a React Native root view to your existing native app"
+  href="<TODO>"
+/>
+
+<BoxLink
+  title="Install Expo modules"
+  description="Install the Expo Modules API and use it to add existing Expo modules or write your own modules"
+  href="/brownfield/installing-expo-modules"
+/>

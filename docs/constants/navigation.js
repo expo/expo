@@ -415,7 +415,7 @@ const general = [
         makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
-      makeSection('Bare React Native', [
+      makeSection('Existing React Native apps', [
         makePage('bare/overview.mdx'),
         makePage('bare/installing-expo-modules.mdx'),
         makePage('bare/using-expo-cli.mdx'),
@@ -423,6 +423,10 @@ const general = [
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/upgrade.mdx'),
+      ]),
+      makeSection('Existing Native apps', [
+        makePage('brownfield/overview.mdx'),
+        makePage('brownfield/installing-expo-modules.mdx'),
       ]),
     ],
     { expanded: true }
