@@ -2,13 +2,13 @@ import { ExpoGlobal } from '..';
 import { EventEmitter } from '../ts-declarations/EventEmitter';
 import { NativeModule } from '../ts-declarations/NativeModule';
 import { SharedObject } from '../ts-declarations/SharedObject';
-declare class WebEventEmitter implements EventEmitter {
+declare class WebEventEmitter<TEventsMap extends Record<never, never>> implements EventEmitter {
     private listeners;
     constructor();
-    removeListener<EventName, ListenerFunction extends Function>(eventName: EventName, listener: ListenerFunction): void;
-    removeAllListeners<EventName>(eventName: EventName): void;
-    emit<EventName, Arguments extends any[]>(eventName: EventName, ...args: Arguments): void;
-    addListener<EventName, ListenerFunction extends Function>(eventName: EventName, listener: ListenerFunction): void;
+    removeListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): void;
+    removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void;
+    emit<EventName extends keyof TEventsMap>(eventName: EventName, ...args: Parameters<TEventsMap[EventName]>): void;
+    addListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): void;
 }
 declare class CoreObject implements ExpoGlobal {
     modules: Record<string, any>;

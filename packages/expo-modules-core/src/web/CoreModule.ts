@@ -4,28 +4,31 @@ import { NativeModule } from '../ts-declarations/NativeModule';
 import { SharedObject } from '../ts-declarations/SharedObject';
 import uuid from '../uuid';
 
-class WebEventEmitter implements EventEmitter {
+class WebEventEmitter<TEventsMap extends Record<never, never>> implements EventEmitter {
   private listeners: Map<any, Set<Function>>;
 
   constructor() {
     this.listeners = new Map();
   }
 
-  removeListener<EventName, ListenerFunction extends Function>(
+  removeListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
-    listener: ListenerFunction
+    listener: TEventsMap[EventName]
   ): void {
     this.listeners.get(eventName)?.delete(listener);
   }
-  removeAllListeners<EventName>(eventName: EventName): void {
+  removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
     this.listeners.get(eventName)?.clear();
   }
-  emit<EventName, Arguments extends any[]>(eventName: EventName, ...args: Arguments): void {
+  emit<EventName extends keyof TEventsMap>(
+    eventName: EventName,
+    ...args: Parameters<TEventsMap[EventName]>
+  ): void {
     this.listeners.get(eventName)?.forEach((listener) => listener(...args));
   }
-  addListener<EventName, ListenerFunction extends Function>(
+  addListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
-    listener: ListenerFunction
+    listener: TEventsMap[EventName]
   ): void {
     if (!this.listeners.has(eventName)) {
       this.listeners.set(eventName, new Set());
