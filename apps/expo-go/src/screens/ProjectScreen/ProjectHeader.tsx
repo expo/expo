@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Image } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { ProjectsQuery } from '../../graphql/types';
 
-type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 export function ProjectHeader(props: { app: ProjectPageApp }) {
   const source = props.app.icon ? props.app.icon.url : props.app.iconUrl;
