@@ -21,18 +21,18 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
     super.init()
 
-    self.bridge = bridge
+    RCTBridge.setCurrent(bridge)
   }
 
   /**
    Sends an event to JS triggering the animation that collapses the dev menu.
    */
   public func sendCloseEvent() {
-    bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+    RCTBridge.current().enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
 
   public func sendOpenEvent() {
-    bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
+    RCTBridge.current().enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTAppDelegate
