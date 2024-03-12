@@ -228,6 +228,13 @@ public:
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
 }
 
+#pragma mark - Runtime execution
+
+- (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
+{
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
+}
+
 #pragma mark - Private
 
 - (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
