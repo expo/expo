@@ -362,7 +362,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     private val TAG = ExpoUpdatesAppLoader::class.java.simpleName
     const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
-
     @Throws(JSONException::class)
     private fun processManifestJson(manifestJson: JSONObject): JSONObject {
       // if the manifest is scoped to a random anonymous scope key, automatically verify it
