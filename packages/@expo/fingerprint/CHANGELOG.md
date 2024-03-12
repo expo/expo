@@ -14,6 +14,7 @@
 - Fix fingerprint of ios (xcode projects). ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
 - Fix inconsistent hashes for autolinking. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 - Fixed expo-modules-autolinking sourcer missing some packages on iOS. ([#27442](https://github.com/expo/expo/pull/27442) by [@kudo](https://github.com/kudo))
+- Add more default android ignores that differ per machine. ([#27577](https://github.com/expo/expo/pull/27577) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
