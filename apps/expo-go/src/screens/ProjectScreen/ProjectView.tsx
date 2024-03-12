@@ -1,13 +1,12 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
 import { EmptySection } from './EmptySection';
-import { LegacyLaunchSection } from './LegacyLaunchSection';
 import { ProjectHeader } from './ProjectHeader';
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
@@ -50,46 +49,26 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
     );
   } else {
     const app = data.app.byId;
+    const hasEASUpdates = appHasEASUpdates(app);
 
     contents = (
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {appHasEASUpdates(app) && (
+          {hasEASUpdates && (
             <>
               <EASUpdateLaunchSection app={app} />
               <Spacer.Vertical size="xl" />
             </>
           )}
-          {appHasLegacyUpdate(app) && (
-            <>
-              <LegacyLaunchSection app={app} />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && (
+          {!hasEASUpdates && (
             <>
               <EmptySection />
               <Spacer.Vertical size="xl" />
             </>
           )}
           <View bg="default" border="default" overflow="hidden" rounded="large">
-            <ConstantItem title="Owner" value={app.username} />
-            {app.sdkVersion !== '0.0.0' && (
-              <>
-                <Divider style={{ height: 1 }} />
-                <ConstantItem title="SDK Version" value={app.sdkVersion} />
-              </>
-            )}
-            {app.latestReleaseForReleaseChannel?.runtimeVersion && (
-              <>
-                <Divider style={{ height: 1 }} />
-                <ConstantItem
-                  title="Runtime Version"
-                  value={app.latestReleaseForReleaseChannel?.runtimeVersion}
-                />
-              </>
-            )}
+            <ConstantItem title="Owner" value={app.ownerAccount.name} />
           </View>
         </View>
       </ScrollView>
@@ -108,10 +87,6 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
   }, [navigation, data?.app?.byId]);
 
   return <View flex="1">{contents}</View>;
-}
-
-function appHasLegacyUpdate(app: ProjectPageApp): boolean {
-  return app.published;
 }
 
 function appHasEASUpdates(app: ProjectPageApp): boolean {
