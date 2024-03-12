@@ -1216,7 +1216,7 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
-  - react-native-skia (0.1.221):
+  - react-native-skia (1.0.2):
     - React
     - React-callinvoker
     - React-Core
