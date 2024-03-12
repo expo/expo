@@ -159,6 +159,7 @@
     "@types/three": "^0.137.0",
     "@types/victory": "^31.0.14",
     "babel-jest": "^29.2.1",
+    "expo-atlas": "^0.0.3",
     "expo-module-scripts": "^3.0.0",
     "jest": "^29.2.1",
     "react-test-renderer": "18.2.0"

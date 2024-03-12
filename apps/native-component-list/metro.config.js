@@ -1,5 +1,6 @@
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
+const { withMetroBundleConfig } = require('expo-atlas/metro');
 const path = require('path');
 
 const monorepoRoot = path.join(__dirname, '../..');
@@ -48,4 +49,4 @@ config.watchFolders = [
   path.join(monorepoRoot, 'react-native-lab'), // Allow Metro to resolve `react-native-lab/react-native` files
 ];
 
-module.exports = config;
+module.exports = withMetroBundleConfig(config);
