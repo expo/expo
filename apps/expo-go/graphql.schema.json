@@ -1214,6 +1214,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isDisabled",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "isSSOEnabled",
             "description": "Whether this account has SSO enabled. Can be queried by all members.",
             "args": [],
@@ -1600,6 +1616,22 @@
             "deprecationReason": null
           },
           {
+            "name": "viewerUserPermission",
+            "description": "Permission info for the viewer on this account",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserPermission",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "willAutoRenewBuilds",
             "description": null,
             "args": [],
@@ -1717,6 +1749,18 @@
         "description": null,
         "fields": null,
         "inputFields": [
+          {
+            "name": "searchTerm",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "sortByField",
             "description": null,
@@ -4699,6 +4743,18 @@
             "deprecationReason": null
           },
           {
+            "name": "googleServiceAccountKeyForFcmV1",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "GoogleServiceAccountKey",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "googleServiceAccountKeyForSubmissions",
             "description": null,
             "args": [],
@@ -4802,6 +4858,18 @@
             "deprecationReason": null
           },
           {
+            "name": "googleServiceAccountKeyForFcmV1Id",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "googleServiceAccountKeyForSubmissionsId",
             "description": null,
             "type": {
@@ -4889,6 +4957,71 @@
             "deprecationReason": null
           },
           {
+            "name": "createFcmV1Credential",
+            "description": "Create a GoogleServiceAccountKeyEntity to store credential and\nconnect it with an edge from AndroidAppCredential",
+            "args": [
+              {
+                "name": "accountId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "androidAppCredentialsId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "credential",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "AndroidAppCredentials",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "deleteAndroidAppCredentials",
             "description": "Delete a set of credentials for an Android app",
             "args": [
@@ -4927,6 +5060,55 @@
             "args": [
               {
                 "name": "fcmId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "AndroidAppCredentials",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "setGoogleServiceAccountKeyForFcmV1",
+            "description": "Set the Google Service Account Key to be used for Firebase Cloud Messaging V1",
+            "args": [
+              {
+                "name": "googleServiceAccountKeyId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -7668,6 +7850,22 @@
             "deprecationReason": null
           },
           {
+            "name": "internalDistributionBuildPrivacy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "AppInternalDistributionBuildPrivacy",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "iosAppCredentials",
             "description": "iOS app credentials for the project",
             "args": [
@@ -9248,6 +9446,18 @@
             "deprecationReason": null
           },
           {
+            "name": "internalDistributionBuildPrivacy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "AppInternalDistributionBuildPrivacy",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "privacy",
             "description": null,
             "type": {
@@ -9545,6 +9755,29 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "AppInternalDistributionBuildPrivacy",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "PRIVATE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PUBLIC",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -14197,6 +14430,18 @@
             "deprecationReason": null
           },
           {
+            "name": "appIdentifier",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "appVersion",
             "description": null,
             "args": [],
@@ -14546,6 +14791,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isForIosSimulator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "isGitWorkingTreeDirty",
             "description": null,
             "args": [],
@@ -14705,6 +14966,18 @@
                 "name": "Project",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "projectMetadataFileUrl",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -15845,6 +16118,18 @@
             "deprecationReason": null
           },
           {
+            "name": "simulator",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "status",
             "description": null,
             "type": {
@@ -15937,6 +16222,30 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "runtimeVersion",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "simulator",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
               "ofType": null
             },
             "defaultValue": null,
@@ -16860,6 +17169,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "simulator",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
               "ofType": null
             },
             "defaultValue": null,
@@ -17925,6 +18246,22 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isForIosSimulator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               }
             },
@@ -19297,6 +19634,18 @@
                 "name": "String",
                 "ofType": null
               }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "submitProfile",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -23215,6 +23564,18 @@
             "deprecationReason": null
           },
           {
+            "name": "submitProfile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "targetPattern",
             "description": null,
             "args": [],
@@ -23457,6 +23818,22 @@
               "ofType": {
                 "kind": "OBJECT",
                 "name": "App",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
                 "ofType": null
               }
             },
@@ -27454,6 +27831,12 @@
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "EXPO_DEVELOPER_ONBOARDING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -27468,6 +27851,12 @@
         "enumValues": [
           {
             "name": "DEV_CLIENT_USERS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DID_SUBSCRIBE_TO_EAS_AT_LEAST_ONCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -28420,6 +28809,12 @@
             "deprecationReason": null
           },
           {
+            "name": "BUILD_ERRORED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "BUILD_LIMIT_THRESHOLD_EXCEEDED",
             "description": null,
             "isDeprecated": false,
@@ -28433,6 +28828,12 @@
           },
           {
             "name": "SUBMISSION_COMPLETE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SUBMISSION_ERRORED",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -29582,6 +29983,18 @@
           },
           {
             "name": "gitRef",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "metadataLocation",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -32785,6 +33198,22 @@
             "deprecationReason": null
           },
           {
+            "name": "preferences",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserPreferences",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "primaryAccount",
             "description": "Associated accounts",
             "args": [],
@@ -34623,6 +35052,30 @@
             "deprecationReason": null
           },
           {
+            "name": "logFiles",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "logsUrl",
             "description": null,
             "args": [],
@@ -34631,8 +35084,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use logFiles instead"
           },
           {
             "name": "maxRetryTimeMinutes",
@@ -37023,6 +37476,18 @@
             "deprecationReason": null
           },
           {
+            "name": "submitProfile",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "targetPattern",
             "description": null,
             "type": {
@@ -37445,6 +37910,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "EAS_BUILD_GCS_PROJECT_METADATA",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "EAS_BUILD_GCS_PROJECT_SOURCES",
             "description": null,
             "isDeprecated": false,
@@ -37453,14 +37924,14 @@
           {
             "name": "EAS_BUILD_PROJECT_SOURCES",
             "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use EAS_BUILD_GCS_PROJECT_SOURCES instead."
           },
           {
             "name": "EAS_SUBMIT_APP_ARCHIVE",
             "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use EAS_SUBMIT_GCS_APP_ARCHIVE instead."
           },
           {
             "name": "EAS_SUBMIT_GCS_APP_ARCHIVE",
@@ -38325,6 +38796,22 @@
             "deprecationReason": null
           },
           {
+            "name": "preferences",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserPreferences",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "primaryAccount",
             "description": "Associated accounts",
             "args": [],
@@ -39059,6 +39546,22 @@
                     "ofType": null
                   }
                 }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "preferences",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserPreferences",
+                "ofType": null
               }
             },
             "isDeprecated": false,
@@ -40414,6 +40917,29 @@
             "type": {
               "kind": "INTERFACE",
               "name": "UserActor",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UserPreferences",
+        "description": null,
+        "fields": [
+          {
+            "name": "selectedAccountName",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,

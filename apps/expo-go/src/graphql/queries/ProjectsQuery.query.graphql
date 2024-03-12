@@ -1,4 +1,4 @@
-query WebContainerProjectPage_Query(
+query ProjectsQuery(
   $appId: String!
   $platform: AppPlatform!
   $sdkVersions: [String!]!
