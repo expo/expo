@@ -3,7 +3,7 @@
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="css-wc5n09"
+    class="pt-14 pb-12 px-6 w-[280px]"
     data-sidebar="true"
   >
     <p
@@ -62,33 +62,38 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </button>
     </p>
     <a
-      class="css-vmf6tj"
+      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      data-state="closed"
       href="#base-level-heading"
     >
       <p
-        class="css-dhipyq-TextComponent"
+        class="!text-secondary hocus:!text-link css-1yjys1n-TextComponent"
         data-text="true"
       >
         Base level heading
       </p>
     </a>
     <a
-      class="css-1p8gu4x"
+      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      data-state="closed"
       href="#level-3-subheading"
+      style="padding-left: 12px;"
     >
       <p
-        class="css-dhipyq-TextComponent"
+        class="!text-secondary hocus:!text-link css-1yjys1n-TextComponent"
         data-text="true"
       >
         Level 3 subheading
       </p>
     </a>
     <a
-      class="css-1p8gu4x"
+      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      data-state="closed"
       href="#code-heading-depth-1"
+      style="padding-left: 12px;"
     >
       <code
-        class="css-1jai1da-TextComponent"
+        class="!text-secondary hocus:!text-link truncate !text-2xs css-yszm2s-TextComponent"
         data-text="true"
       >
         Code heading depth 1
