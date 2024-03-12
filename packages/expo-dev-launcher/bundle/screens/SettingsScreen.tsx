@@ -309,7 +309,7 @@ function UpdatesDebugSettings() {
   return (
     <View my="medium">
       <View px="medium">
-        <Heading color="secondary">EAS Update Configuration</Heading>
+        <Heading color="secondary">EAS Update configuration</Heading>
         <Spacer.Vertical size="medium" />
       </View>
 
