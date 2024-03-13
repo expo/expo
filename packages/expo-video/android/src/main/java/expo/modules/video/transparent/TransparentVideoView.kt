@@ -28,32 +28,6 @@ data class State(
     val onFrameAvailable: Flow<Unit>
 )
 
-/**
- * Displays a video with an alpha channel.
- *
- * The source must be a video compatible with android 4.4+ (https://developer.android.com/media/platform/supported-formats#video-codecs)
- * The source must be a composition of two videos vertically superposed :
- * - The upper part of the video must display the rgb channels, without any alpha
- * - The lower part of the video must display the alpha mask in shades of grey
- *   (black -> alpha = 0f, white -> alpha = 1f) to apply to the rgb part.
- *
- *   |-----------------------|
- *   |                       |
- *   |                       |
- *   |       rgb video       |
- *   |                       |
- *   |                       |
- *   |-----------------------|
- *   |                       |
- *   |                       |
- *   |  alpha mask video     |
- *   |                       |
- *   |                       |
- *   |-----------------------|
- *
- *   Warning : This cannot display a video that has an alpha channel like transparent
- *   webm. It only blends rgb data with alpha data.
- */
 @OptIn(UnstableApi::class)
 class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   val id: String = UUID.randomUUID().toString()
