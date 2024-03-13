@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 4.5.7 — 2024-03-13
+
+### 🐛 Bug fixes
+
+- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

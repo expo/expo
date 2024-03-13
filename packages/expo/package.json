@@ -60,7 +60,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.17.7",
+    "@expo/cli": "0.17.8",
     "@expo/config": "8.5.4",
     "@expo/config-plugins": "7.8.4",
     "@expo/metro-config": "0.17.6",
@@ -71,7 +71,7 @@
     "expo-font": "~11.10.3",
     "expo-keep-awake": "~12.8.2",
     "expo-modules-autolinking": "1.10.3",
-    "expo-modules-core": "1.11.11",
+    "expo-modules-core": "1.11.12",
     "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.12 — 2024-03-13
+
+### 💡 Others
+
 - [iOS] Moved expo-dev-client + expo-updates interop setup out from `application:willFinishLaunchingWithOptions:`. ([#27477](https://github.com/expo/expo/pull/27477) by [@kudo](https://github.com/kudo))
 
 ## 0.24.11 — 2024-02-16

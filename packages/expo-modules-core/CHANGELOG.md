@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add iOS support for `PlatformColor` and `DynamicColorIOS` color props. ([#26724](https://github.com/expo/expo/pull/26724) by [@dlindenkreuz](https://github.com/dlindenkreuz))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.11.12 — 2024-03-13
+
+### 🎉 New features
+
+- Add iOS support for `PlatformColor` and `DynamicColorIOS` color props. ([#26724](https://github.com/expo/expo/pull/26724) by [@dlindenkreuz](https://github.com/dlindenkreuz))
 
 ## 1.11.11 — 2024-03-11
 
