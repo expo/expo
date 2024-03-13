@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
