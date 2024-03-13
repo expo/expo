@@ -14,6 +14,7 @@
 - [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
 - Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
 - [Android] Adds support for boarders. ([#27003](https://github.com/expo/expo/pull/27003) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Adds support for transparent video ([#27627](https://github.com/expo/expo/pull/27627) by [@kowczarz](https://github.com/kowczarz))
 
 ### 🐛 Bug fixes
 
