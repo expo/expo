@@ -105,13 +105,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   }
 
   private func getWindow() -> UIWindow {
-    var window = UIApplication.shared.windows.filter {
-      $0.isKeyWindow
-    }.first
-    if window == nil, let mainWindow = UIApplication.shared.delegate?.window {
-      window = mainWindow
-    }
-    guard let window = window else {
+    guard let window = UIApplication.shared.windows.filter(\.isKeyWindow).first ?? UIApplication.shared.delegate?.window as? UIWindow else {
       fatalError("Cannot find the current window.")
     }
     return window
