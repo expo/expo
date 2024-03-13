@@ -12,7 +12,7 @@ function getExpoTheme(extend = {}, plugins = []) {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx}',
     './ui/foundations/**/*.{js,ts,jsx,tsx}',
     './ui/components/**/*.{js,ts,jsx,tsx}',
