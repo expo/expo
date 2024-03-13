@@ -12,7 +12,6 @@
 - Fixed `Unrecognised selector` crash for `extraModulesForBridge:` on iOS. ([#26523](https://github.com/expo/expo/pull/26523) by [@kudo](https://github.com/kudo))
 - Fix runtime version overflow ([#27172](https://github.com/expo/expo/pull/27172) by [@kadikraman](https://github.com/kadikraman))
 - Fixed registerDevMenuItems duplicating items rather than replacing. ([#27356](https://github.com/expo/expo/pull/27356) by [@lukmccall](https://github.com/lukmccall))
-- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -24,6 +23,12 @@
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 4.5.7 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
 
 ## 4.5.6 - 2024-02-16
 
