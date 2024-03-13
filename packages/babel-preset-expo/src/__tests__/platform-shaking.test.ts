@@ -54,7 +54,7 @@ it(`does not replace EXPO_OS when assigning`, () => {
     process.env.EXPO_OS = 'web';
   `;
 
-  expect(babel.transform(sourceCode, options)!.code!).toEqual("Platform.OS='web';");
+  expect(babel.transform(sourceCode, options)!.code!).toEqual("process.env.EXPO_OS='web';");
 });
 
 describe('global scoping', () => {

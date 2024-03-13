@@ -8,33 +8,11 @@
 
 import { ConfigAPI, NodePath, types } from '@babel/core';
 
-export default function inlinePlugin({
+export default function minifyPlatformSelectPlugin({
   types: t,
 }: ConfigAPI & { types: typeof types }): babel.PluginObj {
   return {
     visitor: {
-      MemberExpression(path, state) {
-        if (
-          // Ensure that we are not in the left-hand side of an assignment expression
-          // e.g. `Platform.OS = 'web'`
-          isLeftHandSideOfAssignmentExpression(path.node, path.parent) ||
-          // Match `Platform.OS` and `Platform['OS']`
-          !path.matchesPattern('Platform.OS')
-        ) {
-          return;
-        }
-
-        // NOTE(EvanBacon): Upstream metro allows `Platform.OS` to be a global and doesn't check the scope.
-        // Skipping here would be safer but it would also be a breaking change.
-        // Ensure path is not a global variable
-        // if (path.scope.hasGlobal('Platform')) {
-        //   return;
-        // }
-
-        const opts = state.opts as { platform: string };
-
-        path.replaceWith(t.stringLiteral(opts.platform));
-      },
       CallExpression(path, state) {
         const node = path.node;
         const arg = node.arguments[0];
@@ -68,9 +46,6 @@ function isPlatformSelect(path: NodePath<types.CallExpression>): boolean {
     types.isObjectExpression(path.node.arguments[0])
   );
 }
-
-const isLeftHandSideOfAssignmentExpression = (node: types.MemberExpression, parent: types.Node) =>
-  types.isAssignmentExpression(parent) && parent.left === node;
 
 function findProperty(objectExpression: types.ObjectExpression, key: string, fallback: () => any) {
   let value = null;
