@@ -40,7 +40,7 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JNIDeallocator
-import expo.modules.kotlin.jni.JSIInteropModuleRegistry
+import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.sharedobjects.ClassRegistry
@@ -65,8 +65,8 @@ class AppContext(
 
   private var hostWasDestroyed = false
 
-  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
-  internal lateinit var jsiInterop: JSIInteropModuleRegistry
+  // We postpone creating the `JSIContext` to not load so files in unit tests.
+  internal lateinit var jsiInterop: JSIContext
 
   /**
    * The core module that defines the `expo` object in the global scope of the JS runtime.
@@ -154,7 +154,7 @@ class AppContext(
 
     trace("AppContext.installJSIInterop") {
       try {
-        jsiInterop = JSIInteropModuleRegistry()
+        jsiInterop = JSIContext()
         val reactContext = reactContextHolder.get() ?: return@trace
         val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
 

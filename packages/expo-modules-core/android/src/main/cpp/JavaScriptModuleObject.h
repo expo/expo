@@ -18,27 +18,24 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 class JavaScriptModuleObject;
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
@@ -58,11 +55,6 @@ public:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
   static void registerNatives();
-
-  /**
-   * Pointer to the module registry interop.
-   */
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
 
   /**
    * Returns a cached instance of jsi::Object representing this module.
@@ -141,21 +133,18 @@ private:
 
   friend void decorateObjectWithFunctions(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithProperties(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithConstants(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );

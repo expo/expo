@@ -4,7 +4,7 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import org.junit.Test
 
-class JSIInteropModuleRegistryTest {
+class JSIContextTest {
   @Test
   fun module_should_be_registered() = withSingleModule({
     Function("syncFunction") {}
