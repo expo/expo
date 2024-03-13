@@ -25,7 +25,7 @@ object ExpoReactHostFactory {
     val packageList: List<ReactPackage>,
     val jsMainModulePath: String = "index",
     val jsBundleAssetPath: String = "index",
-    val isHermesEnabled: Boolean = true,
+    val isHermesEnabled: Boolean = true
   )
 
   @OptIn(UnstableReactNativeAPI::class)
@@ -54,7 +54,8 @@ object ExpoReactHostFactory {
           jsBundleLoader = jsBundleLoader,
           reactPackages = createParams.packageList,
           jsRuntimeFactory = jsRuntimeFactory,
-          turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
+          turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
+        )
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
@@ -66,7 +67,8 @@ object ExpoReactHostFactory {
           componentFactory,
           true,
           reactJsExceptionHandler,
-          useDeveloperSupport)
+          useDeveloperSupport
+        )
           .apply {
             jsEngineResolutionAlgorithm =
               if (createParams.isHermesEnabled) {
