@@ -6,11 +6,6 @@ input {
   appearance: unset;
 }
 
-/* This isn't being included by Tailwind by default */
-.bg-white {
-  background-color: #fff;
-}
-
 #__next[aria-hidden] {
   filter: none !important;
 }
