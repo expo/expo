@@ -14,6 +14,7 @@ import Git from '../../Git';
 import logger from '../../Logger';
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
+import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan } = chalk;
@@ -52,6 +53,42 @@ export const prepareCanaries = new Task<TaskArgs>(
 );
 
 /**
+ * Cleans up all the changes that were made by previously run tasks.
+ */
+export const cleanWorkingTree = new Task<TaskArgs>(
+  {
+    name: 'cleanWorkingTree',
+    dependsOn: [],
+  },
+  async () => {
+    await runWithSpinner(
+      'Cleaning up the working tree',
+      async () => {
+        // JSON files are automatically added to the index after previous tasks.
+        await Git.checkoutAsync({
+          ref: 'HEAD',
+          paths: [
+            'apps/*/package.json',
+            'packages/**/package.json',
+            'packages/expo-module-template/$package.json',
+            'packages/expo/bundledNativeModules.json',
+            'templates/*/package.json',
+          ],
+        });
+
+        // Remove tarballs created by `npm pack`.
+        await Git.cleanAsync({
+          recursive: true,
+          force: true,
+          paths: ['packages/**/*.tgz'],
+        });
+      },
+      'Cleaned up the working tree'
+    );
+  }
+);
+
+/**
  * Pipeline with a bunch of tasks required to publish canaries.
  */
 export const publishCanaryPipeline = new Task<TaskArgs>(
@@ -68,6 +105,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateWorkspaceProjects,
       packPackageToTarball,
       publishPackages,
+      cleanWorkingTree,
     ],
   },
   async (parcels: Parcel[]) => {
@@ -75,9 +113,6 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
 
     logger.success(
       `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
-    );
-    logger.info(
-      'The script has left some changes in your working directory, make sure to clean them up.'
     );
   }
 );
