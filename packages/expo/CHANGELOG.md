@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 50.0.13 — 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.12 — 2024-03-11
 
 ### 📚 3rd party library updates
