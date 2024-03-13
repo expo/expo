@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeTransparentVideoView.js","sourceRoot":"","sources":["../src/NativeTransparentVideoView.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,mBAAmB,CAAC;AAE7D,eAAe,wBAAwB,CAAC,sBAAsB,CAAC,CAAC","sourcesContent":["import { requireNativeViewManager } from 'expo-modules-core';\n\nexport default requireNativeViewManager('ExpoTransparentVideo');\n"]}
