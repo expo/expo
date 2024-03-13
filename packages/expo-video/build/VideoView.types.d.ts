@@ -147,6 +147,7 @@ export interface VideoViewProps extends ViewProps {
      */
     startsPictureInPictureAutomatically?: boolean;
 }
+export type TransparentVideoViewProps = Omit<VideoViewProps, 'onPictureInPictureStart' | 'onPictureInPictureStop' | 'allowsPictureInPicture' | 'startsPictureInPictureAutomatically'>;
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
  * */
