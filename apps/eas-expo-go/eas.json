@@ -23,7 +23,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk50-0.73.5",
+          "key": "sdk50-0.73.6",
           "customPaths": ["../../ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.2",
