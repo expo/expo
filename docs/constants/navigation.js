@@ -320,6 +320,7 @@ const general = [
       makePage('eas-update/debug-advanced.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/build-locally.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('eas-update/optimize-assets.mdx'),
@@ -419,7 +420,6 @@ const general = [
         makePage('bare/installing-updates.mdx'),
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
-        makePage('bare/error-recovery.mdx'),
         makePage('bare/upgrade.mdx'),
       ]),
     ],
