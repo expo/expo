@@ -33,7 +33,7 @@ function stripReactNativeImport(code: string) {
 
 describe('global scoping', () => {
   // TODO: Maybe break this behavior and only allow Platform.OS if it's not a global.
-  it(`does remove Platform module without import (from global)`, () => {
+  it(`removes Platform module without import (from global)`, () => {
     const options = {
       ...DEFAULT_OPTS,
       caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),

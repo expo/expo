@@ -16,12 +16,14 @@ export default function inlinePlugin({
       MemberExpression(path, state) {
         if (
           // Ensure that we are not in the left-hand side of an assignment expression
-          !isLeftHandSideOfAssignmentExpression(path.node, path.parent) &&
+          // e.g. `Platform.OS = 'web'`
+          isLeftHandSideOfAssignmentExpression(path.node, path.parent) ||
           // Match `Platform.OS` and `Platform['OS']`
           !path.matchesPattern('Platform.OS')
         ) {
           return;
         }
+
         // NOTE(EvanBacon): Upstream metro allows `Platform.OS` to be a global and doesn't check the scope.
         // Skipping here would be safer but it would also be a breaking change.
         // Ensure path is not a global variable
@@ -30,6 +32,7 @@ export default function inlinePlugin({
         // }
 
         const opts = state.opts as { platform: string };
+
         path.replaceWith(t.stringLiteral(opts.platform));
       },
       CallExpression(path, state) {
