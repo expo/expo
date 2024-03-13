@@ -27,7 +27,7 @@ function _generate() {
   return data;
 }
 function _ctxShared() {
-  const data = require("../../_ctx-shared");
+  const data = require("expo-router/_ctx-shared");
   _ctxShared = function () {
     return data;
   };
