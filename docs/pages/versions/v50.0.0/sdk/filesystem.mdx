@@ -14,20 +14,31 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
 `expo-file-system` provides access to a file system stored locally on the device. It is also capable of uploading and downloading files from network URLs.
 
 <PlatformsSection android emulator ios simulator />
 
-<Collapsible summary="Diagram explaining how expo-file-system interacts with different resources">
+<Collapsible
+  summary={
+    <>
+      Diagram explaining how <CODE>expo-file-system</CODE> interacts with different resources
+    </>
+  }>
   <ImageSpotlight
     alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
     src="/static/images/sdk/file-system/file-system-diagram.png"
-    containerClassName="bg-white"
+    containerClassName="bg-pallette-white"
   />
 </Collapsible>
 
-<Collapsible summary="How expo-file-system works differently inside of the Expo Go app">
+<Collapsible
+  summary={
+    <>
+      How <CODE>expo-file-system</CODE> works differently inside of the Expo Go app
+    </>
+  }>
   Within Expo Go, each project has a separate file system scope and has no access to the file system
   of other projects.
 </Collapsible>
