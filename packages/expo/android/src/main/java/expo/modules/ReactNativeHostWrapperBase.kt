@@ -21,15 +21,13 @@ open class ReactNativeHostWrapperBase(
   override fun createReactInstanceManager(): ReactInstanceManager {
     val developerSupport = useDeveloperSupport
     reactNativeHostHandlers.forEach { handler ->
-      handler.onWillCreateReactInstanceManager(developerSupport)
+      handler.onWillCreateReactInstance(developerSupport)
     }
 
-    val result = reactNativeHostHandlers.asSequence()
-      .mapNotNull { it.createReactInstanceManager(developerSupport) }
-      .firstOrNull() ?: super.createReactInstanceManager()
+    val result = super.createReactInstanceManager()
 
     reactNativeHostHandlers.forEach { handler ->
-      handler.onDidCreateReactInstanceManager(result, developerSupport)
+      handler.onDidCreateReactInstance(developerSupport, result, null)
     }
 
     injectHostReactInstanceManager(result)

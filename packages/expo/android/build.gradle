@@ -134,11 +134,7 @@ android {
 
         def rnVersion = getRNVersion()
         if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/reactNativeHostWrapper"
-        } else if (rnVersion >= versionToNumber(0, 73, 0)) {
-          srcDirs += "src/reactNativeHostWrapper73"
-        } else {
-          srcDirs += "src/reactNativeHostWrapper71"
+          srcDirs += "src/reactWrappers"
         }
       }
     }

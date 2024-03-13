@@ -44,4 +44,13 @@ class ReactNativeHostWrapper(
   override fun getRedBoxHandler(): RedBoxHandler? {
     return invokeDelegateMethod("getRedBoxHandler")
   }
+
+  internal fun getReactHostFactoryCreateParams(): ExpoReactHostFactory.CreateParams {
+    return ExpoReactHostFactory.CreateParams(
+      packages,
+      jsMainModuleName,
+      bundleAssetName ?: "index",
+      jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES
+    )
+  }
 }
