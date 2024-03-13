@@ -102,27 +102,27 @@ export interface VideoViewProps extends ViewProps {
    * Determines whether native controls should be displayed or not.
    * @default true
    */
-  nativeControls: boolean | undefined;
+  nativeControls?: boolean;
 
   /**
    * Describes how the video should be scaled to fit in the container.
    * Options are 'contain', 'cover', and 'fill'.
    * @default 'contain'
    */
-  contentFit: VideoContentFit | undefined;
+  contentFit?: VideoContentFit;
 
   /**
    * Determines whether fullscreen mode is allowed or not.
    * @default true
    */
-  allowsFullscreen: boolean | undefined;
+  allowsFullscreen?: boolean;
 
   /**
    * Determines whether the timecodes should be displayed or not.
    * @default true
    * @platform ios
    */
-  showsTimecodes: boolean | undefined;
+  showsTimecodes?: boolean;
 
   /**
    * Determines whether the player allows the user to skip media content.
@@ -130,14 +130,14 @@ export interface VideoViewProps extends ViewProps {
    * @platform android
    * @platform ios
    */
-  requiresLinearPlayback: boolean | undefined;
+  requiresLinearPlayback?: boolean;
 
   /**
    * Determines the position offset of the video inside the container.
    * @default { dx: 0, dy: 0 }
    * @platform ios
    */
-  contentPosition: { dx?: number; dy?: number } | undefined;
+  contentPosition?: { dx?: number; dy?: number };
 
   /**
    * A callback to call after the video player enters Picture in Picture (PiP) mode.
