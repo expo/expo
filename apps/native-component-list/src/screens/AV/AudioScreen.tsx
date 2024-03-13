@@ -10,7 +10,7 @@ import ListButton from '../../components/ListButton';
 
 export default class AudioScreen extends React.Component {
   static navigationOptions = {
-    title: 'Audio',
+    title: 'Audio (expo-av)',
   };
 
   _setAudioActive = (active: boolean) => () => Audio.setIsEnabledAsync(active);
