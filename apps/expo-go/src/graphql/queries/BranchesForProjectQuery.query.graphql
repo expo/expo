@@ -9,20 +9,7 @@ query BranchesForProject(
     byId(appId: $appId) {
       id
       name
-      slug
       fullName
-      username
-      published
-      description
-      githubUrl
-      playStoreUrl
-      appStoreUrl
-      sdkVersion
-      iconUrl
-      privacy
-      icon {
-        url
-      }
       updateBranches(limit: $limit, offset: $offset) {
         id
         name

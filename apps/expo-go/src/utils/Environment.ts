@@ -15,12 +15,6 @@ const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 // Constants.supportedExpoSdks is not guaranteed to be sorted!
 const sortedSupportedExpoSdks = SupportedExpoSdks.sort();
 
-let lowestSupportedSdkVersion: number = -1;
-
-if (SupportedExpoSdks.length > 0) {
-  lowestSupportedSdkVersion = semver.major(sortedSupportedExpoSdks[0]);
-}
-
 const supportedSdksString = `SDK${
   SupportedExpoSdks.length === 1 ? ':' : 's:'
 } ${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join(', ')}`;
@@ -28,6 +22,5 @@ const supportedSdksString = `SDK${
 export default {
   IOSClientReleaseType,
   IsIOSRestrictedBuild,
-  lowestSupportedSdkVersion,
   supportedSdksString,
 };

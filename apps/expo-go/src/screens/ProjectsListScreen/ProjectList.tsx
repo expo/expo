@@ -133,11 +133,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
           key={app.id}
           id={app.id}
           name={app.name}
-          fullName={app.fullName}
-          updateBranches={app.updateBranches}
-          imageURL={app.iconUrl || undefined}
-          subtitle={app.packageName || app.fullName}
-          sdkVersion={app.sdkVersion}
+          subtitle={app.fullName}
           first={index === 0}
           last={index === (data.apps ?? []).length - 1}
         />
