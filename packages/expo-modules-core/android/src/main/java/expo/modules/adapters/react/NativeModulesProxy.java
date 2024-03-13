@@ -180,7 +180,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
+    super.invalidate();
     mModuleRegistry.onDestroy();
     mKotlinInteropModuleRegistry.onDestroy();
   }

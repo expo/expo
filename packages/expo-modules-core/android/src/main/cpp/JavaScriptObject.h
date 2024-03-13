@@ -52,6 +52,8 @@ public:
     std::shared_ptr<jsi::Object> jsObject
   );
 
+  virtual ~JavaScriptObject() = default;
+
   std::shared_ptr<jsi::Object> get() override;
 
   /**
