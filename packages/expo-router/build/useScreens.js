@@ -19,7 +19,7 @@ function getSortedChildren(children, order, initialRouteName) {
     }
     const entries = [...children];
     const ordered = order
-        .map(({ name, redirect, initialParams, listeners, options, getId }) => {
+        .map(({ name, redirect, initialParams, listeners, options, getId, navigationKey }) => {
         if (!entries.length) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
@@ -42,7 +42,7 @@ function getSortedChildren(children, order, initialRouteName) {
             }
             return {
                 route: match,
-                props: { initialParams, listeners, options, getId },
+                props: { initialParams, listeners, options, getId, navigationKey },
             };
         }
     })

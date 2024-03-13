@@ -8,12 +8,19 @@ const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
+const hooks_1 = require("../hooks");
 const Link_1 = require("../link/Link");
 // This is the only way to access the navigator.
 const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
 exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
+    const globalParams = (0, hooks_1.useGlobalSearchParams)();
+    const localSearchParams = (0, hooks_1.useLocalSearchParams)();
+    const navigationKeySuffix = Object.keys(localSearchParams)
+        .map((key) => `${key}=${globalParams[key]}`)
+        .join(':');
     // Support the `href` shortcut prop.
     return screens.map((screen) => {
+        const navigationKey = `${screen.name}-${navigationKeySuffix}`;
         if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
             const { href, ...options } = screen.options;
             if (options.tabBarButton) {
@@ -21,6 +28,7 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
             }
             return {
                 ...screen,
+                navigationKey: screen.navigationKey ?? navigationKey,
                 options: {
                     ...options,
                     tabBarButton: (props) => {
@@ -33,7 +41,10 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                 },
             };
         }
-        return screen;
+        return {
+            ...screen,
+            navigationKey: screen.navigationKey ?? navigationKey,
+        };
     });
 });
 exports.default = exports.Tabs;

@@ -35,6 +35,7 @@ export type ScreenProps<
   redirect?: boolean;
   initialParams?: Record<string, any>;
   options?: TOptions;
+  navigationKey?: string;
 
   listeners?:
     | ScreenListeners<State, EventMap>
@@ -59,7 +60,7 @@ function getSortedChildren(
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, redirect, initialParams, listeners, options, getId }) => {
+    .map(({ name, redirect, initialParams, listeners, options, getId, navigationKey }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -86,7 +87,7 @@ function getSortedChildren(
 
         return {
           route: match,
-          props: { initialParams, listeners, options, getId },
+          props: { initialParams, listeners, options, getId, navigationKey },
         };
       }
     })
