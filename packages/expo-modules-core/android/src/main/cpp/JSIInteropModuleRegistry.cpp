@@ -93,7 +93,9 @@ void JSIInteropModuleRegistry::prepareRuntime() {
   SharedObject::installBaseClass(
     runtimeHolder->get(),
     [this](const SharedObject::ObjectId objectId) {
-      deleteSharedObject(objectId);
+      jni::ThreadScope::WithClassLoader([this, objectId = objectId] {
+        deleteSharedObject(objectId);
+      });
     }
   );
 
@@ -238,8 +240,10 @@ void JSIInteropModuleRegistry::jniSetNativeStateForSharedObject(
 ) {
   auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
     id,
-    [this](int id) {
-      deleteSharedObject(id);
+    [this](const SharedObject::ObjectId objectId) {
+      jni::ThreadScope::WithClassLoader([this, objectId = objectId] {
+        deleteSharedObject(objectId);
+      });
     }
   );
 
