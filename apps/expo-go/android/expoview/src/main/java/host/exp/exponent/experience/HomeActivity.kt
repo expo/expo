@@ -13,6 +13,7 @@ import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
 import expo.modules.application.ApplicationModule
+import expo.modules.asset.AssetModule
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
@@ -163,6 +164,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
     override fun getModulesList(): List<Class<out Module>> {
       return listOf(
+        AssetModule::class.java,
         BarCodeScannerModule::class.java,
         BlurModule::class.java,
         CameraViewModule::class.java,
