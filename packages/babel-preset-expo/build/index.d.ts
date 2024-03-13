@@ -13,6 +13,8 @@ type BabelPresetExpoPlatformOptions = {
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+    /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
+    minifyTypeofWindow?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */
