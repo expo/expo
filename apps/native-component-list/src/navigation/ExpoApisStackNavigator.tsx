@@ -76,7 +76,13 @@ export const Screens = [
     getComponent() {
       return optionalRequire(() => require('../screens/AV/AudioScreen'));
     },
-    name: 'Audio',
+    name: 'Audio (expo-av)',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Audio/AudioScreen'));
+    },
+    name: 'Audio (expo-audio)',
   },
   {
     getComponent() {
