@@ -1,7 +1,3 @@
-export type ChangeEventPayload = {
-  value: string;
-};
-
 export declare class AudioPlayer {
   /**
    * Boolean value whether the player is currently playing.

@@ -7,7 +7,7 @@ enum AudioCategory: String, Enumerable {
   case playback
   case record
   case soloAmbient
-  
+
   func toAVCategory() -> AVAudioSession.Category {
     switch self {
     case .ambient:
@@ -25,4 +25,3 @@ enum AudioCategory: String, Enumerable {
     }
   }
 }
-
