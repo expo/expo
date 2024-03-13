@@ -5,7 +5,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "main": "build/cjs/index",
-  "module": "build/esm/index",
+  "module": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
     "entry.js"
