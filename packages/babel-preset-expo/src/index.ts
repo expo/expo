@@ -153,6 +153,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
   }
 
+  // TODO: Consolidate all reassignments when we have a version of `babel-plugin-transform-define` that supports assignment not being replaced.
+  // if (isProduction) {
+  //   inlines['Platform.OS'] = platform;
+  // }
+
   extraPlugins.push([require('babel-plugin-transform-define'), inlines]);
 
   if (isProduction) {

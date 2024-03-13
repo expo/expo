@@ -31,6 +31,32 @@ function stripReactNativeImport(code: string) {
     .replace('var _reactNative=require("react-native");', '');
 }
 
+it(`does not replace Platform.OS when assigning`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    Platform.OS = 'web';
+  `;
+
+  expect(babel.transform(sourceCode, options)!.code!).toEqual("Platform.OS='web';");
+});
+
+it(`does not replace EXPO_OS when assigning`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    process.env.EXPO_OS = 'web';
+  `;
+
+  expect(babel.transform(sourceCode, options)!.code!).toEqual("Platform.OS='web';");
+});
+
 describe('global scoping', () => {
   // TODO: Maybe break this behavior and only allow Platform.OS if it's not a global.
   it(`removes Platform module without import (from global)`, () => {
