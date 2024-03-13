@@ -44,18 +44,9 @@
                          launchOptions:(nullable NSDictionary *)launchOptions
 {
   RCTAppDelegate *appDelegate = [self getRCTAppDelegate];
-  NSURL *bundleURL = _bundleURL;
-  if (bundleURL == nil) {
-    bundleURL = appDelegate.bundleURL;
-  }
-  NSString *moduleName = _moduleName;
-  if (moduleName == nil) {
-    moduleName = appDelegate.moduleName;
-  }
-  NSDictionary *initialProperties = _initialProperties;
-  if (initialProperties == nil) {
-    initialProperties = appDelegate.initialProps;
-  }
+  NSURL *bundleURL = _bundleURL ?: appDelegate.bundleURL;
+  NSString *moduleName = _moduleName ?: appDelegate.moduleName;
+  NSDictionary *initialProperties = _initialProperties ?: appDelegate.initialProps;
   RCTRootViewFactoryConfiguration *configuration =
   [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:bundleURL
                                               newArchEnabled:appDelegate.fabricEnabled

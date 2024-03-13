@@ -67,7 +67,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
       developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
-      initialProperties: self.rootViewInitialProperties)
+      initialProperties: self.rootViewInitialProperties
+    )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 

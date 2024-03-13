@@ -8,7 +8,7 @@ open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 
   /**
-   If this module wants to handle react instance and the root view creation, it can return the instance.
+   If this module wants to handle React instance and the root view creation, it can return the instance.
    Otherwise return nil.
    */
   @objc

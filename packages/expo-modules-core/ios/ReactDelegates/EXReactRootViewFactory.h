@@ -27,8 +27,8 @@ NS_SWIFT_NAME(ExpoReactRootViewFactory)
            turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
 
 /**
- Create a default react instance binded root view.
- This is a wrapper for `RCTRootViewFactory` that create `RCTRootViewFactoryConfiguration` from `UIApplication.sharedApplication.delegate`.
+ Creates a root view bound to a default React instance.
+ This is a wrapper for `RCTRootViewFactory` that creates `RCTRootViewFactoryConfiguration` from `UIApplication.sharedApplication.delegate`.
  All the nullable parameters will reference from AppDelegate when the value is null.
  */
 + (UIView *)createDefaultReactRootView:(nullable NSURL *)bundleURL
