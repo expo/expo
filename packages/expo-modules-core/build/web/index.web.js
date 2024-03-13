@@ -1,2 +1,2 @@
-export { default as CoreModule } from './CoreModule';
+import './CoreModule';
 //# sourceMappingURL=index.web.js.map

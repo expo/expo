@@ -1,1 +1,1 @@
-export { default as CoreModule } from './CoreModule';
+import './CoreModule';
