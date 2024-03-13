@@ -1,35 +1,29 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tutorial = void 0;
-const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const createEntryFile_1 = require("./createEntryFile");
-const exports_1 = require("../exports");
-const Pressable_1 = require("../views/Pressable");
+import React from 'react';
+import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { createEntryFileAsync } from './createEntryFile';
+import { Link } from '../exports';
+import { Pressable } from '../views/Pressable';
 // TODO: Use openLinkFromBrowser thing
 function Header() {
-    return (<Pressable_1.Pressable>
-      {({ hovered }) => (<react_native_1.Text role="heading" aria-level={1} style={[styles.title, react_native_1.Platform.OS !== 'web' && { textAlign: 'left' }]}>
+    return (<Pressable>
+      {({ hovered }) => (<Text role="heading" aria-level={1} style={[styles.title, Platform.OS !== 'web' && { textAlign: 'left' }]}>
           Welcome to{' '}
-          <exports_1.Link href="https://github.com/expo/expo-router/" style={[
+          <Link href="https://github.com/expo/expo-router/" style={[
                 hovered && {
                     textDecorationColor: 'white',
                     textDecorationLine: 'underline',
                 },
             ]}>
             Expo
-          </exports_1.Link>
-        </react_native_1.Text>)}
-    </Pressable_1.Pressable>);
+          </Link>
+        </Text>)}
+    </Pressable>);
 }
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
-function Tutorial() {
-    react_1.default.useEffect(() => {
-        if (react_native_1.Platform.OS === 'web') {
+export function Tutorial() {
+    React.useEffect(() => {
+        if (Platform.OS === 'web') {
             // Reset the route on web so the initial route isn't a 404 after
             // the user has created the entry file.
             // This is useful for cases where you are testing the tutorial.
@@ -43,22 +37,21 @@ function Tutorial() {
             }
         }
     }, []);
-    return (<react_native_1.View style={styles.background}>
-      <react_native_1.StatusBar barStyle="light-content"/>
+    return (<View style={styles.background}>
+      <StatusBar barStyle="light-content"/>
 
-      <react_native_safe_area_context_1.SafeAreaView style={styles.safeArea}>
-        <react_native_1.View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
           <Header />
-          <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+          <Text role="heading" aria-level={2} style={styles.subtitle}>
             Start by creating a file{'\n'}in the{' '}
-            <react_native_1.Text style={{ fontWeight: 'bold' }}>{getRootDir()}</react_native_1.Text> directory.
-          </react_native_1.Text>
+            <Text style={{ fontWeight: 'bold' }}>{getRootDir()}</Text> directory.
+          </Text>
           {canAutoTouchFile && <Button />}
-        </react_native_1.View>
-      </react_native_safe_area_context_1.SafeAreaView>
-    </react_native_1.View>);
+        </View>
+      </SafeAreaView>
+    </View>);
 }
-exports.Tutorial = Tutorial;
 function getRootDir() {
     const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT;
     if (dir.match(/\/src\/app$/)) {
@@ -70,10 +63,10 @@ function getRootDir() {
     return dir.split('/').pop() ?? dir;
 }
 function Button() {
-    return (<Pressable_1.Pressable onPress={() => {
-            (0, createEntryFile_1.createEntryFileAsync)();
+    return (<Pressable onPress={() => {
+            createEntryFileAsync();
         }} style={{
-            ...react_native_1.Platform.select({
+            ...Platform.select({
                 web: {
                     // subtle white shadow
                     boxShadow: 'rgba(255, 255, 255, 0.15) 0px 0px 20px 5px',
@@ -87,7 +80,7 @@ function Button() {
                 },
             }),
         }}>
-      {({ pressed, hovered }) => (<react_native_1.View style={[
+      {({ pressed, hovered }) => (<View style={[
                 styles.buttonContainer,
                 hovered && {
                     backgroundColor: 'white',
@@ -96,16 +89,16 @@ function Button() {
                     backgroundColor: 'rgba(255,255,255,0.7)',
                 },
             ]}>
-          <react_native_1.Text style={[styles.code, hovered && { color: 'black' }]}>
-            <react_native_1.Text style={{ color: '#BCC3CD' }}>$</react_native_1.Text> touch {getRootDir()}
+          <Text style={[styles.code, hovered && { color: 'black' }]}>
+            <Text style={{ color: '#BCC3CD' }}>$</Text> touch {getRootDir()}
             /index.js
-          </react_native_1.Text>
-        </react_native_1.View>)}
-    </Pressable_1.Pressable>);
+          </Text>
+        </View>)}
+    </Pressable>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     background: {
-        ...react_native_1.Platform.select({
+        ...Platform.select({
             web: {
                 backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
                 backgroundPositionX: -3,
@@ -135,7 +128,7 @@ const styles = react_native_1.StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonContainer: {
-        ...react_native_1.Platform.select({
+        ...Platform.select({
             web: {
                 transitionDuration: '200ms',
                 backgroundColor: 'transparent',
@@ -153,7 +146,7 @@ const styles = react_native_1.StyleSheet.create({
         color: 'black',
     },
     code: {
-        ...react_native_1.Platform.select({
+        ...Platform.select({
             web: {
                 transitionDuration: '200ms',
                 color: 'white',
@@ -161,7 +154,7 @@ const styles = react_native_1.StyleSheet.create({
             },
             default: {
                 color: 'black',
-                fontFamily: react_native_1.Platform.select({
+                fontFamily: Platform.select({
                     ios: 'Courier New',
                     android: 'monospace',
                 }),

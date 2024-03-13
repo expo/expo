@@ -1,12 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.assertStaticParams = exports.loadStaticParamsAsync = void 0;
-async function loadStaticParamsAsync(route) {
+export async function loadStaticParamsAsync(route) {
     const expandedChildren = await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })));
     route.children = expandedChildren.flat();
     return route;
 }
-exports.loadStaticParamsAsync = loadStaticParamsAsync;
 async function loadStaticParamsRecursive(route, props) {
     if (!route?.dynamic && !route?.children?.length) {
         return [route];
@@ -110,7 +106,7 @@ function formatExpected(expected, received) {
         '}',
     ].join('\n');
 }
-function assertStaticParams(route, params) {
+export function assertStaticParams(route, params) {
     // Type checking
     if (!route.dynamic) {
         throw new Error('assertStaticParams() must be called on a dynamic route.');
@@ -152,5 +148,4 @@ function assertStaticParams(route, params) {
         }
     }
 }
-exports.assertStaticParams = assertStaticParams;
 //# sourceMappingURL=loadStaticParamsAsync.js.map

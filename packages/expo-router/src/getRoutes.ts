@@ -1,4 +1,4 @@
-import { DynamicConvention, RouteNode } from './Route';
+import type { DynamicConvention, RouteNode } from './Route';
 import {
   matchArrayGroupName,
   matchDeepDynamicRouteName,
@@ -6,7 +6,7 @@ import {
   matchGroupName,
   removeSupportedExtensions,
 } from './matchers';
-import { RequireContext } from './types';
+import type { RequireContext } from './types';
 
 export type Options = {
   ignore?: RegExp[];

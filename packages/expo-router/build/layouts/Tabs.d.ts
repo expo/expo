@@ -6,22 +6,22 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }> | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
@@ -33,22 +33,22 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }> | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
@@ -58,22 +58,22 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }> | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
@@ -85,22 +85,22 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: string | undefined;
     children: React.ReactNode;
     screenListeners?: Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }> | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => Partial<{
-        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabPress">;
-        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "tabLongPress">;
-        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "focus">;
-        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "blur">;
-        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "state">;
-        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap, "beforeRemove">;
+        tabPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress">;
+        tabLongPress: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress">;
+        focus: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "focus">;
+        blur: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "blur">;
+        state: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "state">;
+        beforeRemove: import("@react-navigation/native").EventListenerCallback<BottomTabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove">;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;

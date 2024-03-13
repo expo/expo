@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ServerLocationContext = void 0;
-const react_1 = require("react");
-exports.ServerLocationContext = (0, react_1.createContext)(undefined);
+import { createContext } from 'react';
+export const ServerLocationContext = createContext(undefined);
 //# sourceMappingURL=serverLocationContext.js.map

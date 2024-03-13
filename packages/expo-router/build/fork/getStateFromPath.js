@@ -1,14 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripBaseUrl = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const findFocusedRoute_1 = require("./findFocusedRoute");
-const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
-const matchers_1 = require("../matchers");
-function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
+import escape from 'escape-string-regexp';
+import { findFocusedRoute } from './findFocusedRoute';
+import validatePathConfig from './validatePathConfig';
+import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+export function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
     let parsed;
     try {
         parsed = new URL(path, 'https://phony.example');
@@ -31,7 +25,6 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         url: parsed,
     };
 }
-exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -53,14 +46,13 @@ exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessi
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-function getStateFromPath(path, options) {
+export default function getStateFromPath(path, options) {
     const { initialRoutes, configs } = getMatchableRouteConfigs(options);
     return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
-exports.default = getStateFromPath;
-function getMatchableRouteConfigs(options) {
+export function getMatchableRouteConfigs(options) {
     if (options) {
-        (0, validatePathConfig_1.default)(options);
+        validatePathConfig(options);
     }
     const screens = options?.screens;
     // Expo Router disallows usage without a linking config.
@@ -92,7 +84,6 @@ function getMatchableRouteConfigs(options) {
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
 }
-exports.getMatchableRouteConfigs = getMatchableRouteConfigs;
 function assertConfigDuplicates(configs) {
     // Check for duplicate patterns in the config
     configs.reduce((acc, config) => {
@@ -150,11 +141,11 @@ function sortConfigs(a, b) {
     const aParts = a.pattern
         .split('/')
         // Strip out group names to ensure they don't affect the priority.
-        .filter((part) => (0, matchers_1.matchGroupName)(part) == null);
+        .filter((part) => matchGroupName(part) == null);
     if (a.screen === 'index') {
         aParts.push('index');
     }
-    const bParts = b.pattern.split('/').filter((part) => (0, matchers_1.matchGroupName)(part) == null);
+    const bParts = b.pattern.split('/').filter((part) => matchGroupName(part) == null);
     if (b.screen === 'index') {
         bParts.push('index');
     }
@@ -239,7 +230,7 @@ function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
             ...value,
             // Collapse all levels of group segments before testing.
             // This enables `app/(one)/(two)/index.js` to be matched.
-            path: (0, matchers_1.stripGroupSegmentsFromPath)(value.path),
+            path: stripGroupSegmentsFromPath(value.path),
         };
     });
     const match = leafNodes.find((config) => 
@@ -269,7 +260,7 @@ function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = pro
     const formattedPaths = getUrlWithReactNavigationConcessions(path);
     if (!formattedPaths.url)
         return;
-    let cleanPath = stripBaseUrl((0, matchers_1.stripGroupSegmentsFromPath)(formattedPaths.url.pathname), baseUrl) +
+    let cleanPath = stripBaseUrl(stripGroupSegmentsFromPath(formattedPaths.url.pathname), baseUrl) +
         formattedPaths.url.search;
     if (!path.startsWith('/'))
         cleanPath = cleanPath.slice(1);
@@ -434,13 +425,13 @@ function formatRegexPattern(it) {
         return `((.*\\/)${it.endsWith('?') ? '?' : ''})`;
     }
     // Strip groups from the matcher
-    if ((0, matchers_1.matchGroupName)(it) != null) {
+    if (matchGroupName(it) != null) {
         // Groups are optional segments
         // this enables us to match `/bar` and `/(foo)/bar` for the same route
         // NOTE(EvanBacon): Ignore this match in the regex to avoid capturing the group
-        return `(?:${(0, escape_string_regexp_1.default)(it)}\\/)?`;
+        return `(?:${escape(it)}\\/)?`;
     }
-    return (0, escape_string_regexp_1.default)(it) + `\\/`;
+    return escape(it) + `\\/`;
 }
 const createConfigItem = (screen, routeNames, pattern, path, hasChildren, parse, _route) => {
     // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
@@ -522,7 +513,7 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
             parentScreens.push(route.name);
         }
     }
-    route = (0, findFocusedRoute_1.findFocusedRoute)(state);
+    route = findFocusedRoute(state);
     // Remove groups from the path while preserving a trailing slash.
     route.path = path;
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
@@ -565,11 +556,11 @@ function getBaseUrlRegex(baseUrl) {
     if (baseUrlCache.has(baseUrl)) {
         return baseUrlCache.get(baseUrl);
     }
-    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(baseUrl)}`, 'g');
+    const regex = new RegExp(`^\\/?${escape(baseUrl)}`, 'g');
     baseUrlCache.set(baseUrl, regex);
     return regex;
 }
-function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
+export function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
             const reg = getBaseUrlRegex(baseUrl);
@@ -578,5 +569,4 @@ function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.stripBaseUrl = stripBaseUrl;
 //# sourceMappingURL=getStateFromPath.js.map

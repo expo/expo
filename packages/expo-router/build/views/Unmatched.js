@@ -1,21 +1,15 @@
 // Copyright © 2024 650 Industries.
 'use client';
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Unmatched = void 0;
-const expo_linking_1 = require("expo-linking");
-const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
-const hooks_1 = require("../hooks");
-const Link_1 = require("../link/Link");
-const useNavigation_1 = require("../useNavigation");
-const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
+import { createURL } from 'expo-linking';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { usePathname, useRouter } from '../hooks';
+import { Link } from '../link/Link';
+import { useNavigation } from '../useNavigation';
+const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () { };
 function NoSSR({ children }) {
-    const [render, setRender] = react_1.default.useState(false);
-    react_1.default.useEffect(() => {
+    const [render, setRender] = React.useState(false);
+    React.useEffect(() => {
         setRender(true);
     }, []);
     if (!render) {
@@ -24,23 +18,23 @@ function NoSSR({ children }) {
     return <>{children}</>;
 }
 /** Default screen for unmatched routes. */
-function Unmatched() {
-    const router = (0, hooks_1.useRouter)();
-    const navigation = (0, useNavigation_1.useNavigation)();
-    const pathname = (0, hooks_1.usePathname)();
-    const url = (0, expo_linking_1.createURL)(pathname);
+export function Unmatched() {
+    const router = useRouter();
+    const navigation = useNavigation();
+    const pathname = usePathname();
+    const url = createURL(pathname);
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Not Found',
         });
     }, [navigation]);
-    return (<react_native_1.View style={styles.container}>
-      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+    return (<View style={styles.container}>
+      <Text role="heading" aria-level={1} style={styles.title}>
         Unmatched Route
-      </react_native_1.Text>
-      <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+      </Text>
+      <Text role="heading" aria-level={2} style={styles.subtitle}>
         Page could not be found.{' '}
-        <react_native_1.Text onPress={() => {
+        <Text onPress={() => {
             if (router.canGoBack()) {
                 router.back();
             }
@@ -49,22 +43,21 @@ function Unmatched() {
             }
         }} style={styles.link}>
           Go back.
-        </react_native_1.Text>
-      </react_native_1.Text>
+        </Text>
+      </Text>
 
       <NoSSR>
-        <Link_1.Link href={pathname} replace style={styles.link}>
+        <Link href={pathname} replace style={styles.link}>
           {url}
-        </Link_1.Link>
+        </Link>
       </NoSSR>
 
-      <Link_1.Link href="/_sitemap" replace style={[styles.link, { marginTop: 8 }]}>
+      <Link href="/_sitemap" replace style={[styles.link, { marginTop: 8 }]}>
         Sitemap
-      </Link_1.Link>
-    </react_native_1.View>);
+      </Link>
+    </View>);
 }
-exports.Unmatched = Unmatched;
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'black',
