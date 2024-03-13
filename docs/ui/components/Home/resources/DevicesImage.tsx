@@ -18,6 +18,7 @@ export const DevicesImage = () => (
         bottom: -32px;
       }
     `)}
+    className="asset-shadow"
     width="354"
     height="164"
     viewBox="0 0 354 164"

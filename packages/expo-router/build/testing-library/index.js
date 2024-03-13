@@ -34,7 +34,6 @@ const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
-    jest.useFakeTimers();
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);

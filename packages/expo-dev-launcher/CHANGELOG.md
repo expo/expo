@@ -12,6 +12,7 @@
 - [Android] Fixed to not return DevLauncherDevSupportManagerFactory in host handler when `enableAutoSetup` is false. ([#27068](https://github.com/expo/expo/pull/27068) by [@jayshah123](https://github.com/jayshah123))
 - Fixed missing `runtimeVersion` error when loading app with `expo-updates` and `expo-dev-client`. ([#27180](https://github.com/expo/expo/pull/27180) by [@kudo](https://github.com/kudo))
 - Remove legacy flag from command line hint. ([#27225](https://github.com/expo/expo/pull/27225) by [@simek](https://github.com/simek))
+- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -19,6 +20,9 @@
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 - Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 - Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Removed [Flipper workaround](https://github.com/expo/expo/pull/18105) on Android. ([#27508](https://github.com/expo/expo/pull/27508) by [@kudo](https://github.com/kudo))
+- Remove debug settings for EAS Updates extension. ([#27603](https://github.com/expo/expo/pull/27603) by [@wschurman](https://github.com/wschurman))
+- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

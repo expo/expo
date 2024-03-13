@@ -84,7 +84,15 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
+
+    __weak __typeof(self) weakSelf = self;
+    self.bridgeDelegate = [[EXDevLauncherBridgeDelegate alloc] initWithBundleURLGetter:^NSURL * {
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf != nil) {
+        return [strongSelf getSourceURL];
+      }
+      return nil;
+    }];
   }
   return self;
 }
@@ -173,6 +181,16 @@
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [self getSourceURL];
+}
+
+- (NSURL *)bundleURL
+{
+  return [self getSourceURL];
+}
+
+- (NSURL *)getSourceURL
 {
   NSURL *launcherURL = [self devLauncherURL];
   if (launcherURL != nil && [self isLauncherPackagerRunning]) {

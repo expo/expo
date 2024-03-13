@@ -1,4 +1,4 @@
-query WebContainerProjectPage_Query(
+query ProjectsQuery(
   $appId: String!
   $platform: AppPlatform!
   $sdkVersions: [String!]!
@@ -9,21 +9,8 @@ query WebContainerProjectPage_Query(
       name
       slug
       fullName
-      username
-      published
-      description
-      githubUrl
-      playStoreUrl
-      appStoreUrl
-      sdkVersion
-      iconUrl
-      privacy
-      icon {
-        url
-      }
-      latestReleaseForReleaseChannel(platform: $platform, releaseChannel: "default") {
-        sdkVersion
-        runtimeVersion
+      ownerAccount {
+        name
       }
       updateBranches(limit: 100, offset: 0) {
         id

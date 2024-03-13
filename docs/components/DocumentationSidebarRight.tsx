@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
 import { Button, mergeClasses } from '@expo/styleguide';
-import { breakpoints, spacing } from '@expo/styleguide-base';
 import { ArrowCircleUpIcon, LayoutAlt03Icon } from '@expo/styleguide-icons';
 import * as React from 'react';
 
@@ -12,32 +10,13 @@ import withHeadingManager, {
 } from '~/components/page-higher-order/withHeadingManager';
 import { CALLOUT } from '~/ui/components/Text';
 
-const sidebarStyle = css({
-  padding: spacing[6],
-  paddingTop: spacing[14],
-  paddingBottom: spacing[12],
-  width: 280,
-
-  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    width: '100%',
-  },
-});
-
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
 const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 10;
 
 const isDynamicScrollAvailable = () => {
-  if (!history?.replaceState) {
-    return false;
-  }
-
-  if (window.matchMedia('(prefers-reduced-motion)').matches) {
-    return false;
-  }
-
-  return true;
+  return !window.matchMedia('(prefers-reduced-motion)').matches;
 };
 
 type Props = React.PropsWithChildren<{
@@ -102,7 +81,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav css={sidebarStyle} data-sidebar>
+      <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
         <CALLOUT
           weight="medium"
           className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none">
@@ -157,38 +136,38 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     }
   };
 
-  private handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, heading: Heading) => {
-    if (!isDynamicScrollAvailable()) {
-      return;
-    }
-
+  private handleLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    { slug, ref }: Heading
+  ) => {
     event.preventDefault();
-    const { slug, ref } = heading;
 
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
-      behavior: 'smooth',
+      behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
       top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
     });
-    history.replaceState(history.state, '', '#' + slug);
+
+    if (history?.replaceState) {
+      history.replaceState(history.state, '', '#' + slug);
+    }
   };
 
   private handleTopClick = (
     event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>
   ) => {
-    if (!isDynamicScrollAvailable()) {
-      return;
-    }
-
     event.preventDefault();
 
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
-      behavior: 'smooth',
+      behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
       top: 0,
     });
-    history.replaceState(history.state, '', ' ');
+
+    if (history?.replaceState) {
+      history.replaceState(history.state, '', ' ');
+    }
   };
 }
 

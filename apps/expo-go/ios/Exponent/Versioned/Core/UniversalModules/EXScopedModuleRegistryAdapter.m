@@ -6,7 +6,6 @@
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
-#import "EXScopedFilePermissionModule.h"
 #import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedPermissions.h"

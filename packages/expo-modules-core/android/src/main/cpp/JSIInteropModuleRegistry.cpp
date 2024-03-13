@@ -5,6 +5,7 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "SharedObject.h"
+#include "NativeModule.h"
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -92,9 +93,13 @@ void JSIInteropModuleRegistry::prepareRuntime() {
   SharedObject::installBaseClass(
     runtimeHolder->get(),
     [this](const SharedObject::ObjectId objectId) {
-      deleteSharedObject(objectId);
+      jni::ThreadScope::WithClassLoader([this, objectId = objectId] {
+        deleteSharedObject(objectId);
+      });
     }
   );
+
+  NativeModule::installClass(runtimeHolder->get());
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(
@@ -235,8 +240,10 @@ void JSIInteropModuleRegistry::jniSetNativeStateForSharedObject(
 ) {
   auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
     id,
-    [this](int id) {
-      deleteSharedObject(id);
+    [this](const SharedObject::ObjectId objectId) {
+      jni::ThreadScope::WithClassLoader([this, objectId = objectId] {
+        deleteSharedObject(objectId);
+      });
     }
   );
 

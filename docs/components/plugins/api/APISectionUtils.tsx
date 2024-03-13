@@ -183,6 +183,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
+  PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Platform: 'https://reactnative.dev/docs/platform',
