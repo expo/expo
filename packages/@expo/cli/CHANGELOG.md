@@ -24,7 +24,6 @@
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
-- Filter extra avd info when listing emulators. ([#27497](https://github.com/expo/expo/pull/27497) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -36,6 +35,16 @@
 ### 📚 3rd party library updates
 
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 0.17.8 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- Filter extra avd info when listing emulators. ([#27497](https://github.com/expo/expo/pull/27497) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.17.7 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
 
 ## 0.17.6 - 2024-02-27
 

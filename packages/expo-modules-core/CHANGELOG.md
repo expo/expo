@@ -25,9 +25,6 @@
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26587](https://github.com/expo/expo/pull/26587) by [@kudo](https://github.com/kudo))
-- [Android] Fixed activity contract registration after host destruction. ([#26881](https://github.com/expo/expo/pull/26881) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Ensured that `onCreate` before `OnActivityEntersForeground` event. ([#26944](https://github.com/expo/expo/pull/26944) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Thrown an exception when nested types can't be converted instead of crashing the app. ([#27449](https://github.com/expo/expo/pull/27449) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Unit converter now ignores nullability. It will always return unit regardless of whether the input value is null or not. ([#27591](https://github.com/expo/expo/pull/27591) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
@@ -42,6 +39,19 @@
 - Introduce `EXCreateReactBindingRootView` to create correct React Native setup for New Architecture mode. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Set bridge on `AppContext` in `ExpoBridgeModule`. ([#27378](https://github.com/expo/expo/pull/27378) by [@alanjhughes](https://github.com/alanjhughes))
 - Added TypeScript declarations and documentation for global JSI bindings. ([#27465](https://github.com/expo/expo/pull/27465) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.11.11 - 2024-03-11
+
+### 🐛 Bug fixes
+
+- [Android] Ensured that `onCreate` before `OnActivityEntersForeground` event. ([#26944](https://github.com/expo/expo/pull/26944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed activity contract registration after host destruction. ([#26881](https://github.com/expo/expo/pull/26881) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.11.10 - 2024-03-06
+
+### 🐛 Bug fixes
+
+- [Android] Thrown an exception when nested types can't be converted instead of crashing the app. ([#27449](https://github.com/expo/expo/pull/27449) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.11.9 - 2024-02-16
 

@@ -8,10 +8,22 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- On `Android`, requesting audio permissions was meant to be optional in the config plugin. ([#27365](https://github.com/expo/expo/pull/27365) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.1.1 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 - 2024-03-13
+
+### 🐛 Bug fixes
+
 - On `Android`, fix empty qualities being passed to QualitySelector ([#27126](https://github.com/expo/expo/pull/27126) by [@leonhh](https://github.com/leonhh))
 - On `web`, prevent creating a webworker when rendering on the server ([#27222](https://github.com/expo/expo/pull/27222) by [@marklawlor](https://github.com/marklawlor))
 - On `iOS`, fix method call on an optional variable. ([#27235](https://github.com/expo/expo/pull/27235) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, fix the orientation value in `onResponsiveOrientationChanged` when `exif` is set to true. ([#27314](https://github.com/expo/expo/pull/27314) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix scanned frame bounds when scanning a barcode. ([#27207](https://github.com/expo/expo/pull/27207) by [@tamagokun](https://github.com/tamagokun))
 - Fix incorrect prop name `flash` being passed to native. ([#27394](https://github.com/expo/expo/pull/27394) by [@alanjhughes](https://github.com/alanjhughes))
 - Ensure `mute` prop is passed to native so it is correctly initialiased even when not provided from JS. ([#27546](https://github.com/expo/expo/pull/27546) by [@alanjhughes](https://github.com/alanjhughes))
@@ -19,10 +31,11 @@
 - On `iOS`, fix an issue where the configuration can be interuppted when the dev menu is presented on intial launch. ([#27572](https://github.com/expo/expo/pull/27572) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix `getAvailablePictureSizes` in the legacy package. ([#27642](https://github.com/expo/expo/pull/27642) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 💡 Others
+## 14.0.6 - 2024-03-07
 
-- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
-- On `Android`, requesting audio permissions was meant to be optional in the config plugin. ([#27365](https://github.com/expo/expo/pull/27365) by [@alanjhughes](https://github.com/alanjhughes))
+### 🐛 Bug fixes
+
+- On `iOS`, fix the orientation value in `onResponsiveOrientationChanged` when `exif` is set to true. ([#27314](https://github.com/expo/expo/pull/27314) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.0.5 - 2024-02-16
 
