@@ -23,6 +23,7 @@
 - Fix `push` navigation not pushing the same route multiple times ([#27307](https://github.com/expo/expo/pull/27307) by [@marklawlor](https://github.com/marklawlor))
 - Fix router.navigate will only push when path parameters change ([#27285](https://github.com/expo/expo/pull/27285) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect route generation of array shared groups with brackets ([#27459](https://github.com/expo/expo/pull/27459) by [@marklawlor](https://github.com/marklawlor))
+- Remove `jest.fakeTimers()` from `expo-router/testing-library` ([#27512](https://github.com/expo/expo/pull/27512) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect initial URL on web when using baseUrl ([#27287](https://github.com/expo/expo/pull/27287) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others

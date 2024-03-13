@@ -32,8 +32,6 @@ export function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
-  jest.useFakeTimers();
-
   const mockContext = getMockContext(context);
 
   // Reset the initial URL
