@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
-class UnitTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(isOptional) {
+class UnitTypeConverter : DynamicAwareTypeConverters<Any>(true) {
   override fun convertFromDynamic(value: Dynamic): Any {
     return Unit
   }

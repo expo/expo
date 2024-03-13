@@ -7,10 +7,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { BranchListItem } from '../../components/BranchListItem';
 import { SectionHeader } from '../../components/SectionHeader';
-import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { ProjectsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
-type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   const branchesToRender = app.updateBranches.filter(

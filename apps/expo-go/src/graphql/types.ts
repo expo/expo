@@ -108,6 +108,7 @@ export type Account = {
   googleServiceAccountKeys: Array<GoogleServiceAccountKey>;
   id: Scalars['ID'];
   isCurrent: Scalars['Boolean'];
+  isDisabled: Scalars['Boolean'];
   /** Whether this account has SSO enabled. Can be queried by all members. */
   isSSOEnabled: Scalars['Boolean'];
   name: Scalars['String'];
@@ -144,6 +145,8 @@ export type Account = {
   userInvitations: Array<UserInvitation>;
   /** Actors associated with this account and permissions they hold */
   users: Array<UserPermission>;
+  /** Permission info for the viewer on this account */
+  viewerUserPermission: UserPermission;
   /** @deprecated Build packs are no longer supported */
   willAutoRenewBuilds?: Maybe<Scalars['Boolean']>;
 };
@@ -310,6 +313,7 @@ export type AccountAppsEdge = {
 };
 
 export type AccountAppsFilterInput = {
+  searchTerm?: InputMaybe<Scalars['String']>;
   sortByField: AccountAppsSortByField;
 };
 
@@ -751,6 +755,7 @@ export type AndroidAppCredentials = {
   androidFcm?: Maybe<AndroidFcm>;
   app: App;
   applicationIdentifier?: Maybe<Scalars['String']>;
+  googleServiceAccountKeyForFcmV1?: Maybe<GoogleServiceAccountKey>;
   googleServiceAccountKeyForSubmissions?: Maybe<GoogleServiceAccountKey>;
   id: Scalars['ID'];
   isLegacy: Scalars['Boolean'];
@@ -763,6 +768,7 @@ export type AndroidAppCredentialsFilter = {
 
 export type AndroidAppCredentialsInput = {
   fcmId?: InputMaybe<Scalars['ID']>;
+  googleServiceAccountKeyForFcmV1Id?: InputMaybe<Scalars['ID']>;
   googleServiceAccountKeyForSubmissionsId?: InputMaybe<Scalars['ID']>;
 };
 
@@ -770,10 +776,17 @@ export type AndroidAppCredentialsMutation = {
   __typename?: 'AndroidAppCredentialsMutation';
   /** Create a set of credentials for an Android app */
   createAndroidAppCredentials: AndroidAppCredentials;
+  /**
+   * Create a GoogleServiceAccountKeyEntity to store credential and
+   * connect it with an edge from AndroidAppCredential
+   */
+  createFcmV1Credential: AndroidAppCredentials;
   /** Delete a set of credentials for an Android app */
   deleteAndroidAppCredentials: DeleteAndroidAppCredentialsResult;
   /** Set the FCM push key to be used in an Android app */
   setFcm: AndroidAppCredentials;
+  /** Set the Google Service Account Key to be used for Firebase Cloud Messaging V1 */
+  setGoogleServiceAccountKeyForFcmV1: AndroidAppCredentials;
   /** Set the Google Service Account Key to be used for submitting an Android app */
   setGoogleServiceAccountKeyForSubmissions: AndroidAppCredentials;
 };
@@ -786,6 +799,13 @@ export type AndroidAppCredentialsMutationCreateAndroidAppCredentialsArgs = {
 };
 
 
+export type AndroidAppCredentialsMutationCreateFcmV1CredentialArgs = {
+  accountId: Scalars['ID'];
+  androidAppCredentialsId: Scalars['String'];
+  credential: Scalars['String'];
+};
+
+
 export type AndroidAppCredentialsMutationDeleteAndroidAppCredentialsArgs = {
   id: Scalars['ID'];
 };
@@ -793,6 +813,12 @@ export type AndroidAppCredentialsMutationDeleteAndroidAppCredentialsArgs = {
 
 export type AndroidAppCredentialsMutationSetFcmArgs = {
   fcmId: Scalars['ID'];
+  id: Scalars['ID'];
+};
+
+
+export type AndroidAppCredentialsMutationSetGoogleServiceAccountKeyForFcmV1Args = {
+  googleServiceAccountKeyId: Scalars['ID'];
   id: Scalars['ID'];
 };
 
@@ -1043,6 +1069,7 @@ export type App = Project & {
   id: Scalars['ID'];
   /** App query field for querying EAS Insights about this app */
   insights: AppInsights;
+  internalDistributionBuildPrivacy: AppInternalDistributionBuildPrivacy;
   /** iOS app credentials for the project */
   iosAppCredentials: Array<IosAppCredentials>;
   isDeleting: Scalars['Boolean'];
@@ -1368,6 +1395,7 @@ export type AppChannelsConnection = {
 
 export type AppDataInput = {
   id: Scalars['ID'];
+  internalDistributionBuildPrivacy?: InputMaybe<AppInternalDistributionBuildPrivacy>;
   privacy?: InputMaybe<Scalars['String']>;
 };
 
@@ -1413,6 +1441,11 @@ export type AppInsightsUniqueUsersByAppVersionOverTimeArgs = {
 export type AppInsightsUniqueUsersByPlatformOverTimeArgs = {
   timespan: InsightsTimespan;
 };
+
+export enum AppInternalDistributionBuildPrivacy {
+  Private = 'PRIVATE',
+  Public = 'PUBLIC'
+}
 
 export type AppMutation = {
   __typename?: 'AppMutation';
@@ -2080,6 +2113,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   actor?: Maybe<Actor>;
   app: App;
   appBuildVersion?: Maybe<Scalars['String']>;
+  appIdentifier?: Maybe<Scalars['String']>;
   appVersion?: Maybe<Scalars['String']>;
   artifacts?: Maybe<BuildArtifacts>;
   buildMode?: Maybe<BuildMode>;
@@ -2109,6 +2143,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   /** @deprecated User type is deprecated */
   initiatingUser?: Maybe<User>;
   iosEnterpriseProvisioning?: Maybe<BuildIosEnterpriseProvisioning>;
+  isForIosSimulator: Scalars['Boolean'];
   isGitWorkingTreeDirty?: Maybe<Scalars['Boolean']>;
   isWaived: Scalars['Boolean'];
   logFiles: Array<Scalars['String']>;
@@ -2121,6 +2156,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   platform: AppPlatform;
   priority: BuildPriority;
   project: Project;
+  projectMetadataFileUrl?: Maybe<Scalars['String']>;
   projectRootDirectory?: Maybe<Scalars['String']>;
   provisioningStartedAt?: Maybe<Scalars['DateTime']>;
   /** Queue position is 1-indexed */
@@ -2274,6 +2310,7 @@ export type BuildFilter = {
   platform?: InputMaybe<AppPlatform>;
   runtimeVersion?: InputMaybe<Scalars['String']>;
   sdkVersion?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<BuildStatus>;
 };
 
@@ -2283,6 +2320,8 @@ export type BuildFilterInput = {
   distributions?: InputMaybe<Array<DistributionType>>;
   platforms?: InputMaybe<Array<AppPlatform>>;
   releaseChannel?: InputMaybe<Scalars['String']>;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
 };
 
 export enum BuildIosEnterpriseProvisioning {
@@ -2400,6 +2439,7 @@ export type BuildMetadataInput = {
   runtimeVersion?: InputMaybe<Scalars['String']>;
   sdkVersion?: InputMaybe<Scalars['String']>;
   selectedImage?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
   trackingContext?: InputMaybe<Scalars['JSONObject']>;
   username?: InputMaybe<Scalars['String']>;
   workflow?: InputMaybe<BuildWorkflow>;
@@ -2580,6 +2620,7 @@ export type BuildPublicData = {
   artifacts: PublicArtifacts;
   distribution?: Maybe<DistributionType>;
   id: Scalars['ID'];
+  isForIosSimulator: Scalars['Boolean'];
   platform: AppPlatform;
   project: ProjectPublicData;
   status: BuildStatus;
@@ -2783,6 +2824,7 @@ export type CreateGitHubBuildTriggerInput = {
   platform: AppPlatform;
   /** A branch or tag name, or a wildcard pattern where the code change originates from. For example, `main` or `release/*`. */
   sourcePattern: Scalars['String'];
+  submitProfile?: InputMaybe<Scalars['String']>;
   /** A branch name or a wildcard pattern that the pull request targets. For example, `main` or `release/*`. */
   targetPattern?: InputMaybe<Scalars['String']>;
   type: GitHubBuildTriggerType;
@@ -3363,6 +3405,7 @@ export type GitHubBuildTrigger = {
   lastRunStatus?: Maybe<GitHubBuildTriggerRunStatus>;
   platform: AppPlatform;
   sourcePattern: Scalars['String'];
+  submitProfile?: Maybe<Scalars['String']>;
   targetPattern?: Maybe<Scalars['String']>;
   type: GitHubBuildTriggerType;
   updatedAt: Scalars['DateTime'];
@@ -3408,6 +3451,7 @@ export enum GitHubBuildTriggerType {
 export type GitHubRepository = {
   __typename?: 'GitHubRepository';
   app: App;
+  createdAt: Scalars['DateTime'];
   githubAppInstallation: GitHubAppInstallation;
   githubRepositoryIdentifier: Scalars['Int'];
   githubRepositoryUrl?: Maybe<Scalars['String']>;
@@ -3926,11 +3970,13 @@ export type LineDataset = {
 };
 
 export enum MailchimpAudience {
-  ExpoDevelopers = 'EXPO_DEVELOPERS'
+  ExpoDevelopers = 'EXPO_DEVELOPERS',
+  ExpoDeveloperOnboarding = 'EXPO_DEVELOPER_ONBOARDING'
 }
 
 export enum MailchimpTag {
   DevClientUsers = 'DEV_CLIENT_USERS',
+  DidSubscribeToEasAtLeastOnce = 'DID_SUBSCRIBE_TO_EAS_AT_LEAST_ONCE',
   EasMasterList = 'EAS_MASTER_LIST',
   NewsletterSignupList = 'NEWSLETTER_SIGNUP_LIST'
 }
@@ -4098,9 +4144,11 @@ export type Notification = {
 
 export enum NotificationEvent {
   BuildComplete = 'BUILD_COMPLETE',
+  BuildErrored = 'BUILD_ERRORED',
   BuildLimitThresholdExceeded = 'BUILD_LIMIT_THRESHOLD_EXCEEDED',
   BuildPlanCreditThresholdExceeded = 'BUILD_PLAN_CREDIT_THRESHOLD_EXCEEDED',
   SubmissionComplete = 'SUBMISSION_COMPLETE',
+  SubmissionErrored = 'SUBMISSION_ERRORED',
   Test = 'TEST'
 }
 
@@ -4245,6 +4293,7 @@ export type Project = {
 export type ProjectArchiveSourceInput = {
   bucketKey?: InputMaybe<Scalars['String']>;
   gitRef?: InputMaybe<Scalars['String']>;
+  metadataLocation?: InputMaybe<Scalars['String']>;
   repositoryUrl?: InputMaybe<Scalars['String']>;
   type: ProjectArchiveSourceType;
   url?: InputMaybe<Scalars['String']>;
@@ -4693,6 +4742,7 @@ export type SsoUser = Actor & UserActor & {
   location?: Maybe<Scalars['String']>;
   notificationSubscriptions: Array<NotificationSubscription>;
   pinnedApps: Array<App>;
+  preferences: UserPreferences;
   /** Associated accounts */
   primaryAccount: Account;
   profilePhoto: Scalars['String'];
@@ -4994,6 +5044,8 @@ export type Submission = ActivityTimelineProjectActivity & {
   id: Scalars['ID'];
   initiatingActor?: Maybe<Actor>;
   iosConfig?: Maybe<IosSubmissionConfig>;
+  logFiles: Array<Scalars['String']>;
+  /** @deprecated Use logFiles instead */
   logsUrl?: Maybe<Scalars['String']>;
   /** Retry time starts after completedAt */
   maxRetryTimeMinutes: Scalars['Int'];
@@ -5326,6 +5378,7 @@ export type UpdateGitHubBuildTriggerInput = {
   isActive: Scalars['Boolean'];
   platform: AppPlatform;
   sourcePattern: Scalars['String'];
+  submitProfile?: InputMaybe<Scalars['String']>;
   targetPattern?: InputMaybe<Scalars['String']>;
   type: GitHubBuildTriggerType;
 };
@@ -5394,8 +5447,11 @@ export type UploadSessionCreateUploadSessionArgs = {
 };
 
 export enum UploadSessionType {
+  EasBuildGcsProjectMetadata = 'EAS_BUILD_GCS_PROJECT_METADATA',
   EasBuildGcsProjectSources = 'EAS_BUILD_GCS_PROJECT_SOURCES',
+  /** @deprecated Use EAS_BUILD_GCS_PROJECT_SOURCES instead. */
   EasBuildProjectSources = 'EAS_BUILD_PROJECT_SOURCES',
+  /** @deprecated Use EAS_SUBMIT_GCS_APP_ARCHIVE instead. */
   EasSubmitAppArchive = 'EAS_SUBMIT_APP_ARCHIVE',
   EasSubmitGcsAppArchive = 'EAS_SUBMIT_GCS_APP_ARCHIVE'
 }
@@ -5480,6 +5536,7 @@ export type User = Actor & UserActor & {
   /** Pending UserInvitations for this user. Only resolves for the viewer. */
   pendingUserInvitations: Array<UserInvitation>;
   pinnedApps: Array<App>;
+  preferences: UserPreferences;
   /** Associated accounts */
   primaryAccount: Account;
   profilePhoto: Scalars['String'];
@@ -5583,6 +5640,7 @@ export type UserActor = {
   location?: Maybe<Scalars['String']>;
   notificationSubscriptions: Array<NotificationSubscription>;
   pinnedApps: Array<App>;
+  preferences: UserPreferences;
   /** Associated accounts */
   primaryAccount: Account;
   profilePhoto: Scalars['String'];
@@ -5839,6 +5897,11 @@ export type UserPermission = {
   userActor?: Maybe<UserActor>;
 };
 
+export type UserPreferences = {
+  __typename?: 'UserPreferences';
+  selectedAccountName?: Maybe<Scalars['String']>;
+};
+
 export type UserQuery = {
   __typename?: 'UserQuery';
   /**
@@ -5987,7 +6050,7 @@ export type DeleteApplePushKeyResult = {
   id: Scalars['ID'];
 };
 
-export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> };
+export type CommonAppDataFragment = { __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } };
 
 export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
 
@@ -6004,7 +6067,7 @@ export type Home_AccountDataQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export type BranchDetailsQueryVariables = Exact<{
   name: Scalars['String'];
@@ -6025,7 +6088,7 @@ export type BranchesForProjectQueryVariables = Exact<{
 }>;
 
 
-export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null, playStoreUrl?: string | null, appStoreUrl?: string | null, sdkVersion: string, iconUrl?: string | null, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, fullName: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
 
 export type Home_CurrentUserActorQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6038,7 +6101,7 @@ export type Home_ProfileData2QueryVariables = Exact<{
 }>;
 
 
-export type Home_ProfileData2Query = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
+export type Home_ProfileData2Query = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
 
 export type Home_MyAppsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -6046,7 +6109,7 @@ export type Home_MyAppsQueryVariables = Exact<{
 }>;
 
 
-export type Home_MyAppsQuery = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }> } | { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }> } | null };
+export type Home_MyAppsQuery = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } | { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } | null };
 
 export type Home_ProfileSnacksQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -6056,15 +6119,6 @@ export type Home_ProfileSnacksQueryVariables = Exact<{
 
 export type Home_ProfileSnacksQuery = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | { __typename?: 'User', id: string, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
 
-export type WebContainerProjectPage_QueryVariables = Exact<{
-  appId: Scalars['String'];
-  platform: AppPlatform;
-  sdkVersions: Array<Scalars['String']> | Scalars['String'];
-}>;
-
-
-export type WebContainerProjectPage_Query = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null, playStoreUrl?: string | null, appStoreUrl?: string | null, sdkVersion: string, iconUrl?: string | null, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null, latestReleaseForReleaseChannel?: { __typename?: 'AppRelease', sdkVersion: string, runtimeVersion?: string | null } | null, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
-
 export type Home_AccountAppsQueryVariables = Exact<{
   accountName: Scalars['String'];
   limit: Scalars['Int'];
@@ -6072,7 +6126,16 @@ export type Home_AccountAppsQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }> } } };
+export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } } };
+
+export type ProjectsQueryVariables = Exact<{
+  appId: Scalars['String'];
+  platform: AppPlatform;
+  sdkVersions: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type ProjectsQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
 
 export type Home_AccountSnacksQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -6114,25 +6177,15 @@ export type HomeScreenDataQueryVariables = Exact<{
 }>;
 
 
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
   id
-  fullName
   name
-  iconUrl
-  packageName
-  username
-  description
-  sdkVersion
-  privacy
-  updateBranches(limit: 100, offset: 0) {
-    id
+  fullName
+  ownerAccount {
     name
-    updates(limit: 1, offset: 0) {
-      id
-    }
   }
 }
     `;
@@ -6313,20 +6366,7 @@ export const BranchesForProjectDocument = gql`
     byId(appId: $appId) {
       id
       name
-      slug
       fullName
-      username
-      published
-      description
-      githubUrl
-      playStoreUrl
-      appStoreUrl
-      sdkVersion
-      iconUrl
-      privacy
-      icon {
-        url
-      }
       updateBranches(limit: $limit, offset: $offset) {
         id
         name
@@ -6560,84 +6600,6 @@ export type Home_ProfileSnacksQueryResult = Apollo.QueryResult<Home_ProfileSnack
 export function refetchHome_ProfileSnacksQuery(variables: Home_ProfileSnacksQueryVariables) {
       return { query: Home_ProfileSnacksDocument, variables: variables }
     }
-export const WebContainerProjectPage_QueryDocument = gql`
-    query WebContainerProjectPage_Query($appId: String!, $platform: AppPlatform!, $sdkVersions: [String!]!) {
-  app {
-    byId(appId: $appId) {
-      id
-      name
-      slug
-      fullName
-      username
-      published
-      description
-      githubUrl
-      playStoreUrl
-      appStoreUrl
-      sdkVersion
-      iconUrl
-      privacy
-      icon {
-        url
-      }
-      latestReleaseForReleaseChannel(platform: $platform, releaseChannel: "default") {
-        sdkVersion
-        runtimeVersion
-      }
-      updateBranches(limit: 100, offset: 0) {
-        id
-        name
-        updates(
-          limit: 1
-          offset: 0
-          filter: {platform: $platform, sdkVersions: $sdkVersions}
-        ) {
-          id
-          group
-          message
-          createdAt
-          runtimeVersion
-          platform
-          manifestPermalink
-        }
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useWebContainerProjectPage_Query__
- *
- * To run a query within a React component, call `useWebContainerProjectPage_Query` and pass it any options that fit your needs.
- * When your component renders, `useWebContainerProjectPage_Query` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useWebContainerProjectPage_Query({
- *   variables: {
- *      appId: // value for 'appId'
- *      platform: // value for 'platform'
- *      sdkVersions: // value for 'sdkVersions'
- *   },
- * });
- */
-export function useWebContainerProjectPage_Query(baseOptions: Apollo.QueryHookOptions<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>(WebContainerProjectPage_QueryDocument, options);
-      }
-export function useWebContainerProjectPage_QueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>(WebContainerProjectPage_QueryDocument, options);
-        }
-export type WebContainerProjectPage_QueryHookResult = ReturnType<typeof useWebContainerProjectPage_Query>;
-export type WebContainerProjectPage_QueryLazyQueryHookResult = ReturnType<typeof useWebContainerProjectPage_QueryLazyQuery>;
-export type WebContainerProjectPage_QueryQueryResult = Apollo.QueryResult<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>;
-export function refetchWebContainerProjectPage_Query(variables: WebContainerProjectPage_QueryVariables) {
-      return { query: WebContainerProjectPage_QueryDocument, variables: variables }
-    }
 export const Home_AccountAppsDocument = gql`
     query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
   account {
@@ -6683,6 +6645,71 @@ export type Home_AccountAppsLazyQueryHookResult = ReturnType<typeof useHome_Acco
 export type Home_AccountAppsQueryResult = Apollo.QueryResult<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>;
 export function refetchHome_AccountAppsQuery(variables: Home_AccountAppsQueryVariables) {
       return { query: Home_AccountAppsDocument, variables: variables }
+    }
+export const ProjectsQueryDocument = gql`
+    query ProjectsQuery($appId: String!, $platform: AppPlatform!, $sdkVersions: [String!]!) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      ownerAccount {
+        name
+      }
+      updateBranches(limit: 100, offset: 0) {
+        id
+        name
+        updates(
+          limit: 1
+          offset: 0
+          filter: {platform: $platform, sdkVersions: $sdkVersions}
+        ) {
+          id
+          group
+          message
+          createdAt
+          runtimeVersion
+          platform
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useProjectsQuery__
+ *
+ * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProjectsQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      platform: // value for 'platform'
+ *      sdkVersions: // value for 'sdkVersions'
+ *   },
+ * });
+ */
+export function useProjectsQuery(baseOptions: Apollo.QueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsQueryDocument, options);
+      }
+export function useProjectsQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsQueryDocument, options);
+        }
+export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
+export type ProjectsQueryLazyQueryHookResult = ReturnType<typeof useProjectsQueryLazyQuery>;
+export type ProjectsQueryQueryResult = Apollo.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
+export function refetchProjectsQuery(variables: ProjectsQueryVariables) {
+      return { query: ProjectsQueryDocument, variables: variables }
     }
 export const Home_AccountSnacksDocument = gql`
     query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
