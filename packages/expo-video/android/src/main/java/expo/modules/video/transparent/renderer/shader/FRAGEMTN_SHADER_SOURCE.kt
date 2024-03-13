@@ -9,7 +9,7 @@ varying vec2 alphaTextureCoordinates;
 void main() {
   vec4 rgbSource = texture2D(texture, rgbTextureCoordinates);
   float alphaSource = texture2D(texture, alphaTextureCoordinates).g;
-  
+
   gl_FragColor = vec4(rgbSource.rgb * alphaSource, alphaSource);
 }
 """

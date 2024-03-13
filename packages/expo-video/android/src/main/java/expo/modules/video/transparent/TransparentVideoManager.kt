@@ -2,7 +2,6 @@ package expo.modules.video.transparent
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import expo.modules.video.VideoManager
 import expo.modules.video.VideoPlayer
 import expo.modules.video.VideoViewNotFoundException
 

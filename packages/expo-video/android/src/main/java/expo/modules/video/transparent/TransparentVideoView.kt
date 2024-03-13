@@ -22,17 +22,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-
 data class State(
-    val aspectRatio: Float,
-    val onFrameAvailable: Flow<Unit>
+  val aspectRatio: Float,
+  val onFrameAvailable: Flow<Unit>
 )
 
 @OptIn(UnstableApi::class)
 class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   val id: String = UUID.randomUUID().toString()
   private val currentActivity = appContext.currentActivity
-      ?: throw Exceptions.MissingActivity()
+    ?: throw Exceptions.MissingActivity()
 
   var videoPlayer: VideoPlayer? = null
     set(videoPlayer) {
