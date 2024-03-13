@@ -7,6 +7,8 @@
   "main": "index.js",
   "scripts": {
     "build:web": "expo export -p web",
+    "export:forget": "EXPO_USE_FORGET=1 expo export -p web --output-dir dist-forget --source-maps",
+    "export:default": "expo export -p web --output-dir dist-default --source-maps",
     "web": "expo start --web",
     "lint": "eslint .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",

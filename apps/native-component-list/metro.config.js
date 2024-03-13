@@ -48,4 +48,13 @@ config.watchFolders = [
   path.join(monorepoRoot, 'react-native-lab'), // Allow Metro to resolve `react-native-lab/react-native` files
 ];
 
+// Import the Expo superclass which has support for PostCSS.
+const { FileStore } = require('@expo/metro-config/file-store');
+
+config.cacheStores = [
+  new FileStore({
+    root: path.join(__dirname, '.expo/cache', process.env.EXPO_USE_FORGET ? 'forget' : 'default'),
+  }),
+];
+
 module.exports = config;
