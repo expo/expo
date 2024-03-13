@@ -1,6 +1,6 @@
 import { PureComponent, createRef } from 'react';
-import NativeVideoModule from './NativeVideoModule';
 import NativeTransparentVideoView from './NativeTransparentVideoView';
+import NativeVideoModule from './NativeVideoModule';
 /**
  * Displays a video with an alpha channel.
  *
