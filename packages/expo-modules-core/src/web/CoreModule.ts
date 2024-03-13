@@ -1,15 +1,10 @@
-import { ExpoGlobal } from '..';
-import { EventEmitter } from '../ts-declarations/EventEmitter';
-import { NativeModule } from '../ts-declarations/NativeModule';
-import { SharedObject } from '../ts-declarations/SharedObject';
+import type { EventEmitter as EventEmitterType } from '../ts-declarations/EventEmitter';
+import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
+import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
 import uuid from '../uuid';
 
-class WebEventEmitter<TEventsMap extends Record<never, never>> implements EventEmitter {
-  private listeners: Map<any, Set<Function>>;
-
-  constructor() {
-    this.listeners = new Map();
-  }
+class EventEmitter<TEventsMap extends Record<never, never>> implements EventEmitterType {
+  private listeners: Map<keyof TEventsMap, Set<Function>> = new Map();
 
   removeListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
@@ -37,32 +32,32 @@ class WebEventEmitter<TEventsMap extends Record<never, never>> implements EventE
   }
 }
 
-class CoreObject implements ExpoGlobal {
-  modules: Record<string, any>;
-  EventEmitter: typeof WebEventEmitter;
-  SharedObject: typeof SharedObject;
-  NativeModule: typeof NativeModule;
-  constructor() {
-    this.modules = {};
-    this.SharedObject = SharedObject;
-    this.NativeModule = NativeModule;
-    this.EventEmitter = WebEventEmitter;
-  }
+class NativeModule<TEventsMap extends Record<never, never>>
+  extends EventEmitter<TEventsMap>
+  implements NativeModuleType
+{
+  [key: string]: any;
+  ViewPrototype?: object | undefined;
+  __expo_module_name__?: string;
+}
 
-  getViewConfig(viewName: string): {
-    validAttributes: Record<string, any>;
-    directEventTypes: Record<string, { registrationName: string }>;
-  } | null {
+class SharedObject<TEventsMap extends Record<never, never>>
+  extends EventEmitter<TEventsMap>
+  implements SharedObjectType
+{
+  release(): void {
     throw new Error('Method not implemented.');
-  }
-  uuidv4() {
-    return uuid.v4();
-  }
-  uuidv5(name: string, namespace: string | number[]) {
-    return uuid.v5(name, namespace);
   }
 }
 
-globalThis.expo = new CoreObject();
-
-export default CoreObject;
+globalThis.expo = {
+  EventEmitter,
+  NativeModule,
+  SharedObject,
+  modules: {},
+  uuidv4: uuid.v4,
+  uuidv5: uuid.v5,
+  getViewConfig: () => {
+    throw new Error('Method not implemented.');
+  },
+};

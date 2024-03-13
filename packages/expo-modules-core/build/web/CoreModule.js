@@ -1,11 +1,6 @@
-import { NativeModule } from '../ts-declarations/NativeModule';
-import { SharedObject } from '../ts-declarations/SharedObject';
 import uuid from '../uuid';
-class WebEventEmitter {
-    listeners;
-    constructor() {
-        this.listeners = new Map();
-    }
+class EventEmitter {
+    listeners = new Map();
     removeListener(eventName, listener) {
         this.listeners.get(eventName)?.delete(listener);
     }
@@ -22,27 +17,24 @@ class WebEventEmitter {
         this.listeners.get(eventName)?.add(listener);
     }
 }
-class CoreObject {
-    modules;
-    EventEmitter;
-    SharedObject;
-    NativeModule;
-    constructor() {
-        this.modules = {};
-        this.SharedObject = SharedObject;
-        this.NativeModule = NativeModule;
-        this.EventEmitter = WebEventEmitter;
-    }
-    getViewConfig(viewName) {
+class NativeModule extends EventEmitter {
+    ViewPrototype;
+    __expo_module_name__;
+}
+class SharedObject extends EventEmitter {
+    release() {
         throw new Error('Method not implemented.');
     }
-    uuidv4() {
-        return uuid.v4();
-    }
-    uuidv5(name, namespace) {
-        return uuid.v5(name, namespace);
-    }
 }
-globalThis.expo = new CoreObject();
-export default CoreObject;
+globalThis.expo = {
+    EventEmitter,
+    NativeModule,
+    SharedObject,
+    modules: {},
+    uuidv4: uuid.v4,
+    uuidv5: uuid.v5,
+    getViewConfig: () => {
+        throw new Error('Method not implemented.');
+    },
+};
 //# sourceMappingURL=CoreModule.js.map
