@@ -117,6 +117,14 @@ module.exports = {
   [
     plugin(function ({ addUtilities }) {
       addUtilities({
+        '.asset-shadow': {
+          filter:
+            'drop-shadow(0 3px 10px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.07))',
+        },
+        '.asset-sm-shadow': {
+          filter:
+            'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.03))',
+        },
         '.wrap-anywhere': {
           'overflow-wrap': 'anywhere',
         },
