@@ -53,4 +53,9 @@
   return [self.interceptor sourceURLForBridge:bridge];
 }
 
+- (NSURL *)bundleURL {
+  // Passing nil bridge because the underlying `sourceURLForBridge:` doesn't use the bridge.
+  return [self.interceptor sourceURLForBridge:nil];
+}
+
 @end

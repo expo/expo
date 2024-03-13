@@ -18,8 +18,21 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation EXDevLauncherBridgeDelegate
 
+
+- (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
+{
+  if (self = [self init]) {
+    self.bundleURLGetter = bundleURLGetter;
+  }
+  return self;
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-  return [[EXDevLauncherController sharedInstance] sourceURLForBridge:bridge];
+  return self.bundleURLGetter();
+}
+
+- (NSURL *)bundleURL {
+  return self.bundleURLGetter();
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions {
@@ -38,7 +51,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     RCTAppSetupPrepareApp(application, enableTM);
 #endif
 
-    self.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
+    self.rootViewFactory.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
 
     NSMutableDictionary *initProps = [NSMutableDictionary new];
 #ifdef RCT_NEW_ARCH_ENABLED
