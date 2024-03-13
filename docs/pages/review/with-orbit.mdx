@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { Step } from '~/ui/components/Step';
 
-[Expo Orbit](https://expo.dev/orbit) is a macOS app designed to speed up installing and running builds from EAS. It also launches updates directly from the Expo dashboard on Android Emulators and iOS Simulators.
+[Expo Orbit](https://expo.dev/orbit) is a macOS and Windows app designed to speed up installing and running builds from EAS. It also launches updates directly from the Expo dashboard on Android Emulators and iOS Simulators.
 
 > **Note**: Launching updates using Expo Orbit is currently supported only for Android Emulators and iOS Simulators.
 
@@ -16,7 +16,7 @@ import { Step } from '~/ui/components/Step';
 
 - **Install the Orbit** app before following the steps in this guide. You can download it directly from [GitHub releases](https://github.com/expo/orbit/releases) or see the [alternative method](/build/orbit/#installation) to install it.
 - After installing the app, sign in to your Expo account from **Settings**.
-- You'll also need a [development build](/develop/development-builds/introduction/) installed on your Android Emulator or iOS Simulator with the same [runtime version](/eas-update/runtime-versions/) as the update.
+  {/* - You'll also need a [development build](/develop/development-builds/introduction/) installed on your Android Emulator or iOS Simulator with the same [runtime version](/eas-update/runtime-versions/) as the update. */}
 
 ## Preview an update with Expo Orbit
 
@@ -26,19 +26,7 @@ import { Step } from '~/ui/components/Step';
   caption="Expo Orbit launching an update directly from Expo dashboard to an Android Emulator."
 />
 
-Previewing an update with Expo Orbit is a two-step process:
-
-<Step label="1">
-
-### Publish an update
-
-Start by [publishing an update](/eas-update/getting-started/#publish-an-update) on your project. Use the command below and replace it with your specific development profile as the `[branch]` name and a `[message]` describing the update.
-
-<Terminal cmd={['$ eas update --branch [branch] --message [message]']} />
-
-</Step>
-
-<Step label="2">
+Previewing an update with Expo Orbit requires you to have a published update. If you haven't published an update, see the steps in [Publish an update](/eas-update/publish-updates/) before following steps in the next section.
 
 ### Install and launch the update
 
@@ -46,11 +34,13 @@ After the update is published, follow these steps to open it on an Android Emula
 
 - Navigate your project's **Updates** tab
 - Select the update you want to preview
-- Under **Platform-specific updates** section, click the three-dotted menu next to the target platform and select **Open in Orbit**
+- Under the **Platform-specific updates** section, click the three-dotted menu next to the target platform and select **Open in Orbit**
 - Orbit will install and launch the update on the selected Android Emulator or iOS Simulator
-
-</Step>
 
 You can now seamlessly launch and review updates using Expo Orbit.
 
-> **Note**: If you are [building your app locally](/guides/local-app-development/) and are using EAS Update, click **Launch with deep link** when prompted.
+### How does automatic installing and launching an update work
+
+If you've created a development build with EAS Build, at the time of installing and launching the update, the same runtime version and target platform are used from the development build. If a compatible update is found, it will be automatically installed and launched on the development build.
+
+If you don't use EAS Build and are [building your app locally](/guides/local-app-development/), click **Launch with deep link** when prompted.
