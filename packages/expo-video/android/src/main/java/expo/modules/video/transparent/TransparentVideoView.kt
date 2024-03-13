@@ -17,15 +17,9 @@ import expo.modules.video.transparent.renderer.TransparentVideoRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
-
-data class State(
-  val aspectRatio: Float,
-  val onFrameAvailable: Flow<Unit>
-)
 
 @OptIn(UnstableApi::class)
 class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
