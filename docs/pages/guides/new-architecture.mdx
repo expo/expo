@@ -8,6 +8,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
@@ -95,7 +96,22 @@ Set `newArchEnabled` on target platforms:
 
 Run prebuild command and compile your project:
 
-<Terminal cmd={['$ npx expo prebuild --clean', '$ npx expo run:android # or ios', '$ eas build -p android # or ios']} />
+<Tabs tabs={['Android', 'iOS']}>
+  <Tab>
+    <Terminal cmd={[
+      '$ npx expo prebuild --clean',
+      '$ npx expo run:android',
+      '$ eas build -p android',
+    ]} />
+  </Tab>
+  <Tab>
+    <Terminal cmd={[
+      '$ npx expo prebuild --clean',
+      '$ npx expo run:ios',
+      '$ eas build -p ios'
+    ]} />
+  </Tab>
+</Tabs>
 
 </Step>
 
