@@ -48,6 +48,7 @@ class RouterStore {
     rootState;
     nextState;
     routeInfo;
+    splashScreenAnimationFrame;
     navigationRef;
     navigationRefSubscription;
     rootStateSubscribers = new Set();
@@ -118,9 +119,10 @@ class RouterStore {
             if (!this.hasAttemptedToHideSplash) {
                 this.hasAttemptedToHideSplash = true;
                 // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-                requestAnimationFrame(() => 
-                // @ts-expect-error: This function is native-only and for internal-use only.
-                SplashScreen._internal_maybeHideAsync?.());
+                this.splashScreenAnimationFrame = requestAnimationFrame(() => {
+                    // @ts-expect-error: This function is native-only and for internal-use only.
+                    SplashScreen._internal_maybeHideAsync?.();
+                });
             }
             let shouldUpdateSubscribers = this.nextState === state;
             this.nextState = undefined;
@@ -182,6 +184,11 @@ class RouterStore {
     routeInfoSnapshot = () => {
         return this.routeInfo;
     };
+    cleanup() {
+        if (this.splashScreenAnimationFrame) {
+            cancelAnimationFrame(this.splashScreenAnimationFrame);
+        }
+    }
 }
 exports.RouterStore = RouterStore;
 exports.store = new RouterStore();

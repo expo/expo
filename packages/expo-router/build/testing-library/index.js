@@ -33,6 +33,9 @@ const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
+afterAll(() => {
+    router_store_1.store.cleanup();
+});
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Reset the initial URL

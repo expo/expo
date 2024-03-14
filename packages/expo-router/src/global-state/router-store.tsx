@@ -43,6 +43,7 @@ export class RouterStore {
   rootState?: ResultState;
   nextState?: ResultState;
   routeInfo?: UrlObject;
+  splashScreenAnimationFrame?: number;
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;
@@ -132,11 +133,10 @@ export class RouterStore {
       if (!this.hasAttemptedToHideSplash) {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-        requestAnimationFrame(
-          () =>
-            // @ts-expect-error: This function is native-only and for internal-use only.
-            SplashScreen._internal_maybeHideAsync?.()
-        );
+        this.splashScreenAnimationFrame = requestAnimationFrame(() => {
+          // @ts-expect-error: This function is native-only and for internal-use only.
+          SplashScreen._internal_maybeHideAsync?.();
+        });
       }
 
       let shouldUpdateSubscribers = this.nextState === state;
@@ -211,6 +211,12 @@ export class RouterStore {
   routeInfoSnapshot = () => {
     return this.routeInfo!;
   };
+
+  cleanup() {
+    if (this.splashScreenAnimationFrame) {
+      cancelAnimationFrame(this.splashScreenAnimationFrame);
+    }
+  }
 }
 
 export const store = new RouterStore();
