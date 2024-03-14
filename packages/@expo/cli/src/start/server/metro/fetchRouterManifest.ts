@@ -23,7 +23,7 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
 };
 
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/build/routes-manifest'))
+  return require(resolveFrom(projectRoot, 'expo-router/build/cjs/routes-manifest'))
     .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
 }
 

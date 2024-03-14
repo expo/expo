@@ -38,7 +38,7 @@ export interface SetupTypedRoutesOptions {
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
   const typedRoutesModule = resolveFrom.silent(
     options.projectRoot,
-    'expo-router/build/typed-routes'
+    'expo-router/build/cjs/typed-routes'
   );
   return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
 }

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
-const matchers_1 = require("./matchers");
+import { matchArrayGroupName, matchDeepDynamicRouteName, matchDynamicName, matchGroupName, removeSupportedExtensions, } from './matchers';
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -14,7 +11,7 @@ const matchers_1 = require("./matchers");
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-function getRoutes(contextModule, options = {}) {
+export function getRoutes(contextModule, options = {}) {
     const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
@@ -26,14 +23,12 @@ function getRoutes(contextModule, options = {}) {
     }
     return rootNode;
 }
-exports.getRoutes = getRoutes;
-function getExactRoutes(contextModule, options = {}) {
+export function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
-exports.getExactRoutes = getExactRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -260,7 +255,7 @@ function getFileMeta(key) {
     key = key.replace(/^\.\//, '');
     const parts = key.split('/');
     const filename = parts[parts.length - 1];
-    const filenameWithoutExtensions = (0, matchers_1.removeSupportedExtensions)(filename);
+    const filenameWithoutExtensions = removeSupportedExtensions(filename);
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = filename.match(/\+api\.[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -272,27 +267,26 @@ function getFileMeta(key) {
         throw new Error(`Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
     return {
-        route: (0, matchers_1.removeSupportedExtensions)(key),
+        route: removeSupportedExtensions(key),
         specificity: 0,
         isLayout,
         isApi,
     };
 }
-function getIgnoreList(options) {
+export function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
     if (options?.preserveApiRoutes !== true) {
         ignore.push(/\+api\.[tj]sx?$/);
     }
     return ignore;
 }
-exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
 function extrapolateGroups(key, keys = new Set()) {
-    const match = (0, matchers_1.matchArrayGroupName)(key);
+    const match = matchArrayGroupName(key);
     if (!match) {
         keys.add(key);
         return keys;
@@ -311,7 +305,7 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-function generateDynamic(path) {
+export function generateDynamic(path) {
     const dynamic = path
         .split('/')
         .map((part) => {
@@ -322,8 +316,8 @@ function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
-        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
+        const deepDynamicName = matchDeepDynamicRouteName(part);
+        const dynamicName = deepDynamicName ?? matchDynamicName(part);
         if (!dynamicName)
             return null;
         return { name: dynamicName, deep: !!deepDynamicName };
@@ -331,7 +325,6 @@ function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
-exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory) {
     if (!directory.files.has('_sitemap')) {
         directory.files.set('_sitemap', [
@@ -377,7 +370,7 @@ function getLayoutNode(node, options) {
      * So
      */
     // We may strip loadRoute during testing
-    const groupName = (0, matchers_1.matchGroupName)(node.route);
+    const groupName = matchGroupName(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
@@ -415,7 +408,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
          * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
          * Each of these layouts will have a different initialRouteName based upon the first group.
          */
-        const groupName = (0, matchers_1.matchGroupName)(node.route);
+        const groupName = matchGroupName(node.route);
         const childMatchingGroup = node.children.find((child) => {
             return child.route.replace(/\/index$/, '') === groupName;
         });

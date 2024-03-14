@@ -1,5 +1,5 @@
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/build/Route';
 
 const debug = require('debug')('expo:metro:html') as typeof console.log;
 

@@ -1,52 +1,23 @@
 'use client';
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRoot = void 0;
-const expo_constants_1 = __importDefault(require("expo-constants"));
-const expo_status_bar_1 = require("expo-status-bar");
-const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
-const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = require("./global-state/serverLocationContext");
-const Splash_1 = require("./views/Splash");
+import Constants from 'expo-constants';
+import { StatusBar } from 'expo-status-bar';
+import React, { Fragment } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { useInitializeExpoRouter } from './global-state/router-store';
+import { ServerLocationContext } from './global-state/serverLocationContext';
+import { SplashScreen } from './views/Splash';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
+const INITIAL_METRICS = Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
-const hasViewControllerBasedStatusBarAppearance = react_native_1.Platform.OS === 'ios' &&
-    !!expo_constants_1.default.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
-function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
+const hasViewControllerBasedStatusBarAppearance = Platform.OS === 'ios' &&
+    !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
+export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -54,25 +25,24 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
           {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <expo_status_bar_1.StatusBar style="auto"/>}
-        </react_native_safe_area_context_1.SafeAreaProvider>
+          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto"/>}
+        </SafeAreaProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
-exports.ExpoRoot = ExpoRoot;
-const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
+const initialUrl = Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, }) {
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, initialLocation);
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = Fragment, }) {
+    const store = useInitializeExpoRouter(context, initialLocation);
     if (store.shouldShowTutorial()) {
-        Splash_1.SplashScreen.hideAsync();
+        SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
             const Tutorial = require('./onboard/Tutorial').Tutorial;
             return (<WrapperComponent>
@@ -85,15 +55,15 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     const Component = store.rootComponent;
-    return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
+    return (<UpstreamNavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverLocationContext_1.ServerLocationContext.Provider value={initialLocation}>
+      <ServerLocationContext.Provider value={initialLocation}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </serverLocationContext_1.ServerLocationContext.Provider>
-    </NavigationContainer_1.default>);
+      </ServerLocationContext.Provider>
+    </UpstreamNavigationContainer>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

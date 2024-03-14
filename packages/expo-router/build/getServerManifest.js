@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseParameter = exports.getServerManifest = void 0;
-const matchers_1 = require("./matchers");
-const sortRoutes_1 = require("./sortRoutes");
+import { getContextKey, matchGroupName } from './matchers';
+import { sortRoutes } from './sortRoutes';
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
@@ -18,7 +15,7 @@ function uniqueBy(arr, key) {
     });
 }
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-function getServerManifest(route) {
+export function getServerManifest(route) {
     function getFlatNodes(route) {
         if (route.children.length) {
             return route.children.map((child) => getFlatNodes(child)).flat();
@@ -28,16 +25,16 @@ function getServerManifest(route) {
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
         if (route.type === 'api') {
-            key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
+            key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
         }
         else {
-            key = (0, matchers_1.getContextKey)(route.route).replace(/\/index$/, '') ?? '/';
+            key = getContextKey(route.route).replace(/\/index$/, '') ?? '/';
         }
         return [[key, route]];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
     const flat = getFlatNodes(route)
-        .sort(([, a], [, b]) => (0, sortRoutes_1.sortRoutes)(b, a))
+        .sort(([, a], [, b]) => sortRoutes(b, a))
         .reverse();
     const apiRoutes = uniqueBy(flat.filter(([, route]) => route.type === 'api'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, route]) => route.type === 'route'), ([path]) => path);
@@ -49,10 +46,9 @@ function getServerManifest(route) {
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
     };
 }
-exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
     return paths.map((normalizedRoutePath) => {
-        const matcher = getNamedRouteRegex(normalizedRoutePath[0], (0, matchers_1.getContextKey)(normalizedRoutePath[1].route), normalizedRoutePath[1].contextKey);
+        const matcher = getNamedRouteRegex(normalizedRoutePath[0], getContextKey(normalizedRoutePath[1].route), normalizedRoutePath[1].contextKey);
         if (normalizedRoutePath[1].generated) {
             matcher.generated = true;
         }
@@ -142,7 +138,7 @@ function getNamedParametrizedRoute(route) {
                     : `/(?<${cleanedKey}>[^/]+?)`;
             }
             else if (/^\(.*\)$/.test(segment)) {
-                const groupName = (0, matchers_1.matchGroupName)(segment)
+                const groupName = matchGroupName(segment)
                     .split(',')
                     .map((group) => group.trim())
                     .filter(Boolean);
@@ -174,7 +170,7 @@ function escapeStringRegexp(str) {
     }
     return str;
 }
-function parseParameter(param) {
+export function parseParameter(param) {
     let repeat = false;
     let optional = false;
     let name = param;
@@ -188,5 +184,4 @@ function parseParameter(param) {
     }
     return { name, repeat, optional };
 }
-exports.parseParameter = parseParameter;
 //# sourceMappingURL=getServerManifest.js.map

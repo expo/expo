@@ -1,53 +1,28 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 // Forked from react-navigation with a custom `extractPathFromURL` that automatically
 // allows any prefix and parses Expo Go URLs.
 // For simplicity the following are disabled: enabled, prefixes, independent
 // https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/useLinking.native.tsx
-const core_1 = require("@react-navigation/core");
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const extractPathFromURL_1 = require("./extractPathFromURL");
+import { getActionFromState as getActionFromStateDefault, getStateFromPath as getStateFromPathDefault, } from '@react-navigation/core';
+import * as React from 'react';
+import { Linking, Platform } from 'react-native';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 const linkingHandlers = [];
-function useLinking(ref, { 
+export default function useLinking(ref, { 
 // enabled = true,
 // prefixes,
 filter, config, getInitialURL = () => Promise.race([
-    react_native_1.Linking.getInitialURL(),
+    Linking.getInitialURL(),
     new Promise((resolve) => 
     // Timeout in 150ms if `getInitialState` doesn't resolve
     // Workaround for https://github.com/facebook/react-native/issues/25675
     setTimeout(resolve, 150)),
 ]), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);
-    const subscription = react_native_1.Linking.addEventListener('url', callback);
+    const subscription = Linking.addEventListener('url', callback);
     return () => {
         subscription?.remove();
     };
-}, getStateFromPath = core_1.getStateFromPath, getActionFromState = core_1.getActionFromState, }) {
+}, getStateFromPath = getStateFromPathDefault, getActionFromState = getActionFromStateDefault, }) {
     //   const independent = useNavigationIndependentTree();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
@@ -63,7 +38,7 @@ filter, config, getInitialURL = () => Promise.race([
                 'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
                 "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
                 '- Only a single instance of the root component is rendered',
-                react_native_1.Platform.OS === 'android'
+                Platform.OS === 'android'
                     ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
                     : '',
             ]
@@ -108,7 +83,7 @@ filter, config, getInitialURL = () => Promise.race([
             return undefined;
         }
         // NOTE(EvanBacon): This is the important part.
-        const path = (0, extractPathFromURL_1.extractExpoPathFromURL)(url);
+        const path = extractExpoPathFromURL(url);
         return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
     }, []);
     const getInitialState = React.useCallback(() => {
@@ -176,5 +151,4 @@ filter, config, getInitialURL = () => Promise.race([
         getInitialState,
     };
 }
-exports.default = useLinking;
 //# sourceMappingURL=useLinking.native.js.map

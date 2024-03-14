@@ -1,0 +1,1 @@
+{"version":3,"file":"index.native.js","names":["getDevServer","exports","require"],"sources":["../../../src/getDevServer/index.native.ts"],"sourcesContent":["export const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer');\n"],"mappings":";;;;;;AAAO,MAAMA,YAAY,GAAAC,OAAA,CAAAD,YAAA,GAAGE,OAAO,CAAC,mDAAmD,CAAC"}
