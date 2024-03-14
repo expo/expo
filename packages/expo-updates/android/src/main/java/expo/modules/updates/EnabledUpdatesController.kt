@@ -5,9 +5,9 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
@@ -24,8 +24,8 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
@@ -143,8 +143,8 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    startupProcedure.onDidCreateReactInstanceManager(reactInstanceManager)
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+    startupProcedure.onDidCreateReactInstanceManager(reactContext)
   }
 
   @Synchronized

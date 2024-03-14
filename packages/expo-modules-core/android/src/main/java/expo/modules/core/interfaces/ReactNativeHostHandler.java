@@ -1,10 +1,9 @@
 package expo.modules.core.interfaces;
 
-import com.facebook.react.ReactHost;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
-
 import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactContext;
 
 public interface ReactNativeHostHandler {
   /**
@@ -73,14 +72,8 @@ public interface ReactNativeHostHandler {
 
   /**
    * Callback after react instance creation
-   *
-   * @param reactInstanceManager In non-bridgeless mode, passing the created {@link ReactInstanceManager}
-   * @param reactHost In bridgeless mode, passing the created {@link ReactHost}
    */
-  default void onDidCreateReactInstance(
-    boolean useDeveloperSupport,
-    @Nullable ReactInstanceManager reactInstanceManager,
-    @Nullable ReactHost reactHost) {}
+  default void onDidCreateReactInstance(boolean useDeveloperSupport, ReactContext reactContext) {}
 
   //endregion
 }

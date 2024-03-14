@@ -7,14 +7,12 @@ import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,15 +43,11 @@ class UpdatesPackage : Package {
         }
       }
 
-      override fun onDidCreateReactInstance(
-        useDeveloperSupport: Boolean,
-        reactInstanceManager: ReactInstanceManager?,
-        reactHost: ReactHost?
-      ) {
+      override fun onDidCreateReactInstance(useDeveloperSupport: Boolean, reactContext: ReactContext) {
         // WHEN_VERSIONING_REMOVE_FROM_HERE
         // This code path breaks versioning and is not necessary for Expo Go.
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport) && reactInstanceManager != null) {
-          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
+        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
+          UpdatesController.instance.onDidCreateReactInstanceManager(reactContext)
         }
         // WHEN_VERSIONING_REMOVE_TO_HERE
       }

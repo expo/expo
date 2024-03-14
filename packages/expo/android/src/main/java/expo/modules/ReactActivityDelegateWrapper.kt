@@ -97,6 +97,7 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
+      dispatchWillCreateReactInstanceIfNeeded()
       reactDelegate.loadApp(appKey)
       rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
@@ -110,19 +111,21 @@ class ReactActivityDelegateWrapper(
       .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
       .firstOrNull()
     if (delayLoadAppHandler != null) {
+      shouldEmitPendingResume = true
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
+        dispatchWillCreateReactInstanceIfNeeded()
         invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
         }
-        if (shouldEmitPendingResume) {
-          onResume()
-        }
+        shouldEmitPendingResume = false
+        onResume()
       }
       return
     }
 
+    dispatchWillCreateReactInstanceIfNeeded()
     invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onContentChanged(activity)
@@ -189,22 +192,19 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    if (!reactNativeHost.hasInstance() && reactHost == null) {
-      shouldEmitPendingResume = true
+    if (shouldEmitPendingResume) {
       return
     }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
     }
-    shouldEmitPendingResume = false
   }
 
   override fun onPause() {
     // If app is stopped before delayed `loadApp`, we should cancel the pending resume
-    shouldEmitPendingResume = false
-    if (!reactNativeHost.hasInstance() && reactHost == null) {
-      return
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
@@ -214,9 +214,8 @@ class ReactActivityDelegateWrapper(
 
   override fun onDestroy() {
     // If app is stopped before delayed `loadApp`, we should cancel the pending resume
-    shouldEmitPendingResume = false
-    if (!reactNativeHost.hasInstance() && reactHost == null) {
-      return
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
@@ -343,6 +342,15 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
+  }
+
+  private fun dispatchWillCreateReactInstanceIfNeeded() {
+    if (_reactHost != null) {
+      val useDeveloperSupport = _reactNativeHost.useDeveloperSupport
+      (_reactNativeHost as? ReactNativeHostWrapper)?.reactNativeHostHandlers?.forEach {
+        it.onWillCreateReactInstance(useDeveloperSupport)
+      }
+    }
   }
 
   //endregion

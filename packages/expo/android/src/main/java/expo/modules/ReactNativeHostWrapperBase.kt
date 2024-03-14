@@ -1,5 +1,6 @@
 package expo.modules
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.collection.ArrayMap
 import com.facebook.react.ReactInstanceManager
@@ -18,6 +19,7 @@ open class ReactNativeHostWrapperBase(
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
+  @SuppressLint("VisibleForTests")
   override fun createReactInstanceManager(): ReactInstanceManager {
     val developerSupport = useDeveloperSupport
     reactNativeHostHandlers.forEach { handler ->
@@ -27,7 +29,7 @@ open class ReactNativeHostWrapperBase(
     val result = super.createReactInstanceManager()
 
     reactNativeHostHandlers.forEach { handler ->
-      handler.onDidCreateReactInstance(developerSupport, result, null)
+      handler.onDidCreateReactInstance(developerSupport, result.currentReactContext)
     }
 
     injectHostReactInstanceManager(result)
@@ -41,17 +43,17 @@ open class ReactNativeHostWrapperBase(
       .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
-  override fun getJSMainModuleName(): String {
+  public override fun getJSMainModuleName(): String {
     return invokeDelegateMethod("getJSMainModuleName")
   }
 
-  override fun getJSBundleFile(): String? {
+  public override fun getJSBundleFile(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getJSBundleFile(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
   }
 
-  override fun getBundleAssetName(): String? {
+  public override fun getBundleAssetName(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getBundleAssetName(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
@@ -63,7 +65,7 @@ open class ReactNativeHostWrapperBase(
       .firstOrNull() ?: host.useDeveloperSupport
   }
 
-  override fun getPackages(): MutableList<ReactPackage> {
+  public override fun getPackages(): MutableList<ReactPackage> {
     return invokeDelegateMethod("getPackages")
   }
 

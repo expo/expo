@@ -5,28 +5,63 @@ package expo.modules
 import android.content.Context
 import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultComponentsRegistry
-import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
+import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
+import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
+import java.lang.ref.WeakReference
 
 object ExpoReactHostFactory {
   private var reactHost: ReactHost? = null
 
-  internal data class CreateParams(
-    val packageList: List<ReactPackage>,
-    val jsMainModulePath: String = "index",
-    val jsBundleAssetPath: String = "index",
-    val isHermesEnabled: Boolean = true
-  )
+  @UnstableReactNativeAPI
+  private class ExpoReactHostDelegate(
+    private val weakContext: WeakReference<Context>,
+    private val reactNativeHostWrapper: ReactNativeHostWrapper,
+    override val bindingsInstaller: BindingsInstaller? = null,
+    private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
+    private val exceptionHandler: (Exception) -> Unit = {},
+    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
+      DefaultTurboModuleManagerDelegate.Builder()
+  ) : ReactHostDelegate {
+    override val jsBundleLoader: JSBundleLoader
+      get() {
+        val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
+        return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+      }
+
+    override val jsMainModulePath: String
+      get() = reactNativeHostWrapper.jsMainModuleName
+
+    override val jsRuntimeFactory: JSRuntimeFactory
+      get() = if (reactNativeHostWrapper.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
+        HermesInstance()
+      } else {
+        JSCInstance()
+      }
+
+    override val reactPackages: List<ReactPackage>
+      get() = reactNativeHostWrapper.packages
+
+    override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
+
+    override fun handleInstanceException(error: Exception) = exceptionHandler(error)
+  }
 
   @OptIn(UnstableReactNativeAPI::class)
   @JvmStatic
@@ -39,48 +74,33 @@ object ExpoReactHostFactory {
     }
     if (reactHost == null) {
       val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-      val reactNativeHostHandlers = reactNativeHost.reactNativeHostHandlers
-      reactNativeHostHandlers.forEach { handler ->
-        handler.onWillCreateReactInstance(useDeveloperSupport)
-      }
-
-      val createParams = reactNativeHost.getReactHostFactoryCreateParams()
-      val jsBundleLoader =
-        JSBundleLoader.createAssetLoader(context, "assets://${createParams.jsBundleAssetPath}", true)
-      val jsRuntimeFactory = if (createParams.isHermesEnabled) HermesInstance() else JSCInstance()
-      val defaultReactHostDelegate =
-        DefaultReactHostDelegate(
-          jsMainModulePath = createParams.jsMainModulePath,
-          jsBundleLoader = jsBundleLoader,
-          reactPackages = createParams.packageList,
-          jsRuntimeFactory = jsRuntimeFactory,
-          turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
-        )
+      val reactHostDelegate = ExpoReactHostDelegate(WeakReference(context), reactNativeHost)
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
 
-      reactHost =
+      val reactHostImpl =
         ReactHostImpl(
           context,
-          defaultReactHostDelegate,
+          reactHostDelegate,
           componentFactory,
           true,
           reactJsExceptionHandler,
           useDeveloperSupport
         )
           .apply {
-            jsEngineResolutionAlgorithm =
-              if (createParams.isHermesEnabled) {
-                JSEngineResolutionAlgorithm.HERMES
-              } else {
-                JSEngineResolutionAlgorithm.JSC
-              }
+            jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
           }
 
-      reactNativeHostHandlers.forEach { handler ->
-        handler.onDidCreateReactInstance(useDeveloperSupport, null, reactHost)
-      }
+      reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
+        override fun onReactContextInitialized(context: ReactContext) {
+          reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+            handler.onDidCreateReactInstance(useDeveloperSupport, context)
+          }
+        }
+      })
+
+      reactHost = reactHostImpl
     }
     return reactHost as ReactHost
   }
