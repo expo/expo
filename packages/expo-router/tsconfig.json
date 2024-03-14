@@ -12,7 +12,6 @@
   },
   "include": [
     "./src",
-    "./types/jest.d.ts",
     "./types/expect.d.ts",
     "../expo/src/ts-declarations"
   ],
