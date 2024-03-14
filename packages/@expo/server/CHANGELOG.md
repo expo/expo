@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add Connect adapter. ([#27684](https://github.com/expo/expo/pull/27684) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 - Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
