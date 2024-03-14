@@ -404,6 +404,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Video/TransparentVideoScreen'));
+    },
+    name: 'Transparent Video (expo-video)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Screens'));
     },
     name: 'Screens',
