@@ -5,9 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- EXDevLauncherDeferredRCTRootView is a special no-op class for expo-dev-launcher to defer bridge creation until `EXDevLauncherController` finishing setup.
+ EXDevLauncherDeferredRCTRootView is a special no-op class for expo-dev-launcher to defer react instance creation until `EXDevLauncherController` finishing setup.
  */
-@interface EXDevLauncherDeferredRCTRootView : RCTRootView
+@interface EXDevLauncherDeferredRCTRootView : UIView
 
 @end
 

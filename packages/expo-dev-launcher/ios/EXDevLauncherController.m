@@ -8,6 +8,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
+#import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
@@ -200,7 +201,6 @@
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 }
 
-
 - (void)clearRecentlyOpenedApps
 {
   return [_recentlyOpenedAppsRegistry clearRegistry];
@@ -328,7 +328,7 @@
   }
 
   [self _removeInitModuleObserver];
-  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
+  UIView *rootView = [EXReactRootViewFactory createDefaultReactRootView:[self getSourceURL] moduleName:nil initialProperties:nil launchOptions:_launchOptions];
   _launcherBridge = _bridgeDelegate.bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
