@@ -24,7 +24,8 @@ on:
       - fastlane/**
       - Gemfile.lock
   schedule:
-    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
+  schedule:
+    - cron: '20 5 * * *' # 5:20 AM UTC time every day
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
