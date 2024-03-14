@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
+    "@types/connect": "^3.4.38",
     "@types/express": "^4.17.17"
   },
   "publishConfig": {
