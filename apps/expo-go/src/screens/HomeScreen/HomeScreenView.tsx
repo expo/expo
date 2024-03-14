@@ -39,7 +39,6 @@ import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import HistoryActions from '../../redux/HistoryActions';
 import { DevSession, HistoryList } from '../../types';
 import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCallback';
-import getSnackId from '../../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -247,9 +246,6 @@ export class HomeScreenView extends React.Component<Props, State> {
       const [projects, graphQLResponse] = await Promise.all([
         api.sendAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
           method: 'GET',
-          searchParams: {
-            deviceId: getSnackId(),
-          },
         }),
         accountName
           ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
