@@ -176,6 +176,9 @@ export type TransparentVideoViewProps = Omit<
   | 'onPictureInPictureStop'
   | 'allowsPictureInPicture'
   | 'startsPictureInPictureAutomatically'
+  | 'allowsFullscreen'
+  | 'nativeControls'
+  | 'contentFit'
 >;
 
 /**

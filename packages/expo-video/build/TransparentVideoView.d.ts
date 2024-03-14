@@ -3,11 +3,11 @@ import { TransparentVideoViewProps, VideoSource } from './VideoView.types';
 /**
  * Displays a video with an alpha channel.
  *
- * The source must be a video compatible with android 4.4+ (https://developer.android.com/media/platform/supported-formats#video-codecs)
+ * The source must be a video compatible with android (https://developer.android.com/media/platform/supported-formats#video-codecs)
  * The source must be a composition of two videos vertically superposed:
  * - The upper part of the video must display the rgb channels
- * - The lower part of the video must display the alpha mask in shades of grey
- *   (black -> alpha = 0f, white -> alpha = 1f) to apply to the rgb part.
+ * - The lower part of the video must display the alpha mask in grayscale
+ *   (black -> alpha = 0% opacity, white -> alpha = 100% opacity) to apply to the rgb part.
  *
  *   |-----------------------|
  *   |                       |
