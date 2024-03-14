@@ -22,12 +22,13 @@ export function useBlurhash(
   punch = punch || 1;
 
   const [uri, setUri] = useState<string | null>(null);
-  const isBlurhash = (!!blurhash && !!blurhash.uri && isBlurhashString(blurhash.uri)) ?? false;
-
+  const isBlurhash = (blurhash?.uri && isBlurhashString(blurhash.uri)) ?? false;
   useEffect(() => {
     let isCanceled = false;
 
-    if (!blurhash || !blurhash.uri || !isBlurhash) return;
+    if (!blurhash || !blurhash.uri || !isBlurhash) {
+      return;
+    }
     const strippedBlurhashString = blurhash?.uri?.replace(/blurhash:\//, '');
 
     const pixels = decode(
@@ -79,8 +80,6 @@ export function useBlurhash(
       });
     };
   }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch, isBlurhash]);
-  return useMemo(
-    () => (uri ? ([{ uri }, isBlurhash] as const) : ([null, isBlurhash] as const)),
-    [uri, isBlurhash]
-  );
+  const source = useMemo(() => (uri ? { uri } : null), [uri]);
+  return [source, isBlurhash] as const;
 }

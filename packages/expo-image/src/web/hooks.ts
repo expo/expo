@@ -13,7 +13,7 @@ export function useThumbhash(source: ImageSource | null | undefined) {
     () => (isThumbhash ? { uri: thumbHashStringToDataURL(strippedThumbhashString) } : null),
     [strippedThumbhashString, isThumbhash]
   );
-  return useMemo(() => [thumbhashSource, isThumbhash] as const, [thumbhashSource, isThumbhash]);
+  return [thumbhashSource, isThumbhash] as const;
 }
 
 export function useImageHashes(source: ImageSource | null | undefined) {

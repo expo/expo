@@ -8,7 +8,7 @@ export declare function useImageHashes(source: ImageSource | null | undefined): 
     isImageHash: boolean;
 } | {
     resolvedSource: {
-        readonly uri: string;
+        uri: string;
     } | null;
     isImageHash: boolean;
 };

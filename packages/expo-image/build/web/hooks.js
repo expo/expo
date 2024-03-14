@@ -6,7 +6,7 @@ export function useThumbhash(source) {
     const isThumbhash = isThumbhashString(source?.uri || '');
     const strippedThumbhashString = source?.uri?.replace(/thumbhash:\//, '') ?? '';
     const thumbhashSource = useMemo(() => (isThumbhash ? { uri: thumbHashStringToDataURL(strippedThumbhashString) } : null), [strippedThumbhashString, isThumbhash]);
-    return useMemo(() => [thumbhashSource, isThumbhash], [thumbhashSource, isThumbhash]);
+    return [thumbhashSource, isThumbhash];
 }
 export function useImageHashes(source) {
     const [thumbhash, isThumbhashString] = useThumbhash(source);

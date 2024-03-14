@@ -13,11 +13,12 @@ const scaleRatio = 10;
 export function useBlurhash(blurhash, punch = 1) {
     punch = punch || 1;
     const [uri, setUri] = useState(null);
-    const isBlurhash = (!!blurhash && !!blurhash.uri && isBlurhashString(blurhash.uri)) ?? false;
+    const isBlurhash = (blurhash?.uri && isBlurhashString(blurhash.uri)) ?? false;
     useEffect(() => {
         let isCanceled = false;
-        if (!blurhash || !blurhash.uri || !isBlurhash)
+        if (!blurhash || !blurhash.uri || !isBlurhash) {
             return;
+        }
         const strippedBlurhashString = blurhash?.uri?.replace(/blurhash:\//, '');
         const pixels = decode(strippedBlurhashString, blurhash?.width ?? DEFAULT_SIZE.width, blurhash?.height ?? DEFAULT_SIZE.height, punch);
         const canvas = document.createElement('canvas');
@@ -61,6 +62,7 @@ export function useBlurhash(blurhash, punch = 1) {
             });
         };
     }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch, isBlurhash]);
-    return useMemo(() => (uri ? [{ uri }, isBlurhash] : [null, isBlurhash]), [uri, isBlurhash]);
+    const source = useMemo(() => (uri ? { uri } : null), [uri]);
+    return [source, isBlurhash];
 }
 //# sourceMappingURL=useBlurhash.js.map
