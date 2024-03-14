@@ -18,7 +18,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
-/// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
 const react_1 = __importDefault(require("react"));
@@ -65,6 +64,9 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
         },
         getPathnameWithParams() {
             return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
+        },
+        getRouterState() {
+            return router_store_1.store.rootStateSnapshot();
         },
     });
 }

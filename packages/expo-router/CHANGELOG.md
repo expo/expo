@@ -26,6 +26,7 @@
 - Remove `jest.fakeTimers()` from `expo-router/testing-library` ([#27512](https://github.com/expo/expo/pull/27512) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect initial URL on web when using baseUrl ([#27287](https://github.com/expo/expo/pull/27287) by [@marklawlor](https://github.com/marklawlor))
 - Cancel ExpoRouter SplashScreen during test teardown ([#27620](https://github.com/expo/expo/pull/27620) by [@marklawlor](https://github.com/marklawlor))
+- Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
