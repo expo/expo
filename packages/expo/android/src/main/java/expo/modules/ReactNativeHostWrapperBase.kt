@@ -1,12 +1,13 @@
 package expo.modules
 
-import android.annotation.SuppressLint
 import android.app.Application
 import androidx.collection.ArrayMap
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.bridge.ReactContext
 import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
@@ -19,7 +20,6 @@ open class ReactNativeHostWrapperBase(
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
-  @SuppressLint("VisibleForTests")
   override fun createReactInstanceManager(): ReactInstanceManager {
     val developerSupport = useDeveloperSupport
     reactNativeHostHandlers.forEach { handler ->
@@ -28,9 +28,13 @@ open class ReactNativeHostWrapperBase(
 
     val result = super.createReactInstanceManager()
 
-    reactNativeHostHandlers.forEach { handler ->
-      handler.onDidCreateReactInstance(developerSupport, result.currentReactContext)
-    }
+    result.addReactInstanceEventListener(object : ReactInstanceEventListener {
+      override fun onReactContextInitialized(context: ReactContext) {
+        reactNativeHostHandlers.forEach { handler ->
+          handler.onDidCreateReactInstance(developerSupport, context)
+        }
+      }
+    })
 
     injectHostReactInstanceManager(result)
 
