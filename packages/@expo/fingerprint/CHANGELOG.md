@@ -15,6 +15,7 @@
 - Fix inconsistent hashes for autolinking. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 - Fixed expo-modules-autolinking sourcer missing some packages on iOS. ([#27442](https://github.com/expo/expo/pull/27442) by [@kudo](https://github.com/kudo))
 - Add more default android ignores that differ per machine. ([#27577](https://github.com/expo/expo/pull/27577) by [@wschurman](https://github.com/wschurman))
+- Added `react-native` package.json to fingerprint. **This will typically introduce fingerprint result breaking changes**. ([#27657](https://github.com/expo/expo/pull/27657) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
