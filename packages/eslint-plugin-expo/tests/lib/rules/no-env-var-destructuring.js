@@ -25,6 +25,9 @@ ruleTester.run("no-env-var-destructuring", rule, {
     {
       code: 'const myVar = process.env.MY_VAR;',
     },
+    {
+      code:     "const food = 'potato';"
+    }
   ],
 
   invalid: [

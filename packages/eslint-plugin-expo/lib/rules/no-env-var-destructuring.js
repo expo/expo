@@ -23,12 +23,15 @@ module.exports = {
   },
 
   create(context) {
+    const isMemberExpressionProcessEnv = (obj) => {
+      return obj && obj.object && obj.object.name === 'process' && obj.property && obj.property.name === 'env';
+    }
     return {
       VariableDeclarator(node) {
         const left = node.id;
         const right = node.init;
         const isDestructuring = left.type === 'ObjectPattern';
-        const isProcessEnv = right.property.name === 'env' && right.object.name === 'process';
+        const isProcessEnv = isMemberExpressionProcessEnv(right);
         if (isDestructuring && isProcessEnv) {
           left.properties.forEach(function (property) {
             context.report({

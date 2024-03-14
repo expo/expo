@@ -34,7 +34,8 @@ Then configure the rules you want to use under the rules section.
 ```json
 {
   "rules": {
-    "expo/no-env-var-destructuring": 2
+    "expo/no-env-var-destructuring": 2,
+    "expo/no-dynamic-env-var": 2,
   }
 }
 ```
@@ -44,9 +45,10 @@ Then configure the rules you want to use under the rules section.
 
 <!-- begin auto-generated rules list -->
 
-| Name                                                               | Description                                      |
-| :----------------------------------------------------------------- | :----------------------------------------------- |
-| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow desctructuring of environment variables |
+| Name                                                               | Description                                          |
+| :----------------------------------------------------------------- | :--------------------------------------------------- |
+| [no-dynamic-env-var](docs/rules/no-dynamic-env-var.md)             | Prevents process.env from being accessed dynamically |
+| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow desctructuring of environment variables     |
 
 <!-- end auto-generated rules list -->
 
