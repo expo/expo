@@ -3383,7 +3383,7 @@
   resolved "https://registry.yarnpkg.com/@react-native-segmented-control/segmented-control/-/segmented-control-2.4.1.tgz#ea612c8b12bfea7712c7ea456b7b98dfc6748485"
   integrity sha512-c8Q7TP14CD6vJ38VO5SWoIcxfwLPIz/4zRKJnJOJ0xKkMxkrUu089m86Y0dSvo+T3c1NQyvBFRtKWrPqbqG6tg==
 
-"@react-native/assets-registry@0.74.0", "@react-native/assets-registry@~0.73.1":
+"@react-native/assets-registry@0.74.0", "@react-native/assets-registry@~0.74.0":
   version "0.74.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.74.0.tgz#560bec29b2699c4d4cbfecfb4c2c5025397aac23"
   integrity sha512-I8Yy6bCKU5R4qZX4jfXsAPsHyuGHlulbnbG3NqO9JgZ3T2DJxJiZE39rHORP0trLnRh0rIeRcs4Mc14fAE6hrw==
@@ -3395,7 +3395,7 @@
   dependencies:
     "@react-native/codegen" "0.74.2"
 
-"@react-native/babel-preset@0.74.2", "@react-native/babel-preset@^0.73.18":
+"@react-native/babel-preset@0.74.2", "@react-native/babel-preset@^0.74.2":
   version "0.74.2"
   resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.74.2.tgz#25c377ed4f747baea5adeaeba3be3110c6a43093"
   integrity sha512-xux1qblfc/XuJib0k5jV5Ro+XGkvwfNYrsvAD7FY+WKn8CBpovwxOvHuqk3HDYpjnIVw7zy5VgyIx+ArlBi6Wg==
@@ -3480,7 +3480,7 @@
   resolved "https://registry.yarnpkg.com/@react-native/debugger-frontend/-/debugger-frontend-0.74.1.tgz#fc512b916830cfeffb0413f0d343282dddd66720"
   integrity sha512-XgJmnnCkuifquEGqGhYSwM7jqXfU7oaP/k7YZBMyknj1QI8sW4pXKHjWW9bM0wKeAC/CptN+0+r4v8C4Qdp36g==
 
-"@react-native/dev-middleware@0.74.3", "@react-native/dev-middleware@^0.73.6":
+"@react-native/dev-middleware@0.74.3", "@react-native/dev-middleware@^0.74.3":
   version "0.74.3"
   resolved "https://registry.yarnpkg.com/@react-native/dev-middleware/-/dev-middleware-0.74.3.tgz#3d6668e668af92c7be9e8a48c47564163a136d3f"
   integrity sha512-hT0VIydwYfSSLK5tJbtJ1ekTDVQHb0AocnAcsgMPWaAOsiDvEHV68xihcOQoK8D2l64N7hg2VIrozVjoFcG5tA==
@@ -16474,7 +16474,7 @@ react-native-webview@13.6.3:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.73.4, react-native@0.74.0-rc.3:
+react-native@0.74.0-rc.3:
   version "0.74.0-rc.3"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.74.0-rc.3.tgz#0f6b92e4d914ba2949cce7737807c4c7e47ba906"
   integrity sha512-lPdnH5zsS+POUdHmZgNs2kKwteKB8D3mFnCrG68A40E/ItiOTnziw6gH6XyHrMTwedqgImV3OF0r3w3MFwW6Rw==
