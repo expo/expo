@@ -1,7 +1,5 @@
 import { ExpoRouter } from '../../types/expo-router';
 
-type A = ExpoRouter.Href<{ pathname: string }>;
-
 /** Resolve an href object into a fully qualified, relative href. */
 export const resolveHref = (href: ExpoRouter.Href): string => {
   if (typeof href === 'string') {
