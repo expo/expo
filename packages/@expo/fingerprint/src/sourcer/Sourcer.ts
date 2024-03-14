@@ -13,6 +13,7 @@ import {
   getExpoAutolinkingIosSourcesAsync,
   getExpoConfigSourcesAsync,
 } from './Expo';
+import { getDefaultPackageSourcesAsync } from './Packages';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { profile } from '../utils/Profile';
@@ -43,6 +44,9 @@ export async function getHashSourcesAsync(
 
     // patch-package
     profile(options, getPatchPackageSourcesAsync)(projectRoot, options),
+
+    // some known dependencies, e.g. react-native
+    profile(options, getDefaultPackageSourcesAsync)(projectRoot, options),
   ]);
 
   // extra sources
