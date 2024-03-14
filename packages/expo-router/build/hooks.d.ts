@@ -1,4 +1,4 @@
-import { Router } from './types';
+import { ExpoRouter } from '../types/expo-router';
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
@@ -6,7 +6,7 @@ export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 export declare function useRootNavigation(): import("@react-navigation/native").NavigationContainerRef<ReactNavigation.RootParamList> | null;
 /** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
 export declare function useNavigationContainerRef(): import("@react-navigation/native").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
-export declare function useRouter(): Router;
+export declare function useRouter(): ExpoRouter.Router;
 /**
  * @private
  * @returns the current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link, i.e. `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`

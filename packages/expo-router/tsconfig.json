@@ -11,6 +11,7 @@
     ],
   },
   "include": [
+    "./types/expo-router.d.ts",
     "./src",
     "./types/expect.d.ts",
     "../expo/src/ts-declarations"

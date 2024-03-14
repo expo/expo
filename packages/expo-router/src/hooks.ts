@@ -2,7 +2,7 @@ import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { Router } from './types';
+import { ExpoRouter } from '../types/expo-router';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -24,7 +24,7 @@ export function useNavigationContainerRef() {
   return store.navigationRef;
 }
 
-export function useRouter(): Router {
+export function useRouter(): ExpoRouter.Router {
   return React.useMemo(
     () => ({
       push: store.push,

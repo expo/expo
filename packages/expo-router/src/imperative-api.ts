@@ -1,7 +1,7 @@
 import { store } from './global-state/router-store';
-import { Router } from './types';
+import { ExpoRouter } from '../types/expo-router';
 
-export const router: Router = {
+export const router: ExpoRouter.Router = {
   navigate: (href) => store.navigate(href),
   push: (href) => store.push(href),
   dismiss: (count) => store.dismiss(count),
