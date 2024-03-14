@@ -13,7 +13,7 @@ import assert from 'assert';
 import { dirname, isAbsolute, resolve as pathResolve } from 'path';
 import { sync as resolveSync, SyncOpts as UpstreamResolveOptions } from 'resolve';
 import * as resolve from 'resolve.exports';
-
+import fs from 'fs';
 import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
 
 /**
@@ -83,7 +83,10 @@ type ResolverOptions = {
   | 'includeCoreModules'
 >;
 
-type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;
+type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions &
+  ResolverOptions & {
+    pathExists: (file: string) => boolean;
+  };
 
 const defaultResolver = (
   path: string,
@@ -108,6 +111,17 @@ const defaultResolver = (
         return false;
       }
       return fileExistsSync(file);
+    },
+    pathExists(file) {
+      if (blockList.some((regex) => regex.test(file))) {
+        return false;
+      }
+      try {
+        fs.accessSync(path, fs.constants.F_OK);
+        return true; // File exists
+      } catch {
+        return false; // File doesn't exist
+      }
     },
     preserveSymlinks: options.preserveSymlinks,
     defaultResolver,
@@ -181,7 +195,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
       // ignore if package.json cannot be found
     }
 
-    if (packageJsonPath && options.isFile!(packageJsonPath)) {
+    if (packageJsonPath && options.pathExists!(packageJsonPath)) {
       const pkg = options.readPackageSync!(options.readFileSync!, packageJsonPath);
       assert(pkg, 'package.json should be read by `readPackageSync`');
 
@@ -220,7 +234,7 @@ const shouldIgnoreRequestForExports = (path: string) => path.startsWith('.') || 
 // https://github.com/lukeed/escalade/blob/2477005062cdbd8407afc90d3f48f4930354252b/src/sync.js
 function findClosestPackageJson(
   start: string,
-  options: UpstreamResolveOptions
+  options: UpstreamResolveOptionsWithConditions
 ): string | undefined {
   let dir = pathResolve('.', start);
   if (!options.isDirectory!(dir)) {
@@ -229,7 +243,7 @@ function findClosestPackageJson(
 
   while (true) {
     const pkgJsonFile = pathResolve(dir, './package.json');
-    const hasPackageJson = options.isFile!(pkgJsonFile);
+    const hasPackageJson = options.pathExists!(pkgJsonFile);
 
     if (hasPackageJson) {
       return pkgJsonFile;
