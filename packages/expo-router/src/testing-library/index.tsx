@@ -15,6 +15,8 @@ import { router } from '../imperative-api';
 // re-export everything
 export * from '@testing-library/react-native';
 
+jest.useFakeTimers();
+
 afterAll(() => {
   store.cleanup();
 });
