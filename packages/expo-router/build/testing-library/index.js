@@ -32,6 +32,7 @@ const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
+jest.useFakeTimers();
 afterAll(() => {
     router_store_1.store.cleanup();
 });
