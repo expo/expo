@@ -2,15 +2,15 @@
  * @fileoverview Disallow destructuring env vars from process.env
  * @author Expo
  */
-"use strict";
+'use strict';
 
 //------------------------------------------------------------------------------
 // Requirements
 //------------------------------------------------------------------------------
 
-const rule = require("../../../lib/rules/no-env-var-destructuring"),
-  RuleTester = require("eslint").RuleTester;
+const RuleTester = require('eslint').RuleTester;
 
+const rule = require('../../../lib/rules/no-env-var-destructuring');
 
 //------------------------------------------------------------------------------
 // Tests
@@ -20,14 +20,14 @@ const ruleTester = new RuleTester({
   parserOptions: { ecmaVersion: 2015 },
 });
 
-ruleTester.run("no-env-var-destructuring", rule, {
+ruleTester.run('no-env-var-destructuring', rule, {
   valid: [
     {
       code: 'const myVar = process.env.MY_VAR;',
     },
     {
-      code:     "const food = 'potato';"
-    }
+      code: "const food = 'potato';",
+    },
   ],
 
   invalid: [
@@ -36,7 +36,7 @@ ruleTester.run("no-env-var-destructuring", rule, {
       errors: [
         {
           message: 'Unexpected desctucturing. Cannot descructure MY_VAR from process.env',
-          type: 'VariableDeclarator'
+          type: 'VariableDeclarator',
         },
       ],
     },
@@ -45,11 +45,11 @@ ruleTester.run("no-env-var-destructuring", rule, {
       errors: [
         {
           message: 'Unexpected desctucturing. Cannot descructure MY_VAR from process.env',
-          type: 'VariableDeclarator'
+          type: 'VariableDeclarator',
         },
         {
           message: 'Unexpected desctucturing. Cannot descructure ANOTHER_VAR from process.env',
-          type: 'VariableDeclarator'
+          type: 'VariableDeclarator',
         },
       ],
     },

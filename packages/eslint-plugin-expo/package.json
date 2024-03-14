@@ -10,6 +10,11 @@
   "author": "Expo",
   "main": "./lib/index.js",
   "exports": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/eslint-plugin-expo"
+  },
   "scripts": {
     "lint": "npm-run-all \"lint:*\"",
     "lint:eslint-docs": "npm-run-all \"update:eslint-docs --check\"",
@@ -26,7 +31,9 @@
     "eslint-plugin-eslint-plugin": "^5.0.0",
     "eslint-plugin-node": "^11.1.0",
     "mocha": "^10.0.0",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "eslint-config-universe": "^12.0.0",
+    "prettier": "^3.2.5"
   },
   "engines": {
     "node": "^14.17.0 || ^16.0.0 || >= 18.0.0"

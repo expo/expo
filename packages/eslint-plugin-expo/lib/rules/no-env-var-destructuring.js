@@ -2,7 +2,7 @@
  * @fileoverview Disallow destructuring env vars from process.env
  * @author Expo
  */
-"use strict";
+'use strict';
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -18,14 +18,21 @@ module.exports = {
     },
     schema: [],
     messages: {
-      unexpectedDesctucturing: 'Unexpected desctucturing. Cannot descructure {{destructuredVariable}} from process.env',
+      unexpectedDesctucturing:
+        'Unexpected desctucturing. Cannot descructure {{destructuredVariable}} from process.env',
     },
   },
 
   create(context) {
     const isMemberExpressionProcessEnv = (obj) => {
-      return obj && obj.object && obj.object.name === 'process' && obj.property && obj.property.name === 'env';
-    }
+      return (
+        obj &&
+        obj.object &&
+        obj.object.name === 'process' &&
+        obj.property &&
+        obj.property.name === 'env'
+      );
+    };
     return {
       VariableDeclarator(node) {
         const left = node.id;
