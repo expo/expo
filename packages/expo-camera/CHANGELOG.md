@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `pictureSize` prop to `CameraView` component.
+- Add `pictureSize` prop to `CameraView` component. ([#27664](https://github.com/expo/expo/pull/27664) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
