@@ -7,13 +7,13 @@ Eslint rules for Expo apps
 You'll first need to install [ESLint](https://eslint.org/):
 
 ```sh
-npm i eslint --save-dev
+npx expo install eslint --save-dev
 ```
 
 Next, install `eslint-plugin-expo`:
 
 ```sh
-npm install eslint-plugin-expo --save-dev
+npx expo install eslint-plugin-expo --save-dev
 ```
 
 ## Usage
@@ -22,9 +22,9 @@ Add `expo` to the plugins section of your `.eslintrc` configuration file. You ca
 
 ```json
 {
-    "plugins": [
-        "expo"
-    ]
+"plugins": [
+   "expo"
+  ]
 }
 ```
 
@@ -33,26 +33,21 @@ Then configure the rules you want to use under the rules section.
 
 ```json
 {
-    "rules": {
-        "expo/rule-name": 2
-    }
+  "rules": {
+    "expo/no-env-var-destructuring": 2
+  }
 }
 ```
-
-
-
-## Configurations
-
-<!-- begin auto-generated configs list -->
-TODO: Run eslint-doc-generator to generate the configs list (or delete this section if no configs are offered).
-<!-- end auto-generated configs list -->
-
 
 
 ## Rules
 
 <!-- begin auto-generated rules list -->
-TODO: Run eslint-doc-generator to generate the rules list.
+
+| Name                                                               | Description                                      |
+| :----------------------------------------------------------------- | :----------------------------------------------- |
+| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow desctructuring of environment variables |
+
 <!-- end auto-generated rules list -->
 
 
