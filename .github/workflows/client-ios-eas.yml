@@ -24,7 +24,6 @@ on:
       - fastlane/**
       - Gemfile.lock
   schedule:
-  schedule:
     - cron: '20 5 * * *' # 5:20 AM UTC time every day
 
 concurrency:
