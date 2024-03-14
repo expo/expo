@@ -1,9 +1,4 @@
-import {
-  StackActions,
-  type NavigationState,
-  type PartialState,
-  PartialRoute,
-} from '@react-navigation/native';
+import { StackActions, type NavigationState, PartialRoute } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { nanoid } from 'nanoid/non-secure';
 
