@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-expo",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Eslint rules for Expo apps",
   "keywords": [
     "eslint",
@@ -34,5 +34,5 @@
   "peerDependencies": {
     "eslint": ">=7"
   },
-  "license": "ISC"
+  "license": "MIT"
 }
