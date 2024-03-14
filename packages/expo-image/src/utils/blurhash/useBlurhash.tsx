@@ -29,21 +29,21 @@ export function useBlurhash(
     if (!blurhash || !blurhash.uri || !isBlurhash) {
       return;
     }
-    const strippedBlurhashString = blurhash?.uri?.replace(/blurhash:\//, '');
+    const strippedBlurhashString = blurhash.uri.replace(/blurhash:\//, '');
 
     const pixels = decode(
       strippedBlurhashString,
-      blurhash?.width ?? DEFAULT_SIZE.width,
-      blurhash?.height ?? DEFAULT_SIZE.height,
+      blurhash.width ?? DEFAULT_SIZE.width,
+      blurhash.height ?? DEFAULT_SIZE.height,
       punch
     );
 
     const canvas = document.createElement('canvas');
     const upscaledCanvas = document.createElement('canvas');
-    canvas.width = blurhash?.width ?? DEFAULT_SIZE.width;
-    canvas.height = blurhash?.height ?? DEFAULT_SIZE.height;
-    upscaledCanvas.width = (blurhash?.width ?? DEFAULT_SIZE.width) * scaleRatio;
-    upscaledCanvas.height = (blurhash?.height ?? DEFAULT_SIZE.height) * scaleRatio;
+    canvas.width = blurhash.width ?? DEFAULT_SIZE.width;
+    canvas.height = blurhash.height ?? DEFAULT_SIZE.height;
+    upscaledCanvas.width = (blurhash.width ?? DEFAULT_SIZE.width) * scaleRatio;
+    upscaledCanvas.height = (blurhash.height ?? DEFAULT_SIZE.height) * scaleRatio;
     const context = canvas.getContext('2d');
     if (!context) {
       console.warn('Failed to decode blurhash');
