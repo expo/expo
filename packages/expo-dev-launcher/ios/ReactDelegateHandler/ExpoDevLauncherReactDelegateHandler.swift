@@ -5,15 +5,14 @@ import EXDevMenu
 import EXUpdatesInterface
 
 @objc
-public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
+public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
   @objc
   public static var enableAutoSetup: Bool = true
 
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegateHandler: DevClientAppDelegate?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
-  private var rootViewInitialProperties: [AnyHashable : Any]?
+  private var rootViewInitialProperties: [AnyHashable: Any]?
   static var shouldEnableAutoSetup: Bool = {
     // if someone else has set this explicitly, use that value
     if !enableAutoSetup {
@@ -33,7 +32,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     return true
   }()
 
-  public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
+  public override func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
       return nil
     }
@@ -42,49 +46,28 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
-    self.bridgeDelegateHandler = EXRCTAppDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
-
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
-    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegateHandler, launchOptions: launchOptions)
-  }
-
-  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
-    if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
-      return nil
-    }
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
-    self.deferredRootView = EXDevLauncherDeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
+    self.deferredRootView = EXDevLauncherDeferredRCTRootView()
     return self.deferredRootView
   }
-
-  // MARK: RCTBridgeDelegate implementations
-
-  // swiftlint:disable implicitly_unwrapped_optional
-  public func sourceURL(for bridge: RCTBridge!) -> URL! {
-    return EXDevLauncherController.sharedInstance().sourceUrl()
-  }
-  // swiftlint:enable implicitly_unwrapped_optional
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let bridgeDelegateHandler = self.bridgeDelegateHandler else {
-      fatalError("bridgeDelegateHandler is not initialized")
-    }
-    let bridge = bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
-    developmentClientController.appBridge = bridge
+    developmentClientController.appBridge = RCTBridge.current()
 
-    let rootView = bridgeDelegateHandler.createRootView(
-      with: bridge,
-      moduleName: self.rootViewModuleName ?? "",
-      initProps: self.rootViewInitialProperties ?? [:]
+    let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
+      developmentClientController.sourceUrl(),
+      moduleName: self.rootViewModuleName,
+      initialProperties: self.rootViewInitialProperties
     )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
@@ -106,11 +89,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: Internals
 
   private func getWindow() -> UIWindow {
-    var window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-    if (window == nil) {
-      window = UIApplication.shared.delegate?.window ?? nil
-    }
-    guard let window = window else {
+    guard let window = UIApplication.shared.windows.filter(\.isKeyWindow).first ?? UIApplication.shared.delegate?.window as? UIWindow else {
       fatalError("Cannot find the current window.")
     }
     return window
