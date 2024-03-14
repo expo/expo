@@ -15,8 +15,6 @@ import { router } from '../imperative-api';
 // re-export everything
 export * from '@testing-library/react-native';
 
-jest.useFakeTimers();
-
 afterAll(() => {
   store.cleanup();
 });
@@ -51,6 +49,8 @@ export function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
+  jest.useFakeTimers();
+
   const mockContext = getMockContext(context);
 
   // Reset the initial URL
