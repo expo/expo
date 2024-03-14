@@ -938,7 +938,7 @@ build:
 
 #### `eas/resolve_build_config`
 
-Resolves and prints the build configuration. If the build has been triggered by the GitHub integration, it will update current `job` and `metadata` context values. It should be called after installing the dependencies, because the config may be influenced by config plugins.
+Resolves and prints the build configuration. If the build has been triggered by the GitHub integration, it will update the current `job` and `metadata` context values. It should be called after installing the dependencies because the config may be influenced by config plugins.
 
 This function is automatically executed by the [`eas/build`](#easbuild) function group.
 
@@ -951,7 +951,7 @@ This function is automatically executed by the [`eas/build`](#easbuild) function
 
 #### `eas/get_credentials_for_build_triggered_by_github_integration`
 
-> **warning** **Deprecated:** Replace this step with `eas/resolve_build_config`.
+> **warning** **Deprecated:** Replace this step with [`eas/resolve_build_config`](#easresolve_build_config).
 
 #### `eas/resolve_apple_team_id_from_credentials`
 
