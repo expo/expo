@@ -2,7 +2,6 @@ package com.helloworld
 
 import android.app.Application
 import android.content.res.Configuration
-import androidx.annotation.NonNull
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -10,11 +9,11 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactHost
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
-import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 
 import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ExpoReactHostFactory
 import expo.modules.ReactNativeHostWrapper
 
 class MainApplication : Application(), ReactApplication {
@@ -38,7 +37,7 @@ class MainApplication : Application(), ReactApplication {
   )
 
   override val reactHost: ReactHost
-    get() = getDefaultReactHost(applicationContext, reactNativeHost)
+    get() = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     super.onCreate()
