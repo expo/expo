@@ -109,7 +109,7 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 
 ## Add the TV config plugin
 
-<Terminal cmd={['npx expo install --dev @react-native-tvos/config-tv']} />
+<Terminal cmd={['$ npx expo install --dev @react-native-tvos/config-tv']} />
 
 When installed, the plugin will modify the project for TV when either:
 
@@ -130,10 +130,10 @@ Verify that this plugin appears in **app.json**:
 
 <Terminal cmd={[
   '# See all Expo CLI and config plugin debug information',
-  'export DEBUG=expo:*',
+  '$ export DEBUG=expo:*',
   '',
   '# See only debug information for the TV plugin',
-  'export DEBUG=expo:react-native-tvos:config-tv']}
+  '$ export DEBUG=expo:react-native-tvos:config-tv']}
 />
 
 </Step>
@@ -144,7 +144,7 @@ Verify that this plugin appears in **app.json**:
 
 Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifications to the project.
 
-<Terminal cmd={['export EXPO_TV=1', 'npx expo prebuild --clean']} />
+<Terminal cmd={['$ export EXPO_TV=1', '$ npx expo prebuild --clean']} />
 
 > **Note**: The `--clean` argument is recommended, and is required if you have existing Android and iOS directories in the project.
 
@@ -156,7 +156,7 @@ Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifica
 
 Start an Android TV emulator and use the following command to start the app on the emulator:
 
-<Terminal cmd={['npx expo run:android']} />
+<Terminal cmd={['$ npx expo run:android']} />
 
 </Step>
 <Step label="5">
@@ -165,7 +165,7 @@ Start an Android TV emulator and use the following command to start the app on t
 
 Run the following command to build and run the app on an Apple TV simulator:
 
-<Terminal cmd={['npx expo run:ios']} />
+<Terminal cmd={['$ npx expo run:ios']} />
 
 </Step>
 <Step label="6">
@@ -174,7 +174,7 @@ Run the following command to build and run the app on an Apple TV simulator:
 
 You can revert the changes for TV and go back to phone development by unsetting `EXPO_TV` and running prebuild again:
 
-<Terminal cmd={['unset EXPO_TV', 'npx expo prebuild --clean']} />
+<Terminal cmd={['$ unset EXPO_TV', '$ npx expo prebuild --clean']} />
 
 </Step>
 
