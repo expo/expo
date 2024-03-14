@@ -652,6 +652,7 @@ When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcre
 - [`eas/checkout`](#eascheckout)
 - [`eas/use_npm_token`](#easuse_npm_token)
 - [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
 - [`eas/prebuild`](#easprebuild)
 - [`eas/configure_eas_update`](#easconfigure_eas_update)
 - [`eas/run_gradle`](#easrun_gradle)
@@ -662,7 +663,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/checkout`](#eascheckout)
 - [`eas/use_npm_token`](#easuse_npm_token)
 - [`eas/install_node_modules`](#easinstall_node_modules)
-- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/resolve_build_config`](#easresolve_build_config)
 - [`eas/prebuild`](#easprebuild)
 - [`eas/configure_eas_update`](#easconfigure_eas_update)
 - [`eas/inject_android_credentials`](#easinject_android_credentials)
@@ -677,6 +678,7 @@ When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcre
 - [`eas/checkout`](#eascheckout)
 - [`eas/use_npm_token`](#easuse_npm_token)
 - [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
 - [`eas/prebuild`](#easprebuild)
 - Install pods using the `pod install` command
 - [`eas/configure_eas_update`](#easconfigure_eas_update)
@@ -689,7 +691,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/checkout`](#eascheckout)
 - [`eas/use_npm_token`](#easuse_npm_token)
 - [`eas/install_node_modules`](#easinstall_node_modules)
-- [`eas/get_credentials_for_build_triggered_by_github_integration`](#easget_credentials_for_build_triggered_by_github_integration)
+- [`eas/resolve_build_config`](#easresolve_build_config)
 - [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
 - [`eas/prebuild`](#easprebuild)
 - Install pods using the `pod install` command
@@ -934,37 +936,22 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
-#### `eas/get_credentials_for_build_triggered_by_github_integration`
+#### `eas/resolve_build_config`
 
-Resolves the credentials for a build triggered by our [GitHub integration](/build/building-from-github/). Call this function if you are using the GitHub integration and your custom build needs to use credentials.
+Resolves and prints the build configuration. If the build has been triggered by the GitHub integration, it will update current `job` and `metadata` context values. It should be called after installing the dependencies, because the config may be influenced by config plugins.
 
-This is a no-op if the build was not triggered by the GitHub integration. This function is automatically executed by [`eas/build`](#easbuild) function group.
-
-```yaml example.yml
-build:
-  name: Example Android config for a build triggered by GitHub integration
-  steps:
-    - eas/checkout
-    - eas/use_npm_token
-    - eas/install_node_modules
-    # @info #
-    - eas/get_credentials_for_build_triggered_by_github_integration
-    # @end #
-    - eas/configure_eas_update:
-        inputs:
-          throw_if_not_configured: false
-    - eas/inject_android_credentials
-    - eas/configure_android_version
-    - eas/run_gradle
-    - eas/find_and_upload_build_artifacts
-```
+This function is automatically executed by the [`eas/build`](#easbuild) function group.
 
 <BoxLink
-  title="eas/get_credentials_for_build_triggered_by_github_integration source code"
-  description="View the source code for the eas/get_credentials_for_build_triggered_by_github_integration function on GitHub."
+  title="eas/resolve_build_config source code"
+  description="View the source code for the eas/resolve_build_config function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/getCredentialsForBuildTriggeredByGitHubIntegration.ts"
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/resolveBuildConfig.ts"
 />
+
+#### `eas/get_credentials_for_build_triggered_by_github_integration`
+
+> **warning** **Deprecated:** Replace this step with `eas/resolve_build_config`.
 
 #### `eas/resolve_apple_team_id_from_credentials`
 
