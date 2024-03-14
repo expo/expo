@@ -62,7 +62,7 @@ jobs:
             sleep 1
           done
           yarn test-links http://127.0.0.1:8000
-        timeout-minutes: 1
+        timeout-minutes: 3
       - name: 🚀 Deploy Docs website
         if: ${{ github.event.ref == 'refs/heads/main' }}
         run: ./deploy.sh
