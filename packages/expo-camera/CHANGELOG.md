@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `pictureSize` prop to `CameraView` component.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
