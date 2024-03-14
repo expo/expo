@@ -65,9 +65,6 @@ export function getUrlWithReactNavigationConcessions(
     // The slashes are at the end, not the beginning
     nonstandardPathname:
       stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-
-    // React Navigation doesn't support hashes, so here
-    inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
     url: parsed,
   };
 }
@@ -309,6 +306,7 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
 
 function getStateFromEmptyPathWithConfigs(
   path: string,
+  hash: string,
   configs: RouteConfig[],
   initialRoutes: InitialRouteConfig[]
 ): ResultState | undefined {
@@ -356,7 +354,7 @@ function getStateFromEmptyPathWithConfigs(
     };
   });
 
-  return createNestedStateObject(path, routes, configs, initialRoutes);
+  return createNestedStateObject(path, hash, routes, configs, initialRoutes);
 }
 
 function getStateFromPathWithConfigs(
@@ -376,7 +374,12 @@ function getStateFromPathWithConfigs(
   if (!path.startsWith('/')) cleanPath = cleanPath.slice(1);
 
   if (formattedPaths.nonstandardPathname === '/') {
-    return getStateFromEmptyPathWithConfigs(cleanPath, configs, initialRoutes);
+    return getStateFromEmptyPathWithConfigs(
+      cleanPath,
+      formattedPaths.url.hash.slice(1),
+      configs,
+      initialRoutes
+    );
   }
 
   // We match the whole path against the regex instead of segments
@@ -387,7 +390,13 @@ function getStateFromPathWithConfigs(
     return undefined;
   }
   // This will always be empty if full path matched
-  return createNestedStateObject(cleanPath, routes, configs, initialRoutes);
+  return createNestedStateObject(
+    cleanPath,
+    formattedPaths.url.hash.slice(1),
+    routes,
+    configs,
+    initialRoutes
+  );
 }
 
 const joinPaths = (...paths: string[]): string =>
@@ -706,6 +715,7 @@ const createStateObject = (
 
 const createNestedStateObject = (
   path: string,
+  hash: string | undefined,
   routes: ParsedRoute[],
   routeConfigs: RouteConfig[],
   initialRoutes: InitialRouteConfig[]
@@ -768,6 +778,11 @@ const createNestedStateObject = (
     if (Object.keys(route.params).length === 0) {
       delete route.params;
     }
+  }
+
+  if (hash) {
+    route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
+    route.params['#'] = hash;
   }
 
   return state;

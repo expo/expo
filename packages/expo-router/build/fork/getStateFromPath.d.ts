@@ -19,8 +19,8 @@ export declare function getUrlWithReactNavigationConcessions(path: string, baseU
     url: null;
 } | {
     nonstandardPathname: string;
-    inputPathnameWithoutHash: string;
     url: URL;
+    inputPathnameWithoutHash?: undefined;
 };
 /**
  * Utility to parse a path string to initial state object accepted by the container.
