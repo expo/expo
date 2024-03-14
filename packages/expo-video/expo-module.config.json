@@ -4,6 +4,6 @@
     "modules": ["VideoModule"]
   },
   "android": {
-    "modules": ["expo.modules.video.VideoModule"]
+    "modules": ["expo.modules.video.VideoModule", "expo.modules.video.transparent.TransparentVideoModule"]
   }
 }
