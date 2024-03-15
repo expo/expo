@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed multiple WebSocket connections created on Web when an app containing multiple dev tools plugins. ([#27702](https://github.com/expo/expo/pull/27702) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
