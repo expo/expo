@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed "Tried to resolve a promise more than once" crash on iOS. ([#27672](https://github.com/expo/expo/pull/27672) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Create native module for iOS and Android. Migrate `downloadAsync` to a native implementation. ([#27369](https://github.com/expo/expo/pull/27369) by [@aleqsio](https://github.com/aleqsio))
