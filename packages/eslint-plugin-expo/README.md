@@ -43,13 +43,7 @@ Then configure the rules you want to use under the rules section.
 
 ## Rules
 
-<!-- begin auto-generated rules list -->
-
 | Name                                                               | Description                                          |
 | :----------------------------------------------------------------- | :--------------------------------------------------- |
 | [no-dynamic-env-var](docs/rules/no-dynamic-env-var.md)             | Prevents process.env from being accessed dynamically |
 | [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow desctructuring of environment variables     |
-
-<!-- end auto-generated rules list -->
-
-

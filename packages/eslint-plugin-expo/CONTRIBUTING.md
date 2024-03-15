@@ -1,26 +1,14 @@
 ## Creating a new rule
 
-We use [generator-eslint](https://github.com/eslint/generator-eslint) for the folder structure and rule generation. This ensures a consitent rule layout, and allows for a lot of the documentation to be generated automatically.
+To create a new rules, add the following files:
+- `lib/rules/newRule.ts`
+- `tests/lib/rules/newRule.ts`
+- `docs/rules/newRule.md`
 
-First, ensure you Yeoman, Node.js and generator-eslint installed globally:
+and make sure you add the new rule to `lib/rules/index.ts`.
 
-```sh
-npm i -g yo
-npm i -g generator-eslint
-```
-
-Then to create a new rule, run ththe following at the project root level:
-
-```sh
-yo eslint:rule
-```
-
-You will be prompted to enter information about the new rule after which the plugin will create files for the rule, test and documentation.
-
-First add some test cases to check the validity of your error in `tests/lib/rules`.
-
-Then implement your rule in `lib/rules` (run `yarn test` to run the tests). The [AST explorer](https://astexplorer.net/) might come in handy here when writing the rule.
+Now you can implement your rule in `lib/rules` (run `yarn test` to run the tests). The [AST explorer](https://astexplorer.net/) can come in handy here when writing the rule.
 
 Now update the documentation for the new rule in `docs/rules`.
 
-And finally, run `yarn update:eslint-docs` to update the documentation with details about the new rule.
+And finally make sure it's added to the table and config in `README.md`.
