@@ -141,7 +141,7 @@ it(`supports overwriting the default engine option`, () => {
   expect(firstPass.code).not.toEqual(secondPass.code);
 });
 
-describe('react compiler', () => {
+describe('compiler', () => {
   const options = {
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
     babelrc: false,

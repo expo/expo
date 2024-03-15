@@ -1,4 +1,5 @@
-function App() {
+export function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const foo = () => {
     try {
       console.log('hey');
