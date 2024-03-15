@@ -13,7 +13,7 @@ import { isNodeExternal } from './externals';
 import { formatFileCandidates } from './formatFileCandidates';
 import { isServerEnvironment } from '../middleware/metroOptions';
 
-class FailedToResolvePathError extends Error {
+export class FailedToResolvePathError extends Error {
   // Added to ensure the error is matched by our tooling.
   // TODO: Test that this matches `isFailedToResolvePathError`
   candidates = {};
