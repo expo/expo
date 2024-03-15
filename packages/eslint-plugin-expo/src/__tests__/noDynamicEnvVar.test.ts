@@ -1,6 +1,6 @@
 import { RuleTester } from '@typescript-eslint/rule-tester';
 
-import { noDynamicEnvVar } from '../../../lib/rules/noDynamicEnvVar';
+import { noDynamicEnvVar } from '../rules/noDynamicEnvVar';
 
 const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',

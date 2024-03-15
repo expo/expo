@@ -1,6 +1,6 @@
 import { RuleTester } from '@typescript-eslint/rule-tester';
 
-import { noEnvVarDestructuring } from '../../../lib/rules/noEnvVarDestructuring';
+import { noEnvVarDestructuring } from '../rules/noEnvVarDestructuring';
 
 const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
