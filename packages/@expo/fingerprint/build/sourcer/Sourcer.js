@@ -18,6 +18,7 @@ async function getHashSourcesAsync(projectRoot, options) {
         (0, Profile_1.profile)(options, Expo_1.getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Expo_1.getExpoConfigSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Expo_1.getEasBuildSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getExpoCNGPatchSourcesAsync)(projectRoot, options),
         // bare managed files
         (0, Profile_1.profile)(options, Bare_1.getGitIgnoreSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Bare_1.getPackageJsonScriptSourcesAsync)(projectRoot, options),

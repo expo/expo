@@ -1,6 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
@@ -25,7 +25,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaReferencesCache::instance()->loadJClasses(jni::Environment::current());
     expo::FrontendConverterProvider::instance()->createConverters();
 
-    expo::JSIInteropModuleRegistry::registerNatives();
+    expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();

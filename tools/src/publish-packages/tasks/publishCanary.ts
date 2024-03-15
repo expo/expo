@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import path from 'path';
 import semver from 'semver';
 
 import { checkEnvironmentTask } from './checkEnvironmentTask';
@@ -10,19 +11,30 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import { PACKAGES_DIR } from '../../Constants';
 import Git from '../../Git';
 import logger from '../../Logger';
+import { getPackageViewAsync, publishPackageAsync } from '../../Npm';
+import {
+  getAvailableProjectTemplatesAsync,
+  updateTemplateVersionsAsync,
+} from '../../ProjectTemplates';
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { cyan } = chalk;
+const { cyan, green } = chalk;
 
 /**
  * An array of packages whose version is constrained to the SDK version.
  */
 const SDK_CONSTRAINED_PACKAGES = ['expo', 'jest-expo', '@expo/config-types'];
+
+/**
+ * Path to `bundledNativeModules.json` file.
+ */
+const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
 
 /**
  * Prepare packages to be published as canaries.
@@ -49,6 +61,49 @@ export const prepareCanaries = new Task<TaskArgs>(
 
     // Override the tag option – canary releases should always use `canary` tag
     options.tag = 'canary';
+  }
+);
+
+const publishCanaryProjectTemplates = new Task<TaskArgs>(
+  {
+    name: 'publishCanaryProjectTemplates',
+    dependsOn: [prepareCanaries],
+  },
+  async (parcels: Parcel[], options: CommandOptions) => {
+    await runWithSpinner(
+      'Updating and publishing project templates',
+      async (step) => {
+        const templates = await getAvailableProjectTemplatesAsync();
+        const bundledNativeModules = require(BUNDLED_NATIVE_MODULES_PATH);
+        const expoVersion = await sdkVersionAsync();
+        const dependenciesToUpdate = {
+          ...bundledNativeModules,
+          expo: `~${expoVersion}`,
+        };
+
+        for (const template of templates) {
+          step.start(`Updating and publishing ${green(template.name)}`);
+
+          const templateView = await getPackageViewAsync(template.name);
+
+          // Canary project template uses the same version as the `expo` package that it depends on.
+          const canaryVersion = findNextAvailableCanaryVersion(
+            expoVersion,
+            templateView?.versions ?? []
+          );
+
+          // Update versions of the dependencies based on `bundledNativeModules.json`.
+          await updateTemplateVersionsAsync(template.path, canaryVersion, dependenciesToUpdate);
+
+          // Publish the project template with a `canary` tag.
+          await publishPackageAsync(template.path, {
+            tagName: 'canary',
+            dryRun: options.dry,
+          });
+        }
+      },
+      'Updated and published project templates'
+    );
   }
 );
 
@@ -105,6 +160,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateWorkspaceProjects,
       packPackageToTarball,
       publishPackages,
+      publishCanaryProjectTemplates,
       cleanWorkingTree,
     ],
   },

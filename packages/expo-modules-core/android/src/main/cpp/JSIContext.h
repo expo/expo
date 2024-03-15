@@ -15,6 +15,13 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+#include <ReactCommon/RuntimeExecutor.h>
+#include <react/jni/JRuntimeExecutor.h>
+
+#endif
+
 #if REACT_NATIVE_TARGET_VERSION >= 73
 
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
@@ -32,11 +39,10 @@ namespace expo {
 /**
  * A JNI wrapper to initialize CPP part of modules and access all data from the module registry.
  */
-class JSIInteropModuleRegistry : public jni::HybridClass<JSIInteropModuleRegistry> {
+class JSIContext : public jni::HybridClass<JSIContext> {
 public:
-  static auto constexpr
-    kJavaDescriptor = "Lexpo/modules/kotlin/jni/JSIInteropModuleRegistry;";
-  static auto constexpr TAG = "JSIInteropModuleRegistry";
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/JSIContext;";
+  static auto constexpr TAG = "JSIContext";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
@@ -50,6 +56,19 @@ public:
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
   );
+
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+  /**
+     * Initializes the `ExpoModulesHostObject` and adds it to the global object.
+     */
+    void installJSIForBridgeless(
+      jlong jsRuntimePointer,
+      jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+      jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
+    );
+
+#endif
 
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
@@ -112,7 +131,6 @@ public:
    */
   void drainJSEventLoop();
 
-  std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
@@ -124,13 +142,13 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
-  ~JSIInteropModuleRegistry();
+  ~JSIContext();
 
 private:
   friend HybridBase;
-  jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
+  jni::global_ref<JSIContext::javaobject> javaPart_;
 
-  explicit JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis);
+  explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
   inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
@@ -143,8 +161,53 @@ private:
 
   void jniWasDeallocated();
 
+  void prepareJSIContext(
+    jlong jsRuntimePointer,
+    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+    std::shared_ptr<react::CallInvoker> callInvoker
+  );
+
   void prepareRuntime();
 
-  void jniSetNativeStateForSharedObject(int id, jni::alias_ref<JavaScriptObject::javaobject> jsObject);
+  void jniSetNativeStateForSharedObject(
+    int id,
+    jni::alias_ref<JavaScriptObject::javaobject> jsObject
+  );
 };
+
+/**
+ * We are binding the JSIContext to the runtime using a thread-local map.
+ * This is a simplification of how we're accessing the JSIContext from different places.
+ * We're using a thread-local map to prevent from accessing the wrong JSIContext from a different thread.
+ * It's much safer than passing around the JSIContext as a parameter.
+ */
+extern thread_local std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
+
+/**
+ * Binds the JSIContext to the runtime.
+ * @param runtime
+ * @param jsiContext
+ */
+void bindJSIContext(const jsi::Runtime &runtime, JSIContext *jsiContext);
+
+/**
+ * Unbinds the JSIContext from the runtime.
+ * @param runtime
+ */
+void unbindJSIContext(const jsi::Runtime &runtime);
+
+/**
+ * Gets the JSIContext for the given runtime.
+ * @param runtime
+ * @return JSIContext * - it should never be stored when received from this function.
+ * It might throw an exception if the JSIContext for the given runtime doesn't exist.
+ */
+inline JSIContext *getJSIContext(const jsi::Runtime &runtime) {
+  const auto iterator = jsiContexts.find(reinterpret_cast<uintptr_t>(&runtime));
+  if (iterator == jsiContexts.end()) {
+    throw std::invalid_argument("JSIContext for the given runtime doesn't exist");
+  }
+  return iterator->second;
+}
+
 } // namespace expo
