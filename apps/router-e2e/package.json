@@ -7,7 +7,7 @@
     "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start"
   },
   "dependencies": {
-    "expo": "~50.0.0-alpha.0",
+    "expo": "~51.0.0-unreleased",
     "expo-router": "^3.0.0",
     "react": "18.2.0",
     "react-native": "0.74.0-rc.3"
