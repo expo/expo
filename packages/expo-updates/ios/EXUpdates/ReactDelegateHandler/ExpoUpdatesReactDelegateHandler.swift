@@ -12,6 +12,7 @@ import EXUpdatesInterface
  */
 public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
+  private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
@@ -60,6 +61,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     self.reactDelegate = reactDelegate
+    self.launchOptions = launchOptions
     AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     controller.delegate = self
@@ -81,7 +83,9 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
       AppController.sharedInstance.launchAssetUrl(),
       moduleName: self.rootViewModuleName,
-      initialProperties: self.rootViewInitialProperties)
+      initialProperties: self.rootViewInitialProperties,
+      launchOptions: self.launchOptions
+    )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
     let rootViewController = reactDelegate.createRootViewController()
@@ -99,6 +103,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
    */
   private func cleanup() {
     self.reactDelegate = nil
+    self.launchOptions = nil
     self.deferredRootView = nil
     self.rootViewModuleName = nil
     self.rootViewInitialProperties = nil
