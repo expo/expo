@@ -5,10 +5,10 @@
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-module tsc && chmod +x build/cli/index.js",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
+    "prepare": "yarn run clean && yarn run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "test:e2e": "expo-module clean && expo-module tsc && expo-module test --config e2e/jest.config.js",
