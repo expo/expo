@@ -37,14 +37,19 @@ const debug = require('debug')('expo:start:server:node-renderer') as typeof cons
 const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
 // Support unhandled rejections
-require('source-map-support').install({
-  retrieveSourceMap(source: string) {
-    if (cachedSourceMaps.has(source)) {
-      return cachedSourceMaps.get(source);
-    }
-    return null;
-  },
-});
+// Detect if running in Bun
+
+// @ts-expect-error: This is a global variable that is set by Bun.
+if (!process.isBun) {
+  require('source-map-support').install({
+    retrieveSourceMap(source: string) {
+      if (cachedSourceMaps.has(source)) {
+        return cachedSourceMaps.get(source);
+      }
+      return null;
+    },
+  });
+}
 
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
