@@ -39,7 +39,15 @@ describe(diffFingerprintChangesAsync, () => {
       '/app',
       await normalizeOptionsAsync('/app', { debug: true })
     );
-    expect(diff).toMatchInlineSnapshot(`
+
+    // Because our resolve-from mock will pull package from expo/expo monorepo.
+    // As long as we bumping package versions like react-native, we will break the snapshot.
+    // Removing packages from the diff will make the test stable.
+    const normalizedDiff = diff.filter(
+      (item) => !(item.type === 'contents' && item.id.startsWith('package:'))
+    );
+
+    expect(normalizedDiff).toMatchInlineSnapshot(`
       [
         {
           "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
