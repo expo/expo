@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.node",
+  "include": ["./lib", "./tests/lib"],
+  "compilerOptions": {
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": false,
+    "composite": false,
+  }
+}

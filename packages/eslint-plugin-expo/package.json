@@ -16,30 +16,30 @@
     "directory": "packages/eslint-plugin-expo"
   },
   "scripts": {
-    "lint": "npm-run-all \"lint:*\"",
-    "lint:eslint-docs": "npm-run-all \"update:eslint-docs --check\"",
-    "lint:js": "eslint .",
-    "test": "mocha tests --recursive",
-    "update:eslint-docs": "eslint-doc-generator"
+    "lint": "eslint .",
+    "test": "mocha --require mochaSetup.mjs",
+    "build": "tsc"
   },
   "dependencies": {
-    "requireindex": "^1.2.0"
+    "@typescript-eslint/types": "^7.2.0",
+    "@typescript-eslint/utils": "^7.2.0",
+    "eslint": "^8.57.0"
   },
   "devDependencies": {
+    "@types/eslint": "^8.56.5",
+    "@typescript-eslint/rule-tester": "^7.2.0",
     "eslint": "^8.57.0",
-    "eslint-doc-generator": "^1.0.0",
+    "eslint-config-universe": "^12.0.0",
     "eslint-plugin-eslint-plugin": "^5.0.0",
     "eslint-plugin-node": "^11.1.0",
     "mocha": "^10.0.0",
-    "npm-run-all": "^4.1.5",
-    "eslint-config-universe": "^12.0.0",
     "prettier": "^3.2.5"
   },
   "engines": {
-    "node": "^14.17.0 || ^16.0.0 || >= 18.0.0"
+    "node": ">=18.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=7"
+    "eslint": ">=8"
   },
   "license": "MIT"
 }

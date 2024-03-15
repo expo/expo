@@ -1,7 +1,5 @@
 # Prevents process.env from being accessed dynamically (`expo/no-dynamic-env-var`)
 
-<!-- end auto-generated rule header -->
-
 Expo's Metro config injects build settings that can be used in the client bundle via environment variables. The environment variables (`process.env.*`) are replaced with the appropriate values at build time. This means that `process.env` is not a standard JavaScript object, and dynamically accessing its values will break inlining on environment variables.
 
 ## Rule Details
