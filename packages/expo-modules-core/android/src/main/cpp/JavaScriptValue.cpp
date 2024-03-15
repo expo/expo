@@ -8,7 +8,7 @@
 #include "JavaScriptFunction.h"
 #include "TypedArray.h"
 #include "Exceptions.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 namespace expo {
 void JavaScriptValue::registerNatives() {
@@ -157,7 +157,7 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptValue::getObject() {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
   return JavaScriptObject::newInstance(
-    runtimeHolder.getModuleRegistry(),
+    runtimeHolder.getJSIContext(),
     runtimeHolder,
     jsObject
   );
@@ -168,7 +168,7 @@ jni::local_ref<JavaScriptFunction::javaobject> JavaScriptValue::jniGetFunction()
   auto jsFunction = std::make_shared<jsi::Function>(
     jsValue->getObject(jsRuntime).asFunction(jsRuntime));
   return JavaScriptFunction::newInstance(
-    runtimeHolder.getModuleRegistry(),
+    runtimeHolder.getJSIContext(),
     runtimeHolder,
     jsFunction
   );
@@ -176,7 +176,7 @@ jni::local_ref<JavaScriptFunction::javaobject> JavaScriptValue::jniGetFunction()
 
 jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptValue::getArray() {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto moduleRegistry = runtimeHolder.getModuleRegistry();
+  auto moduleRegistry = runtimeHolder.getJSIContext();
 
   auto jsArray = jsValue
     ->getObject(jsRuntime)
@@ -210,14 +210,14 @@ jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray(
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
   return JavaScriptTypedArray::newInstance(
-    runtimeHolder.getModuleRegistry(),
+    runtimeHolder.getJSIContext(),
     runtimeHolder,
     jsObject
   );
 }
 
 jni::local_ref<JavaScriptValue::javaobject> JavaScriptValue::newInstance(
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  JSIContext *jsiContext,
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Value> jsValue
 ) {
@@ -225,7 +225,7 @@ jni::local_ref<JavaScriptValue::javaobject> JavaScriptValue::newInstance(
     std::move(runtime),
     std::move(jsValue)
   );
-  jsiInteropModuleRegistry->jniDeallocator->addReference(value);
+  jsiContext->jniDeallocator->addReference(value);
   return value;
 }
 } // namespace expo

@@ -42,7 +42,7 @@ struct SharedRef : public jni::HybridClass<SharedRef, SharedObjectId> {
     friend HybridBase;
 };
 
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 typedef std::variant<folly::dynamic, jni::global_ref<SharedRef::javaobject>> CallbackArg;
 
@@ -57,11 +57,9 @@ public:
   static void registerNatives();
 
   static jni::local_ref<JavaCallback::javaobject> newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jsiContext,
     Callback callback
   );
-
-  static JSIInteropModuleRegistry *jsiRegistry_;
 
 private:
   friend HybridBase;

@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
@@ -14,12 +15,12 @@ import java.lang.ref.WeakReference
 
 /**
  * Despite the fact that this class is marked as [Destructible], it is not included in the [JNIDeallocator].
- * The deallocation of the [JSIInteropModuleRegistry] should be performed at the very end
+ * The deallocation of the [JSIContext] should be performed at the very end
  * to prevent the destructor of the [Destructible] object from accessing data that has already been freed.
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JSIInteropModuleRegistry : Destructible {
+class JSIContext : Destructible {
   internal lateinit var appContextHolder: WeakReference<AppContext> // = WeakReference(appContext)
 
   // Has to be called "mHybridData" - fbjni uses it via reflection
@@ -43,6 +44,20 @@ class JSIInteropModuleRegistry : Destructible {
     )
   }
 
+  fun installJSIForBridgeless(
+    appContext: AppContext,
+    jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
+    runtimeExecutor: RuntimeExecutor
+  ) {
+    appContextHolder = appContext.weak()
+    installJSIForBridgeless(
+      jsRuntimePointer,
+      jniDeallocator,
+      runtimeExecutor
+    )
+  }
+
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
@@ -51,6 +66,12 @@ class JSIInteropModuleRegistry : Destructible {
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl
+  )
+
+  private external fun installJSIForBridgeless(
+    jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
+    runtimeExecutor: RuntimeExecutor
   )
 
   @OptIn(FrameworkAPI::class)
