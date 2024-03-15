@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.node",
-  "include": ["./lib", "./tests/lib"],
+  "include": ["./lib"],
   "compilerOptions": {
     "outDir": "build",
     "resolveJsonModule": true,

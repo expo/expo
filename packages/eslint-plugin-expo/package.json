@@ -8,8 +8,11 @@
     "eslint-plugin"
   ],
   "author": "Expo",
-  "main": "./lib/index.js",
-  "exports": "./lib/index.js",
+  "main": "./build/index.js",
+  "files": [
+    "README.md",
+    "build"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo.git",
