@@ -28,7 +28,7 @@
 
 ### 💡 Others
 
-- Depend on internal CJS build of `expo-router`.
+- Depend on internal CJS build of `expo-router`. ([#27638](https://github.com/expo/expo/pull/27638) by [@EvanBacon](https://github.com/EvanBacon))
 - Change server log tag. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
 - Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable lazy modules with swc when building `@expo/cli`. ([#27061](https://github.com/expo/expo/pull/27061) by [@byCedric](https://github.com/byCedric))
