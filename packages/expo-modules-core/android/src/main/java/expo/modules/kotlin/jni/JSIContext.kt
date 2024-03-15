@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
@@ -43,6 +44,20 @@ class JSIContext : Destructible {
     )
   }
 
+  fun installJSIForBridgeless(
+    appContext: AppContext,
+    jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
+    runtimeExecutor: RuntimeExecutor
+  ) {
+    appContextHolder = appContext.weak()
+    installJSIForBridgeless(
+      jsRuntimePointer,
+      jniDeallocator,
+      runtimeExecutor
+    )
+  }
+
   /**
    * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
@@ -51,6 +66,12 @@ class JSIContext : Destructible {
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl
+  )
+
+  private external fun installJSIForBridgeless(
+    jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
+    runtimeExecutor: RuntimeExecutor
   )
 
   @OptIn(FrameworkAPI::class)
