@@ -25,7 +25,9 @@ export function useLoadedNavigation() {
     if (isMounted.current) {
       const pendingCallbacks = pending.current;
       pending.current = [];
-      pendingCallbacks.forEach((callback) => {});
+      pendingCallbacks.forEach((callback) => {
+        callback(navigation as GenericNavigation);
+      });
     }
   }, [navigation]);
 

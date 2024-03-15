@@ -20,7 +20,9 @@ function useLoadedNavigation() {
         if (isMounted.current) {
             const pendingCallbacks = pending.current;
             pending.current = [];
-            pendingCallbacks.forEach((callback) => { });
+            pendingCallbacks.forEach((callback) => {
+                callback(navigation);
+            });
         }
     }, [navigation]);
     (0, react_1.useEffect)(() => {
