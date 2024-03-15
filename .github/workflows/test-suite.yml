@@ -199,6 +199,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v3
         with:
