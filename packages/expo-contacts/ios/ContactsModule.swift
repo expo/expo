@@ -15,6 +15,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var currentContactPickingContext: ContactPickingContext?
+  private var contactManipulationPromise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
@@ -137,8 +138,10 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       controller.onViewDisappeared = {
         promise.resolve()
+        self.contactManipulationPromise = nil
       }
 
+      contactManipulationPromise = promise
       parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 

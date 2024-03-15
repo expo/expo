@@ -83,3 +83,9 @@ internal class ContactPickingInProgressException: Exception {
     "Different contact picking in progress. Await other contact picking first"
   }
 }
+
+internal class ContactManipulationInProgressException: Exception {
+  override var reason: String {
+    "Different contact manipulation in progress. Await other contact manipulation first"
+  }
+}

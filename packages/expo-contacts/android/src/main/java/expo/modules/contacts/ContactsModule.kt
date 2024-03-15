@@ -258,6 +258,10 @@ class ContactsModule : Module() {
     AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, options: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
 
+      if (contactManipulationPromise != null) {
+        throw ContactManipulationInProgressException()
+      }
+
       if (contactId != null) {
         val contact = getContactById(contactId, defaultFields) ?: throw ContactNotFoundException()
         presentEditForm(contact, promise)
@@ -293,14 +297,14 @@ class ContactsModule : Module() {
     }
 
      AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (mPendingPromise != null) {
+       if (contactPickingPromise != null) {
          throw ContactPickingInProgressException()
        }
 
        val intent = Intent(Intent.ACTION_PICK)
        intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
-       mPendingPromise = promise
+       contactPickingPromise = promise
        activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
@@ -320,7 +324,7 @@ class ContactsModule : Module() {
     )
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-    mPendingPromise = promise
+    contactManipulationPromise = promise
     activity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
@@ -683,11 +687,17 @@ class ContactsModule : Module() {
 
   private inner class ContactsActivityEventListener : ActivityEventListener {
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
-      val pendingPromise = mPendingPromise ?: return
       if (requestCode == RC_EDIT_CONTACT) {
+        val pendingPromise = contactManipulationPromise ?: return
+
         pendingPromise.resolve(0)
+
+        contactManipulationPromise = null
       }
       if (requestCode == RC_PICK_CONTACT) {
+        val pendingPromise = contactPickingPromise ?: return
+
+
         if (resultCode == Activity.RESULT_CANCELED) {
           pendingPromise.resolve(null)
         }
@@ -697,9 +707,9 @@ class ContactsModule : Module() {
           val contact = getContactById(contactId, defaultFields)
           pendingPromise.resolve(contact?.toMap(defaultFields))
         }
-      }
 
-      mPendingPromise = null
+        contactPickingPromise = null
+      }
     }
 
     override fun onNewIntent(intent: Intent) = Unit
