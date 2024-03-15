@@ -3,18 +3,6 @@ import invariant from 'invariant';
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-function getRandomValues(input: Uint8Array): Uint8Array {
-  const output = input;
-  // Get access to the underlying raw bytes
-  if (input.byteLength !== input.length) input = new Uint8Array(input.buffer);
-
-  const bytes = Crypto.getRandomBytes(input.length);
-
-  for (let i = 0; i < bytes.length; i++) input[i] = bytes[i];
-
-  return output;
-}
-
 function convertBufferToString(buffer: Uint8Array): string {
   const state: string[] = [];
   for (let i = 0; i < buffer.byteLength; i += 1) {
@@ -29,8 +17,7 @@ function convertToUrlSafeString(b64: string): string {
 }
 
 export function generateRandom(size: number): string {
-  const buffer = new Uint8Array(size);
-  getRandomValues(buffer);
+  const buffer = Crypto.getRandomValues(new Uint8Array(size));
   return convertBufferToString(buffer);
 }
 
