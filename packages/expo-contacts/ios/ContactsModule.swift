@@ -73,7 +73,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       if contactManipulationPromise != nil {
         throw ContactManipulationInProgressException()
       }
-      
+
       var controller: ContactsViewController?
       var contact: CNMutableContact
 
