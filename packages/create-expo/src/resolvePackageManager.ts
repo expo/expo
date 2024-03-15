@@ -103,7 +103,7 @@ export async function configurePackageManager(
   packageManager: PackageManagerName,
   flags: { silent: boolean } = { silent: false }
 ) {
-  const manager = createPackageManager(packageManager, { cwd: projectRoot });
+  const manager = createPackageManager(packageManager, { cwd: projectRoot, ...flags });
   switch (manager.name) {
     case 'pnpm':
       await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
