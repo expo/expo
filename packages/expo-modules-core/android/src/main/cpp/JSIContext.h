@@ -15,6 +15,8 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
+#define IS_NEW_ARCHITECTURE_ENABLED 1
+
 #if IS_NEW_ARCHITECTURE_ENABLED
 
 #include <ReactCommon/RuntimeExecutor.h>
@@ -41,10 +43,8 @@ namespace expo {
  */
 class JSIContext : public jni::HybridClass<JSIContext> {
 public:
-  static auto constexpr
-  kJavaDescriptor = "Lexpo/modules/kotlin/jni/JSIContext;";
-  static auto constexpr
-  TAG = "JSIContext";
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/JSIContext;";
+  static auto constexpr TAG = "JSIContext";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
@@ -163,7 +163,7 @@ private:
 
   void jniWasDeallocated();
 
-  void prepareJSIInterop(
+  void prepareJSIContext(
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     std::shared_ptr<react::CallInvoker> callInvoker
@@ -171,8 +171,10 @@ private:
 
   void prepareRuntime();
 
-  void
-  jniSetNativeStateForSharedObject(int id, jni::alias_ref<JavaScriptObject::javaobject> jsObject);
+  void jniSetNativeStateForSharedObject(
+    int id,
+    jni::alias_ref<JavaScriptObject::javaobject> jsObject
+  );
 };
 
 /**
