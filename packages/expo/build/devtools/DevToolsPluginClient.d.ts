@@ -12,6 +12,8 @@ export declare abstract class DevToolsPluginClient {
     protected eventEmitter: EventEmitter;
     private static defaultWSStore;
     private readonly wsStore;
+    protected isClosed: boolean;
+    protected retries: number;
     constructor(connectionInfo: ConnectionInfo);
     /**
      * Initialize the connection.

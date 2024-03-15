@@ -1,5 +1,6 @@
 import { EventEmitter } from 'fbemitter';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
+import { WebSocketWithReconnect } from './WebSocketWithReconnect';
 import * as logger from './logger';
 // This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
 export const MESSAGE_PROTOCOL_VERSION = 2;
@@ -13,6 +14,8 @@ export class DevToolsPluginClient {
     eventEmitter = new EventEmitter();
     static defaultWSStore = new WebSocketBackingStore();
     wsStore = DevToolsPluginClient.defaultWSStore;
+    isClosed = false;
+    retries = 0;
     constructor(connectionInfo) {
         this.connectionInfo = connectionInfo;
         this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
@@ -32,6 +35,7 @@ export class DevToolsPluginClient {
      * Close the connection.
      */
     async closeAsync() {
+        this.isClosed = true;
         this.wsStore.ws?.removeEventListener('message', this.handleMessage);
         this.wsStore.refCount -= 1;
         if (this.wsStore.refCount < 1) {
@@ -87,7 +91,7 @@ export class DevToolsPluginClient {
      */
     connectAsync() {
         return new Promise((resolve, reject) => {
-            const ws = new WebSocket(`ws://${this.connectionInfo.devServer}/message`);
+            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`);
             ws.addEventListener('open', () => {
                 resolve(ws);
             });
