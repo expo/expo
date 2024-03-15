@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
@@ -160,6 +160,18 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
     }
 }
 exports.getExpoAutolinkingAndroidSourcesAsync = getExpoAutolinkingAndroidSourcesAsync;
+/**
+ * Gets the patch sources for the `patch-project`.
+ */
+async function getExpoCNGPatchSourcesAsync(projectRoot, options) {
+    const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, 'cng-patches', 'expoCNGPatches');
+    if (result != null) {
+        debug(`Adding dir - ${chalk_1.default.dim('cng-patches')}`);
+        return [result];
+    }
+    return [];
+}
+exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
 async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
     if (!options.platforms.includes('ios')) {
         return [];

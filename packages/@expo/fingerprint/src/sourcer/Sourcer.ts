@@ -12,6 +12,7 @@ import {
   getExpoAutolinkingAndroidSourcesAsync,
   getExpoAutolinkingIosSourcesAsync,
   getExpoConfigSourcesAsync,
+  getExpoCNGPatchSourcesAsync,
 } from './Expo';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
@@ -29,6 +30,7 @@ export async function getHashSourcesAsync(
     profile(options, getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
     profile(options, getExpoConfigSourcesAsync)(projectRoot, options),
     profile(options, getEasBuildSourcesAsync)(projectRoot, options),
+    profile(options, getExpoCNGPatchSourcesAsync)(projectRoot, options),
 
     // bare managed files
     profile(options, getGitIgnoreSourcesAsync)(projectRoot, options),

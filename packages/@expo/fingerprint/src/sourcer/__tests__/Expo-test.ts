@@ -12,6 +12,7 @@ import {
   getExpoAutolinkingAndroidSourcesAsync,
   getExpoAutolinkingIosSourcesAsync,
   getExpoConfigSourcesAsync,
+  getExpoCNGPatchSourcesAsync,
   sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
 
@@ -284,6 +285,25 @@ export default ({ config }) => {
       expect.objectContaining({
         type: 'file',
         filePath: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
+      })
+    );
+  });
+});
+
+describe(getExpoCNGPatchSourcesAsync, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('should contain patch-packages `patches` dir', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.fromJSON(require('./fixtures/PatchPackage.json'));
+
+    const sources = await getExpoCNGPatchSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: 'cng-patches',
       })
     );
   });
