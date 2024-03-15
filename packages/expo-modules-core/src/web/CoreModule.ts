@@ -25,6 +25,9 @@ class EventEmitter<TEventsMap extends Record<never, never>> implements EventEmit
     eventName: EventName,
     listener: TEventsMap[EventName]
   ): void {
+    if (!this.listeners) {
+      this.listeners = new Map();
+    }
     if (!this.listeners?.has(eventName)) {
       this.listeners?.set(eventName, new Set());
     }

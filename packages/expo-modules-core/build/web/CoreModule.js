@@ -11,6 +11,9 @@ class EventEmitter {
         this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
     }
     addListener(eventName, listener) {
+        if (!this.listeners) {
+            this.listeners = new Map();
+        }
         if (!this.listeners?.has(eventName)) {
             this.listeners?.set(eventName, new Set());
         }
