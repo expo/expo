@@ -20,10 +20,7 @@ function useLoadedNavigation() {
         if (isMounted.current) {
             const pendingCallbacks = pending.current;
             pending.current = [];
-            pendingCallbacks.forEach((callback) => {
-                // @ts-expect-error
-                callback(navigation);
-            });
+            pendingCallbacks.forEach((callback) => { });
         }
     }, [navigation]);
     (0, react_1.useEffect)(() => {
