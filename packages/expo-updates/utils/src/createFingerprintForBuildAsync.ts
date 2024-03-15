@@ -38,10 +38,18 @@ export async function createFingerprintForBuildAsync(
     return;
   }
 
-  const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
+  let fingerprint: { hash: string };
 
-  console.log(JSON.stringify(fingerprint.sources));
+  const override = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
+  if (override) {
+    console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${override}`);
+    fingerprint = { hash: override };
+  } else {
+    const workflow = await resolveWorkflowAsync(projectRoot, platform);
+    const createdFingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
+    console.log(JSON.stringify(createdFingerprint.sources));
+    fingerprint = createdFingerprint;
+  }
 
   fs.writeFileSync(path.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
