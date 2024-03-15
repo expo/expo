@@ -3555,17 +3555,17 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@react-navigation/core@6.4.0", "@react-navigation/core@^6.4.10", "@react-navigation/core@^6.4.9":
-  version "6.4.10"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-6.4.10.tgz#0c52621968b35e3a75e189e823d3b9e3bad77aff"
-  integrity sha512-oYhqxETRHNHKsipm/BtGL0LI43Hs2VSFoWMbBdHK9OqgQPjTVUitslgLcPpo4zApCcmBWoOLX2qPxhsBda644A==
+"@react-navigation/core@6.4.0", "@react-navigation/core@^6.4.15", "@react-navigation/core@^6.4.9":
+  version "6.4.15"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-6.4.15.tgz#312fb00788cd259d17999f859a228e07f2aae020"
+  integrity sha512-/ti6dulU68bsR3+zM9rlrqOUG8x7Xor35B4W1sA/AbDC0b1veexMGUQHXeyF+qh/3loG8JTwBUgTsPXkoLO2mw==
   dependencies:
     "@react-navigation/routers" "^6.1.9"
     escape-string-regexp "^4.0.0"
     nanoid "^3.1.23"
     query-string "^7.1.3"
     react-is "^16.13.0"
-    use-latest-callback "^0.1.7"
+    use-latest-callback "^0.1.9"
 
 "@react-navigation/drawer@6.5.0":
   version "6.5.0"
@@ -3606,11 +3606,11 @@
     warn-once "^0.1.0"
 
 "@react-navigation/native@6.0.13", "@react-navigation/native@^6.1.6", "@react-navigation/native@~6.0.13", "@react-navigation/native@~6.1.6":
-  version "6.1.10"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-6.1.10.tgz#d108423ae3acbe13f11d9b7351c1f5522d8391a5"
-  integrity sha512-jDG89TbZItY7W7rIcS1RqT63vWOPD4XuQLNKqZO0DY7mKnKh/CGBd0eg3nDMXUl143Qp//IxJKe2TfBQRDEU4A==
+  version "6.1.16"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-6.1.16.tgz#02a37773f917a30b32e512537c6e458e671aced6"
+  integrity sha512-nlP9RrpNs0ogMQpYXURIIMZYOYvg51jvcC3wfE9GFKQO0Av+GsvWd/kPtliWzWmtFwPnqiu5dw4bCvNtfsB3bA==
   dependencies:
-    "@react-navigation/core" "^6.4.10"
+    "@react-navigation/core" "^6.4.15"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
     nanoid "^3.1.23"
@@ -4767,13 +4767,6 @@
   integrity sha512-nCkHGI4w7ZgAdNkrEu0bv+4xNV/XDqW+DydknebMOQwkpDGx8G+HTlj7R7ABI8i8nKxVw0wtKPi1D+lPOkh4YQ==
   dependencies:
     "@types/mime" "^1"
-    "@types/node" "*"
-
-"@types/sha1@^1.1.2":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@types/sha1/-/sha1-1.1.3.tgz#d4cc37f17d093c524382d90326ba7274ef4637a8"
-  integrity sha512-bXfx/6xrPu1l6pLItGRMPX00lhnJavpj2qiQeLHflXvL2Ix97aC8FTF2/pQoqukRzcCwKyN3csZvOLzamIoaSA==
-  dependencies:
     "@types/node" "*"
 
 "@types/source-list-map@*":
@@ -7049,7 +7042,7 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-charenc@0.0.2, "charenc@>= 0.0.1", charenc@~0.0.1:
+charenc@0.0.2, charenc@~0.0.1:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
@@ -7777,7 +7770,7 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-crypt@0.0.2, "crypt@>= 0.0.1", crypt@~0.0.1:
+crypt@0.0.2, crypt@~0.0.1:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
@@ -17486,14 +17479,6 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-sha1@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/sha1/-/sha1-1.1.1.tgz#addaa7a93168f393f19eb2b15091618e2700f848"
-  integrity sha1-rdqnqTFo85PxnrKxUJFhjicA+Eg=
-  dependencies:
-    charenc ">= 0.0.1"
-    crypt ">= 0.0.1"
-
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-3.0.1.tgz#8f2981ad92531f55035b01fb230769a40e02efa3"
@@ -19423,10 +19408,10 @@ urlpattern-polyfill@^6.0.2:
   dependencies:
     braces "^3.0.2"
 
-use-latest-callback@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.1.7.tgz#f189fa4e58ee18c7a2d9de53f92210e118d1b14f"
-  integrity sha512-Hlrl0lskgZZpo2vIpZ4rA7qA/rAGn2PcDvDH1M47AogqMPB0qlGEdsa66AVkIUiEEDpfxA9/N6hY6MqtaNoqWA==
+use-latest-callback@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.1.9.tgz#10191dc54257e65a8e52322127643a8940271e2a"
+  integrity sha512-CL/29uS74AwreI/f2oz2hLTW7ZqVeV5+gxFeGudzQrgkCytrHw33G4KbnQOrRlAEzzAFXi7dDLMC9zhWcVpzmw==
 
 use-subscription@^1.8.0:
   version "1.8.0"
