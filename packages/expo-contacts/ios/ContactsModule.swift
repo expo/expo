@@ -15,6 +15,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var currentContactPickingContext: ContactPickingContext?
+  private var contactManipulationPromise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
@@ -68,18 +69,11 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       }
     }
 
-    AsyncFunction("dismissFormAsync") { (promise: Promise) in
-      guard let presentingViewController else {
-        promise.resolve(false)
-        return
-      }
-      presentingViewController.dismiss(animated: true) {
-        self.presentingViewController = nil
-        promise.resolve(true)
-      }
-    }.runOnQueue(.main)
-
     AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact, options: FormOptions, promise: Promise) in
+      if contactManipulationPromise != nil {
+        throw ContactManipulationInProgressException()
+      }
+      
       var controller: ContactsViewController?
       var contact: CNMutableContact
 
@@ -137,8 +131,10 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       controller.onViewDisappeared = {
         promise.resolve()
+        self.contactManipulationPromise = nil
       }
 
+      contactManipulationPromise = promise
       parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 
