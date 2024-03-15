@@ -24,6 +24,7 @@ export function useLoadedNavigation() {
       const pendingCallbacks = pending.current;
       pending.current = [];
       pendingCallbacks.forEach((callback) => {
+        // @ts-expect-error
         callback(navigation);
       });
     }
