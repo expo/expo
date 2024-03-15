@@ -1,7 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaCallback.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include <fbjni/fbjni.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
@@ -10,8 +10,6 @@ namespace expo {
 
 JavaCallback::JavaCallback(Callback callback)
   : callback(std::move(callback)) {}
-
-JSIInteropModuleRegistry *JavaCallback::jsiRegistry_ = nullptr;
 
 void JavaCallback::registerNatives() {
   registerHybrid({
@@ -48,12 +46,11 @@ SharedRef::SharedRef() = default;
 SharedObjectId::SharedObjectId() = default;
 
 jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  JSIContext *jsiContext,
   Callback callback
 ) {
   auto object = JavaCallback::newObjectCxxArgs(std::move(callback));
-  jsiRegistry_ = jsiInteropModuleRegistry;
-  jsiInteropModuleRegistry->jniDeallocator->addReference(object);
+  jsiContext->jniDeallocator->addReference(object);
   return object;
 }
 

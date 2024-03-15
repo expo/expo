@@ -8,7 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 class JavaScriptObjectTest {
-  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  private lateinit var jsiInterop: JSIContext
 
   private fun emptyObject(): JavaScriptObject {
     return jsiInterop.evaluateScript("({ })").getObject()
@@ -16,7 +16,7 @@ class JavaScriptObjectTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry().apply {
+    jsiInterop = JSIContext().apply {
       installJSIForTests(defaultAppContextMock())
     }
   }

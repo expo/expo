@@ -1,7 +1,7 @@
 #include "JavaScriptTypedArray.h"
 
 #include "JavaScriptRuntime.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 namespace expo {
 
@@ -91,7 +91,7 @@ void JavaScriptTypedArray::writeBuffer(
 }
 
 jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptTypedArray::newInstance(
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  JSIContext *jSIContext,
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Object> jsObject
 ) {
@@ -99,7 +99,7 @@ jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptTypedArray::newInstan
     std::move(runtime),
     std::move(jsObject)
   );
-  jsiInteropModuleRegistry->jniDeallocator->addReference(object);
+  jSIContext->jniDeallocator->addReference(object);
   return object;
 }
 }

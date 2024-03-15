@@ -18,7 +18,7 @@ class JavaScriptValue;
 
 class JavaScriptObject;
 
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A wrapper for the jsi::Runtime.
@@ -35,12 +35,9 @@ public:
    * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
    * See **JavaScriptRuntime.cpp** for the `SyncCallInvoker` implementation.
    */
-  JavaScriptRuntime(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry
-  );
+  JavaScriptRuntime();
 
   JavaScriptRuntime(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker
   );
@@ -80,11 +77,8 @@ public:
 
   std::shared_ptr<jsi::Object> getMainObject();
 
-  JSIInteropModuleRegistry *getModuleRegistry();
-
 private:
   std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<jsi::Object> mainObject;
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
 };
 } // namespace expo

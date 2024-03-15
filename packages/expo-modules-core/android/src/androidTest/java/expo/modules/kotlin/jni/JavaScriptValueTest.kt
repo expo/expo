@@ -6,11 +6,11 @@ import org.junit.Before
 import org.junit.Test
 
 class JavaScriptValueTest {
-  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  private lateinit var jsiInterop: JSIContext
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry().apply {
+    jsiInterop = JSIContext().apply {
       installJSIForTests(defaultAppContextMock())
     }
   }

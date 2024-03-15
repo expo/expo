@@ -14,12 +14,12 @@ import java.lang.ref.WeakReference
 
 /**
  * Despite the fact that this class is marked as [Destructible], it is not included in the [JNIDeallocator].
- * The deallocation of the [JSIInteropModuleRegistry] should be performed at the very end
+ * The deallocation of the [JSIContext] should be performed at the very end
  * to prevent the destructor of the [Destructible] object from accessing data that has already been freed.
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JSIInteropModuleRegistry : Destructible {
+class JSIContext : Destructible {
   internal lateinit var appContextHolder: WeakReference<AppContext> // = WeakReference(appContext)
 
   // Has to be called "mHybridData" - fbjni uses it via reflection

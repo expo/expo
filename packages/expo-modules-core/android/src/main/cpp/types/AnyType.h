@@ -10,7 +10,7 @@
 namespace jni = facebook::jni;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * Holds information about the expected Kotlin type.
