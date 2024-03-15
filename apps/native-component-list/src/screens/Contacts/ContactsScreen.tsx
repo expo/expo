@@ -30,7 +30,7 @@ export default function ContactsScreen({ navigation }: Props) {
         <HeaderContainerRight>
           <HeaderIconButton
             disabled={Platform.select({ web: true, default: false })}
-            name="md-add"
+            name="add"
             onPress={() => {
               const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
               ContactUtils.presentNewContactFormAsync({ contact: randomContact });

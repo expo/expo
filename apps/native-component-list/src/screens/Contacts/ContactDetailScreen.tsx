@@ -31,13 +31,13 @@ export default function ContactDetailScreen(props: any) {
       headerRight: () => (
         <HeaderContainerRight>
           <HeaderIconButton
-            name="md-share"
+            name="share"
             onPress={async () => {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
             }}
           />
           <HeaderIconButton
-            name="md-open"
+            name="open"
             onPress={async () => {
               await Contacts.presentFormAsync(props.route.params.id);
               console.log('the native contact form has been closed');
@@ -45,7 +45,7 @@ export default function ContactDetailScreen(props: any) {
           />
           {isIos && (
             <HeaderIconButton
-              name="md-copy"
+              name="copy"
               onPress={async () => {
                 await ContactUtils.cloneAsync(props.route.params.id);
                 props.navigation.goBack();
@@ -338,7 +338,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
+        <Ionicons name={icon as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

@@ -182,9 +182,12 @@ func contactKeysToFetch(from fields: [String]?) -> [String] {
   return results
 }
 
-func getDescriptors(for fields: [String]?) -> [CNKeyDescriptor] {
+func getDescriptors(for fields: [String]?, isWriting: Bool = false) -> [CNKeyDescriptor] {
   let keys = contactKeysToFetch(from: fields)
   var descriptors = keys as [CNKeyDescriptor]
+  if isWriting {
+    descriptors.append(CNContactVCardSerialization.descriptorForRequiredKeys())
+  }
 
   if keys.contains(ContactsKey.name) {
     descriptors.append(CNContactFormatter.descriptorForRequiredKeys(for: .fullName))
