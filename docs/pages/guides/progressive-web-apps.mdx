@@ -21,7 +21,7 @@ Expo CLI automatically generates the **favicon.ico** file based on the `web.favi
 {
   "web": {
     "favicon": "./assets/favicon.png"
-  } 
+  }
 }
 ```
 
@@ -272,11 +272,11 @@ Run the wizard command, selecting `dist` as the root of the app, and the default
   cmd={[
     '$ npx workbox-cli wizard',
     '',
-    '$ ? What is the root of your web app (that is which directory do you deploy)? dist/',
-    '$ ? Which file types would you like to precache? js, html, ttf, ico, json',
-    '$ ? Where would you like your service worker file to be saved? dist/sw.js',
-    '$ ? Where would you like to save these configuration options? workbox-config.js',
-    "$ ? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    '? What is the root of your web app (that is which directory do you deploy)? dist/',
+    '? Which file types would you like to precache? js, html, ttf, ico, json',
+    '? Where would you like your service worker file to be saved? dist/sw.js',
+    '? Where would you like to save these configuration options? workbox-config.js',
+    "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
   ]}
 />
 
@@ -284,7 +284,7 @@ Run the wizard command, selecting `dist` as the root of the app, and the default
 
 <Step label="5">
 
-Finally, run `npx workbox-cli generateSW workbox-config.js` to generate the service worker config. 
+Finally, run `npx workbox-cli generateSW workbox-config.js` to generate the service worker config.
 
 Going forward, you can add a build script in **package.json** to run both scripts in the correct order:
 

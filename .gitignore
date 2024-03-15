@@ -75,7 +75,6 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
-templates/**/*.tgz
 
 # Codemod
 .codemod.bookmark

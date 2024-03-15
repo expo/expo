@@ -20,6 +20,7 @@ public class AssetModule: Module {
     AsyncFunction("downloadAsync") { (url: URL, md5Hash: String?, type: String, promise: Promise) in
       if url.isFileURL {
         promise.resolve(url.standardizedFileURL.absoluteString)
+        return
       }
       guard let cacheFileId = md5Hash ?? getMD5Hash(fromURL: url),
       let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
