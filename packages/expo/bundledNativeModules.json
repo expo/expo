@@ -79,7 +79,7 @@
   "expo-updates": "~0.24.3",
   "expo-video-thumbnails": "~7.9.0",
   "expo-web-browser": "~12.8.0",
-  "jest-expo": "~50.0.1",
+  "jest-expo": "~51.0.0-unreleased",
   "lottie-react-native": "6.4.1",
   "react": "18.2.0",
   "react-dom": "18.2.0",
