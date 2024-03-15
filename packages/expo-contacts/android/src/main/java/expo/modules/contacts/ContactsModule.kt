@@ -18,10 +18,6 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -277,10 +273,10 @@ class ContactsModule : Module() {
 
     OnActivityResult { _, payload ->
       val (requestCode, _, _) = payload
-        val pendingPromise = mPendingPromise ?: return@OnActivityResult
-        if (requestCode == RC_EDIT_CONTACT) {
-          pendingPromise.resolve(0)
-        }
+      val pendingPromise = mPendingPromise ?: return@OnActivityResult
+      if (requestCode == RC_EDIT_CONTACT) {
+        pendingPromise.resolve(0)
+      }
     }
   }
 
