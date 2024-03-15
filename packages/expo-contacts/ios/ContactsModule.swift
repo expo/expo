@@ -22,7 +22,7 @@ public class ContactsModule: Module {
 
     AsyncFunction("writeContactToFileAsync") { (options: ContactsQuery) -> String? in
       let keys = contactKeysToFetch(from: options.fields)
-      let payload = fetchContactsData(options: options, keys: keys)
+      let payload = fetchContactsData(options: options, keys: keys, isWriting: true)
 
       if let error = payload["error"] {
         throw FailedToFetchContactsException()
@@ -518,7 +518,7 @@ public class ContactsModule: Module {
       predicate = CNContact.predicateForContacts(withIdentifiers: [containerId])
     }
 
-    var descriptors = getDescriptors(for: keys)
+    var descriptors = getDescriptors(for: keys, isWriting: isWriting)
     return queryContacts(with: predicate, keys: descriptors, options: options)
   }
 
