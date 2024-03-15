@@ -1,7 +1,9 @@
 package expo.modules
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.JSEngineResolutionAlgorithm
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.UIManagerProvider
@@ -29,7 +31,7 @@ class ReactNativeHostWrapper(
     return invokeDelegateMethod("getUIManagerProvider")
   }
 
-  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? {
+  public override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? {
     return invokeDelegateMethod("getJSEngineResolutionAlgorithm")
   }
 
@@ -43,5 +45,12 @@ class ReactNativeHostWrapper(
 
   override fun getRedBoxHandler(): RedBoxHandler? {
     return invokeDelegateMethod("getRedBoxHandler")
+  }
+
+  companion object {
+    @JvmStatic
+    fun createReactHost(context: Context, reactNativeHost: ReactNativeHost): ReactHost {
+      return ExpoReactHostFactory.createFromReactNativeHost(context, reactNativeHost)
+    }
   }
 }
