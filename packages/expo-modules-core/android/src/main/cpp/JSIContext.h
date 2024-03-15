@@ -15,8 +15,6 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
-#define IS_NEW_ARCHITECTURE_ENABLED 1
-
 #if IS_NEW_ARCHITECTURE_ENABLED
 
 #include <ReactCommon/RuntimeExecutor.h>
