@@ -39,7 +39,7 @@
   "dependencies": {
     "@expo/config": "~8.5.0",
     "@expo/config-plugins": "~7.8.0",
-    "@expo/config-types": "^50.0.0-alpha.1",
+    "@expo/config-types": "^51.0.0-unreleased",
     "@expo/image-utils": "^0.4.0",
     "@expo/json-file": "^8.3.0",
     "debug": "^4.3.1",
