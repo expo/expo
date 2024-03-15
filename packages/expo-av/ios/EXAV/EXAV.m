@@ -555,7 +555,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   NSString *bitRateStrategy = [self _getBitRateStrategyFromEnum:iosOptionsFromJS[EXAudioRecordingOptionBitRateStrategyKey]];
   NSDictionary<NSString *, NSString *> *avKeysForRecordingOptionsKeys = [self _getAVKeysForRecordingOptionsKeys:bitRateStrategy];
   
-  NSMutableDictionary *recorderSettings = [NSMutableDictionary new];
+  NSMutableDictionary *recorderSettings  = [NSMutableDictionary new];
   for (NSString *recordingOptionsKey in avKeysForRecordingOptionsKeys) {
     if (iosOptionsFromJS[recordingOptionsKey]) {
       recorderSettings[avKeysForRecordingOptionsKeys[recordingOptionsKey]] = iosOptionsFromJS[recordingOptionsKey];

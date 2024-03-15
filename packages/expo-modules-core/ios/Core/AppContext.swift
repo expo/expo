@@ -142,7 +142,7 @@ public final class AppContext: NSObject {
 
   // MARK: - Classes
 
-  internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
+  public lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
   /**
    A registry containing references to JavaScript classes.
