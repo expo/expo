@@ -7,33 +7,32 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-describe('compiler', () => {
-  const options = {
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
-    babelrc: false,
-    presets: [preset],
-    sourceMaps: false,
+const options = {
+  caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+  babelrc: false,
+  presets: [preset],
+  sourceMaps: false,
 
-    compact: false,
-    comments: true,
-    retainLines: true,
-  };
-  it(`allows destructuring in the catch block`, () => {
-    // Ensuring the transform doesn't throw.
-    const { code } = babel.transformFileSync(
-      path.resolve(__dirname, 'samples/destructure-catch.tsx'),
-      options
-    )!;
+  compact: false,
+  comments: true,
+  retainLines: true,
+};
 
-    expect(code).toMatchSnapshot();
-  });
-  it(`supports functions with discarded return values in try/catch blocks that run in memos`, () => {
-    // Ensuring the transform doesn't throw.
-    const { code } = babel.transformFileSync(
-      path.resolve(__dirname, 'samples/try-catch-hook.tsx'),
-      options
-    )!;
+it(`allows destructuring in the catch block`, () => {
+  // Ensuring the transform doesn't throw.
+  const { code } = babel.transformFileSync(
+    path.resolve(__dirname, 'samples/destructure-catch.tsx'),
+    options
+  )!;
 
-    expect(code).toMatchSnapshot();
-  });
+  expect(code).toMatchSnapshot();
+});
+it(`supports functions with discarded return values in try/catch blocks that run in memos`, () => {
+  // Ensuring the transform doesn't throw.
+  const { code } = babel.transformFileSync(
+    path.resolve(__dirname, 'samples/try-catch-hook.tsx'),
+    options
+  )!;
+
+  expect(code).toMatchSnapshot();
 });
