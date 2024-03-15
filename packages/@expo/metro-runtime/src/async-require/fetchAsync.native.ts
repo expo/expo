@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Platform } from 'react-native';
 // @ts-expect-error
 import Networking from 'react-native/Libraries/Network/RCTNetworking';
 
@@ -56,7 +55,7 @@ export function fetchAsync(
         'asyncRequest',
         url,
         {
-          'expo-platform': Platform.OS,
+          'expo-platform': process.env.EXPO_OS,
         },
         '',
         'text',

@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CODE_FONT = void 0;
-const react_native_1 = require("react-native");
-exports.CODE_FONT = react_native_1.Platform.select({
-    default: 'Courier',
-    ios: 'Courier New',
-    android: 'monospace',
-});
+exports.CODE_FONT = process.env.EXPO_OS === 'ios'
+    ? // iOS
+        'Courier New'
+    : process.env.EXPO_OS === 'android'
+        ? // Android
+            'monospace'
+        : // Default
+            'Courier';
 //# sourceMappingURL=constants.js.map

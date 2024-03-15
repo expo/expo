@@ -136,7 +136,7 @@ const styles = react_native_1.StyleSheet.create({
         lineHeight: 20,
     },
     safeArea: {
-        paddingTop: react_native_1.Platform.OS !== 'ios' ? react_native_1.StatusBar.currentHeight : 40,
+        paddingTop: process.env.EXPO_OS !== 'ios' ? react_native_1.StatusBar.currentHeight : 40,
     },
 });
 //# sourceMappingURL=LogBoxInspectorHeader.js.map

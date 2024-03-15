@@ -5,26 +5,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withErrorOverlay = void 0;
 const react_1 = __importDefault(require("react"));
-// TODO: This will break tree shaking due to how we transpile this package.
-const react_native_1 = require("react-native");
-const ErrorToastContainer_1 = __importDefault(require("./toast/ErrorToastContainer"));
 if (!global.setImmediate) {
     global.setImmediate = function (fn) {
         return setTimeout(fn, 0);
     };
 }
-if (process.env.NODE_ENV === 'development') {
-    if (react_native_1.Platform.OS === 'web') {
-        // Stack traces are big with React Navigation
-        require('./LogBox').default.install();
-    }
+if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
+    // Stack traces are big with React Navigation
+    require('./LogBox').default.install();
 }
 function withErrorOverlay(Comp) {
     if (process.env.NODE_ENV === 'production') {
         return Comp;
     }
+    const { default: ErrorToastContainer } = require('./toast/ErrorToastContainer');
     return function ErrorOverlay(props) {
-        return (react_1.default.createElement(ErrorToastContainer_1.default, null,
+        return (react_1.default.createElement(ErrorToastContainer, null,
             react_1.default.createElement(Comp, { ...props })));
     };
 }

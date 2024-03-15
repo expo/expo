@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Use `process.env.EXPO_OS` platform env checks to reduce `react-native` imports. ([#27636](https://github.com/expo/expo/pull/27636) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.3 - 2024-02-06

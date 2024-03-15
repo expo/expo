@@ -11,7 +11,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchAsync = void 0;
-const react_native_1 = require("react-native");
 // @ts-expect-error
 const RCTNetworking_1 = __importDefault(require("react-native/Libraries/Network/RCTNetworking"));
 function fetchAsync(url) {
@@ -46,7 +45,7 @@ function fetchAsync(url) {
             }
         });
         RCTNetworking_1.default.sendRequest('GET', 'asyncRequest', url, {
-            'expo-platform': react_native_1.Platform.OS,
+            'expo-platform': process.env.EXPO_OS,
         }, '', 'text', false, 0, (requestId) => {
             id = requestId;
         }, true);
