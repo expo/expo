@@ -81,6 +81,10 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }.runOnQueue(.main)
 
     AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact?, options: FormOptions, promise: Promise) in
+      if contactManipulationPromise != nil {
+        throw ContactManipulationInProgressException()
+      }
+      
       var controller: ContactsViewController?
 
       if let identifier {

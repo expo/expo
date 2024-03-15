@@ -132,6 +132,10 @@ class QueryArguments(
 
 class ContactsModule : Module() {
   private var mPendingPromise: Promise? = null
+  private var mModuleRegistry: ModuleRegistry? = null
+  private var contactPickingPromise: Promise? = null
+  private var contactManipulationPromise: Promise? = null
+
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -321,14 +325,14 @@ class ContactsModule : Module() {
     }
 
      AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (mPendingPromise != null) {
+       if (contactPickingPromise != null) {
          throw ContactPickingInProgressException()
        }
 
        val intent = Intent(Intent.ACTION_PICK)
        intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
-       mPendingPromise = promise
+       contactPickingPromise = promise
        activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
@@ -747,6 +751,9 @@ class ContactsModule : Module() {
         }
       }
       if (requestCode == RC_PICK_CONTACT) {
+        val pendingPromise = contactPickingPromise ?: return
+
+
         if (resultCode == Activity.RESULT_CANCELED) {
           pendingPromise.resolve(null)
         }
@@ -756,9 +763,9 @@ class ContactsModule : Module() {
           val contact = getContactById(contactId, defaultFields)
           pendingPromise.resolve(contact?.toMap(defaultFields))
         }
-      }
 
-      mPendingPromise = null
+        contactPickingPromise = null
+      }
     }
 
     override fun onNewIntent(intent: Intent) = Unit
