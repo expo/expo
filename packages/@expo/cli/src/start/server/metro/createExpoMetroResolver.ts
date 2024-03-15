@@ -172,13 +172,7 @@ export function createFastResolver({
         // the app doesn't finish without it.
         preserveSymlinks,
         readPackageSync(readFileSync, pkgFile) {
-          return (
-            context.getPackage(pkgFile) ??
-            JSON.parse(
-              // @ts-expect-error
-              readFileSync(pkgfile)
-            )
-          );
+          return context.getPackage(pkgFile) ?? JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
         },
         includeCoreModules: isServer,
 
