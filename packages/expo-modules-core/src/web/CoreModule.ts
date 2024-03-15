@@ -4,31 +4,31 @@ import type { SharedObject as SharedObjectType } from '../ts-declarations/Shared
 import uuid from '../uuid';
 
 class EventEmitter<TEventsMap extends Record<never, never>> implements EventEmitterType {
-  private listeners: Map<keyof TEventsMap, Set<Function>> = new Map();
+  private listeners?: Map<keyof TEventsMap, Set<Function>>;
 
   removeListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
     listener: TEventsMap[EventName]
   ): void {
-    this.listeners.get(eventName)?.delete(listener);
+    this.listeners?.get(eventName)?.delete(listener);
   }
   removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
-    this.listeners.get(eventName)?.clear();
+    this.listeners?.get(eventName)?.clear();
   }
   emit<EventName extends keyof TEventsMap>(
     eventName: EventName,
     ...args: Parameters<TEventsMap[EventName]>
   ): void {
-    this.listeners.get(eventName)?.forEach((listener) => listener(...args));
+    this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
   }
   addListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
     listener: TEventsMap[EventName]
   ): void {
-    if (!this.listeners.has(eventName)) {
-      this.listeners.set(eventName, new Set());
+    if (!this.listeners?.has(eventName)) {
+      this.listeners?.set(eventName, new Set());
     }
-    this.listeners.get(eventName)?.add(listener);
+    this.listeners?.get(eventName)?.add(listener);
   }
 }
 
