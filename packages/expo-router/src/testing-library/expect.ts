@@ -15,4 +15,7 @@ expect.extend({
   toHaveSearchParams(screen, expected) {
     return matchers.toEqual(screen.getSearchParams(), expected);
   },
+  toHaveRouterState(screen, expected) {
+    return matchers.toEqual(screen.getRouterState(), expected);
+  },
 });

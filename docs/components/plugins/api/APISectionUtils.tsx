@@ -174,12 +174,10 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
-  ExpoUpdatesManifest: '/versions/latest/sdk/updates/#expoupdatesmanifest',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
-  Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
@@ -200,10 +198,33 @@ const hardcodedTypeLinks: Record<string, string> = {
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
-const renderWithLink = (name: string, type?: string) => {
+const packageLinks: Record<string, string> = {
+  'expo-manifests': 'manifests',
+};
+
+const renderWithLink = ({
+  name,
+  type,
+  typePackage,
+}: {
+  name: string;
+  type?: string;
+  typePackage: string | undefined;
+}) => {
   const replacedName = replaceableTypes[name] ?? name;
 
   if (name.includes('.')) return name;
+
+  if (typePackage && packageLinks[typePackage]) {
+    return (
+      <A
+        href={`${packageLinks[typePackage]}/#${replacedName.toLowerCase()}`}
+        key={`type-link-${replacedName}`}>
+        {replacedName}
+        {type === 'array' && '[]'}
+      </A>
+    );
+  }
 
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
@@ -272,7 +293,7 @@ export const resolveTypeName = (
           } else {
             return (
               <>
-                {renderWithLink(name)}
+                {renderWithLink({ name, typePackage: typeDefinition.package })}
                 <span className="text-quaternary">{'<'}</span>
                 {typeArguments.map((type, index) => (
                   <span key={`${name}-nested-type-${index}`}>
@@ -287,14 +308,18 @@ export const resolveTypeName = (
             );
           }
         } else {
-          return renderWithLink(name);
+          return renderWithLink({ name, typePackage: typeDefinition.package });
         }
       } else {
         return name;
       }
     } else if (elementType?.name) {
       if (elementType.type === 'reference') {
-        return renderWithLink(elementType.name, type);
+        return renderWithLink({
+          name: elementType.name,
+          type,
+          typePackage: typeDefinition.package,
+        });
       } else if (type === 'array') {
         return elementType.name + '[]';
       }

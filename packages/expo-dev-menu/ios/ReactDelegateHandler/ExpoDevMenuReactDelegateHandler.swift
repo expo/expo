@@ -21,9 +21,14 @@ public class ExpoDevMenuReactDelegateHandler: ExpoReactDelegateHandler {
     return true
   }()
 
-  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
+  public override func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     if ExpoDevMenuReactDelegateHandler.shouldEnableAutoSetup {
-      DevMenuManager.shared.currentBridge = bridge
+      DevMenuManager.shared.currentBridge = RCTBridge.current()
     }
     return nil
   }

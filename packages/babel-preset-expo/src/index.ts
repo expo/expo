@@ -144,27 +144,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
   }
 
-  // if (isProduction) {
-  //   inlines['process.env.NODE_ENV'] = 'production';
-  //   inlines['__DEV__'] = false;
-  // }
+  if (isProduction) {
+    inlines['process.env.NODE_ENV'] = 'production';
+    inlines['__DEV__'] = false;
+    inlines['Platform.OS'] = platform;
+  }
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
   }
 
-  extraPlugins.push([require('babel-plugin-transform-define'), inlines]);
+  extraPlugins.push([require('./define-plugin'), inlines]);
 
-  if (isProduction && hasModule('metro-transform-plugins')) {
-    // Metro applies this plugin too but it does it after the imports have been transformed which breaks
-    // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
-    // is replaced with a string literal and `__DEV__` is converted to a boolean.
-    // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+  if (isProduction) {
+    // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
+    // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
     extraPlugins.push([
-      require('metro-transform-plugins/src/inline-plugin.js'),
+      require('./minify-platform-select-plugin'),
       {
-        dev: isDev,
-        inlinePlatform: true,
         platform,
       },
     ]);

@@ -100,19 +100,9 @@ describe(getUrlWithReactNavigationConcessions, () => {
       );
     });
   });
-
-  [
-    ['', ''],
-    ['https://acme.com/hello/world/?foo=bar#123', 'https://acme.com/hello/world/?foo=bar'],
-    ['/foobar#123', '/foobar'],
-  ].forEach(([url, expected]) => {
-    it(`returns the pathname without hash for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url).inputPathnameWithoutHash).toBe(expected);
-    });
-  });
 });
 
-it(`strips hashes`, () => {
+it(`parses hashes`, () => {
   expect(
     getStateFromPath('/hello#123', {
       screens: {
@@ -124,6 +114,9 @@ it(`strips hashes`, () => {
       {
         name: 'hello',
         path: '/hello',
+        params: {
+          '#': '123',
+        },
       },
     ],
   });
@@ -134,6 +127,7 @@ it(`strips hashes`, () => {
         name: '[hello]',
         params: {
           hello: 'hello',
+          '#': '123',
         },
         path: '/hello',
       },

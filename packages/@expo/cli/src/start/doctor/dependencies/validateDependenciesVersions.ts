@@ -11,12 +11,14 @@ import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
-interface IncorrectDependency {
+type IncorrectDependency = {
   packageName: string;
   packageType: 'dependencies' | 'devDependencies';
   expectedVersionOrRange: string;
   actualVersion: string;
-}
+};
+
+type DependenciesToCheck = { known: string[]; unknown: string[] };
 
 /**
  * Print a list of incorrect dependency versions.
@@ -49,7 +51,6 @@ function logInvalidDependency({
   actualVersion,
 }: IncorrectDependency) {
   Log.warn(
-    // chalk` - {underline ${packageName}} - expected version: {underline ${expectedVersionOrRange}} - actual version installed: {underline ${actualVersion}}`
     chalk`  {bold ${packageName}}{cyan @}{red ${actualVersion}} - expected version: {green ${expectedVersionOrRange}}`
   );
 }
@@ -65,7 +66,7 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
   incorrectDeps.forEach((dep) => logInvalidDependency(dep));
 
   Log.warn(
-    'Your project may not work correctly until you install the correct versions of the packages.'
+    'Your project may not work correctly until you install the expected versions of the packages.'
   );
 
   return false;
@@ -106,8 +107,8 @@ export async function getVersionedDependenciesAsync(
 
   // intersection of packages from package.json and bundled native modules
   const { known: resolvedPackagesToCheck, unknown } = getPackagesToCheck(
-    resolvedDependencies,
-    combinedKnownPackages
+    combinedKnownPackages,
+    resolvedDependencies
   );
   debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
   debug(`Skipping packages that cannot be versioned automatically: %O`, unknown);
@@ -144,9 +145,9 @@ function getFilteredObject(keys: string[], object: Record<string, string>) {
 }
 
 function getPackagesToCheck(
-  dependencies: Record<string, string> | null | undefined,
-  bundledNativeModules: BundledNativeModules
-): { known: string[]; unknown: string[] } {
+  bundledNativeModules: BundledNativeModules,
+  dependencies?: Record<string, string> | null
+): DependenciesToCheck {
   const dependencyNames = Object.keys(dependencies ?? {});
   const known: string[] = [];
   const unknown: string[] = [];
@@ -170,7 +171,7 @@ function findIncorrectDependencies(
   for (const packageName of packages) {
     const expectedVersionOrRange = bundledNativeModules[packageName];
     const actualVersion = packageVersions[packageName];
-    if (isDependencyVersionIncorrect(packageName, expectedVersionOrRange, actualVersion)) {
+    if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
       incorrectDeps.push({
         packageName,
         packageType: findDependencyType(pkg, packageName),
@@ -184,27 +185,20 @@ function findIncorrectDependencies(
 
 function isDependencyVersionIncorrect(
   packageName: string,
-  expectedVersionOrRange: string | undefined,
-  actualVersion: string
+  actualVersion: string,
+  expectedVersionOrRange?: string
 ) {
-  if (typeof expectedVersionOrRange !== 'string') {
+  if (!expectedVersionOrRange) {
     return false;
   }
 
   // we never want to go backwards with the expo patch version
   if (packageName === 'expo') {
-    if (semver.ltr(actualVersion, expectedVersionOrRange)) {
-      return true;
-    }
-    return false;
+    return semver.ltr(actualVersion, expectedVersionOrRange);
   }
 
   // all other packages: version range is based on Expo SDK version, so we always want to match range
-  if (!semver.intersects(expectedVersionOrRange, actualVersion)) {
-    return true;
-  }
-
-  return false;
+  return !semver.intersects(expectedVersionOrRange, actualVersion);
 }
 
 function findDependencyType(

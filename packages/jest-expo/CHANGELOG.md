@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -13,6 +15,15 @@
 - Mock `EventEmitter` from `expo-modules-core`. ([#26945](https://github.com/expo/expo/pull/26945) by [@aleqsio](https://github.com/aleqsio))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 - Simulate the mocked `expo-modules-core.EventEmitter` like a true EventEmitter. ([#27257](https://github.com/expo/expo/pull/27257) by [@kudo](https://github.com/kudo))
+
+## 50.0.4 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.3 - 2024-03-07
+
+### 💡 Others
+
 - Add mock for `window.__REACT_DEVTOOLS_GLOBAL_HOOK__` if undefined. ([#27434](https://github.com/expo/expo/pull/27434) by [@marklawlor](https://github.com/marklawlor))
 - Add off() stub to `__REACT_DEVTOOLS_GLOBAL_HOOK__` mock ([#27487](https://github.com/expo/expo/pull/27487) by [@marklawlor](https://github.com/marklawlor))
 

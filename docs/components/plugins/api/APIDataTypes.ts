@@ -55,6 +55,7 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | number | boolean | null;
   operator?: string;
+  package?: string;
   objectType?: {
     name: string;
     type: string;
