@@ -6,7 +6,6 @@ public class ContactsModule: Module {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
-  private var isWriting = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
