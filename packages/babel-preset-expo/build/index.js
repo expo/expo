@@ -21,6 +21,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isServer = api.caller(common_1.getIsServer);
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
@@ -35,6 +36,9 @@ function babelPresetExpo(api, options = {}) {
         platform = 'web';
     }
     const platformOptions = getOptions(options, platform);
+    if (platformOptions.useTransformReactJSXExperimental != null) {
+        throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
+    }
     if (platformOptions.disableImportExportTransform == null) {
         if (platform === 'web') {
             // Only disable import/export transform when Webpack is used because
@@ -64,33 +68,38 @@ function babelPresetExpo(api, options = {}) {
         // should retain the same behavior since it's hard to debug the differences.
         extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
-    if (isProduction && (0, common_1.hasModule)('metro-transform-plugins')) {
-        // Metro applies this plugin too but it does it after the imports have been transformed which breaks
-        // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
-        // is replaced with a string literal and `__DEV__` is converted to a boolean.
-        // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+    const isServerEnv = isServer || isReactServer;
+    const inlines = {
+        'process.env.EXPO_OS': platform,
+        // 'typeof document': isServerEnv ? 'undefined' : 'object',
+    };
+    // `typeof window` is left in place for native + client environments.
+    const minifyTypeofWindow = (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
+    if (minifyTypeofWindow !== false) {
+        // This nets out slightly faster in development when considering the cost of bundling server dependencies.
+        inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
+    }
+    if (isProduction) {
+        inlines['process.env.NODE_ENV'] = 'production';
+        inlines['__DEV__'] = false;
+        inlines['Platform.OS'] = platform;
+    }
+    if (process.env.NODE_ENV !== 'test') {
+        inlines['process.env.EXPO_BASE_URL'] = baseUrl;
+    }
+    extraPlugins.push([require('./define-plugin'), inlines]);
+    if (isProduction) {
+        // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
+        // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
         extraPlugins.push([
-            require('metro-transform-plugins/src/inline-plugin.js'),
+            require('./minify-platform-select-plugin'),
             {
-                dev: isDev,
-                inlinePlatform: true,
                 platform,
             },
         ]);
     }
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
-    }
-    // Allow jest tests to redefine the environment variables.
-    if (process.env.NODE_ENV !== 'test') {
-        extraPlugins.push([
-            inline_env_vars_1.expoInlineTransformEnvVars,
-            {
-                // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
-                // squat user-defined environment variables.
-                EXPO_BASE_URL: baseUrl,
-            },
-        ]);
     }
     // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
     // Webpack uses DefinePlugin for environment variables.

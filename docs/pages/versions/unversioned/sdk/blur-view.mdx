@@ -4,18 +4,16 @@ description: A React component that blurs everything underneath the view.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-blur'
 packageName: 'expo-blur'
 iconUrl: '/static/images/packages/expo-blur.png'
+platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 A React component that blurs everything underneath the view. Common usage of this is for navigation bars, tab bars, and modals.
 
 > **info** `BlurView` on Android is an experimental feature. To enable it use the [`experimentalBlurMethod`](#experimentalblurmethod) prop.
-
-<PlatformsSection emulator android ios simulator web />
 
 #### Known issues
 

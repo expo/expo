@@ -1,6 +1,5 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
 import { TerminalSquareIcon } from '@expo/styleguide-icons';
+import { Language, Prism } from 'prism-react-renderer';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -17,7 +16,7 @@ type TerminalProps = {
 };
 
 export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet css={wrapperStyle}>
+  <Snippet className="[li_&]:mt-4">
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -75,9 +74,16 @@ function cmdMapper(line: string, index: number) {
         <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
           -&nbsp;
         </CODE>
-        <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
-          {line.substring(1).trim()}
-        </CODE>
+        <CODE
+          className="whitespace-pre !bg-[transparent] !border-none text-default"
+          dangerouslySetInnerHTML={{
+            __html: Prism.highlight(
+              line.substring(1).trim(),
+              Prism.languages['bash'],
+              'bash' as Language
+            ),
+          }}
+        />
       </div>
     );
   }
@@ -88,10 +94,3 @@ function cmdMapper(line: string, index: number) {
     </CODE>
   );
 }
-
-const wrapperStyle = css`
-  li & {
-    margin-top: ${spacing[4]}px;
-    display: flex;
-  }
-`;

@@ -19,12 +19,22 @@
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
 - Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 - Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Removed [Flipper workaround](https://github.com/expo/expo/pull/18105) on Android. ([#27508](https://github.com/expo/expo/pull/27508) by [@kudo](https://github.com/kudo))
+- Remove debug settings for EAS Updates extension. ([#27603](https://github.com/expo/expo/pull/27603) by [@wschurman](https://github.com/wschurman))
+- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573) by [@kudo](https://github.com/kudo))
+- [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Replace deprecated `@babel/plugin-proposal-export-namespace-from` with updated, non-proposal package. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 3.6.8 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
 
 ## 3.6.7 - 2024-02-16
 

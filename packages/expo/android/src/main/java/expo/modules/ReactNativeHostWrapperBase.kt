@@ -2,10 +2,12 @@ package expo.modules
 
 import android.app.Application
 import androidx.collection.ArrayMap
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.bridge.ReactContext
 import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
@@ -21,16 +23,18 @@ open class ReactNativeHostWrapperBase(
   override fun createReactInstanceManager(): ReactInstanceManager {
     val developerSupport = useDeveloperSupport
     reactNativeHostHandlers.forEach { handler ->
-      handler.onWillCreateReactInstanceManager(developerSupport)
+      handler.onWillCreateReactInstance(developerSupport)
     }
 
-    val result = reactNativeHostHandlers.asSequence()
-      .mapNotNull { it.createReactInstanceManager(developerSupport) }
-      .firstOrNull() ?: super.createReactInstanceManager()
+    val result = super.createReactInstanceManager()
 
-    reactNativeHostHandlers.forEach { handler ->
-      handler.onDidCreateReactInstanceManager(result, developerSupport)
-    }
+    result.addReactInstanceEventListener(object : ReactInstanceEventListener {
+      override fun onReactContextInitialized(context: ReactContext) {
+        reactNativeHostHandlers.forEach { handler ->
+          handler.onDidCreateReactInstance(developerSupport, context)
+        }
+      }
+    })
 
     injectHostReactInstanceManager(result)
 
@@ -43,17 +47,17 @@ open class ReactNativeHostWrapperBase(
       .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
-  override fun getJSMainModuleName(): String {
+  public override fun getJSMainModuleName(): String {
     return invokeDelegateMethod("getJSMainModuleName")
   }
 
-  override fun getJSBundleFile(): String? {
+  public override fun getJSBundleFile(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getJSBundleFile(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
   }
 
-  override fun getBundleAssetName(): String? {
+  public override fun getBundleAssetName(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getBundleAssetName(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
@@ -65,7 +69,7 @@ open class ReactNativeHostWrapperBase(
       .firstOrNull() ?: host.useDeveloperSupport
   }
 
-  override fun getPackages(): MutableList<ReactPackage> {
+  public override fun getPackages(): MutableList<ReactPackage> {
     return invokeDelegateMethod("getPackages")
   }
 

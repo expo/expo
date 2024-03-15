@@ -7,9 +7,11 @@
 ### 🎉 New features
 
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+- Add URL hash support ([#27105](https://github.com/expo/expo/pull/27105) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
+- Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with skipping all imports. ([#27238](https://github.com/expo/expo/pull/27238) by [@EvanBacon](https://github.com/EvanBacon))
 - Include search parameters in the default Screen.getId() function. ([#26710](https://github.com/expo/expo/pull/26710) by [@marklawlor](https://github.com/marklawlor))
 - Fix sitemap missing paths ([#26507](https://github.com/expo/expo/pull/26507) by [@marklawlor](https://github.com/marklawlor))
@@ -21,8 +23,15 @@
 - Fix using parenthesis in urls ([#27120](https://github.com/expo/expo/pull/27120) by [@marklawlor](https://github.com/marklawlor))
 - Fix `push` navigation not pushing the same route multiple times ([#27307](https://github.com/expo/expo/pull/27307) by [@marklawlor](https://github.com/marklawlor))
 - Fix router.navigate will only push when path parameters change ([#27285](https://github.com/expo/expo/pull/27285) by [@marklawlor](https://github.com/marklawlor))
+- Fix incorrect route generation of array shared groups with brackets ([#27459](https://github.com/expo/expo/pull/27459) by [@marklawlor](https://github.com/marklawlor))
+- Fix incorrect initial URL on web when using baseUrl ([#27287](https://github.com/expo/expo/pull/27287) by [@marklawlor](https://github.com/marklawlor))
+- Cancel ExpoRouter SplashScreen during test teardown ([#27620](https://github.com/expo/expo/pull/27620) by [@marklawlor](https://github.com/marklawlor))
+- Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
+- Fix missing types from typed routes ([#27412](https://github.com/expo/expo/pull/27412) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
+
+- Enable Jest tests for all platforms ([#27407](https://github.com/expo/expo/pull/27407) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.4.8 - 2024-02-29
 
@@ -63,7 +72,7 @@ _This version does not introduce any user-facing changes._
 
 - Deprecate `useRootNavigation` in favor of `useNavigationContainerRef`. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove duplicate context mocking functions ([#26651](https://github.com/expo/expo/pull/26651) by [@marklawlor](https://github.com/marklawlor))
-- Update to remove `ExpoRequest/`ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+- Update to remove `ExpoRequest`/`ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
 
 ## 3.4.3 - 2024-01-18
 

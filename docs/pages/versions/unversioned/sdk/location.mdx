@@ -4,11 +4,11 @@ description: A library that provides access to reading geolocation information, 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location'
 packageName: 'expo-location'
 iconUrl: '/static/images/packages/expo-location.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
@@ -19,8 +19,6 @@ import {
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

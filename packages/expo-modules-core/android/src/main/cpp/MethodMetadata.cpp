@@ -1,5 +1,5 @@
 #include "MethodMetadata.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
@@ -10,6 +10,7 @@
 
 #include <utility>
 #include <functional>
+#include <unistd.h>
 
 #include "JSReferencesCache.h"
 
@@ -24,10 +25,10 @@ namespace expo {
 jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   jsi::Function &&function,
   jsi::Runtime &rt,
-  JSIInteropModuleRegistry *moduleRegistry,
   bool isRejectCallback = false
 ) {
-  std::shared_ptr<react::CallInvoker> jsInvoker = moduleRegistry->runtimeHolder->jsInvoker;
+  JSIContext *jsiContext = getJSIContext(rt);
+  std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
   auto weakWrapper = react::CallbackWrapper::createWeak(std::move(function), rt,
                                                         std::move(jsInvoker));
 
@@ -45,8 +46,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
       weakWrapper,
       callbackWrapperOwner = std::move(callbackWrapperOwner),
       wrapperWasCalled = false,
-      isRejectCallback,
-      moduleRegistry
+      isRejectCallback
     ](
       CallbackArg responses) mutable {
       if (wrapperWasCalled) {
@@ -65,8 +65,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
             weakWrapper,
             callbackWrapperOwner = std::move(callbackWrapperOwner),
             responses = std::move(responses),
-            isRejectCallback,
-            moduleRegistry
+            isRejectCallback
           ]() mutable {
             auto strongWrapper2 = weakWrapper.lock();
             if (!strongWrapper2) {
@@ -126,7 +125,8 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
               std::get<jni::global_ref<SharedRef::javaobject>>(responses)
             );
 
-            auto jsClass = moduleRegistry->getJavascriptClass(native->getClass());
+            const auto jsiContext = getJSIContext(rt);
+            auto jsClass = jsiContext->getJavascriptClass(native->getClass());
             auto jsObject = jsClass
               ->cthis()
               ->get()
@@ -136,14 +136,14 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
 
             auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
             auto jsObjectInstance = JavaScriptObject::newInstance(
-              moduleRegistry,
-              moduleRegistry->runtimeHolder,
+              jsiContext,
+              jsiContext->runtimeHolder,
               objSharedPtr
             );
             jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
               jsObjectInstance
             );
-            moduleRegistry->registerSharedObject(native, jsRef);
+            jsiContext->registerSharedObject(native, jsRef);
 
             auto ret = jsi::Value(rt, *objSharedPtr);
             callback.call(
@@ -159,11 +159,10 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
       wrapperWasCalled = true;
     };
 
-  return JavaCallback::newInstance(moduleRegistry, std::move(fn));
+  return JavaCallback::newInstance(jsiContext, std::move(fn));
 }
 
 jobjectArray MethodMetadata::convertJSIArgsToJNI(
-  JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
   const jsi::Value &thisValue,
@@ -175,12 +174,12 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     count++;
   }
 
-  // The `count < this->args` case is handled by the Kotlin part
-  if (count > this->args) {
+  // The `count < argTypes.size()` case is handled by the Kotlin part
+  if (count > argTypes.size()) {
     throwNewJavaException(
       InvalidArgsNumberException::create(
         count,
-        this->args
+        argTypes.size()
       ).get()
     );
   }
@@ -197,12 +196,12 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   ) -> const jsi::Value & {
     if (!takesOwner) {
       return args[index];
-    } else {
-      if (index != 0) {
-        return args[index - 1];
-      }
-      return thisValue;
     }
+
+    if (index != 0) {
+      return args[index - 1];
+    }
+    return thisValue;
   };
 
   for (size_t argIndex = 0; argIndex < count; argIndex++) {
@@ -210,7 +209,7 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     auto &type = argTypes[argIndex];
 
     if (type->converter->canConvert(rt, arg)) {
-      auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
+      auto converterValue = type->converter->convert(rt, env, arg);
       env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
       env->DeleteLocalRef(converterValue);
     } else if (arg.isNull() || arg.isUndefined()) {
@@ -232,17 +231,16 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 MethodMetadata::MethodMetadata(
   std::string name,
   bool takesOwner,
-  int args,
   bool isAsync,
   jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
     takesOwner(takesOwner),
-    args(args),
     isAsync(isAsync),
     jBodyReference(std::move(jBodyReference)) {
-  argTypes.reserve(args);
-  for (size_t i = 0; i < args; i++) {
+  size_t argsSize = expectedArgTypes->size();
+  argTypes.reserve(argsSize);
+  for (size_t i = 0; i < argsSize; i++) {
     auto expectedType = expectedArgTypes->getElement(i);
     argTypes.push_back(
       std::make_unique<AnyType>(std::move(expectedType))
@@ -253,27 +251,24 @@ MethodMetadata::MethodMetadata(
 MethodMetadata::MethodMetadata(
   std::string name,
   bool takesOwner,
-  int args,
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
     takesOwner(takesOwner),
-    args(args),
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
     jBodyReference(std::move(jBodyReference)) {
 }
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
-  jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *moduleRegistry
+  jsi::Runtime &runtime
 ) {
   if (body == nullptr) {
     if (isAsync) {
-      body = std::make_shared<jsi::Function>(toAsyncFunction(runtime, moduleRegistry));
+      body = std::make_shared<jsi::Function>(toAsyncFunction(runtime));
     } else {
-      body = std::make_shared<jsi::Function>(toSyncFunction(runtime, moduleRegistry));
+      body = std::make_shared<jsi::Function>(toSyncFunction(runtime));
     }
   }
 
@@ -281,14 +276,13 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
 }
 
 jsi::Function MethodMetadata::toSyncFunction(
-  jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *moduleRegistry
+  jsi::Runtime &runtime
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
-    args,
-    [this, moduleRegistry](
+    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
+    argTypes.size(),
+    [this](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
@@ -297,7 +291,6 @@ jsi::Function MethodMetadata::toSyncFunction(
       try {
         return this->callSync(
           rt,
-          moduleRegistry,
           thisValue,
           args,
           count
@@ -311,7 +304,6 @@ jsi::Function MethodMetadata::toSyncFunction(
 jni::local_ref<jobject> MethodMetadata::callJNISync(
   JNIEnv *env,
   jsi::Runtime &rt,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
@@ -320,7 +312,7 @@ jni::local_ref<jobject> MethodMetadata::callJNISync(
     return nullptr;
   }
 
-  auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
+  auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
 
   // Cast in this place is safe, cause we know that this function is promise-less.
   auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
@@ -334,7 +326,6 @@ jni::local_ref<jobject> MethodMetadata::callJNISync(
 
 jsi::Value MethodMetadata::callSync(
   jsi::Runtime &rt,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
@@ -347,30 +338,30 @@ jsi::Value MethodMetadata::callSync(
   */
   jni::JniLocalScope scope(env, (int) count);
 
-  auto result = this->callJNISync(env, rt, moduleRegistry, thisValue, args, count);
-  return convert(moduleRegistry, env, rt, std::move(result));
+  auto result = this->callJNISync(env, rt, thisValue, args, count);
+  return convert(env, rt, std::move(result));
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(
-  jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *moduleRegistry
+  jsi::Runtime &runtime
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
-    args,
-    [this, moduleRegistry](
+    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
+    argTypes.size(),
+    [this](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
+      JSIContext *jsiContext = getJSIContext(rt);
       /**
        * Halt execution during cleaning phase as modules and js context will be deallocated soon.
        * The output of this method doesn't matter.
        * We added that check to prevent the app from crashing when users reload their apps.
        */
-      if (moduleRegistry->wasDeallocated) {
+      if (jsiContext->wasDeallocated) {
         return jsi::Value::undefined();
       }
 
@@ -383,19 +374,19 @@ jsi::Function MethodMetadata::toAsyncFunction(
        */
       jni::JniLocalScope scope(env, (int) count);
 
-      auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
+      auto &Promise = jsiContext->jsRegistry->getObject<jsi::Function>(
         JSReferencesCache::JSKeys::PROMISE
       );
 
       try {
-        auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
+        auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 
         // Creates a JSI promise
         jsi::Value promise = Promise.callAsConstructor(
           rt,
-          createPromiseBody(rt, moduleRegistry, globalConvertedArgs)
+          createPromiseBody(rt, globalConvertedArgs)
         );
         return promise;
       } catch (jni::JniException &jniException) {
@@ -412,7 +403,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
           rt,
           jsi::Function::createFromHostFunction(
             rt,
-            moduleRegistry->jsRegistry->getPropNameID(rt, "promiseFn"),
+            jsiContext->jsRegistry->getPropNameID(rt, "promiseFn"),
             2,
             [code, message](
               jsi::Runtime &rt,
@@ -446,14 +437,13 @@ jsi::Function MethodMetadata::toAsyncFunction(
 
 jsi::Function MethodMetadata::createPromiseBody(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *moduleRegistry,
   jobjectArray globalArgs
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    moduleRegistry->jsRegistry->getPropNameID(runtime, "promiseFn"),
+    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, "promiseFn"),
     2,
-    [this, globalArgs, moduleRegistry](
+    [this, globalArgs](
       jsi::Runtime &rt,
       const jsi::Value &thisVal,
       const jsi::Value *promiseConstructorArgs,
@@ -468,14 +458,12 @@ jsi::Function MethodMetadata::createPromiseBody(
 
       jobject resolve = createJavaCallbackFromJSIFunction(
         std::move(resolveJSIFn),
-        rt,
-        moduleRegistry
+        rt
       ).release();
 
       jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
         rt,
-        moduleRegistry,
         true
       ).release();
 

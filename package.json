@@ -19,10 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.74.0-rc.2",
-    "@react-native/assets-registry": "0.74.0",
-    "@react-native/babel-preset": "0.74.2",
-    "@react-native/dev-middleware": "0.74.2",
+    "react-native": "0.74.0-rc.3",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
     "**/util": "~0.12.4"

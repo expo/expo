@@ -37,7 +37,14 @@
 
 #endif
 
+@interface RCTAppDelegate ()
+
+- (RCTRootViewFactory *)createRCTRootViewFactory;
+
+@end
+
 @implementation DevClientAppDelegate {
+
 #if RCT_NEW_ARCH_ENABLED
   RCTHost *_reactHost;
 #endif // RCT_NEW_ARCH_ENABLED
@@ -55,8 +62,18 @@
 }
 #endif
 
+@synthesize rootViewFactory = _rootViewFactory;
+
+- (RCTRootViewFactory *)rootViewFactory
+{
+  if (_rootViewFactory == nil) {
+    _rootViewFactory = [self createRCTRootViewFactory];
+  }
+  return _rootViewFactory;
+}
+
 - (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
-  self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
+  self.rootViewFactory.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
 #ifdef RCT_NEW_ARCH_ENABLED
   // bridgeless mode is not yet supported in expo-dev-client

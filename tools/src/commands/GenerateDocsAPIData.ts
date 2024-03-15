@@ -68,6 +68,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-localization': ['Localization.ts'],
   'expo-location': ['Location.ts'],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
+  'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
   'expo-navigation-bar': ['NavigationBar.ts'],

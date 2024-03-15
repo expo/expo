@@ -34,13 +34,20 @@ describe(createFingerprintFromSourcesAsync, () => {
     ];
 
     expect(
-      await createFingerprintFromSourcesAsync(sources, '/app', await normalizeOptionsAsync('/app'))
+      await createFingerprintFromSourcesAsync(
+        sources,
+        '/app',
+        await normalizeOptionsAsync('/app', { debug: true })
+      )
     ).toMatchInlineSnapshot(`
       {
         "hash": "ca7d58cd60289daa5cddcf99fcaa1d339bfc2c1a",
         "sources": [
           {
             "contents": "HelloWorld",
+            "debugInfo": {
+              "hash": "db8ac1c259eb89d4a131b253bacfca5f319d54f2",
+            },
             "hash": "db8ac1c259eb89d4a131b253bacfca5f319d54f2",
             "id": "foo",
             "reasons": [
@@ -49,6 +56,10 @@ describe(createFingerprintFromSourcesAsync, () => {
             "type": "contents",
           },
           {
+            "debugInfo": {
+              "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
+              "path": "assets/icon.png",
+            },
             "filePath": "assets/icon.png",
             "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
             "reasons": [
@@ -64,6 +75,30 @@ describe(createFingerprintFromSourcesAsync, () => {
 
 describe(createFingerprintSourceAsync, () => {
   it('should merge hash value to original source', async () => {
+    const source: HashSource = {
+      type: 'contents',
+      id: 'foo',
+      contents: 'HelloWorld',
+      reasons: ['foo'],
+    };
+    const expectedResult = {
+      ...source,
+      hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
+      debugInfo: {
+        hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
+      },
+    };
+    expect(
+      await createFingerprintSourceAsync(
+        source,
+        pLimit(1),
+        '/app',
+        await normalizeOptionsAsync('/app', { debug: true })
+      )
+    ).toEqual(expectedResult);
+  });
+
+  it('does not include debug info when debug option is falsey', async () => {
     const source: HashSource = {
       type: 'contents',
       id: 'foo',
@@ -89,7 +124,7 @@ describe(createContentsHashResultsAsync, () => {
   it('should return {id, hex} result', async () => {
     const id = 'foo';
     const contents = '{}';
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const result = await createContentsHashResultsAsync(
       {
         type: 'contents',
@@ -115,7 +150,7 @@ describe(createFileHashResultsAsync, () => {
     const filePath = 'assets/icon.png';
     const contents = '{}';
     const limiter = pLimit(1);
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     vol.mkdirSync('/app');
     vol.mkdirSync('/app/assets');
     vol.writeFileSync(path.join('/app', filePath), contents);
@@ -131,7 +166,7 @@ describe(createFileHashResultsAsync, () => {
     const filePath = 'app.json';
     const contents = '{}';
     const limiter = pLimit(1);
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     options.ignorePaths = ['*.json'];
     vol.mkdirSync('/app');
     vol.writeFileSync(path.join('/app', filePath), contents);
@@ -148,7 +183,7 @@ describe(createDirHashResultsAsync, () => {
 
   it('should return {id, hex} result', async () => {
     const limiter = pLimit(3);
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
@@ -164,7 +199,7 @@ describe(createDirHashResultsAsync, () => {
 
   it('should ignore dir if it is in options.ignorePaths', async () => {
     const limiter = pLimit(3);
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     options.ignorePaths = ['ios/**/*', 'android/**/*'];
     const volJSON = {
       '/app/ios/Podfile': '...',
@@ -188,7 +223,7 @@ describe(createDirHashResultsAsync, () => {
 
   it('should return stable result from sorted files', async () => {
     const limiter = pLimit(3);
-    const options = await normalizeOptionsAsync('/app');
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',

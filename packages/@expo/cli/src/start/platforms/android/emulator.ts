@@ -23,16 +23,23 @@ export function whichEmulator(): string {
 export async function listAvdsAsync(): Promise<Device[]> {
   try {
     const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
-    return stdout
-      .split(os.EOL)
-      .filter(Boolean)
-      .map((name) => ({
-        name,
-        type: 'emulator',
-        // unsure from this
-        isBooted: false,
-        isAuthorized: true,
-      }));
+    return (
+      stdout
+        .split(os.EOL)
+        .filter(Boolean)
+        /**
+         * AVD IDs cannot contain spaces. This removes extra info lines from the output. e.g.
+         * "INFO    | Storing crashdata in: /tmp/android-brent/emu-crash-34.1.18.db
+         */
+        .filter((name) => !name.trim().includes(' '))
+        .map((name) => ({
+          name,
+          type: 'emulator',
+          // unsure from this
+          isBooted: false,
+          isAuthorized: true,
+        }))
+    );
   } catch {
     return [];
   }

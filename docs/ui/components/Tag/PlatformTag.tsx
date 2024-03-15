@@ -21,8 +21,10 @@ export const PlatformTag = ({ platform, type, className }: PlatformTagProps) => 
         (platformName === 'android' ||
           platformName === 'ios' ||
           platformName === 'web' ||
-          platformName === 'expo') &&
+          platformName === 'macos' ||
+          platformName === 'tvos') &&
           TAG_CLASSES[platformName],
+        'select-none',
         className
       )}>
       {type !== 'toc' && <PlatformIcon platform={platformName} />}

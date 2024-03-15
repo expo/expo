@@ -18,6 +18,7 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -40,7 +41,7 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JNIDeallocator
-import expo.modules.kotlin.jni.JSIInteropModuleRegistry
+import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.sharedobjects.ClassRegistry
@@ -65,8 +66,8 @@ class AppContext(
 
   private var hostWasDestroyed = false
 
-  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
-  internal lateinit var jsiInterop: JSIInteropModuleRegistry
+  // We postpone creating the `JSIContext` to not load so files in unit tests.
+  internal lateinit var jsiInterop: JSIContext
 
   /**
    * The core module that defines the `expo` object in the global scope of the JS runtime.
@@ -154,27 +155,33 @@ class AppContext(
 
     trace("AppContext.installJSIInterop") {
       try {
-        jsiInterop = JSIInteropModuleRegistry()
+        jsiInterop = JSIContext()
         val reactContext = reactContextHolder.get() ?: return@trace
         val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
 
-        val jsCallInvokerHolder = reactContext.catalystInstance?.jsCallInvokerHolder
-        if (jsCallInvokerHolder !is CallInvokerHolderImpl) {
-          logger.warn("⚠️ Cannot install JSI interop: CallInvokerHolderImpl is not available")
+        val jsRuntimePointer = jsContextHolder.takeIf { it != 0L }.ifNull {
+          logger.error("❌ Cannot install JSI interop - JS runtime pointer is null")
           return@trace
         }
 
-        jsContextHolder
-          .takeIf { it != 0L }
-          ?.let {
-            jsiInterop.installJSI(
-              this,
-              it,
-              jniDeallocator,
-              jsCallInvokerHolder
-            )
-            logger.info("✅ JSI interop was installed")
-          }
+        @Suppress("DEPRECATION")
+        if (reactContext.isBridgeless) {
+          jsiInterop.installJSIForBridgeless(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.runtimeExecutor!!
+          )
+        } else {
+          jsiInterop.installJSI(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl
+          )
+        }
+
+        logger.info("✅ JSI interop was installed")
       } catch (e: Throwable) {
         logger.error("❌ Cannot install JSI interop: $e", e)
       }

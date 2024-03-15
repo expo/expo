@@ -1,6 +1,7 @@
 import './expect';
+import { NavigationState, PartialState } from '@react-navigation/native';
 import { render } from '@testing-library/react-native';
-import { FileStub } from './context-stubs';
+import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 export * from '@testing-library/react-native';
 type RenderRouterOptions = Parameters<typeof render>[1] & {
     initialUrl?: any;
@@ -10,20 +11,20 @@ type Result = ReturnType<typeof render> & {
     getPathnameWithParams(): string;
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
+    getRouterState(): NavigationState<any> | PartialState<any>;
 };
-export type MockContextConfig = string | string[] | Record<string, FileStub> | {
-    appDir: string;
-    overrides: Record<string, FileStub>;
-};
-export declare function getMockConfig(context: MockContextConfig): {
-    initialRouteName?: string | undefined;
-    screens: Record<string, import("../getReactNavigationConfig").Screen>;
-};
-export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {
-    keys: () => string[];
-    resolve: (key: string) => string;
-    id: string;
-};
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            toHavePathname(pathname: string): R;
+            toHavePathnameWithParams(pathname: string): R;
+            toHaveSegments(segments: string[]): R;
+            toHaveSearchParams(params: Record<string, string | string[]>): R;
+            toHaveRouterState(state: NavigationState<any> | PartialState<any>): R;
+        }
+    }
+}
+export { MockContextConfig, getMockConfig, getMockContext };
 export declare function renderRouter(context?: MockContextConfig, { initialUrl, ...options }?: RenderRouterOptions): Result;
 export declare const testRouter: {
     /** Navigate to the provided pathname and the pathname */

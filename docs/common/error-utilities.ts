@@ -293,6 +293,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
+  // Random API replaced with Crypto
+  '/versions/v50.0.0/sdk/random/': '/versions/v50.0.0/sdk/crypto/',
+  '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
+
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/overview/',
@@ -407,6 +411,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
   '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
+  '/bare/error-recovery/': '/eas-update/error-recovery/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',

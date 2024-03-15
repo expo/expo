@@ -4,7 +4,7 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JSIUtils.h"
 
 #if UNIT_TEST
@@ -35,7 +35,9 @@ namespace {
  */
 class SyncCallInvoker : public react::CallInvoker {
 public:
-  void invokeAsync(std::function<void()> &&func) noexcept override {
+  void invokeAsync(std::function<void()> &&func)
+
+  noexcept override{
     func();
   }
 
@@ -48,11 +50,8 @@ public:
 
 } // namespace
 
-JavaScriptRuntime::JavaScriptRuntime(
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry
-)
-  : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
+JavaScriptRuntime::JavaScriptRuntime()
+  : jsInvoker(std::make_shared<SyncCallInvoker>()) {
 #if !UNIT_TEST
   throw std::logic_error(
     "The JavaScriptRuntime constructor is only available when UNIT_TEST is defined.");
@@ -111,11 +110,9 @@ JavaScriptRuntime::JavaScriptRuntime(
 }
 
 JavaScriptRuntime::JavaScriptRuntime(
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker
-) : jsInvoker(std::move(jsInvoker)),
-    jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
+) : jsInvoker(std::move(jsInvoker)) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
@@ -131,7 +128,7 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
   try {
     return JavaScriptValue::newInstance(
-      jsiInteropModuleRegistry,
+      getJSIContext(get()),
       weak_from_this(),
       std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
@@ -154,12 +151,12 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
   auto global = std::make_shared<jsi::Object>(runtime->global());
-  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), global);
+  return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), global);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
-  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), newObject);
+  return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), newObject);
 }
 
 void JavaScriptRuntime::drainJSEventLoop() {
@@ -167,9 +164,13 @@ void JavaScriptRuntime::drainJSEventLoop() {
 }
 
 void JavaScriptRuntime::installMainObject() {
-  auto coreModule = jsiInteropModuleRegistry->getCoreModule();
-  coreModule->cthis()->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
-  mainObject = coreModule->cthis()->getJSIObject(*runtime);
+  auto coreModule = getJSIContext(get())->getCoreModule();
+
+  // As opposed to other modules, the core module is represented by a raw JS object instead of an instance of NativeModule class.
+  mainObject = std::make_shared<jsi::Object>(*runtime);
+
+  // Decorate the core object based on the module definition.
+  coreModule->cthis()->decorate(*runtime, mainObject.get());
 
   auto global = runtime->global();
 
@@ -187,9 +188,5 @@ void JavaScriptRuntime::installMainObject() {
 
 std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
   return mainObject;
-}
-
-JSIInteropModuleRegistry *JavaScriptRuntime::getModuleRegistry() {
-  return jsiInteropModuleRegistry;
 }
 } // namespace expo

@@ -4,17 +4,15 @@ description: An API that provides information about the user's cellular service 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-cellular'
 packageName: 'expo-cellular'
 iconUrl: '/static/images/packages/expo-cellular.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 `expo-cellular` provides information about the user's cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
-
-<PlatformsSection android emulator ios web />
 
 ## Installation
 

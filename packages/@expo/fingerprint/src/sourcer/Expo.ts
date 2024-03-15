@@ -192,6 +192,21 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
   }
 }
 
+/**
+ * Gets the patch sources for the `patch-project`.
+ */
+export async function getExpoCNGPatchSourcesAsync(
+  projectRoot: string,
+  options: NormalizedOptions
+): Promise<HashSource[]> {
+  const result = await getFileBasedHashSourceAsync(projectRoot, 'cng-patches', 'expoCNGPatches');
+  if (result != null) {
+    debug(`Adding dir - ${chalk.dim('cng-patches')}`);
+    return [result];
+  }
+  return [];
+}
+
 export async function getExpoAutolinkingIosSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions

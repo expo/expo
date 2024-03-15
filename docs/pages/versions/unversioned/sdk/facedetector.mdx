@@ -3,19 +3,17 @@ title: FaceDetector
 description: A library that uses Google Mobile Vision to detect faces on images.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-face-detector'
 packageName: 'expo-face-detector'
+platforms: ['android*', 'ios*']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
 > **warning** **Deprecated:** This library will no longer be available from SDK 51. We recommend [`react-native-vision-camera`](https://github.com/mrousavy/react-native-vision-camera) if you require this functionality.
 
 `expo-face-detector` lets you use the power of the [Google's ML Kit](https://developers.google.com/ml-kit/vision/face-detection) framework to detect faces on images.
-
-<PlatformsSection android ios />
 
 #### Known issues&ensp;<PlatformTags platforms={['android']} />
 

@@ -8,6 +8,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
+#import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
@@ -84,7 +85,15 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
+
+    __weak __typeof(self) weakSelf = self;
+    self.bridgeDelegate = [[EXDevLauncherBridgeDelegate alloc] initWithBundleURLGetter:^NSURL * {
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf != nil) {
+        return [strongSelf getSourceURL];
+      }
+      return nil;
+    }];
   }
   return self;
 }
@@ -174,6 +183,16 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+  return [self getSourceURL];
+}
+
+- (NSURL *)bundleURL
+{
+  return [self getSourceURL];
+}
+
+- (NSURL *)getSourceURL
+{
   NSURL *launcherURL = [self devLauncherURL];
   if (launcherURL != nil && [self isLauncherPackagerRunning]) {
     return launcherURL;
@@ -181,7 +200,6 @@
   NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 }
-
 
 - (void)clearRecentlyOpenedApps
 {
@@ -310,7 +328,7 @@
   }
 
   [self _removeInitModuleObserver];
-  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
+  UIView *rootView = [EXReactRootViewFactory createDefaultReactRootView:[self getSourceURL] moduleName:nil initialProperties:nil launchOptions:_launchOptions];
   _launcherBridge = _bridgeDelegate.bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self

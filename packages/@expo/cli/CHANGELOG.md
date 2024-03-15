@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add experimental support for using a canary build of the React Native renderer. ([#27303](https://github.com/expo/expo/pull/27303) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add warnings when URI schemes cannot be resolved for dev client launches. ([#27241](https://github.com/expo/expo/pull/27241) by [@EvanBacon](https://github.com/EvanBacon))
 - Add total files bundled to the bundling finished message. ([#27215](https://github.com/expo/expo/pull/27215) by [@EvanBacon](https://github.com/EvanBacon))
@@ -15,6 +16,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `console.log` statements from colliding with Metro logs. ([#27217](https://github.com/expo/expo/pull/27217) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix using dev server URL in development. ([#27213](https://github.com/expo/expo/pull/27213) by [@EvanBacon](https://github.com/EvanBacon))
 - Always reset production bundler cache in run command. ([#27114](https://github.com/expo/expo/pull/27114) by [@EvanBacon](https://github.com/EvanBacon))
@@ -33,6 +36,16 @@
 ### 📚 3rd party library updates
 
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 0.17.8 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- Filter extra avd info when listing emulators. ([#27497](https://github.com/expo/expo/pull/27497) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.17.7 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
 
 ## 0.17.6 - 2024-02-27
 

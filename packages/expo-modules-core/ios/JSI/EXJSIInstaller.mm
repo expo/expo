@@ -11,6 +11,7 @@
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/EventEmitter.h>
+#import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
@@ -54,6 +55,8 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 }
 #endif // React Native >=0.74
 
+#pragma mark - Installing JSI bindings
+
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
   EXRuntime *runtime = [appContext _runtime];
@@ -91,6 +94,11 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 + (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
 {
   expo::EventEmitter::installClass(*[runtime get]);
+}
+
++ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime
+{
+  expo::NativeModule::installClass(*[runtime get]);
 }
 
 @end

@@ -200,6 +200,7 @@ const general = [
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/not-found.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
@@ -319,6 +320,7 @@ const general = [
       makePage('eas-update/debug-advanced.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/build-locally.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('eas-update/optimize-assets.mdx'),
@@ -355,6 +357,7 @@ const general = [
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
+    makePage('push-notifications/fcm-credentials.mdx'),
     makeGroup(
       'Reference',
       [
@@ -417,7 +420,6 @@ const general = [
         makePage('bare/installing-updates.mdx'),
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
-        makePage('bare/error-recovery.mdx'),
         makePage('bare/upgrade.mdx'),
       ]),
     ],
@@ -468,7 +470,6 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
-    makePage('router/reference/not-found.mdx'),
     { expanded: true },
   ]),
 ];

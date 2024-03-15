@@ -7,11 +7,10 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DateFormats } from '../constants/DateFormats';
-import { WebContainerProjectPage_Query } from '../graphql/types';
+import { ProjectsQuery } from '../graphql/types';
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 
-type Update =
-  WebContainerProjectPage_Query['app']['byId']['updateBranches'][number]['updates'][number];
+type Update = ProjectsQuery['app']['byId']['updateBranches'][number]['updates'][number];
 
 type Props = {
   name: string;
