@@ -86,8 +86,8 @@
     "react-native-pager-view": "6.2.3",
     "react-native-reanimated": "~3.6.0",
     "react-native-safe-area-context": "4.8.2",
-    "react-native-svg": "14.1.0",
     "react-native-screens": "~3.29.0",
+    "react-native-svg": "14.1.0",
     "react-native-view-shot": "3.8.0",
     "react-native-webview": "13.6.4",
     "test-suite": "*"
@@ -102,8 +102,8 @@
     "expo-yarn-workspaces": "^2.0.0",
     "getenv": "^1.0.0",
     "jest": "^29.3.1",
-    "jest-puppeteer": "^9.0.0",
-    "puppeteer": "^21.2.1",
+    "jest-puppeteer": "^10.0.1",
+    "puppeteer": "^22.4.1",
     "serve": "^11.3.0"
   }
 }
