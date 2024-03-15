@@ -106,7 +106,6 @@ export async function configurePackageManager(
   const manager = createPackageManager(packageManager, { cwd: projectRoot });
   switch (manager.name) {
     case 'pnpm':
-      debug('Setting pnpm `node-linker=hoisted` to make it React Native compatible');
       await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
       break;
 
@@ -115,7 +114,6 @@ export async function configurePackageManager(
       const majorVersion = parseInt(yarnVersion.split('.')[0], 10);
 
       if (majorVersion >= 2) {
-        debug('Setting yarn berry `nodeLinker: node-modules` to make it React Native compatible');
         await manager.runAsync(['config', 'set', 'nodeLinker', 'node-modules']);
       }
 
