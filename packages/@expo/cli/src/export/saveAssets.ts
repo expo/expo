@@ -31,10 +31,10 @@ export type ExportAssetDescriptor = {
 export type ExportAssetMap = Map<string, ExportAssetDescriptor>;
 
 export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: string) {
-  fs.mkdirSync(path.join(outputDir), { recursive: true });
   if (!files.size) {
     return;
   }
+  fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   // Test fixtures:
   // Log.log(
