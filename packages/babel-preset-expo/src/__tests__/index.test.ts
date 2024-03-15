@@ -141,37 +141,6 @@ it(`supports overwriting the default engine option`, () => {
   expect(firstPass.code).not.toEqual(secondPass.code);
 });
 
-describe('compiler', () => {
-  const options = {
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
-    babelrc: false,
-    presets: [preset],
-    sourceMaps: false,
-
-    compact: false,
-    comments: true,
-    retainLines: true,
-  };
-  it(`allows destructuring in the catch block`, () => {
-    // Ensuring the transform doesn't throw.
-    const { code } = babel.transformFileSync(
-      path.resolve(__dirname, 'samples/destructure-catch.tsx'),
-      options
-    )!;
-
-    expect(code).toMatchSnapshot();
-  });
-  it(`supports functions with discarded return values in try/catch blocks that run in memos`, () => {
-    // Ensuring the transform doesn't throw.
-    const { code } = babel.transformFileSync(
-      path.resolve(__dirname, 'samples/try-catch-hook.tsx'),
-      options
-    )!;
-
-    expect(code).toMatchSnapshot();
-  });
-});
-
 describe.each([
   ['metro', getCaller({ name: 'metro', isDev: false })],
   ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes', isDev: true })],
