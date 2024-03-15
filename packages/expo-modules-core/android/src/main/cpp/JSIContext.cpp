@@ -12,10 +12,22 @@
 
 #include <memory>
 
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+#include "BridgelessJSCallInvoker.h"
+
+#endif
+
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
+
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+#include "BridgelessJSCallInvoker.h"
+
+#endif
 
 jni::local_ref<JSIContext::jhybriddata>
 JSIContext::initHybrid(jni::alias_ref<jhybridobject> jThis) {
@@ -26,6 +38,10 @@ void JSIContext::registerNatives() {
   registerHybrid({
                    makeNativeMethod("initHybrid", JSIContext::initHybrid),
                    makeNativeMethod("installJSI", JSIContext::installJSI),
+#if IS_NEW_ARCHITECTURE_ENABLED
+                   makeNativeMethod("installJSIForBridgeless",
+                                    JSIContext::installJSIForBridgeless),
+#endif
                    makeNativeMethod("installJSIForTests",
                                     JSIContext::installJSIForTests),
                    makeNativeMethod("evaluateScript", JSIContext::evaluateScript),
@@ -54,19 +70,32 @@ void JSIContext::installJSI(
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
 ) {
-  this->jniDeallocator = jni::make_global(jniDeallocator);
-
-  auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-
-  jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
-
-  runtimeHolder = std::make_shared<JavaScriptRuntime>(
-    runtime,
+  prepareJSIContext(
+    jsRuntimePointer,
+    jniDeallocator,
     jsInvokerHolder->cthis()->getCallInvoker()
   );
 
   prepareRuntime();
 }
+
+#if IS_NEW_ARCHITECTURE_ENABLED
+
+void JSIContext::installJSIForBridgeless(
+  jlong jsRuntimePointer,
+  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+  jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
+) {
+  prepareJSIContext(
+    jsRuntimePointer,
+    jniDeallocator,
+    std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get())
+  );
+
+  prepareRuntime();
+}
+
+#endif
 
 void JSIContext::installJSIForTests(
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
@@ -83,6 +112,21 @@ void JSIContext::installJSIForTests(
 
   prepareRuntime();
 #endif // !UNIT_TEST
+}
+
+void JSIContext::prepareJSIContext(
+  jlong jsRuntimePointer,
+  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+  std::shared_ptr<react::CallInvoker> callInvoker
+) {
+  this->jniDeallocator = jni::make_global(jniDeallocator);
+  auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
+  jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
+
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    runtime,
+    std::move(callInvoker)
+  );
 }
 
 void JSIContext::prepareRuntime() {
