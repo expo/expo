@@ -3,6 +3,7 @@ package expo.modules
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.ViewGroup
@@ -10,11 +11,13 @@ import androidx.collection.ArrayMap
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
@@ -35,8 +38,11 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
-  private val host: ReactNativeHost by lazy {
+  private val _reactNativeHost: ReactNativeHost by lazy {
     invokeDelegateMethod("getReactNativeHost")
+  }
+  private val _reactHost: ReactHost? by lazy {
+    invokeDelegateMethod("getReactHost")
   }
 
   /**
@@ -59,8 +65,16 @@ class ReactActivityDelegateWrapper(
     return rootView
   }
 
+  override fun createRootView(initialProps: Bundle?): ReactRootView {
+    return this.createRootView()
+  }
+
   override fun getReactNativeHost(): ReactNativeHost {
-    return host
+    return _reactNativeHost
+  }
+
+  override fun getReactHost(): ReactHost? {
+    return _reactHost
   }
 
   override fun getReactInstanceManager(): ReactInstanceManager {
@@ -83,6 +97,7 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
+      dispatchWillCreateReactInstanceIfNeeded()
       reactDelegate.loadApp(appKey)
       rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
@@ -93,22 +108,24 @@ class ReactActivityDelegateWrapper(
     }
 
     val delayLoadAppHandler = reactActivityHandlers.asSequence()
-      .mapNotNull { it.getDelayLoadAppHandler(activity, host) }
+      .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
       .firstOrNull()
     if (delayLoadAppHandler != null) {
+      shouldEmitPendingResume = true
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
+        dispatchWillCreateReactInstanceIfNeeded()
         invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
         }
-        if (shouldEmitPendingResume) {
-          onResume()
-        }
+        shouldEmitPendingResume = false
+        onResume()
       }
       return
     }
 
+    dispatchWillCreateReactInstanceIfNeeded()
     invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onContentChanged(activity)
@@ -137,14 +154,28 @@ class ReactActivityDelegateWrapper(
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
       val launchOptions = composeLaunchOptions() as Bundle? // composeLaunchOptions() is nullable but older react-native declares as nonnull.
-      val reactDelegate = object : ReactDelegate(
-        plainActivity,
-        reactNativeHost,
-        mainComponentName,
-        launchOptions
-      ) {
-        override fun createRootView(): ReactRootView {
-          return this@ReactActivityDelegateWrapper.createRootView()
+      val reactDelegate: ReactDelegate
+      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+        reactDelegate = object : ReactDelegate(
+          plainActivity,
+          reactHost,
+          mainComponentName,
+          launchOptions
+        ) {
+          override fun createRootView(): ReactRootView {
+            return this@ReactActivityDelegateWrapper.createRootView()
+          }
+        }
+      } else {
+        reactDelegate = object : ReactDelegate(
+          plainActivity,
+          reactNativeHost,
+          mainComponentName,
+          launchOptions
+        ) {
+          override fun createRootView(): ReactRootView {
+            return this@ReactActivityDelegateWrapper.createRootView()
+          }
         }
       }
       val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
@@ -161,22 +192,19 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    if (!host.hasInstance()) {
-      shouldEmitPendingResume = true
+    if (shouldEmitPendingResume) {
       return
     }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
     }
-    shouldEmitPendingResume = false
   }
 
   override fun onPause() {
     // If app is stopped before delayed `loadApp`, we should cancel the pending resume
-    shouldEmitPendingResume = false
-    if (!host.hasInstance()) {
-      return
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
@@ -186,9 +214,8 @@ class ReactActivityDelegateWrapper(
 
   override fun onDestroy() {
     // If app is stopped before delayed `loadApp`, we should cancel the pending resume
-    shouldEmitPendingResume = false
-    if (!host.hasInstance()) {
-      return
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
@@ -279,6 +306,14 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("isFabricEnabled")
   }
 
+  override fun composeLaunchOptions(): Bundle? {
+    return invokeDelegateMethod("composeLaunchOptions")
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration?) {
+    delegate.onConfigurationChanged(newConfig)
+  }
+
   //endregion
 
   //region Internals
@@ -307,6 +342,15 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
+  }
+
+  private fun dispatchWillCreateReactInstanceIfNeeded() {
+    if (_reactHost != null) {
+      val useDeveloperSupport = _reactNativeHost.useDeveloperSupport
+      (_reactNativeHost as? ReactNativeHostWrapper)?.reactNativeHostHandlers?.forEach {
+        it.onWillCreateReactInstance(useDeveloperSupport)
+      }
+    }
   }
 
   //endregion

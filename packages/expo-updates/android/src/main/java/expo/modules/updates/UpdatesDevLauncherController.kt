@@ -3,7 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
@@ -23,8 +23,8 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import org.json.JSONObject
 import java.io.File
 import java.lang.ref.WeakReference
@@ -80,7 +80,7 @@ class UpdatesDevLauncherController(
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
 
   override fun start() {
     throw Exception("IUpdatesController.start should not be called in dev client")

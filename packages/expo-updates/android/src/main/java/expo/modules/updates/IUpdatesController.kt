@@ -2,7 +2,7 @@ package expo.modules.updates
 
 import android.os.Bundle
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
@@ -46,7 +46,7 @@ interface IUpdatesController {
    */
   var appContext: WeakReference<AppContext>?
 
-  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager)
+  fun onDidCreateReactInstanceManager(reactContext: ReactContext)
 
   /**
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
