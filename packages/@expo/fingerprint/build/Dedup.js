@@ -16,7 +16,7 @@ function dedupSources(sources, projectRoot) {
         const [duplicatedItemIndex, shouldSwapSource] = findDuplicatedSourceIndex(newSources, source, projectRoot);
         if (duplicatedItemIndex >= 0) {
             const duplicatedItem = newSources[duplicatedItemIndex];
-            debug(`Skipping duplicated source: ${source}`);
+            debug(`Skipping duplicated source: ${JSON.stringify(source)}`);
             if (shouldSwapSource) {
                 newSources[duplicatedItemIndex] = {
                     ...source,
