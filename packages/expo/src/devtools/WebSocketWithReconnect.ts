@@ -177,6 +177,7 @@ export class WebSocketWithReconnect implements WebSocket {
 
     if (this.retries >= this.maxRetries) {
       this.onError(new Error('Exceeded max retries'));
+      this.close();
       return;
     }
 
@@ -198,6 +199,19 @@ export class WebSocketWithReconnect implements WebSocket {
     } catch {}
   }
 
+  public get readyState() {
+    // Only return closed if the WebSocket is explicitly closed or exceeds max retries.
+    if (this.isClosed) {
+      return WebSocket.CLOSED;
+    }
+
+    const readyState = this.ws?.readyState;
+    if (readyState === WebSocket.CLOSED) {
+      return WebSocket.CONNECTING;
+    }
+    return readyState ?? WebSocket.CONNECTING;
+  }
+
   //#endregion
 
   //#region WebSocket API proxy
@@ -206,10 +220,6 @@ export class WebSocketWithReconnect implements WebSocket {
   public readonly OPEN = 1;
   public readonly CLOSING = 2;
   public readonly CLOSED = 3;
-
-  public get readyState() {
-    return this.ws?.readyState ?? WebSocket.CLOSED;
-  }
 
   public get binaryType() {
     return this.ws?.binaryType ?? 'blob';

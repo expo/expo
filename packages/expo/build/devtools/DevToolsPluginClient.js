@@ -50,8 +50,9 @@ export class DevToolsPluginClient {
      * @param params any extra payload.
      */
     sendMessage(method, params) {
-        if (!this.isConnected()) {
-            throw new Error('Unable to send message in a disconnected state.');
+        if (this.wsStore.ws?.readyState === WebSocket.CLOSED) {
+            logger.warn('Unable to send message in a disconnected state.');
+            return;
         }
         const payload = {
             version: MESSAGE_PROTOCOL_VERSION,
@@ -91,7 +92,16 @@ export class DevToolsPluginClient {
      */
     connectAsync() {
         return new Promise((resolve, reject) => {
-            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`);
+            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+                onError: (e) => {
+                    if (e instanceof Error) {
+                        console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);
+                    }
+                    else {
+                        console.warn(`Error happened from the WebSocket connection: ${JSON.stringify(e)}`);
+                    }
+                },
+            });
             ws.addEventListener('open', () => {
                 resolve(ws);
             });

@@ -116,6 +116,7 @@ export class WebSocketWithReconnect {
         }
         if (this.retries >= this.maxRetries) {
             this.onError(new Error('Exceeded max retries'));
+            this.close();
             return;
         }
         setTimeout(() => {
@@ -135,15 +136,23 @@ export class WebSocketWithReconnect {
         }
         catch { }
     }
+    get readyState() {
+        // Only return closed if the WebSocket is explicitly closed or exceeds max retries.
+        if (this.isClosed) {
+            return WebSocket.CLOSED;
+        }
+        const readyState = this.ws?.readyState;
+        if (readyState === WebSocket.CLOSED) {
+            return WebSocket.CONNECTING;
+        }
+        return readyState ?? WebSocket.CONNECTING;
+    }
     //#endregion
     //#region WebSocket API proxy
     CONNECTING = 0;
     OPEN = 1;
     CLOSING = 2;
     CLOSED = 3;
-    get readyState() {
-        return this.ws?.readyState ?? WebSocket.CLOSED;
-    }
     get binaryType() {
         return this.ws?.binaryType ?? 'blob';
     }

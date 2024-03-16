@@ -108,6 +108,17 @@ describe(WebSocketWithReconnect, () => {
     await delayAsync(100);
     expect(mockOnError).toHaveBeenCalled();
   });
+
+  it('should show connecting state when reconnecting', async () => {
+    server = new WebSocketServer({ port: 8000 });
+
+    ws = new WebSocketWithReconnect('ws://localhost:8000', {
+      retriesInterval: 1000,
+    });
+    await closeServerAsync(server);
+    await delayAsync(100);
+    expect(ws.readyState).toBe(WebSocket.CONNECTING);
+  });
 });
 
 async function closeServerAsync(server: WebSocketServer | null) {

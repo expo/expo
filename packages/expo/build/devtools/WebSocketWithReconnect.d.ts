@@ -54,11 +54,11 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private handleConnectTimeout;
     private reconnectIfNeeded;
     private wsClose;
+    get readyState(): number;
     readonly CONNECTING = 0;
     readonly OPEN = 1;
     readonly CLOSING = 2;
     readonly CLOSED = 3;
-    get readyState(): number;
     get binaryType(): BinaryType;
     get bufferedAmount(): number;
     get extensions(): string;
