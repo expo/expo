@@ -45,6 +45,11 @@ export declare const localAssets: LocalAssets;
  */
 export declare const isEmergencyLaunch: boolean;
 /**
+ * If `isEmergencyLaunch` is set to true, this will contain a string error message describing
+ * what failed during initialization.
+ */
+export declare const emergencyLaunchReason: string | null;
+/**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
  */
