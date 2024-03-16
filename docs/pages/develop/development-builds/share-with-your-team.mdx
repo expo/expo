@@ -8,6 +8,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { Terminal } from '~/ui/components/Snippet';
 
 Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time. You can also share it with your team or run it on multiple test devices.
 
@@ -30,6 +31,15 @@ You can also direct your teammate to the build page in the Expo dashboard. From 
   alt="An example of shareable development build URL from Expo dashboard."
   src="/static/images/share-dev-build/expo-dashboard.png"
 />
+
+### Get development build with EAS CLI
+
+Your teammate can also download and install the development build using EAS CLI.
+Make sure to sign in to the Expo Account associated with the app before running the command.
+
+<Terminal cmd={['$ eas build:run --profile development']} />
+
+Change the build profile if you define a different name for the development build.
 
 ### iOS-only instructions
 
