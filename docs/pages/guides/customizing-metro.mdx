@@ -29,7 +29,19 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-See [**metro.config.js** documentation](https://facebook.github.io/metro/docs/configuration) for more information.
+<BoxLink
+  title="API Reference: metro.config.js"
+  description="A reference of available configurations with Metro and expo/metro-config"
+  href="/versions/latest/config/metro/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title={`"Configuring Metro" — an API reference on the Metro Bundler documentation`}
+  description="Learn about all of the available options. Refers to the latest released version of Metro."
+  href="https://facebook.github.io/metro/docs/configuration"
+  Icon={BookOpen02Icon}
+/>
 
 ## Assets
 
@@ -56,6 +68,44 @@ config.resolver.assetExts.push(
 
 module.exports = config;
 ```
+
+## Transformer
+
+If you want to modify the `transformer` property, you should ensure that you do not clobber the existing config provided by default by `expo/metro-config`.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+// Warning: do not do this! You will lose the default transformer configuration.
+// config.transformer = {
+//   babelTransformerPath: require.resolve("react-native-svg-transformer"),
+// };
+
+config.transformer = {
+  ...config.transformer,
+  // Your customization here.
+}
+
+module.exports = config;
+```
+
+Refer to the [ExpoMetroConfig.ts](https://github.com/expo/expo/blob/d54c290e384d9a95b98445f77f82149ce82603f3/packages/%40expo/metro-config/src/ExpoMetroConfig.ts#L245-L272) source code before overwriting any values, to ensure that you understand what you are changing. The following links provide information on how to modify specific aspects of the transformer.
+
+<BoxLink
+  title="Extending the Babel transformer"
+  description="Learn about how to extend the Babel transformer, commonly used for inlining SVGs."
+  href="/versions/latest/config/metro/#extending-the-babel-transformer"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Extending the Babel transformer"
+  description="Learn about how to extend the Babel transformer, commonly used for inlining SVGs."
+  href="/versions/latest/config/metro/#extending-the-babel-transformer"
+  Icon={BookOpen02Icon}
+/>
 
 ## Bundle splitting
 
