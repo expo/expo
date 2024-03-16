@@ -103,6 +103,12 @@ public:
 };
 
 /**
+ Emits an event with the given name and arguments to the emitter object.
+ Does nothing if the given object is not an instance of the EventEmitter class.
+ */
+void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
+
+/**
  Gets `expo.EventEmitter` class from the given runtime.
  */
 jsi::Function getClass(jsi::Runtime &runtime);

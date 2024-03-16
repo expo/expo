@@ -42,19 +42,12 @@ open class SharedObject: AnySharedObject {
       log.warn("Trying to send event '\(eventName)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    runtime.schedule { [weak self] in
-      guard let self, let jsObject = self.getJavaScriptObject() else {
+    runtime.schedule { [weak self, weak runtime] in
+      guard let self, let runtime, let jsObject = self.getJavaScriptObject() else {
         log.warn("Trying to send event '\(eventName)' to \(type(of: self)), but the JS object is no longer associated with the native instance")
         return
       }
-      do {
-        try jsObject
-          .getProperty("emit")
-          .asFunction()
-          .call(withArguments: [eventName] + args, thisObject: jsObject, asConstructor: false)
-      } catch {
-        log.error("Unable to send event '\(eventName)' to \(type(of: self)):", error)
-      }
+      JSIUtils.emitEvent(eventName, to: jsObject, withArguments: args, in: runtime)
     }
   }
 }
