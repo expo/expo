@@ -91,7 +91,7 @@ final class SharedObjectSpec: ExpoSpec {
     }
 
     describe("Native object") {
-      it("sends events") {
+      it("emits events") {
         // Create the shared object
         let jsObject = try runtime
           .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
@@ -99,21 +99,26 @@ final class SharedObjectSpec: ExpoSpec {
 
         // Add a listener that adds three arguments
         try runtime.eval([
-          "total = 0",
-          "sharedObject.addListener('test event', (a, b, c) => { total = a + b + c })"
+          "result = null",
+          "sharedObject.addListener('test event', (number, string, record) => { result = { number, string, record } })"
         ])
 
         // Get the native instance
         let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
-        // Send an event from the native object to JS
-        nativeObject?.sendEvent(name: "test event", args: 1, 2, 3)
+        struct EventRecord: Record {
+          @Field var boolean: Bool = true
+        }
+
+        // Emit an event from the native object to JS
+        nativeObject?.emit(event: "test event", arguments: 123, "test", EventRecord())
 
         // Check the value that is set by the listener
-        let total = try runtime.eval("total")
+        let result = try runtime.eval("result").asObject()
 
-        expect(total.kind) == .number
-        expect(try total.asInt()) == 6
+        expect(try result.getProperty("number").asInt()) == 123
+        expect(try result.getProperty("string").asString()) == "test"
+        expect(try result.getProperty("record").asObject().getProperty("boolean").asBool()) == true
       }
     }
   }
