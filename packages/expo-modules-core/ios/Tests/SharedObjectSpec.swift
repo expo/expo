@@ -91,6 +91,9 @@ final class SharedObjectSpec: ExpoSpec {
     }
 
     describe("Native object") {
+      // Event emitting requires Xcode 15.0, but we're still using Xcode 14
+      // to run these tests on GitHub Actions due to some performance issues.
+      #if swift(>=5.9)
       it("emits events") {
         // Create the shared object
         let jsObject = try runtime
@@ -120,6 +123,7 @@ final class SharedObjectSpec: ExpoSpec {
         expect(try result.getProperty("string").asString()) == "test"
         expect(try result.getProperty("record").asObject().getProperty("boolean").asBool()) == true
       }
+      #endif // swift(>=5.9)
     }
   }
 }

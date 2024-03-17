@@ -39,6 +39,10 @@ open class SharedObject: AnySharedObject {
 // When put in the class, pack expansion is crashing with `EXC_BAD_ACCESS` code.
 // See https://github.com/apple/swift/issues/72381 for more details.
 public extension SharedObject { // swiftlint:disable:this no_grouping_extension
+  // Parameter packs feature requires Swift 5.9 (Xcode 15.0), but some CIs and EAS images may still use older versions.
+  // As of April 29, all submissions must be made with Xcode 15, so hopefully we can remove this condition soon.
+  // No one should use <15.0 these days.
+  #if swift(>=5.9)
   /**
    Schedules an event with the given name and arguments to be emitted to the associated JavaScript object.
    */
@@ -67,4 +71,10 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
       JSIUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
     }
   }
+  #else // swift(>=5.9)
+  @available(*, unavailable, message: "Unavailable in Xcode <15.0")
+  public func emit(event: String, arguments: AnyArgument...) {
+    fatalError("Emitting events to JS requires at least Xcode 15.0")
+  }
+  #endif // swift(<5.9)
 }
