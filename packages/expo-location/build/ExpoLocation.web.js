@@ -1,5 +1,5 @@
-import { PermissionStatus } from 'expo-modules-core';
 import { LocationAccuracy, } from './Location.types';
+import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {
     code;
@@ -36,26 +36,39 @@ function isLocationValid(location, options) {
     return Date.now() - location.timestamp <= maxAge && locationAccuracy <= requiredAccuracy;
 }
 /**
- * Gets the permission details. The implementation is not very good as it actually requests
- * for the current location, but there is no better way on web so far :(
+ * Gets the permission details. The implementation is not very good as it's not
+ * possible to query for permission on all browsers, apparently only the
+ * latest versions will support this.
  */
 async function getPermissionsAsync() {
-    return new Promise((resolve) => {
-        const resolveWithStatus = (status) => resolve({
-            status,
-            granted: status === PermissionStatus.GRANTED,
+    if (!navigator?.permissions?.query) {
+        throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
+    }
+    const permission = await navigator.permissions.query({ name: 'geolocation' });
+    if (permission.state === 'granted') {
+        return {
+            status: PermissionStatus.GRANTED,
+            granted: true,
             canAskAgain: true,
             expires: 0,
-        });
-        navigator.geolocation.getCurrentPosition(() => resolveWithStatus(PermissionStatus.GRANTED), ({ code }) => {
-            if (code === 1 /* PERMISSION_DENIED */) {
-                resolveWithStatus(PermissionStatus.DENIED);
-            }
-            else {
-                resolveWithStatus(PermissionStatus.UNDETERMINED);
-            }
-        }, { enableHighAccuracy: false, maximumAge: Infinity });
-    });
+        };
+    }
+    if (permission.state === 'denied') {
+        return {
+            status: PermissionStatus.DENIED,
+            granted: false,
+            canAskAgain: true,
+            expires: 0,
+        };
+    }
+    // The permission state is 'prompt' when the permission has not been requested
+    // yet, tested on Chrome.
+    return {
+        status: PermissionStatus.UNDETERMINED,
+        granted: false,
+        canAskAgain: true,
+        expires: 0,
+    };
 }
 let lastKnownPosition = null;
 export default {

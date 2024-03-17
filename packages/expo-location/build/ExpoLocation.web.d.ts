@@ -1,8 +1,9 @@
-import { PermissionResponse } from 'expo-modules-core';
 import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
+import { PermissionResponse } from 'expo-modules-core';
 /**
- * Gets the permission details. The implementation is not very good as it actually requests
- * for the current location, but there is no better way on web so far :(
+ * Gets the permission details. The implementation is not very good as it's not
+ * possible to query for permission on all browsers, apparently only the
+ * latest versions will support this.
  */
 declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
