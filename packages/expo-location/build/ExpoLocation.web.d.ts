@@ -1,5 +1,5 @@
-import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 import { PermissionResponse } from 'expo-modules-core';
+import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 /**
  * Gets the permission details. The implementation is not very good as it's not
  * possible to query for permission on all browsers, apparently only the
