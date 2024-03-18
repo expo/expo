@@ -42,7 +42,6 @@ export default function VideoScreen() {
   const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
-  const [selectedSource, setSelectedSource] = React.useState<number>(0);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
@@ -50,8 +49,9 @@ export default function VideoScreen() {
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
+  const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
 
-  const player = useVideoPlayer(videoSources[selectedSource]);
+  const player = useVideoPlayer(currentSource);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -67,15 +67,15 @@ export default function VideoScreen() {
 
   const seekBy = useCallback(() => {
     player.seekBy(10);
-  }, []);
+  }, [player]);
 
   const replay = useCallback(() => {
     player.replay();
-  }, []);
+  }, [player]);
 
   const toggleMute = useCallback(() => {
     player.muted = !player.muted;
-  }, []);
+  }, [player]);
 
   const togglePictureInPicture = useCallback(() => {
     if (!isInPictureInPicture) {
@@ -90,7 +90,7 @@ export default function VideoScreen() {
       player.staysActiveInBackground = staysActive;
       setStaysActiveInBackground(staysActive);
     },
-    [staysActiveInBackground]
+    [staysActiveInBackground, player]
   );
 
   const updateLoop = useCallback(
@@ -98,18 +98,21 @@ export default function VideoScreen() {
       player.loop = loop;
       setLoop(loop);
     },
-    [loop]
+    [loop, player]
   );
 
-  const updatePreservesPitch = useCallback((correctPitch: boolean) => {
-    player.preservesPitch = correctPitch;
-    setCorrectsPitch(correctPitch);
-  }, []);
+  const updatePreservesPitch = useCallback(
+    (correctPitch: boolean) => {
+      player.preservesPitch = correctPitch;
+      setCorrectsPitch(correctPitch);
+    },
+    [player]
+  );
 
   useEffect(() => {
     player.play();
     player.preservesPitch = shouldCorrectPitch;
-  }, []);
+  }, [player]);
 
   return (
     <View style={styles.contentContainer}>
@@ -141,10 +144,9 @@ export default function VideoScreen() {
           itemStyle={Platform.OS === 'ios' && { height: 150 }}
           style={styles.picker}
           mode="dropdown"
-          selectedValue={selectedSource}
+          selectedValue={videoSources.indexOf(currentSource)}
           onValueChange={(value: number) => {
-            setSelectedSource(value);
-            player.replace(videoSources[value]);
+            setCurrentSource(videoSources[value]);
           }}>
           {videoSources.map((source, index) => (
             <Picker.Item key={index} label={videoLabels[index]} value={index} />

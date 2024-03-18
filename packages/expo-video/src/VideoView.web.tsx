@@ -220,6 +220,31 @@ class VideoPlayerWeb implements VideoPlayer {
       });
     };
   }
+
+  release(): void {
+    console.warn('The `VideoPlayer.release` method is not supported on web');
+  }
+  addListener<EventName extends never>(
+    eventName: EventName,
+    listener: Record<never, never>[EventName]
+  ): void {
+    console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
+  }
+  removeListener<EventName extends never>(
+    eventName: EventName,
+    listener: Record<never, never>[EventName]
+  ): void {
+    console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
+  }
+  removeAllListeners(eventName: never): void {
+    console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
+  }
+  emit<EventName extends never>(
+    eventName: EventName,
+    ...args: Parameters<Record<never, never>[EventName]>
+  ): void {
+    console.warn('The `VideoPlayer.emit` method is not yet supported on web');
+  }
 }
 
 function mapStyles(style: VideoViewProps['style']): React.CSSProperties {

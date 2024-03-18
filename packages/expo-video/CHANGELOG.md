@@ -17,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix memory leaks on fast refresh. ([#27428](https://github.com/expo/expo/pull/27428) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 0.3.1 — 2023-12-12

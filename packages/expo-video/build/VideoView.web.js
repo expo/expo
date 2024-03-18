@@ -197,6 +197,21 @@ class VideoPlayerWeb {
             });
         };
     }
+    release() {
+        console.warn('The `VideoPlayer.release` method is not supported on web');
+    }
+    addListener(eventName, listener) {
+        console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
+    }
+    removeListener(eventName, listener) {
+        console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
+    }
+    removeAllListeners(eventName) {
+        console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
+    }
+    emit(eventName, ...args) {
+        console.warn('The `VideoPlayer.emit` method is not yet supported on web');
+    }
 }
 function mapStyles(style) {
     const flattenedStyles = StyleSheet.flatten(style);
