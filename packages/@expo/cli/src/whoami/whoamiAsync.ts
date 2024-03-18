@@ -6,8 +6,8 @@ import * as Log from '../log';
 export async function whoamiAsync() {
   const user = await getUserAsync();
   if (user) {
-    Log.exit(chalk.green(getActorDisplayName(user)), 0);
+    Log.log(chalk.green(getActorDisplayName(user)));
   } else {
-    Log.exit('Not logged in');
+    Log.log('Not logged in');
   }
 }
