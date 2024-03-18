@@ -1,4 +1,5 @@
 import { EventEmitter } from 'fbemitter';
+import { WebSocketBackingStore } from './WebSocketBackingStore';
 import * as logger from './logger';
 // This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
 export const MESSAGE_PROTOCOL_VERSION = 2;
@@ -10,8 +11,54 @@ export const DevToolsPluginMethod = 'Expo:DevToolsPlugin';
 export class DevToolsPluginClient {
     connectionInfo;
     eventEmitter = new EventEmitter();
+    static defaultWSStore = new WebSocketBackingStore();
+    wsStore = DevToolsPluginClient.defaultWSStore;
     constructor(connectionInfo) {
         this.connectionInfo = connectionInfo;
+        this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
+    }
+    /**
+     * Initialize the connection.
+     * @hidden
+     */
+    async initAsync() {
+        if (this.wsStore.ws == null) {
+            this.wsStore.ws = await this.connectAsync();
+        }
+        this.wsStore.refCount += 1;
+        this.wsStore.ws.addEventListener('message', this.handleMessage);
+    }
+    /**
+     * Close the connection.
+     */
+    async closeAsync() {
+        this.wsStore.ws?.removeEventListener('message', this.handleMessage);
+        this.wsStore.refCount -= 1;
+        if (this.wsStore.refCount < 1) {
+            this.wsStore.ws?.close();
+            this.wsStore.ws = null;
+        }
+        this.eventEmitter.removeAllListeners();
+    }
+    /**
+     * Send a message to the other end of DevTools.
+     * @param method A method name.
+     * @param params any extra payload.
+     */
+    sendMessage(method, params) {
+        if (!this.isConnected()) {
+            throw new Error('Unable to send message in a disconnected state.');
+        }
+        const payload = {
+            version: MESSAGE_PROTOCOL_VERSION,
+            pluginName: this.connectionInfo.pluginName,
+            method: DevToolsPluginMethod,
+            params: {
+                method,
+                params,
+            },
+        };
+        this.wsStore.ws?.send(JSON.stringify(payload));
     }
     /**
      * Subscribe to a message from the other end of DevTools.
@@ -28,6 +75,30 @@ export class DevToolsPluginClient {
      */
     addMessageListenerOnce(method, listener) {
         this.eventEmitter.once(method, listener);
+    }
+    /**
+     * Returns whether the client is connected to the server.
+     */
+    isConnected() {
+        return this.wsStore.ws?.readyState === WebSocket.OPEN;
+    }
+    /**
+     * The method to create the WebSocket connection.
+     */
+    connectAsync() {
+        return new Promise((resolve, reject) => {
+            const ws = new WebSocket(`ws://${this.connectionInfo.devServer}/message`);
+            ws.addEventListener('open', () => {
+                resolve(ws);
+            });
+            ws.addEventListener('error', (e) => {
+                reject(e);
+            });
+            ws.addEventListener('close', (e) => {
+                logger.info('WebSocket closed', e.code, e.reason);
+                this.wsStore.ws = null;
+            });
+        });
     }
     handleMessage = (event) => {
         let payload;
@@ -46,5 +117,12 @@ export class DevToolsPluginClient {
         }
         this.eventEmitter.emit(payload.params.method, payload.params.params);
     };
+    /**
+     * Get the WebSocket backing store. Exposed for testing.
+     * @hidden
+     */
+    getWebSocketBackingStore() {
+        return this.wsStore;
+    }
 }
 //# sourceMappingURL=DevToolsPluginClient.js.map
