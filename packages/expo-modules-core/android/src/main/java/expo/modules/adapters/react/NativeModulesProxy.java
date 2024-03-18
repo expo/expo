@@ -111,26 +111,16 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   }
 
   /**
-   * The only exported {@link ReactMethod}.
+   * The only exported {@link ReactMethod} for legacy NativeUnimoduleProxy.
+   * This is used only when JSI is not available. i.e. the legacy remote debugging.
    * JavaScript can call native modules' exported methods ({@link ExpoMethod}) using this method as a proxy.
    * For native {@link ExpoMethod} `void put(String key, int value)` in `NativeDictionary` module
-   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", "put", ["key", 42])`
-   * or `NativeModulesProxy.callMethod("NativeDictionary", 2, ["key", 42])`, where the second argument
+   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", 2, ["key", 42])`, where the second argument
    * is a method's constant key.
    */
   @ReactMethod
-  public void callMethod(String moduleName, Dynamic methodKeyOrName, ReadableArray arguments, final Promise promise) {
-    String methodName;
-    if (methodKeyOrName.getType() == ReadableType.String) {
-      methodName = methodKeyOrName.asString();
-    } else if (methodKeyOrName.getType() == ReadableType.Number) {
-      methodName = mExportedMethodsReverseKeys.get(moduleName).get(methodKeyOrName.asInt());
-    } else {
-      promise.reject(UNEXPECTED_ERROR, "Method key is neither a String nor an Integer -- don't know how to map it to method name.");
-      return;
-    }
-
-    callMethod(moduleName, methodName, arguments, promise);
+  public void callMethod(String moduleName, int methodKey, ReadableArray arguments, final Promise promise) {
+    callMethod(moduleName, mExportedMethodsReverseKeys.get(moduleName).get(methodKey), arguments, promise);
   }
 
   public void callMethod(String moduleName, String methodName, ReadableArray arguments, final Promise promise) {
