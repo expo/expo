@@ -4,9 +4,8 @@
 
 #import <objc/runtime.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
-#import <React/RCTSurfaceHostingProxyRootView.h>
-#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTHost.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -19,10 +18,11 @@
 
 @end
 
-@interface RCTSurfaceHostingProxyRootView () {
+@interface RCTRootViewFactory () {
   RCTHost *_reactHost;
 }
 
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @end
 
 @implementation EXReactRootViewFactory
@@ -76,15 +76,12 @@
   EXReactRootViewFactory *factory = [[EXReactRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:appDelegate];
   UIView *rootView = [factory superViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 
-  // We want to retain RCTHost/RCTBridge instance from the root view.
-  // RCTBridge is retained from RCTRootView by nature and RCTHost would be retained using associated objects.
-  // We will also release the unused RCTHost/RCTBridge from RCTRootViewFactory.
+  // The RCTHost/RCTBridge instance is retained by the RCTRootViewFactory.
+  // We will have to replace these instance from the app to the newly created instance.
   if (appDelegate.bridgelessEnabled) {
-    RCTHost *rctHost = [factory valueForKey:@"_reactHost"];
-    objc_setAssociatedObject(rootView, "_reactHost", rctHost, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [appRootViewFactory setValue:nil forKey:@"_reactHost"];
+    appRootViewFactory.reactHost = factory.reactHost;
   } else {
-    appRootViewFactory.bridge = nil;
+    appRootViewFactory.bridge = factory.bridge;
   }
   return rootView;
 }
@@ -97,6 +94,16 @@
                       launchOptions:(nullable NSDictionary *)launchOptions
 {
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+}
+
+- (RCTHost *)reactHost
+{
+  return [self valueForKey:@"_reactHost"];
+}
+
+- (void)setReactHost:(RCTHost *)reactHost
+{
+  return [self setValue:reactHost forKey:@"_reactHost"];
 }
 
 + (RCTAppDelegate *)getRCTAppDelegate
