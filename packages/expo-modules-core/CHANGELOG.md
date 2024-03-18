@@ -28,6 +28,7 @@
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26587](https://github.com/expo/expo/pull/26587) by [@kudo](https://github.com/kudo))
 - [Android] Unit converter now ignores nullability. It will always return unit regardless of whether the input value is null or not. ([#27591](https://github.com/expo/expo/pull/27591) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `RCTHost` is not retained on iOS bridgeless mode. ([#27715](https://github.com/expo/expo/pull/27715) by [@kudo](https://github.com/kudo))
 - Fixed errors on Android when running on bridgeless mode. ([#27725](https://github.com/expo/expo/pull/27725) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

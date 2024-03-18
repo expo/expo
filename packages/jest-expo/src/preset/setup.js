@@ -182,6 +182,19 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
   },
 }));
 
+// Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
+jest.doMock('expo-modules-core/build/Refs', () => ({
+  createSnapshotFriendlyRef: () => {
+    const { createSnapshotFriendlyRef } = jest.requireActual('expo-modules-core/build/Refs');
+    // Fixes: `cannot define property "toJSON", object is not extensible
+    const ref = Object.create(createSnapshotFriendlyRef());
+    Object.defineProperty(ref, 'toJSON', {
+      value: () => '[React.ref]',
+    });
+    return ref;
+  },
+}));
+
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
   const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
