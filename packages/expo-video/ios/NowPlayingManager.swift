@@ -44,6 +44,13 @@ class NowPlayingManager {
     }
     observations.removeValue(forKey: player)
     players.remove(player)
+
+    if players.allObjects.isEmpty {
+      let commandCenter = MPRemoteCommandCenter.shared()
+
+      removeExistingTargets(commandCenter: commandCenter)
+      MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+    }
   }
 
   private func setMostRecentInteractionPlayer(player: AVPlayer) {

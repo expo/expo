@@ -1,8 +1,9 @@
+import type { SharedObject } from 'expo-modules-core';
 import { ViewProps } from 'react-native';
 /**
  * A class that represents an instance of the video player.
  */
-export declare class VideoPlayer {
+export declare class VideoPlayer extends SharedObject {
     /**
      * Boolean value whether the player is currently playing.
      * > This property is get-only, use `play` and `pause` methods to control the playback.

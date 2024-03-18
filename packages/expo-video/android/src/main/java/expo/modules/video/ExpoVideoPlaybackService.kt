@@ -60,6 +60,9 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     hidePlayerNotification(player)
     mediaSessions[player]?.release()
     mediaSessions.remove(player)
+    if (mediaSessions.isEmpty()) {
+      stopSelf()
+    }
   }
 
   override fun onBind(intent: Intent?): IBinder {
