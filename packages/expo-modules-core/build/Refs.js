@@ -5,6 +5,6 @@ import React from 'react';
  * @returns a React ref object.
  */
 export function createSnapshotFriendlyRef() {
-  return React.createRef();
+    return React.createRef();
 }
 //# sourceMappingURL=Refs.js.map
