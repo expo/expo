@@ -53,7 +53,7 @@ function isLocationValid(location: LocationObject, options: LocationLastKnownOpt
  * possible to query for permission on all browsers, apparently only the
  * latest versions will support this.
  */
-async function getPermissionsAsync(): Promise<PermissionResponse> {
+async function getPermissionsAsync(shouldAsk = false): Promise<PermissionResponse> {
   if (!navigator?.permissions?.query) {
     throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
   }
@@ -76,6 +76,39 @@ async function getPermissionsAsync(): Promise<PermissionResponse> {
       canAskAgain: true,
       expires: 0,
     };
+  }
+
+  if (shouldAsk) {
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          resolve({
+            status: PermissionStatus.GRANTED,
+            granted: true,
+            canAskAgain: true,
+            expires: 0,
+          });
+        },
+        (positionError: GeolocationPositionError) => {
+          if (positionError.code === positionError.PERMISSION_DENIED) {
+            resolve({
+              status: PermissionStatus.DENIED,
+              granted: false,
+              canAskAgain: true,
+              expires: 0,
+            });
+            return;
+          }
+
+          resolve({
+            status: PermissionStatus.GRANTED,
+            granted: false,
+            canAskAgain: true,
+            expires: 0,
+          });
+        }
+      );
+    });
   }
 
   // The permission state is 'prompt' when the permission has not been requested
@@ -153,13 +186,13 @@ export default {
 
   getPermissionsAsync,
   async requestPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    return getPermissionsAsync(true);
   },
   async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    return getPermissionsAsync(true);
   },
   async requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    return getPermissionsAsync(true);
   },
   async getForegroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();

@@ -5,7 +5,7 @@ import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Loc
  * possible to query for permission on all browsers, apparently only the
  * latest versions will support this.
  */
-declare function getPermissionsAsync(): Promise<PermissionResponse>;
+declare function getPermissionsAsync(shouldAsk?: boolean): Promise<PermissionResponse>;
 declare const _default: {
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;

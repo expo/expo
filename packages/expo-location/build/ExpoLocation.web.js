@@ -40,7 +40,7 @@ function isLocationValid(location, options) {
  * possible to query for permission on all browsers, apparently only the
  * latest versions will support this.
  */
-async function getPermissionsAsync() {
+async function getPermissionsAsync(shouldAsk = false) {
     if (!navigator?.permissions?.query) {
         throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
     }
@@ -60,6 +60,34 @@ async function getPermissionsAsync() {
             canAskAgain: true,
             expires: 0,
         };
+    }
+    if (shouldAsk) {
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(() => {
+                resolve({
+                    status: PermissionStatus.GRANTED,
+                    granted: true,
+                    canAskAgain: true,
+                    expires: 0,
+                });
+            }, (positionError) => {
+                if (positionError.code === positionError.PERMISSION_DENIED) {
+                    resolve({
+                        status: PermissionStatus.DENIED,
+                        granted: false,
+                        canAskAgain: true,
+                        expires: 0,
+                    });
+                    return;
+                }
+                resolve({
+                    status: PermissionStatus.GRANTED,
+                    granted: false,
+                    canAskAgain: true,
+                    expires: 0,
+                });
+            });
+        });
     }
     // The permission state is 'prompt' when the permission has not been requested
     // yet, tested on Chrome.
@@ -128,13 +156,13 @@ export default {
     },
     getPermissionsAsync,
     async requestPermissionsAsync() {
-        return getPermissionsAsync();
+        return getPermissionsAsync(true);
     },
     async requestForegroundPermissionsAsync() {
-        return getPermissionsAsync();
+        return getPermissionsAsync(true);
     },
     async requestBackgroundPermissionsAsync() {
-        return getPermissionsAsync();
+        return getPermissionsAsync(true);
     },
     async getForegroundPermissionsAsync() {
         return getPermissionsAsync();
