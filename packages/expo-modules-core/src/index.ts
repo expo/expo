@@ -9,6 +9,7 @@ import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
+import './web/index';
 
 export type * from './ts-declarations/global';
 
