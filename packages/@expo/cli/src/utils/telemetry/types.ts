@@ -1,3 +1,5 @@
+import { type Actor } from '../../api/user/user';
+
 export type TelemetryEvent =
   | 'action'
   | 'Open Url on Device'
@@ -12,3 +14,10 @@ export type TelemetryEvent =
 export type TelemetryProperties = Record<string, any>;
 
 export type TelemetryRecord = { event: TelemetryEvent; properties?: TelemetryProperties };
+
+export interface TelemetryClient {
+  readonly isIdentified: boolean;
+  identify(actor?: Actor): Promise<void>;
+  record(event: TelemetryEvent, properties?: TelemetryProperties): void;
+  flush(): Promise<void>;
+}

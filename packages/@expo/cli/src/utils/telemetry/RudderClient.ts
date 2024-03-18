@@ -1,26 +1,29 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
 
-import { TelemetryClient } from './TelemetryClient';
-import type { TelemetryEvent, TelemetryProperties } from './types';
+import { getContext } from './getContext';
+import type { TelemetryClient, TelemetryEvent, TelemetryProperties } from './types';
 import UserSettings from '../../api/user/UserSettings';
 import { Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
-export class RudderStackClient extends TelemetryClient {
+export class RudderClient implements TelemetryClient {
   private rudderstack: RudderAnalytics;
   private identity: { userId: string; anonymousId: string } | undefined;
 
-  constructor() {
-    super();
-    this.rudderstack = new RudderAnalytics(
-      env.EXPO_STAGING || env.EXPO_LOCAL
-        ? '24TKICqYKilXM480mA7ktgVDdea'
-        : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified
-      'https://cdp.expo.dev/v1/batch',
-      {
-        flushInterval: 300,
-      }
-    );
+  constructor(sdk?: RudderAnalytics) {
+    if (!sdk) {
+      sdk = new RudderAnalytics(
+        env.EXPO_STAGING || env.EXPO_LOCAL
+          ? '24TKICqYKilXM480mA7ktgVDdea'
+          : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified
+        'https://cdp.expo.dev/v1/batch',
+        {
+          flushInterval: 300,
+        }
+      );
+    }
+
+    this.rudderstack = sdk;
   }
 
   get isIdentified() {
@@ -51,10 +54,10 @@ export class RudderStackClient extends TelemetryClient {
     }
 
     if (this.identity) {
-      const context = this.context;
+      const { app, ...context } = getContext();
       await this.rudderstack.track({
         event,
-        properties: { ...properties, ...context.app },
+        properties: { ...properties, ...app },
         ...this.identity,
         context,
       });

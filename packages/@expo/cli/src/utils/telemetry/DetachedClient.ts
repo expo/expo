@@ -2,8 +2,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { TelemetryClient } from './TelemetryClient';
-import type { TelemetryRecord } from './types';
+import type { TelemetryClient, TelemetryEvent, TelemetryRecord } from './types';
 import UserSettings from '../../api/user/UserSettings';
 import { Actor } from '../../api/user/user';
 
@@ -14,8 +13,9 @@ export type DetachedTelemetry = {
   records: TelemetryRecord[];
 };
 
-export class RudderDetachedClient extends TelemetryClient {
+export class DetachedClient implements TelemetryClient {
   private actor: Actor | undefined;
+  private records: TelemetryRecord[] = [];
 
   get isIdentified() {
     return !!this.actor;
@@ -23,6 +23,10 @@ export class RudderDetachedClient extends TelemetryClient {
 
   async identify(actor?: Actor) {
     if (actor) this.actor = actor;
+  }
+
+  async record(event: TelemetryEvent, properties?: Record<string, any>) {
+    this.records.push({ event, properties });
   }
 
   async flush() {
@@ -44,5 +48,7 @@ export class RudderDetachedClient extends TelemetryClient {
     });
 
     child.unref();
+
+    debug('Detached flush started');
   }
 }

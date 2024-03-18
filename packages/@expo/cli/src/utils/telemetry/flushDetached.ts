@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { DetachedTelemetry } from './RudderDetachedClient';
-import { RudderStackClient } from './RudderStackClient';
+import type { DetachedTelemetry } from './DetachedClient';
+import { RudderClient } from './RudderClient';
 import UserSettings from '../../api/user/UserSettings';
 import { getUserAsync } from '../../api/user/user';
 
@@ -34,7 +34,7 @@ async function flush() {
     return;
   }
 
-  const client = new RudderStackClient();
+  const client = new RudderClient();
   await client.identify(data.actor || (await getUserAsync()));
 
   for (const record of data.records) {
