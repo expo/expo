@@ -45,6 +45,7 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /** Send telemetry events, when enabled, from the main `@expo/cli` thread */
   get EXPO_NO_TELEMETRY_DETACH() {
     return boolish('EXPO_NO_TELEMETRY_DETACH', false);
   }
