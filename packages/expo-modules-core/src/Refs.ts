@@ -6,9 +6,5 @@ import React from 'react';
  * @returns a React ref object.
  */
 export function createSnapshotFriendlyRef<T>(): React.RefObject<T> {
-  const ref = React.createRef<T>();
-  Object.defineProperty(ref, 'toJSON', {
-    value: () => '[React.ref]',
-  });
-  return ref;
+  return React.createRef<T>();
 }
