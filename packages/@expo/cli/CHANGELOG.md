@@ -33,6 +33,7 @@
 - Enable lazy modules with swc when building `@expo/cli`. ([#27061](https://github.com/expo/expo/pull/27061) by [@byCedric](https://github.com/byCedric))
 - Update to remove `ExpoRequest/ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
 - Update the legacy inspector overrides to new device middleware API. ([#27425](https://github.com/expo/expo/pull/27425) by [@byCedric](https://github.com/byCedric))
+- Move telemetry to detached process for unblocking the `@expo/cli` thread. ([#27730](https://github.com/expo/expo/pull/27730) by [@byCedric](https://github.com/byCedric))
 
 ### 📚 3rd party library updates
 
