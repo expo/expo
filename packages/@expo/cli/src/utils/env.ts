@@ -45,8 +45,8 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
-  get EXPO_NO_TELEMETRY_DETACHED() {
-    return boolish('EXPO_NO_TELEMETRY_DETACHED', false);
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
   }
 
   /** local directory to the universe repo for testing locally */

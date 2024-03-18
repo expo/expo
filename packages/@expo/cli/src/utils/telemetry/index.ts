@@ -8,7 +8,7 @@ const debug = require('debug')('expo:telemetry') as typeof console.log;
 function getClient(): TelemetryClient | null {
   if (env.EXPO_NO_TELEMETRY) return null;
 
-  const client = env.EXPO_NO_TELEMETRY_DETACHED
+  const client = env.EXPO_NO_TELEMETRY_DETACH
     ? new RudderClient() // Block the CLI process when sending telemetry, useful for testing
     : new DetachedClient(); // Do not block the CLI process when sending telemetry
 
