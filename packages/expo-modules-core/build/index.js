@@ -6,6 +6,7 @@ import Platform from './Platform';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
+import './web/index';
 export { default as uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, requireNativeViewManager, 
 // Errors
