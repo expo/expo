@@ -208,15 +208,15 @@ export async function instantiateMetroAsync(
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   // Initialize all React Native debug features
-  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
-  prependMiddleware(middleware, debugMiddleware);
-  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+  // const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  // prependMiddleware(middleware, debugMiddleware);
+  // middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints: {
       ...websocketEndpoints,
-      ...debugWebsocketEndpoints,
+      // ...debugWebsocketEndpoints,
     },
     watch: !isExporting && isWatchEnabled(),
   });
