@@ -2,7 +2,6 @@
 
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 
-#import <objc/runtime.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RCTHost.h>
