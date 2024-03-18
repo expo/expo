@@ -297,7 +297,7 @@ function flattenDirectoryTreeToRoutes(
 
     // Now update this layout with the new relative route and dynamic conventions
     layout.route = newRoute;
-    layout.dynamic = generateDynamic(layout.route);
+    layout.dynamic = generateDynamic(layout.contextKey.slice(0));
   }
 
   // This should never occur as there will always be a root layout, but it makes the type system happy

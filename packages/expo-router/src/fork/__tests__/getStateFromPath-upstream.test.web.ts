@@ -660,7 +660,14 @@ it('handles two initialRouteNames', () => {
                           state: {
                             index: 1,
                             routes: [
-                              { name: 'Bos' },
+                              {
+                                name: 'Bos',
+                                params: {
+                                  author: 'Jane',
+                                  fruit: 'apple',
+                                  type: 'sweet',
+                                },
+                              },
                               {
                                 name: 'Bis',
                                 params: {
@@ -761,6 +768,11 @@ it('accepts initialRouteName without config for it', () => {
                             routes: [
                               {
                                 name: 'Bas',
+                                params: {
+                                  author: 'Jane',
+                                  fruit: 'apple',
+                                  type: 'sweet',
+                                },
                               },
                               {
                                 name: 'Bis',
@@ -1026,6 +1038,7 @@ it('chooses more exhaustive pattern', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1116,6 +1129,7 @@ it('handles same paths beginnings with params', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1172,6 +1186,7 @@ it('handles not taking path with too many segments', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1228,6 +1243,7 @@ it('handles differently ordered params v1', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1285,6 +1301,7 @@ it('handles differently ordered params v2', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1341,6 +1358,7 @@ it('handles differently ordered params v3', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1397,6 +1415,7 @@ it('handles differently ordered params v4', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1455,6 +1474,7 @@ it('handles simple optional params', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bas',
@@ -1510,6 +1530,7 @@ it('handle 2 optional params at the end v1', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bas',
@@ -1567,6 +1588,7 @@ it('handle 2 optional params at the end v2', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10 },
             },
             {
               name: 'Bas',
@@ -1625,6 +1647,7 @@ it('handle 2 optional params at the end v3', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10, pwd: 15 },
             },
             {
               name: 'Bas',
@@ -1683,6 +1706,7 @@ it('handle optional params in the middle v1', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 10 },
             },
             {
               name: 'Bas',
@@ -1741,6 +1765,7 @@ it('handle optional params in the middle v2', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10, pwd: 15 },
             },
             {
               name: 'Bas',
@@ -1801,6 +1826,7 @@ it('handle optional params in the middle v3', () => {
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 10, smh: 15 },
             },
             {
               name: 'Bas',
@@ -1859,6 +1885,7 @@ it('handle optional params in the middle v4', () => {
           routes: [
             {
               name: 'Foo',
+              params: { pwd: 5, id: 10 },
             },
             {
               name: 'Bas',
@@ -1919,6 +1946,7 @@ it('handle optional params in the middle v5', () => {
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',
@@ -1978,6 +2006,7 @@ it('handle optional params in the beginning v1', () => {
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',
@@ -2040,6 +2069,7 @@ it('handle optional params in the beginning v2', () => {
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',

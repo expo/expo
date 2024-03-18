@@ -1,4 +1,4 @@
-import React, { type PropsWithChildren } from 'react';
+import React, { ReactNode } from 'react';
 import type { ErrorBoundaryProps } from './exports';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 export type DynamicConvention = {
@@ -37,12 +37,17 @@ export type RouteNode = {
     /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
     entryPoints?: string[];
 };
+export declare const LocalRouteParamsContext: React.Context<Record<string, string | undefined> | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
 /** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node }: PropsWithChildren<{
+export declare function Route({ children, node, route, }: {
+    children: ReactNode;
     node: RouteNode;
-}>): JSX.Element;
+    route?: {
+        params: Record<string, string | undefined>;
+    };
+}): JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map
