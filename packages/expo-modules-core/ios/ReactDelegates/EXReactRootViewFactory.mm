@@ -57,11 +57,11 @@
   NSString *moduleName = _moduleName ?: appDelegate.moduleName;
   NSDictionary *initialProperties = _initialProperties ?: appDelegate.initialProps;
 
-   if (![appDelegate.rootViewFactory isKindOfClass:EXReactRootViewFactory.class]) {
-     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                    reason:@"The appDelegate.rootViewFactory must be an EXReactRootViewFactory instance."
-                                  userInfo:nil];
-   }
+  if (![appDelegate.rootViewFactory isKindOfClass:EXReactRootViewFactory.class]) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"The appDelegate.rootViewFactory must be an EXReactRootViewFactory instance."
+                                 userInfo:nil];
+  }
   EXReactRootViewFactory *appRootViewFactory = (EXReactRootViewFactory *)appDelegate.rootViewFactory;
   RCTRootViewFactoryConfiguration *appRootViewFactoryConfiguration = [appRootViewFactory valueForKey:@"_configuration"];
 
