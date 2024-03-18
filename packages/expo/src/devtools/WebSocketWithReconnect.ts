@@ -43,6 +43,7 @@ export class WebSocketWithReconnect implements WebSocket {
   private connectTimeoutHandle: ReturnType<typeof setTimeout> | null = null;
   private isClosed = false;
   private sendQueue: (string | ArrayBufferView | Blob | ArrayBufferLike)[] = [];
+  private lastCloseEvent: WebSocketCloseEvent | null = null;
 
   private readonly emitter = new EventEmitter();
   private readonly eventSubscriptions: EventSubscription[] = [];
@@ -66,6 +67,8 @@ export class WebSocketWithReconnect implements WebSocket {
 
   public close() {
     this.clearConnectTimeoutIfNeeded();
+    this.emitter.emit('close', this.lastCloseEvent);
+    this.lastCloseEvent = null;
     this.isClosed = true;
     this.emitter.removeAllListeners();
     this.sendQueue = [];
@@ -154,7 +157,7 @@ export class WebSocketWithReconnect implements WebSocket {
 
   private handleClose = (event: WebSocketCloseEvent) => {
     this.clearConnectTimeoutIfNeeded();
-    this.emitter.emit('close', event);
+    this.lastCloseEvent = event;
     this.reconnectIfNeeded(`WebSocket closed - code[${event.code}] reason[${event.reason}]`);
   };
 

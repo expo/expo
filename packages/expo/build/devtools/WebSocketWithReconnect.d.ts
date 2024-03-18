@@ -36,6 +36,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private connectTimeoutHandle;
     private isClosed;
     private sendQueue;
+    private lastCloseEvent;
     private readonly emitter;
     private readonly eventSubscriptions;
     constructor(url: string, options?: Options);

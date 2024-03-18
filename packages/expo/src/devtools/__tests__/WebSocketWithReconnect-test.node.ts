@@ -119,6 +119,26 @@ describe(WebSocketWithReconnect, () => {
     await delayAsync(100);
     expect(ws.readyState).toBe(WebSocket.CONNECTING);
   });
+
+  it('should not emit close event when reconnecting until exceeds maxRetries', async () => {
+    server = new WebSocketServer({ port: 8000 });
+
+    const mockOnError = jest.fn();
+    ws = new WebSocketWithReconnect('ws://localhost:8000', {
+      retriesInterval: 50,
+      maxRetries: 2,
+      onError: mockOnError,
+    });
+    const mockClose = jest.fn();
+    ws.addEventListener('close', mockClose);
+    await closeServerAsync(server);
+    await delayAsync(50);
+    expect(mockClose).not.toHaveBeenCalled();
+    await delayAsync(100);
+    expect(mockClose).toHaveBeenCalled();
+    expect(ws.readyState).toBe(WebSocket.CLOSED);
+    expect(mockOnError).toHaveBeenCalled();
+  });
 });
 
 async function closeServerAsync(server: WebSocketServer | null) {
