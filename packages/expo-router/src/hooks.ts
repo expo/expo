@@ -1,4 +1,3 @@
-import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { LocalRouteParamsContext } from './Route';
