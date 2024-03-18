@@ -40,7 +40,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private readonly emitter;
     private readonly eventSubscriptions;
     constructor(url: string, options?: Options);
-    close(): void;
+    close(code?: number, reason?: string): void;
     addEventListener(event: 'message', listener: (event: WebSocketMessageEvent) => void): void;
     addEventListener(event: 'open', listener: () => void): void;
     addEventListener(event: 'error', listener: (event: WebSocketErrorEvent) => void): void;

@@ -27,9 +27,13 @@ export class WebSocketWithReconnect {
         this.onReconnect = options?.onReconnect ?? (() => { });
         this.connect();
     }
-    close() {
+    close(code, reason) {
         this.clearConnectTimeoutIfNeeded();
-        this.emitter.emit('close', this.lastCloseEvent);
+        this.emitter.emit('close', this.lastCloseEvent ?? {
+            code: code ?? 1000,
+            reason: reason ?? 'Explicit closing',
+            message: 'Explicit closing',
+        });
         this.lastCloseEvent = null;
         this.isClosed = true;
         this.emitter.removeAllListeners();
@@ -82,6 +86,7 @@ export class WebSocketWithReconnect {
     }
     handleOpen = () => {
         this.clearConnectTimeoutIfNeeded();
+        this.lastCloseEvent = null;
         this.emitter.emit('open');
         const sendQueue = this.sendQueue;
         this.sendQueue = [];
@@ -99,7 +104,11 @@ export class WebSocketWithReconnect {
     };
     handleClose = (event) => {
         this.clearConnectTimeoutIfNeeded();
-        this.lastCloseEvent = event;
+        this.lastCloseEvent = {
+            code: event.code,
+            reason: event.reason,
+            message: event.message,
+        };
         this.reconnectIfNeeded(`WebSocket closed - code[${event.code}] reason[${event.reason}]`);
     };
     handleConnectTimeout = () => {
