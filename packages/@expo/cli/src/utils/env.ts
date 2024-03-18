@@ -45,6 +45,10 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  get EXPO_NO_TELEMETRY_DETACHED() {
+    return boolish('EXPO_NO_TELEMETRY_DETACHED', false);
+  }
+
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
     return string('EXPO_UNIVERSE_DIR', '');
