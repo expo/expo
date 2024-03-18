@@ -4,7 +4,6 @@ import type { TelemetryClient, TelemetryEvent, TelemetryProperties } from './typ
 import { env } from '../env';
 
 const debug = require('debug')('expo:telemetry') as typeof console.log;
-const telemetry = getClient();
 
 function getClient(): TelemetryClient | null {
   if (env.EXPO_NO_TELEMETRY) return null;
@@ -19,6 +18,9 @@ function getClient(): TelemetryClient | null {
 
   return client;
 }
+
+/** The singleton telemetry instance */
+export const telemetry = getClient();
 
 export async function logEventAsync(event: TelemetryEvent, properties?: TelemetryProperties) {
   await telemetry?.record(event, properties);
