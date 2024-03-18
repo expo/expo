@@ -12,6 +12,7 @@ import './sweet/setUpErrorManager.fx';
 import './web/index';
 
 export type * from './ts-declarations/global';
+export type * from './ts-declarations/SharedObject';
 
 export { default as uuid } from './uuid';
 

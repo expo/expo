@@ -33,6 +33,11 @@ declare class VideoPlayerWeb implements VideoPlayer {
     replay(): void;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     _addListeners(video: HTMLVideoElement): void;
+    release(): void;
+    addListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
+    removeListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
+    removeAllListeners(eventName: never): void;
+    emit<EventName extends never>(eventName: EventName, ...args: Parameters<Record<never, never>[EventName]>): void;
 }
 export declare function useVideoPlayer(source?: string | null): VideoPlayer;
 export declare const VideoView: React.ForwardRefExoticComponent<{
