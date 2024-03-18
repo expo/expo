@@ -123,7 +123,6 @@ export abstract class DevToolsPluginClient {
       });
       ws.addEventListener('close', (e: WebSocketCloseEvent) => {
         logger.info('WebSocket closed', e.code, e.reason);
-        this.wsStore.ws = null;
       });
     });
   }

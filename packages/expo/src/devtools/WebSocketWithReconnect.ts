@@ -3,13 +3,13 @@ import { EventEmitter, type EventSubscription } from 'fbemitter';
 export interface Options {
   /**
    * Reconnect interval in milliseconds.
-   * @default 2000
+   * @default 1500
    */
   retriesInterval?: number;
 
   /**
    * The maximum number of retries.
-   * @default 10
+   * @default 200
    */
   maxRetries?: number;
 
@@ -51,8 +51,8 @@ export class WebSocketWithReconnect implements WebSocket {
     public readonly url: string,
     options?: Options
   ) {
-    this.retriesInterval = options?.retriesInterval ?? 1000;
-    this.maxRetries = options?.maxRetries ?? 10;
+    this.retriesInterval = options?.retriesInterval ?? 1500;
+    this.maxRetries = options?.maxRetries ?? 200;
     this.connectTimeout = options?.connectTimeout ?? 5000;
     this.onError =
       options?.onError ??
@@ -65,10 +65,7 @@ export class WebSocketWithReconnect implements WebSocket {
   }
 
   public close() {
-    if (this.connectTimeoutHandle != null) {
-      clearTimeout(this.connectTimeoutHandle);
-      this.connectTimeoutHandle = null;
-    }
+    this.clearConnectTimeoutIfNeeded();
     this.isClosed = true;
     this.emitter.removeAllListeners();
     this.sendQueue = [];
@@ -135,10 +132,7 @@ export class WebSocketWithReconnect implements WebSocket {
   }
 
   private handleOpen = () => {
-    if (this.connectTimeoutHandle != null) {
-      clearTimeout(this.connectTimeoutHandle);
-      this.connectTimeoutHandle = null;
-    }
+    this.clearConnectTimeoutIfNeeded();
     this.emitter.emit('open');
 
     const sendQueue = this.sendQueue;
@@ -153,11 +147,13 @@ export class WebSocketWithReconnect implements WebSocket {
   };
 
   private handleError = (event: WebSocketErrorEvent) => {
+    this.clearConnectTimeoutIfNeeded();
     this.emitter.emit('error', event);
     this.reconnectIfNeeded(`WebSocket error - ${event.message}`);
   };
 
   private handleClose = (event: WebSocketCloseEvent) => {
+    this.clearConnectTimeoutIfNeeded();
     this.emitter.emit('close', event);
     this.reconnectIfNeeded(`WebSocket closed - code[${event.code}] reason[${event.reason}]`);
   };
@@ -165,6 +161,13 @@ export class WebSocketWithReconnect implements WebSocket {
   private handleConnectTimeout = () => {
     this.reconnectIfNeeded('Timeout from connecting to the WebSocket');
   };
+
+  private clearConnectTimeoutIfNeeded() {
+    if (this.connectTimeoutHandle != null) {
+      clearTimeout(this.connectTimeoutHandle);
+      this.connectTimeoutHandle = null;
+    }
+  }
 
   private reconnectIfNeeded(reason: string) {
     if (this.ws != null) {

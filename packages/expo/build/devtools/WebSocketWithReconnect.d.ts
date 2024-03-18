@@ -1,12 +1,12 @@
 export interface Options {
     /**
      * Reconnect interval in milliseconds.
-     * @default 2000
+     * @default 1500
      */
     retriesInterval?: number;
     /**
      * The maximum number of retries.
-     * @default 10
+     * @default 200
      */
     maxRetries?: number;
     /**
@@ -52,6 +52,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private handleError;
     private handleClose;
     private handleConnectTimeout;
+    private clearConnectTimeoutIfNeeded;
     private reconnectIfNeeded;
     private wsClose;
     get readyState(): number;

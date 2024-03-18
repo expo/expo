@@ -15,8 +15,8 @@ export class WebSocketWithReconnect {
     eventSubscriptions = [];
     constructor(url, options) {
         this.url = url;
-        this.retriesInterval = options?.retriesInterval ?? 1000;
-        this.maxRetries = options?.maxRetries ?? 10;
+        this.retriesInterval = options?.retriesInterval ?? 1500;
+        this.maxRetries = options?.maxRetries ?? 200;
         this.connectTimeout = options?.connectTimeout ?? 5000;
         this.onError =
             options?.onError ??
@@ -27,10 +27,7 @@ export class WebSocketWithReconnect {
         this.connect();
     }
     close() {
-        if (this.connectTimeoutHandle != null) {
-            clearTimeout(this.connectTimeoutHandle);
-            this.connectTimeoutHandle = null;
-        }
+        this.clearConnectTimeoutIfNeeded();
         this.isClosed = true;
         this.emitter.removeAllListeners();
         this.sendQueue = [];
@@ -81,10 +78,7 @@ export class WebSocketWithReconnect {
         }
     }
     handleOpen = () => {
-        if (this.connectTimeoutHandle != null) {
-            clearTimeout(this.connectTimeoutHandle);
-            this.connectTimeoutHandle = null;
-        }
+        this.clearConnectTimeoutIfNeeded();
         this.emitter.emit('open');
         const sendQueue = this.sendQueue;
         this.sendQueue = [];
@@ -96,16 +90,24 @@ export class WebSocketWithReconnect {
         this.emitter.emit('message', event);
     };
     handleError = (event) => {
+        this.clearConnectTimeoutIfNeeded();
         this.emitter.emit('error', event);
         this.reconnectIfNeeded(`WebSocket error - ${event.message}`);
     };
     handleClose = (event) => {
+        this.clearConnectTimeoutIfNeeded();
         this.emitter.emit('close', event);
         this.reconnectIfNeeded(`WebSocket closed - code[${event.code}] reason[${event.reason}]`);
     };
     handleConnectTimeout = () => {
         this.reconnectIfNeeded('Timeout from connecting to the WebSocket');
     };
+    clearConnectTimeoutIfNeeded() {
+        if (this.connectTimeoutHandle != null) {
+            clearTimeout(this.connectTimeoutHandle);
+            this.connectTimeoutHandle = null;
+        }
+    }
     reconnectIfNeeded(reason) {
         if (this.ws != null) {
             this.wsClose(this.ws);
