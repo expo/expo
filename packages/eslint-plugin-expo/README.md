@@ -1,6 +1,6 @@
 # eslint-plugin-expo
 
-Eslint rules for Expo apps
+ESLint rules for Expo apps
 
 ## Installation
 
@@ -22,9 +22,9 @@ Add `expo` to the plugins section of your `.eslintrc` configuration file. You ca
 
 ```json
 {
-"plugins": [
-   "expo"
-  ]
+  "plugins": [
+    "expo"
+    ]
 }
 ```
 
@@ -34,8 +34,8 @@ Then configure the rules you want to use under the rules section.
 ```json
 {
   "rules": {
-    "expo/no-env-var-destructuring": 2,
-    "expo/no-dynamic-env-var": 2,
+    "expo/no-env-var-destructuring": "error",
+    "expo/no-dynamic-env-var": "error",
   }
 }
 ```

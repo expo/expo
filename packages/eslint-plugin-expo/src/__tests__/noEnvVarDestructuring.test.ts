@@ -26,7 +26,7 @@ ruleTester.run('noEnvVarDestructuring', noEnvVarDestructuring, {
       code: 'const { MY_VAR } = process.env;',
       errors: [
         {
-          messageId: 'unexpectedDesrtucturing',
+          messageId: 'unexpectedDestructuring',
           data: {
             value: 'MY_VAR',
           },
@@ -37,13 +37,13 @@ ruleTester.run('noEnvVarDestructuring', noEnvVarDestructuring, {
       code: 'const { MY_VAR, ANOTHER_VAR } = process.env;',
       errors: [
         {
-          messageId: 'unexpectedDesrtucturing',
+          messageId: 'unexpectedDestructuring',
           data: {
             value: 'MY_VAR',
           },
         },
         {
-          messageId: 'unexpectedDesrtucturing',
+          messageId: 'unexpectedDestructuring',
           data: {
             value: 'ANOTHER_VAR',
           },

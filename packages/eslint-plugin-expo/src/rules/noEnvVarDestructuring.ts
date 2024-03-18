@@ -11,7 +11,7 @@ export const noEnvVarDestructuring = createRule({
     },
     schema: [],
     messages: {
-      unexpectedDesrtucturing:
+      unexpectedDestructuring:
         'Unexpected desctucturing. Cannot descructure {{value}} from process.env',
     },
   },
@@ -32,7 +32,7 @@ export const noEnvVarDestructuring = createRule({
           left.properties.forEach(function (property) {
             context.report({
               node,
-              messageId: 'unexpectedDesrtucturing',
+              messageId: 'unexpectedDestructuring',
               data: {
                 value: property.value?.type === 'Identifier' ? property.value.name : 'variables',
               },

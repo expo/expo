@@ -4,7 +4,7 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 ## Rule Details
 
-This rule aims to prevent users from encountering errors due to descturcturing environment variables.
+This rule aims to prevent users from encountering errors due to destructuring environment variables.
 
 Examples of **incorrect** code for this rule:
 
