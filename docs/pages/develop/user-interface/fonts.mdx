@@ -69,7 +69,7 @@ Install [`expo-font`](/versions/latest/sdk/font/#installation) library and add t
 
 The `fonts` option takes an array of one or more font files to link to the native project. The path to each font file is relative to the project's root.
 
-After [creating a new native build](/develop/development-builds/create-a-build/), you can use the font in your project with the `fontFamily` style prop. On Android, the font family name will be the name of the font file without the extension. On iOS, the font family name will be read from the font file itself. We recommend naming the font file the same as the font family so the family name is consistent on both platforms. For example, if you have a font family named "Inter-Black" and the name of the file **Inter-Black.otf**, then the font family name will be **Inter-Black** on both Android and iOS.
+After [creating a new native build](/develop/development-builds/create-a-build/), you can use the font in your project with the `fontFamily` style prop. On Android, the font family name will be the name of the font file without the extension. On iOS, the font family name will be read from the font file itself. We recommend naming the font file the same as the **PostScript name** so the family name is consistent on both platforms. For example, if you have a font family named "Inter-Black" and the name of the file **Inter-Black.otf**, then the font family name will be **Inter-Black** on both Android and iOS.
 
 If you want to try a font without creating a new native build, you can load it at runtime. See the next section for details.
 
