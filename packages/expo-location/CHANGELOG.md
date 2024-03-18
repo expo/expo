@@ -4,13 +4,7 @@
 
 ### 🛠 Breaking changes
 
--[Web] `getPermissionsAsync` no longer prompts the user for permission
-([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
-instead we use the new browser API `navigator.permissions.query` to check the permission status.
-
-Web application relying on `getPermissionsAsync` asking for permissions will need 
-to handle the case where the permission status is `UNDETERMINED` and prompt the 
-user for permission using `getCurrentPositionAsync`.
+- [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
 
 ### 🎉 New features
 
