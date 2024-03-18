@@ -1,3 +1,4 @@
+import { createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
@@ -8,7 +9,7 @@ export class Image extends React.PureComponent {
     nativeViewRef;
     constructor(props) {
         super(props);
-        this.nativeViewRef = React.createRef();
+        this.nativeViewRef = createSnapshotFriendlyRef();
     }
     /**
      * Preloads images at the given URLs that can be later used in the image view.

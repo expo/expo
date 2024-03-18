@@ -19,4 +19,5 @@ export * from './TypedArrays.types';
 export const SyntheticPlatformEmitter = DeviceEventEmitter;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
+export * from './Refs';
 //# sourceMappingURL=index.js.map
