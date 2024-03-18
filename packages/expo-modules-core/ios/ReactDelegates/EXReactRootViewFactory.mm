@@ -4,6 +4,7 @@
 
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTHost.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -14,6 +15,13 @@
 
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
 
+@end
+
+@interface RCTRootViewFactory () {
+  RCTHost *_reactHost;
+}
+
+@property (nonatomic, strong, nullable) RCTHost *reactHost;
 @end
 
 @implementation EXReactRootViewFactory
@@ -47,25 +55,54 @@
   NSURL *bundleURL = _bundleURL ?: appDelegate.bundleURL;
   NSString *moduleName = _moduleName ?: appDelegate.moduleName;
   NSDictionary *initialProperties = _initialProperties ?: appDelegate.initialProps;
+
+  if (![appDelegate.rootViewFactory isKindOfClass:EXReactRootViewFactory.class]) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"The appDelegate.rootViewFactory must be an EXReactRootViewFactory instance."
+                                 userInfo:nil];
+  }
+  EXReactRootViewFactory *appRootViewFactory = (EXReactRootViewFactory *)appDelegate.rootViewFactory;
+  RCTRootViewFactoryConfiguration *appRootViewFactoryConfiguration = [appRootViewFactory valueForKey:@"_configuration"];
+
   RCTRootViewFactoryConfiguration *configuration =
   [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:bundleURL
                                               newArchEnabled:appDelegate.fabricEnabled
                                           turboModuleEnabled:appDelegate.turboModuleEnabled
                                            bridgelessEnabled:appDelegate.bridgelessEnabled];
+  configuration.createRootViewWithBridge = appRootViewFactoryConfiguration.createRootViewWithBridge;
+  configuration.createBridgeWithDelegate = appRootViewFactoryConfiguration.createBridgeWithDelegate;
 
-  __weak RCTAppDelegate *weakDelegate = appDelegate;
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
-    return [weakDelegate createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-  };
+  EXReactRootViewFactory *factory = [[EXReactRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:appDelegate];
+  UIView *rootView = [factory superViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
-    return [weakDelegate createBridgeWithDelegate:delegate launchOptions:launchOptions];
-  };
+  // The RCTHost/RCTBridge instance is retained by the RCTRootViewFactory.
+  // We will have to replace these instance from the app to the newly created instance.
+  if (appDelegate.bridgelessEnabled) {
+    appRootViewFactory.reactHost = factory.reactHost;
+  } else {
+    appRootViewFactory.bridge = factory.bridge;
+  }
+  return rootView;
+}
 
-  RCTRootViewFactory *factory = [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:appDelegate];
-  return [factory viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+/**
+ Calls origin `viewWithModuleName:initialProperties:launchOptions:` from superview (`RCTRootViewFactory`).
+ */
+- (UIView *)superViewWithModuleName:(NSString *)moduleName
+                  initialProperties:(nullable NSDictionary *)initialProperties
+                      launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+}
+
+- (RCTHost *)reactHost
+{
+  return [self valueForKey:@"_reactHost"];
+}
+
+- (void)setReactHost:(RCTHost *)reactHost
+{
+  return [self setValue:reactHost forKey:@"_reactHost"];
 }
 
 + (RCTAppDelegate *)getRCTAppDelegate
