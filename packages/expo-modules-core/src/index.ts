@@ -38,3 +38,5 @@ export const SyntheticPlatformEmitter = DeviceEventEmitter;
 
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
+
+export * from './Refs';
