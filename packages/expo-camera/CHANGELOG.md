@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- On Android, added sound of shutter click when picture is taken. ([#22620](https://github.com/expo/expo/pull/22620) by [@pranavbabu](https://github.com/pranavbabu))
 ### 🐛 Bug fixes
 
 ### 💡 Others
