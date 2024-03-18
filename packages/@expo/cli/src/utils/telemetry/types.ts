@@ -18,6 +18,6 @@ export type TelemetryRecord = { event: TelemetryEvent; properties?: TelemetryPro
 export interface TelemetryClient {
   readonly isIdentified: boolean;
   identify(actor?: Actor): Promise<void>;
-  record(event: TelemetryEvent, properties?: TelemetryProperties): void;
+  record(event: TelemetryEvent, properties?: TelemetryProperties): Promise<void>;
   flush(): Promise<void>;
 }
