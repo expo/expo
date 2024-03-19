@@ -45,7 +45,7 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: GeneratedData) =>
+const isHook = ({ name }: { name: string }) =>
   name.startsWith('use') &&
   // note(simek): hardcode this exception until the method will be renamed
   name !== 'useSystemBrightnessAsync';
@@ -98,7 +98,7 @@ const groupByHeader = (entries: GeneratedData[]) => {
 };
 
 const renderAPI = (
-  version: string,
+  sdkVersion: string,
   {
     packageName,
     apiName,
@@ -115,16 +115,16 @@ const renderAPI = (
       data = packageName
         .map(name => {
           const { children } = testRequire
-            ? testRequire(`~/public/static/data/${version}/${name}.json`)
-            : require(`~/public/static/data/${version}/${name}.json`);
+            ? testRequire(`~/public/static/data/${sdkVersion}/${name}.json`)
+            : require(`~/public/static/data/${sdkVersion}/${name}.json`);
           return children;
         })
         .flat()
         .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
     } else {
       const { children } = testRequire
-        ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
-        : require(`~/public/static/data/${version}/${packageName}.json`);
+        ? testRequire(`~/public/static/data/${sdkVersion}/${packageName}.json`)
+        : require(`~/public/static/data/${sdkVersion}/${packageName}.json`);
       data = children;
     }
 
@@ -234,7 +234,7 @@ const renderAPI = (
         method?.kind === TypeDocKind.Method &&
         method?.flags?.isStatic === true &&
         !methodsNames.includes(method.name) &&
-        !isHook(method as GeneratedData)
+        !isHook(method)
     );
     const componentMethods = componentsChildren
       .filter(
@@ -260,32 +260,48 @@ const renderAPI = (
                   data={categorizedMethods[key]}
                   header={header}
                   key={`${header}-${index}`}
+                  sdkVersion={sdkVersion}
                 />
               ))
             : Object.entries(categorizedMethods).map(([key, data], index) => (
-                <APISectionMethods data={data} header={key} key={`${key}-${index}`} />
+                <APISectionMethods
+                  data={data}
+                  header={key}
+                  key={`${key}-${index}`}
+                  sdkVersion={sdkVersion}
+                />
               )))}
-        <APISectionComponents data={components} componentsProps={componentsProps} />
-        <APISectionMethods data={staticMethods} header="Static Methods" />
-        <APISectionMethods data={componentMethods} header="Component Methods" />
-        <APISectionConstants data={constants} apiName={apiName} />
-        <APISectionMethods data={hooks} header="Hooks" />
+        <APISectionComponents
+          data={components}
+          sdkVersion={sdkVersion}
+          componentsProps={componentsProps}
+        />
+        <APISectionMethods data={staticMethods} header="Static Methods" sdkVersion={sdkVersion} />
+        <APISectionMethods
+          data={componentMethods}
+          header="Component Methods"
+          sdkVersion={sdkVersion}
+        />
+        <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
+        <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
         <APISectionClasses
           data={classes}
+          sdkVersion={sdkVersion}
           exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
         />
         {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
+          <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}
-        <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionMethods data={methods} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
+          sdkVersion={sdkVersion}
         />
-        <APISectionNamespaces data={namespaces} />
-        <APISectionInterfaces data={interfaces} />
-        <APISectionTypes data={types} />
+        <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />
+        <APISectionInterfaces data={interfaces} sdkVersion={sdkVersion} />
+        <APISectionTypes data={types} sdkVersion={sdkVersion} />
         <APISectionEnums data={enums} />
       </>
     );

@@ -29,6 +29,7 @@ import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
+  sdkVersion: string;
   defaultProps?: DefaultPropsDefinitionData;
   header?: string;
 };
@@ -53,16 +54,17 @@ const extractDefaultPropValue = (
   )[0]?.defaultValue;
 };
 
-const renderInheritedProp = (ip: TypeDefinitionData) => {
+const renderInheritedProp = (ip: TypeDefinitionData, sdkVersion: string) => {
   return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
-      <CODE>{resolveTypeName(ip)}</CODE>
+      <CODE>{resolveTypeName(ip, sdkVersion)}</CODE>
     </LI>
   );
 };
 
 const renderInheritedProps = (
   data: PropsDefinitionData | undefined,
+  sdkVersion: string,
   exposeInSidebar?: boolean
 ): JSX.Element | undefined => {
   const inheritedData = data?.type?.types ?? data?.extendedTypes ?? [];
@@ -72,7 +74,7 @@ const renderInheritedProps = (
     return (
       <>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
-        <UL>{inheritedProps.map(renderInheritedProp)}</UL>
+        <UL>{inheritedProps.map(i => renderInheritedProp(i, sdkVersion))}</UL>
       </>
     );
   }
@@ -93,6 +95,7 @@ const getPropsBaseTypes = (def: PropsDefinitionData) => {
 
 const renderProps = (
   def: PropsDefinitionData,
+  sdkVersion: string,
   defaultValues?: DefaultPropsDefinitionData,
   exposeInSidebar?: boolean
 ): JSX.Element => {
@@ -104,16 +107,19 @@ const renderProps = (
     <div key={`props-definition-${def.name}`} className="[&>*:last-child]:!mb-0">
       {propsDeclarations?.map(prop =>
         prop
-          ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), { exposeInSidebar })
+          ? renderProp(prop, sdkVersion, extractDefaultPropValue(prop, defaultValues), {
+              exposeInSidebar,
+            })
           : null
       )}
-      {renderInheritedProps(def, exposeInSidebar)}
+      {renderInheritedProps(def, sdkVersion, exposeInSidebar)}
     </div>
   );
 };
 
 export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
+  sdkVersion: string,
   defaultValue?: string,
   { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
@@ -140,7 +146,7 @@ export const renderProp = (
       <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <span className={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
         <span className={STYLES_SECONDARY}>Type:</span>{' '}
-        {renderTypeOrSignatureType(type, extractedSignatures)}
+        {renderTypeOrSignatureType({ type, signatures: extractedSignatures, sdkVersion })}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
             <span className={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
@@ -153,7 +159,12 @@ export const renderProp = (
   );
 };
 
-const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
+const APISectionProps = ({
+  data,
+  defaultProps,
+  header = 'Props',
+  sdkVersion,
+}: APISectionPropsProps) => {
   const baseProp = data.find(prop => prop.name === header);
   return data?.length > 0 ? (
     <>
@@ -169,7 +180,12 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(propsDefinition, defaultProps, data?.length === 1 || header === 'Props')
+        renderProps(
+          propsDefinition,
+          sdkVersion,
+          defaultProps,
+          data?.length === 1 || header === 'Props'
+        )
       )}
     </>
   ) : null;
