@@ -8,12 +8,16 @@ import { VscodeRuntimeCallFunctionOnHandler } from './messageHandlers/VscodeRunt
 import { VscodeRuntimeGetPropertiesHandler } from './messageHandlers/VscodeRuntimeGetProperties';
 import type { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
+const debug = require('debug')('expo:metro:debugging:messageHandlers') as typeof console.log;
+
 export function createHandlersFactory(
   metroBundler: MetroBundlerDevServer
 ): CreateCustomMessageHandlerFn {
   return (connection) => {
+    debug('Initializing for connection: ', connection.page.title);
+
     // Only enable the custom CDP handlers for the React Native Experimental page
-    if (connection.page.title !== 'React Native Experimental (Improved Chrome Reloads)') {
+    if (connection.page.title !== 'Hermes React Native') {
       return null;
     }
 
@@ -32,11 +36,38 @@ export function createHandlersFactory(
       return null;
     }
 
+    debug(
+      'Initialized with middlewares: ',
+      middlewares.map((middleware) => middleware.constructor.name).join(', ')
+    );
+
     return {
       handleDeviceMessage: (message: any) =>
-        middlewares.some((middleware) => middleware.handleDeviceMessage?.(message)) || undefined,
-      handleDebuggerMessage: (message: any) =>
-        middlewares.some((middleware) => middleware.handleDebuggerMessage?.(message)) || undefined,
+        withMessageDebug(
+          'device',
+          message,
+          middlewares.some((middleware) => middleware.handleDeviceMessage?.(message))
+        ),
+      handleDebuggerMessage: (message: any) => {
+        withMessageDebug(
+          'debugger',
+          message,
+          middlewares.some((middleware) => middleware.handleDebuggerMessage?.(message))
+        );
+      },
     };
   };
+}
+
+function withMessageDebug(type: 'device' | 'debugger', message: any, result?: null | boolean) {
+  const status = result ? 'handled' : 'ignored';
+  const prefix = type === 'device' ? '(debugger) <- (device)' : '(debugger) -> (device)';
+
+  try {
+    debug(`%s = %s:`, prefix, status, JSON.stringify(message));
+  } catch {
+    debug(`%s = %s:`, prefix, status, 'message not serializable');
+  }
+
+  return result || undefined;
 }
