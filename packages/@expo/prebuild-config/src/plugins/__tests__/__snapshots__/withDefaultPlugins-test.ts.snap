@@ -923,12 +923,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
-                      "android:value": "@string/expo_runtime_version",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "expo.modules.updates.ENABLED",
                       "android:value": "true",
                     },
@@ -943,6 +937,12 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
