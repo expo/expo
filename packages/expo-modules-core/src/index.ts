@@ -29,6 +29,7 @@ export {
 };
 
 export * from './requireNativeModule';
+export * from './createNativeModule';
 export * from './TypedArrays.types';
 
 /**

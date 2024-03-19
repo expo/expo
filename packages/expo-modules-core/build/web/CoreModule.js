@@ -20,7 +20,7 @@ class EventEmitter {
         this.listeners?.get(eventName)?.add(listener);
     }
 }
-class NativeModule extends EventEmitter {
+export class NativeModule extends EventEmitter {
     ViewPrototype;
     __expo_module_name__;
 }
