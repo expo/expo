@@ -491,6 +491,8 @@ PODS:
   - ExpoSQLite (13.1.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
+    - sqlite3/fts (~> 3.42.0)
+    - sqlite3/fts5 (~> 3.42.0)
   - ExpoStoreReview (6.8.2):
     - ExpoModulesCore
   - ExpoSymbols (0.0.1):
@@ -1919,6 +1921,10 @@ PODS:
   - sqlite3 (3.42.0):
     - sqlite3/common (= 3.42.0)
   - sqlite3/common (3.42.0)
+  - sqlite3/fts (3.42.0):
+    - sqlite3/common
+  - sqlite3/fts5 (3.42.0):
+    - sqlite3/common
   - UMAppLoader (4.5.0)
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -2518,7 +2524,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 752ad6ae2b693de9cd4e7fddb78297bdc658b815
   ExpoSMS: aca5b62dbfef73670cb35d0ebd9a2017899bbb2d
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
-  ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
+  ExpoSQLite: 9ef28fb70cdf40a134cbb6b59c85d5e7b8b3acb4
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
   ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
