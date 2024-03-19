@@ -24,7 +24,6 @@ Add `expo` to the plugins section of your `.eslintrc` configuration file. You ca
 {
   "plugins": [
     "expo"
-    ]
   ]
 }
 ```
