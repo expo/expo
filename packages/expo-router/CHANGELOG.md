@@ -29,6 +29,7 @@
 - Export `toHaveRouterState` and other matcher types from `expo-router/testing-library` ([#27646](https://github.com/expo/expo/pull/27646) by [@marklawlor](https://github.com/marklawlor))
 - Fix missing types from typed routes ([#27412](https://github.com/expo/expo/pull/27412) by [@marklawlor](https://github.com/marklawlor))
 - Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
+- Fix failure to find ctx-shared import while generating route types ([#27740](https://github.com/expo/expo/issues/27740) by [@chriszs](https://github.com/chriszs))
 
 ### 💡 Others
 
