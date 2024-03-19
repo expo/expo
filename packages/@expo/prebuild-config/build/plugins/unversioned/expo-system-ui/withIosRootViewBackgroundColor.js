@@ -15,9 +15,9 @@ function _configPlugins() {
   };
   return data;
 }
-function _normalizeColor() {
-  const data = _interopRequireDefault(require("@react-native/normalize-color"));
-  _normalizeColor = function () {
+function _normalizeColors() {
+  const data = _interopRequireDefault(require("@react-native/normalize-colors"));
+  _normalizeColors = function () {
     return data;
   };
   return data;
@@ -67,7 +67,7 @@ function setRootViewBackgroundColor(config, infoPlist) {
   if (!backgroundColor) {
     delete infoPlist[BACKGROUND_COLOR_KEY];
   } else {
-    let color = (0, _normalizeColor().default)(backgroundColor);
+    let color = (0, _normalizeColors().default)(backgroundColor);
     if (!color) {
       throw new Error('Invalid background color on iOS');
     }
