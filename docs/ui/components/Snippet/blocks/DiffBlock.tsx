@@ -25,6 +25,7 @@ type Props = PropsWithChildren<{
   source?: string;
   raw?: string;
   filenameModifier?: (filename: string) => string;
+  filenameToLinkUrl?: (filename: string) => string;
   showOperation?: boolean;
   collapseDeletedFiles?: boolean;
   SnippetHeaderComponent?: typeof SnippetHeader | typeof PermalinkedSnippetHeader;
@@ -34,6 +35,7 @@ export const DiffBlock = ({
   source,
   raw,
   filenameModifier = str => str,
+  filenameToLinkUrl,
   showOperation = false,
   collapseDeletedFiles = false,
   SnippetHeaderComponent = SnippetHeader,
@@ -75,6 +77,7 @@ export const DiffBlock = ({
           Icon={Copy07Icon}
           operationType={type}
           showOperation={showOperation}
+          linkUrl={filenameToLinkUrl ? filenameToLinkUrl(newPath) : undefined}
           float={collapseDeletedFiles && type === 'delete'}>
           <SettingsAction />
         </SnippetHeaderComponent>
