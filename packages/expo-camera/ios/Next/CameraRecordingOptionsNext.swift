@@ -53,3 +53,38 @@ enum VideoCodecNext: String, Enumerable {
     }
   }
 }
+
+enum PictureSize: String, Enumerable {
+  case hd4k = "3840x2160"
+  case hd1920 = "1920x1080"
+  case hd720 = "1280x720"
+  case vga = "640x480"
+  case cif = "352x288"
+  case photo = "Photo"
+  case high = "High"
+  case medium = "Medium"
+  case low = "Low"
+
+  func toCapturePreset() -> AVCaptureSession.Preset {
+    switch self {
+    case .hd4k:
+      return .hd4K3840x2160
+    case .hd1920:
+      return .hd1920x1080
+    case .hd720:
+      return .hd1280x720
+    case .vga:
+      return .vga640x480
+    case .cif:
+      return .cif352x288
+    case .photo:
+      return .photo
+    case .high:
+      return .high
+    case .medium:
+      return .medium
+    case .low:
+      return .low
+    }
+  }
+}

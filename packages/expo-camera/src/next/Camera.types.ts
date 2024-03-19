@@ -312,6 +312,11 @@ export type CameraProps = ViewProps & {
    */
   videoQuality?: VideoQuality;
   /**
+   * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
+   * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
+   */
+  pictureSize?: string;
+  /**
    * A boolean to enable or disable the torch
    * @default false
    */
@@ -375,6 +380,7 @@ export type CameraProps = ViewProps & {
  */
 export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+  readonly getAvailablePictureSizes: () => Promise<string[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly stopRecording: () => Promise<void>;
   readonly launchModernScanner: () => Promise<void>;
