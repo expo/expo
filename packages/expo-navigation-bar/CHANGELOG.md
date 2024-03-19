@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
+
 ## 2.8.1 - 2023-12-19
 
 _This version does not introduce any user-facing changes._
