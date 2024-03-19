@@ -1,31 +1,31 @@
 import { mockConnection } from './testUtilts';
+import { getDebuggerType } from '../../getDebuggerType';
+import { type DebuggerRequest } from '../../types';
 import {
   type DebuggerGetPossibleBreakpoints,
-  VscodeDebuggerGetPossibleBreakpointsMiddleware,
+  VscodeDebuggerGetPossibleBreakpointsHandler,
 } from '../VscodeDebuggerGetPossibleBreakpoints';
-import { type DebuggerRequest } from '../types';
-import { getDebuggerType } from '../utils';
 
-jest.mock('../utils', () => ({
-  ...jest.requireActual('../utils'),
+jest.mock('../../getDebuggerType', () => ({
+  ...jest.requireActual('../../getDebuggerType'),
   getDebuggerType: jest.fn(() => 'unknown'),
 }));
 
 it('is enabled when debugger has vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('vscode');
-  const handler = new VscodeDebuggerGetPossibleBreakpointsMiddleware(mockConnection());
+  const handler = new VscodeDebuggerGetPossibleBreakpointsHandler(mockConnection());
   expect(handler.isEnabled()).toBe(true);
 });
 
 it('is disabled when debugger doesnt have vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('unknown');
-  const handler = new VscodeDebuggerGetPossibleBreakpointsMiddleware(mockConnection());
+  const handler = new VscodeDebuggerGetPossibleBreakpointsHandler(mockConnection());
   expect(handler.isEnabled()).toBe(false);
 });
 
 it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () => {
   const connection = mockConnection();
-  const handler = new VscodeDebuggerGetPossibleBreakpointsMiddleware(connection);
+  const handler = new VscodeDebuggerGetPossibleBreakpointsHandler(connection);
 
   const message: DebuggerRequest<DebuggerGetPossibleBreakpoints> = {
     id: 420,

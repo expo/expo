@@ -1,15 +1,20 @@
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, DeviceMiddleware, DeviceResponse } from './types';
-import { getDebuggerType } from './utils';
+import {
+  type CdpMessage,
+  type DebuggerRequest,
+  type DeviceResponse,
+  MessageHandler,
+} from '../types';
+import { getDebuggerType } from '../getDebuggerType';
 
 /**
  * Hermes doesn't seem to handle this request, but `locations` have to be returned.
  * Respond with an empty location to make it "spec compliant" with Chrome DevTools.
  */
-export class VscodeDebuggerGetPossibleBreakpointsMiddleware extends DeviceMiddleware {
+export class VscodeDebuggerGetPossibleBreakpointsHandler extends MessageHandler {
   isEnabled() {
-    return getDebuggerType(this.debuggerInfo.userAgent) === 'vscode';
+    return getDebuggerType(this.debugger.userAgent) === 'vscode';
   }
 
   handleDebuggerMessage(message: DebuggerRequest<DebuggerGetPossibleBreakpoints>) {

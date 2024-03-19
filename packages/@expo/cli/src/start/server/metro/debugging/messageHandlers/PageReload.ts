@@ -1,9 +1,9 @@
 import type { Protocol } from 'devtools-protocol';
 
-import { CdpMessage, Connection, DebuggerRequest, DeviceMiddleware } from './types';
-import { MetroBundlerDevServer } from '../../MetroBundlerDevServer';
+import { type CdpMessage, type Connection, type DebuggerRequest, MessageHandler } from '../types';
+import type { MetroBundlerDevServer } from '../../MetroBundlerDevServer';
 
-export class PageReloadMiddleware extends DeviceMiddleware {
+export class PageReloadHandler extends MessageHandler {
   private metroBundler: MetroBundlerDevServer;
 
   constructor(connection: Connection, metroBundler: MetroBundlerDevServer) {

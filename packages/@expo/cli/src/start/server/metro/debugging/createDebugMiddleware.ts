@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { createDeviceMiddlewareFactory } from './createDeviceMiddlewareFactory';
+import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
@@ -14,8 +14,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     projectRoot: metroBundler.projectRoot,
     serverBaseUrl: metroBundler.getUrlCreator().constructUrl({ scheme: 'http', hostType: 'lan' }),
     logger: createLogger(chalk.bold('Debug:')),
-    // @ts-expect-error Upgrade to latest `@react-native/dev-middleware` with the device middleware API
-    unstable_deviceMessageMiddleware: createDeviceMiddlewareFactory(metroBundler),
+    unstable_customInspectorMessageHandler: createHandlersFactory(metroBundler),
     unstable_experiments: {
       enableNewDebugger: true,
     },

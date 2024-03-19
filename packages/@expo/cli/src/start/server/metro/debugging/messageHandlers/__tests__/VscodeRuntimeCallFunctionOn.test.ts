@@ -1,10 +1,10 @@
 import { mockConnection } from './testUtilts';
+import { getDebuggerType } from '../../getDebuggerType';
+import { type DebuggerRequest } from '../../types';
 import {
   type RuntimeCallFunctionOn,
-  VscodeRuntimeCallFunctionOnMiddleware,
+  VscodeRuntimeCallFunctionOnHandler,
 } from '../VscodeRuntimeCallFunctionOn';
-import { type DebuggerRequest } from '../types';
-import { getDebuggerType } from '../utils';
 
 jest.mock('../utils', () => ({
   ...jest.requireActual('../utils'),
@@ -13,19 +13,19 @@ jest.mock('../utils', () => ({
 
 it('is enabled when debugger has vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('vscode');
-  const handler = new VscodeRuntimeCallFunctionOnMiddleware(mockConnection());
+  const handler = new VscodeRuntimeCallFunctionOnHandler(mockConnection());
   expect(handler.isEnabled()).toBe(true);
 });
 
 it('is disabled when debugger doesnt have vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('unknown');
-  const handler = new VscodeRuntimeCallFunctionOnMiddleware(mockConnection());
+  const handler = new VscodeRuntimeCallFunctionOnHandler(mockConnection());
   expect(handler.isEnabled()).toBe(false);
 });
 
 it('swallows `Runtime.callFunctionOn` debugger message and responds with object ID pointer', () => {
   const connection = mockConnection();
-  const handler = new VscodeRuntimeCallFunctionOnMiddleware(connection);
+  const handler = new VscodeRuntimeCallFunctionOnHandler(connection);
 
   // Message should NOT be sent to the device
   expect(handler.handleDebuggerMessage(callFunctionOnMessage)).toBe(true);

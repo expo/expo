@@ -1,15 +1,15 @@
 import type { Protocol } from 'devtools-protocol';
 
 import {
-  CdpMessage,
-  DeviceMiddleware,
-  DeviceRequest,
-  DebuggerRequest,
-  DebuggerResponse,
-  DeviceResponse,
-} from './types';
+  type CdpMessage,
+  type DeviceRequest,
+  type DebuggerRequest,
+  type DebuggerResponse,
+  type DeviceResponse,
+  MessageHandler,
+} from '../types';
 
-export class NetworkResponseMiddleware extends DeviceMiddleware {
+export class NetworkResponseHandler extends MessageHandler {
   /** All known responses, mapped by request id */
   storage = new Map<string, DebuggerResponse<NetworkGetResponseBody>['result']>();
 

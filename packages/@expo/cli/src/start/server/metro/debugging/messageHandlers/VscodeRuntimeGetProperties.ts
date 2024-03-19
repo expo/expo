@@ -1,7 +1,12 @@
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, DeviceResponse, DeviceMiddleware } from './types';
-import { getDebuggerType } from './utils';
+import {
+  type CdpMessage,
+  type DebuggerRequest,
+  type DeviceResponse,
+  MessageHandler,
+} from '../types';
+import { getDebuggerType } from '../getDebuggerType';
 
 /**
  * Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
@@ -11,12 +16,12 @@ import { getDebuggerType } from './utils';
  * @see https://github.com/facebook/hermes/issues/114
  * @see https://github.com/microsoft/vscode-js-debug/issues/1583
  */
-export class VscodeRuntimeGetPropertiesMiddleware extends DeviceMiddleware {
+export class VscodeRuntimeGetPropertiesHandler extends MessageHandler {
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
   interceptGetProperties = new Set<number>();
 
   isEnabled() {
-    return getDebuggerType(this.debuggerInfo.userAgent) === 'vscode';
+    return getDebuggerType(this.debugger.userAgent) === 'vscode';
   }
 
   handleDebuggerMessage(message: DebuggerRequest<RuntimeGetProperties>) {

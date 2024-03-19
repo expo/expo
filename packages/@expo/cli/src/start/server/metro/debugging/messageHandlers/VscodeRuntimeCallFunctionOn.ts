@@ -1,7 +1,12 @@
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, DeviceResponse, DeviceMiddleware } from './types';
-import { getDebuggerType } from './utils';
+import {
+  type CdpMessage,
+  type DebuggerRequest,
+  type DeviceResponse,
+  MessageHandler,
+} from '../types';
+import { getDebuggerType } from '../getDebuggerType';
 
 /**
  * Vscode is trying to inject a script to fetch information about "Stringy" variables.
@@ -10,9 +15,9 @@ import { getDebuggerType } from './utils';
  * @see https://github.com/expo/vscode-expo/issues/231
  * @see https://github.com/microsoft/vscode-js-debug/blob/dcccaf3972d675cc1e5c776450bb4c3dc8c178c1/src/adapter/stackTrace.ts#L319-L324
  */
-export class VscodeRuntimeCallFunctionOnMiddleware extends DeviceMiddleware {
+export class VscodeRuntimeCallFunctionOnHandler extends MessageHandler {
   isEnabled() {
-    return getDebuggerType(this.debuggerInfo.userAgent) === 'vscode';
+    return getDebuggerType(this.debugger.userAgent) === 'vscode';
   }
 
   handleDebuggerMessage(message: DebuggerRequest<RuntimeCallFunctionOn>) {

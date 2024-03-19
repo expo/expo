@@ -1,21 +1,21 @@
 import { mockConnection } from './testUtilts';
-import { NetworkResponseMiddleware } from '../NetworkResponse';
+import { NetworkResponseHandler } from '../NetworkResponse';
 
 it('is disabled when device capability includes `nativeNetworkInspection`', () => {
   const connection = mockConnection({ page: { capabilities: { nativeNetworkInspection: true } } });
-  const handler = new NetworkResponseMiddleware(connection);
+  const handler = new NetworkResponseHandler(connection);
   expect(handler.isEnabled()).toBe(false);
 });
 
 it('is enabled when device capability is missing `nativeNetworkInspection`', () => {
   const connection = mockConnection();
-  const handler = new NetworkResponseMiddleware(connection);
+  const handler = new NetworkResponseHandler(connection);
   expect(handler.isEnabled()).toBe(true);
 });
 
 it('responds to response body from device and debugger', () => {
   const connection = mockConnection();
-  const handler = new NetworkResponseMiddleware(connection);
+  const handler = new NetworkResponseHandler(connection);
 
   // Expect the device message to be handled
   expect(
@@ -52,7 +52,7 @@ it('responds to response body from device and debugger', () => {
 
 it('does not respond to non-existing response', () => {
   const connection = mockConnection();
-  const handler = new NetworkResponseMiddleware(connection);
+  const handler = new NetworkResponseHandler(connection);
 
   // Expect the debugger message to not be handled
   expect(

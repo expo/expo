@@ -1,10 +1,10 @@
 import { mockConnection } from './testUtilts';
-import { PageReloadMiddleware } from '../PageReload';
+import { PageReloadHandler } from '../PageReload';
 
 it('broadcasts reload message', () => {
   const connection = mockConnection();
   const bundler = { broadcastMessage: jest.fn() };
-  const handler = new PageReloadMiddleware(connection, bundler as any);
+  const handler = new PageReloadHandler(connection, bundler as any);
 
   expect(
     handler.handleDebuggerMessage({

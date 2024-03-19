@@ -1,10 +1,10 @@
 import { mockConnection } from './testUtilts';
+import { getDebuggerType } from '../../getDebuggerType';
+import { type DebuggerRequest } from '../../types';
 import {
   type RuntimeGetProperties,
-  VscodeRuntimeGetPropertiesMiddleware,
+  VscodeRuntimeGetPropertiesHandler,
 } from '../VscodeRuntimeGetProperties';
-import { type DebuggerRequest } from '../types';
-import { getDebuggerType } from '../utils';
 
 jest.mock('../utils', () => ({
   ...jest.requireActual('../utils'),
@@ -13,19 +13,19 @@ jest.mock('../utils', () => ({
 
 it('is enabled when debugger has vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('vscode');
-  const handler = new VscodeRuntimeGetPropertiesMiddleware(mockConnection());
+  const handler = new VscodeRuntimeGetPropertiesHandler(mockConnection());
   expect(handler.isEnabled()).toBe(true);
 });
 
 it('is disabled when debugger doesnt have vscode user agent', () => {
   jest.mocked(getDebuggerType).mockReturnValue('unknown');
-  const handler = new VscodeRuntimeGetPropertiesMiddleware(mockConnection());
+  const handler = new VscodeRuntimeGetPropertiesHandler(mockConnection());
   expect(handler.isEnabled()).toBe(false);
 });
 
 it('mutates `Runtime.getProperties` device response with `description` properties', () => {
   const connection = mockConnection();
-  const handler = new VscodeRuntimeGetPropertiesMiddleware(connection);
+  const handler = new VscodeRuntimeGetPropertiesHandler(connection);
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
     method: 'Runtime.getProperties',
@@ -62,7 +62,7 @@ it('mutates `Runtime.getProperties` device response with `description` propertie
 
 it('mutates `Runtime.getProperties` device responses and removes `objectId` from symbol types', () => {
   const connection = mockConnection();
-  const handler = new VscodeRuntimeGetPropertiesMiddleware(connection);
+  const handler = new VscodeRuntimeGetPropertiesHandler(connection);
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
     method: 'Runtime.getProperties',

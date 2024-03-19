@@ -1,6 +1,6 @@
 import type WS from 'ws';
 
-import type { Connection } from '../types';
+import type { Connection } from '../../types';
 
 type PartialConnection = {
   page?: Partial<Connection['page']>;
