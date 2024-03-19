@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Enabled [FTS](https://www.sqlite.org/fts3.html) and [FTS5](https://www.sqlite.org/fts5.html) for SQLite. ([#27738](https://github.com/expo/expo/pull/27738) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.3.0 — 2024-03-05
