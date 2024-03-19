@@ -355,10 +355,10 @@ class ExpoCameraView(
 
   @OptIn(ExperimentalCamera2Interop::class)
   fun getAvailablePictureSizes(): List<String> {
-    camera?.cameraInfo?.let { cameraInfo ->
+    return camera?.cameraInfo?.let { cameraInfo ->
       val info = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-      return info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() } ?: emptyList()
-    } ?: return emptyList()
+      info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
+    } ?: emptyList()
   }
 
   fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
