@@ -1,12 +1,12 @@
 import type Protocol from 'devtools-protocol';
 
+import { getDebuggerType } from '../getDebuggerType';
 import {
   type CdpMessage,
   type DebuggerRequest,
   type DeviceResponse,
   MessageHandler,
 } from '../types';
-import { getDebuggerType } from '../getDebuggerType';
 
 /**
  * Hermes doesn't seem to handle this request, but `locations` have to be returned.

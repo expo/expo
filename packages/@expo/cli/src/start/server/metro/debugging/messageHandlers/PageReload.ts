@@ -1,7 +1,7 @@
 import type { Protocol } from 'devtools-protocol';
 
-import { type CdpMessage, type Connection, type DebuggerRequest, MessageHandler } from '../types';
 import type { MetroBundlerDevServer } from '../../MetroBundlerDevServer';
+import { type CdpMessage, type Connection, type DebuggerRequest, MessageHandler } from '../types';
 
 export class PageReloadHandler extends MessageHandler {
   private metroBundler: MetroBundlerDevServer;

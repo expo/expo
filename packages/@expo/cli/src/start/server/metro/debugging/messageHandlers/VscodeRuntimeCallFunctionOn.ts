@@ -1,12 +1,12 @@
 import type Protocol from 'devtools-protocol';
 
+import { getDebuggerType } from '../getDebuggerType';
 import {
   type CdpMessage,
   type DebuggerRequest,
   type DeviceResponse,
   MessageHandler,
 } from '../types';
-import { getDebuggerType } from '../getDebuggerType';
 
 /**
  * Vscode is trying to inject a script to fetch information about "Stringy" variables.

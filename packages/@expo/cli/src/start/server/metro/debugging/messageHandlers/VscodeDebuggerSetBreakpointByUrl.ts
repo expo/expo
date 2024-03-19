@@ -1,7 +1,7 @@
 import type Protocol from 'devtools-protocol';
 
-import { type CdpMessage, type DebuggerRequest, MessageHandler } from '../types';
 import { getDebuggerType } from '../getDebuggerType';
+import { type CdpMessage, type DebuggerRequest, MessageHandler } from '../types';
 
 /**
  * Hermes and vscode have trouble setting breakpoints by `urlRegex` through `Debugger.setBreakpointByUrl`.
