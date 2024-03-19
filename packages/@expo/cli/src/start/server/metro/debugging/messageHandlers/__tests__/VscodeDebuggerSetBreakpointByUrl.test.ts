@@ -6,8 +6,8 @@ import {
   VscodeDebuggerSetBreakpointByUrlHandler,
 } from '../VscodeDebuggerSetBreakpointByUrl';
 
-jest.mock('../utils', () => ({
-  ...jest.requireActual('../utils'),
+jest.mock('../../getDebuggerType', () => ({
+  ...jest.requireActual('../../getDebuggerType'),
   getDebuggerType: jest.fn(() => 'unknown'),
 }));
 
