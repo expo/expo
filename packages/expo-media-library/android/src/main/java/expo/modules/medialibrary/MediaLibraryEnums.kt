@@ -17,6 +17,12 @@ enum class GranularPermission(val value: String) {
   }
 }
 
+enum class AccessPrivileges(val value: String) {
+  ALL("all"),
+  LIMITED("limited"),
+  NONE("none")
+}
+
 enum class MediaType(val apiName: String, val mediaColumn: Int?) {
   AUDIO("audio", MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
   PHOTO("photo", MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
