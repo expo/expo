@@ -31,9 +31,11 @@ import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
+  sdkVersion: string;
 };
 
 const renderInterfaceComment = (
+  sdkVersion: string,
   comment?: CommentData,
   signatures?: MethodSignatureData[],
   defaultValue?: string
@@ -45,9 +47,9 @@ const renderInterfaceComment = (
       defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
-        {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
+        {parameters?.length ? parameters.map(param => renderParamRow(param, sdkVersion)) : null}
         <DEMI>Returns</DEMI>
-        <CODE>{resolveTypeName(type)}</CODE>
+        <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         {signatureComment && (
           <>
             <br />
@@ -78,14 +80,10 @@ const renderInterfaceComment = (
   }
 };
 
-const renderInterfacePropertyRow = ({
-  name,
-  flags,
-  type,
-  comment,
-  signatures,
-  defaultValue,
-}: PropData): JSX.Element => {
+const renderInterfacePropertyRow = (
+  { name, flags, type, comment, signatures, defaultValue }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : '')
@@ -97,19 +95,17 @@ const renderInterfacePropertyRow = ({
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
-        <APIDataType typeDefinition={type} />
+        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
-      <Cell fitContent>{renderInterfaceComment(comment, signatures, initValue)}</Cell>
+      <Cell fitContent>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
   );
 };
 
-const renderInterface = ({
-  name,
-  children,
-  comment,
-  extendedTypes,
-}: InterfaceDefinitionData): JSX.Element | null => {
+const renderInterface = (
+  { name, children, comment, extendedTypes }: InterfaceDefinitionData,
+  sdkVersion: string
+): JSX.Element | null => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
   if (!interfaceChildren.length) return null;
@@ -132,7 +128,9 @@ const renderInterface = ({
             Extends:{' '}
           </CALLOUT>
           {extendedTypes.map(extendedType => (
-            <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
+            <CODE key={`extend-${extendedType.name}`}>
+              {resolveTypeName(extendedType, sdkVersion)}
+            </CODE>
           ))}
         </CALLOUT>
       ) : null}
@@ -140,7 +138,9 @@ const renderInterface = ({
       {interfaceMethods.length ? (
         <>
           <BoxSectionHeader text={`${name} Methods`} />
-          {interfaceMethods.map(method => renderMethod(method, { exposeInSidebar: false }))}
+          {interfaceMethods.map(method =>
+            renderMethod(method, { exposeInSidebar: false, sdkVersion })
+          )}
         </>
       ) : undefined}
       {interfaceFields.length ? (
@@ -148,7 +148,7 @@ const renderInterface = ({
           <BoxSectionHeader text={`${name} Properties`} />
           <Table>
             <ParamsTableHeadRow />
-            <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
+            <tbody>{interfaceFields.map(f => renderInterfacePropertyRow(f, sdkVersion))}</tbody>
           </Table>
           <br />
         </>
@@ -157,11 +157,11 @@ const renderInterface = ({
   );
 };
 
-const APISectionInterfaces = ({ data }: APISectionInterfacesProps) =>
+const APISectionInterfaces = ({ data, sdkVersion }: APISectionInterfacesProps) =>
   data?.length ? (
     <>
       <H2 key="interfaces-header">Interfaces</H2>
-      {data.map(renderInterface)}
+      {data.map(d => renderInterface(d, sdkVersion))}
     </>
   ) : null;
 
