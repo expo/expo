@@ -1,6 +1,9 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
+
+SQLITE_VERSION = '3.42.0'
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoSQLite'
@@ -14,8 +17,12 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.dependency 'ExpoModulesCore'
-  # The builtin sqlite does not support extensions so we update it
-  s.dependency 'sqlite3', '~> 3.42.0'
+
+  s.dependency 'sqlite3', "~> #{SQLITE_VERSION}"
+  unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
+    s.dependency 'sqlite3/fts', "~> #{SQLITE_VERSION}"
+    s.dependency 'sqlite3/fts5', "~> #{SQLITE_VERSION}"
+  end
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
