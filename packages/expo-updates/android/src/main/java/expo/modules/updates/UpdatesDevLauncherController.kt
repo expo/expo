@@ -48,7 +48,6 @@ class UpdatesDevLauncherController(
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
   override var shouldEmitJsEvents = false
-  override val isEmergencyLaunch = updatesDirectoryException != null
 
   private var launcher: Launcher? = null
 
@@ -284,7 +283,7 @@ class UpdatesDevLauncherController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = null, // no embedded update in debug builds
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",

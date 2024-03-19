@@ -55,7 +55,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   internal var remoteLoadStatus: RemoteLoadStatus = .Idle
-  internal private(set) var isEmergencyLaunch: Bool = false
+  internal private(set) var emergencyLaunchException: Error?
 
   internal func launchedUpdate() -> Update? {
     return launcher?.launchedUpdate
@@ -95,7 +95,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   private func emergencyLaunch(fatalError error: NSError) {
-    isEmergencyLaunch = true
+    emergencyLaunchException = error
 
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
@@ -309,7 +309,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func markFailedLaunchForLaunchedUpdate() {
-    if isEmergencyLaunch {
+    if emergencyLaunchException != nil {
       return
     }
 
@@ -333,7 +333,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func markSuccessfulLaunchForLaunchedUpdate() {
-    if isEmergencyLaunch {
+    if emergencyLaunchException != nil {
       return
     }
 

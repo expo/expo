@@ -125,8 +125,6 @@ class EnabledUpdatesController(
     get() = startupProcedure.isUsingEmbeddedAssets
   private val localAssetFiles
     get() = startupProcedure.localAssetFiles
-  override val isEmergencyLaunch: Boolean
-    get() = startupProcedure.isEmergencyLaunch
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -195,7 +193,7 @@ class EnabledUpdatesController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = startupProcedure.emergencyLaunchException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration.runtimeVersionRaw,

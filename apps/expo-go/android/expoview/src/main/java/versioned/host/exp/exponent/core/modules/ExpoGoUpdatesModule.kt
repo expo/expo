@@ -35,6 +35,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
         // keep these keys in sync with UpdatesModule
         constants["isEmergencyLaunch"] = false
+        constants["emergencyLaunchReason"] = null
         constants["isEmbeddedLaunch"] = false
         constants["isEnabled"] = true
         constants["isUsingEmbeddedAssets"] = false

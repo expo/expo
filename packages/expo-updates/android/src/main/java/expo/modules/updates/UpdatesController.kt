@@ -31,50 +31,48 @@ class UpdatesController {
       }
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
-      if (singletonInstance == null) {
-        var updatesDirectoryException: Exception? = null
-        val updatesDirectory = try {
-          UpdatesUtils.getOrCreateUpdatesDirectory(context)
-        } catch (e: Exception) {
-          updatesDirectoryException = e
-          null
-        }
+      if (singletonInstance != null) {
+        return
+      }
 
-        val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
-          val logger = UpdatesLogger(context)
-          when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
-            UpdatesConfigurationValidationResult.VALID -> {
-              return@run UpdatesConfiguration(context, null)
-            }
-            UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
-              "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
-              UpdatesErrorCode.InitializationError
-            )
-            UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
-              "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
-              UpdatesErrorCode.InitializationError
-            )
-            UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
-              "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
-              UpdatesErrorCode.InitializationError
-            )
-          }
-          return@run null
-        }
+      val logger = UpdatesLogger(context)
 
-        singletonInstance = if (updatesConfiguration != null && updatesDirectory != null) {
-          EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
-        } else {
-          val logger = UpdatesLogger(context)
-          if (updatesDirectory == null) {
-            // this means there was a storage error
-            logger.error(
-              "The expo-updates system is disabled due to a storage access error: ${updatesDirectoryException?.message ?: "Unknown Error"}",
-              UpdatesErrorCode.InitializationError
-            )
+      val updatesDirectory = try {
+        UpdatesUtils.getOrCreateUpdatesDirectory(context)
+      } catch (e: Exception) {
+        logger.error(
+          "The expo-updates system is disabled due to a storage access error: ${e.message}",
+          UpdatesErrorCode.InitializationError
+        )
+        singletonInstance = DisabledUpdatesController(context, e)
+        return
+      }
+
+      val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
+        when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
+          UpdatesConfigurationValidationResult.VALID -> {
+            return@run UpdatesConfiguration(context, null)
           }
-          DisabledUpdatesController(context, updatesDirectoryException)
+          UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
+            "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
+            UpdatesErrorCode.InitializationError
+          )
+          UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
+            "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
+            UpdatesErrorCode.InitializationError
+          )
+          UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
+            "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
+            UpdatesErrorCode.InitializationError
+          )
         }
+        return@run null
+      }
+
+      singletonInstance = if (updatesConfiguration != null) {
+        EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
+      } else {
+        DisabledUpdatesController(context, null)
       }
     }
 

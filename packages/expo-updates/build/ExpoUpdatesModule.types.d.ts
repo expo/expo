@@ -4,7 +4,8 @@ import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, Up
  * @internal
  */
 export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener' | 'removeListeners'> {
-    isEmergencyLaunch?: boolean;
+    isEmergencyLaunch: boolean;
+    emergencyLaunchReason: string | null;
     isEmbeddedLaunch: boolean;
     isEnabled: boolean;
     isUsingEmbeddedAssets?: boolean;

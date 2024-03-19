@@ -29,7 +29,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     return launcher?.launchAssetUrl
   }
 
-  private let isEmergencyLaunch: Bool
   public var launchAssetURL: URL? {
     launcher?.launchAssetUrl
   }
@@ -72,8 +71,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
-    self.isEmergencyLaunch = directoryDatabaseException != nil
-
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
       withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
     )
@@ -301,7 +298,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     return UpdatesModuleConstants(
       launchedUpdate: launcher?.launchedUpdate,
       embeddedUpdate: nil, // no embedded update in debug builds
-      isEmergencyLaunch: isEmergencyLaunch,
+      emergencyLaunchException: self.directoryDatabaseException,
       isEnabled: true,
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
       runtimeVersion: self.config?.runtimeVersion ?? "1",

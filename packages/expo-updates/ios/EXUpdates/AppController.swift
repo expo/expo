@@ -10,7 +10,7 @@ import ExpoModulesCore
 public struct UpdatesModuleConstants {
   let launchedUpdate: Update?
   let embeddedUpdate: Update?
-  let isEmergencyLaunch: Bool
+  let emergencyLaunchException: Error?
   let isEnabled: Bool
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
