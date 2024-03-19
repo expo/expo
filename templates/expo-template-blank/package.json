@@ -13,7 +13,7 @@
     "expo": "~51.0.0-unreleased",
     "expo-status-bar": "~1.11.0",
     "react": "18.2.0",
-    "react-native": "0.74.0-rc.3"
+    "react-native": "0.74.0-rc.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
