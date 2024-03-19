@@ -18,6 +18,12 @@ export function info(...params: Parameters<typeof console.info>) {
   }
 }
 
+export function warn(...params: Parameters<typeof console.info>) {
+  if (enableLogging) {
+    console.warn(...params);
+  }
+}
+
 export function setEnableLogging(enabled: boolean) {
   enableLogging = enabled;
 }
