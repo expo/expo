@@ -1,6 +1,6 @@
 import { mockConnection } from './testUtilts';
 import { getDebuggerType } from '../../getDebuggerType';
-import { type DebuggerRequest } from '../../types';
+import type { DebuggerRequest } from '../../types';
 import {
   type RuntimeGetProperties,
   VscodeRuntimeGetPropertiesHandler,

@@ -1,6 +1,6 @@
 import { mockConnection } from './testUtilts';
 import { getDebuggerType } from '../../getDebuggerType';
-import { type DebuggerRequest } from '../../types';
+import type { DebuggerRequest } from '../../types';
 import {
   type RuntimeCallFunctionOn,
   VscodeRuntimeCallFunctionOnHandler,
@@ -30,8 +30,8 @@ it('swallows `Runtime.callFunctionOn` debugger message and responds with object 
   // Message should NOT be sent to the device
   expect(handler.handleDebuggerMessage(callFunctionOnMessage)).toBe(true);
   // Handler should respond with object ID pointer
-  expect(connection.debuggerInfo.socket.send).toBeCalledWith(
-    JSON.stringify({
+  expect(connection.debugger.sendMessage).toBeCalledWith(
+    expect.objectContaining({
       id: 420,
       result: {
         result: {

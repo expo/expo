@@ -1,14 +1,6 @@
-import type WS from 'ws';
-
 import type { Connection } from '../../types';
 
-type PartialConnection = {
-  page?: Partial<Connection['page']>;
-  debuggerInfo?: Partial<Connection['debuggerInfo']>;
-  deviceInfo?: Partial<Connection['deviceInfo']>;
-};
-
-export function mockConnection(connection: PartialConnection = {}): Connection {
+export function mockConnection(connection: Partial<Connection> = {}): Connection {
   return {
     page: {
       id: 'test-page-id',
@@ -18,16 +10,16 @@ export function mockConnection(connection: PartialConnection = {}): Connection {
       capabilities: {},
       ...(connection.page || {}),
     },
-    debuggerInfo: {
-      socket: { send: jest.fn() } as unknown as WS,
+    debugger: {
+      sendMessage: jest.fn(),
       userAgent: 'test-user-agent',
       ...(connection.debuggerInfo || {}),
     },
-    deviceInfo: {
+    device: {
       id: 'test-device-id',
       name: 'test-device',
       appId: 'test-app',
-      socket: { send: jest.fn() } as unknown as WS,
+      sendMessage: jest.fn(),
       ...(connection.deviceInfo || {}),
     },
   };

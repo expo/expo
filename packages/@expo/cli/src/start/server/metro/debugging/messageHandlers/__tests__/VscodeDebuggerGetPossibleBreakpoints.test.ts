@@ -1,6 +1,6 @@
 import { mockConnection } from './testUtilts';
 import { getDebuggerType } from '../../getDebuggerType';
-import { type DebuggerRequest } from '../../types';
+import type { DebuggerRequest } from '../../types';
 import {
   type DebuggerGetPossibleBreakpoints,
   VscodeDebuggerGetPossibleBreakpointsHandler,
@@ -38,8 +38,8 @@ it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () =>
   // Should stop propagation when handled
   expect(handler.handleDebuggerMessage(message)).toBe(true);
   // Should send a response with empty locations
-  expect(connection.debuggerInfo.socket.send).toBeCalledWith(
-    JSON.stringify({
+  expect(connection.debugger.sendMessage).toBeCalledWith(
+    expect.objectContaining({
       id: 420,
       result: { locations: [] },
     })

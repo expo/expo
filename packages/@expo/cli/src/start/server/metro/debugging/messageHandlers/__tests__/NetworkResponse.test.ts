@@ -39,8 +39,8 @@ it('responds to response body from device and debugger', () => {
   ).toBe(true);
 
   // Expect the proper response was sent
-  expect(connection.debuggerInfo.socket.send).toBeCalledWith(
-    JSON.stringify({
+  expect(connection.debugger.sendMessage).toBeCalledWith(
+    expect.objectContaining({
       id: 420,
       result: {
         body: 'hello',
@@ -63,5 +63,5 @@ it('does not respond to non-existing response', () => {
     })
   ).toBe(false);
 
-  expect(connection.debuggerInfo.socket.send).not.toBeCalled();
+  expect(connection.debugger.sendMessage).not.toBeCalled();
 });

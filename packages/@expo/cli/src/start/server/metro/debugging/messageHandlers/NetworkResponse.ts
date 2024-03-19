@@ -1,12 +1,12 @@
 import type { Protocol } from 'devtools-protocol';
 
-import {
-  type CdpMessage,
-  type DeviceRequest,
-  type DebuggerRequest,
-  type DebuggerResponse,
-  type DeviceResponse,
-  MessageHandler,
+import { MessageHandler } from '../MessageHandler';
+import type {
+  CdpMessage,
+  DeviceRequest,
+  DebuggerRequest,
+  DebuggerResponse,
+  DeviceResponse,
 } from '../types';
 
 export class NetworkResponseHandler extends MessageHandler {

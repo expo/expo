@@ -15,5 +15,5 @@ it('broadcasts reload message', () => {
   ).toBe(true);
 
   expect(bundler.broadcastMessage).toBeCalledWith('reload');
-  expect(connection.debuggerInfo.socket.send).toBeCalledWith(JSON.stringify({ id: 420 }));
+  expect(connection.debugger.sendMessage).toBeCalledWith(expect.objectContaining({ id: 420 }));
 });

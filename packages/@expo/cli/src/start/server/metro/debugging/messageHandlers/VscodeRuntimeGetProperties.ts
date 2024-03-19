@@ -1,12 +1,8 @@
 import type Protocol from 'devtools-protocol';
 
+import { MessageHandler } from '../MessageHandler';
 import { getDebuggerType } from '../getDebuggerType';
-import {
-  type CdpMessage,
-  type DebuggerRequest,
-  type DeviceResponse,
-  MessageHandler,
-} from '../types';
+import type { CdpMessage, DebuggerRequest, DeviceResponse } from '../types';
 
 /**
  * Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
