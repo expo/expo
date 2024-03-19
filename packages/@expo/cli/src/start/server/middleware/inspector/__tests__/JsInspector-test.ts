@@ -1,12 +1,13 @@
 import fetch from 'node-fetch';
 
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE, METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74 } from './fixtures/metroInspectorResponse';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
 import { launchInspectorBrowserAsync } from '../LaunchBrowser';
+import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');
@@ -36,6 +37,22 @@ describe(queryAllInspectorAppsAsync, () => {
     const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
     mockFetch.mockReturnValue(
       Promise.resolve(new Response(JSON.stringify(METRO_INSPECTOR_RESPONSE_FIXTURE)))
+    );
+
+    const result = await queryAllInspectorAppsAsync('http://localhost:8081');
+    expect(result.length).toBe(entities.length);
+    for (let i = 0; i < result.length; ++i) {
+      expect(result[i].webSocketDebuggerUrl).toBe(entities[i].webSocketDebuggerUrl);
+      expect(result[i].description).not.toBe("don't use");
+    }
+  });
+
+  it('should return all available app entities for react native 0.74+', async () => {
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74.filter((app) => pageIsSupported(app));
+
+    const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
+    mockFetch.mockReturnValue(
+      Promise.resolve(new Response(JSON.stringify(METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74)))
     );
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
