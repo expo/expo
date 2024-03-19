@@ -6,6 +6,7 @@ import { VscodeDebuggerGetPossibleBreakpointsHandler } from './messageHandlers/V
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './messageHandlers/VscodeDebuggerSetBreakpointByUrl';
 import { VscodeRuntimeCallFunctionOnHandler } from './messageHandlers/VscodeRuntimeCallFunctionOn';
 import { VscodeRuntimeGetPropertiesHandler } from './messageHandlers/VscodeRuntimeGetProperties';
+import { pageIsSupported } from './pageIsSupported';
 import type { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 const debug = require('debug')('expo:metro:debugging:messageHandlers') as typeof console.log;
@@ -16,12 +17,12 @@ export function createHandlersFactory(
   return (connection) => {
     debug('Initializing for connection: ', connection.page.title);
 
-    // Only enable the custom CDP handlers for the React Native Experimental page
-    if (connection.page.title !== 'Hermes React Native') {
+    if (!pageIsSupported(connection.page)) {
+      debug('Aborted, unsupported page capabiltiies:', connection.page.capabilities);
       return null;
     }
 
-    const middlewares = [
+    const handlers = [
       // Generic handlers
       new NetworkResponseHandler(connection),
       new PageReloadHandler(connection, metroBundler),
@@ -32,13 +33,14 @@ export function createHandlersFactory(
       new VscodeRuntimeCallFunctionOnHandler(connection),
     ].filter((middleware) => middleware.isEnabled());
 
-    if (!middlewares.length) {
+    if (!handlers.length) {
+      debug('Aborted, all handlers are disabled');
       return null;
     }
 
     debug(
-      'Initialized with middlewares: ',
-      middlewares.map((middleware) => middleware.constructor.name).join(', ')
+      'Initialized with handlers: ',
+      handlers.map((middleware) => middleware.constructor.name).join(', ')
     );
 
     return {
@@ -46,13 +48,13 @@ export function createHandlersFactory(
         withMessageDebug(
           'device',
           message,
-          middlewares.some((middleware) => middleware.handleDeviceMessage?.(message))
+          handlers.some((middleware) => middleware.handleDeviceMessage?.(message))
         ),
       handleDebuggerMessage: (message: any) => {
         withMessageDebug(
           'debugger',
           message,
-          middlewares.some((middleware) => middleware.handleDebuggerMessage?.(message))
+          handlers.some((middleware) => middleware.handleDebuggerMessage?.(message))
         );
       },
     };
