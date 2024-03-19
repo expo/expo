@@ -25,6 +25,7 @@ Add `expo` to the plugins section of your `.eslintrc` configuration file. You ca
   "plugins": [
     "expo"
     ]
+  ]
 }
 ```
 
@@ -35,7 +36,7 @@ Then configure the rules you want to use under the rules section.
 {
   "rules": {
     "expo/no-env-var-destructuring": "error",
-    "expo/no-dynamic-env-var": "error",
+    "expo/no-dynamic-env-var": "error"
   }
 }
 ```
