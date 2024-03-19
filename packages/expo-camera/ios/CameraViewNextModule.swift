@@ -58,6 +58,10 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         view.torchEnabled = enabled
       }
 
+      Prop("pictureSize") { (view, pictureSize: PictureSize?) in
+        view.pictureSize = pictureSize ?? .high
+      }
+
       Prop("zoom") { (view, zoom: Double) in
         if fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
@@ -89,6 +93,12 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
         if view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
+        }
+      }
+
+      AsyncFunction("getAvailablePictureSizes") { (_: String?) in
+        return PictureSize.allCases.map {
+          $0.rawValue
         }
       }
 

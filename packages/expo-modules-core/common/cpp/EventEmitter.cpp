@@ -130,9 +130,7 @@ void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, const std::
 
 void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
-    // Pass the arguments without the first that is the event name.
-    const jsi::Value *payloadArgs = count > 1 ? &args[1] : nullptr;
-    state->listeners.call(runtime, eventName, emitter, payloadArgs, count - 1);
+    state->listeners.call(runtime, eventName, emitter, args, count);
   }
 }
 
@@ -156,6 +154,10 @@ jsi::Object createEventSubscription(jsi::Runtime &runtime, const std::string &ev
 }
 
 #pragma mark - Public API
+
+void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments) {
+  emitEvent(runtime, emitter, eventName, arguments.data(), arguments.size());
+}
 
 jsi::Function getClass(jsi::Runtime &runtime) {
   return common::getCoreObject(runtime)
@@ -196,7 +198,10 @@ void installClass(jsi::Runtime &runtime) {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
-    emitEvent(runtime, thisObject, eventName, args, count);
+    // Make a new pointer that skips the first argument which is the event name.
+    const jsi::Value *eventArgs = count > 1 ? &args[1] : nullptr;
+
+    emitEvent(runtime, thisObject, eventName, eventArgs, count - 1);
     return jsi::Value::undefined();
   };
 

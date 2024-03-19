@@ -1,15 +1,11 @@
 package expo.modules.kotlin.types
 
-import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
-class UnitTypeConverter : DynamicAwareTypeConverters<Any>(true) {
-  override fun convertFromDynamic(value: Dynamic): Any {
-    return Unit
-  }
-
-  override fun convertFromAny(value: Any): Any = Unit
+class UnitTypeConverter : TypeConverter<Unit>() {
+  override fun convert(value: Any?, context: AppContext?) = Unit
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.ANY)
 }

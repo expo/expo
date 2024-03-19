@@ -22,6 +22,7 @@ import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
+import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
@@ -145,11 +146,19 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   override fun close() {
-    player.removeListener(playerListener)
     currentActivity.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
-    VideoManager.unregisterVideoPlayer(this)
-    player.release()
+    VideoManager.unregisterVideoPlayer(this@VideoPlayer)
+
+    appContext?.mainQueue?.launch {
+      player.removeListener(playerListener)
+      player.release()
+    }
+  }
+
+  override fun deallocate() {
+    close()
+    super.deallocate()
   }
 
   fun changePlayerView(playerView: PlayerView) {

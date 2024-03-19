@@ -66,9 +66,9 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 <Terminal
   cmd={[
-    'export ANDROID_HOME=$HOME/Library/Android/sdk',
-    'export PATH=$PATH:$ANDROID_HOME/emulator',
-    'export PATH=$PATH:$ANDROID_HOME/platform-tools',
+    '$ export ANDROID_HOME=$HOME/Library/Android/sdk',
+    '$ export PATH=$PATH:$ANDROID_HOME/emulator',
+    '$ export PATH=$PATH:$ANDROID_HOME/platform-tools',
   ]}
   cmdCopy="export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools"
 />
@@ -79,7 +79,13 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 Reload the path environment variables in your current shell:
 
-<Terminal cmd={['# for bash', 'source $HOME/.bashrc', '', '# for zsh', 'source $HOME/.zshrc']} />
+<Terminal cmd={[
+  '# for zsh',
+  '$ source $HOME/.zshrc',
+  '',
+  '# for bash',
+  '$ source $HOME/.bashrc',
+]} />
 
 </Step>
 

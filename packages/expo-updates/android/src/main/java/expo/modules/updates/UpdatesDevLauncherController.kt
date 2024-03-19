@@ -3,7 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
@@ -23,8 +23,8 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import org.json.JSONObject
 import java.io.File
 import java.lang.ref.WeakReference
@@ -48,7 +48,6 @@ class UpdatesDevLauncherController(
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
   override var shouldEmitJsEvents = false
-  override val isEmergencyLaunch = updatesDirectoryException != null
 
   private var launcher: Launcher? = null
 
@@ -80,7 +79,7 @@ class UpdatesDevLauncherController(
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
 
   override fun start() {
     throw Exception("IUpdatesController.start should not be called in dev client")
@@ -284,7 +283,7 @@ class UpdatesDevLauncherController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = null, // no embedded update in debug builds
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",

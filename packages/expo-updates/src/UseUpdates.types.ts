@@ -40,6 +40,11 @@ export type CurrentlyRunningInfo = {
    */
   isEmergencyLaunch: boolean;
   /**
+   * If `isEmergencyLaunch` is set to true, this will contain a string error message describing
+   * what failed during initialization.
+   */
+  emergencyLaunchReason: string | null;
+  /**
    * If `expo-updates` is enabled, this is the
    * [manifest](https://docs.expo.dev/versions/latest/sdk/updates/#updatesmanifest) object for the update that's currently
    * running.

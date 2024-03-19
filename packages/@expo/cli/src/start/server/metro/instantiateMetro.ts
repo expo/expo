@@ -12,7 +12,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { createDebugMiddleware } from './debugging/createDebugMiddleware';
+// import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -23,7 +23,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
+// import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
@@ -208,15 +208,15 @@ export async function instantiateMetroAsync(
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   // Initialize all React Native debug features
-  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
-  prependMiddleware(middleware, debugMiddleware);
-  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+  // const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  // prependMiddleware(middleware, debugMiddleware);
+  // middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints: {
       ...websocketEndpoints,
-      ...debugWebsocketEndpoints,
+      // ...debugWebsocketEndpoints,
     },
     watch: !isExporting && isWatchEnabled(),
   });

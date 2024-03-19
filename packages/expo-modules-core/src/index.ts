@@ -9,8 +9,10 @@ import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
+import './web/index';
 
 export type * from './ts-declarations/global';
+export type * from './ts-declarations/SharedObject';
 
 export { default as uuid } from './uuid';
 
@@ -37,3 +39,5 @@ export const SyntheticPlatformEmitter = DeviceEventEmitter;
 
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
+
+export * from './Refs';

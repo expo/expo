@@ -17,6 +17,9 @@
 - Add --version top-level flag and also add handler for missing command in expo-update cli. ([#27296](https://github.com/expo/expo/pull/27296) by [@wschurman](https://github.com/wschurman))
 - Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323), [#27387](https://github.com/expo/expo/pull/27387) by [@wschurman](https://github.com/wschurman))
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Add ability to override build-time fingerprint. ([#27597](https://github.com/expo/expo/pull/27597) by [@wschurman](https://github.com/wschurman))
+- Expose emergency launch reason on constants. ([#27714](https://github.com/expo/expo/pull/27714) by [@wschurman](https://github.com/wschurman))
+
 
 ### 🐛 Bug fixes
 
@@ -39,13 +42,14 @@
 - Convert manifest creation scripts to typescript. ([#27082](https://github.com/expo/expo/pull/27082) by [@wschurman](https://github.com/wschurman))
 - Move cli and utils subpackages to new expo-module-scripts system. ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
 - Remove legacy expo bundle-assets utilities. ([#27123](https://github.com/expo/expo/pull/27123) by [@wschurman](https://github.com/wschurman))
+- [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
+- [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
 
 ## 0.24.12 - 2024-03-13
 
 ### 💡 Others
 
 - [iOS] Moved expo-dev-client + expo-updates interop setup out from `application:willFinishLaunchingWithOptions:`. ([#27477](https://github.com/expo/expo/pull/27477) by [@kudo](https://github.com/kudo))
-- [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601) by [@kudo](https://github.com/kudo))
 
 ## 0.24.11 - 2024-02-16
 

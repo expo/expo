@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~50.0.0-alpha.0",
+    "expo": "~51.0.0-unreleased",
     "expo-apple-authentication": "~6.3.0",
     "expo-av": "~13.10.0",
     "expo-blur": "~12.9.0",
@@ -21,7 +21,7 @@
     "expo-status-bar": "~1.11.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.74.0-rc.3",
+    "react-native": "0.74.0-rc.4",
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {

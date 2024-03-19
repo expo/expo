@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "50.0.0-preview.4",
+  "version": "51.0.0-unreleased",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -81,6 +81,6 @@
     "expo-module-scripts": "^3.4.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.74.0-rc.3"
+    "react-native": "0.74.0-rc.4"
   }
 }

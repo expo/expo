@@ -33,7 +33,7 @@
     "date-fns": "^2.28.0",
     "dedent": "^0.7.0",
     "es6-error": "^4.1.1",
-    "expo": "~50.0.0-alpha.0",
+    "expo": "~51.0.0-unreleased",
     "expo-application": "~5.8.0",
     "expo-asset": "~9.0.0",
     "expo-barcode-scanner": "~12.9.0",
@@ -57,7 +57,7 @@
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "18.2.0",
-    "react-native": "0.74.0-rc.3",
+    "react-native": "0.74.0-rc.4",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-infinite-scroll-view": "^0.4.5",
@@ -72,7 +72,6 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "semver": "^7.5.4",
-    "sha1": "^1.1.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
@@ -86,9 +85,8 @@
     "@types/react": "~18.0.14",
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.5.0",
-    "@types/sha1": "^1.1.2",
     "expo-module-scripts": "^3.0.0",
-    "jest-expo": "~50.0.0-alpha.0",
+    "jest-expo": "~51.0.0-unreleased",
     "react-native-bundle-visualizer": "^3.0.0"
   }
 }

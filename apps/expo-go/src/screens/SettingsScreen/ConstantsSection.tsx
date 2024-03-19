@@ -6,16 +6,8 @@ import { Clipboard, Alert } from 'react-native';
 import { ConstantItem } from '../../components/ConstantItem';
 import { SectionHeader } from '../../components/SectionHeader';
 import Environment from '../../utils/Environment';
-import getSnackId from '../../utils/getSnackId';
 
 export function ConstantsSection() {
-  const copySnackIdToClipboard = () => {
-    Clipboard.setString(getSnackId());
-
-    // Should have some integrated alert banner
-    Alert.alert('Clipboard', 'The device ID has been copied to your clipboard');
-  };
-
   const copyClientVersionToClipboard = () => {
     if (Constants.expoVersion) {
       Clipboard.setString(Constants.expoVersion);
@@ -30,8 +22,6 @@ export function ConstantsSection() {
     <View>
       <SectionHeader header="App Info" />
       <View bg="default" border="default" overflow="hidden" rounded="large">
-        <ConstantItem title="Device ID" value={getSnackId()} onPress={copySnackIdToClipboard} />
-        <Divider style={{ height: 1 }} />
         {Constants.expoVersion ? (
           <>
             <ConstantItem

@@ -21,10 +21,9 @@ async function loadBundleAsync(bundlePath) {
         return (0, fetchThenEval_1.fetchThenEvalAsync)(requestUrl);
     }
     else {
-        const Platform = require('react-native').Platform;
         const LoadingView = require('../LoadingView')
             .default;
-        if (Platform.OS !== 'web') {
+        if (process.env.EXPO_OS !== 'web') {
             // Send a signal to the `expo` package to show the loading indicator.
             LoadingView.showMessage('Downloading...', 'load');
         }
@@ -35,7 +34,7 @@ async function loadBundleAsync(bundlePath) {
             HMRClient.registerBundle(requestUrl);
         })
             .finally(() => {
-            if (!--pendingRequests && Platform.OS !== 'web') {
+            if (!--pendingRequests && process.env.EXPO_OS !== 'web') {
                 LoadingView.hide();
             }
         });
