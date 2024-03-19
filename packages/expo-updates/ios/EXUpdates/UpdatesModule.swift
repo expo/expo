@@ -37,6 +37,8 @@ public final class UpdatesModule: Module {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
+          "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
+          "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
           "channel": channel,
@@ -56,7 +58,8 @@ public final class UpdatesModule: Module {
         "updateId": launchedUpdate.updateId.uuidString,
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": constantsForModule.assetFilesMap,
-        "isEmergencyLaunch": constantsForModule.isEmergencyLaunch,
+        "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
+        "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,
         "channel": channel,

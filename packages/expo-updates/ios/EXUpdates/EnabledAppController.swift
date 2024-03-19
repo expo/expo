@@ -248,7 +248,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     return UpdatesModuleConstants(
       launchedUpdate: startupProcedure.launchedUpdate(),
       embeddedUpdate: getEmbeddedUpdate(),
-      isEmergencyLaunch: startupProcedure.isEmergencyLaunch,
+      emergencyLaunchException: startupProcedure.emergencyLaunchException,
       isEnabled: true,
       isUsingEmbeddedAssets: startupProcedure.isUsingEmbeddedAssets(),
       runtimeVersion: self.config.runtimeVersion,
