@@ -1,6 +1,9 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 
-const createRule = ESLintUtils.RuleCreator((name) => `https://my-website.io/eslint/${name}`);
+const createRule = ESLintUtils.RuleCreator(
+  (name) =>
+    `https://github.com/expo/expo/blob/main/packages/eslint-plugin-expo/docs/rules/${name}.md`
+);
 
 export const noEnvVarDestructuring = createRule({
   name: 'no-env-var-destructuring',
