@@ -31,12 +31,6 @@ describe(`DevToolsPluginClient`, () => {
   it('should connect to the WebSocket server', async () => {
     expect(appClient.isConnected()).toBe(true);
   });
-
-  it('should throw errors when sending a message in a disconnected state', async () => {
-    await appClient.closeAsync();
-    expect(appClient.isConnected()).toBe(false);
-    expect(() => appClient.sendMessage('testMethod', {})).toThrow();
-  });
 });
 
 describe(`DevToolsPluginClient (browser <> app)`, () => {
@@ -177,7 +171,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     await delayAsync(100);
     expect(browserClient.isConnected()).toBe(false);
     expect(browserClient2.isConnected()).toBe(true);
-    expect(() => browserClient.sendMessage(method, { from: 'browserClient' })).toThrow();
+    browserClient.sendMessage(method, { from: 'browserClient' });
     browserClient2.sendMessage(method, { from: 'browserClient2' });
 
     expect(receivedMessages.length).toBe(1);

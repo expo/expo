@@ -1,6 +1,7 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import { WebSocketBackingStore } from './WebSocketBackingStore';
+import { WebSocketWithReconnect } from './WebSocketWithReconnect';
 import type { ConnectionInfo } from './devtools.types';
 import * as logger from './logger';
 
@@ -18,6 +19,9 @@ export abstract class DevToolsPluginClient {
 
   private static defaultWSStore: WebSocketBackingStore = new WebSocketBackingStore();
   private readonly wsStore: WebSocketBackingStore = DevToolsPluginClient.defaultWSStore;
+
+  protected isClosed = false;
+  protected retries = 0;
 
   public constructor(public readonly connectionInfo: ConnectionInfo) {
     this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
@@ -39,6 +43,7 @@ export abstract class DevToolsPluginClient {
    * Close the connection.
    */
   public async closeAsync(): Promise<void> {
+    this.isClosed = true;
     this.wsStore.ws?.removeEventListener('message', this.handleMessage);
     this.wsStore.refCount -= 1;
     if (this.wsStore.refCount < 1) {
@@ -54,8 +59,9 @@ export abstract class DevToolsPluginClient {
    * @param params any extra payload.
    */
   public sendMessage(method: string, params: any) {
-    if (!this.isConnected()) {
-      throw new Error('Unable to send message in a disconnected state.');
+    if (this.wsStore.ws?.readyState === WebSocket.CLOSED) {
+      logger.warn('Unable to send message in a disconnected state.');
+      return;
     }
 
     const payload: Record<string, any> = {
@@ -100,7 +106,15 @@ export abstract class DevToolsPluginClient {
    */
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://${this.connectionInfo.devServer}/message`);
+      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+        onError: (e: unknown) => {
+          if (e instanceof Error) {
+            console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);
+          } else {
+            console.warn(`Error happened from the WebSocket connection: ${JSON.stringify(e)}`);
+          }
+        },
+      });
       ws.addEventListener('open', () => {
         resolve(ws);
       });
@@ -109,7 +123,6 @@ export abstract class DevToolsPluginClient {
       });
       ws.addEventListener('close', (e: WebSocketCloseEvent) => {
         logger.info('WebSocket closed', e.code, e.reason);
-        this.wsStore.ws = null;
       });
     });
   }
