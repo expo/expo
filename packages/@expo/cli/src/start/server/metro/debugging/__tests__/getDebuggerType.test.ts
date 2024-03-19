@@ -1,4 +1,4 @@
-import { getDebuggerType } from '../utils';
+import { getDebuggerType } from '../getDebuggerType';
 
 describe(getDebuggerType, () => {
   it('returns `chrome` for user agent from chrome', () => {

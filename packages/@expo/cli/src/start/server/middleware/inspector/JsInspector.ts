@@ -1,9 +1,11 @@
+import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
+import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
 
 export interface MetroInspectorProxyApp {
   id: string;
@@ -16,6 +18,11 @@ export interface MetroInspectorProxyApp {
   vm: 'Hermes' | "don't use";
   /** Added since React Native 0.73.x */
   deviceName?: string;
+  /** Added since React Native 0.74.x */
+  reactNative?: {
+    logicalDeviceId: string;
+    capabilities: CustomMessageHandlerConnection['page']['capabilities'];
+  };
 }
 
 let openingBrowserInstance: LaunchBrowserInstance | null = null;
@@ -75,7 +82,7 @@ export async function queryAllInspectorAppsAsync(
   const resp = await fetch(`${metroServerOrigin}/json/list`);
   const apps: MetroInspectorProxyApp[] = transformApps(await resp.json());
   // Only use targets with better reloading support
-  return apps.filter((app) => app.title === 'React Native Experimental (Improved Chrome Reloads)');
+  return apps.filter((app) => pageIsSupported(app));
 }
 
 // The description of `React Native Experimental (Improved Chrome Reloads)` target is `don't use` from metro.
@@ -85,7 +92,7 @@ function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[]
 
   for (const app of apps) {
     if (app.description !== "don't use") {
-      const deviceId = app.id.split('-')[0];
+      const deviceId = app.reactNative?.logicalDeviceId ?? app.id.split('-')[0];
       const appId = app.description;
       deviceIdToAppId[deviceId] = appId;
     }
@@ -93,7 +100,7 @@ function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[]
 
   return apps.map((app) => {
     if (app.description === "don't use") {
-      const deviceId = app.id.split('-')[0];
+      const deviceId = app.reactNative?.logicalDeviceId ?? app.id.split('-')[0];
       app.description = deviceIdToAppId[deviceId] ?? app.description;
     }
     return app;

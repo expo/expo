@@ -1,13 +1,8 @@
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import {
-  CdpMessage,
-  DebuggerMetadata,
-  DebuggerRequest,
-  DeviceResponse,
-  InspectorHandler,
-} from './types';
-import { getDebuggerType } from './utils';
+import { MessageHandler } from '../MessageHandler';
+import { getDebuggerType } from '../getDebuggerType';
+import type { CdpMessage, DebuggerRequest, DeviceResponse } from '../types';
 
 /**
  * Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
@@ -17,15 +12,16 @@ import { getDebuggerType } from './utils';
  * @see https://github.com/facebook/hermes/issues/114
  * @see https://github.com/microsoft/vscode-js-debug/issues/1583
  */
-export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
+export class VscodeRuntimeGetPropertiesHandler extends MessageHandler {
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
   interceptGetProperties = new Set<number>();
 
-  onDebuggerMessage(
-    message: DebuggerRequest<RuntimeGetProperties>,
-    { userAgent }: DebuggerMetadata
-  ): boolean {
-    if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.getProperties') {
+  isEnabled() {
+    return getDebuggerType(this.debugger.userAgent) === 'vscode';
+  }
+
+  handleDebuggerMessage(message: DebuggerRequest<RuntimeGetProperties>) {
+    if (message.method === 'Runtime.getProperties') {
       this.interceptGetProperties.add(message.id);
     }
 
@@ -33,12 +29,8 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
     return false;
   }
 
-  onDeviceMessage(message: DeviceResponse<RuntimeGetProperties>, { userAgent }: DebuggerMetadata) {
-    if (
-      getDebuggerType(userAgent) === 'vscode' &&
-      'id' in message &&
-      this.interceptGetProperties.has(message.id)
-    ) {
+  handleDeviceMessage(message: DeviceResponse<RuntimeGetProperties>) {
+    if ('id' in message && this.interceptGetProperties.has(message.id)) {
       this.interceptGetProperties.delete(message.id);
 
       for (const item of message.result.result ?? []) {

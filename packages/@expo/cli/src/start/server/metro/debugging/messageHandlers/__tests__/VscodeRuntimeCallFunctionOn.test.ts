@@ -1,36 +1,37 @@
+import { mockConnection } from './testUtilts';
+import { getDebuggerType } from '../../getDebuggerType';
+import type { DebuggerRequest } from '../../types';
 import {
-  RuntimeCallFunctionOn,
+  type RuntimeCallFunctionOn,
   VscodeRuntimeCallFunctionOnHandler,
 } from '../VscodeRuntimeCallFunctionOn';
-import { DebuggerRequest } from '../types';
-import { getDebuggerType } from '../utils';
 
-jest.mock('../utils', () => ({
-  ...jest.requireActual('../utils'),
+jest.mock('../../getDebuggerType', () => ({
+  ...jest.requireActual('../../getDebuggerType'),
   getDebuggerType: jest.fn(() => 'unknown'),
 }));
 
-it('does not respond on non-vscode debugger type', () => {
-  const handler = new VscodeRuntimeCallFunctionOnHandler();
-  const socket = { send: jest.fn() };
+it('is enabled when debugger has vscode user agent', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+  const handler = new VscodeRuntimeCallFunctionOnHandler(mockConnection());
+  expect(handler.isEnabled()).toBe(true);
+});
 
-  // Message should be sent to the device
-  expect(handler.onDebuggerMessage(callFunctionOnMessage, { socket })).toBe(false);
-  // Handler should not respond
-  expect(socket.send).not.toBeCalled();
+it('is disabled when debugger doesnt have vscode user agent', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('unknown');
+  const handler = new VscodeRuntimeCallFunctionOnHandler(mockConnection());
+  expect(handler.isEnabled()).toBe(false);
 });
 
 it('swallows `Runtime.callFunctionOn` debugger message and responds with object ID pointer', () => {
-  jest.mocked(getDebuggerType).mockReturnValue('vscode');
-
-  const handler = new VscodeRuntimeCallFunctionOnHandler();
-  const socket = { send: jest.fn() };
+  const connection = mockConnection();
+  const handler = new VscodeRuntimeCallFunctionOnHandler(connection);
 
   // Message should NOT be sent to the device
-  expect(handler.onDebuggerMessage(callFunctionOnMessage, { socket })).toBe(true);
+  expect(handler.handleDebuggerMessage(callFunctionOnMessage)).toBe(true);
   // Handler should respond with object ID pointer
-  expect(socket.send).toBeCalledWith(
-    JSON.stringify({
+  expect(connection.debugger.sendMessage).toBeCalledWith(
+    expect.objectContaining({
       id: 420,
       result: {
         result: {
