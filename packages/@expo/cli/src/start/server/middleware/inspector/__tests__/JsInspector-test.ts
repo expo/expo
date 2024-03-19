@@ -1,13 +1,16 @@
 import fetch from 'node-fetch';
 
-import { METRO_INSPECTOR_RESPONSE_FIXTURE, METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74 } from './fixtures/metroInspectorResponse';
+import {
+  METRO_INSPECTOR_RESPONSE_FIXTURE,
+  METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74,
+} from './fixtures/metroInspectorResponse';
+import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
 import { launchInspectorBrowserAsync } from '../LaunchBrowser';
-import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');
