@@ -24,7 +24,6 @@ const react_1 = __importDefault(require("react"));
 const mock_config_1 = require("./mock-config");
 Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
-const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
 const getLinkingConfig_1 = require("../getLinkingConfig");
@@ -38,8 +37,6 @@ afterAll(() => {
 function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
     jest.useFakeTimers();
     const mockContext = (0, mock_config_1.getMockContext)(context);
-    // Reset the initial URL
-    (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
     getLinkingConfig_1.stateCache.clear();
@@ -53,6 +50,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={location}/>, {
         ...options,
     });
+    jest.runAllTimers();
     return Object.assign(result, {
         getPathname() {
             return router_store_1.store.routeInfoSnapshot().pathname;

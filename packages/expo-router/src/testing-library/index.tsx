@@ -5,7 +5,6 @@ import { act, render, RenderResult, screen } from '@testing-library/react-native
 import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
-import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
@@ -53,9 +52,6 @@ export function renderRouter(
 
   const mockContext = getMockContext(context);
 
-  // Reset the initial URL
-  setInitialUrl(initialUrl);
-
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
@@ -71,6 +67,7 @@ export function renderRouter(
   const result = render(<ExpoRoot context={mockContext} location={location} />, {
     ...options,
   });
+  jest.runAllTimers();
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {

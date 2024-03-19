@@ -66,7 +66,7 @@ export class RouterStore {
   initialize(
     context: RequireContext,
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>,
-    initialLocation?: URL
+    linkingConfigOverrides: Partial<ExpoLinkingOptions> = {}
   ) {
     // Clean up any previous state
     this.initialState = undefined;
@@ -90,15 +90,17 @@ export class RouterStore {
     this.navigationRef = navigationRef;
 
     if (this.routeNode) {
-      this.linking = getLinkingConfig(this.routeNode!);
+      const nativeConfigFilepath = context.keys().find((key) => key.match(/\.\/\+native.[jt]sx?$/));
 
-      if (initialLocation) {
-        this.linking.getInitialURL = () => initialLocation.toString();
-        this.initialState = this.linking.getStateFromPath?.(
-          initialLocation.pathname + initialLocation.search,
-          this.linking.config
-        );
+      if (process.env.EXPO_OS !== 'web' && nativeConfigFilepath) {
+        const nativeConfig = context(nativeConfigFilepath);
+        if (nativeConfig.subscribe) linkingConfigOverrides.subscribe = nativeConfig.subscribe;
+        if (nativeConfig.getInitialURL)
+          linkingConfigOverrides.getInitialURL = nativeConfig.getInitialURL;
+        if (nativeConfig.prefixes) linkingConfigOverrides.prefixes = nativeConfig.prefixes;
       }
+
+      this.linking = getLinkingConfig(this.routeNode!, linkingConfigOverrides);
     }
 
     // There is no routeNode, so we will be showing the onboarding screen
@@ -177,7 +179,7 @@ export class RouterStore {
     return getRouteInfoFromState(
       (state: Parameters<typeof getPathFromState>[0], asPath: boolean) => {
         return getPathDataFromState(state, {
-          screens: [],
+          screens: {},
           ...this.linking?.config,
           preserveDynamicRoutes: asPath,
           preserveGroups: asPath,
@@ -253,12 +255,18 @@ export function useStoreRouteInfo() {
   );
 }
 
-export function useInitializeExpoRouter(context: RequireContext, initialLocation: URL | undefined) {
+export function useInitializeExpoRouter(
+  context: RequireContext,
+  linking: Partial<ExpoLinkingOptions> = {},
+  location: URL | undefined
+) {
   const navigationRef = useNavigationContainerRef();
-  useMemo(
-    () => store.initialize(context, navigationRef, initialLocation),
-    [context, initialLocation]
-  );
+  useMemo(() => {
+    if (location && !linking.getInitialURL) {
+      linking.getInitialURL = () => location.pathname + location.search;
+    }
+    store.initialize(context, navigationRef, linking);
+  }, [context, linking, location]);
   useExpoRouter();
   return store;
 }

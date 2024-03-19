@@ -71,7 +71,7 @@ export function getExactRoutes(
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
   const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
 
-  const ignoreList: RegExp[] = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
+  const ignoreList: RegExp[] = [/^\.\/\+\w+\.[tj]sx?$/]; // Ignore the top level files that start with '+'. E.g +html, +native
 
   if (options.ignore) {
     ignoreList.push(...options.ignore);

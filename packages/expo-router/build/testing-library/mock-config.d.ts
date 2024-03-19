@@ -1,11 +1,11 @@
-import { FileStub } from './context-stubs';
-export type MockContextConfig = string | string[] | Record<string, FileStub> | {
+import { MemoryContext } from './context-stubs';
+export type MockContextConfig = string | string[] | {
     appDir: string;
-    overrides: Record<string, FileStub>;
-};
+    overrides: MemoryContext;
+} | MemoryContext;
 export declare function getMockConfig(context: MockContextConfig, metaOnly?: boolean): {
     initialRouteName?: string | undefined;
-    screens: Record<string, import("../getReactNavigationConfig").Screen>;
+    screens: import("@react-navigation/core").PathConfigMap<Record<string, unknown>>;
 };
 export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {
     keys: () => string[];

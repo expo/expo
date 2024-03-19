@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { ServerLocationContext } from './global-state/serverLocationContext';
 import { RequireContext } from './types';
@@ -17,6 +18,7 @@ export type ExpoRootProps = {
   context: RequireContext;
   location?: URL;
   wrapper?: ComponentType<PropsWithChildren>;
+  linking?: Partial<ExpoLinkingOptions>;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -65,8 +67,9 @@ function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
+  linking,
 }: ExpoRootProps) {
-  const store = useInitializeExpoRouter(context, initialLocation);
+  const store = useInitializeExpoRouter(context, linking, initialLocation);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();

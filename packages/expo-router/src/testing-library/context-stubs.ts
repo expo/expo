@@ -1,8 +1,15 @@
+import { LinkingOptions } from '@react-navigation/native';
 import path from 'path';
 
 import requireContext from './require-context-ponyfill';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
+export type MemoryContext = {
+  [key: string]: FileStub | NativeStub;
+} & {
+  '+native'?: NativeStub;
+};
+
 export type FileStub =
   | (Record<string, unknown> & {
       default: ReactComponent;
@@ -10,11 +17,15 @@ export type FileStub =
     })
   | ReactComponent;
 
+export type NativeStub = Partial<
+  Pick<LinkingOptions<Record<string, unknown>>, 'getInitialURL' | 'prefixes' | 'subscribe'>
+>;
+
 export { requireContext };
 
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export function inMemoryContext(context: Record<string, FileStub>) {
+export function inMemoryContext(context: MemoryContext) {
   return Object.assign(
     function (id: string) {
       id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
@@ -33,7 +44,7 @@ export function inMemoryContext(context: Record<string, FileStub>) {
   );
 }
 
-export function requireContextWithOverrides(dir: string, overrides: Record<string, FileStub>) {
+export function requireContextWithOverrides(dir: string, overrides: MemoryContext) {
   const existingContext = requireContext(path.resolve(process.cwd(), dir));
 
   return Object.assign(

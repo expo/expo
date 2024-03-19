@@ -1,3 +1,5 @@
+import { LinkingOptions } from '@react-navigation/native';
+
 import type { RouteNode } from './Route';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
@@ -93,10 +95,7 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(
   routes: RouteNode,
   metaOnly: boolean
-): {
-  initialRouteName?: string;
-  screens: Record<string, Screen>;
-} {
+): NonNullable<LinkingOptions<Record<string, unknown>>['config']> {
   return {
     initialRouteName: routes.initialRouteName,
     screens: getReactNavigationScreensConfig(routes.children, metaOnly),

@@ -64,7 +64,7 @@ class RouterStore {
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
-    initialize(context, navigationRef, initialLocation) {
+    initialize(context, navigationRef, linkingConfigOverrides = {}) {
         // Clean up any previous state
         this.initialState = undefined;
         this.rootState = undefined;
@@ -82,11 +82,17 @@ class RouterStore {
         }
         this.navigationRef = navigationRef;
         if (this.routeNode) {
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode);
-            if (initialLocation) {
-                this.linking.getInitialURL = () => initialLocation.toString();
-                this.initialState = this.linking.getStateFromPath?.(initialLocation.pathname + initialLocation.search, this.linking.config);
+            const nativeConfigFilepath = context.keys().find((key) => key.match(/\.\/\+native.[jt]sx?$/));
+            if (process.env.EXPO_OS !== 'web' && nativeConfigFilepath) {
+                const nativeConfig = context(nativeConfigFilepath);
+                if (nativeConfig.subscribe)
+                    linkingConfigOverrides.subscribe = nativeConfig.subscribe;
+                if (nativeConfig.getInitialURL)
+                    linkingConfigOverrides.getInitialURL = nativeConfig.getInitialURL;
+                if (nativeConfig.prefixes)
+                    linkingConfigOverrides.prefixes = nativeConfig.prefixes;
             }
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode, linkingConfigOverrides);
         }
         // There is no routeNode, so we will be showing the onboarding screen
         // In the meantime, just mock the routeInfo
@@ -154,7 +160,7 @@ class RouterStore {
     getRouteInfo(state) {
         return (0, LocationProvider_1.getRouteInfoFromState)((state, asPath) => {
             return (0, getPathFromState_1.getPathDataFromState)(state, {
-                screens: [],
+                screens: {},
                 ...this.linking?.config,
                 preserveDynamicRoutes: asPath,
                 preserveGroups: asPath,
@@ -214,9 +220,14 @@ function useStoreRouteInfo() {
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.routeInfoSnapshot, exports.store.routeInfoSnapshot);
 }
 exports.useStoreRouteInfo = useStoreRouteInfo;
-function useInitializeExpoRouter(context, initialLocation) {
+function useInitializeExpoRouter(context, linking = {}, location) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
-    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, initialLocation), [context, initialLocation]);
+    (0, react_1.useMemo)(() => {
+        if (location && !linking.getInitialURL) {
+            linking.getInitialURL = () => location.pathname + location.search;
+        }
+        exports.store.initialize(context, navigationRef, linking);
+    }, [context, linking, location]);
     useExpoRouter();
     return exports.store;
 }

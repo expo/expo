@@ -69,8 +69,8 @@ exports.ExpoRoot = ExpoRoot;
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, }) {
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, initialLocation);
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking, }) {
+    const store = (0, router_store_1.useInitializeExpoRouter)(context, linking, initialLocation);
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
