@@ -1,4 +1,4 @@
-name: CLI
+name: Eslint Plugin Expo
 
 on:
   push:
