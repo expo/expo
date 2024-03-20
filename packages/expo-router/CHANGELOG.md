@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
-- Add `linking` prop to `<ExpoRoot />`
+- Add `linking` prop to `<ExpoRoot />` ([#27757](https://github.com/expo/expo/pull/27757) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
