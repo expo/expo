@@ -39,7 +39,7 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   }
 
   public static func requiresMainQueueSetup() -> Bool {
-    return true
+    return false
   }
 
   public var bridge: RCTBridge! {

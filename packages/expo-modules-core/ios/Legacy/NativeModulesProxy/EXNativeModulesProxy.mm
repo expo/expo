@@ -140,7 +140,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (nonnull EXModulesProxyConfig *)nativeModulesConfig
