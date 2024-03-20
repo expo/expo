@@ -9,8 +9,8 @@ import { Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1 } from '../getServerManifest';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Options): Promise<{
-    initialRouteName?: string | undefined;
-    screens: import("@react-navigation/native").PathConfigMap<Record<string, unknown>>;
+    initialRouteName: string | undefined;
+    screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.

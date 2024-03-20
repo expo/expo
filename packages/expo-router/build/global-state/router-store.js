@@ -78,20 +78,11 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-<<<<<<< HEAD
         this.routeNode = (0, getRoutes_1.getRoutes)(context, {
             ...expo_constants_1.default.expoConfig?.extra?.router,
             ignoreEntryPoints: true,
             platform: react_native_1.Platform.OS,
         });
-        this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
-        // Only error in production, in development we will show the onboarding screen
-        if (!this.routeNode && process.env.NODE_ENV === 'production') {
-            throw new Error('No routes found');
-        }
-        this.navigationRef = navigationRef;
-=======
-        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
         // We always needs routeInfo, even if there are no routes. This can happen if:
         //  - there are no routes (we are showing the onboarding screen)
         //  - getInitialURL() is async
@@ -102,7 +93,6 @@ class RouterStore {
             params: {},
             segments: [],
         };
->>>>>>> a5bd55492ca ([router] add linking prop to ExpoRouter)
         if (this.routeNode) {
             // We have routes, so get the linking config and the root component
             this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode, linkingConfigOverrides);
