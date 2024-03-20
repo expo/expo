@@ -47,6 +47,9 @@ class DevMenuActivity : ReactActivity() {
 
         val reactDelegate: ReactDelegate = ReactActivityDelegate::class.java
           .getPrivateDeclaredFieldValue("mReactDelegate", this)
+        if (!rootViewWasInitialized()) {
+          rootView = reactDelegate.reactRootView
+        }
 
         ReactDelegate::class.java
           .setPrivateDeclaredFieldValue("mFabricEnabled", reactDelegate, fabricEnabled)
@@ -57,7 +60,7 @@ class DevMenuActivity : ReactActivity() {
         (rootView.parent as? ViewGroup)?.removeView(rootView)
 
         // Attaches the root view to the current activity
-        plainActivity.setContentView(reactDelegate.getReactRootView())
+        plainActivity.setContentView(reactDelegate.reactRootView)
       }
 
       override fun getReactNativeHost() = DevMenuManager.getMenuHost()
@@ -71,24 +74,11 @@ class DevMenuActivity : ReactActivity() {
         putStringArray("registeredCallbacks", DevMenuManager.registeredCallbacks.map { it.name }.toTypedArray())
       }
 
-      override fun createRootView(): ReactRootView {
+      override fun createRootView(): ReactRootView? {
         if (rootViewWasInitialized()) {
           return rootView
         }
-
-        rootView = super.createRootView().apply { setIsFabric(fabricEnabled) }
-
-        return rootView
-      }
-
-      override fun createRootView(bundle: Bundle?): ReactRootView {
-        if (rootViewWasInitialized()) {
-          return rootView
-        }
-
-        rootView = super.createRootView(bundle)
-
-        return rootView
+        return super.createRootView()
       }
     }
   }
