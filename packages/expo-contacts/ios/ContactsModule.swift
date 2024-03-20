@@ -80,11 +80,13 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       }
     }.runOnQueue(.main)
 
+    // swiftlint:disable closure_body_length
     AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact?, options: FormOptions, promise: Promise) in
+      // swiftlint:enable closure_body_length
       if contactManipulationPromise != nil {
         throw ContactManipulationInProgressException()
       }
-
+      
       var controller: ContactsViewController?
 
       if let identifier {
