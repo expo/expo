@@ -9,9 +9,9 @@ import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
+import MonoText from '../../components/MonoText';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
-import MonoText from '../../components/MonoText';
 
 type StackParams = {
   ContactDetail: { id: string };
