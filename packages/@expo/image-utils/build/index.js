@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.jimpAsync = exports.imageAsync = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.createSquareAsync = exports.jimpAsync = exports.imageAsync = void 0;
 const Cache = __importStar(require("./Cache"));
 exports.Cache = Cache;
 const Image_1 = require("./Image");
@@ -33,6 +33,7 @@ Object.defineProperty(exports, "generateImageAsync", { enumerable: true, get: fu
 Object.defineProperty(exports, "getPngInfo", { enumerable: true, get: function () { return Image_1.getPngInfo; } });
 const jimp_1 = require("./jimp");
 Object.defineProperty(exports, "jimpAsync", { enumerable: true, get: function () { return jimp_1.jimpAsync; } });
+Object.defineProperty(exports, "createSquareAsync", { enumerable: true, get: function () { return jimp_1.createSquareAsync; } });
 const sharp_1 = require("./sharp");
 Object.defineProperty(exports, "findSharpInstanceAsync", { enumerable: true, get: function () { return sharp_1.findSharpInstanceAsync; } });
 Object.defineProperty(exports, "isAvailableAsync", { enumerable: true, get: function () { return sharp_1.isAvailableAsync; } });

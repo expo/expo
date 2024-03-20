@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add default icon on iOS to prevent submission failure when no `icon` is defined.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -6,7 +6,10 @@
 
 ### 🎉 New features
 
+- Expose `createSquareAsync` to generate a square image from a color.
+
 ### 🐛 Bug fixes
+
 - Fixed vulnerability with update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ### 💡 Others
