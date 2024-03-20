@@ -38,17 +38,18 @@ class DevMenuActivity : ReactActivity() {
       override fun onDestroy() = Unit
 
       override fun loadApp(appKey: String?) {
-        // On the first launch of this activity we need to call super.loadApp() to start the dev menu
-        if (!appWasLoaded) {
-          super.loadApp(appKey)
-          appWasLoaded = true
-          return
-        }
-
         val reactDelegate: ReactDelegate = ReactActivityDelegate::class.java
           .getPrivateDeclaredFieldValue("mReactDelegate", this)
-        if (!rootViewWasInitialized()) {
-          rootView = reactDelegate.reactRootView
+
+        // On the first launch of this activity we need to call super.loadApp() to start the dev menu
+        // and cache the rootView for reuse
+        if (!appWasLoaded) {
+          super.loadApp(appKey)
+          if (!rootViewWasInitialized()) {
+            rootView = reactDelegate.reactRootView
+          }
+          appWasLoaded = true
+          return
         }
 
         ReactDelegate::class.java
@@ -74,6 +75,8 @@ class DevMenuActivity : ReactActivity() {
         putStringArray("registeredCallbacks", DevMenuManager.registeredCallbacks.map { it.name }.toTypedArray())
       }
 
+      // NOTE: We could remove this suppress after dropping Expo SDK 51
+      @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE")
       override fun createRootView(): ReactRootView? {
         if (rootViewWasInitialized()) {
           return rootView
