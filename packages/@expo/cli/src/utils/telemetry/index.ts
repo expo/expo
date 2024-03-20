@@ -3,10 +3,11 @@ import { RudderClient } from './RudderClient';
 import type { TelemetryClient, TelemetryEvent, TelemetryProperties } from './types';
 import { env } from '../env';
 
-const debug = require('debug')('expo:telemetry') as typeof console.log;
+/** The singleton telemetry client to use */
+let telemetry: TelemetryClient | null = null;
 
-function getClient(): TelemetryClient | null {
-  if (env.EXPO_NO_TELEMETRY) return null;
+export function getTelemetry(): TelemetryClient | null {
+  if (env.EXPO_NO_TELEMETRY || telemetry) return telemetry;
 
   const client = env.EXPO_NO_TELEMETRY_DETACH
     ? new RudderClient() // Block the CLI process when sending telemetry, useful for testing
@@ -16,13 +17,9 @@ function getClient(): TelemetryClient | null {
   process.once('SIGTERM', () => client.flush());
   process.once('beforeExit', () => client.flush());
 
-  return client;
+  return (telemetry = client);
 }
 
-/** The singleton telemetry instance */
-export const telemetry = getClient();
-
 export async function logEventAsync(event: TelemetryEvent, properties?: TelemetryProperties) {
-  await telemetry?.record(event, properties);
-  debug('Telemetry event recorded:', event);
+  await getTelemetry()?.record(event, properties);
 }

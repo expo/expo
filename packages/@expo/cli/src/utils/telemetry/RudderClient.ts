@@ -6,6 +6,8 @@ import UserSettings from '../../api/user/UserSettings';
 import { Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
+const debug = require('debug')('expo:telemetry:rudderClient') as typeof console.log;
+
 export class RudderClient implements TelemetryClient {
   private rudderstack: RudderAnalytics;
   private identity: { userId: string; anonymousId: string } | undefined;
@@ -33,6 +35,8 @@ export class RudderClient implements TelemetryClient {
   async identify(actor?: Actor) {
     if (!actor) return;
 
+    debug('Actor received');
+
     const userId = actor.id;
     const anonymousId = await UserSettings.getAnonymousIdentifierAsync();
 
@@ -48,13 +52,16 @@ export class RudderClient implements TelemetryClient {
     });
   }
 
-  async record(event: TelemetryEvent, properties: TelemetryProperties = {}): Promise<void> {
+  async record(event: TelemetryEvent, properties: TelemetryProperties = {}) {
     if (!this.isIdentified) {
       await this.identify(await getUserAsync());
     }
 
     if (this.identity) {
       const { app, ...context } = getContext();
+
+      debug('Event received: %s', event);
+
       await this.rudderstack.track({
         event,
         properties: { ...properties, ...app },
@@ -64,7 +71,7 @@ export class RudderClient implements TelemetryClient {
     }
   }
 
-  async flush(): Promise<void> {
+  async flush() {
     await this.rudderstack.flush();
   }
 }

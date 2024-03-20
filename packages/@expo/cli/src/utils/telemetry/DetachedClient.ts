@@ -6,7 +6,7 @@ import type { TelemetryClient, TelemetryEvent, TelemetryRecord } from './types';
 import UserSettings from '../../api/user/UserSettings';
 import { Actor } from '../../api/user/user';
 
-const debug = require('debug')('expo:telemetry') as typeof console.log;
+const debug = require('debug')('expo:telemetry:detachedClient') as typeof console.log;
 
 export type DetachedTelemetry = {
   actor?: Actor;
@@ -22,10 +22,13 @@ export class DetachedClient implements TelemetryClient {
   }
 
   async identify(actor?: Actor) {
-    if (actor) this.actor = actor;
+    if (!actor) return;
+    debug('Actor received');
+    this.actor = actor;
   }
 
   async record(event: TelemetryEvent, properties?: Record<string, any>) {
+    debug('Event received: %s', event);
     this.records.push({ event, properties });
   }
 
