@@ -38,6 +38,8 @@ export class DetachedClient implements TelemetryClient {
     const data: DetachedTelemetry = { actor: this.actor, records: this.records };
 
     this.records = [];
+
+    await fs.promises.mkdir(path.dirname(file), { recursive: true });
     await fs.promises.writeFile(file, JSON.stringify(data));
 
     const child = spawn(process.execPath, [require.resolve('./flushDetached'), file], {

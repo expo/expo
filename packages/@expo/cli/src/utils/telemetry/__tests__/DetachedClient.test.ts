@@ -24,7 +24,7 @@ it('stores identify information', async () => {
 });
 
 it('stores all recorded events to json file', async () => {
-  vol.fromJSON({ '/home/user/.expo/state.json': JSON.stringify({}) });
+  vol.fromJSON({});
 
   const actor = { id: 'fake', __typename: 'User' } as Actor;
   const client = new DetachedClient();
@@ -40,25 +40,25 @@ it('stores all recorded events to json file', async () => {
     '/home/user/.expo/.telemetry.json': JSON.stringify({
       actor,
       records: [
-        { event: 'Start Project', properties: undefined },
-        { event: 'Serve Manifest', properties: undefined },
-        { event: 'Open Url on Device', properties: undefined },
+        { event: 'Start Project' },
+        { event: 'Serve Manifest' },
+        { event: 'Open Url on Device' },
       ],
     }),
   });
 });
 
 it('flushes in detached process', async () => {
-  const childRef = { unref: jest.fn() };
+  const spawnChild = { unref: jest.fn() };
 
-  jest.mocked(spawn).mockReturnValue(childRef as any);
-  vol.fromJSON({ '/home/user/.expo/state.json': JSON.stringify({}) });
+  jest.mocked(spawn).mockReturnValue(spawnChild as any);
+  vol.fromJSON({});
 
   const client = new DetachedClient();
   await client.record('Start Project');
   await client.flush();
 
-  expect(childRef.unref).toHaveBeenCalled();
+  expect(spawnChild.unref).toHaveBeenCalled();
   expect(spawn).toHaveBeenCalledWith(
     expect.any(String),
     [expect.any(String), '/home/user/.expo/.telemetry.json'],
