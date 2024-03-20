@@ -131,7 +131,8 @@ class QueryArguments(
 )
 
 class ContactsModule : Module() {
-  private var mPendingPromise: Promise? = null
+  private var contactPickingPromise: Promise? = null
+  private var contactManipulationPromise: Promise? = null
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -270,42 +271,37 @@ class ContactsModule : Module() {
       // Create contact from supplied data.
       if (contactData != null) {
         val contact = mutateContact(null, contactData)
-        mPendingPromise = promise
+        contactManipulationPromise = promise
         presentForm(contact)
       }
       promise.resolve()
     }
 
     OnActivityResult { _, payload ->
-      val (requestCode, _, _) = payload
-      val pendingPromise = mPendingPromise ?: return@OnActivityResult
+      val (requestCode, resultCode, intent) = payload
       if (requestCode == RC_EDIT_CONTACT) {
+        val pendingPromise = contactManipulationPromise ?: return@OnActivityResult
+
         pendingPromise.resolve(0)
+
+        contactManipulationPromise = null
       }
-    }
+      if (requestCode == RC_PICK_CONTACT) {
+        val pendingPromise = contactPickingPromise ?: return@OnActivityResult
 
-     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (mPendingPromise != null) {
-         throw ContactPickingInProgressException()
-       }
 
-       val intent = Intent(Intent.ACTION_PICK)
-       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+        if (resultCode == Activity.RESULT_CANCELED) {
+          pendingPromise.resolve(null)
+        }
 
-       mPendingPromise = promise
-       activity.startActivityForResult(intent, RC_PICK_CONTACT)
-    }
+        if (resultCode == Activity.RESULT_OK) {
+          val contactId = intent?.data?.lastPathSegment
+          val contact = getContactById(contactId, defaultFields)
+          pendingPromise.resolve(contact?.toMap(defaultFields))
+        }
 
-     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (contactPickingPromise != null) {
-         throw ContactPickingInProgressException()
-       }
-
-       val intent = Intent(Intent.ACTION_PICK)
-       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
-
-       contactPickingPromise = promise
-       activity.startActivityForResult(intent, RC_PICK_CONTACT)
+        contactPickingPromise = null
+      }
     }
 
      AsyncFunction("presentContactPickerAsync") { promise: Promise ->
@@ -695,36 +691,6 @@ class ContactsModule : Module() {
   private fun ensurePermissions() {
     ensureReadPermission()
     ensureWritePermission()
-  }
-
-  private inner class ContactsActivityEventListener : ActivityEventListener {
-    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
-      if (requestCode == RC_EDIT_CONTACT) {
-        val pendingPromise = contactManipulationPromise ?: return
-
-        pendingPromise.resolve(0)
-
-        contactManipulationPromise = null
-      }
-      if (requestCode == RC_PICK_CONTACT) {
-        val pendingPromise = contactPickingPromise ?: return
-
-
-        if (resultCode == Activity.RESULT_CANCELED) {
-          pendingPromise.resolve(null)
-        }
-
-        if (resultCode == Activity.RESULT_OK) {
-          val contactId = intent?.data?.lastPathSegment
-          val contact = getContactById(contactId, defaultFields)
-          pendingPromise.resolve(contact?.toMap(defaultFields))
-        }
-
-        contactPickingPromise = null
-      }
-    }
-
-    override fun onNewIntent(intent: Intent) = Unit
   }
 }
 
