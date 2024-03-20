@@ -12,11 +12,13 @@ import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
+  sdkVersion: string;
   apiName?: string;
 };
 
 const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
+  sdkVersion: string,
   apiName?: string
 ): JSX.Element => (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
@@ -30,7 +32,8 @@ const renderConstant = (
     </H3Code>
     {type && (
       <P>
-        <DEMI theme="secondary">Type:</DEMI> <APIDataType typeDefinition={type} />
+        <DEMI theme="secondary">Type:</DEMI>{' '}
+        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </P>
     )}
     {comment && (
@@ -39,11 +42,11 @@ const renderConstant = (
   </div>
 );
 
-const APISectionConstants = ({ data, apiName }: APISectionConstantsProps) =>
+const APISectionConstants = ({ data, sdkVersion, apiName }: APISectionConstantsProps) =>
   data?.length ? (
     <>
       <H2 key="constants-header">Constants</H2>
-      {data.map(constant => renderConstant(constant, apiName))}
+      {data.map(constant => renderConstant(constant, sdkVersion, apiName))}
     </>
   ) : null;
 
