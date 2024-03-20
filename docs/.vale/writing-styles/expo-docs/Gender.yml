@@ -4,5 +4,5 @@ link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writ
 ignorecase: false
 level: warning
 tokens:
-  - he/she
-  - s/he
+  - he
+  - she
