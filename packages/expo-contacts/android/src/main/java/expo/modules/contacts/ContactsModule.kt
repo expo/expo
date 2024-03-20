@@ -20,7 +20,6 @@ import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -29,17 +28,7 @@ import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MissingPermissionException(permission: String) : CodedException("Missing $permission permission")
 
-class RetrieveIdException : CodedException("Couldn't get the contact id")
-
-class AddContactException : CodedException("Given contact couldn't be added")
-
-class ContactNotFoundException : CodedException("Couldn't find contact")
-
-class ContactUpdateException : CodedException("Given contact couldn't be updated")
-
-class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for contact")
 
 data class ContactPage(
   val data: List<Contact>,
