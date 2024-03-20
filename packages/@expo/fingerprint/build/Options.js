@@ -47,6 +47,7 @@ exports.DEFAULT_IGNORE_PATHS = [
     '**/node_modules/expo/config.js',
     '**/node_modules/expo/config-plugins.js',
     `**/node_modules/{${[
+        'chalk',
         'debug',
         'escape-string-regexp',
         'getenv',
@@ -55,6 +56,7 @@ exports.DEFAULT_IGNORE_PATHS = [
         'imurmurhash',
         'js-tokens',
         'json5',
+        'picocolors',
         'lines-and-columns',
         'require-from-string',
         'resolve-from',

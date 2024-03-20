@@ -160,13 +160,6 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "file",
   },
   {
-    "filePath": "node_modules/picocolors/picocolors.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
     "filePath": ".gitignore",
     "reasons": [
       "bareGitIgnore",
