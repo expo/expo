@@ -1,0 +1,48 @@
+name: CLI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/eslint-plugin-expo.yml
+      - packages/eslint-plugin-expo/**
+      - yarn.lock
+  pull_request:
+    paths:
+      - .github/workflows/eslint-plugin-expo.yml
+      - packages/eslint-plugin-expo/**
+      - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+        working-directory: packages/eslint-plugin-expo
+      - name: 🚨 Lint eslint-plugin-expo
+        run: yarn lint --max-warnings 0
+        working-directory: packages/eslint-plugin-expo
+      - name: 🧪 Run eslint-plugin-expo tests
+        run: yarn test
+        working-directory: packages/eslint-plugin-expo
+      - name: 👷 Build eslint-plugin-expo
+        run: yarn build
+        working-directory: packages/eslint-plugin-expo
