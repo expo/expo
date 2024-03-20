@@ -47,3 +47,6 @@ Then configure the rules you want to use under the rules section.
 | :----------------------------------------------------------------- | :--------------------------------------------------- |
 | [no-dynamic-env-var](docs/rules/noDynamicEnvVar.md)             | Prevents process.env from being accessed dynamically |
 | [no-env-var-destructuring](docs/rules/noEnvVarDestructuring.md) | Disallow desctructuring of environment variables     |
+
+
+Test to see if this makes `sdk.yml` run.
