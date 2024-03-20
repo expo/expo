@@ -1,6 +1,7 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { AndroidPrerequisite } from './doctor/android/AndroidPrerequisite';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -77,10 +78,14 @@ export async function startAsync(
   if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
     // If Xcode could potentially be used, then we should eagerly perform the
     // assertions since they can take a while on cold boots.
-    getXcodeVersionAsync({ silent: true });
+    await getXcodeVersionAsync({ silent: true });
     SimulatorAppPrerequisite.instance.assertAsync().catch(() => {
       // noop -- this will be thrown again when the user attempts to open the project.
     });
+  }
+
+  if (exp.platforms?.includes('android')) {
+    await AndroidPrerequisite.instance.assertAsync();
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
