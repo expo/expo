@@ -27,7 +27,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "@react-native/assets-registry": "~0.73.1"
+    "@react-native/assets-registry": "~0.74.75"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"

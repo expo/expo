@@ -32,6 +32,7 @@ import { H2, BOLD, DEMI, P, CODE, MONOSPACE, CALLOUT } from '~/ui/components/Tex
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
+  sdkVersion: string;
 };
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
@@ -46,6 +47,7 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 
 const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
+  sdkVersion: string,
   index?: number
 ): JSX.Element => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
@@ -54,22 +56,18 @@ const renderTypeDeclarationTable = (
     <Table>
       <ParamsTableHeadRow />
       <tbody>
-        {children?.map(renderTypePropertyRow)}
-        {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+        {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
+        {indexSignature?.parameters &&
+          indexSignature.parameters.map(d => renderTypePropertyRow(d, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
 );
 
-const renderTypePropertyRow = ({
-  name,
-  flags,
-  type,
-  comment,
-  defaultValue,
-  signatures,
-  kind,
-}: PropData): JSX.Element => {
+const renderTypePropertyRow = (
+  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -83,7 +81,9 @@ const renderTypePropertyRow = ({
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>{renderTypeOrSignatureType(type, signatures, true)}</Cell>
+      <Cell fitContent>
+        {renderTypeOrSignatureType({ type, signatures, allowBlock: true, sdkVersion })}
+      </Cell>
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
@@ -97,12 +97,10 @@ const renderTypePropertyRow = ({
   );
 };
 
-const renderType = ({
-  name,
-  comment,
-  type,
-  typeParameter,
-}: TypeGeneralData): JSX.Element | undefined => {
+const renderType = (
+  { name, comment, type, typeParameter }: TypeGeneralData,
+  sdkVersion: string
+): JSX.Element | undefined => {
   if (type.declaration) {
     // Object Types
     return (
@@ -116,12 +114,12 @@ const renderType = ({
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
+        {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
                 <CommentTextBlock comment={comment} />
-                {parameters && renderParams(parameters)}
+                {parameters && renderParams(parameters, sdkVersion)}
               </div>
             ))
           : null}
@@ -152,7 +150,7 @@ const renderType = ({
                   )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>
-                      <CODE>{resolveTypeName(validType)}</CODE>
+                      <CODE>{resolveTypeName(validType, sdkVersion)}</CODE>
                       {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
@@ -163,7 +161,8 @@ const renderType = ({
           ) : null}
           {propTypes.map(
             (propType, index) =>
-              propType.declaration && renderTypeDeclarationTable(propType.declaration, index)
+              propType.declaration &&
+              renderTypeDeclarationTable(propType.declaration, sdkVersion, index)
           )}
         </div>
       );
@@ -189,7 +188,7 @@ const renderType = ({
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
-                <CODE>{resolveTypeName(lt)}</CODE>
+                <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
                 {index + 1 !== literalTypes.length ? (
                   <CALLOUT tag="span" theme="quaternary">
                     {' | '}
@@ -218,7 +217,7 @@ const renderType = ({
         </H3Code>
         <P className="mb-3">
           <DEMI theme="secondary">Type: </DEMI>
-          <APIDataType typeDefinition={type} />
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
         </P>
         <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
@@ -255,18 +254,20 @@ const renderType = ({
           <DEMI theme="secondary">Generic: </DEMI>
           <CODE>
             {type.checkType.name}
-            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </P>
         <P>
           <DEMI theme="secondary">Type: </DEMI>
           <CODE>
             {type.checkType.name}
-            {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+            {typeParameter && (
+              <> extends {type.extendsType && resolveTypeName(type.extendsType, sdkVersion)}</>
+            )}
             {' ? '}
-            {type.trueType && resolveTypeName(type.trueType)}
+            {type.trueType && resolveTypeName(type.trueType, sdkVersion)}
             {' : '}
-            {type.falseType && resolveTypeName(type.falseType)}
+            {type.falseType && resolveTypeName(type.falseType, sdkVersion)}
           </CODE>
         </P>
       </div>
@@ -291,7 +292,7 @@ const renderType = ({
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          String union of <CODE>{resolveTypeName(possibleData[0])}</CODE> values.
+          String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
         </P>
       </div>
     );
@@ -299,11 +300,11 @@ const renderType = ({
   return undefined;
 };
 
-const APISectionTypes = ({ data }: APISectionTypesProps) =>
+const APISectionTypes = ({ data, sdkVersion }: APISectionTypesProps) =>
   data?.length ? (
     <>
       <H2 key="types-header">Types</H2>
-      {data.map(renderType)}
+      {data.map(d => renderType(d, sdkVersion))}
     </>
   ) : null;
 

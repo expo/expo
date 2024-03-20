@@ -201,7 +201,9 @@ public final class CameraViewModule: Module {
 
     AsyncFunction("getAvailablePictureSizes") { (_: String?, _: Int) in
       // Argument types must be compatible with Android which receives the ratio and view tag.
-      return pictureSizesDict.keys
+      return pictureSizesDict.map { k, _ in
+        k
+      }
     }
 
     AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in

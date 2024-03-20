@@ -649,7 +649,7 @@ export async function getContactByIdAsync(
       pageSize: 1,
       pageOffset: 0,
       fields,
-      id: Array.isArray(id) ? id : [id],
+      id,
     });
     if (results && results.data && results.data.length > 0) {
       return results.data[0];

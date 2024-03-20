@@ -19,6 +19,7 @@ export declare class RouterStore {
     rootState?: ResultState;
     nextState?: ResultState;
     routeInfo?: UrlObject;
+    splashScreenAnimationFrame?: number;
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
@@ -44,6 +45,7 @@ export declare class RouterStore {
     snapshot: () => this;
     rootStateSnapshot: () => ResultState;
     routeInfoSnapshot: () => UrlObject;
+    cleanup(): void;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

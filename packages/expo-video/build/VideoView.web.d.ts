@@ -5,15 +5,25 @@ declare class VideoPlayerWeb implements VideoPlayer {
     src: string | null;
     _mountedVideos: Set<HTMLVideoElement>;
     _audioNodes: Set<MediaElementAudioSourceNode>;
-    isPlaying: boolean;
-    _isMuted: boolean;
-    timestamp: number;
+    playing: boolean;
+    _muted: boolean;
     _volume: number;
+    _loop: boolean;
+    _playbackRate: number;
+    _preservesPitch: boolean;
     staysActiveInBackground: boolean;
-    set isMuted(value: boolean);
-    get isMuted(): boolean;
+    set muted(value: boolean);
+    get muted(): boolean;
+    set playbackRate(value: number);
+    get playbackRate(): number;
     set volume(value: number);
     get volume(): number;
+    set loop(value: boolean);
+    get loop(): boolean;
+    get currentTime(): number;
+    set currentTime(value: number);
+    get preservesPitch(): boolean;
+    set preservesPitch(value: boolean);
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
     play(): void;
@@ -23,6 +33,11 @@ declare class VideoPlayerWeb implements VideoPlayer {
     replay(): void;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     _addListeners(video: HTMLVideoElement): void;
+    release(): void;
+    addListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
+    removeListener<EventName extends never>(eventName: EventName, listener: Record<never, never>[EventName]): void;
+    removeAllListeners(eventName: never): void;
+    emit<EventName extends never>(eventName: EventName, ...args: Parameters<Record<never, never>[EventName]>): void;
 }
 export declare function useVideoPlayer(source?: string | null): VideoPlayer;
 export declare const VideoView: React.ForwardRefExoticComponent<{

@@ -38,11 +38,11 @@ You can use the **app/\_layout.tsx** file to define your app's main navigator:
 import { Stack } from 'expo-router/stack';
 
 export default function AppLayout() {
- return (
-   <Stack>
-     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-   </Stack>
- );
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
 }
 ```
 
@@ -79,14 +79,14 @@ export default function TabLayout() {
 
 The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the options presented in the React Navigation documentation to customize the tab bar.
 
-Finally, we have the two tab files which make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
+Finally, we have the two tab files that make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
 
 ```tsx app/(tabs)/index.tsx & app/(tabs)/settings.tsx
-import { View, Text } from "react-native";
+import { View, Text } from 'react-native';
 
 export default function Tab() {
   return (
-    <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
       <Text>Tab [Home|Settings]</Text>
     </View>
   );

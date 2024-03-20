@@ -1,9 +1,10 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaScriptModuleObject.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JSIUtils.h"
 #include "SharedObject.h"
+#include "NativeModule.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -28,21 +29,19 @@ namespace expo {
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (auto &[name, method]: objectData->methodsMetadata) {
     jsObject->setProperty(
       runtime,
       jsi::String::createFromUtf8(runtime, name),
-      jsi::Value(runtime, *method.toJSFunction(runtime, jsiInteropModuleRegistry))
+      jsi::Value(runtime, *method.toJSFunction(runtime))
     );
   }
 }
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (auto &[name, property]: objectData->properties) {
@@ -53,14 +52,12 @@ void decorateObjectWithProperties(
     descriptor.setProperty(
       runtime,
       "get",
-      jsi::Value(runtime, *getter.toJSFunction(runtime,
-                                               jsiInteropModuleRegistry))
+      jsi::Value(runtime, *getter.toJSFunction(runtime))
     );
     descriptor.setProperty(
       runtime,
       "set",
-      jsi::Value(runtime, *setter.toJSFunction(runtime,
-                                               jsiInteropModuleRegistry))
+      jsi::Value(runtime, *setter.toJSFunction(runtime))
     );
     common::defineProperty(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
@@ -68,7 +65,6 @@ void decorateObjectWithProperties(
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (const auto &[name, value]: objectData->constants) {
@@ -107,30 +103,33 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     return object;
   }
 
-  auto moduleObject = std::make_shared<jsi::Object>(runtime);
+  auto moduleObject = std::make_shared<jsi::Object>(NativeModule::createInstance(runtime));
 
+  decorate(runtime, moduleObject.get());
+
+  jsiObject = moduleObject;
+  return moduleObject;
+}
+
+void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *moduleObject) {
   decorateObjectWithConstants(
     runtime,
-    jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithProperties(
     runtime,
-    jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
   decorateObjectWithFunctions(
     runtime,
-    jsiInteropModuleRegistry,
-    moduleObject.get(),
+    moduleObject,
     this
   );
 
   if (viewPrototype) {
     auto viewPrototypeObject = viewPrototype->cthis();
-    viewPrototypeObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
     auto viewPrototypeJSIObject = viewPrototypeObject->getJSIObject(runtime);
     moduleObject->setProperty(
       runtime,
@@ -142,19 +141,18 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   for (auto &[name, classInfo]: classes) {
     auto &[classRef, constructor, ownerClass] = classInfo;
     auto classObject = classRef->cthis();
-    classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
 
     auto klass = SharedObject::createClass(
       runtime,
       name.c_str(),
-      [classObject, &constructor = constructor, jsiInteropModuleRegistry = jsiInteropModuleRegistry](
+      [classObject, &constructor = constructor](
         jsi::Runtime &runtime,
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
       ) {
         auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
-        decorateObjectWithProperties(runtime, jsiInteropModuleRegistry, thisObject.get(),
+        decorateObjectWithProperties(runtime, thisObject.get(),
                                      classObject);
         try {
           JNIEnv *env = jni::Environment::current();
@@ -167,7 +165,6 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
           auto result = constructor.callJNISync(
             env,
             runtime,
-            jsiInteropModuleRegistry,
             thisValue,
             args,
             count
@@ -182,12 +179,13 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
             JavaReferencesCache::instance()->getJClass(
               "expo/modules/kotlin/sharedobjects/SharedObject").clazz
           )) {
+            JSIContext *jsiContext = getJSIContext(runtime);
             auto jsThisObject = JavaScriptObject::newInstance(
-              jsiInteropModuleRegistry,
-              jsiInteropModuleRegistry->runtimeHolder,
+              jsiContext,
+              jsiContext->runtimeHolder,
               thisObject
             );
-            jsiInteropModuleRegistry->registerSharedObject(result, jsThisObject);
+            jsiContext->registerSharedObject(result, jsThisObject);
           }
         } catch (jni::JniException &jniException) {
           rethrowAsCodedError(runtime, jniException);
@@ -197,14 +195,16 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
 
     auto klassSharedPtr = std::make_shared<jsi::Function>(std::move(klass));
 
+    JSIContext *jsiContext = getJSIContext(runtime);
+
     auto jsThisObject = JavaScriptObject::newInstance(
-      jsiInteropModuleRegistry,
-      jsiInteropModuleRegistry->runtimeHolder,
+      jsiContext,
+      jsiContext->runtimeHolder,
       klassSharedPtr
     );
 
     if (ownerClass != nullptr) {
-      jsiInteropModuleRegistry->registerClass(jni::make_local(ownerClass), jsThisObject);
+      jsiContext->registerClass(jni::make_local(ownerClass), jsThisObject);
     }
 
     moduleObject->setProperty(
@@ -220,14 +220,10 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
 
     decorateObjectWithFunctions(
       runtime,
-      jsiInteropModuleRegistry,
       &klassPrototype,
       classObject
     );
   }
-
-  jsiObject = moduleObject;
-  return moduleObject;
 }
 
 void JavaScriptModuleObject::exportConstants(

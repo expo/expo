@@ -12,7 +12,7 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A convenient wrapper for the Kotlin CodedException.

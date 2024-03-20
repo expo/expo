@@ -101,9 +101,11 @@ export default function ExpoImage({
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
-  const { containerRef, source: selectedSource } = useSourceSelection(
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
+    containerRef,
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 

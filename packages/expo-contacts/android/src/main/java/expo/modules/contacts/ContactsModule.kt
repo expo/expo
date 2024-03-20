@@ -18,10 +18,6 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -134,8 +130,6 @@ class QueryArguments(
 )
 
 class ContactsModule : Module() {
-  private val mActivityEventListener: ActivityEventListener = ContactsActivityEventListener()
-  private var mModuleRegistry: ModuleRegistry? = null
   private var mPendingPromise: Promise? = null
 
   private val permissionsManager: Permissions
@@ -146,18 +140,6 @@ class ContactsModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
-
-    OnCreate {
-      appContext
-        .legacyModule<UIManager>()
-        ?.registerActivityEventListener(mActivityEventListener)
-    }
-
-    OnDestroy {
-      appContext
-        .legacyModule<UIManager>()
-        ?.unregisterActivityEventListener(mActivityEventListener)
-    }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
@@ -272,7 +254,7 @@ class ContactsModule : Module() {
       uri.toString()
     }
 
-    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>, options: Map<String, Any?>?, promise: Promise ->
+    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, options: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
 
       if (contactId != null) {
@@ -281,8 +263,20 @@ class ContactsModule : Module() {
         return@AsyncFunction
       }
       // Create contact from supplied data.
-      val contact = mutateContact(null, contactData)
-      presentForm(contact)
+      if (contactData != null) {
+        val contact = mutateContact(null, contactData)
+        mPendingPromise = promise
+        presentForm(contact)
+      }
+      promise.resolve()
+    }
+
+    OnActivityResult { _, payload ->
+      val (requestCode, _, _) = payload
+      val pendingPromise = mPendingPromise ?: return@OnActivityResult
+      if (requestCode == RC_EDIT_CONTACT) {
+        pendingPromise.resolve(0)
+      }
     }
   }
 
@@ -291,8 +285,7 @@ class ContactsModule : Module() {
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    val activityProvider = mModuleRegistry!!.getModule(ActivityProvider::class.java)
-    activityProvider.currentActivity.startActivity(intent)
+    activity.startActivity(intent)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
@@ -302,9 +295,8 @@ class ContactsModule : Module() {
     )
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-    val activityProvider = mModuleRegistry!!.getModule(ActivityProvider::class.java)
     mPendingPromise = promise
-    activityProvider.currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
+    activity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
   private val resolver: ContentResolver
@@ -662,17 +654,6 @@ class ContactsModule : Module() {
   private fun ensurePermissions() {
     ensureReadPermission()
     ensureWritePermission()
-  }
-
-  private inner class ContactsActivityEventListener : ActivityEventListener {
-    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
-      val pendingPromise = mPendingPromise ?: return
-      if (requestCode == RC_EDIT_CONTACT) {
-        pendingPromise.resolve(0)
-      }
-    }
-
-    override fun onNewIntent(intent: Intent) = Unit
   }
 }
 

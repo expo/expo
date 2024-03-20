@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform } from 'react-native';
 
 import { LogBoxLog } from './LogBoxLog';
 
@@ -18,7 +17,7 @@ export function useLogs(): {
 } {
   const logs = React.useContext(LogContext);
   if (!logs) {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    if (process.env.EXPO_OS === 'web' && typeof window !== 'undefined') {
       // Logbox data that is pre-fetched on the dev server and rendered here.
       const expoCliStaticErrorElement = document.getElementById('_expo-static-error');
       if (expoCliStaticErrorElement?.textContent) {

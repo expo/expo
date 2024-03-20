@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationModule
+import expo.modules.asset.AssetModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
@@ -124,6 +125,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ApplicationModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
+    AssetModule::class.java,
     BarometerModule::class.java,
     GyroscopeModule::class.java,
     LightSensorModule::class.java,

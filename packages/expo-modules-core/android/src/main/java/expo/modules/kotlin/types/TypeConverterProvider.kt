@@ -295,7 +295,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class to AnyTypeConverter(isOptional),
 
-      Unit::class to UnitTypeConverter(isOptional),
+      // Unit converter doesn't care about nullability.
+      // It will always return Unit
+      Unit::class to UnitTypeConverter(),
 
       ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional)
     )

@@ -18,27 +18,24 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 class JavaScriptModuleObject;
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
@@ -60,16 +57,16 @@ public:
   static void registerNatives();
 
   /**
-   * Pointer to the module registry interop.
-   */
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
-
-  /**
    * Returns a cached instance of jsi::Object representing this module.
    * @param runtime
    * @return Wrapped instance of JavaScriptModuleObject::HostObject
    */
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
+
+  /**
+   * Decorates the given object with properties and functions provided in the module definition.
+   */
+  void decorate(jsi::Runtime &runtime, jsi::Object *moduleObject);
 
   /**
    * Exports constants that will be assigned to the underlying HostObject.
@@ -136,21 +133,18 @@ private:
 
   friend void decorateObjectWithFunctions(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithProperties(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithConstants(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );

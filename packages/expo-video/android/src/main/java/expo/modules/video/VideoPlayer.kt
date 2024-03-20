@@ -22,14 +22,16 @@ import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
+import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, private val appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject() {
-  private val currentActivity: Activity by lazy {
-    appContext.activityProvider?.currentActivity
-      ?: throw Exceptions.MissingActivity()
-  }
+class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
+  private val currentActivity: Activity
+    get() {
+      return appContext?.activityProvider?.currentActivity
+        ?: throw Exceptions.MissingActivity()
+    }
 
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
@@ -46,13 +48,19 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
     .build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
-  var isPlaying = false
+  var playing = false
   var isLoading = true
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
+  var preservesPitch = false
+    set(preservesPitch) {
+      applyPitchCorrection()
+      field = preservesPitch
+    }
+
   private var serviceConnection: ServiceConnection
   internal var playbackServiceBinder: PlaybackServiceBinder? = null
   lateinit var timeline: Timeline
@@ -60,14 +68,14 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
   var volume = 1f
     set(volume) {
       if (player.volume == volume) return
-      player.volume = if (isMuted) 0f else volume
+      player.volume = if (muted) 0f else volume
       field = volume
     }
 
-  var isMuted = false
-    set(isMuted) {
-      field = isMuted
-      volume = if (isMuted) 0f else userVolume
+  var muted = false
+    set(muted) {
+      field = muted
+      volume = if (muted) 0f else userVolume
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
@@ -75,11 +83,12 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
       if (player.playbackParameters == value) return
       player.playbackParameters = value
       field = value
+      applyPitchCorrection()
     }
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-      this@VideoPlayer.isPlaying = isPlaying
+      this@VideoPlayer.playing = isPlaying
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -128,18 +137,28 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
       }
     }
     intent.action = MediaSessionService.SERVICE_INTERFACE
-    currentActivity.startService(intent)
-    currentActivity.bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+    currentActivity.apply {
+      startService(intent)
+      bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+    }
     player.addListener(playerListener)
     VideoManager.registerVideoPlayer(this)
   }
 
   override fun close() {
-    player.removeListener(playerListener)
     currentActivity.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
-    VideoManager.unregisterVideoPlayer(this)
-    player.release()
+    VideoManager.unregisterVideoPlayer(this@VideoPlayer)
+
+    appContext?.mainQueue?.launch {
+      player.removeListener(playerListener)
+      player.release()
+    }
+  }
+
+  override fun deallocate() {
+    close()
+    super.deallocate()
   }
 
   fun changePlayerView(playerView: PlayerView) {
@@ -151,5 +170,11 @@ class VideoPlayer(context: Context, private val appContext: AppContext, private 
   fun prepare() {
     player.setMediaItem(mediaItem)
     player.prepare()
+  }
+
+  private fun applyPitchCorrection() {
+    val speed = playbackParameters.speed
+    val pitch = if (preservesPitch) 1f else speed
+    playbackParameters = PlaybackParameters(speed, pitch)
   }
 }

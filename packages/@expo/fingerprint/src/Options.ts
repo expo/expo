@@ -11,17 +11,24 @@ export const DEFAULT_IGNORE_PATHS = [
   // Android
   '**/android/build/**/*',
   '**/android/.cxx/**/*',
+  '**/android/.gradle/**/*',
   '**/android/app/build/**/*',
   '**/android/app/.cxx/**/*',
+  '**/android/app/.gradle/**/*',
   '**/android-annotation/build/**/*',
   '**/android-annotation/.cxx/**/*',
+  '**/android-annotation/.gradle/**/*',
   '**/android-annotation-processor/build/**/*',
   '**/android-annotation-processor/.cxx/**/*',
+  '**/android-annotation-processor/.gradle/**/*',
+
+  // Often has different line endings, thus we have to ignore it
+  '**/android/gradlew.bat',
 
   // Android gradle plugins
   '**/*-gradle-plugin/build/**/*',
-  '**/*-gradle-plugin/.gradle/**/*',
   '**/*-gradle-plugin/.cxx/**/*',
+  '**/*-gradle-plugin/.gradle/**/*',
 
   // iOS
   '**/ios/Pods/**/*',
@@ -44,6 +51,7 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/node_modules/expo/config.js',
   '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
+    'chalk',
     'debug',
     'escape-string-regexp',
     'getenv',
@@ -52,6 +60,7 @@ export const DEFAULT_IGNORE_PATHS = [
     'imurmurhash',
     'js-tokens',
     'json5',
+    'picocolors',
     'lines-and-columns',
     'require-from-string',
     'resolve-from',

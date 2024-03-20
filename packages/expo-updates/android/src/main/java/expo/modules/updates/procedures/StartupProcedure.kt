@@ -3,7 +3,7 @@ package expo.modules.updates.procedures
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
@@ -77,7 +77,7 @@ class StartupProcedure(
   val launchedUpdate: UpdateEntity?
     get() = launcher?.launchedUpdate
 
-  var isEmergencyLaunch = false
+  var emergencyLaunchException: Exception? = null
     private set
   private val errorRecovery = ErrorRecovery(context)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
@@ -102,7 +102,7 @@ class StartupProcedure(
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
         launcher = NoDatabaseLauncher(context, e)
-        isEmergencyLaunch = true
+        emergencyLaunchException = e
         notifyController()
       }
 
@@ -238,11 +238,11 @@ class StartupProcedure(
     callback.onFinished()
   }
 
-  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    if (isEmergencyLaunch) {
+  fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+    if (emergencyLaunchException != null) {
       return
     }
-    errorRecovery.startMonitoring(reactInstanceManager)
+    errorRecovery.startMonitoring(reactContext)
   }
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -303,7 +303,7 @@ class StartupProcedure(
       }
 
       override fun markFailedLaunchForLaunchedUpdate() {
-        if (isEmergencyLaunch) {
+        if (emergencyLaunchException != null) {
           return
         }
         databaseHandler.post {
@@ -314,7 +314,7 @@ class StartupProcedure(
       }
 
       override fun markSuccessfulLaunchForLaunchedUpdate() {
-        if (isEmergencyLaunch) {
+        if (emergencyLaunchException != null) {
           return
         }
         databaseHandler.post {

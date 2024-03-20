@@ -8,12 +8,17 @@
 
 - Add silent option. ([#27325](https://github.com/expo/expo/pull/27325) by [@wschurman](https://github.com/wschurman))
 - Add debug option to enable verbose debug output. ([#27457](https://github.com/expo/expo/pull/27457) by [@wschurman](https://github.com/wschurman))
+- Added sourcer for `patch-project` patches support. ([#27653](https://github.com/expo/expo/pull/27653) by [@kudo](https://github.com/kudo))
+- [CLI] Enable debug info when `process.env.DEBUG` is defined. ([#27662](https://github.com/expo/expo/pull/27662) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fix fingerprint of ios (xcode projects). ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
 - Fix inconsistent hashes for autolinking. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 - Fixed expo-modules-autolinking sourcer missing some packages on iOS. ([#27442](https://github.com/expo/expo/pull/27442) by [@kudo](https://github.com/kudo))
+- Add more default android ignores that differ per machine. ([#27577](https://github.com/expo/expo/pull/27577) by [@wschurman](https://github.com/wschurman))
+- Added `react-native` package.json to fingerprint. **This will typically introduce fingerprint result breaking changes**. ([#27657](https://github.com/expo/expo/pull/27657) by [@kudo](https://github.com/kudo))
+- Exclude `chalk` and `picocolors` packages from fingerprint. **This will introduce fingerprint result breaking changes**. ([#27760](https://github.com/expo/expo/pull/27760) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

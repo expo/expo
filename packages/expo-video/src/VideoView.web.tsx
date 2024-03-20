@@ -26,20 +26,32 @@ class VideoPlayerWeb implements VideoPlayer {
   src: string | null = null;
   _mountedVideos: Set<HTMLVideoElement> = new Set();
   _audioNodes: Set<MediaElementAudioSourceNode> = new Set();
-  isPlaying: boolean = false;
-  _isMuted: boolean = false;
-  timestamp: number = 0;
+  playing: boolean = false;
+  _muted: boolean = false;
   _volume: number = 1;
+  _loop: boolean = false;
+  _playbackRate: number = 1.0;
+  _preservesPitch: boolean = true;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
-  set isMuted(value: boolean) {
+  set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.muted = value;
     });
-    this._isMuted = value;
+    this._muted = value;
   }
-  get isMuted(): boolean {
-    return this._isMuted;
+  get muted(): boolean {
+    return this._muted;
+  }
+
+  set playbackRate(value: number) {
+    this._mountedVideos.forEach((video) => {
+      video.playbackRate = value;
+    });
+  }
+
+  get playbackRate(): number {
+    return this._playbackRate;
   }
 
   set volume(value: number) {
@@ -54,6 +66,38 @@ class VideoPlayerWeb implements VideoPlayer {
       this._volume = video.volume;
     });
     return this._volume;
+  }
+
+  set loop(value: boolean) {
+    this._mountedVideos.forEach((video) => {
+      video.loop = value;
+    });
+    this._loop = value;
+  }
+
+  get loop(): boolean {
+    return this._loop;
+  }
+
+  get currentTime(): number {
+    // All videos should be synchronized, so we return the position of the first video.
+    return [...this._mountedVideos][0].currentTime;
+  }
+
+  set currentTime(value: number) {
+    this._mountedVideos.forEach((video) => {
+      video.currentTime = value;
+    });
+  }
+
+  get preservesPitch(): boolean {
+    return this._preservesPitch;
+  }
+  set preservesPitch(value: boolean) {
+    this._mountedVideos.forEach((video) => {
+      video.preservesPitch = value;
+    });
+    this._preservesPitch = value;
   }
 
   mountVideoView(video: HTMLVideoElement) {
@@ -82,13 +126,13 @@ class VideoPlayerWeb implements VideoPlayer {
     this._mountedVideos.forEach((video) => {
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
   pause(): void {
     this._mountedVideos.forEach((video) => {
       video.pause();
     });
-    this.isPlaying = false;
+    this.playing = false;
   }
   replace(source: string): void {
     this._mountedVideos.forEach((video) => {
@@ -97,7 +141,7 @@ class VideoPlayerWeb implements VideoPlayer {
       video.load();
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
@@ -109,7 +153,7 @@ class VideoPlayerWeb implements VideoPlayer {
       video.currentTime = 0;
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
 
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
@@ -136,14 +180,14 @@ class VideoPlayerWeb implements VideoPlayer {
     };
 
     video.onplay = () => {
-      this.isPlaying = true;
+      this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
       });
     };
 
     video.onpause = () => {
-      this.isPlaying = false;
+      this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
       });
@@ -151,11 +195,10 @@ class VideoPlayerWeb implements VideoPlayer {
 
     video.onvolumechange = () => {
       this.volume = video.volume;
-      this.isMuted = video.muted;
+      this._muted = video.muted;
     };
 
     video.onseeking = () => {
-      this.timestamp = video.currentTime;
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
         mountedVideo.currentTime = video.currentTime;
@@ -163,7 +206,6 @@ class VideoPlayerWeb implements VideoPlayer {
     };
 
     video.onseeked = () => {
-      this.timestamp = video.currentTime;
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
         mountedVideo.currentTime = video.currentTime;
@@ -173,9 +215,35 @@ class VideoPlayerWeb implements VideoPlayer {
     video.onratechange = () => {
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) return;
+        this._playbackRate = video.playbackRate;
         mountedVideo.playbackRate = video.playbackRate;
       });
     };
+  }
+
+  release(): void {
+    console.warn('The `VideoPlayer.release` method is not supported on web');
+  }
+  addListener<EventName extends never>(
+    eventName: EventName,
+    listener: Record<never, never>[EventName]
+  ): void {
+    console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
+  }
+  removeListener<EventName extends never>(
+    eventName: EventName,
+    listener: Record<never, never>[EventName]
+  ): void {
+    console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
+  }
+  removeAllListeners(eventName: never): void {
+    console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
+  }
+  emit<EventName extends never>(
+    eventName: EventName,
+    ...args: Parameters<Record<never, never>[EventName]>
+  ): void {
+    console.warn('The `VideoPlayer.emit` method is not yet supported on web');
   }
 }
 

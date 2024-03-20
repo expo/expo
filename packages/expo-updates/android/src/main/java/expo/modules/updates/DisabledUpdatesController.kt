@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
@@ -55,9 +55,6 @@ class DisabledUpdatesController(
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
 
-  override var isEmergencyLaunch = false
-    private set
-
   @get:Synchronized
   override val launchAssetFile: String?
     get() {
@@ -74,7 +71,7 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
 
   @Synchronized
   override fun start() {
@@ -84,7 +81,6 @@ class DisabledUpdatesController(
     isStarted = true
 
     launcher = NoDatabaseLauncher(context, fatalException)
-    isEmergencyLaunch = fatalException != null
     notifyController()
     return
   }
@@ -95,7 +91,7 @@ class DisabledUpdatesController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
       embeddedUpdate = null,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = fatalException,
       isEnabled = false,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,

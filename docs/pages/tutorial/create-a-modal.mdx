@@ -372,32 +372,7 @@ files={{
 
 export default function App() {
   /* @info Create a state variable.*/const [isModalVisible, setIsModalVisible] = useState(false);  /* @end */
-  /* @hide const [showAppOptions, setShowAppOptions] = useState(false); */
-  const [showAppOptions, setShowAppOptions] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setSelectedImage(result.uri);
-      setShowAppOptions(true);
-    } else {
-      alert("You did not select any image.");
-    }
-  };
-
-  const onReset = () => {
-    setShowAppOptions(false);
-  };
-  const onSaveImageAsync = async () => {
-    // we will implement this later
-  };
-  /* @end */
+  // ...rest of the code remains same
 
   /* @info Update functions to control the modal's visibility.*/
   const onAddSticker = () => {

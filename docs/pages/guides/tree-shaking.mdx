@@ -185,6 +185,68 @@ The above code snippet is then minified, which removes the unused conditional:
 - This system does not apply to server code as environment variables are not inlined in server bundles.
 - Library authors should not use `EXPO_PUBLIC_` environment variables as they only run in application code for security reasons.
 
+## Removing server code
+
+> SDK 51 and greater
+
+It's common to use `typeof window === 'undefined'` to conditionally enable or disable code for server and client environments.
+
+`babel-preset-expo` automatically transforms `typeof window === 'undefined'` to `true` when bundling for server environments and `false` when bundling for websites. The check remains unchanged when bundling for native client environments to support apps that polyfill `window`. This transform runs in both development and production but only removes conditional requires in production.
+
+You can configure `babel-preset-expo` to skip the transform by passing `{ preserveTypeofWindow: false }`.
+
+<Step label="1">
+
+```js Input
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
+```
+
+</Step>
+
+<Step label="2">
+
+The input code from the previous step is transformed to the following code snippet after `babel-preset-expo` when bundling for server environments (API routes, server rendering):
+
+```js Post babel-preset-expo (bundling for server)
+if (true) {
+  console.log('Hello on the server!');
+}
+```
+
+Bundling client code for web browsers will change `typeof window` to `false`:
+
+```js Post babel-preset-expo
+if (false) {
+  console.log('Hello on the server!');
+}
+```
+
+Bundling client code for native apps will leave `typeof window` in place:
+
+```js Post babel-preset-expo
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
+```
+
+</Step>
+
+<Step label="3">
+
+The above code snippet is then minified, which removes the unused conditional:
+
+```js Post minifier (server)
+console.log('Hello on the server!');
+```
+
+```js Post minifier (client websites)
+// Empty file
+```
+
+</Step>
+
 ## Remove unused imports and exports
 
 As of Expo SDK 50, unused imports and exports are not removed from the production bundle. We plan to add this feature to all platforms in a future release.

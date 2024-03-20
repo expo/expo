@@ -32,7 +32,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
     AsyncFunction("writeContactToFileAsync") { (options: ContactsQuery) -> String? in
       let keys = contactKeysToFetch(from: options.fields)
-      let payload = fetchContactsData(options: options, keys: keys)
+      let payload = fetchContactsData(options: options, keys: keys, isWriting: true)
 
       if let error = payload["error"] {
         throw FailedToFetchContactsException()
@@ -80,22 +80,22 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       }
     }.runOnQueue(.main)
 
-    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact, options: FormOptions, promise: Promise) in
+    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact?, options: FormOptions, promise: Promise) in
       var controller: ContactsViewController?
-      var contact: CNMutableContact
 
       if let identifier {
-        if let foundContact = try getContact(withId: identifier) as? CNMutableContact {
-          contact = foundContact
-          controller = ContactsViewController.init(forNewContact: contact)
+        if let foundContact = try? getContact(withId: identifier) {
+          controller = ContactsViewController.init(forNewContact: foundContact)
         }
       } else {
-        contact = CNMutableContact()
-        try mutateContact(&contact, with: data)
-        if options.isNew == true {
-          controller = ContactsViewController.init(forNewContact: contact)
-        } else {
-          controller = ContactsViewController.init(forUnknownContact: contact)
+        var contact = CNMutableContact()
+        if let data {
+          try mutateContact(&contact, with: data)
+          if options.isNew == true {
+            controller = ContactsViewController.init(forNewContact: contact)
+          } else {
+            controller = ContactsViewController.init(forUnknownContact: contact)
+          }
         }
       }
 
@@ -552,7 +552,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
   }
 
-  private func fetchContactsData(options: ContactsQuery, keys: [String]) -> [String: Any] {
+  private func fetchContactsData(options: ContactsQuery, keys: [String], isWriting: Bool = false) -> [String: Any] {
     var predicate: NSPredicate?
 
     if let id = options.id {
@@ -565,7 +565,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       predicate = CNContact.predicateForContacts(withIdentifiers: [containerId])
     }
 
-    var descriptors = getDescriptors(for: keys)
+    var descriptors = getDescriptors(for: keys, isWriting: isWriting)
     return queryContacts(with: predicate, keys: descriptors, options: options)
   }
 
