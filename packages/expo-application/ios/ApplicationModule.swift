@@ -25,6 +25,7 @@ public class ApplicationModule: Module {
       }
 
       do {
+        // REASON C617.1
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: urlToDocumentsFolder.path)
         if let installDate = fileAttributes[FileAttributeKey.creationDate] as? Date {
           return installDate.timeIntervalSince1970 * 1000

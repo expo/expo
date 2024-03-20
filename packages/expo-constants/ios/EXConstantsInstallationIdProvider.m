@@ -1,5 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
+// TODO: Remove
 #import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
@@ -41,7 +41,7 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   if (installationId) {
     return installationId;
   }
-  
+  // REASON CA92.1
   NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDLegacyKey];
   if (legacyUUID) {
     installationId = legacyUUID;
