@@ -28,8 +28,6 @@ import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-
-
 data class ContactPage(
   val data: List<Contact>,
   val hasPreviousPage: Boolean = false,
@@ -278,7 +276,6 @@ class ContactsModule : Module() {
       if (requestCode == RC_PICK_CONTACT) {
         val pendingPromise = contactPickingPromise ?: return@OnActivityResult
 
-
         if (resultCode == Activity.RESULT_CANCELED) {
           pendingPromise.resolve(null)
         }
@@ -293,16 +290,16 @@ class ContactsModule : Module() {
       }
     }
 
-     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (contactPickingPromise != null) {
-         throw ContactPickingInProgressException()
-       }
+    AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+      if (contactPickingPromise != null) {
+        throw ContactPickingInProgressException()
+      }
 
-       val intent = Intent(Intent.ACTION_PICK)
-       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+      val intent = Intent(Intent.ACTION_PICK)
+      intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
-       contactPickingPromise = promise
-       activity.startActivityForResult(intent, RC_PICK_CONTACT)
+      contactPickingPromise = promise
+      activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
