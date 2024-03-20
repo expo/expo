@@ -106,7 +106,7 @@ export function createControlledEnvironment() {
     // We handle this ourselves, expansion should always use the current state of "current + parsed env".
     const allExpandedEnv = dotenvExpand({
       parsed: { ...process.env, ...parsedEnv } as Record<string, string>,
-      ignoreProcessEnv: true,
+      processEnv: {},
     });
 
     if (allExpandedEnv.error) {
