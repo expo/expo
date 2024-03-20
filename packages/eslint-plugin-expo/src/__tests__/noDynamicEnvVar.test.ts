@@ -18,7 +18,7 @@ ruleTester.run('noDynamicEnvVar', noDynamicEnvVar, {
       code: 'const myVar = process.env["MY_VAR"]',
       errors: [
         {
-          messageId: 'unexpectedDynamicAccess',
+          messageId: 'unexpectedDynamicAccess - oops!',
           data: {
             value: 'MY_VAR',
           },
