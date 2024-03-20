@@ -21,7 +21,7 @@
       result[@"md5"] = [[NSData dataWithContentsOfFile:path] md5String];
     }
     result[@"size"] = @([EXFileSystemLocalFileHandler getFileSize:path attributes:attributes]);
-    // 0A2A.1
+    // REASON 0A2A.1
     result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
     resolve(result);
   } else {
