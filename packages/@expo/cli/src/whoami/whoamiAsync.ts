@@ -8,6 +8,6 @@ export async function whoamiAsync() {
   if (user) {
     Log.log(chalk.green(getActorDisplayName(user)));
   } else {
-    Log.log('Not logged in');
+    Log.exit('Not logged in');
   }
 }
