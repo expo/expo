@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Expose `createSquareAsync` to generate a square image from a color.
+- Expose `createSquareAsync` to generate a square image from a color. ([#27774](https://github.com/expo/expo/pull/27774) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
