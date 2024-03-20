@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.4.0 — 2024-03-20
+
+### 🐛 Bug fixes
+
 - Enabled [FTS](https://www.sqlite.org/fts3.html) and [FTS5](https://www.sqlite.org/fts5.html) for SQLite. ([#27738](https://github.com/expo/expo/pull/27738) by [@kudo](https://github.com/kudo))
 - Fixed `NullPointerException` on Android when opening the same database multiple times. ([#27748](https://github.com/expo/expo/pull/27748) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 13.3.0 — 2024-03-05
 

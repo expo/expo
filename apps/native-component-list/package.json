@@ -117,7 +117,7 @@
     "expo-sms": "~11.7.0",
     "expo-speech": "~11.7.0",
     "expo-splash-screen": "^0.26.0",
-    "expo-sqlite": "~13.3.0",
+    "expo-sqlite": "~13.4.0",
     "expo-standard-web-crypto": "~1.7.0",
     "expo-status-bar": "^1.1.0",
     "expo-store-review": "~6.8.0",

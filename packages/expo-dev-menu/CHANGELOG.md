@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 4.5.8 — 2024-03-20
+
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))

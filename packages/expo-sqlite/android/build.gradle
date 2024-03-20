@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'de.undercouch.download'
 
 group = 'host.exp.exponent'
-version = '13.3.0'
+version = '13.4.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -130,7 +130,7 @@ android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "13.3.0"
+    versionName "13.4.0"
 
     externalNativeBuild {
       cmake {

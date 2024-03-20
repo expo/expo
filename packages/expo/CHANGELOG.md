@@ -8,14 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 50.0.14 — 2024-03-20
+
+### 🐛 Bug fixes
+
 - Fixed multiple WebSocket connections created on Web when an app containing multiple dev tools plugins. ([#27702](https://github.com/expo/expo/pull/27702) by [@kudo](https://github.com/kudo))
 - Fixed "Error : Unable to send message in a disconnected state." in dev tools plugins from fast refresh. ([#27704](https://github.com/expo/expo/pull/27704) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
 - Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 50.0.13 — 2024-03-13
 
