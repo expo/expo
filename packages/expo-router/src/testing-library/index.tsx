@@ -8,7 +8,7 @@ import React from 'react';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { ExpoLinkingOptions, stateCache } from '../getLinkingConfig';
+import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
@@ -21,7 +21,6 @@ afterAll(() => {
 
 type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
-  linking?: Partial<ExpoLinkingOptions>;
 };
 
 type Result = ReturnType<typeof render> & {
@@ -48,7 +47,7 @@ export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(
   context: MockContextConfig = './app',
-  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
+  { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
 
@@ -58,10 +57,7 @@ export function renderRouter(
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
 
-  const result = render(
-    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
-    options
-  );
+  const result = render(<ExpoRoot context={mockContext} location={initialUrl} />, options);
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {

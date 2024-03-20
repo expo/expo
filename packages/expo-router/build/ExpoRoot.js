@@ -95,6 +95,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
         return contextType;
     }, []);
+    linking = getNativeLinking(context, linking);
     // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
     // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
     // So we need to ensure that the linking.getInitialURL is set to the initial location
@@ -166,5 +167,16 @@ if (process.env.NODE_ENV !== 'production') {
 }
 else {
     onUnhandledAction = function () { };
+}
+function getNativeLinking(context, linking) {
+    if (react_native_1.Platform.OS === 'web')
+        return linking;
+    const nativeLinkingKey = context.keys().find((key) => key.match(/^\.\/\+native\.[tj]sx?$/));
+    if (!nativeLinkingKey)
+        return linking;
+    return {
+        ...linking,
+        ...context(nativeLinkingKey),
+    };
 }
 //# sourceMappingURL=ExpoRoot.js.map
