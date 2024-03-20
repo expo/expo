@@ -1,4 +1,3 @@
-import { LinkingOptions } from '@react-navigation/native';
 import type { RouteNode } from './Route';
 export type Screen = string | {
     path: string;
@@ -7,5 +6,8 @@ export type Screen = string | {
     initialRouteName?: string;
 };
 export declare function getReactNavigationScreensConfig(nodes: RouteNode[], metaOnly: boolean): Record<string, Screen>;
-export declare function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean): NonNullable<LinkingOptions<Record<string, unknown>>['config']>;
+export declare function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean): {
+    initialRouteName: string | undefined;
+    screens: Record<string, Screen>;
+};
 //# sourceMappingURL=getReactNavigationConfig.d.ts.map
