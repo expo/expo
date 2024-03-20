@@ -5,7 +5,7 @@ export type MockContextConfig = string | string[] | Record<string, FileStub> | {
 };
 export declare function getMockConfig(context: MockContextConfig, metaOnly?: boolean): {
     initialRouteName?: string | undefined;
-    screens: Record<string, import("../getReactNavigationConfig").Screen>;
+    screens: import("@react-navigation/core").PathConfigMap<Record<string, unknown>>;
 };
 export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {
     keys: () => string[];
