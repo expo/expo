@@ -245,7 +245,7 @@ module.exports = {
           { name: 'getContactsAsync', argumentsCount: 1, key: 14 },
           { name: 'presentFormAsync', argumentsCount: 3, key: 15 },
           { name: 'writeContactToFileAsync', argumentsCount: 1, key: 16 },
-          { name: 'dismissFormAsync', argumentsCount: 1, key: 17 },
+          { name: 'dismissFormAsync', argumentsCount: 0, key: 17 },
         ],
         ExpoDevice: [
           { name: 'getDeviceTypeAsync', argumentsCount: 0, key: 'getDeviceTypeAsync' },
