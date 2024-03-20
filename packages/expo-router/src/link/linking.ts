@@ -1,3 +1,4 @@
+import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
@@ -12,11 +13,9 @@ const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo
 // This helps keep the native functionality working like the web functionality.
 // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
 // then `/index` would be used on web and `/settings` would be used on native.
-export function getInitialURL(): Promise<string | null> | string {
-  if (process.env.NODE_ENV === 'test') {
-    return Linking.getInitialURL() ?? getRootURL();
-  }
-
+export function getInitialURL(): ReturnType<
+  NonNullable<LinkingOptions<Record<string, unknown>>['getInitialURL']>
+> {
   if (Platform.OS === 'web') {
     if (typeof window === 'undefined') {
       return '';

@@ -1,3 +1,6 @@
+import React from 'react';
+import { View } from 'react-native';
+
 import { router } from '../imperative-api';
 import { act, renderRouter, screen } from '../testing-library';
 
@@ -50,5 +53,48 @@ it('toHaveRouterState', () => {
     ],
     stale: false,
     type: 'stack',
+  });
+});
+
+/*
+ * These are placeholder tests and they should be converted into +native tests.
+ */
+describe('linking', () => {
+  it('can use getInitialURL', () => {
+    renderRouter(
+      {
+        index: () => <View testID="index" />,
+        page: () => <View testID="page" />,
+      },
+      {
+        linking: {
+          getInitialURL: () => '/page',
+        },
+      }
+    );
+
+    expect(screen.getByTestId('page')).toBeVisible();
+  });
+
+  it('can use async getInitialURL', async () => {
+    let resolve: (path: string) => void;
+    const getInitialURL = () => new Promise<string>((res) => (resolve = res));
+    renderRouter(
+      {
+        index: () => <View testID="index" />,
+        page: () => <View testID="page" />,
+      },
+      {
+        linking: {
+          getInitialURL,
+        },
+      }
+    );
+
+    expect(screen.toJSON()).toBeNull();
+
+    await act(() => resolve('/page'));
+
+    expect(screen.getByTestId('page')).toBeVisible();
   });
 });

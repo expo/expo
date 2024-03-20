@@ -8,22 +8,32 @@ function getNavigationConfig(routes, metaOnly = true) {
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
 }
 exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(routes, metaOnly = true) {
+function getLinkingConfig(routes, overrides = {}, metaOnly = true) {
+    // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
+    let hasCachedInitialUrl = false;
+    let initialUrl;
     return {
-        prefixes: [],
-        // @ts-expect-error
+        prefixes: overrides.prefixes ?? [],
         config: getNavigationConfig(routes, metaOnly),
         // A custom getInitialURL is used on native to ensure the app always starts at
         // the root path if it's launched from something other than a deep link.
         // This helps keep the native functionality working like the web functionality.
         // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
         // then `/index` would be used on web and `/settings` would be used on native.
-        getInitialURL: linking_1.getInitialURL,
-        subscribe: linking_1.addEventListener,
+        getInitialURL() {
+            // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
+            // Therefor we memoize the result.
+            if (!hasCachedInitialUrl) {
+                initialUrl = (overrides.getInitialURL ?? linking_1.getInitialURL)();
+                hasCachedInitialUrl = true;
+            }
+            return initialUrl;
+        },
+        subscribe: overrides.subscribe ?? linking_1.addEventListener,
         getStateFromPath: getStateFromPathMemoized,
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
-                screens: [],
+                screens: {},
                 ...this.config,
                 ...options,
             }) ?? '/');

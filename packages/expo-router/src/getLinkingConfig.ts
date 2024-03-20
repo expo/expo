@@ -2,7 +2,7 @@ import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
-import { getReactNavigationConfig, Screen } from './getReactNavigationConfig';
+import { getReactNavigationConfig } from './getReactNavigationConfig';
 import {
   addEventListener,
   getInitialURL,
@@ -10,37 +10,46 @@ import {
   getStateFromPath,
 } from './link/linking';
 
-export function getNavigationConfig(
-  routes: RouteNode,
-  metaOnly: boolean = true
-): {
-  initialRouteName?: string;
-  screens: Record<string, Screen>;
-} {
+export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
   return getReactNavigationConfig(routes, metaOnly);
 }
 
-export type ExpoLinkingOptions = LinkingOptions<object> & {
+export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
   getPathFromState?: typeof getPathFromState;
 };
 
-export function getLinkingConfig(routes: RouteNode, metaOnly: boolean = true): ExpoLinkingOptions {
+export function getLinkingConfig(
+  routes: RouteNode,
+  overrides: Partial<ExpoLinkingOptions> = {},
+  metaOnly: boolean = true
+): ExpoLinkingOptions {
+  // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
+  let hasCachedInitialUrl = false;
+  let initialUrl: ReturnType<typeof getInitialURL> | undefined;
+
   return {
-    prefixes: [],
-    // @ts-expect-error
+    prefixes: overrides.prefixes ?? [],
     config: getNavigationConfig(routes, metaOnly),
     // A custom getInitialURL is used on native to ensure the app always starts at
     // the root path if it's launched from something other than a deep link.
     // This helps keep the native functionality working like the web functionality.
     // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
     // then `/index` would be used on web and `/settings` would be used on native.
-    getInitialURL,
-    subscribe: addEventListener,
+    getInitialURL() {
+      // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
+      // Therefor we memoize the result.
+      if (!hasCachedInitialUrl) {
+        initialUrl = (overrides.getInitialURL ?? getInitialURL)();
+        hasCachedInitialUrl = true;
+      }
+      return initialUrl;
+    },
+    subscribe: overrides.subscribe ?? addEventListener,
     getStateFromPath: getStateFromPathMemoized,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
-          screens: [],
+          screens: {},
           ...this.config,
           ...options,
         }) ?? '/'
