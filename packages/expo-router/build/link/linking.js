@@ -50,9 +50,6 @@ function getInitialURLWithTimeout() {
 // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
 // then `/index` would be used on web and `/settings` would be used on native.
 function getInitialURL() {
-    if (process.env.NODE_ENV === 'test') {
-        return Linking.getInitialURL() ?? getRootURL();
-    }
     if (react_native_1.Platform.OS === 'web') {
         if (typeof window === 'undefined') {
             return '';
