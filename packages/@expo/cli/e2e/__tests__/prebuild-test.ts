@@ -297,6 +297,7 @@ it(
         "ios/Podfile.properties.json",
         "ios/githubtemplateprebuild/AppDelegate.h",
         "ios/githubtemplateprebuild/AppDelegate.mm",
+        "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
         "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
         "ios/githubtemplateprebuild/Images.xcassets/Contents.json",
         "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
