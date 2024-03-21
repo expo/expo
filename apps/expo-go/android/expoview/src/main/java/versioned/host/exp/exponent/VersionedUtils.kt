@@ -201,9 +201,6 @@ object VersionedUtils {
     // Build the instance manager
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
-      .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder? ->
-        emptyList()
-      }
       .addPackage(MainReactPackage())
       .addPackage(
         ExponentPackage(
