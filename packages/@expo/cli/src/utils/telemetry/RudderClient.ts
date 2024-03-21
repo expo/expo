@@ -77,15 +77,17 @@ export class RudderClient implements TelemetryClient {
     }
 
     if (this.identity) {
-      const { app, ...context } = getContext();
-
       debug('Event received: %s', event);
 
       await this.rudderstack.track({
         event,
-        properties: { ...properties, ...app },
+        properties: {
+          ...properties,
+          source: 'expo/cli',
+          source_version: process.env.__EXPO_VERSION,
+        },
         ...this.identity,
-        context,
+        context: getContext(),
       });
     }
   }
