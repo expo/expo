@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config';
 import { Middleware } from 'metro-config';
 
+import { logEventAsync } from '../../telemetry';
 import { createDebuggerTelemetryMiddleware, findDebugTool } from '../metroDebuggerMiddleware';
-import { logEventAsync } from '../rudderstackClient';
 
 jest.mock('../getMetroDebugProperties');
-jest.mock('../rudderstackClient');
+jest.mock('../../telemetry');
 
 const FLIPPER_UA = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Flipper/0.177.0 Chrome/100.0.4896.143 Electron/18.2.0 Safari/537.36`;
 const CHROME_ORIGIN = `https://chrome-devtools-frontend.appspot.com`;
