@@ -78,11 +78,16 @@ export async function isAvailableAsync() {
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function requestPermissionsAsync(writeOnly = false) {
+export async function requestPermissionsAsync(writeOnly = false, granularPermissions = ['audio', 'photo', 'video']) {
     if (!MediaLibrary.requestPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
+    }
+    if (Platform.OS === 'android') {
+        return await MediaLibrary.requestPermissionsAsync(writeOnly, granularPermissions);
     }
     return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
@@ -90,11 +95,16 @@ export async function requestPermissionsAsync(writeOnly = false) {
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function getPermissionsAsync(writeOnly = false) {
+export async function getPermissionsAsync(writeOnly = false, granularPermissions = ['audio', 'photo', 'video']) {
     if (!MediaLibrary.getPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+    }
+    if (Platform.OS === 'android') {
+        return await MediaLibrary.getPermissionsAsync(writeOnly, granularPermissions);
     }
     return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
@@ -110,8 +120,8 @@ export async function getPermissionsAsync(writeOnly = false) {
  */
 export const usePermissions = createPermissionHook({
     // TODO(cedric): permission requesters should have an options param or a different requester
-    getMethod: (options) => getPermissionsAsync(options?.writeOnly),
-    requestMethod: (options) => requestPermissionsAsync(options?.writeOnly),
+    getMethod: (options) => getPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+    requestMethod: (options) => requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
 });
 // @needsAudit
 /**

@@ -72,19 +72,21 @@ class MediaLibraryModule : Module() {
 
     Events(LIBRARY_DID_CHANGE_EVENT)
 
-    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
+    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
         promise,
-        *getManifestPermissions(writeOnly)
+        *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
 
-    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
+    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
         promise,
-        *getManifestPermissions(writeOnly)
+        *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
 
@@ -350,11 +352,16 @@ class MediaLibraryModule : Module() {
     get() = hasWritePermissions()
 
   @SuppressLint("InlinedApi")
-  private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
+  private fun getManifestPermissions(writeOnly: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
     // ACCESS_MEDIA_LOCATION should not be requested if it's absent in android-manifest
+    // If only audio permission is requested, we don't need to request media location permissions
     val shouldAddMediaLocationAccess =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION)
+        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
+        !(
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            granularPermissions.count() == 1 && granularPermissions.contains(GranularPermission.AUDIO)
+          )
 
     val shouldAddWriteExternalStorage =
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
@@ -362,24 +369,23 @@ class MediaLibraryModule : Module() {
 
     val shouldAddGranularPermissions =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        listOf(READ_MEDIA_AUDIO, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES)
-          .all { MediaLibraryUtils.hasManifestPermission(context, it) }
+        granularPermissions.all { MediaLibraryUtils.hasManifestPermission(context, it.toManifestPermission()) }
 
     return listOfNotNull(
       WRITE_EXTERNAL_STORAGE.takeIf { shouldAddWriteExternalStorage },
       READ_EXTERNAL_STORAGE.takeIf { !writeOnly && !shouldAddGranularPermissions },
       ACCESS_MEDIA_LOCATION.takeIf { shouldAddMediaLocationAccess },
-      *getGranularPermissions(writeOnly, shouldAddGranularPermissions)
+      *getGranularPermissions(writeOnly, shouldAddGranularPermissions, granularPermissions)
     ).toTypedArray()
   }
 
   @SuppressLint("InlinedApi")
-  private fun getGranularPermissions(writeOnly: Boolean, shouldAdd: Boolean): Array<String> {
+  private fun getGranularPermissions(writeOnly: Boolean, shouldAdd: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
     val addPermission = !writeOnly && shouldAdd
     return listOfNotNull(
-      READ_MEDIA_IMAGES.takeIf { addPermission },
-      READ_MEDIA_VIDEO.takeIf { addPermission },
-      READ_MEDIA_AUDIO.takeIf { addPermission }
+      READ_MEDIA_IMAGES.takeIf { addPermission && granularPermissions.contains(GranularPermission.PHOTO) },
+      READ_MEDIA_VIDEO.takeIf { addPermission && granularPermissions.contains(GranularPermission.VIDEO) },
+      READ_MEDIA_AUDIO.takeIf { addPermission && granularPermissions.contains(GranularPermission.AUDIO) }
     ).toTypedArray()
   }
 
@@ -397,15 +403,19 @@ class MediaLibraryModule : Module() {
   }
 
   private fun hasReadPermissions(): Boolean {
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val permissions = arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      // Android will only return albums that the user allowed access to.
+      permissions.map { permission ->
+        appContext.permissions
+          ?.hasGrantedPermissions(permission) ?: false
+      }.any { it }.not()
     } else {
-      arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+      val permissions = arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+      appContext.permissions
+        ?.hasGrantedPermissions(*permissions)
+        ?.not() ?: false
     }
-
-    return appContext.permissions
-      ?.hasGrantedPermissions(*permissions)
-      ?.not() ?: false
   }
 
   private fun hasWritePermissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
