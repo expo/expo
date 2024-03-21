@@ -37,7 +37,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val currentActivity = appContext.currentActivity
     ?: throw Exceptions.MissingActivity()
   private val decorView = currentActivity.window.decorView
-  private val rootView = decorView.findViewById(android.R.id.content) as ViewGroup
+  private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 
   private val rectHint: Rect = Rect()
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
