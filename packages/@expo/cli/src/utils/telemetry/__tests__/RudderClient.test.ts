@@ -64,7 +64,10 @@ it('tracks event with correct mode', async () => {
       client: { mode: 'detached' },
     },
     event: 'Start Project',
-    properties: { source: 'expo/cli', source_version: undefined },
+    properties: expect.objectContaining({
+      source: 'expo/cli',
+      source_version: process.env.__EXPO_VERSION, // undefined in testing
+    }),
   });
 });
 
