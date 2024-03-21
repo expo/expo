@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`compiler allows destructuring in the catch block 1`] = `
+exports[`allows destructuring in the catch block 1`] = `
 "Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/src/__tests__/samples/destructure-catch.tsx";function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   var foo = function () {
@@ -16,7 +16,7 @@ exports[`compiler allows destructuring in the catch block 1`] = `
 }"
 `;
 
-exports[`compiler supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
+exports[`supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
 "Object.defineProperty(exports, "__esModule", { value: true });exports.useSideEffectMayThrow = useSideEffectMayThrow;var _react = require("react");
 
 function SIDE_EFFECT_MAY_THROW() {}
