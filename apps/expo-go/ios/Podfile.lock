@@ -37,7 +37,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.27.1):
     - ExpoModulesCore
-  - Expo (50.0.0-preview.4):
+  - Expo (51.0.0-unreleased):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -156,6 +156,8 @@ PODS:
   - ExpoSQLite (13.1.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
+    - sqlite3/fts (~> 3.42.0)
+    - sqlite3/fts5 (~> 3.42.0)
   - ExpoStoreReview (6.8.2):
     - ExpoModulesCore
   - ExpoSymbols (0.0.1):
@@ -1448,6 +1450,10 @@ PODS:
   - sqlite3 (3.42.0):
     - sqlite3/common (= 3.42.0)
   - sqlite3/common (3.42.0)
+  - sqlite3/fts (3.42.0):
+    - sqlite3/common
+  - sqlite3/fts5 (3.42.0):
+    - sqlite3/common
   - Stripe (23.18.3):
     - StripeApplePay (= 23.18.3)
     - StripeCore (= 23.18.3)
@@ -1968,7 +1974,7 @@ SPEC CHECKSUMS:
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
-  Expo: 5096704437d0388c1ae6c622c8fd6d1b61889a53
+  Expo: 2d88b1f9b7a511015414d8c40cc8c6af13c469eb
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoAsset: 518654245b6a5f4d498b96d49eaa9888070e70e8
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
@@ -2009,7 +2015,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 752ad6ae2b693de9cd4e7fddb78297bdc658b815
   ExpoSMS: aca5b62dbfef73670cb35d0ebd9a2017899bbb2d
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
-  ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
+  ExpoSQLite: 9ef28fb70cdf40a134cbb6b59c85d5e7b8b3acb4
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
   ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
@@ -2033,7 +2039,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: edaa73aaa4bc9d2db3c401ca8d8d1e8e1aeeafd3
+  hermes-engine: 0933c22606de894dccc3248ae93129951a6e8e6b
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
