@@ -183,6 +183,7 @@ it(
         "ios/Podfile.properties.json",
         "ios/basicprebuild/AppDelegate.h",
         "ios/basicprebuild/AppDelegate.mm",
+        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
         "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
         "ios/basicprebuild/Images.xcassets/Contents.json",
         "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
