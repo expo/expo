@@ -165,7 +165,7 @@ def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories') 
   SQLITE3_SRC_DIR.mkdirs()
 }
 
-def downloadSQLite = tasks.create('downloadSQLite', Download) {
+def downloadSQLite = tasks.register('downloadSQLite', Download) {
   dependsOn(createNativeDepsDirectories)
   src("https://www.sqlite.org/2023/sqlite-amalgamation-${SQLITE_VERSION}.zip")
   onlyIfNewer(true)
@@ -174,8 +174,8 @@ def downloadSQLite = tasks.create('downloadSQLite', Download) {
 }
 
 def prepareSQLite = tasks.register("prepareSQLite", Copy) {
-  mustRunAfter(downloadSQLite)
-  from(zipTree(downloadSQLite.dest))
+  dependsOn(downloadSQLite)
+  from(zipTree(downloadSQLite.get().dest))
   into(SQLITE3_SRC_DIR)
   eachFile { file ->
     // flatten files
@@ -193,5 +193,5 @@ void nativeBuildDependsOn(project, dependsOnTask) {
 }
 
 afterEvaluate {
-  nativeBuildDependsOn(project, prepareSQLite.get())
+  nativeBuildDependsOn(project, prepareSQLite)
 }
