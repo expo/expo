@@ -14,7 +14,7 @@ export class RudderClient implements TelemetryClient {
   /** The known identity of the user */
   private identity: { userId: string; anonymousId: string } | undefined;
   /** The promise to initially identify the user */
-  private initialIdentify: Promise<void> | undefined;
+  private initialIdentify: Promise<any> | undefined;
 
   constructor(sdk?: RudderAnalytics) {
     if (!sdk) {
@@ -39,7 +39,8 @@ export class RudderClient implements TelemetryClient {
    */
   private async waitUntilInitialIdentification() {
     if (!this.identity && !this.initialIdentify) {
-      this.initialIdentify = getUserAsync().then((actor) => this.identify(actor));
+      // This method has a side-effect that calls `.identify()` internally
+      this.initialIdentify = getUserAsync();
     }
 
     if (!this.identity && this.initialIdentify) {
