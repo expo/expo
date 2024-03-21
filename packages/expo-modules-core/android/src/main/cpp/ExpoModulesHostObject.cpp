@@ -18,7 +18,12 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIContext *installer)
  * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  auto &runtime = installer->runtimeHolder->get();
+  facebook::react::LongLivedObjectCollection::get(runtime).clear();
+#else
   facebook::react::LongLivedObjectCollection::get().clear();
+#endif
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
   installer->jniDeallocator.reset();

@@ -20,27 +20,7 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
-
-namespace {
-
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func) noexcept override {
-    func();
-  }
-
-  void invokeSync(std::function<void()> &&func) override {
-    func();
-  }
-
-  ~SyncCallInvoker() override = default;
-};
-
-} // namespace
+#import <ExpoModulesCore/TestingSyncJSCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -71,7 +51,7 @@ public:
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = std::make_shared<SyncCallInvoker>();
+    _jsCallInvoker = std::make_shared<expo::TestingSyncJSCallInvoker>(_runtime);
   }
   return self;
 }
@@ -232,7 +212,13 @@ public:
 
 - (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
 {
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
+    block();
+  });
+#else
   _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
+#endif
 }
 
 #pragma mark - Private

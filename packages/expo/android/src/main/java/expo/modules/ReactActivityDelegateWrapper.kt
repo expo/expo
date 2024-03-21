@@ -57,16 +57,8 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("getLaunchOptions")
   }
 
-  override fun createRootView(): ReactRootView {
-    val rootView = reactActivityHandlers.asSequence()
-      .mapNotNull { it.createReactRootView(activity) }
-      .firstOrNull() ?: invokeDelegateMethod("createRootView")
-    rootView.setIsFabric(isNewArchitectureEnabled)
-    return rootView
-  }
-
-  override fun createRootView(initialProps: Bundle?): ReactRootView {
-    return this.createRootView()
+  override fun createRootView(): ReactRootView? {
+    return invokeDelegateMethod("createRootView")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -153,19 +145,15 @@ class ReactActivityDelegateWrapper(
       // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
-      val launchOptions = composeLaunchOptions() as Bundle? // composeLaunchOptions() is nullable but older react-native declares as nonnull.
+      val launchOptions = composeLaunchOptions()
       val reactDelegate: ReactDelegate
       if (ReactFeatureFlags.enableBridgelessArchitecture) {
-        reactDelegate = object : ReactDelegate(
+        reactDelegate = ReactDelegate(
           plainActivity,
           reactHost,
           mainComponentName,
           launchOptions
-        ) {
-          override fun createRootView(): ReactRootView {
-            return this@ReactActivityDelegateWrapper.createRootView()
-          }
-        }
+        )
       } else {
         reactDelegate = object : ReactDelegate(
           plainActivity,
@@ -174,7 +162,7 @@ class ReactActivityDelegateWrapper(
           launchOptions
         ) {
           override fun createRootView(): ReactRootView {
-            return this@ReactActivityDelegateWrapper.createRootView()
+            return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
           }
         }
       }
