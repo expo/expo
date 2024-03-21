@@ -1,7 +1,7 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
 
 import { getContext } from './getContext';
-import type { TelemetryClient, TelemetryEvent, TelemetryProperties, TelemetryRecord } from './types';
+import type { TelemetryClient, TelemetryEvent, TelemetryProperties, TelemetryRecord, TelemetryRecordWithDate } from './types';
 import UserSettings from '../../api/user/UserSettings';
 import { Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import { env } from '../env';
@@ -71,23 +71,22 @@ export class RudderClient implements TelemetryClient {
     });
   }
 
-  async record(event: TelemetryEvent | TelemetryRecord, properties: TelemetryProperties = {}) {
+  async record(record: TelemetryRecord | TelemetryRecordWithDate) {
     if (!this.identity) {
       await this.waitUntilIdentified();
     }
 
     if (this.identity) {
-      debug('Event received: %s', event);
+      debug('Event received: %s', record.event);
 
-      if (typeof event !== 'string') {
-        properties = event.properties ?? properties;
-        event = event.event;
-      }
+      const originalTimestamp =
+        'originalTimestamp' in record ? record.originalTimestamp : undefined;
 
       await this.rudderstack.track({
-        event,
+        event: record.event,
+        originalTimestamp,
         properties: {
-          ...properties,
+          ...(record.properties ?? {}),
           source: 'expo/cli',
           source_version: process.env.__EXPO_VERSION,
         },

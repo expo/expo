@@ -38,7 +38,7 @@ async function flush() {
   await client.identify(data.actor || (await getUserAsync()));
 
   for (const record of data.records) {
-    await client.record(record.event, record.properties);
+    await client.record(record);
   }
 
   await client.flush();

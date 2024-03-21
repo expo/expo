@@ -14,7 +14,7 @@ it('does not track event when user is not identified', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
 
-  await client.record('Start Project');
+  await client.record({ event: 'Start Project' });
 
   expect(sdk.track).not.toHaveBeenCalled();
 });
@@ -23,19 +23,21 @@ it('tracks event when user is identified', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
   const actor = { id: 'fake', __typename: 'User' } as Actor;
-  const { app, ...context } = getContext();
 
   jest.mocked(getActorDisplayName).mockReturnValue('expotest');
 
   await client.identify(actor);
-  await client.record('Start Project');
+  await client.record({ event: 'Start Project' });
 
   expect(sdk.track).toHaveBeenCalledWith({
     userId: 'fake',
     anonymousId: expect.any(String),
     event: 'Start Project',
-    properties: app,
-    context,
+    properties: expect.objectContaining({
+      source: 'expo/cli',
+      source_version: process.env.__EXPO_VERSION, // undefined in testing
+    }),
+    context: getContext(),
   });
 });
 
@@ -48,7 +50,7 @@ it('tries to identify when tracking event', async () => {
 
   expect(client.isIdentified).toBe(false);
 
-  await client.record('Start Project');
+  await client.record({ event: 'Start Project' });
 
   expect(getUserAsync).toHaveBeenCalled();
   expect(client.isIdentified).toBe(true);
@@ -60,7 +62,7 @@ it('flushes recorded events', async () => {
   const actor = { id: 'fake', __typename: 'User' } as Actor;
 
   await client.identify(actor);
-  await client.record('Start Project');
+  await client.record({ event: 'Start Project' });
   await client.flush();
 
   expect(sdk.flush).toHaveBeenCalled();
@@ -78,9 +80,9 @@ it('only identifies once when recording events', async () => {
 
   // Record events, which should await the _same_ `getUserAsync` promise
   const recordPromise = Promise.all([
-    client.record('Start Project'),
-    client.record('Serve Manifest'),
-    client.record('Open Url on Device'),
+    client.record({ event: 'Start Project' }),
+    client.record({ event: 'Serve Manifest' }),
+    client.record({ event: 'Open Url on Device' }),
   ]);
 
   expect(getUserAsyncResolve!).not.toBeUndefined();

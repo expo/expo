@@ -30,21 +30,20 @@ it('stores all recorded events to json file', async () => {
   const client = new DetachedClient();
   await Promise.all([
     client.identify(actor),
-    client.record('Start Project'),
-    client.record('Serve Manifest'),
-    client.record('Open Url on Device'),
+    client.record({ event: 'Start Project' }),
+    client.record({ event: 'Serve Manifest' }),
+    client.record({ event: 'Open Url on Device' }),
   ]);
   await client.flush();
 
-  expect(vol.toJSON()).toMatchObject({
-    '/home/user/.expo/.telemetry.json': JSON.stringify({
-      actor,
-      records: [
-        { event: 'Start Project' },
-        { event: 'Serve Manifest' },
-        { event: 'Open Url on Device' },
-      ],
-    }),
+  const file = vol.readFileSync('/home/user/.expo/.telemetry.json', 'utf8');
+  expect(JSON.parse(file.toString())).toMatchObject({
+    actor,
+    records: [
+      { event: 'Start Project', originalTimestamp: expect.any(String) },
+      { event: 'Serve Manifest', originalTimestamp: expect.any(String) },
+      { event: 'Open Url on Device', originalTimestamp: expect.any(String) },
+    ],
   });
 });
 
@@ -55,7 +54,7 @@ it('flushes in detached process', async () => {
   vol.fromJSON({});
 
   const client = new DetachedClient();
-  await client.record('Start Project');
+  await client.record({ event: 'Start Project' });
   await client.flush();
 
   expect(spawnChild.unref).toHaveBeenCalled();

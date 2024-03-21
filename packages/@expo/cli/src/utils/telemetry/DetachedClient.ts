@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import type { TelemetryClient, TelemetryEvent, TelemetryRecord } from './types';
+import type { TelemetryClient, TelemetryRecord, TelemetryRecordWithDate } from './types';
 import UserSettings from '../../api/user/UserSettings';
 import { Actor } from '../../api/user/user';
 
@@ -10,12 +10,12 @@ const debug = require('debug')('expo:telemetry:detachedClient') as typeof consol
 
 export type DetachedTelemetry = {
   actor?: Actor;
-  records: TelemetryRecord[];
+  records: TelemetryRecordWithDate[];
 };
 
 export class DetachedClient implements TelemetryClient {
   private actor: Actor | undefined;
-  private records: TelemetryRecord[] = [];
+  private records: TelemetryRecordWithDate[] = [];
 
   get isIdentified() {
     return !!this.actor;
@@ -27,13 +27,9 @@ export class DetachedClient implements TelemetryClient {
     this.actor = actor;
   }
 
-  async record(event: TelemetryEvent | TelemetryRecord, properties?: Record<string, any>) {
-    debug('Event received: %s', event);
-    if (typeof event === 'string') {
-      this.records.push({ event, properties });
-    } else {
-      this.records.push(event);
-    }
+  async record(record: TelemetryRecord) {
+    debug('Event received: %s', record.event);
+    this.records.push({ ...record, originalTimestamp: new Date() });
   }
 
   async flush() {
