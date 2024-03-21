@@ -1,20 +1,14 @@
 import fs from 'fs';
-import path from 'path';
 
 import type { DetachedTelemetry } from './DetachedClient';
 import { RudderClient } from './RudderClient';
-import UserSettings from '../../api/user/UserSettings';
 import { getUserAsync } from '../../api/user/user';
 
 const telemetryFile = process.argv[2];
-const telemetryLog = path.join(UserSettings.getDirectory(), '.telemetry.log');
 
 flush()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    fs.writeFileSync(telemetryLog, JSON.stringify(error), 'utf8');
-    process.exit(1);
-  });
+  .catch(() => fs.promises.unlink(telemetryFile))
+  .finally(() => process.exit(0));
 
 async function flush() {
   if (!telemetryFile) return;

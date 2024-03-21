@@ -5,9 +5,8 @@ import { type Actor } from '../../../api/user/user';
 import { DetachedClient } from '../DetachedClient';
 
 jest.mock('fs');
-jest.mock('child_process', () => ({
-  spawn: jest.fn(() => ({ unref: jest.fn() })),
-}));
+jest.mock('child_process', () => ({ spawn: jest.fn(() => ({ unref: jest.fn() })) }));
+jest.mock('tempy', () => ({ file: jest.fn(() => '/tmp/expo-telemetry.json') }));
 jest.mock('../../../api/user/UserSettings', () => ({
   getDirectory: jest.fn(() => '/home/user/.expo'),
 }));
@@ -36,7 +35,7 @@ it('stores all recorded events to json file', async () => {
   ]);
   await client.flush();
 
-  const file = vol.readFileSync('/home/user/.expo/.telemetry.json', 'utf8');
+  const file = vol.readFileSync('/tmp/expo-telemetry.json', 'utf8');
   expect(JSON.parse(file.toString())).toMatchObject({
     actor,
     records: [
@@ -60,7 +59,7 @@ it('flushes in detached process', async () => {
   expect(spawnChild.unref).toHaveBeenCalled();
   expect(spawn).toHaveBeenCalledWith(
     expect.any(String),
-    [expect.any(String), '/home/user/.expo/.telemetry.json'],
+    [expect.any(String), '/tmp/expo-telemetry.json'],
     {
       detached: true,
       shell: false,
