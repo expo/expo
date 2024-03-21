@@ -10,18 +10,17 @@ internal class VideoSource(
   @Field var uri: String? = null,
   @Field var drm: DRMOptions? = null
 ) : Record, Serializable {
-  fun toMediaItem(): MediaItem {
-    val mediaItem = MediaItem
-      .Builder()
-      .setUri(this.uri ?: "")
-
-    this.drm?.let {
-      if (it.type.isSupported()) {
-        mediaItem.setDrmConfiguration(it.toDRMConfiguration())
-      } else {
-        throw UnsupportedDRMTypeException(it.type)
+  fun toMediaItem() = MediaItem
+    .Builder()
+    .apply {
+      setUri(uri ?: "")
+      drm?.let {
+        if (it.type.isSupported()) {
+          setDrmConfiguration(it.toDRMConfiguration())
+        } else {
+          throw UnsupportedDRMTypeException(it.type)
+        }
       }
     }
-    return mediaItem.build()
-  }
+    .build()
 }
