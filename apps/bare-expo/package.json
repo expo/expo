@@ -45,7 +45,6 @@
     "@react-native-picker/picker": "2.5.1",
     "@react-native-segmented-control/segmented-control": "2.4.1",
     "@shopify/flash-list": "1.6.3",
-    "@shopify/react-native-skia": "0.1.221",
     "expo": "~51.0.0-unreleased",
     "expo-camera": "~14.0.0",
     "expo-dev-client": "~3.3.0",
