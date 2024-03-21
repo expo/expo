@@ -161,7 +161,19 @@ jsi::Function getClass(jsi::Runtime &runtime) {
 }
 
 void installClass(jsi::Runtime &runtime) {
-  jsi::Function eventEmitterClass = common::createClass(runtime, "EventEmitter");
+  jsi::Function eventEmitterClass = common::createClass(runtime, "EventEmitter", [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    // To provide backwards compatibility with the old EventEmitter where the native module object was passed as an argument.
+    // We're checking if the argument is already an instance of the new emitter and if so, just return it without unnecessarily wrapping it.
+    if (count > 0) {
+      jsi::Object firstArg = args[0].asObject(runtime);
+      jsi::Function constructor = thisValue.asObject(runtime).getPropertyAsFunction(runtime, "constructor");
+
+      if (firstArg.instanceOf(runtime, constructor)) {
+        return jsi::Value(runtime, args[0]);
+      }
+    }
+    return jsi::Value(runtime, thisValue);
+  });
   jsi::Object prototype = eventEmitterClass.getPropertyAsObject(runtime, "prototype");
 
   jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
