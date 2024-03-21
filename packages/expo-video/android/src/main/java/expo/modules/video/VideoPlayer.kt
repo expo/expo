@@ -1,11 +1,11 @@
 package expo.modules.video
 
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.SurfaceView
@@ -14,37 +14,24 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
 class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
-  private val currentActivity: Activity
-    get() {
-      return appContext?.activityProvider?.currentActivity
-        ?: throw Exceptions.MissingActivity()
-    }
-
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
 
-  private var loadControl = DefaultLoadControl.Builder()
-    .setPrioritizeTimeOverSizeThresholds(false)
-    .build()
-
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
-    .setLoadControl(loadControl)
     .build()
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
@@ -110,8 +97,6 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   init {
-    val intent = Intent(context, ExpoVideoPlaybackService::class.java)
-
     serviceConnection = object : ServiceConnection {
       override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
         playbackServiceBinder = binder as? PlaybackServiceBinder
@@ -136,17 +121,27 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
         )
       }
     }
-    intent.action = MediaSessionService.SERVICE_INTERFACE
-    currentActivity.apply {
+
+    appContext.reactContext?.apply {
+      val intent = Intent(context, ExpoVideoPlaybackService::class.java)
+      intent.action = MediaSessionService.SERVICE_INTERFACE
+
       startService(intent)
-      bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+
+      val flags = if (Build.VERSION.SDK_INT >= 29) {
+        BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES
+      } else {
+        BIND_AUTO_CREATE
+      }
+
+      bindService(intent, serviceConnection, flags)
     }
     player.addListener(playerListener)
     VideoManager.registerVideoPlayer(this)
   }
 
   override fun close() {
-    currentActivity.unbindService(serviceConnection)
+    appContext?.reactContext?.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
@@ -157,8 +152,8 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   override fun deallocate() {
-    close()
     super.deallocate()
+    close()
   }
 
   fun changePlayerView(playerView: PlayerView) {

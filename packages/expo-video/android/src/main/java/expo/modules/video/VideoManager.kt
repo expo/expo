@@ -12,7 +12,7 @@ object VideoManager {
   private var videoViews = mutableMapOf<String, VideoView>()
 
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
-  private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, ArrayList<VideoView>>()
+  private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
   fun registerVideoView(videoView: VideoView) {
     videoViews[videoView.id] = videoView
@@ -27,7 +27,7 @@ object VideoManager {
   }
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
-    videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: arrayListOf()
+    videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
   }
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
@@ -56,9 +56,7 @@ object VideoManager {
     }
   }
 
-  fun onAppForegrounded() {
-    // TODO: Left here for future use
-  }
+  fun onAppForegrounded() = Unit
 
   fun onAppBackgrounded() {
     for (videoView in videoViews.values) {

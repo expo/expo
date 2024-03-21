@@ -13,11 +13,13 @@ internal class DRMOptions(
   @Field var multiKey: Boolean = false
 ) : Record, Serializable {
 
-  fun toDRMConfiguration(): MediaItem.DrmConfiguration {
-    val drmConfiguration = MediaItem.DrmConfiguration.Builder(type.toUUID())
-    licenseServer?.let { drmConfiguration.setLicenseUri(it) }
-    headers?.let { drmConfiguration.setLicenseRequestHeaders(it) }
-    drmConfiguration.setMultiSession(multiKey)
-    return drmConfiguration.build()
-  }
+  fun toDRMConfiguration() = MediaItem
+    .DrmConfiguration
+    .Builder(type.toUUID())
+    .apply {
+      licenseServer?.let { setLicenseUri(it) }
+      headers?.let { setLicenseRequestHeaders(it) }
+      setMultiSession(multiKey)
+    }
+    .build()
 }
