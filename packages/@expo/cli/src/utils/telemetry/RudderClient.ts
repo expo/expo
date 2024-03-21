@@ -13,7 +13,7 @@ export class RudderClient implements TelemetryClient {
   private rudderstack: RudderAnalytics;
   /** The known identity of the user */
   private identity: { userId: string; anonymousId: string } | undefined;
-  /** The promise queue to identify the user */
+  /** The promise to initially identify the user */
   private initialIdentify: Promise<void> | undefined;
 
   constructor(sdk?: RudderAnalytics) {
