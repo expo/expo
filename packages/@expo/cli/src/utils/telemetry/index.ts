@@ -22,5 +22,5 @@ export function getTelemetry(): TelemetryClient | null {
 }
 
 export async function logEventAsync(event: TelemetryEvent, properties?: TelemetryProperties) {
-  await getTelemetry()?.record(event, properties);
+  await getTelemetry()?.record({ event, properties });
 }

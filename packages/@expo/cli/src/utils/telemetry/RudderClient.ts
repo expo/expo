@@ -3,7 +3,7 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 import { getContext } from './getContext';
 import type { TelemetryClient, TelemetryRecord, TelemetryRecordWithDate } from './types';
 import UserSettings from '../../api/user/UserSettings';
-import { Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
+import { type Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
 const debug = require('debug')('expo:telemetry:rudderClient') as typeof console.log;
