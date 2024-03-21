@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Upgrade `dotenv-expand` to avoid recursive expansion loops. ([#27764](https://github.com/expo/expo/pull/27764) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.2.2 - 2024-03-07
