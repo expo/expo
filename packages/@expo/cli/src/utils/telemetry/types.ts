@@ -21,7 +21,7 @@ export interface TelemetryClient {
   /** Identify the current actor */
   identify(actor?: Actor): Promise<void>;
   /** Record a (custom) event */
-  record(event: TelemetryEvent, properties?: TelemetryProperties): Promise<void>;
+  record(event: TelemetryEvent | TelemetryRecord, properties?: TelemetryProperties): Promise<void>;
   /** Clear the record queue and send all recorded events */
   flush(): Promise<void>;
 }

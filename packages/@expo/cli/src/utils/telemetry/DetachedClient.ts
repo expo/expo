@@ -27,9 +27,13 @@ export class DetachedClient implements TelemetryClient {
     this.actor = actor;
   }
 
-  async record(event: TelemetryEvent, properties?: Record<string, any>) {
+  async record(event: TelemetryEvent | TelemetryRecord, properties?: Record<string, any>) {
     debug('Event received: %s', event);
-    this.records.push({ event, properties });
+    if (typeof event === 'string') {
+      this.records.push({ event, properties });
+    } else {
+      this.records.push(event);
+    }
   }
 
   async flush() {
