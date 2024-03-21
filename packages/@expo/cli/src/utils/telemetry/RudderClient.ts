@@ -16,7 +16,10 @@ export class RudderClient implements TelemetryClient {
   /** The promise to initially identify the user */
   private initialIdentify: Promise<any> | undefined;
 
-  constructor(sdk?: RudderAnalytics) {
+  constructor(
+    sdk?: RudderAnalytics,
+    private mode: 'attached' | 'detached' = 'attached'
+  ) {
     if (!sdk) {
       sdk = new RudderAnalytics(
         env.EXPO_STAGING || env.EXPO_LOCAL
@@ -96,7 +99,10 @@ export class RudderClient implements TelemetryClient {
           source_version: process.env.__EXPO_VERSION,
         },
         ...this.identity,
-        context: getContext(),
+        context: {
+          ...getContext(),
+          client: { mode: this.mode },
+        },
       });
     }
   }
