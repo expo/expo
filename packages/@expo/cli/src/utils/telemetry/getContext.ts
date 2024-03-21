@@ -3,16 +3,9 @@ import os from 'os';
 
 import { groupBy } from '../array';
 
-const PLATFORM_TO_TELEMETRY_PLATFORM: { [platform: string]: string } = {
-  darwin: 'Mac',
-  win32: 'Windows',
-  linux: 'Linux',
-};
-
 export function getContext() {
-  const platform = PLATFORM_TO_TELEMETRY_PLATFORM[os.platform()] || os.platform();
   return {
-    os: { name: platform, version: os.release() },
+    os: { name: os.platform(), version: os.release() },
     device: { arch: os.arch(), version: os.version(), memory: summarizeMemory() },
     cpu: summarizeCpuInfo(),
     app: { name: 'expo', version: process.env.__EXPO_VERSION },
