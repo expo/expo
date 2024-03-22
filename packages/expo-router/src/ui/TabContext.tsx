@@ -5,6 +5,7 @@ import {
 import {
   DefaultNavigatorOptions,
   NavigationAction,
+  NavigationProp,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
@@ -15,14 +16,31 @@ import { createContext } from 'react';
 
 import { TriggerMap } from './common';
 
-export type ExpoTabsProps = DefaultNavigatorOptions<
+export type ExpoTabsProps = ExpoTabsNavigatorOptions;
+
+export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<
   ParamListBase,
+  string | undefined,
   TabNavigationState<ParamListBase>,
   ExpoTabsScreenOptions,
-  TabNavigationEventMap
+  TabNavigationEventMap,
+  ExpoTabsNavigationProp<ParamListBase>
 > &
   Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
   BottomTabNavigationConfig;
+
+export type ExpoTabsNavigationProp<
+  ParamList extends ParamListBase,
+  RouteName extends keyof ParamList = keyof ParamList,
+  NavigatorID extends string | undefined = undefined,
+> = NavigationProp<
+  ParamList,
+  RouteName,
+  NavigatorID,
+  TabNavigationState<ParamListBase>,
+  ExpoTabsScreenOptions,
+  TabNavigationEventMap
+>;
 
 export type ExpoTabsScreenOptions = Pick<
   BottomTabNavigationOptions,
@@ -68,6 +86,7 @@ export const TabsStateContext = createContext<TabsContextValue['state']>({
   stale: false,
   routeNames: [],
   routes: [],
+  preloadedRouteKeys: [],
 });
 
 export type Route = TabNavigationState<ParamListBase>['routes'][number];

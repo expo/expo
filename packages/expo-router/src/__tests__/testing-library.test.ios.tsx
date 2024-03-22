@@ -30,6 +30,7 @@ it('toHaveRouterState', () => {
   expect(screen).toHaveRouterState({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['_sitemap', 'directory/page', '[slug]', '[...catchAll]', '+not-found'],
     routes: [
       {

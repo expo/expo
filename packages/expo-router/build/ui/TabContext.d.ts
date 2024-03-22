@@ -1,9 +1,11 @@
 /// <reference types="react" />
 import { BottomTabNavigationOptions, BottomTabNavigationConfig } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import { DefaultNavigatorOptions, NavigationAction, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
+import { DefaultNavigatorOptions, NavigationAction, NavigationProp, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
 import { TriggerMap } from './common';
-export type ExpoTabsProps = DefaultNavigatorOptions<ParamListBase, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap> & Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
+export type ExpoTabsProps = ExpoTabsNavigatorOptions;
+export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<ParamListBase, string | undefined, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap, ExpoTabsNavigationProp<ParamListBase>> & Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
 BottomTabNavigationConfig;
+export type ExpoTabsNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = keyof ParamList, NavigatorID extends string | undefined = undefined> = NavigationProp<ParamList, RouteName, NavigatorID, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap>;
 export type ExpoTabsScreenOptions = Pick<BottomTabNavigationOptions, 'title' | 'lazy' | 'unmountOnBlur' | 'freezeOnBlur'> & {
     params?: object;
     title: string;
@@ -34,7 +36,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         payload?: object | undefined;
         source?: string | undefined;
         target?: string | undefined;
-    }> | ((state: TabNavigationState<any>) => Readonly<{
+    }> | ((state: Readonly<TabNavigationState<any>>) => Readonly<{
         type: string;
         payload?: object | undefined;
         source?: string | undefined;
@@ -42,15 +44,18 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
     }>)): void;
     navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName] | [screen: RouteName, params: object | undefined] : never): void;
     navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-        key: string;
-        params?: object | undefined;
-        merge?: boolean | undefined;
-    } | {
         name: RouteName_1;
-        key?: string | undefined;
+        params: object | undefined;
+        path?: string | undefined;
+        merge?: boolean | undefined;
+    } : never): void;
+    navigateDeprecated<RouteName_2 extends string>(...args: RouteName_2 extends unknown ? [screen: RouteName_2] | [screen: RouteName_2, params: object | undefined] : never): void;
+    navigateDeprecated<RouteName_3 extends string>(options: RouteName_3 extends unknown ? {
+        name: RouteName_3;
         params: object | undefined;
         merge?: boolean | undefined;
     } : never): void;
+    preload<RouteName_4 extends string>(...args: RouteName_4 extends unknown ? [screen: RouteName_4] | [screen: RouteName_4, params: object | undefined] : never): void;
     reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
     goBack(): void;
     isFocused(): boolean;
@@ -58,21 +63,14 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
     getId(): string | undefined;
     getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T;
     getState(): TabNavigationState<any>;
+    setStateForNextRouteNamesChange(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
 } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-    getParent<T_1 = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
+    getParent<T_1 = NavigationProp<ParamListBase, string, undefined, Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, {}, {}> | undefined>(id?: string | undefined): T_1;
@@ -85,23 +83,15 @@ export declare const TabsNavigatorContext: import("react").Context<({
         payload?: object | undefined;
         source?: string | undefined;
         target?: string | undefined;
-    }> | ((state: Readonly<{
+    }> | ((state: Readonly<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }>) => Readonly<{
+    }>>) => Readonly<{
         type: string;
         payload?: object | undefined;
         source?: string | undefined;
@@ -109,29 +99,24 @@ export declare const TabsNavigatorContext: import("react").Context<({
     }>)): void;
     navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName] | [screen: RouteName, params: object | undefined] : never): void;
     navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-        key: string;
-        params?: object | undefined;
-        merge?: boolean | undefined;
-    } | {
         name: RouteName_1;
-        key?: string | undefined;
+        params: object | undefined;
+        path?: string | undefined;
+        merge?: boolean | undefined;
+    } : never): void;
+    navigateDeprecated<RouteName_2 extends string>(...args: RouteName_2 extends unknown ? [screen: RouteName_2] | [screen: RouteName_2, params: object | undefined] : never): void;
+    navigateDeprecated<RouteName_3 extends string>(options: RouteName_3 extends unknown ? {
+        name: RouteName_3;
         params: object | undefined;
         merge?: boolean | undefined;
     } : never): void;
+    preload<RouteName_4 extends string>(...args: RouteName_4 extends unknown ? [screen: RouteName_4] | [screen: RouteName_4, params: object | undefined] : never): void;
     reset(state: Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }> | import("@react-navigation/native").PartialState<Readonly<{
@@ -139,15 +124,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>): void;
@@ -161,20 +138,29 @@ export declare const TabsNavigatorContext: import("react").Context<({
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
+    setStateForNextRouteNamesChange(state: Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }> | import("@react-navigation/native").PartialState<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>>): void;
 } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
-    setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
+    setParams<RouteName_5 extends string>(params: Partial<object | undefined>): void;
 } & TabActionHelpers<ParamListBase>) | null>;
 export declare const TabsStateContext: import("react").Context<TabNavigationState<any>>;
 export type Route = TabNavigationState<ParamListBase>['routes'][number];

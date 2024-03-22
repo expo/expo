@@ -18,6 +18,7 @@ import {
 import { StyleSheet, ViewProps, View } from 'react-native';
 
 import {
+  ExpoTabsProps,
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabTriggerMapContext,
@@ -41,15 +42,7 @@ export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
 
-export type UseTabsOptions = Omit<
-  DefaultNavigatorOptions<
-    ParamListBase,
-    TabNavigationState<any>,
-    ExpoTabsScreenOptions,
-    TabNavigationEventMap
-  >,
-  'children'
-> &
+export type UseTabsOptions = Omit<ExpoTabsProps, 'children'> &
   Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
 
 export type TabsProps = ViewProps & {

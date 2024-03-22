@@ -26,6 +26,7 @@ describe('push', () => {
     expect(store.rootState).toStrictEqual({
       index: 5,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -84,6 +85,7 @@ describe('push', () => {
     expect(store.rootState).toEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -125,6 +127,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -158,6 +161,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 3,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
@@ -200,6 +204,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
@@ -236,6 +241,7 @@ describe('replace', () => {
     expect(store.rootState).toStrictEqual({
       index: 3,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {

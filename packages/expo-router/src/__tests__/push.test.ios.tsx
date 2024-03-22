@@ -40,6 +40,7 @@ it('stacks should always push a new route', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
     routes: [
       {
@@ -64,6 +65,7 @@ it('stacks should always push a new route', () => {
         state: {
           index: 3,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['user/[id]', 'post/[id]'],
           routes: [
             {
@@ -74,6 +76,7 @@ it('stacks should always push a new route', () => {
                 params: { id: '1' },
                 screen: 'index',
               },
+              path: undefined,
             },
             {
               key: expect.any(String),
@@ -106,6 +109,7 @@ it('stacks should always push a new route', () => {
               path: undefined,
               state: {
                 index: 1,
+                preloadedRoutes: [],
                 key: expect.any(String),
                 routeNames: ['index'],
                 routes: [
@@ -113,6 +117,7 @@ it('stacks should always push a new route', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: { id: '1' },
+                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -219,6 +224,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 2,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['index', '(tabs)', 'd', '_sitemap', '+not-found'],
     routes: [
       {
@@ -248,12 +254,14 @@ it('works in a nested layout Stack->Tab->Stack', () => {
           ],
           index: 2,
           key: expect.any(String),
+          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'c'],
           routes: [
             {
               key: expect.any(String),
               name: 'a',
               params: {},
+              path: undefined,
             },
             {
               key: expect.any(String),
@@ -272,12 +280,14 @@ it('works in a nested layout Stack->Tab->Stack', () => {
               state: {
                 index: 2,
                 key: expect.any(String),
+                preloadedRoutes: [],
                 routeNames: ['one', 'two'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'one',
                     params: {},
+                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -350,6 +360,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 3,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
     routes: [
       {
@@ -375,12 +386,14 @@ it('targets the correct Stack when pushing to a nested layout', () => {
         state: {
           index: 2,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['index', 'two', 'page'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
               params: {},
+              path: undefined,
             },
             {
               key: expect.any(String),
@@ -399,12 +412,14 @@ it('targets the correct Stack when pushing to a nested layout', () => {
               state: {
                 index: 1,
                 key: expect.any(String),
+                preloadedRoutes: [],
                 routeNames: ['index', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: undefined,
                   },
                   {
                     key: expect.any(String),
