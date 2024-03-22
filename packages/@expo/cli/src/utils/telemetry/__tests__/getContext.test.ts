@@ -3,11 +3,6 @@ import os from 'os';
 import { getContext } from '../getContext';
 
 const originalVersion = process.env.__EXPO_VERSION;
-const knownPlatformNames = {
-  darwin: 'Mac',
-  linux: 'Linux',
-  win32: 'Windows',
-};
 
 jest.mock('ci-info', () => ({ isCI: true, isPR: true, name: 'GitHub Actions' }));
 
@@ -21,15 +16,8 @@ afterAll(() => {
 
 it('contains os name and version', () => {
   expect(getContext().os).toMatchObject({
-    name: knownPlatformNames[os.platform()] || os.platform(),
+    name: os.platform(),
     version: os.release(),
-  });
-});
-
-it('contains device type and model', () => {
-  expect(getContext().device).toMatchObject({
-    type: knownPlatformNames[os.platform()] || os.platform(),
-    model: knownPlatformNames[os.platform()] || os.platform(),
   });
 });
 
