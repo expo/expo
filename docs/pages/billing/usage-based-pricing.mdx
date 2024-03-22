@@ -15,9 +15,11 @@ Usage-based billing is enabled for EAS Build and EAS Update and is billed monthl
 
 ### EAS Build
 
-For EAS Build, a flat fee is charged for an individual build executed at high-priority levels. This is totaled monthly and charged at the end of your billing period or sooner if you cancel your plan.
+For EAS Build, a flat fee is charged for an individual build executed at higher-priority levels. This is totaled monthly and charged at the end of your billing period or sooner if you cancel your plan.
 
-[Production and Enterprise plans](/billing/plans/#plans) subscribers also receive EAS Build credit that can be used for any combination of builds.
+> **Note**: Builds that are canceled before any work is done are not charged.
+
+[Production, Enterprise, and Legacy plans](/billing/plans/#plans) subscribers receive credits for EAS Build. These credits can be used to offset the cost of builds. They are reset at the start of the billing cycle and expire at the end of that billing cycle.
 
 For example, consider an account subscribed to the Production plan which does 15 medium Android builds, and 10 large iOS builds in a billing cycle:
 
@@ -28,9 +30,9 @@ For example, consider an account subscribed to the Production plan which does 15
 | EAS Build Credit        |       |          | -$55  |
 | **Total**               |       |          | $0    |
 
-Since the credit included in the Production plan is higher than the total cost in the above table, the subscriber pays $0 for their 25 builds.
+Since the credit is included in the Production plan, the subscriber pays $0 for their 25 builds.
 
-Consider another example where the credit limit has been exceeded:
+Next, consider another example where the credit limit is exceeded:
 
 | Description             | Price | Quantity | Total |
 | ----------------------- | ----- | -------- | ----- |
@@ -52,9 +54,46 @@ In this scenario, the subscriber pays $31 for 60 builds instead of $130 because 
 
 ### EAS Update
 
-Usage-based pricing for EAS Update comprises two metrics: updated users and global edge bandwidth. Updated users track the unique users who download an update in a given billing period. Global edge bandwidth represents the total bandwidth used for all update downloads.
+Usage-based pricing for EAS Update comprises two metrics:
+
+- Monthly updated users
+- Global edge bandwidth
+
+Monthly updated users reflect the number of unique users who download an update in a given billing cycle. Whereas global edge bandwidth represents the total amount of bandwidth used for all update downloads. Moreover, each monthly updated user includes 40 MiB of global edge bandwidth, up to the global edge bandwidth limit for that plan.
+
+> **Note**: A monthly updated user counts only once per billing cycle, regardless of how many updates this user downloads.
+
+Each plan has a number of monthly updated users and global edge bandwidth included as part of the subscription. These differ for each plan and for the most updated numbers, refer to our Pricing page.
+
+> **Note**: The On-demand plan includes the same amount of monthly updated users and global edge bandwidth as the Free plan.
+
+For example, let's consider a subscriber to the On-demand plan who deploys 5 updates of 20 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's overage bill will be:
+
+| Description           | Price           | Quantity | Total |
+| --------------------- | --------------- | -------- | ----- |
+| Updated users         | $0.005 per user | 9,000    | $45   |
+| Global edge bandwidth | $0.10 per GiB   | 525 GiB  | $52.5 |
+| **Total**             |                 |          | $97.5 |
+
+Out of the 10,000 users, 1,000 are included in the On-demand plan. As a result, 9,000 are billed for as part of usage-based billing. Paying for 9,000 updated users also includes approximately 351.6 GiB (that is, 9000 users \* 40 MiB / 1024).
+
+The global edge bandwidth calculation is:
+
+| Description                                       | Calculation                       | Quantity     |
+| ------------------------------------------------- | --------------------------------- | ------------ |
+| Bandwidth used to send updates                    | 5 updates _ 20 MiB _ 10,000 users | 976.5625 GiB |
+|                                                   |
+| Bandwidth included in plan                        |                                   | 100 GiB      |
+| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                   | 351.5625 GiB |
+| **Total**                                         | 976.5625 - 100 - 351.5625         | 525 GiB      |
+
+> **Note**: If the subscriber then sends another 20 MiB update to the same 10,000 users in the current billing cycle, they will only pay for any bandwidth overage used. This is because Expo only charges for [**unique monthly updated users**](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle).
+
+If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 20,000 monthly updated users and 1 TiB (1024 GiB). As such, there is no overage.
 
 ## Monitor usage
+
+> **Note**: Billing estimates shown may be delayed by up to 24 hours (one day).
 
 To see the current billing cycle's usage summary, go to the [Billing](https://expo.dev/settings/billing) and under **Usage this month**, you will find a summary for both EAS Build and EAS Update usage.
 
@@ -66,7 +105,7 @@ To see the current billing cycle's usage summary, go to the [Billing](https://ex
 
 ### EAS Build usage history
 
-To see detailed EAS Build usage or usage for a previous billing cycle:
+To see detailed EAS Build usage for a current or previous billing cycle:
 
 - Click **Usage** in the navigation menu.
 - Under the **EAS Build** section, you will find details on builds count and executed builds based on their platform and resource class.
@@ -79,7 +118,7 @@ To see detailed EAS Build usage or usage for a previous billing cycle:
 
 ### EAS Update usage history
 
-To see detailed EAS Update usage or usage for a previous billing cycle:
+To see detailed EAS Update usage for a current or previous billing cycle:
 
 - Click **Usage** in the navigation menu.
 - Under the **EAS Update** section, you will find details on updated users and global edge bandwidth details.
