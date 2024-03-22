@@ -2,7 +2,6 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
 import expo.modules.kotlin.AppContext
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -18,9 +17,6 @@ import java.lang.ref.WeakReference
  * the application lifecycle, via [UpdatesPackage]. It delegates to an instance of [LoaderTask] to
  * start the process of loading and launching an update, then responds appropriately depending on
  * the callbacks that are invoked.
- *
- * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
- * expo-updates to reload JS and send events to JS.
  */
 class UpdatesController {
   companion object {
