@@ -3,69 +3,78 @@ title: Subscriptions, plans and add-ons
 description: An overview of information on billing and subscriptions to manage your EAS account's plans, invoices, receipts, payments, and usage.
 ---
 
-[Expo Application Services (EAS)](/eas/) offers [free access](https://expo.dev/eas/fair-use#commercial-usage) to a limited quantity of low-priority builds on [EAS Build](/build/introduction/) and free updates via [EAS Update](/eas-update/introduction/). These limits reset monthly.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CreditCard02Icon } from '@expo/styleguide-icons';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-Beyond the Free plan, Expo also offers various subscription plans to cater to a variety of customers and their specific needs. Each subscription plan offers credits to enable premium usage of EAS Build as well as wider access to EAS Update, in the form of more users and extra bandwidth. We also offer add-ons that complement subscriptions and enable opt-in features to amplify customer needs.
+[Expo Application Services (EAS)](/eas/) offers [free access](https://expo.dev/eas/fair-use#commercial-usage) to a limited quantity of low-priority builds on [EAS Build](/build/introduction/) and free updates with [EAS Update](/eas-update/introduction/). These limits reset monthly.
+
+Beyond the Free plan, there are different subscription plans to cater to various customers and their needs. Each plan offers credits to enable high-priority builds for EAS Build and broader access to EAS Update through more monthly updated users and extra bandwidth. We also offer add-ons that complement subscriptions and enable opt-in features to amplify customer needs.
 
 This page lists different subscription-based plans and available add-ons.
 
 ## Subscriptions
 
-Subscriptions are billed monthly and are priced the same worldwide (pre-tax). To see our current price list, please refer to our Pricing page at https://expo.dev/pricing.
+Subscriptions are billed monthly and are priced the same worldwide (pre-tax). To see your account's current subscribed plan, go to [your account's Billing](https://expo.dev/settings/billing), and under **Plan**, you will find details of your current plan.
 
-Subscriptions can be canceled. For more details on how cancellations work, please refer to [our documentation on cancellations](https://www.notion.so/Manage-billing-and-plans-58e6933333e441f29f560859b16b25ef?pvs=21).
+<ImageSpotlight
+  alt="Billing page in Expo dashboard displays the current plan for an Organization account."
+  src="/static/images/billing/plan-01.png"
+  style={{ maxWidth: 720 }}
+/>
 
-We also offer annual contracts on an as-needed basis. Reach out to our customer support team to see if an annual plan is right for you.
+You can also cancel a subscription at any time. See [Cancel a plan](/billing/management/#cancel-a-plan) for more information.
+
+We also offer annual contracts on an as-needed basis. Contact our [customer support](https://expo.dev/contact) team to see if an annual plan suits you.
 
 ## Plans
 
-Each plan comes with its own specific limits, but our subscribers can exceed these limits and pay for additional usage with usage-based billing.
+Each plan has specific limits, but subscribers can exceed them and pay for additional usage with usage-based billing.
+
+<BoxLink
+  title="Pricing"
+  description="Visit our pricing page to see the list of current prices for each plan."
+  href="https://expo.dev/pricing"
+  Icon={CreditCard02Icon}
+/>
 
 ### Production
 
-The Production plan is tailored for professional developers and small businesses. Subscribing to the Production plan gets you access to:
+The Production plan is designed for professional developers and small businesses. Subscribing to the Production plan gets you access to:
 
-- reliable, production-grade services;
-- monthly [credits](https://www.notion.so/Usage-based-pricing-0ad51c06a47b4d618b3b564d938ea27e?pvs=21) for high-priority builds for EAS Build; and,
-- more unique users, higher bandwidth and storage limit for EAS Update.
+- Reliable, production-grade services
+- Monthly [credits](/billing/usage-based-pricing/) for high-priority builds for EAS Build
+- More unique users, higher bandwidth, and storage limit for EAS Update
 
-When limits have been exceeded or credits are used up, any further usage will be charged at [usage-based prices](https://www.notion.so/Usage-based-pricing-0ad51c06a47b4d618b3b564d938ea27e?pvs=21).
-
-For more details on what's included in the Production plan, refer to our Pricing page at https://expo.dev/pricing.
+If you exceed the limits or use up your monthly credits, any further usage will be charged at [usage-based prices](/billing/usage-based-pricing/).
 
 ### Enterprise
 
-The Enterprise plan is designed for organizations and enterprises that have large projects, require additional resources and/or dedicated support. As with the Production plan, subscribing to the Enterprise plan gets you access to:
+The Enterprise plan is designed for organizations and enterprises that have large projects and require additional resources such as dedicated support. Subscribing to the Enterprise plan gets you access to:
 
-- reliable, production-grade services;
-- monthly [credits](https://www.notion.so/Usage-based-pricing-0ad51c06a47b4d618b3b564d938ea27e?pvs=21) for high-priority builds for EAS Build; and,
-- more unique users, higher bandwidth and storage limit for EAS Update.
+- Reliable, production-grade services
+- Monthly [credits](/billing/usage-based-pricing/) for high-priority builds for EAS Build
+- More unique users, higher bandwidth, and storage limit for EAS Update
 
-However, the Enterprise plan has a lot more monthly credits for EAS Build and a higher limit for EAS Update than the other plans.
+An Enterprise plan offers much higher monthly credits for EAS Build and bandwidth for EAS Update than any other plan.
 
-When limits have been exceeded or credits are used up, any further usage will be charged at [usage-based prices](https://www.notion.so/Usage-based-pricing-0ad51c06a47b4d618b3b564d938ea27e?pvs=21).
-
-For more details on what's included in the Enterprise plan, refer to our Pricing page at https://expo.dev/pricing.
+If you exceed the limits or use up your monthly credits, any further usage will be charged at [usage-based prices](/billing/usage-based-pricing/).
 
 ### On-demand
 
-The On-demand plan is a pay-as-you-go option for developers who have variable usage of our services. You can dial up or down your usage as you see fit and upgrade to our Production or Enterprise plan if needed.
+The On-demand plan is a pay-as-you-go option for developers who have variable usage of our services. You can dial up or down your usage as you see fit and upgrade to the Production or Enterprise plan if needed.
 
 Subscribing to the On-demand plan gets you access to:
 
-- reliable, production-grade services;
-- high-priority builds with EAS Build at usage-based prices; and,
-- the ability to exceed the limits of the Free plan for EAS Update and pay for additional usage.
+- Reliable, production-grade services
+- high-priority builds with EAS Build at usage-based prices
+- The ability to exceed the limits of the Free plan for EAS Update and pay for additional usage
 
-For more details on what's included in the On-demand plan, refer to our Pricing page at https://expo.dev/pricing.
+## Usage-based billing
 
-### Usage-based billing
+Usage-based billing is applied to customers who exceed their plan limits. It enables you to use our services without worrying about limitations or contractual obligations.
 
-Usage-based billing is applied to customers who exceed their plan limits. This enables you to use our services as needed without worrying about limitations or any contractual obligations.
-
-Usage-based billing is billed monthly and is currently enabled for EAS Build and EAS Update. We provide an estimate of your existing usage and any overage charges on your [Billing](https://expo.dev/%5Baccount%5D/billing) page.
-
-For more details on what's included in our Enterprise plan, see our [Pricing page](https://expo.dev/pricing).
+Usage-based billing is billed monthly and is currently enabled for EAS Build and EAS Update. We provide an estimate of your existing usage and any overage charges on [your account's Billing](https://expo.dev/settings/billing).
 
 ## Add-ons
 
@@ -73,8 +82,13 @@ For more details on what's included in our Enterprise plan, see our [Pricing pag
 
 The Enterprise Support add-on is only available for Enterprise plan subscribers. Key features include:
 
-- receiving professional, long-term support from our experts;
-- a direct communication channel support with a Service-Level Agreement (SLA); and,
-- a dedicated account manager.
+- Receiving professional, long-term support from our experts
+- Direct communication channel support with a Service-Level Agreement (SLA)
+- A dedicated account manager
 
-For more details on what's available as part of the Enterprise Support add-on, see [Enterprise Support](https://expo.dev/eas/enterprise-support).
+<BoxLink
+  title="Enterprise Support features"
+  description="See a complete list of features of the Enterprise Support add-on."
+  href="https://expo.dev/eas/enterprise-support"
+  Icon={CreditCard02Icon}
+/>

@@ -413,6 +413,15 @@ const general = [
         makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
+      makeSection('Billing', [
+        makePage('billing/overview.mdx'),
+        makePage('billing/plans.mdx'),
+        makePage('billing/management.mdx'),
+        makePage('billing/invoices-and-receipts.mdx'),
+        makePage('billing/understanding-invoices-and-receipts.mdx'),
+        makePage('billing/usage-based-pricing.mdx'),
+        makePage('billing/faq.mdx'),
+      ]),
       makeSection('Bare React Native', [
         makePage('bare/overview.mdx'),
         makePage('bare/installing-expo-modules.mdx'),
