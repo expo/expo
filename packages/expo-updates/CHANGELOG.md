@@ -28,6 +28,7 @@
 - Fixed ANR issue from Detox testing on Android. ([#27031](https://github.com/expo/expo/pull/27031) by [@kudo](https://github.com/kudo))
 - Fix inconsistent hashes for autolinking for fingerprint policy. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 - Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
+- Fixed bridgeless error recovery support for launch errors on iOS. ([#27805](https://github.com/expo/expo/pull/27805) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
