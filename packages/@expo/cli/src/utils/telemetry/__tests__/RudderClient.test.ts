@@ -41,7 +41,30 @@ it('tracks event when user is identified', async () => {
       source: 'expo/cli',
       source_version: process.env.__EXPO_VERSION, // undefined in testing
     }),
-    context: getContext(),
+    context: {
+      ...getContext(),
+      client: { mode: 'attached' },
+    },
+  });
+});
+
+it('tracks event with correct mode', async () => {
+  const sdk = mockRudderAnalytics();
+  const client = new RudderClient(sdk, 'detached');
+  const actor = { id: 'fake', __typename: 'User' } as Actor;
+
+  await client.identify(actor);
+  await client.record({ event: 'Start Project' });
+
+  expect(sdk.track).toHaveBeenCalledWith({
+    userId: 'fake',
+    anonymousId: expect.any(String),
+    context: {
+      ...getContext(),
+      client: { mode: 'detached' },
+    },
+    event: 'Start Project',
+    properties: { source: 'expo/cli', source_version: undefined },
   });
 });
 

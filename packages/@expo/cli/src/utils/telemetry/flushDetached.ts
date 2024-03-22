@@ -28,7 +28,7 @@ async function flush() {
     return;
   }
 
-  const client = new RudderClient();
+  const client = new RudderClient(undefined, 'detached');
   await client.identify(data.actor || (await getUserAsync()));
 
   for (const record of data.records) {
