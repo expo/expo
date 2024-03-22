@@ -305,6 +305,7 @@ export const CodeBlock = ({ children, theme, inline = false }: CodeBlockProps) =
         codeBlockContainerStyle,
         inline && codeBlockInlineContainerStyle,
       ]}
+      className="[&_span]:!text-inherit"
       {...attributes}>
       <CODE
         theme={theme}
