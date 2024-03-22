@@ -285,61 +285,96 @@ import Video from '~/components/plugins/Video';
 <Video file="guides/color-schemes.mp4" />;
 ```
 
-### Inline Snack examples
+### Add code block
+
+Code blocks are a great way to add code snippets to our docs. We leverage the usuall code block Markdown syntax, but it's expanded to support code block titles, and an additional params.
+
+<!-- prettier-ignore -->
+```mdx
+    {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
+    ```js
+    // Your code goes in here
+    ```
+
+    {/* To add a title, just enter it right after language, in the code block starting line: */}
+    ```js myFile.js
+    // Your code goes in here
+    ```
+    ```js Title for a code block
+    // Your code goes in here
+    ```
+
+    {/* Title and params can be separated by pipe ("|") characters, but they also work for block without a title: */}
+    ```js myFile.js|collapseHeight=600
+    // Your code goes in here
+    ```
+    ```js collapseHeight=200
+    // Your code goes in here
+    ```
+```
+
+#### Supported additional params
+
+| Param            | Type   | Description                                                                                                                                                            |
+| ---------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `collapseHeight` | number | The custom height to which code block should be automatically collapsed, the default value is `408` and it's applied unless `collapseHeight` param has been specified. |
+
+### Add inline Snack examples
 
 Snacks are a great way to add instantly-runnable examples to our docs. The `SnackInline` component can be imported to any markdown file, and used like this:
 
 <!-- prettier-ignore -->
-```jsx
+```mdx
 import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='My Example Label' dependencies={['array of', 'packages', 'this Snack relies on']}>
+    ```js
+    // All your code goes in here
 
-// All your JavaScript code goes in here
+    // You can use:
+    /* @info Some text goes here */
+    const myVariable = SomeCodeThatDoesStuff();
+    /* @end */
+    // to create hoverable-text, which reveals the text inside of `@info` onHover.
 
-// You can use:
-/* @info Some text goes here */
-  const myVariable = SomeCodeThatDoesStuff();
-/* @end */
-// to create hoverable-text, which reveals the text inside of `@info` onHover.
-
-// You can use:
-/* @hide Content that is still shown, like a preview. */
-  Everything in here is hidden in the example Snack until
-  you open it in snack.expo.dev
-/* @end */
-// to shorten the length of the Snack shown in our docs. Common example are hiding useless code in examples, like StyleSheets
-
+    // You can use:
+    /* @hide Content that is still shown, like a preview. */
+    Everything in here is hidden in the example Snack until
+    you open it in snack.expo.dev
+    /* @end */
+    // to shorten the length of code block shown in our docs.
+    // Hidden code will still be present when opening in Snack or using "Copy" action.
+    ```
 </SnackInline>
 ```
 
-### Embed multiple options of code
+### Add multiple code variants
 
 Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component.
 The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
-```jsx
+```mdx
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">
-
+    ```js
     addOne = async x => {
-    /* @info This text will be shown onHover */
-    return x + 1;
-    /* @end */
+      /* @info This text will be shown onHover */
+      return x + 1;
+      /* @end */
     };
-
+    ```
 </Tab>
 <Tab label="Add 1 Another Way">
-
+    ```js
     addOne = async x => {
-    /* @info This text will be shown onHover */
-    return x++;
-    /* @end */
+      /* @info This text will be shown onHover */
+      return x++;
+      /* @end */
     };
-
+    ```
 </Tab>
 </Tabs>
 ```
@@ -363,13 +398,13 @@ If you just want to hide a single page from the sidebar, set `hideInSidebar: tru
 
 Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported into any markdown file.
 
-```jsx
+```mdx
 import { Terminal } from '~/ui/components/Snippet';
 
-// for single command and one prop
+{/* for single command and one prop: */}
 <Terminal cmd={["$ npx expo install package"]} />
 
-// for multiple commands
+{/* for multiple commands: */}
 
 <Terminal cmd={[
   "# Create a new native project",

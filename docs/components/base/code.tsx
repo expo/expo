@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
+import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { useEffect, useRef, useState, type PropsWithChildren, Children } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
@@ -134,8 +135,20 @@ function replaceSlashCommentsWithAnnotations(value: string) {
 function parseValue(value: string) {
   if (value.startsWith('@@@')) {
     const valueChunks = value.split('@@@');
+    const titleChunks = valueChunks[1].split('|');
+    const [params, title] = partition(
+      titleChunks,
+      chunk => chunk.includes('=') && !chunk.includes(' ')
+    );
     return {
-      title: valueChunks[1],
+      title: title[0],
+      params: Object.assign(
+        {},
+        ...params.map(param => {
+          const [key, value] = param.split('=');
+          return { [key]: value };
+        })
+      ),
       value: valueChunks[2],
     };
   }
@@ -148,6 +161,18 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
   const [isExpanded, setExpanded] = useState(true);
+
+  // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
+  // which results in this nesting mess, we should fix it in the future
+  const rootProps =
+    className && className.startsWith('language')
+      ? { className, children }
+      : (Children.toArray(children)[0] as JSX.Element)?.props;
+
+  const codeBlockData = parseValue(rootProps?.children?.toString() || '');
+  const collapseHeight = codeBlockData?.params?.collapseHeight
+    ? Number(codeBlockData?.params?.collapseHeight)
+    : EXPAND_SNIPPET_BOUND;
 
   useEffect(() => {
     const tippyFunc = testTippy || tippy;
@@ -162,19 +187,14 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     });
 
     if (contentRef?.current?.clientHeight) {
-      setExpanded(!(contentRef.current.clientHeight > EXPAND_SNIPPET_BOUND));
+      console.warn(contentRef.current.clientHeight, collapseHeight);
+      if (contentRef.current.clientHeight > collapseHeight) {
+        setExpanded(false);
+      }
     }
   }, []);
 
-  // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
-  // which results in this nesting mess, we should fix it in the future
-  const rootProps =
-    className && className.startsWith('language')
-      ? { className, children }
-      : (Children.toArray(children)[0] as JSX.Element)?.props;
-
-  const value = parseValue(rootProps?.children?.toString() || '');
-  let html = value.value;
+  let html = codeBlockData.value;
 
   // mdx will add the class `language-foo` to codeblocks with the tag `foo`
   // if this class is present, we want to slice out `language-`
@@ -202,20 +222,30 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     }
   }
 
-  return value?.title ? (
+  const customCollapseStyle =
+    !isExpanded && collapseHeight
+      ? {
+          maxHeight: collapseHeight,
+        }
+      : undefined;
+
+  return codeBlockData?.title ? (
     <Snippet>
-      <SnippetHeader title={value.title} Icon={getIconForFile(value.title)}>
-        <CopyAction text={cleanCopyValue(value.value)} />
+      <SnippetHeader title={codeBlockData.title} Icon={getIconForFile(codeBlockData.title)}>
+        <CopyAction text={cleanCopyValue(codeBlockData.value)} />
         <SettingsAction />
       </SnippetHeader>
       <SnippetContent className="p-0">
         <pre
           ref={contentRef}
           css={STYLES_CODE_CONTAINER}
+          style={customCollapseStyle}
           className={mergeClasses(
             'relative',
             wordWrap && '!whitespace-pre-wrap !break-words',
-            isExpanded ? 'max-h-[unset]' : `!overflow-hidden ${EXPAND_SNIPPET_BOUND_CLASSNAME}`
+            isExpanded && 'max-h-[unset]',
+            !isExpanded && `!overflow-hidden`,
+            !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME
           )}
           {...attributes}>
           <code
@@ -230,11 +260,14 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     <pre
       ref={contentRef}
       css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
+      style={customCollapseStyle}
       className={mergeClasses(
         'relative',
         preferredTheme === Themes.DARK && 'dark-theme',
         wordWrap && '!whitespace-pre-wrap !break-words',
-        isExpanded ? 'max-h-[unset]' : `!overflow-hidden ${EXPAND_SNIPPET_BOUND_CLASSNAME}`,
+        isExpanded && 'max-h-[unset]',
+        !isExpanded && `!overflow-hidden`,
+        !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME,
         'last:mb-0'
       )}
       {...attributes}>
