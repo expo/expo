@@ -1,5 +1,4 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-// TODO: Remove
 #import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
