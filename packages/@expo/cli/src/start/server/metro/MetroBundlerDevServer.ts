@@ -29,9 +29,9 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
-import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
+import { logEventAsync } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   evalMetroNoHandling,
