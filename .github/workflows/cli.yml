@@ -41,6 +41,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  EXPO_NO_TELEMETRY: true
+
 jobs:
   test:
     runs-on: ubuntu-22.04
