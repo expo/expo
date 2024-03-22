@@ -24,10 +24,8 @@ maybe_prebuild_hermes() {
 
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et ios-generate-dynamic-macros
-elif [ "$EAS_BUILD_PLATFORM" = "android" ]; then
-  if [ "$EAS_BUILD_PROFILE" != "versioned-client-add-sdk" ]; then
-  fi
 fi
+
 
 if [ "$EAS_BUILD_PROFILE" = "versioned-client-add-sdk" ]; then
   if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then

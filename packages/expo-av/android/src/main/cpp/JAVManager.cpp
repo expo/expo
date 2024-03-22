@@ -55,7 +55,7 @@ namespace expo {
         if (mediaPlayer == nullptr) {
           auto message = "Sound Instance with ID " + std::to_string(playerId) +
                          "does not exist!";
-          throw jsi::JSError(runtime, message.c_str());
+          throw jsi::JSError(runtime, message);
         }
 
         if (argsCount > 1 && args[1].isObject()) {
