@@ -59,6 +59,10 @@ export class RudderClient implements TelemetryClient {
     const userId = actor.id;
     const anonymousId = await UserSettings.getAnonymousIdentifierAsync();
 
+    if (this.identity?.userId === userId && this.identity?.anonymousId === anonymousId) {
+      return;
+    }
+
     this.identity = { userId, anonymousId };
     this.rudderstack.identify({
       userId,

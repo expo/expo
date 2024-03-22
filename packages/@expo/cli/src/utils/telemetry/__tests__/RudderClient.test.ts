@@ -5,10 +5,15 @@ import { RudderClient } from '../RudderClient';
 import { getContext } from '../getContext';
 
 jest.mock('@expo/rudder-sdk-node');
+jest.mock('../../../api/user/UserSettings', () => ({
+  getAnonymousIdentifierAsync: jest.fn().mockResolvedValue('anonymous-id'),
+}));
 jest.mock('../../../api/user/user', () => ({
   getActorDisplayName: jest.fn(),
   getUserAsync: jest.fn().mockResolvedValue(undefined),
 }));
+
+const mockActor = { id: 'fake', __typename: 'User' } as Actor;
 
 it('does not track event when user is not identified', async () => {
   const sdk = mockRudderAnalytics();
@@ -22,16 +27,15 @@ it('does not track event when user is not identified', async () => {
 it('tracks event when user is identified', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
-  const actor = { id: 'fake', __typename: 'User' } as Actor;
 
   jest.mocked(getActorDisplayName).mockReturnValue('expotest');
 
-  await client.identify(actor);
+  await client.identify(mockActor);
   await client.record({ event: 'Start Project' });
 
   expect(sdk.track).toHaveBeenCalledWith({
     userId: 'fake',
-    anonymousId: expect.any(String),
+    anonymousId: 'anonymous-id',
     event: 'Start Project',
     properties: expect.objectContaining({
       source: 'expo/cli',
@@ -44,9 +48,8 @@ it('tracks event when user is identified', async () => {
 it('tries to identify when tracking event', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
-  const actor = { id: 'fake', __typename: 'User' } as Actor;
 
-  jest.mocked(getUserAsync).mockResolvedValue(actor);
+  jest.mocked(getUserAsync).mockResolvedValue(mockActor);
 
   expect(client.isIdentified).toBe(false);
 
@@ -59,9 +62,8 @@ it('tries to identify when tracking event', async () => {
 it('flushes recorded events', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
-  const actor = { id: 'fake', __typename: 'User' } as Actor;
 
-  await client.identify(actor);
+  await client.identify(mockActor);
   await client.record({ event: 'Start Project' });
   await client.flush();
 
@@ -71,7 +73,6 @@ it('flushes recorded events', async () => {
 it('only identifies once when recording events', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
-  const actor = { id: 'fake', __typename: 'User' } as Actor;
 
   // Create a long running promise, to test if `telemetry.record` awaits `getUserAsync` once
   let getUserAsyncResolve: (actor: Actor) => void;
@@ -88,11 +89,33 @@ it('only identifies once when recording events', async () => {
   expect(getUserAsyncResolve!).not.toBeUndefined();
 
   // Resolve the `getUserAsync` promise, unblocking the record calls
-  getUserAsyncResolve!(actor);
+  getUserAsyncResolve!(mockActor);
   // Wait until the records are complete
   await recordPromise;
 
   expect(sdk.identify).toHaveBeenCalledTimes(1);
+});
+
+it('only identifies once when loading same user', async () => {
+  const sdk = mockRudderAnalytics();
+  const client = new RudderClient(sdk);
+
+  await client.identify(mockActor);
+  await client.identify(mockActor);
+
+  expect(sdk.identify).toHaveBeenCalledTimes(1);
+});
+
+it('only re-identifies when user has changed', async () => {
+  const sdk = mockRudderAnalytics();
+  const client = new RudderClient(sdk);
+
+  await client.identify({ ...mockActor, id: 'old' });
+  await client.identify({ ...mockActor, id: 'new' });
+
+  expect(sdk.identify).toHaveBeenCalledTimes(2);
+  expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'old' }));
+  expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'new' }));
 });
 
 function mockRudderAnalytics() {
