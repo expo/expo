@@ -1,5 +1,6 @@
 import { getTelemetry } from '..';
 
+beforeEach(() => setEnv('EXPO_NO_TELEMETRY', undefined));
 afterEach(() => resetEnv());
 
 it('returns detached client by default', () => {
@@ -36,7 +37,10 @@ it('returns `null` when `env.EXPO_OFFLINE` is true', () => {
 const envOriginal: Record<string, string | undefined> = {};
 
 function setEnv(key: string, value?: string) {
-  envOriginal[key] = process.env[key];
+  if (!(key in envOriginal)) {
+    envOriginal[key] = process.env[key];
+  }
+
   if (value === undefined) {
     delete process.env[key];
   } else {
@@ -51,5 +55,7 @@ function resetEnv() {
     } else {
       process.env[key] = envOriginal[key];
     }
+
+    delete envOriginal[key];
   }
 }
