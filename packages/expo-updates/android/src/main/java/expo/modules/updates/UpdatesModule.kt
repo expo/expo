@@ -78,15 +78,15 @@ class UpdatesModule : Module() {
     }
 
     OnCreate {
-      UpdatesController.instance.appContext = WeakReference(appContext)
+      UpdatesController.bindAppContext(WeakReference(appContext))
     }
 
     OnStartObserving {
-      UpdatesController.instance.shouldEmitJsEvents = true
+      UpdatesController.shouldEmitJsEvents = true
     }
 
     OnStopObserving {
-      UpdatesController.instance.shouldEmitJsEvents = false
+      UpdatesController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { promise: Promise ->
