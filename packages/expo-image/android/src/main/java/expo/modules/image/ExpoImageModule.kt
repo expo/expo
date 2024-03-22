@@ -1,7 +1,6 @@
 package expo.modules.image
 
 import android.graphics.drawable.Drawable
-import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -25,7 +24,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.views.ViewDefinitionBuilder
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -262,16 +260,5 @@ class ExpoImageModule : Module() {
         }
       }
     }
-  }
-}
-
-// TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
-@Suppress("FunctionName")
-private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
-  vararg props: Pair<String, CustomValueType>,
-  noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
-) {
-  for ((name, value) in props) {
-    Prop<T, PropType>(name) { view, prop -> body(view, value, prop) }
   }
 }
