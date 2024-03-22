@@ -103,6 +103,7 @@ it('only identifies once when loading same user', async () => {
   await client.identify(mockActor);
   await client.identify(mockActor);
 
+  expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: mockActor.id }));
   expect(sdk.identify).toHaveBeenCalledTimes(1);
 });
 
@@ -113,9 +114,9 @@ it('only re-identifies when user has changed', async () => {
   await client.identify({ ...mockActor, id: 'old' });
   await client.identify({ ...mockActor, id: 'new' });
 
-  expect(sdk.identify).toHaveBeenCalledTimes(2);
   expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'old' }));
   expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'new' }));
+  expect(sdk.identify).toHaveBeenCalledTimes(2);
 });
 
 function mockRudderAnalytics() {

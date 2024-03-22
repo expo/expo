@@ -37,7 +37,7 @@ export class RudderClient implements TelemetryClient {
    * This may be called multiple times, from `.record()`, but only calls `getUserAsync` once.
    * Note, this method won't retry after the initial identification returns `undefined`.
    */
-  private async waitUntilIdentified() {
+  private async waitUntilInitialIdentification() {
     if (!this.identity && !this.initialIdentify) {
       this.initialIdentify = getUserAsync().then((actor) => this.identify(actor));
     }
@@ -77,7 +77,7 @@ export class RudderClient implements TelemetryClient {
 
   async record(record: TelemetryRecord | TelemetryRecordWithDate) {
     if (!this.identity) {
-      await this.waitUntilIdentified();
+      await this.waitUntilInitialIdentification();
     }
 
     if (this.identity) {
