@@ -66,9 +66,9 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 <Terminal
   cmd={[
-    'export ANDROID_HOME=$HOME/Library/Android/sdk',
-    'export PATH=$PATH:$ANDROID_HOME/emulator',
-    'export PATH=$PATH:$ANDROID_HOME/platform-tools',
+    '$ export ANDROID_HOME=$HOME/Library/Android/sdk',
+    '$ export PATH=$PATH:$ANDROID_HOME/emulator',
+    '$ export PATH=$PATH:$ANDROID_HOME/platform-tools',
   ]}
   cmdCopy="export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools"
 />
@@ -79,7 +79,13 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 Reload the path environment variables in your current shell:
 
-<Terminal cmd={['# for bash', 'source $HOME/.bashrc', '', '# for zsh', 'source $HOME/.zshrc']} />
+<Terminal cmd={[
+  '# for zsh',
+  '$ source $HOME/.zshrc',
+  '',
+  '# for bash',
+  '$ source $HOME/.bashrc',
+]} />
 
 </Step>
 
@@ -210,7 +216,6 @@ On the Android Studio main screen, click **More Actions**, then **Virtual Device
 <ImageSpotlight
   alt="Android Studio configure."
   src="/static/images/android-studio/virtual-device.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>
@@ -222,7 +227,6 @@ Click the **Create device** button.
 <ImageSpotlight
   alt="Android Studio create virtual device."
   src="/static/images/android-studio/create-device.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>
@@ -234,7 +238,6 @@ Under **Select Hardware**, choose the type of hardware you'd like to emulate. We
 <ImageSpotlight
   alt="Android Studio create virtual device hardware selection."
   src="/static/images/android-studio/select-hardware.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>
@@ -246,7 +249,6 @@ Select an OS version to load on the emulator (probably one of the system images 
 <ImageSpotlight
   alt="Android Studio create virtual device os selection."
   src="/static/images/android-studio/select-os.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>

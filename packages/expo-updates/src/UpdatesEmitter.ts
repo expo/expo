@@ -1,16 +1,18 @@
-import { DeviceEventEmitter } from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { EventEmitter as NativeEventEmitter } from 'expo-modules-core';
+import { EventEmitter, type EventSubscription } from 'fbemitter';
 
+import ExpoUpdatesModule from './ExpoUpdates';
 import { transformNativeStateMachineContext } from './Updates';
 import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
 
 let _emitter: EventEmitter | null;
+const nativeEventEmitter = new NativeEventEmitter(ExpoUpdatesModule);
 
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-    DeviceEventEmitter.addListener(
+    nativeEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+    nativeEventEmitter.addListener(
       'Expo.nativeUpdatesStateChangeEvent',
       _emitNativeStateChangeEvent
     );

@@ -8,11 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.27.5 - 2024-01-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 - 2024-01-20
+
+### 🐛 Bug fixes
+
 - Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
 - Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
 - On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 0.27.3 - 2024-01-10
 

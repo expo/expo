@@ -449,7 +449,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -923,12 +923,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
-                      "android:value": "@string/expo_runtime_version",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "expo.modules.updates.ENABLED",
                       "android:value": "true",
                     },
@@ -943,6 +937,12 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -1266,7 +1266,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
-            "armv7",
+            "arm64",
           ],
           "UIRequiresFullScreen": true,
           "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -1732,7 +1732,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",

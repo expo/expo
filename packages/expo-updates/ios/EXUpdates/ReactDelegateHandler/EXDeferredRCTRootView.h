@@ -5,9 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- EXDeferredRCTRootView is a special no-op class for expo-updates to defer bridge creation until `EXUpdatesAppController` finishing setup.
+ EXDeferredRCTRootView is a special no-op class for expo-updates to defer React instance creation until `EXUpdatesAppController` finishes the setup.
  */
-@interface EXDeferredRCTRootView : RCTRootView
+@interface EXDeferredRCTRootView : UIView
 
 @end
 

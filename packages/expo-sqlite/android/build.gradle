@@ -32,6 +32,20 @@ def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def SQLITE3_SRC_DIR = new File("$buildDir/sqlite3_src")
 
+def getSQLiteBuildFlags() {
+  def buildFlags = ''
+  if (findProperty('expo.sqlite.enableFTS') !== 'false') {
+    buildFlags <<= '-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
+  } else {
+  }
+  def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
+  if (customBuildFlags != '') {
+    buildFlags <<= " ${customBuildFlags}"
+  }
+  logger.info("SQLite build flags: ${buildFlags}")
+  return buildFlags
+}
+
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -122,7 +136,8 @@ android {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-          "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}"
+          "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
+          "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}"
       }
     }
   }

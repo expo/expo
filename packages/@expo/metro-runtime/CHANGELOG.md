@@ -6,12 +6,26 @@
 
 ### 🎉 New features
 
-- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
-- Add error handling for Metro build errors in split chunks. ([#26609](https://github.com/expo/expo/pull/26609) by [@EvanBacon](https://github.com/EvanBacon))
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Use `process.env.EXPO_OS` platform env checks to reduce `react-native` imports. ([#27636](https://github.com/expo/expo/pull/27636) by [@EvanBacon](https://github.com/EvanBacon))
+- Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.1.3 - 2024-02-06
+
+### 🎉 New features
+
+- Send platform to Metro. ([#26812](https://github.com/expo/expo/pull/26812) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.1.2 - 2024-01-23
+
+### 🎉 New features
+
+- Add error handling for Metro build errors in split chunks. ([#26609](https://github.com/expo/expo/pull/26609) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.1 - 2024-01-18
 

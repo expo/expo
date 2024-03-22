@@ -1,7 +1,7 @@
 import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 // @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-color';
+import normalizeColor from '@react-native/normalize-colors';
 import semver from 'semver';
 
 // Maps to the template AppDelegate.m

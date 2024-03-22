@@ -13,6 +13,7 @@ export const currentlyRunning: CurrentlyRunningInfo = {
   createdAt: Updates.createdAt ?? undefined,
   isEmbeddedLaunch: Updates.isEmbeddedLaunch,
   isEmergencyLaunch: Updates.isEmergencyLaunch,
+  emergencyLaunchReason: Updates.emergencyLaunchReason,
   manifest: Updates.manifest ?? undefined,
   runtimeVersion: Updates.runtimeVersion ?? undefined,
 };

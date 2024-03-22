@@ -11,17 +11,21 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer)
+ExpoModulesHostObject::ExpoModulesHostObject(JSIContext *installer)
   : installer(installer) {}
 
 /**
  * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  auto &runtime = installer->runtimeHolder->get();
+  facebook::react::LongLivedObjectCollection::get(runtime).clear();
+#else
   facebook::react::LongLivedObjectCollection::get().clear();
+#endif
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
-  installer->jsInvoker.reset();
   installer->jniDeallocator.reset();
 }
 
@@ -40,7 +44,6 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(
     [this, cName](jsi::Runtime &rt) {
       auto module = installer->getModule(cName);
-      module->cthis()->jsiInteropModuleRegistry = installer;
       return module->cthis()->getJSIObject(rt);
     });
 

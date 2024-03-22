@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
+
 ### 💡 Others
 
 ## 5.9.3 - 2024-01-18

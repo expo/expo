@@ -1,7 +1,9 @@
 package expo.modules.core;
 
 import expo.modules.core.interfaces.CodedThrowable;
+import kotlin.Deprecated;
 
+@Deprecated(message = "AsyncFunction will crash when called. Use expo.modules.kotlin.Promise instead")
 public interface Promise {
   String UNKNOWN_ERROR = "E_UNKNOWN_ERROR";
 

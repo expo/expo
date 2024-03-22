@@ -8,12 +8,14 @@ import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
 
+export type MetroEnvironment = 'node' | 'react-server' | 'client';
+
 export type ExpoMetroOptions = {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
-  environment?: string;
+  environment?: MetroEnvironment;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
@@ -48,6 +50,10 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   // If it is installed, the user MUST import it somewhere in their project.
   // Expo Router automatically pulls this in, so we can check for it.
   return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
+export function isServerEnvironment(environment?: any): boolean {
+  return environment === 'node' || environment === 'react-server';
 }
 
 function withDefaults({

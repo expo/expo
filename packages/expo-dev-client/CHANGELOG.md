@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 3.3.11 - 2024-03-20
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.10 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.9 - 2024-02-27
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.8 - 2024-02-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.7 - 2024-01-24
+
+_This version does not introduce any user-facing changes._
+
 ## 3.3.6 - 2024-01-18
 
 _This version does not introduce any user-facing changes._

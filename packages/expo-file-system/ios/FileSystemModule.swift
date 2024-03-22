@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import Photos
 
 private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
@@ -8,6 +9,7 @@ private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 public final class FileSystemModule: Module {
   private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(sessionHandler: ExpoAppDelegate.getSubscriberOfType(FileSystemBackgroundSessionHandler.self))
   private lazy var taskHandlersManager = EXTaskHandlersManager()
+  private lazy var resourceManager = PHAssetResourceManager()
 
   private lazy var backgroundSession = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
   private lazy var foregroundSession = createUrlSession(type: .foreground, delegate: sessionTaskDispatcher)
@@ -100,6 +102,11 @@ public final class FileSystemModule: Module {
     AsyncFunction("copyAsync") { (options: RelocatingOptions, promise: Promise) in
       let (fromUrl, toUrl) = try options.asTuple()
 
+      if isPHAsset(path: fromUrl.absoluteString) {
+        copyPHAsset(fromUrl: fromUrl, toUrl: toUrl, with: resourceManager, promise: promise)
+        return
+      }
+
       try ensurePathPermission(appContext, path: fromUrl.path, flag: .read)
       try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
 
@@ -134,6 +141,11 @@ public final class FileSystemModule: Module {
       try ensureFileDirectoryExists(localUrl)
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
+      if sourceUrl.isFileURL {
+        try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
+        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        return
+      }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let request = createUrlRequest(url: sourceUrl, headers: options.headers)
       let downloadTask = session.downloadTask(with: request)

@@ -47,6 +47,7 @@ There are a couple of existing React Native libraries to allow rich-text editing
 
 - [`react-native-rich-editor`](https://github.com/wxik/react-native-rich-editor)
 - [`react-native-cn-quill`](https://github.com/imnapo/react-native-cn-quill)
+- [`@10play/tentap-editor`](https://github.com/10play/10Tap-Editor)
 
 ### Custom webview-based editor
 
@@ -81,7 +82,7 @@ Then, let's append a fifth letter `a` to the text input. The position of your cu
 
 There is an additional `onSelectionChange` prop that can be used to get that information. However, it makes the task significantly harder. Inserting additional characters (such as newlines for lists or bullet points) also desynchronizes the selection.
 
-There are some attempts to build such an editor, such as [`markdown-editor`](https://github.com/shakogegia/markdown-editor), but no widely used packages exist.
+There are some attempts to build such an editor, such as [`markdown-editor`](https://github.com/shakogegia/markdown-editor) (not actively maintained) and [`rn-text-editor`](https://github.com/amjadbouhouch/rn-text-editor) (in beta), but no widely used packages exist.
 
 ## Markdown editors with always visible styling markers
 
@@ -91,10 +92,11 @@ This editing experience suits power users or programming/tech applications. You 
 
 ## Native editors
 
-You can use a native Android or iOS rich text editor wrapped into a React Native module. There are a couple of options:
+You can use a native Android or iOS rich text editor wrapped into a React Native module. There are a few options:
 
 - [`react-native-aztec`](https://github.com/WordPress/gutenberg/tree/trunk/packages/react-native-aztec)
 - [`gutenberg-mobile`](https://github.com/wordpress-mobile/gutenberg-mobile)
+- [`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown)
 
 You can also wrap any native rich text editor using [Expo Modules](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
 

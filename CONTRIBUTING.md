@@ -16,7 +16,7 @@ Thanks for the help! We currently review PRs for `packages/`, `docs/`, `template
 
 We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of the Expo client. The Expo client itself (in the `ios/` and `android/` directories) are difficult to setup and require API tokens.
 
-The `bare-expo` project includes most of the Expo SDK and runs the JavaScript code from `apps/test-suite` to allow you to easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with Detox for Android/iOS and report the results on your pull request.
+The `bare-expo` project includes most of the Expo SDK and runs the JavaScript code from `apps/test-suite` to allow you to easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request.
 
 Manual smoke tests are included in `apps/native-component-list`, this is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or there is something that is very difficult to test in an automated way but would be easy to verify through manual interaction.
 
@@ -86,12 +86,18 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
    - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `yarn <android | ios>`.
    - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
-   - To run the full test suite with Detox, you can run the tests `yarn test:<android | ios>`.
+   - To run the full test suite, you can run the tests `yarn test:<android | ios>`.
 5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
    - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
+
+### Finding a task to work on
+
+If you don't have something in mind already, the best way to find something to help with is ["Issue accepted" label](https://github.com/expo/expo/issues?q=is%3Aissue+is%3Aopen+label%3A%22Issue+accepted%22).
+
+Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version and adequately requires a fair amount of context on how Expo Go works.
 
 ### Style
 
@@ -125,7 +131,8 @@ The best way to get your changes merged is to build good tests for them! We have
 
 1. Write your tests in `apps/test-suite/tests`
    - These tests are written with a non-feature-complete version of Jasmine that runs on the Android and iOS clients, so no special features like snapshot testing will be available.
-   - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`. This is where you can do platform exclusion. Use `global.DETOX` to test for iOS tests, and `ExponentTest.isInCI` to test for Android Device Farm.
+   - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`.
+   - If the new test file could be running automatically from the `bare-expo` testing, add it in `apps/bare-expo/e2e/TestSuite-test.native.js`.
 2. Run your tests locally from the `bare-expo` directory with `yarn test:android`, or `yarn test:ios`.
    - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
 3. Remember to try and get your feature running on as many platforms as possible.

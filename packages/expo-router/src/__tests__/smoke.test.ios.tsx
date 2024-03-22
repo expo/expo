@@ -169,7 +169,11 @@ it('deep linking nested groups', async () => {
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
 });
 
-it('can navigate across the drawer navigator', () => {
+// Skipped due to 0.74.0-rc.2 regression.
+// react-native-gesture-handler is failing in Fabric.
+// https://exponent-internal.slack.com/archives/C0447EFTS74/p1709588600921339?thread_ts=1709578927.565339&cid=C0447EFTS74
+// Please enable once `react-native-gesture-handler` is updated
+it.skip('can navigate across the drawer navigator', () => {
   renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,

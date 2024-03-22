@@ -17,6 +17,7 @@
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
+    "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
@@ -30,6 +31,7 @@
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@reach/tabs": "^0.18.0",
     "@sentry/react": "^7.80.1",
     "clipboard-copy": "^4.0.1",
@@ -58,7 +60,8 @@
     "remark-mdx": "^2.2.1",
     "remark-mdx-disable-explicit-jsx": "^0.1.0",
     "remark-mdx-frontmatter": "^2.1.1",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "yet-another-react-lightbox": "^3.17.0"
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.1.0",
@@ -98,7 +101,7 @@
     "postcss": "^8.4.33",
     "postcss-import": "^16.0.0",
     "prettier": "^3.1.1",
-    "puppeteer": "^21.4.0",
+    "puppeteer": "^22.4.1",
     "react-test-renderer": "^18.2.0",
     "rehype-slug": "^6.0.0",
     "remark-cli": "^12.0.0",

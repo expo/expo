@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, Platform } from 'expo-modules-core';
+import { DeviceEventEmitter, Platform } from 'expo-modules-core';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import {
@@ -42,7 +42,7 @@ async function emitOrientationEvent() {
     getOrientationLockAsync(),
     getOrientationAsync(),
   ]);
-  SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
+  DeviceEventEmitter.emit('expoDidUpdateDimensions', {
     orientationLock,
     orientationInfo: { orientation },
   });
@@ -104,9 +104,6 @@ async function _lockAsync(webOrientationLock: WebOrientationLock): Promise<void>
 let _lastWebOrientationLock: WebOrientationLock = WebOrientationLock.UNKNOWN;
 
 export default {
-  get name(): string {
-    return 'ExpoScreenOrientation';
-  },
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
     return orientationLock in OrientationLockAPIToWeb;
   },

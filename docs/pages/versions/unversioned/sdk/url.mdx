@@ -1,15 +1,12 @@
 ---
 title: URL
-description: Standard URL API available on all Expo-supported platforms. 
+description: Standard URL API available on all Expo-supported platforms.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
 packageName: 'expo'
+platforms: ['android', 'ios', 'web']
 ---
 
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 The standard URL API is available on all Expo-supported platforms.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -25,9 +22,9 @@ const params = new URLSearchParams();
 
 ## Conformance
 
-Expo's built-in URL support attempts to be fully [spec compliant](https://developer.mozilla.org/en-US/docs/Web/API/URL). 
+Expo's built-in URL support attempts to be fully [spec compliant](https://developer.mozilla.org/en-US/docs/Web/API/URL).
 
-The only missing exception is that native platforms do not currently support [non-ASCII characters](https://unicode.org/reports/tr46/) in the hostname. 
+The only missing exception is that native platforms do not currently support [non-ASCII characters](https://unicode.org/reports/tr46/) in the hostname.
 
 Consider the following example:
 

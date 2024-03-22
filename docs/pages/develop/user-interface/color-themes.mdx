@@ -7,7 +7,7 @@ import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Whether you are personally on team light or team dark, it's becoming increasingly common for apps to support these two color schemes. Here is an example of how supporting both modes looks in an Expo project:
+It's common for apps to support light and dark color schemes. Here is an example of how supporting both modes looks in an Expo project:
 
 <Video file="guides/color-schemes.mp4" spaceAfter={30} />
 
@@ -17,7 +17,13 @@ Projects require additional configuration to support switching between light and
 
 You can configure the supported appearance styles in **app.json** with the [`userInterfaceStyle`](/versions/latest/config/app/#userinterfacestyle) property. You can also configure specific platforms to support different appearance styles by setting either [`android.userInterfaceStyle`](/versions/latest/config/app/#userinterfacestyle-2) or [`ios.userInterfaceStyle`](/versions/latest/config/app/#userinterfacestyle-1) to the preferred value.
 
-The available options are `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict the app to support light theme only), and `dark` (restrict the app to support dark theme only). The app will default to the light style if this property is absent. Here is an example configuration:
+The available options are:
+
+- `automatic`: Follow system appearance settings and notify about any change the user makes
+- `light`: Restrict the app to support light theme only
+- `dark`: Restrict the app to support dark theme only
+
+The app will default to the light style if this property is absent. Here is an example configuration:
 
 ```json app.json
 {
@@ -27,9 +33,9 @@ The available options are `automatic` (follow system appearance settings and not
 }
 ```
 
-In development builds, you'll need to install the native package [`expo-system-ui`](/versions/latest/sdk/system-ui/#installation). Otherwise, the `userInterfaceStyle` property is ignored. You can also use following command to check if the project is misconfigured:
+In development builds, you'll need to install the native package [`expo-system-ui`](/versions/latest/sdk/system-ui/#installation). Otherwise, the `userInterfaceStyle` property is ignored. You can also use the following command to check if the project is misconfigured:
 
-<Terminal cmd={['npx expo config --type introspect']} />
+<Terminal cmd={['$ npx expo config --type introspect']} />
 
 If the project is misconfigured, you'll see a warning as shown below:
 
@@ -39,7 +45,7 @@ If the project is misconfigured, you'll see a warning as shown below:
   ]}
 />
 
-<Collapsible summary="Using bare workflow?">
+<Collapsible summary="Using bare React Native app?">
 
 ### Android
 
@@ -53,7 +59,7 @@ Ensure that the `uiMode` flag is present on your `MainActivity` (and any other a
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
 ```
 
-Implement the `onConfigurationChanged` method in **MainActivity.java** (`react-native@0.63.3` don't need this):
+Implement the `onConfigurationChanged` method in **MainActivity.java**:
 
 ```java
 import android.content.Intent; // <--- import
@@ -79,7 +85,7 @@ You can configure supported styles with the [UIUserInterfaceStyle](https://devel
 
 ## Detect the color scheme
 
-To detect the color scheme in your project, use `Appearance` and/or `useColorScheme` from `react-native`:
+To detect the color scheme in your project, use `Appearance` or `useColorScheme` from `react-native`:
 
 ```js App.js
 import { Appearance, useColorScheme } from 'react-native';
@@ -99,20 +105,17 @@ function MyComponent() {
 }
 ```
 
-In some cases, you will find it helpful to get the current color scheme imperatively with [`Appearance.getColorScheme()` and/or listen to changes with `Appearance.addChangeListener`](https://reactnative.dev/docs/appearance).
+In some cases, you will find it helpful to get the current color scheme imperatively with [`Appearance.getColorScheme()` or listen to changes with `Appearance.addChangeListener`](https://reactnative.dev/docs/appearance).
 
 ## Minimal example
 
 > Don't forget to configure your project to support the automatic color scheme as described above in [Configuration](#configuration).
 
-> [Snack](https://snack.expo.dev) is locked to light mode.
-
 <SnackInline label="useColorScheme example" dependencies={['expo-status-bar']}>
 
 ```jsx
-import React from 'react';
 import { Text, StyleSheet, View, useColorScheme } from 'react-native';
-import { StatusBar } from 'expo-status-bar'; // automatically switches bar style based on theme!
+import { StatusBar } from 'expo-status-bar'; // Automatically switches bar style based on theme.
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -135,6 +138,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  text: {
+    fontSize: 20,
+  },
   lightContainer: {
     backgroundColor: '#d0d0c0',
   },
@@ -156,6 +162,6 @@ const styles = StyleSheet.create({
 
 While you're developing your project, you can change your simulator's or device's appearance by using the following shortcuts:
 
-- If working with an iOS emulator locally, you can use the <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>a</kbd> shortcut to toggle between light and dark modes.
 - If using an Android Emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
 - If using a real device or an Android Emulator, you can toggle the system dark mode setting in the device's settings.
+- If working with an iOS emulator locally, you can use the <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>a</kbd> shortcut to toggle between light and dark modes.

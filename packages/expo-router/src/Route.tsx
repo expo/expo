@@ -1,4 +1,6 @@
-import React, { ReactNode, useContext } from 'react';
+'use client';
+
+import React, { type PropsWithChildren, useContext } from 'react';
 
 import type { ErrorBoundaryProps } from './exports';
 import { getContextKey } from './matchers';
@@ -59,7 +61,7 @@ export function useContextKey(): string {
 }
 
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node }: { children: ReactNode; node: RouteNode }) {
+export function Route({ children, node }: PropsWithChildren<{ node: RouteNode }>) {
   return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
 }
 

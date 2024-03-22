@@ -21,6 +21,11 @@ let sharedObjectIdPropertyName = "__expo_shared_object_id__"
  */
 public final class SharedObjectRegistry {
   /**
+   Weak reference to the app context for the registry.
+   */
+  private weak var appContext: AppContext?
+
+  /**
    The counter of IDs to assign to the shared object pairs.
    The next pair added to the registry will be saved using this ID.
    */
@@ -43,6 +48,20 @@ public final class SharedObjectRegistry {
     return Self.lockQueue.sync {
       return pairs.count
     }
+  }
+
+  /**
+   Shared object releaser that is common to all instances.
+   */
+  private lazy var objectReleaser: (SharedObjectId) -> Void = { [weak self] objectId in
+    self?.delete(objectId)
+  }
+
+  /**
+   The default initializer that takes the app context.
+   */
+  internal init(appContext: AppContext) {
+    self.appContext = appContext
   }
 
   /**
@@ -73,13 +92,18 @@ public final class SharedObjectRegistry {
   internal func add(native nativeObject: SharedObject, javaScript jsObject: JavaScriptObject) -> SharedObjectId {
     let id = pullNextId()
 
-    // Assigns the ID to the objects.
+    // Assign the ID and the app context to the object.
     nativeObject.sharedObjectId = id
+    nativeObject.appContext = appContext
+
+    // This property should be deprecated, but it's still used when passing as a view prop.
+    // It's already defined in the JS base SharedObject class prototype,
+    // but with the current implementation it's possible to use a raw object for registration.
     jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: [.writable])
 
-    // Set the deallocator on the JS object that deletes the entire pair.
-    jsObject.setObjectDeallocator { [weak self] in
-      self?.delete(id)
+    // Set the native state in the JS object.
+    if let runtime = try? appContext?.runtime {
+      SharedObjectUtils.setNativeState(jsObject, runtime: runtime, objectId: id, releaser: objectReleaser)
     }
 
     // Save the pair in the dictionary.

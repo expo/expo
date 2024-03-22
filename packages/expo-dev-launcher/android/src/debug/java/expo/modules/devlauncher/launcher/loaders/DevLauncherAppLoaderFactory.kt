@@ -5,6 +5,7 @@ import android.net.Uri
 import com.facebook.react.ReactNativeHost
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
+import expo.modules.devlauncher.helpers.getRuntimeVersion
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.koin.optInject
@@ -45,7 +46,8 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
         }
         DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
       } else {
-        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, installationIDHelper.getOrCreateInstallationID(context))
+        val runtimeVersion = getRuntimeVersion(context)
+        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
         val update = updatesInterface!!.loadUpdate(configuration, context) {
           manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
           return@loadUpdate !manifest!!.isUsingDeveloperTool()

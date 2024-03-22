@@ -251,7 +251,7 @@ not appear on the screen.
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -1072,7 +1072,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         
 
@@ -2465,7 +2465,7 @@ which contains all of the pertinent user and credential information.
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -3326,7 +3326,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -3633,7 +3633,7 @@ None of these options are required.
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -3957,7 +3957,7 @@ You must include the ID string of the user to sign out.
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         <p
           class="mb-4 css-1kfqm4n-TextComponent"
@@ -4734,7 +4734,7 @@ OAuth 2.0 protocol
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
         >
           <svg
             class="icon-xs text-palette-blue12"
@@ -4916,7 +4916,7 @@ OAuth 2.0 protocol
           </svg>
         </div>
         <div
-          class="css-1m74yfi-Callout"
+          class="css-1ohc0ia-Callout"
         >
           <p
             class="mb-4 css-1kfqm4n-TextComponent"
@@ -5553,7 +5553,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1m74yfi-Callout"
+          class="css-1ohc0ia-Callout"
         >
           
 
@@ -5595,7 +5595,7 @@ You will still need to handle null values for any fields you request.
           </svg>
         </div>
         <div
-          class="css-1m74yfi-Callout"
+          class="css-1ohc0ia-Callout"
         >
           <p
             class="mb-4 css-1kfqm4n-TextComponent"
@@ -5823,7 +5823,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1m74yfi-Callout"
+          class="css-1ohc0ia-Callout"
         >
           <p
             class="mb-4 css-1kfqm4n-TextComponent"
@@ -6118,7 +6118,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </svg>
         </div>
         <div
-          class="css-1m74yfi-Callout"
+          class="css-1ohc0ia-Callout"
         >
           <p
             class="mb-4 css-1kfqm4n-TextComponent"
@@ -6509,7 +6509,7 @@ provided with an
             </svg>
           </div>
           <div
-            class="css-1m74yfi-Callout"
+            class="css-1ohc0ia-Callout"
           >
             
 
@@ -7646,7 +7646,7 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="css-1m74yfi-Callout"
+                  class="css-1ohc0ia-Callout"
                 >
                   
 
@@ -8302,7 +8302,8 @@ in order to enable/disable the permission.
         </a>
       </code>
        
-      extended by:
+      extended by
+      :
     </p>
     <br />
     <div
@@ -9281,8 +9282,11 @@ you don't get this value.
         >
           PermissionHookBehavior
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>
@@ -9759,7 +9763,7 @@ exports[`APISection expo-pedometer 1`] = `
          
       </span>
       <div
-        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-7sgr13-PlatformTag"
+        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
       >
         <svg
           class="icon-xs text-palette-blue12"
@@ -10082,7 +10086,7 @@ exports[`APISection expo-pedometer 1`] = `
         </svg>
       </div>
       <div
-        class="css-1m74yfi-Callout"
+        class="css-1ohc0ia-Callout"
       >
         
 
@@ -11206,8 +11210,11 @@ in order to enable/disable the permission.
         >
           'never'
         </code>
-        <span>
-           
+        <span
+          class="css-1hmnf1v-TextComponent"
+          data-text="true"
+        >
+           | 
         </span>
       </span>
       <span>

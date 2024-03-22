@@ -8,10 +8,35 @@ export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
 export const DEFAULT_IGNORE_PATHS = [
   FINGERPRINT_IGNORE_FILENAME,
+  // Android
   '**/android/build/**/*',
+  '**/android/.cxx/**/*',
+  '**/android/.gradle/**/*',
   '**/android/app/build/**/*',
   '**/android/app/.cxx/**/*',
+  '**/android/app/.gradle/**/*',
+  '**/android-annotation/build/**/*',
+  '**/android-annotation/.cxx/**/*',
+  '**/android-annotation/.gradle/**/*',
+  '**/android-annotation-processor/build/**/*',
+  '**/android-annotation-processor/.cxx/**/*',
+  '**/android-annotation-processor/.gradle/**/*',
+
+  // Often has different line endings, thus we have to ignore it
+  '**/android/gradlew.bat',
+
+  // Android gradle plugins
+  '**/*-gradle-plugin/build/**/*',
+  '**/*-gradle-plugin/.cxx/**/*',
+  '**/*-gradle-plugin/.gradle/**/*',
+
+  // iOS
   '**/ios/Pods/**/*',
+  '**/ios/build/**/*',
+  '**/ios/*.xcworkspace/xcuserdata/**/*',
+
+  // System files that differ from machine to machine
+  '**/.DS_Store',
 
   // Ignore all expo configs because we will read expo config in a HashSourceContents already
   'app.config.ts',
@@ -26,6 +51,7 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/node_modules/expo/config.js',
   '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
+    'chalk',
     'debug',
     'escape-string-regexp',
     'getenv',
@@ -34,6 +60,7 @@ export const DEFAULT_IGNORE_PATHS = [
     'imurmurhash',
     'js-tokens',
     'json5',
+    'picocolors',
     'lines-and-columns',
     'require-from-string',
     'resolve-from',

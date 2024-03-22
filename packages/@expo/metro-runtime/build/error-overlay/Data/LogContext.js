@@ -5,14 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSelectedLog = exports.useLogs = exports.LogContext = void 0;
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const LogBoxLog_1 = require("./LogBoxLog");
 // Context provider for Array<LogBoxLog>
 exports.LogContext = react_1.default.createContext(null);
 function useLogs() {
     const logs = react_1.default.useContext(exports.LogContext);
     if (!logs) {
-        if (react_native_1.Platform.OS === 'web' && typeof window !== 'undefined') {
+        if (process.env.EXPO_OS === 'web' && typeof window !== 'undefined') {
             // Logbox data that is pre-fetched on the dev server and rendered here.
             const expoCliStaticErrorElement = document.getElementById('_expo-static-error');
             if (expoCliStaticErrorElement?.textContent) {

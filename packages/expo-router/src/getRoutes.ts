@@ -125,7 +125,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
       // filter the missing routes.
       if (node.type !== 'api' && importMode === 'sync') {
-        if (node.loadRoute()?.default) {
+        if (!node.loadRoute()?.default) {
           continue;
         }
       }
@@ -370,7 +370,7 @@ export function getIgnoreList(options?: Options) {
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
 function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<string> {
-  const match = matchArrayGroupName(key)?.[0];
+  const match = matchArrayGroupName(key);
 
   if (!match) {
     keys.add(key);

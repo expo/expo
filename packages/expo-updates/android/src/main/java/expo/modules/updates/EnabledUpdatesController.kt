@@ -5,10 +5,11 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -23,8 +24,8 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
@@ -41,6 +42,8 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
+  override var appContext: WeakReference<AppContext>? = null
+
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
@@ -66,10 +69,17 @@ class EnabledUpdatesController(
 
   private var isStartupFinished = false
 
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   @Synchronized
   private fun onStartupProcedureFinished() {
     isStartupFinished = true
     (this@EnabledUpdatesController as java.lang.Object).notify()
+    UpdatesUtils.sendQueuedEventsToAppContext(shouldEmitJsEvents, appContext, logger)
   }
 
   private val startupProcedure = StartupProcedure(
@@ -115,8 +125,6 @@ class EnabledUpdatesController(
     get() = startupProcedure.isUsingEmbeddedAssets
   private val localAssetFiles
     get() = startupProcedure.localAssetFiles
-  override val isEmergencyLaunch: Boolean
-    get() = startupProcedure.isEmergencyLaunch
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -133,8 +141,8 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    startupProcedure.onDidCreateReactInstanceManager(reactInstanceManager)
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+    startupProcedure.onDidCreateReactInstanceManager(reactContext)
   }
 
   @Synchronized
@@ -169,7 +177,7 @@ class EnabledUpdatesController(
     stateMachine.queueExecution(procedure)
   }
 
-  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
+  override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
     sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
@@ -178,14 +186,14 @@ class EnabledUpdatesController(
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = startupProcedure.emergencyLaunchException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration.runtimeVersionRaw,
@@ -280,12 +288,5 @@ class EnabledUpdatesController(
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
-
-    private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
-    private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
-    private const val UPDATE_ERROR_EVENT = "error"
-
-    const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
-    const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
   }
 }

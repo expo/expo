@@ -44,13 +44,3 @@ includeBuild(
         }.standardOutput.asText.get().trim()
     ).getParentFile()
 )
-
-if (settings.hasProperty("buildReactNativeFromSource") && settings.buildReactNativeFromSource == "true") {
-  include(":ReactAndroid")
-  project(":ReactAndroid").projectDir = new File(reactNativePackage, "../ReactAndroid");
-  include(":ReactAndroid:hermes-engine")
-  project(":ReactAndroid:hermes-engine").projectDir = new File(reactNativePackage, "../ReactAndroid/hermes-engine");
-}
-
-include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')

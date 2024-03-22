@@ -4,8 +4,10 @@ description: A library that provides access to the local file system on the devi
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-system'
 packageName: 'expo-file-system'
 iconUrl: '/static/images/packages/expo-file-system.png'
+platforms: ['android', 'ios', 'tvos']
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
@@ -14,18 +16,20 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-file-system` provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
+`expo-file-system` provides access to a file system stored locally on the device. It is also capable of uploading and downloading files from network URLs.
 
-{/* TODO: update this image so we don't have to force a white background on it */}
+<Collapsible summary="Diagram explaining how expo-file-system interacts with different resources">
+  <ImageSpotlight
+    alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
+    src="/static/images/sdk/file-system/file-system-diagram.png"
+    containerClassName="bg-palette-white"
+  />
+</Collapsible>
 
-<ImageSpotlight
-  alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
-  src="/static/images/sdk/file-system/file-system-diagram.png"
-  style={{ maxWidth: 850, maxHeight: 600 }}
-  containerStyle={{ backgroundColor: '#fff' }}
-/>
-
-<PlatformsSection android emulator ios simulator />
+<Collapsible summary="How expo-file-system works differently inside of the Expo Go app">
+  Within Expo Go, each project has a separate file system scope and has no access to the file system
+  of other projects.
+</Collapsible>
 
 ## Installation
 

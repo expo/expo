@@ -96,7 +96,7 @@ async function loadStaticParamsRecursive(
 
 /** lodash.uniqBy */
 function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
-  const seen: { [key: string]: boolean } = {};
+  const seen: Record<string, boolean> = {};
   return array.filter((item) => {
     const k = key(item);
     if (seen[k]) {

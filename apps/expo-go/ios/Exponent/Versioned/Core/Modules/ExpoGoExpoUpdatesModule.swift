@@ -45,6 +45,8 @@ final class ExpoGoExpoUpdatesModule: Module {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
+          "isEmergencyLaunch": false,
+          "emergencyLaunchReason": nil,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
           "channel": channel,
@@ -61,7 +63,8 @@ final class ExpoGoExpoUpdatesModule: Module {
         "updateId": launchedUpdate.updateId.uuidString,
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": updatesKernelService.assetFilesMapForScopeKey(scopeKey) ?? [:],
-        "isEmergencyLaunch": updatesKernelService.isEmergencyLaunchForScopeKey(scopeKey),
+        "isEmergencyLaunch": false,
+        "emergencyLaunchReason": nil,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,
         "channel": channel,
@@ -73,7 +76,7 @@ final class ExpoGoExpoUpdatesModule: Module {
 
     AsyncFunction("reload") { (promise: Promise) in
       guard let config = updatesKernelService.configForScopeKey(scopeKey) else {
-        throw UpdatesDisabledException()
+        throw UpdatesDisabledException("Updates.reloadAsync()")
       }
 
       updatesKernelService.requestRelaunchForScopeKey(scopeKey) { success in

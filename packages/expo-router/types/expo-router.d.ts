@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
-declare namespace ExpoRouter {
+namespace ExpoRouter {
   type StaticRoutes = string;
   type DynamicRoutes<T extends string> = string;
   type DynamicRouteTemplate = never;
@@ -148,6 +148,10 @@ declare namespace ExpoRouter {
               : T extends DynamicRoutes<infer _>
                 ? T
                 : never)
+          | {
+              pathname: P;
+              params?: never | InputRouteParams<P>;
+            }
     : never;
 
   /*********
@@ -157,7 +161,7 @@ declare namespace ExpoRouter {
   export type Href<T = string> = T extends object ? HrefObject<T> : Route<T>;
 
   export type HrefObject<
-    R extends object,
+    R extends object = { pathname: string },
     P = R extends { pathname: string } ? R['pathname'] : null,
   > = P extends DynamicRouteTemplate
     ? { pathname: P; params: InputRouteParams<P> }
@@ -183,6 +187,12 @@ declare namespace ExpoRouter {
     navigate: (href: Href) => void;
     /** Navigate to route without appending to the history. */
     replace: <T>(href: Href<T>) => void;
+    /** Navigate to the provided href using a push operation if possible. */
+    dismiss: (count?: number) => void;
+    /** Navigate to first screen within the lowest stack. */
+    dismissAll: () => void;
+    /** If there's history that supports invoking the `dismiss` and `dismissAll` function. */
+    canDismiss: () => boolean;
     /** Update the current route query params. */
     setParams: <T = ''>(
       params?: T extends '' ? Record<string, string | undefined | null> : InputRouteParams<T>
@@ -257,6 +267,8 @@ declare namespace ExpoRouter {
 
     /** Should replace the current route without adding to the history. */
     replace?: boolean;
+    /** Should push the current route  */
+    push?: boolean;
 
     /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
     className?: string;

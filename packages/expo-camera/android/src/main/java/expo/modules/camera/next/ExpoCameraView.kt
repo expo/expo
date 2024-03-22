@@ -4,14 +4,18 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
@@ -21,10 +25,11 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FallbackStrategy
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
@@ -63,7 +68,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.*
 import kotlin.math.roundToInt
 
 @SuppressLint("ViewConstructor")
@@ -79,6 +83,7 @@ class ExpoCameraView(
   var camera: Camera? = null
   var activeRecording: Recording? = null
 
+  private var cameraProvider: ProcessCameraProvider? = null
   private val providerFuture = ProcessCameraProvider.getInstance(context)
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
@@ -101,6 +106,12 @@ class ExpoCameraView(
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      createCamera()
+    }
+
+  var pictureSize: String = ""
     set(value) {
       field = value
       createCamera()
@@ -239,6 +250,18 @@ class ExpoCameraView(
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
+          .apply {
+            if (pictureSize.isNotEmpty()) {
+              val size = Size.parseSize(pictureSize)
+              setTargetResolution(size)
+            } else {
+              setResolutionSelector(
+                ResolutionSelector.Builder()
+                  .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                  .build()
+              )
+            }
+          }
           .build()
 
         val cameraInfo = cameraProvider.availableCameraInfos.filter {
@@ -270,6 +293,7 @@ class ExpoCameraView(
           camera?.let {
             observeCameraState(it.cameraInfo)
           }
+          this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
             CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
@@ -301,11 +325,9 @@ class ExpoCameraView(
       }
 
   private fun createVideoCapture(info: List<CameraInfo>): VideoCapture<Recorder> {
-    val supportedQualities = QualitySelector.getSupportedQualities(info[0])
-    val filteredQualities = arrayListOf(videoQuality.mapToQuality())
-      .filter { supportedQualities.contains(it) }
-
-    val qualitySelector = QualitySelector.fromOrderedList(filteredQualities)
+    val preferredQuality = videoQuality.mapToQuality()
+    val fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
+    val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
@@ -326,10 +348,17 @@ class ExpoCameraView(
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
         }
-
         else -> {}
       }
     }
+  }
+
+  @OptIn(ExperimentalCamera2Interop::class)
+  fun getAvailablePictureSizes(): List<String> {
+    return camera?.cameraInfo?.let { cameraInfo ->
+      val info = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+      info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
+    } ?: emptyList()
   }
 
   fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
@@ -343,6 +372,12 @@ class ExpoCameraView(
 
   private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+
+  fun releaseCamera() {
+    appContext.mainQueue.launch {
+      cameraProvider?.unbindAll()
+    }
+  }
 
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
     val cornerPoints = barcode.cornerPoints

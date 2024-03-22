@@ -4,9 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.launcher.Launcher
@@ -32,6 +33,13 @@ class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
+  override var appContext: WeakReference<AppContext>? = null
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference(context.reactNativeHost)
   } else {
@@ -46,9 +54,6 @@ class DisabledUpdatesController(
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
-
-  override var isEmergencyLaunch = false
-    private set
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -66,7 +71,7 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
 
   @Synchronized
   override fun start() {
@@ -76,7 +81,6 @@ class DisabledUpdatesController(
     isStarted = true
 
     launcher = NoDatabaseLauncher(context, fatalException)
-    isEmergencyLaunch = fatalException != null
     notifyController()
     return
   }
@@ -87,7 +91,7 @@ class DisabledUpdatesController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
       embeddedUpdate = null,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = fatalException,
       isEnabled = false,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
@@ -155,14 +159,14 @@ class DisabledUpdatesController(
     private val TAG = DisabledUpdatesController::class.java.simpleName
   }
 
-  override fun sendUpdateStateChangeEventToBridge(
+  override fun sendUpdateStateChangeEventToAppContext(
     eventType: UpdatesStateEventType,
     context: UpdatesStateContext
   ) {
-    sendEventToJS(EnabledUpdatesController.UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 }

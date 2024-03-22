@@ -47,6 +47,11 @@ export function getPossibleProjectRoot(caller: any) {
   return process.env.EXPO_PROJECT_ROOT;
 }
 
+/** If bundling for a react-server target. */
+export function getIsReactServer(caller: any): boolean {
+  return caller?.isReactServer ?? false;
+}
+
 export function getIsDev(caller: any) {
   if (caller?.isDev != null) return caller.isDev;
 

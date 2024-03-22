@@ -33,9 +33,6 @@ function dismissPopup() {
     }
 }
 export default {
-    get name() {
-        return 'ExpoWebBrowser';
-    },
     async openBrowserAsync(url, browserParams = {}) {
         if (typeof window === 'undefined') {
             return { type: WebBrowserResultType.CANCEL };

@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   BarcodePoint,
   BarcodeScanningResult,
@@ -31,8 +31,8 @@ const flashIcons: Record<string, string> = {
 };
 
 const volumeIcons: Record<string, string> = {
-  on: 'ios-volume-high',
-  off: 'ios-volume-mute',
+  on: 'volume-high',
+  off: 'volume-mute',
 };
 
 const photos: CameraCapturedPicture[] = [];
@@ -49,6 +49,9 @@ interface State {
   newPhotos: boolean;
   permissionsGranted: boolean;
   permission?: PermissionStatus;
+  pictureSize?: string;
+  pictureSizes: string[];
+  pictureSizeId: number;
   showGallery: boolean;
   showMoreOptions: boolean;
   mode: CameraMode;
@@ -56,6 +59,8 @@ interface State {
 }
 
 export default class CameraScreen extends React.Component<object, State> {
+  camera? = React.createRef<CameraView>();
+
   readonly state: State = {
     flash: 'off',
     zoom: 0,
@@ -69,11 +74,11 @@ export default class CameraScreen extends React.Component<object, State> {
     permissionsGranted: false,
     showGallery: false,
     showMoreOptions: false,
+    pictureSizes: [],
+    pictureSizeId: 0,
     mode: 'picture',
     recording: false,
   };
-
-  camera?: CameraView;
 
   componentDidMount() {
     if (Platform.OS !== 'web') {
@@ -115,21 +120,47 @@ export default class CameraScreen extends React.Component<object, State> {
   toggleBarcodeScanning = () =>
     this.setState((state) => ({ barcodeScanning: !state.barcodeScanning }));
 
-  takePicture = async () => {
-    if (this.camera) {
-      await this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+  collectPictureSizes = async () => {
+    const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
+    let pictureSizeId = 0;
+    if (Platform.OS === 'ios') {
+      pictureSizeId = pictureSizes.indexOf('High');
+    } else {
+      pictureSizeId = pictureSizes.length - 1;
     }
+    this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
+  };
+
+  previousPictureSize = () => this.changePictureSize(1);
+  nextPictureSize = () => this.changePictureSize(-1);
+
+  changePictureSize = (direction: number) => {
+    this.setState((state) => {
+      let newId = state.pictureSizeId + direction;
+      const length = state.pictureSizes.length;
+      if (newId >= length) {
+        newId = 0;
+      } else if (newId < 0) {
+        newId = length - 1;
+      }
+      return {
+        pictureSize: state.pictureSizes[newId],
+        pictureSizeId: newId,
+      };
+    });
+  };
+
+  takePicture = async () => {
+    await this.camera?.current?.takePictureAsync({ onPictureSaved: this.onPictureSaved });
   };
 
   recordVideo = async () => {
-    if (this.camera) {
-      this.setState((state) => ({ recording: !state.recording }));
-      if (this.state.recording) {
-        this.camera.stopRecording();
-        return Promise.resolve();
-      } else {
-        return await this.camera.recordAsync();
-      }
+    this.setState((state) => ({ recording: !state.recording }));
+    if (this.state.recording) {
+      this.camera?.current?.stopRecording();
+      return Promise.resolve();
+    } else {
+      return await this.camera?.current?.recordAsync();
     }
   };
 
@@ -261,6 +292,21 @@ export default class CameraScreen extends React.Component<object, State> {
           <Text style={{ color: this.state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.pictureSizeContainer}>
+        <Text style={styles.pictureQualityLabel}>Picture quality</Text>
+        <View style={styles.pictureSizeChooser}>
+          <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
+            <Ionicons name="arrow-back" size={14} color="white" />
+          </TouchableOpacity>
+          <View style={styles.pictureSizeLabel}>
+            <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
+          </View>
+          <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
+            <Ionicons name="arrow-forward" size={14} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 
@@ -288,13 +334,13 @@ export default class CameraScreen extends React.Component<object, State> {
   renderCamera = () => (
     <View style={{ flex: 1 }}>
       <CameraView
-        ref={(ref) => (this.camera = ref!)}
+        ref={this.camera}
         style={styles.camera}
-        onCameraReady={() => {
-          console.log('ready');
-        }}
+        onCameraReady={this.collectPictureSizes}
+        responsiveOrientationWhenOrientationLocked
         enableTorch={this.state.torchEnabled}
         facing={this.state.facing}
+        pictureSize={this.state.pictureSize}
         flash={this.state.flash}
         mode={this.state.mode}
         mute={this.state.mute}
@@ -390,7 +436,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 84,
     right: 24,
-    width: 100,
+    width: 200,
     backgroundColor: '#000000BA',
     borderRadius: 4,
     padding: 16,

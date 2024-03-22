@@ -20,18 +20,29 @@ class VideoPlayerWeb {
     src = null;
     _mountedVideos = new Set();
     _audioNodes = new Set();
-    isPlaying = false;
-    _isMuted = false;
-    timestamp = 0;
+    playing = false;
+    _muted = false;
     _volume = 1;
-    set isMuted(value) {
+    _loop = false;
+    _playbackRate = 1.0;
+    _preservesPitch = true;
+    staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
+    set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;
         });
-        this._isMuted = value;
+        this._muted = value;
     }
-    get isMuted() {
-        return this._isMuted;
+    get muted() {
+        return this._muted;
+    }
+    set playbackRate(value) {
+        this._mountedVideos.forEach((video) => {
+            video.playbackRate = value;
+        });
+    }
+    get playbackRate() {
+        return this._playbackRate;
     }
     set volume(value) {
         this._mountedVideos.forEach((video) => {
@@ -44,6 +55,33 @@ class VideoPlayerWeb {
             this._volume = video.volume;
         });
         return this._volume;
+    }
+    set loop(value) {
+        this._mountedVideos.forEach((video) => {
+            video.loop = value;
+        });
+        this._loop = value;
+    }
+    get loop() {
+        return this._loop;
+    }
+    get currentTime() {
+        // All videos should be synchronized, so we return the position of the first video.
+        return [...this._mountedVideos][0].currentTime;
+    }
+    set currentTime(value) {
+        this._mountedVideos.forEach((video) => {
+            video.currentTime = value;
+        });
+    }
+    get preservesPitch() {
+        return this._preservesPitch;
+    }
+    set preservesPitch(value) {
+        this._mountedVideos.forEach((video) => {
+            video.preservesPitch = value;
+        });
+        this._preservesPitch = value;
     }
     mountVideoView(video) {
         this._mountedVideos.add(video);
@@ -68,13 +106,13 @@ class VideoPlayerWeb {
         this._mountedVideos.forEach((video) => {
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     pause() {
         this._mountedVideos.forEach((video) => {
             video.pause();
         });
-        this.isPlaying = false;
+        this.playing = false;
     }
     replace(source) {
         this._mountedVideos.forEach((video) => {
@@ -83,7 +121,7 @@ class VideoPlayerWeb {
             video.load();
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     seekBy(seconds) {
         this._mountedVideos.forEach((video) => {
@@ -95,7 +133,7 @@ class VideoPlayerWeb {
             video.currentTime = 0;
             video.play();
         });
-        this.isPlaying = true;
+        this.playing = true;
     }
     _synchronizeWithFirstVideo(video) {
         const firstVideo = [...this._mountedVideos][0];
@@ -121,23 +159,22 @@ class VideoPlayerWeb {
             }
         };
         video.onplay = () => {
-            this.isPlaying = true;
+            this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
-            this.isPlaying = false;
+            this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
             this.volume = video.volume;
-            this.isMuted = video.muted;
+            this._muted = video.muted;
         };
         video.onseeking = () => {
-            this.timestamp = video.currentTime;
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
                     return;
@@ -145,7 +182,6 @@ class VideoPlayerWeb {
             });
         };
         video.onseeked = () => {
-            this.timestamp = video.currentTime;
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
                     return;
@@ -156,9 +192,25 @@ class VideoPlayerWeb {
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate)
                     return;
+                this._playbackRate = video.playbackRate;
                 mountedVideo.playbackRate = video.playbackRate;
             });
         };
+    }
+    release() {
+        console.warn('The `VideoPlayer.release` method is not supported on web');
+    }
+    addListener(eventName, listener) {
+        console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
+    }
+    removeListener(eventName, listener) {
+        console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
+    }
+    removeAllListeners(eventName) {
+        console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
+    }
+    emit(eventName, ...args) {
+        console.warn('The `VideoPlayer.emit` method is not yet supported on web');
     }
 }
 function mapStyles(style) {

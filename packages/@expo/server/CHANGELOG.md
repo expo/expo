@@ -4,14 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Update Node polyfills, removing `ExpoResponse` and `ExpoRequest` globals in the process. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix issue with `duplex` streams not being properly handled. ([#27436](https://github.com/expo/expo/pull/27436) by [@EvanBacon](https://github.com/EvanBacon))
 - Throw "method not found" when an API route has no exports. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix http server not properly handling headers with multiple values like Set-Cookie. ([#26652](https://github.com/expo/expo/pull/26652) by [@hdwatts](https://github.com/hdwatts))
 
 ### 💡 Others
+
+## 0.3.1 - 2024-02-01
+
+### 🐛 Bug fixes
+
+- Fix http server not properly handling headers with multiple values like Set-Cookie. ([#26652](https://github.com/expo/expo/pull/26652) by [@hdwatts](https://github.com/hdwatts))
 
 ## 0.3.0 — 2023-12-12
 

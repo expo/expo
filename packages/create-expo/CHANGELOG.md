@@ -7,12 +7,17 @@
 ### 🎉 New features
 
 - Add support for GitHub URLs in `--template` option. ([#26554](https://github.com/expo/expo/pull/26554) by [@byCedric](https://github.com/byCedric))
+- Add auto-configuration for pnpm and yarn berry. ([#27699](https://github.com/expo/expo/pull/27699) by [@byCedric](https://github.com/byCedric))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.4 - 2024-02-06
 
 ### 🐛 Bug fixes
 
 - Mark compressed `.gz` files as binary to avoid corruption when unpacking with `create-expo --template` ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
-
-### 💡 Others
 
 ## 2.1.3 — 2023-12-12
 

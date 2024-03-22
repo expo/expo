@@ -67,10 +67,26 @@ describe(getFiles, () => {
       expect.stringContaining('Proceeding without mode-specific .env')
     );
   });
-  it(`throws if NODE_ENV is not valid`, () => {
-    expect(() => getFiles('invalid')).toThrowErrorMatchingInlineSnapshot(
-      `"Environment variable "NODE_ENV=invalid" is invalid. Valid values are "development", "test", and "production"`
+  it(`warns if NODE_ENV is not valid`, () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+
+    expect(() => getFiles('invalid')).not.toThrow();
+    expect(warnSpy).toBeCalledWith(
+      expect.stringContaining('"NODE_ENV=invalid" is non-conventional')
     );
+    expect(warnSpy).toBeCalledWith(
+      expect.stringContaining('Use "development", "test", or "production"')
+    );
+
+    warnSpy.mockClear();
+  });
+  it(`does not warn if NODE_ENV is not valid when in silent mode`, () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+
+    expect(() => getFiles('invalid', { silent: true })).not.toThrow();
+    expect(warnSpy).not.toBeCalled();
+
+    warnSpy.mockClear();
   });
 });
 
@@ -262,6 +278,25 @@ describe('_getForce', () => {
         TEST_EXPAND: 'user-defined',
         TEST_VALUE_ENV: 'test',
         TEST_INTERMEDIATE: 'test',
+      },
+    });
+  });
+
+  it('expands variables safely without recursive loop', () => {
+    process.env.USER_DEFINED = 'user-defined';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        // This should not expand to itself, causing a recursive loop
+        '.env': 'TEST_EXPAND=${TEST_EXPAND}',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({
+      files: ['/.env'],
+      env: {
+        TEST_EXPAND: '${TEST_EXPAND}',
       },
     });
   });

@@ -130,8 +130,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
     previewLayer?.videoGravity = .resizeAspectFill
     previewLayer?.needsDisplayOnBoundsChange = true
+    barCodeScanner?.setPreviewLayer(previewLayer)
     #endif
-    self.changePreviewOrientation(orientation: UIApplication.shared.statusBarOrientation)
     self.initializeCaptureSessionInput()
     self.startSession()
     NotificationCenter.default.addObserver(
@@ -236,6 +236,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
 
       self.addErrorNotification()
+      self.changePreviewOrientation()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
         self.maybeStartFaceDetection(self.presetCamera != .back)
@@ -412,11 +413,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
+      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
 
-      if photoOutput.isHighResolutionCaptureEnabled {
-        photoSettings.isHighResolutionPhotoEnabled = true
-      }
       var requestedFlashMode = AVCaptureDevice.FlashMode.off
 
       switch self.flashMode {
@@ -910,13 +908,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   @objc func orientationChanged(notification: Notification) {
-    changePreviewOrientation(orientation: deviceOrientation)
+    changePreviewOrientation()
   }
 
-  func changePreviewOrientation(orientation: UIInterfaceOrientation) {
-    let videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-
+  func changePreviewOrientation() {
     EXUtilities.performSynchronously {
+      let videoOrientation = ExpoCameraUtils.videoOrientation(for: self.deviceOrientation)
       if (self.previewLayer?.connection?.isVideoOrientationSupported) == true {
         self.previewLayer?.connection?.videoOrientation = videoOrientation
       }

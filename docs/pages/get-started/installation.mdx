@@ -52,10 +52,18 @@ After installing Node.js, you can use `npx` to create a new app.
 
 ## Recommended tools
 
-- [Yarn](https://classic.yarnpkg.com/en/docs/install) for faster and more reliable dependency management. Use this instead of `npm` and `npx`.
-- [VS Code Editor](https://code.visualstudio.com/download) and [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) for easier debugging and app config autocomplete.
-- [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows) (the default terminal in VS Code) or Bash via WSL for developers who prefer Windows.
+- [Yarn Classic (v1)](https://classic.yarnpkg.com/en/docs/install) for faster and more reliable dependency management. Use this instead of `npm` and `npx`.
+- [VS Code editor](https://code.visualstudio.com/download) and the [Expo Tools VS Code extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) for easier debugging and app config autocomplete.
 
 If you are using Yarn, you can bootstrap a new app using the following command:
 
 <Terminal cmd={['$ yarn create expo']} />
+
+## Windows terminal support
+
+The Expo CLI is compatible with the following terminals on Windows 10 and higher:
+
+- [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview) (the default terminal)
+- WSL 2 (Windows Subsystem for Linux) using a Bash shell
+
+WSL 2 typically requires additional configuration to set up your development environment for testing code on a device using a [development build](/develop/development-builds/introduction/) or Expo Go. Learn more about [configuring WSL 2 for Expo development](https://expo.fyi/wsl).

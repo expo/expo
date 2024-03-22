@@ -78,7 +78,6 @@ Configuring `@sentry/react-native` can be done through the config plugin. Add th
       [
         "@sentry/react-native/expo",
         {
-          "url": "https://sentry.io/",
           "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
           "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
         }
@@ -91,6 +90,29 @@ Configuring `@sentry/react-native` can be done through the config plugin. Add th
 Next, in an environment where you want to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/build-reference/variables/#using-secrets-in-environment-variables).
 
 > **warning** The Sentry auth token should be stored securely. Do not commit it to a public repository, and treat it as you would any other sensitive API key.
+
+<Collapsible summary={<>When to add <CODE>url</CODE> to <CODE>@sentry/react-native/expo</CODE> config plugin?</>}>
+
+If you are using a self-hosted instance, you need to add the `url` property to the `@sentry/react-native/expo` config plugin.
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          /*@hide ...*/ /*@end*/
+          "url": "https://self-hosted.example.com"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Collapsible>
 
 <ConfigReactNative>
 

@@ -28,7 +28,8 @@ const externalLinks = [
     const redirectsFailed = [];
 
     const browser = await puppeteer.launch({
-      headless: 'new',
+      headless: 'shell',
+      args: ['--disable-dev-shm-usage'],
     });
     const page = await browser.newPage();
 

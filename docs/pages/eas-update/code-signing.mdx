@@ -21,7 +21,7 @@ Generate a private key and corresponding code signing certificate for your app:
 
 <Terminal
   cmd={[
-    'npx expo-updates codesigning:generate \\',
+    '$ npx expo-updates codesigning:generate \\',
     '  --key-output-directory keys \\',
     '  --certificate-output-directory certs \\',
     '  --certificate-validity-duration-years 10 \\',
@@ -42,14 +42,9 @@ Generate a private key and corresponding code signing certificate for your app:
 
 Configure your app's builds to use code signing:
 
-<Terminal
-  cmd={[
-    'npx expo-updates codesigning:configure \\',
-    '  --certificate-input-directory certs \\',
-    '  --key-input-directory keys',
-  ]}
-  cmdCopy="npx expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys"
-/>
+<Terminal cmd={[
+  '$ npx expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys',
+]} />
 
 After this step, create a new build with a new runtime version. The code signing certificate will be embedded in this new build.
 
@@ -59,7 +54,7 @@ After this step, create a new build with a new runtime version. The code signing
 
 Publish a signed update for your app:
 
-<Terminal cmd={['eas update --private-key-path keys/private-key.pem']} />
+<Terminal cmd={['$ eas update --private-key-path keys/private-key.pem']} />
 
 During `eas update`, the EAS CLI automatically detects that code signing is configured for your app. It then verifies the integrity of the update and creates a digital signature using your private key. This process is performed locally so that your private key never leaves your machine. The generated signature is automatically sent to EAS to store alongside the update.
 

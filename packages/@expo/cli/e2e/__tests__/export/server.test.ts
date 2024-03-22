@@ -2,8 +2,8 @@ import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
+import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -28,6 +28,20 @@ describe('server-output', () => {
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
+
+  function getFiles() {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    return klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+  }
 
   describe('requests', () => {
     beforeAll(async () => {
@@ -66,7 +80,7 @@ describe('server-output', () => {
         // Request missing route
         expect(
           await fetch('http://localhost:3000/methods', {
-            method: method,
+            method,
           }).then((res) => res.json())
         ).toEqual({
           method: method.toLowerCase(),
@@ -126,6 +140,60 @@ describe('server-output', () => {
       ).toMatch(/<div id="root">/);
     });
 
+    it(`can serve up static html in array group`, async () => {
+      expect(getFiles()).not.toContain('server/multi-group.html');
+      expect(getFiles()).not.toContain('server/(a,b)/multi-group.html');
+      expect(getFiles()).toContain('server/(a)/multi-group.html');
+      expect(getFiles()).toContain('server/(b)/multi-group.html');
+      expect(await fetch('http://localhost:3000/multi-group').then((res) => res.text())).toMatch(
+        /<div data-testid="multi-group">/
+      );
+    });
+
+    it(`can serve up static html in specific array group`, async () => {
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+    });
+
+    it(`can not serve up static html in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group').then((res) => res.status)
+      ).toEqual(404);
+    });
+
+    it(`can serve up API route in array group`, async () => {
+      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+      expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
+
+      expect(
+        await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+    });
+
+    it(`can serve up API route in specific array group`, async () => {
+      // Should be able to match all the group variations
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+    });
+
+    it(`can not serve up API route in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group-api').then((res) => res.status)
+      ).toEqual(404);
+    });
+
     it(
       'can use environment variables',
       async () => {
@@ -165,20 +233,60 @@ describe('server-output', () => {
       },
       5 * 1000
     );
-    it(
-      'can POST json to a route',
-      async () => {
-        const res = await fetch('http://localhost:3000/api/json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ hello: 'world' }),
-        }).then((r) => r.json());
-        expect(res).toEqual({ hello: 'world' });
-      },
-      5 * 1000
-    );
+    describe('Response.json', () => {
+      it(
+        'can POST json to a route',
+        async () => {
+          const res = await fetch('http://localhost:3000/api/json', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ hello: 'world' }),
+          }).then((r) => r.json());
+          expect(res).toEqual({ hello: 'world' });
+        },
+        5 * 1000
+      );
+    });
+    describe('Response.error', () => {
+      it(
+        'returns a 500 response',
+        async () => {
+          const res = await fetch('http://localhost:3000/api/error', {
+            method: 'GET',
+          });
+          expect(res.status).toBe(500);
+        },
+        5 * 1000
+      );
+    });
+    describe('Response.redirect', () => {
+      it(
+        'returns a 302 Location redirect',
+        async () => {
+          const res = await fetch('http://localhost:3000/api/redirect', {
+            redirect: 'manual',
+            method: 'POST',
+          });
+          expect(res.status).toBe(302);
+          expect(res.headers.get('Location')).toBe('http://test.com/redirect');
+        },
+        5 * 1000
+      );
+      it(
+        'rejects invalid status codes with an internal error',
+        async () => {
+          const res = await fetch('http://localhost:3000/api/redirect', {
+            redirect: 'manual',
+            method: 'GET',
+          });
+          expect(res.status).toBe(500);
+          expect(res.statusText).toBe('Internal Server Error');
+        },
+        5 * 1000
+      );
+    });
     it(
       'handles pinging routes with unsupported methods with 405 "Method Not Allowed"',
       async () => {
@@ -229,14 +337,7 @@ describe('server-output', () => {
       // List output files with sizes for snapshotting.
       // This is to make sure that any changes to the output are intentional.
       // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+      const files = getFiles();
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('server/+html.html');

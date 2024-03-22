@@ -42,7 +42,7 @@ class UpdatesStateMachineInstrumentationTest {
   class TestStateChangeEventSender : UpdatesStateChangeEventSender {
     var lastEventType: UpdatesStateEventType? = null
 
-    override fun sendUpdateStateChangeEventToBridge(
+    override fun sendUpdateStateChangeEventToAppContext(
       eventType: UpdatesStateEventType,
       context: UpdatesStateContext
     ) {

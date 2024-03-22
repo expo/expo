@@ -7,9 +7,12 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - On Android, intent number extras are converted to `double`. However, it must be `int`. ([#26164](https://github.com/expo/expo/pull/26164) by [@Alperengozum](https://github.com/Alperengozum))
 
 ### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.11.0 — 2023-11-14
 
@@ -113,10 +116,7 @@ _This version does not introduce any user-facing changes._
 
 - Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
-```diff
-- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
-+ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
-```## 9.1.0 — 2021-06-16
+## 9.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes
 
@@ -147,9 +147,8 @@ _This version does not introduce any user-facing changes._
 
 ## 8.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 
-*This version does not introduce any user-facing changes.*
-```
+_This version does not introduce any user-facing changes._

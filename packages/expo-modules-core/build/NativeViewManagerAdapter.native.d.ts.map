@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeViewManagerAdapter.native.d.ts","sourceRoot":"","sources":["../src/NativeViewManagerAdapter.native.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAmC1B;;GAEG;AACH,wBAAgB,wBAAwB,CAAC,CAAC,EAAE,QAAQ,EAAE,MAAM,GAAG,KAAK,CAAC,aAAa,CAAC,CAAC,CAAC,CAiDpF"}
+{"version":3,"file":"NativeViewManagerAdapter.native.d.ts","sourceRoot":"","sources":["../src/NativeViewManagerAdapter.native.tsx"],"names":[],"mappings":"AAIA,OAAO,KAAK,MAAM,OAAO,CAAC;AAuD1B;;GAEG;AACH,wBAAgB,wBAAwB,CAAC,CAAC,EAAE,QAAQ,EAAE,MAAM,GAAG,KAAK,CAAC,aAAa,CAAC,CAAC,CAAC,CAiDpF"}

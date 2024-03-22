@@ -18,27 +18,24 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 class JavaScriptModuleObject;
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
@@ -60,16 +57,16 @@ public:
   static void registerNatives();
 
   /**
-   * Pointer to the module registry interop.
-   */
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
-
-  /**
    * Returns a cached instance of jsi::Object representing this module.
    * @param runtime
    * @return Wrapped instance of JavaScriptModuleObject::HostObject
    */
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
+
+  /**
+   * Decorates the given object with properties and functions provided in the module definition.
+   */
+  void decorate(jsi::Runtime &runtime, jsi::Object *moduleObject);
 
   /**
    * Exports constants that will be assigned to the underlying HostObject.
@@ -83,7 +80,6 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -95,7 +91,6 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
@@ -105,7 +100,6 @@ public:
     jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
     jboolean takesOwner,
     jni::alias_ref<jclass> ownerClass,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -139,21 +133,18 @@ private:
 
   friend void decorateObjectWithFunctions(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithProperties(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithConstants(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );

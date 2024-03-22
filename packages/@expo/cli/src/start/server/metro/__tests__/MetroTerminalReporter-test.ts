@@ -61,6 +61,50 @@ describe('_getBundleStatusMessage', () => {
       )
     ).toMatchSnapshot();
   });
+  it(`should format standard progress for a React Server invocation`, () => {
+    const msg = stripAnsi(
+      reporter._getBundleStatusMessage(
+        {
+          bundleDetails: asBundleDetails({
+            entryFile: './index.js',
+            platform: 'ios',
+            buildID,
+            customTransformOptions: {
+              environment: 'react-server',
+            },
+          }),
+          ratio: 0.5,
+          totalFileCount: 100,
+          transformedFileCount: 50,
+        },
+        'in_progress'
+      )
+    );
+    expect(msg).toMatchSnapshot();
+    expect(msg).toMatch(/iOS/);
+  });
+  it(`should format standard progress for a web-based React Server invocation`, () => {
+    const msg = stripAnsi(
+      reporter._getBundleStatusMessage(
+        {
+          bundleDetails: asBundleDetails({
+            entryFile: './index.js',
+            platform: 'web',
+            buildID,
+            customTransformOptions: {
+              environment: 'react-server',
+            },
+          }),
+          ratio: 0.5,
+          totalFileCount: 100,
+          transformedFileCount: 50,
+        },
+        'in_progress'
+      )
+    );
+    expect(msg).toMatchSnapshot();
+    expect(msg).toMatch(/Web/);
+  });
 
   it(`should format standard progress at 0%`, () => {
     expect(
@@ -98,7 +142,7 @@ describe('_getBundleStatusMessage', () => {
           'done'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundled 100ms (./index.js)"`);
+    ).toMatchInlineSnapshot(`"Android Bundled 100ms ./index.js (100 modules)"`);
   });
   it(`should format failed loading`, () => {
     expect(
@@ -117,7 +161,7 @@ describe('_getBundleStatusMessage', () => {
           'failed'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms (./index.js)"`);
+    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms ./index.js (100 modules)"`);
   });
 });
 

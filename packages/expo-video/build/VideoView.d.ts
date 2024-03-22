@@ -1,6 +1,6 @@
 import { ReactNode, PureComponent } from 'react';
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
-export declare function useVideoPlayer(source?: string | null): VideoPlayer;
+import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
+export declare function useVideoPlayer(source: VideoSource): VideoPlayer;
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
@@ -10,6 +10,7 @@ export declare function useVideoPlayer(source?: string | null): VideoPlayer;
 export declare function isPictureInPictureSupported(): Promise<boolean>;
 export declare class VideoView extends PureComponent<VideoViewProps> {
     nativeRef: import("react").RefObject<any>;
+    replace(source: VideoSource): void;
     enterFullscreen(): void;
     exitFullscreen(): void;
     /**

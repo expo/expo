@@ -255,6 +255,7 @@ redirects[classic/turtle-cli]=archive/classic-builds/turtle-cli
 redirects[build-reference/migrating]=archive/classic-builds/migrating
 redirects[archive/classic-updates/getting-started]=eas-update/getting-started
 redirects[archived]=archive
+redirects[archive/classic-updates/building-standalone-apps]=archive/classic-builds/building-standalone-apps
 
 # Old tutorial pages
 redirects[introduction/walkthrough]=tutorial/introduction
@@ -272,6 +273,7 @@ redirects[eas-update/debug-updates]=eas-update/debug
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[eas-update/migrate-to-eas-update]=eas-update/migrate-from-classic-updates
 redirects[distribution/custom-updates-server]=eas-update/custom-updates-server
+redirects[bare/error-recovery]=eas-update/error-recovery
 
 # Redirects after Expo Router docs reorganization from Home to Guides
 redirects[routing/next-steps]=router/introduction

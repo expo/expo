@@ -1,26 +1,23 @@
-/// <reference types="../../types/jest" />
 import './expect';
 
+import { NavigationState, PartialState } from '@react-navigation/native';
 import { act, render, RenderResult, screen } from '@testing-library/react-native';
-import path from 'path';
 import React from 'react';
 
-import {
-  FileStub,
-  inMemoryContext,
-  requireContext,
-  requireContextWithOverrides,
-} from './context-stubs';
+import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { getNavigationConfig, stateCache } from '../getLinkingConfig';
-import { getExactRoutes } from '../getRoutes';
+import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
 // re-export everything
 export * from '@testing-library/react-native';
+
+afterAll(() => {
+  store.cleanup();
+});
 
 type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
@@ -31,42 +28,22 @@ type Result = ReturnType<typeof render> & {
   getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
+  getRouterState(): NavigationState<any> | PartialState<any>;
 };
 
-function isOverrideContext(
-  context: object
-): context is { appDir: string; overrides: Record<string, FileStub> } {
-  return Boolean(typeof context === 'object' && 'appDir' in context);
-}
-
-export type MockContextConfig =
-  | string // Pathname to a directory
-  | string[] // Array of filenames to mock as empty components, e.g () => null
-  | Record<string, FileStub> // Map of filenames and their exports
-  | {
-      // Directory to load as context
-      appDir: string;
-      // Map of filenames and their exports. Will override contents of files loaded in `appDir
-      overrides: Record<string, FileStub>;
-    };
-
-export function getMockConfig(context: MockContextConfig) {
-  return getNavigationConfig(getExactRoutes(getMockContext(context))!);
-}
-
-export function getMockContext(context: MockContextConfig) {
-  if (typeof context === 'string') {
-    return requireContext(path.resolve(process.cwd(), context));
-  } else if (Array.isArray(context)) {
-    return inMemoryContext(
-      Object.fromEntries(context.map((filename) => [filename, { default: () => null }]))
-    );
-  } else if (isOverrideContext(context)) {
-    return requireContextWithOverrides(context.appDir, context.overrides);
-  } else {
-    return inMemoryContext(context);
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toHavePathname(pathname: string): R;
+      toHavePathnameWithParams(pathname: string): R;
+      toHaveSegments(segments: string[]): R;
+      toHaveSearchParams(params: Record<string, string | string[]>): R;
+      toHaveRouterState(state: NavigationState<any> | PartialState<any>): R;
+    }
   }
 }
+
+export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(
   context: MockContextConfig = './app',
@@ -108,6 +85,9 @@ export function renderRouter(
     getPathnameWithParams(this: RenderResult): string {
       return getPathFromState(store.rootState!, store.linking!.config);
     },
+    getRouterState(this: RenderResult) {
+      return store.rootStateSnapshot();
+    },
   });
 }
 
@@ -128,7 +108,7 @@ export const testRouter = {
     expect(screen).toHavePathnameWithParams(path);
   },
   /** Go back in history and asset the new pathname */
-  back(path: string) {
+  back(path?: string) {
     expect(router.canGoBack()).toBe(true);
     act(() => router.back());
     if (path) {
@@ -145,5 +125,9 @@ export const testRouter = {
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }
+  },
+  /** If there's history that supports invoking the `back` function. */
+  dismissAll() {
+    act(() => router.dismissAll());
   },
 };

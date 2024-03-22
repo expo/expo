@@ -97,6 +97,14 @@ export class Package {
     return fs.pathExistsSync(path.join(this.path, 'plugin'));
   }
 
+  get hasCli(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'cli'));
+  }
+
+  get hasUtils(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'utils'));
+  }
+
   get packageName(): string {
     return this.packageJson.name;
   }

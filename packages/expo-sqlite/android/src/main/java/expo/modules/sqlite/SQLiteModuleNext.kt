@@ -51,18 +51,25 @@ class SQLiteModuleNext : Module() {
     }
 
     Class(NativeDatabase::class) {
-      Constructor { databaseName: String, options: OpenDatabaseOptions ->
-        val dbPath = pathForDatabaseName(databaseName)
+      Constructor { databaseName: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
+        val database: NativeDatabase
+        if (serializedData != null) {
+          database = deserializeDatabase(serializedData, options)
+        } else {
+          val dbPath = pathForDatabaseName(databaseName)
 
-        // Try to find opened database for fast refresh
-        findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
-          return@Constructor it
+          // Try to find opened database for fast refresh
+          findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
+            it.addRef()
+            return@Constructor it
+          }
+
+          database = NativeDatabase(databaseName, options)
+          if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
+            throw OpenDatabaseException(databaseName)
+          }
         }
 
-        val database = NativeDatabase(databaseName, options)
-        if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
-          throw OpenDatabaseException(databaseName)
-        }
         addCachedDatabase(database)
         return@Constructor database
       }
@@ -97,6 +104,13 @@ class SQLiteModuleNext : Module() {
       }
       Function("execSync") { database: NativeDatabase, source: String ->
         exec(database, source)
+      }
+
+      AsyncFunction("serializeAsync") { database: NativeDatabase, databaseName: String ->
+        return@AsyncFunction serialize(database, databaseName)
+      }
+      Function("serializeSync") { database: NativeDatabase, databaseName: String ->
+        return@Function serialize(database, databaseName)
       }
 
       AsyncFunction("prepareAsync") { database: NativeDatabase, statement: NativeStatement, source: String ->
@@ -172,6 +186,17 @@ class SQLiteModuleNext : Module() {
     }
   }
 
+  private fun deserializeDatabase(serializedData: ByteArray, options: OpenDatabaseOptions): NativeDatabase {
+    val database = NativeDatabase(MEMORY_DB_NAME, options)
+    if (database.ref.sqlite3_open(MEMORY_DB_NAME) != NativeDatabaseBinding.SQLITE_OK) {
+      throw OpenDatabaseException(MEMORY_DB_NAME)
+    }
+    if (database.ref.sqlite3_deserialize("main", serializedData) != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
+    return database
+  }
+
   @Throws(AccessClosedResourceException::class)
   private fun initDb(database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
@@ -187,6 +212,12 @@ class SQLiteModuleNext : Module() {
   private fun exec(database: NativeDatabase, source: String) {
     maybeThrowForClosedDatabase(database)
     database.ref.sqlite3_exec(source)
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun serialize(database: NativeDatabase, databaseName: String): ByteArray {
+    maybeThrowForClosedDatabase(database)
+    return database.ref.sqlite3_serialize(databaseName)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)

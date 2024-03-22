@@ -1,9 +1,6 @@
 import { ExponentFileSystemModule } from './types';
 
 const platformModule: ExponentFileSystemModule = {
-  get name(): 'ExponentFileSystem' {
-    return 'ExponentFileSystem';
-  },
   get documentDirectory(): string | null {
     return null;
   },

@@ -1,20 +1,19 @@
-import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-export default class MediaLibraryCell extends React.Component<{
+export default function MediaLibraryCell({
+  asset,
+  onPress,
+  style,
+}: {
   asset: MediaLibrary.Asset;
   onPress: (asset: MediaLibrary.Asset) => void;
   style?: StyleProp<ViewStyle>;
-}> {
-  onPress = () => {
-    const { asset } = this.props;
-    this.props.onPress(asset);
-  };
-
-  getAssetData(asset: MediaLibrary.Asset) {
+}) {
+  const data = (() => {
     switch (asset.mediaType) {
       case MediaLibrary.MediaType.photo:
         return {
@@ -41,24 +40,19 @@ export default class MediaLibraryCell extends React.Component<{
       default:
         return null;
     }
-  }
+  })();
 
-  render() {
-    const { asset, style } = this.props;
-    const data = this.getAssetData(asset);
-
-    return (
-      <TouchableOpacity style={[styles.container, style]} onPress={this.onPress}>
-        {data && data.preview}
-        {data && (
-          <View style={styles.cellFooter}>
-            <FontAwesome name={data.icon as any} size={12} color="white" />
-            <Text style={styles.description}>{data.description}</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  }
+  return (
+    <TouchableOpacity style={[styles.container, style]} onPress={() => onPress(asset)}>
+      {data && data.preview}
+      {data && (
+        <View style={styles.cellFooter}>
+          <FontAwesome name={data.icon as any} size={12} color="white" />
+          <Text style={styles.description}>{data.description}</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({

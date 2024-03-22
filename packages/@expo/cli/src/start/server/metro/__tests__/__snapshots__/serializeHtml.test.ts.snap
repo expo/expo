@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`serializes development static html 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/packages/expo-router/entry.bundle?platform=web" defer></script>
+</body></html>"
+`;
+
+exports[`serializes production static html for export 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>
+</body></html>"
+`;

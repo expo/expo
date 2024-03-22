@@ -14,6 +14,7 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import java.lang.ref.WeakReference
 import java.util.Date
 
 /**
@@ -31,16 +32,25 @@ class UpdatesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      UPDATES_EVENT_NAME,
+      UPDATES_STATE_CHANGE_EVENT_NAME,
+      UPDATE_AVAILABLE_EVENT,
+      UPDATE_NO_UPDATE_AVAILABLE_EVENT,
+      UPDATE_ERROR_EVENT
+    )
+
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-      mutableMapOf<String, Any>().apply {
+      mutableMapOf<String, Any?>().apply {
         val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
         // keep these keys in sync with ExpoGoUpdatesModule
-        this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
+        this["isEmergencyLaunch"] = constantsForModule.emergencyLaunchException != null
+        this["emergencyLaunchReason"] = constantsForModule.emergencyLaunchException?.message
         this["isEmbeddedLaunch"] = isEmbeddedLaunch
         this["isEnabled"] = constantsForModule.isEnabled
         this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
@@ -65,6 +75,18 @@ class UpdatesModule : Module() {
           this["localAssets"] = localAssets
         }
       }
+    }
+
+    OnCreate {
+      UpdatesController.bindAppContext(WeakReference(appContext))
+    }
+
+    OnStartObserving {
+      UpdatesController.shouldEmitJsEvents = true
+    }
+
+    OnStopObserving {
+      UpdatesController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { promise: Promise ->

@@ -32,17 +32,6 @@ it(`prefers filters to background color`, () => {
   expect(view.style['backdropFilter']).toBeDefined();
 });
 
-it(`uses a transparent background color when filters aren't supported`, () => {
-  // @ts-ignore
-  global.CSS = undefined;
-
-  const withoutNativeBlur = render(<BlurView tint="light" testID="blur" />);
-  const view = getByTestId(withoutNativeBlur.container, 'blur');
-
-  expect(view.style['backdropFilter']).toBeUndefined();
-  expect(view.style['backgroundColor']).toBeDefined();
-});
-
 it(`supports Animated API`, () => {
   // react-native-web 0.11 doesn't support createAnimatedComponent with functional components.
   // This test ensures that the current version of RNW in Expo works with expo-blur.

@@ -17,6 +17,7 @@ import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
   METRO_SHIMS_FOLDER,
+  REACT_CANARY_FOLDER,
   getNodeExternalModuleId,
   isNodeExternal,
   setupNodeExternals,
@@ -35,6 +36,7 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
+import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
@@ -93,6 +95,7 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Alias react-native renderer code to a vendored React canary build on native.
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -101,15 +104,20 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
+    isReactCanaryEnabled,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    isReactCanaryEnabled?: boolean;
   }
 ) {
   if (isFastResolverEnabled) {
     Log.warn(`Experimental bundling features are enabled.`);
+  }
+  if (isReactCanaryEnabled) {
+    Log.warn(`Experimental React Server Components support is enabled.`);
   }
 
   // Get the `transformer.assetRegistryPath`
@@ -198,6 +206,8 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const canaryFolder = path.join(config.projectRoot, REACT_CANARY_FOLDER);
+
   const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
   function getStrictResolver(
@@ -272,8 +282,12 @@ export function withExtendedResolver(
 
     // Node.js externals support
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      // This is a web-only feature, we may extend the shimming to native platforms in the future.
-      if (platform !== 'web') {
+      const isServer =
+        context.customResolverOptions?.environment === 'node' ||
+        context.customResolverOptions?.environment === 'react-server';
+
+      if (platform !== 'web' && !isServer) {
+        // This is a web/server-only feature, we may extend the shimming to native platforms in the future.
         return null;
       }
 
@@ -285,7 +299,7 @@ export function withExtendedResolver(
       if (
         // In browser runtimes, we want to either resolve a local node module by the same name, or shim the module to
         // prevent crashing when Node.js built-ins are imported.
-        context.customResolverOptions?.environment !== 'node'
+        !isServer
       ) {
         // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
         // then we can mock the file to use an empty module.
@@ -353,25 +367,43 @@ export function withExtendedResolver(
         return result;
       }
 
-      // Replace the web resolver with the original one.
-      // This is basically an alias for web-only.
-      // TODO: Drop this in favor of the standalone asset registry module.
-      if (shouldAliasAssetRegistryForWeb(platform, result)) {
-        // @ts-expect-error: `readonly` for some reason.
-        result.filePath = assetRegistryPath;
-      }
-
-      if (platform === 'web' && result.filePath.includes('node_modules')) {
-        // Replace with static shims
-
-        const normalName = normalizeSlashes(result.filePath)
-          // Drop everything up until the `node_modules` folder.
-          .replace(/.*node_modules\//, '');
-
-        const shimPath = path.join(shimsFolder, normalName);
-        if (fs.existsSync(shimPath)) {
+      if (platform === 'web') {
+        // Replace the web resolver with the original one.
+        // This is basically an alias for web-only.
+        // TODO: Drop this in favor of the standalone asset registry module.
+        if (shouldAliasAssetRegistryForWeb(platform, result)) {
           // @ts-expect-error: `readonly` for some reason.
-          result.filePath = shimPath;
+          result.filePath = assetRegistryPath;
+        }
+
+        if (platform === 'web' && result.filePath.includes('node_modules')) {
+          // Replace with static shims
+
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          const shimPath = path.join(shimsFolder, normalName);
+          if (fs.existsSync(shimPath)) {
+            // @ts-expect-error: `readonly` for some reason.
+            result.filePath = shimPath;
+          }
+        }
+      } else {
+        // When server components are enabled, redirect React Native's renderer to the canary build
+        // this will enable the use hook and other requisite features from React 19.
+        if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          // Files are added via the `@expo/cli/static/canary` folder.
+          const shimPath = path.join(canaryFolder, normalName);
+          if (fs.existsSync(shimPath)) {
+            debug(`Redirecting React Native module "${result.filePath}" to canary build`);
+            // @ts-expect-error: `readonly` for some reason.
+            result.filePath = shimPath;
+          }
         }
       }
 
@@ -392,7 +424,7 @@ export function withExtendedResolver(
         preferNativePlatform: platform !== 'web',
       };
 
-      if (context.customResolverOptions?.environment === 'node') {
+      if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
@@ -405,6 +437,11 @@ export function withExtendedResolver(
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         context.mainFields = ['main', 'module'];
+
+        // Enable react-server import conditions.
+        if (context.customResolverOptions?.environment === 'react-server') {
+          context.unstable_conditionNames = ['node', 'require', 'react-server', 'server'];
+        }
       } else {
         // Non-server changes
 
@@ -461,6 +498,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput,
     isFastResolverEnabled,
     isExporting,
+    isReactCanaryEnabled,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
@@ -469,6 +507,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput?: 'single' | 'static' | 'server';
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    isReactCanaryEnabled: boolean;
   }
 ) {
   if (!config.projectRoot) {
@@ -505,7 +544,10 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
-  await setupShimFiles(projectRoot);
+  await setupShimFiles(projectRoot, {
+    shims: true,
+    canary: isReactCanaryEnabled,
+  });
   await setupNodeExternals(projectRoot);
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
@@ -528,6 +570,7 @@ export async function withMetroMultiPlatformAsync(
     isExporting,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
+    isReactCanaryEnabled,
   });
 }
 

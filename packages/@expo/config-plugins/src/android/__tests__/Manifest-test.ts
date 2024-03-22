@@ -72,7 +72,7 @@ describe(addMetaDataItemToMainApplication, () => {
     const manifest = await getFixtureManifestAsync();
     const app = getMainApplication(manifest)!;
     addMetaDataItemToMainApplication(app, 'bacon', 'pancake');
-    expect(findMetaDataItem(app, 'bacon')).toBe(2);
+    expect(findMetaDataItem(app, 'bacon')).toBeGreaterThanOrEqual(0);
     removeMetaDataItemFromMainApplication(app, 'bacon');
     expect(findMetaDataItem(app, 'bacon')).toBe(-1);
   });

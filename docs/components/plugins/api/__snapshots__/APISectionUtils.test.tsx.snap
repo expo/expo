@@ -25,7 +25,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
        
     </span>
     <div
-      class="!bg-palette-green4 !text-palette-green12 !border-palette-green5 css-7sgr13-PlatformTag"
+      class="!bg-palette-green4 !text-palette-green12 !border-palette-green5 select-none css-7sgr13-PlatformTag"
     >
       <svg
         class="icon-xs text-palette-green12"
