@@ -171,6 +171,15 @@ final class EventEmitterSpec: ExpoSpec {
 
         expect(try counter.asInt()) == 2
       }
+
+      it("provides backwards compatibility for the legacy wrapper") {
+        let emittersAreEqual = try runtime.eval([
+          "emitterA = new expo.EventEmitter()",
+          "emitterB = new expo.EventEmitter(emitterA)",
+          "emitterA === emitterB"
+        ])
+        expect(try emittersAreEqual.asBool()) == true
+      }
     }
   }
 }
