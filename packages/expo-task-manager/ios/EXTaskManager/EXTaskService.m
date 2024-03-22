@@ -451,7 +451,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
  */
 - (void)_saveConfigWithDictionary:(nonnull NSDictionary *)dict
 {
-  // HANDLEDREASON CA92.1
+  // Uses required reason API based on the following reason: CA92.1
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dict forKey:NSStringFromClass([self class])];
   [userDefaults synchronize];

@@ -77,9 +77,9 @@ func exportAsset(asset: PHAsset?) -> [String: Any?]? {
     "mediaSubtypes": stringifyMedia(mediaSubtypes: asset.mediaSubtypes),
     "width": asset.pixelWidth,
     "height": asset.pixelHeight,
-    // HANDLEDREASON 0A2A.1
+    // Uses required reason API based on the following reason: 0A2A.1
     "creationTime": exportDate(asset.creationDate),
-    // HANDLEDREASON 0A2A.1
+    // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
     "duration": asset.duration
   ]

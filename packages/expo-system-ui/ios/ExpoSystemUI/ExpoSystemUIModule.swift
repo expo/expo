@@ -43,7 +43,7 @@ public class ExpoSystemUIModule: Module {
     EXUtilities.performSynchronously {
       if color == nil {
         if let window = UIApplication.shared.delegate?.window {
-          // HANDLEDREASON CA92.1
+          // Uses required reason API based on the following reason: CA92.1
           UserDefaults.standard.removeObject(forKey: colorKey)
           let interfaceStyle = window?.traitCollection.userInterfaceStyle
           window?.backgroundColor = nil
