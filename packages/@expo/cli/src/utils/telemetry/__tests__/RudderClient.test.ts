@@ -49,7 +49,12 @@ it('tries to identify when tracking event', async () => {
   const sdk = mockRudderAnalytics();
   const client = new RudderClient(sdk);
 
-  jest.mocked(getUserAsync).mockResolvedValue(mockActor);
+  jest.mocked(getUserAsync).mockImplementationOnce(() =>
+    Promise.resolve()
+      // Fake the original side-effect of `getUserAsync` to identify the user
+      .then(() => client.identify(mockActor))
+      .then(() => mockActor)
+  );
 
   expect(client.isIdentified).toBe(false);
 
@@ -76,8 +81,14 @@ it('only identifies once when recording events', async () => {
 
   // Create a long running promise, to test if `telemetry.record` awaits `getUserAsync` once
   let getUserAsyncResolve: (actor: Actor) => void;
-  const getUserAsyncPromise = new Promise<Actor>((resolve) => (getUserAsyncResolve = resolve));
-  jest.mocked(getUserAsync).mockImplementation(() => getUserAsyncPromise);
+  const getUserAsyncPromise = new Promise<Actor>((resolve) => {
+    getUserAsyncResolve = (actor) => {
+      // Fake the original side-effect of `getUserAsync` to identify the user
+      client.identify(actor).then(() => resolve(actor));
+    };
+  });
+
+  jest.mocked(getUserAsync).mockImplementationOnce(() => getUserAsyncPromise);
 
   // Record events, which should await the _same_ `getUserAsync` promise
   const recordPromise = Promise.all([

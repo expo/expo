@@ -2,7 +2,7 @@ import { ExpoConfig } from '@expo/config';
 
 import { getMetroDebugProperties } from '../getMetroDebugProperties';
 
-jest.mock('../rudderstackClient');
+jest.mock('../../telemetry');
 
 const fakeExpoConfig = {
   sdkVersion: '47.0.0',

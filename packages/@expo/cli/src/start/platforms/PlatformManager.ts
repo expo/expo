@@ -5,9 +5,9 @@ import chalk from 'chalk';
 import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
-import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
+import { logEventAsync } from '../../utils/telemetry';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 
