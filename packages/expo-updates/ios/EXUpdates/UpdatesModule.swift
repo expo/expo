@@ -70,15 +70,15 @@ public final class UpdatesModule: Module {
     }
 
     OnCreate {
-      AppController.sharedInstance.appContext = self.appContext
+      AppController.bindAppContext(self.appContext)
     }
 
     OnStartObserving {
-      AppController.sharedInstance.shouldEmitJsEvents = true
+      AppController.shouldEmitJsEvents = true
     }
 
     OnStopObserving {
-      AppController.sharedInstance.shouldEmitJsEvents = false
+      AppController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { (promise: Promise) in

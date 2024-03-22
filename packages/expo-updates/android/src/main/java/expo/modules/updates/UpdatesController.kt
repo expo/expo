@@ -3,10 +3,12 @@ package expo.modules.updates
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
+import expo.modules.kotlin.AppContext
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import java.lang.ref.WeakReference
 
 /**
  * Main entry point to expo-updates. Singleton that keeps track of updates state, holds references
@@ -140,6 +142,24 @@ class UpdatesController {
       } else {
         val logger = UpdatesLogger(context)
         logger.warn("Failed to overrideConfiguration: invalid configuration: ${updatesConfigurationValidationResult.name}")
+      }
+    }
+
+    /**
+     * For [UpdatesModule] to set the [shouldEmitJsEvents] property.
+     */
+    internal var shouldEmitJsEvents: Boolean
+      get() = singletonInstance?.shouldEmitJsEvents ?: false
+      set(value) {
+        singletonInstance?.let { it.shouldEmitJsEvents = value }
+      }
+
+    /**
+     * Binds the [AppContext] instance from [UpdatesModule].
+     */
+    internal fun bindAppContext(appContext: WeakReference<AppContext>) {
+      singletonInstance?.let {
+        it.appContext = appContext
       }
     }
   }

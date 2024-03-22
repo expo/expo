@@ -279,6 +279,21 @@ public class AppController: NSObject {
       throw dbError
     }
   }
+
+  /**
+   For `UpdatesModule` to set the `shouldEmitJsEvents` property
+   */
+  internal static var shouldEmitJsEvents: Bool {
+    get { _sharedInstance?.shouldEmitJsEvents ?? false }
+    set { _sharedInstance?.shouldEmitJsEvents = newValue }
+  }
+
+  /**
+   Binds the `AppContext` instance from `UpdatesModule`.
+   */
+  internal static func bindAppContext(_ appContext: AppContext?) {
+    _sharedInstance?.appContext = appContext
+  }
 }
 
 // swiftlint:enable identifier_name
