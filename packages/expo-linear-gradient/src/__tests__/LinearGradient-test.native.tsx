@@ -15,3 +15,11 @@ it(`renders a complex gradient`, () => {
 
   expect(screen.toJSON()).toMatchSnapshot();
 });
+
+it(`fails to typecheck with less than two colors`, () => {
+  // @ts-expect-error
+  render(<LinearGradient colors={['red']} />);
+
+  // @ts-expect-error
+  render(<LinearGradient colors={[]} />);
+});
