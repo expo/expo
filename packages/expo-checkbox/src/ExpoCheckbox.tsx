@@ -10,6 +10,7 @@ const checkmarkBase64 =
 
 export default function ExpoCheckbox({
   color,
+  borderColor,
   disabled,
   onChange,
   onValueChange,
@@ -32,7 +33,12 @@ export default function ExpoCheckbox({
         styles.root,
         style,
         value && styles.checked,
-        !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+        !!color && {
+          backgroundColor: value ? color : undefined,
+        },
+        !!borderColor && {
+          borderColor: value ? borderColor : undefined,
+        },
         disabled && styles.disabled,
         value && disabled && styles.checkedAndDisabled,
       ]}
