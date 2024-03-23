@@ -828,7 +828,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Example
       </strong>
       <span
-        class="css-1nzh6mw-CodeBlock"
+        class="[&_span]:!text-inherit css-1nzh6mw-CodeBlock"
         data-text="true"
       >
         <code
