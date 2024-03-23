@@ -48,7 +48,7 @@ function getExpoDependencyChunks({
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
     ...(includeTV
-      ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization']]
+      ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization', 'expo-crypto', 'expo-network']]
       : []),
   ];
 }
