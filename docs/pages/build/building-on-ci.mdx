@@ -4,6 +4,7 @@ description: Learn how to trigger builds on EAS for your app from a CI environme
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
@@ -53,9 +54,7 @@ Now that we're authenticated with Expo CLI, we can create the build step.
 
 To trigger new builds, we will add this script to our configuration:
 
-```sh
-npx eas-cli build --platform all --non-interactive --no-wait
-```
+<Terminal cmd={['$ npx eas-cli build --platform all --non-interactive --no-wait']} />
 
 This will trigger a new build on EAS. A URL will be printed, linking to the build's progress in the EAS dashboard.
 
@@ -68,7 +67,6 @@ This will trigger a new build on EAS. A URL will be printed, linking to the buil
 Add the following code snippet in **.travis.yml** at the root of your project repository.
 
 ```yaml travis.yml
----
 language: node_js
 node_js:
   - node

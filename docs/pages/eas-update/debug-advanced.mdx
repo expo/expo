@@ -244,9 +244,7 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
 - [Ensure the desired channel is set in our **Expo.plist**](/eas-update/updating-your-app/#configuring-the-channel-manually)
 - Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
-  ```sh
-  sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
-  ```
+  <Terminal cmd={["$ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj"]} />
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
@@ -305,13 +303,13 @@ Once we've found the root cause of the issue, there are various mitigation steps
 
 The fastest way to "undo" a bad publish is to re-publish a known good update. Imagine we have a branch with two updates:
 
-```bash
-branch: "production"
-updates: [
-  update 2 (id: xyz2) "fixes typo"     // bad update
-  update 1 (id: abc1) "updates color"  // good update
-]
-```
+<Terminal cmd={[
+  'branch: "production"',
+  'updates: [',
+  '  update 2 (id: xyz2) "fixes typo"     // bad update',
+  '  update 1 (id: abc1) "updates color"  // good update',
+  ']'
+]} />
 
 If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
@@ -336,7 +334,6 @@ The example command above would result in a branch that now appears like this:
   '  update 1 (id: abc1) "updates color"  // good update',
   ']'
 ]} />
-
 
 Since "update 3" is now the most recent update on the "production" branch, all users who query for an update in the future will receive "update 3" instead of the bad update, "update 2".
 
