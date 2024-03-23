@@ -47,6 +47,7 @@ For more information run `npx pod-install --help` (or `-h`)
 | ------------------- | ----------- | --------------------------------------------- | ---------------------- |
 | `--non-interactive` | `[boolean]` | Skip prompting to install CocoaPods with sudo | `process.stdout.isTTY` |
 | `--quiet`           | `[boolean]` | Only print errors                             | `false`                |
+| `--verbose`         | `[boolean]` | Show more debugging info                      | `false`                |
 
 ## License
 

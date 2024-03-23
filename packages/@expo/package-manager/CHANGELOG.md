@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--verbose` flag. ([#27828](https://github.com/expo/expo/pull/27828) by [@navignaw](https://github.com/navignaw))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
