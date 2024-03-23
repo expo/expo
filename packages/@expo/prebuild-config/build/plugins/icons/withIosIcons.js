@@ -63,10 +63,8 @@ function getIcons(config) {
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
   if (!icon) {
-    _configPlugins().WarningAggregator.addWarningIOS('icon', 'This is the image that your app uses on your home screen, you will need to configure it manually.');
-    return;
+    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   }
-
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
@@ -107,25 +105,31 @@ async function generateUniversalIconAsync(projectRoot, {
 }) {
   const size = 1024;
   const filename = getAppleIconName(size, 1);
-  // Using this method will cache the images in `.expo` based on the properties used to generate them.
-  // this method also supports remote URLs and using the global sharp instance.
-  const {
-    source
-  } = await (0, _imageUtils().generateImageAsync)({
-    projectRoot,
-    cacheType: IMAGE_CACHE_NAME + cacheKey
-  }, {
-    src: icon,
-    name: filename,
-    width: size,
-    height: size,
-    removeTransparency: true,
-    // The icon should be square, but if it's not then it will be cropped.
-    resizeMode: 'cover',
-    // Force the background color to solid white to prevent any transparency.
-    // TODO: Maybe use a more adaptive option based on the icon color?
-    backgroundColor: '#ffffff'
-  });
+  let source;
+  if (icon) {
+    // Using this method will cache the images in `.expo` based on the properties used to generate them.
+    // this method also supports remote URLs and using the global sharp instance.
+    source = (await (0, _imageUtils().generateImageAsync)({
+      projectRoot,
+      cacheType: IMAGE_CACHE_NAME + cacheKey
+    }, {
+      src: icon,
+      name: filename,
+      width: size,
+      height: size,
+      removeTransparency: true,
+      // The icon should be square, but if it's not then it will be cropped.
+      resizeMode: 'cover',
+      // Force the background color to solid white to prevent any transparency.
+      // TODO: Maybe use a more adaptive option based on the icon color?
+      backgroundColor: '#ffffff'
+    })).source;
+  } else {
+    // Create a white square image if no icon exists to mitigate the chance of a submission failure to the app store.
+    source = await (0, _imageUtils().createSquareAsync)({
+      size
+    });
+  }
   // Write image buffer to the file system.
   const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs().writeFile(assetPath, source);
