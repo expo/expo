@@ -87,6 +87,8 @@ const videoWrapperStyle = css({
   width: PLAYER_WIDTH,
   height: PLAYER_HEIGHT,
   backgroundColor: '#000',
+  borderRadius: 10,
+  overflow: 'hidden',
 });
 
 const dimmerStyle = css({
