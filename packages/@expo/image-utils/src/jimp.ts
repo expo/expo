@@ -117,6 +117,24 @@ export function circleAsync(jimp: Jimp): Promise<Jimp> {
   });
 }
 
+/**
+ * Create a square image of a given size and color. Defaults to a white PNG.
+ */
+export async function createSquareAsync({
+  size,
+  color = '#FFFFFF',
+  mime = Jimp.MIME_PNG,
+}: {
+  size: number;
+  color?: string;
+  mime?: any;
+}): Promise<Buffer> {
+  const image = await new Jimp(size, size, color);
+
+  // Convert Jimp image to a Buffer
+  return await image.getBufferAsync(mime);
+}
+
 export async function getJimpImageAsync(input: string | Buffer | Jimp): Promise<Jimp> {
   // @ts-ignore: Jimp types are broken
   if (typeof input === 'string' || input instanceof Buffer) return await Jimp.read(input);

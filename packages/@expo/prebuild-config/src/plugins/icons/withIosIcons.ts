@@ -1,6 +1,6 @@
 import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
+import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 
@@ -29,13 +29,8 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): string | nul
 export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const icon = getIcons(config);
   if (!icon) {
-    WarningAggregator.addWarningIOS(
-      'icon',
-      'This is the image that your app uses on your home screen, you will need to configure it manually.'
-    );
-    return;
+    WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   }
-
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
@@ -75,27 +70,42 @@ export async function generateUniversalIconAsync(
     cacheKey,
     iosNamedProjectRoot,
     platform,
-  }: { platform: 'watchos' | 'ios'; icon: string; iosNamedProjectRoot: string; cacheKey: string }
+  }: {
+    platform: 'watchos' | 'ios';
+    icon?: string | null;
+    iosNamedProjectRoot: string;
+    cacheKey: string;
+  }
 ): Promise<ContentsJson['images']> {
   const size = 1024;
   const filename = getAppleIconName(size, 1);
-  // Using this method will cache the images in `.expo` based on the properties used to generate them.
-  // this method also supports remote URLs and using the global sharp instance.
-  const { source } = await generateImageAsync(
-    { projectRoot, cacheType: IMAGE_CACHE_NAME + cacheKey },
-    {
-      src: icon,
-      name: filename,
-      width: size,
-      height: size,
-      removeTransparency: true,
-      // The icon should be square, but if it's not then it will be cropped.
-      resizeMode: 'cover',
-      // Force the background color to solid white to prevent any transparency.
-      // TODO: Maybe use a more adaptive option based on the icon color?
-      backgroundColor: '#ffffff',
-    }
-  );
+
+  let source: Buffer;
+
+  if (icon) {
+    // Using this method will cache the images in `.expo` based on the properties used to generate them.
+    // this method also supports remote URLs and using the global sharp instance.
+    source = (
+      await generateImageAsync(
+        { projectRoot, cacheType: IMAGE_CACHE_NAME + cacheKey },
+        {
+          src: icon,
+          name: filename,
+          width: size,
+          height: size,
+          removeTransparency: true,
+          // The icon should be square, but if it's not then it will be cropped.
+          resizeMode: 'cover',
+          // Force the background color to solid white to prevent any transparency.
+          // TODO: Maybe use a more adaptive option based on the icon color?
+          backgroundColor: '#ffffff',
+        }
+      )
+    ).source;
+  } else {
+    // Create a white square image if no icon exists to mitigate the chance of a submission failure to the app store.
+    source = await createSquareAsync({ size });
+  }
   // Write image buffer to the file system.
   const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs.writeFile(assetPath, source);
