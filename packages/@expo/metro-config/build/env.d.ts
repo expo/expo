@@ -9,6 +9,8 @@ declare class Env {
     get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean;
     /** Disable Environment Variable injection in client bundles. */
     get EXPO_NO_CLIENT_ENV_VARS(): boolean;
+    /** Rename `require` statements to `_$$_REQUIRE` in an additional traversal pass during transformation. */
+    get EXPO_METRO_RENAME_REQUIRES(): boolean;
 }
 export declare const env: Env;
 export {};

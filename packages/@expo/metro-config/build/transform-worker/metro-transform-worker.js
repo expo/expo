@@ -53,6 +53,8 @@ const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const resolveOptions_1 = require("./resolveOptions");
+const wrapModule_1 = require("./wrapModule");
+const env_1 = require("../env");
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -257,7 +259,7 @@ async function transformJS(file, { config, options, projectRoot }) {
         }
         else {
             // TODO: Replace this with a cheaper transform that doesn't require AST.
-            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
+            ({ ast: wrappedAst } = (0, wrapModule_1.wrapModule)(ast, importDefault, importAll, dependencyMapName, config.globalPrefix, !env_1.env.EXPO_METRO_RENAME_REQUIRES));
         }
     }
     const reserved = [];
@@ -435,6 +437,7 @@ function getCacheKey(config) {
         require.resolve(babelTransformerPath),
         require.resolve(minifierPath),
         require.resolve('metro-transform-worker/src/utils/getMinifier'),
+        require.resolve('./wrapModule'),
         require.resolve('./asset-transformer'),
         require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
         require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),

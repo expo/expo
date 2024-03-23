@@ -23,6 +23,10 @@ class Env {
     get EXPO_NO_CLIENT_ENV_VARS() {
         return (0, getenv_1.boolish)('EXPO_NO_CLIENT_ENV_VARS', false);
     }
+    /** Rename `require` statements to `_$$_REQUIRE` in an additional traversal pass during transformation. */
+    get EXPO_METRO_RENAME_REQUIRES() {
+        return (0, getenv_1.boolish)('EXPO_METRO_RENAME_REQUIRES', false);
+    }
 }
 exports.env = new Env();
 //# sourceMappingURL=env.js.map

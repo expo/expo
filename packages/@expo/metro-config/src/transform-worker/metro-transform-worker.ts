@@ -42,6 +42,8 @@ import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
 import { shouldMinify } from './resolveOptions';
+import { wrapModule } from './wrapModule';
+import { env } from '../env';
 
 export { JsTransformOptions };
 
@@ -327,12 +329,13 @@ async function transformJS(
       wrappedAst = ast;
     } else {
       // TODO: Replace this with a cheaper transform that doesn't require AST.
-      ({ ast: wrappedAst } = JsFileWrapping.wrapModule(
+      ({ ast: wrappedAst } = wrapModule(
         ast,
         importDefault,
         importAll,
         dependencyMapName,
-        config.globalPrefix
+        config.globalPrefix,
+        !env.EXPO_METRO_RENAME_REQUIRES
       ));
     }
   }
@@ -585,6 +588,7 @@ export function getCacheKey(config: JsTransformerConfig): string {
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
     require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('./wrapModule'),
     require.resolve('./asset-transformer'),
     require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
     require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
