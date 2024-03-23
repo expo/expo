@@ -9,7 +9,12 @@ import { LinearGradient } from '../LinearGradient';
 import { getLinearGradientBackgroundImage } from '../NativeLinearGradient.web';
 
 it(`renders`, () => {
-  const colors = ['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)'];
+  const colors: [string, string, ...string[]] = [
+    'cyan',
+    '#ff00ff',
+    'rgba(0,0,0,0)',
+    'rgba(0,255,255,0.5)',
+  ];
   const component = render(<LinearGradient colors={colors} testID="gradient" />);
   const view = getByTestId(component.container, 'gradient');
 
