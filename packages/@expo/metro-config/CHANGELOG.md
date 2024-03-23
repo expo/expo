@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Skip renaming `require` in iife to speed up transformation. Add `EXPO_METRO_RENAME_REQUIRES` env to re-enable this functionality.
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
 
