@@ -16,7 +16,7 @@ type TerminalProps = {
 };
 
 export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet className="[li_&]:mt-4">
+  <Snippet className="terminal-snippet [li_&]:mt-4">
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>

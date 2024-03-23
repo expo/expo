@@ -164,4 +164,13 @@ export const globalPrism = css`
   pre .line-highlight {
     margin-top: 0;
   }
+
+  .terminal-snippet {
+    .token.property,
+    .token.atrule,
+    .token.attr-value,
+    .token.function {
+      color: ${theme.palette.pink10};
+    }
+  }
 `;
