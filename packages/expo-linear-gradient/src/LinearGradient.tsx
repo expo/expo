@@ -8,6 +8,11 @@ import { Platform, processColor, ViewProps } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
 import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 
+/**
+ * A readonly array of colors that represent stops in the gradient. At least two colors are required
+ */
+export type LinearGradientColors = readonly [string, string, ...string[]];
+
 // @needsAudit
 /**
  * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
@@ -33,7 +38,7 @@ export type LinearGradientProps = ViewProps & {
    * A readonly array of colors that represent stops in the gradient. At least two colors are required
    * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
    */
-  colors: readonly [string, string, ...string[]];
+  colors: LinearGradientColors;
   /**
    * A readonly array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
    * Each number indicates a color-stop location where each respective color should be located.
