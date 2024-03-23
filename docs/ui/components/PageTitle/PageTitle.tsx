@@ -16,7 +16,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
       'flex my-2 items-center justify-between',
       'max-xl-gutters:flex-col max-xl-gutters:items-start'
     )}>
-    <H1 className="!my-0">
+    <H1 className="!my-0 !font-bold">
       {iconUrl && (
         <img
           src={iconUrl}
