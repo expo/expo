@@ -20,6 +20,7 @@ const program = new Command(packageJSON.name)
   .description('Install pods in your project')
   .option('--quiet', 'Only print errors')
   .option('--non-interactive', 'Disable interactive prompts')
+  .option('--verbose', 'Show more debugging info')
   .action((inputProjectRoot: string) => (projectRoot = inputProjectRoot))
   .allowUnknownOption()
   .parse(process.argv);
@@ -68,7 +69,9 @@ async function runAsync(): Promise<void> {
   }
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
   try {
-    await manager.installAsync();
+    await manager.installAsync({
+      verbose: !!program.verbose,
+    });
   } catch (error: any) {
     if (error.isPackageManagerError) {
       console.error(chalk.red(error.message));
