@@ -79,13 +79,13 @@ Out of the 10,000 users, 1,000 are included in the On-demand plan. As a result, 
 
 The global edge bandwidth calculation is:
 
-| Description                                       | Calculation                       | Quantity     |
-| ------------------------------------------------- | --------------------------------- | ------------ |
-| Bandwidth used to send updates                    | 5 updates _ 20 MiB _ 10,000 users | 976.5625 GiB |
+| Description                                       | Calculation                         | Quantity     |
+| ------------------------------------------------- | ----------------------------------- | ------------ |
+| Bandwidth used to send updates                    | 5 updates \* 20 MiB \* 10,000 users | 976.5625 GiB |
 |                                                   |
-| Bandwidth included in plan                        |                                   | 100 GiB      |
-| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                   | 351.5625 GiB |
-| **Total**                                         | 976.5625 - 100 - 351.5625         | 525 GiB      |
+| Bandwidth included in plan                        |                                     | 100 GiB      |
+| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB |
+| **Total**                                         | 976.5625 - 100 - 351.5625           | 525 GiB      |
 
 > **Note**: If the subscriber then sends another 20 MiB update to the same 10,000 users in the current billing cycle, they will only pay for any bandwidth overage used. This is because Expo only charges for [**unique monthly updated users**](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle).
 
