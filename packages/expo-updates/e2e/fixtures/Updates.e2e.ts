@@ -818,7 +818,8 @@ describe('JS API tests', () => {
     jestExpect(didCheckAndDownloadHappenInParallel).toEqual('false');
   });
 
-  it('Receives expected events when update available on start', async () => {
+  // This test disabled, since these events are deprecated
+  xit('Receives expected events when update available on start', async () => {
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
