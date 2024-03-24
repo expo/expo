@@ -78,7 +78,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     )
     startupProcedure.delegate = self
     stateMachine.queueExecution(stateMachineProcedure: startupProcedure)
-    shouldEmitJsEvents = true
   }
 
   /**

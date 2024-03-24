@@ -92,6 +92,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     loaderTask!.swiftDelegate = self
     loaderTask!.start()
     // swiftlint:enable force_unwrapping
+    AppController.sharedInstance.shouldEmitJsEvents = true
   }
 
   private func emergencyLaunch(fatalError error: NSError) {

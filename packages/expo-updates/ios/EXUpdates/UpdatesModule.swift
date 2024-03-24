@@ -73,14 +73,6 @@ public final class UpdatesModule: Module {
       AppController.bindAppContext(self.appContext)
     }
 
-    OnStartObserving {
-      AppController.shouldEmitJsEvents = true
-    }
-
-    OnStopObserving {
-      AppController.shouldEmitJsEvents = false
-    }
-
     AsyncFunction("reload") { (promise: Promise) in
       AppController.sharedInstance.requestRelaunch {
         promise.resolve(nil)
