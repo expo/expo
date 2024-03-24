@@ -98,6 +98,18 @@ type ManifestUsesFeature = {
         'android:required': StringBoolean;
     };
 };
+type ManifestSupportsScreens = {
+    $: {
+        'android:smallScreens'?: string;
+        'android:normalScreens'?: string;
+        'android:largeScreens'?: string;
+        'android:xlargeScreens'?: string;
+        'android:anyDensity'?: string;
+        'android:requiresSmallestWidthDp'?: string;
+        'android:compatibleWidthLimitDp'?: string;
+        'android:largestWidthLimitDp'?: string;
+    };
+};
 export type AndroidManifest = {
     manifest: {
         $: {
@@ -112,6 +124,7 @@ export type AndroidManifest = {
         'uses-feature'?: ManifestUsesFeature[];
         queries: ManifestQuery[];
         application?: ManifestApplication[];
+        'supports-screens': ManifestSupportsScreens[];
     };
 };
 type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;

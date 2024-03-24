@@ -135,6 +135,19 @@ type ManifestUsesFeature = {
   };
 };
 
+type ManifestSupportsScreens = {
+  $: {
+    'android:smallScreens'?: string;
+    'android:normalScreens'?: string;
+    'android:largeScreens'?: string;
+    'android:xlargeScreens'?: string;
+    'android:anyDensity'?: string;
+    'android:requiresSmallestWidthDp'?: string;
+    'android:compatibleWidthLimitDp'?: string;
+    'android:largestWidthLimitDp'?: string;
+  };
+};
+
 export type AndroidManifest = {
   manifest: {
     // Probably more, but this is currently all we'd need for most cases in Expo.
@@ -150,6 +163,7 @@ export type AndroidManifest = {
     'uses-feature'?: ManifestUsesFeature[];
     queries: ManifestQuery[];
     application?: ManifestApplication[];
+    'supports-screens': ManifestSupportsScreens[];
   };
 };
 

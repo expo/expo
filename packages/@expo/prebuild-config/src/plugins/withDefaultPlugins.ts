@@ -101,6 +101,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.Orientation.withOrientation,
     AndroidConfig.Permissions.withInternalBlockedPermissions,
     AndroidConfig.Permissions.withPermissions,
+    AndroidConfig.DeviceFamily.withDeviceFamily,
 
     // strings.xml
     AndroidConfig.Name.withName,

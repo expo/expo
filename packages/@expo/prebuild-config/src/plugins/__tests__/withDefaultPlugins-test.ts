@@ -172,6 +172,12 @@ function getLargeConfig(): ExportedConfig {
       ],
       allowBackup: true,
       softwareKeyboardLayoutMode: 'pan',
+      supportsScreens: {
+        smallScreens: true,
+        normalScreens: true,
+        largeScreens: true,
+        xlargeScreens: false,
+      },
     },
     _internal: { projectRoot: '/app' },
     mods: null,

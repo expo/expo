@@ -363,6 +363,12 @@ exports[`built-in plugins compiles mods 1`] = `
         "backgroundColor": "#00ffff",
       },
     },
+    "supportsScreens": {
+      "largeScreens": true,
+      "normalScreens": true,
+      "smallScreens": true,
+      "xlargeScreens": false,
+    },
     "userInterfaceStyle": "light",
     "versionCode": 6,
   },
@@ -1015,6 +1021,16 @@ exports[`built-in plugins introspects mods 1`] = `
                 ],
               },
             ],
+            "supports-screens": [
+              {
+                "$": {
+                  "android:largeScreens": "true",
+                  "android:normalScreens": "true",
+                  "android:smallScreens": "true",
+                  "android:xlargeScreens": "false",
+                },
+              },
+            ],
             "uses-permission": [
               {
                 "$": {
@@ -1646,6 +1662,12 @@ exports[`built-in plugins introspects mods 1`] = `
         "backgroundColor": "#00ffff",
       },
     },
+    "supportsScreens": {
+      "largeScreens": true,
+      "normalScreens": true,
+      "smallScreens": true,
+      "xlargeScreens": false,
+    },
     "userInterfaceStyle": "light",
     "versionCode": 6,
   },
@@ -2076,6 +2098,16 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     ],
                   },
                 ],
+              },
+            ],
+            "supports-screens": [
+              {
+                "$": {
+                  "android:largeScreens": "true",
+                  "android:normalScreens": "true",
+                  "android:smallScreens": "true",
+                  "android:xlargeScreens": "false",
+                },
               },
             ],
             "uses-permission": [
@@ -2616,6 +2648,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "dark": {
         "backgroundColor": "#00ffff",
       },
+    },
+    "supportsScreens": {
+      "largeScreens": true,
+      "normalScreens": true,
+      "smallScreens": true,
+      "xlargeScreens": false,
     },
     "userInterfaceStyle": "light",
     "versionCode": 6,

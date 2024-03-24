@@ -163,7 +163,7 @@ const withAndroidExpoPlugins = (config, props) => {
   _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
   // Note: The withAndroidIntentFilters plugin must appear before the withScheme
   // plugin or withScheme will override the output of withAndroidIntentFilters.
-  _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,
+  _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions, _configPlugins().AndroidConfig.DeviceFamily.withDeviceFamily,
   // strings.xml
   _configPlugins().AndroidConfig.Name.withName,
   // Dangerous -- these plugins run in reverse order.
