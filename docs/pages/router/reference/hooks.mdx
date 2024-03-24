@@ -94,11 +94,12 @@ export default function Route() {
 
 <APIBox header="useNavigation">
 
-Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. [Learn more](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions).
+Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.dispatch(DrawerActions.openDrawer())` in a Drawer layout. [Learn more](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions).
 
 ```jsx
 /* @info */
 import { useNavigation } from 'expo-router';
+import { DrawerActions } from "@react-navigation/native"
 /* @end */
 
 export default function Route() {
@@ -111,7 +112,7 @@ export default function Route() {
       <Text
         onPress={() => {
           /* @info Open the drawer view */
-          navigation.openDrawer();
+          navigation.dispatch(DrawerActions.openDrawer());
           /* @end */
         }}>
         Open Drawer
