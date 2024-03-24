@@ -28,7 +28,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
     /**
      * Adds a listener for the given event name.
      */
-    addListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): void;
+    addListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): EventSubscription;
     /**
      * Removes a listener for the given event name.
      */
