@@ -33,6 +33,7 @@ export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | nu
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
     ignoreEntryPoints: true,
+    platform: 'web',
   });
 
   if (!routeTree) {

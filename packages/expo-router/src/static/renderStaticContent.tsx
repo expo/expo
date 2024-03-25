@@ -27,7 +27,11 @@ AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
-  const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
+  const routeTree = getRoutes(ctx, {
+    preserveApiRoutes: true,
+    platform: 'web',
+    ...options,
+  });
 
   if (!routeTree) {
     throw new Error('No routes found');
@@ -49,7 +53,10 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
 async function getBuildTimeServerManifestAsync(
   options: Parameters<typeof getRoutes>[1] = {}
 ): Promise<ExpoRouterServerManifestV1> {
-  const routeTree = getRoutes(ctx, options);
+  const routeTree = getRoutes(ctx, {
+    platform: 'web',
+    ...options,
+  });
 
   if (!routeTree) {
     throw new Error('No routes found');

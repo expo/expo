@@ -5,6 +5,7 @@ import {
 } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
+import { Platform } from 'react-native';
 
 import {
   canGoBack,
@@ -78,7 +79,7 @@ export class RouterStore {
     this.rootStateSubscribers.clear();
     this.storeSubscribers.clear();
 
-    this.routeNode = getRoutes(context, { ignoreEntryPoints: true });
+    this.routeNode = getRoutes(context, { ignoreEntryPoints: true, platform: Platform.OS });
 
     this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;
 
