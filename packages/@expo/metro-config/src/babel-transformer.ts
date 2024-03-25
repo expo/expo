@@ -16,10 +16,7 @@ import { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
-const cacheKeyParts = [
-  fs.readFileSync(__filename),
-  require('babel-preset-fbjs/package.json').version,
-];
+const cacheKeyParts = [fs.readFileSync(__filename)];
 
 function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';

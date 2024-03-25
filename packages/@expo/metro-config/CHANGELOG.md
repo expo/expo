@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Fully remove "exotic" transformer (`@expo/metro-config/transformer`) in favor of the default Expo transformer.
+
 ### 🎉 New features
 
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))

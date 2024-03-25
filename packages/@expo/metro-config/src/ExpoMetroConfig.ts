@@ -116,22 +116,13 @@ export function getDefaultConfig(
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(
-      chalk.gray(`\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} is no longer supported.`)
+      chalk.gray(
+        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
+      )
     );
   }
 
   const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
-
-  try {
-    // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
-    // This hack is used because there doesn't appear to be anyway to resolve
-    // `babel-preset-fbjs` relative to the project root later (in `metro-expo-babel-transformer`).
-    const babelPresetFbjsPath = resolveFrom(projectRoot, 'babel-preset-fbjs/package.json');
-    process.env.EXPO_METRO_CACHE_KEY_VERSION = String(require(babelPresetFbjsPath).version);
-  } catch {
-    // noop -- falls back to a hardcoded value.
-  }
-
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 

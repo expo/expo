@@ -8,10 +8,7 @@ const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
-const cacheKeyParts = [
-    node_fs_1.default.readFileSync(__filename),
-    require('babel-preset-fbjs/package.json').version,
-];
+const cacheKeyParts = [node_fs_1.default.readFileSync(__filename)];
 function isCustomTruthy(value) {
     return value === true || value === 'true';
 }
