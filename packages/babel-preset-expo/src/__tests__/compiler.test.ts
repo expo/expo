@@ -8,7 +8,7 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 }
 
 const options = {
-  caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+  caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: false }),
   babelrc: false,
   presets: [preset],
   sourceMaps: false,

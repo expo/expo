@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`allows destructuring in the catch block 1`] = `
-"Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/src/__tests__/samples/destructure-catch.tsx";function App() {
+"Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxRuntime = require("react/jsx-runtime");function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   var foo = function () {
     try {
@@ -12,7 +12,7 @@ exports[`allows destructuring in the catch block 1`] = `
       console.error(message);
     }
   };
-  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", { children: "Hello" }, void 0, false, { fileName: _jsxFileName, lineNumber: 12, columnNumber: 10 }, this);
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", { children: "Hello" });
 }"
 `;
 
