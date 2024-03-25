@@ -21,9 +21,8 @@ module.exports = {
   ],
   ...getExpoTheme({
     backgroundImage: theme => ({
-      'default-fade': `linear-gradient(to bottom, ${theme(
-        'backgroundColor.default'
-      )}, transparent)`,
+      'default-fade': `linear-gradient(to bottom, ${theme('backgroundColor.default')}, transparent)`,
+      'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,
       appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
     }),
     fontSize: {
