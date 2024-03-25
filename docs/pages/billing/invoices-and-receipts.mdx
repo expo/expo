@@ -6,7 +6,9 @@ description: Learn how to view your account's payment history, download invoices
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-**Receipts** in the Expo dashboard provide information about an account's payment history and access to invoices and receipts. It also lists the historical data, such as payment date, payment status, and the total amount for that payment. You can also request a refund for a charge if you believe it has been made in error.
+**Receipts** in the Expo dashboard provide information about an account's payment history and access to invoices and receipts. It also provides information on payment dates, payment status, and the total amount for that payment. You can also request a refund for a charge if you believe it has been made in error.
+
+> **Note**: You can only access the **Receipts** if you have [Owner or Admin access](/accounts/working-together/#manage-access) to your account.
 
 ## Receipts
 
@@ -18,22 +20,6 @@ For example, an [Organization account's](/accounts/account-types/#organizations)
   alt="Receipts page in the Expo dashboard."
   src="/static/images/billing/receipts-01.png"
 />
-
-> **Note**: You can only access the **Receipts** if you have [Owner or Admin access](/accounts/working-together/#manage-access) to your account.
-
-### Download and view a receipt
-
-To download and view a receipt for a billing period, go to **Receipts** and:
-
-- Click the **Date** for the billing period corresponding to the receipt. You will be navigated to the appropriate receipt hosted by Stripe. As an example, the March 22, 2024 receipt below links to this page:
-
-<ImageSpotlight
-  alt="Download receipt shown in the Stripe dashboard."
-  src="/static/images/billing/receipts-02.png"
-  style={{ maxWidth: 380 }}
-/>
-
-- Click on **Download receipt.** You will receive a **.pdf** copy of the receipt.
 
 ### Download and view an invoice
 
@@ -49,13 +35,27 @@ To download and view an invoice for a billing period, go to **Receipts** and:
 
 - Click **Download invoice**. You will receive a **.pdf** copy of the invoice.
 
+### Download and view a receipt
+
+To download and view a receipt for a billing period, go to **Receipts** and:
+
+- Click the **Date** for the billing period corresponding to the receipt. You will be navigated to the appropriate receipt hosted by Stripe. As an example, the March 22, 2024 receipt below links to this page:
+
+<ImageSpotlight
+  alt="Download receipt shown in the Stripe dashboard."
+  src="/static/images/billing/receipts-02.png"
+  style={{ maxWidth: 380 }}
+/>
+
+- Click on **Download receipt.** You will receive a **.pdf** copy of the receipt.
+
 ### Request a refund
 
 You can request a refund directly from the **Receipts** page. The approval process is manual and our team investigates any errors before providing a refund.
 
 To request a refund:
 
-- Next to a receipt, there is a three-dot menu. Click the menu and then click **Request Refund:**
+- Next to a receipt, click the a three-dot menu and then click **Request Refund:**
 
 <ImageSpotlight
   alt="Receipts page in the Expo dashboard."

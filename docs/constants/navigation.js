@@ -418,7 +418,7 @@ const general = [
         makePage('billing/plans.mdx'),
         makePage('billing/manage.mdx'),
         makePage('billing/invoices-and-receipts.mdx'),
-        makePage('billing/understanding-invoices-and-receipts.mdx'),
+        // makePage('billing/understanding-invoices-and-receipts.mdx'),
         makePage('billing/usage-based-pricing.mdx'),
         makePage('billing/faq.mdx'),
       ]),
