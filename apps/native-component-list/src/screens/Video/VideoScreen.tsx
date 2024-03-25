@@ -1,8 +1,8 @@
-import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
 import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
+import { useVideoPlayer, VideoView, VideoSource, VideoPlayerEvents } from 'expo-video';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -30,7 +30,14 @@ const androidDrmSource: VideoSource = {
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
 const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
-
+const eventsToListen: (keyof VideoPlayerEvents)[] = [
+  'statusChange',
+  'playingChange',
+  'playbackRateChange',
+  'volumeChange',
+  'playToEnd',
+  'sourceChange',
+];
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
   videoSources.push(androidDrmSource);
@@ -42,16 +49,23 @@ export default function VideoScreen() {
   const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
-  const [selectedSource, setSelectedSource] = React.useState<number>(0);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
   const [loop, setLoop] = React.useState(false);
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
-  const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
+  const [preservePitch, setPreservePitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
+  const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
+  const [logEvents, setLogEvents] = React.useState(false);
 
-  const player = useVideoPlayer(videoSources[selectedSource]);
+  const player = useVideoPlayer(currentSource, (player) => {
+    player.volume = volume;
+    player.loop = loop;
+    player.preservesPitch = preservePitch;
+    player.staysActiveInBackground = staysActiveInBackground;
+    player.play();
+  });
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -67,15 +81,15 @@ export default function VideoScreen() {
 
   const seekBy = useCallback(() => {
     player.seekBy(10);
-  }, []);
+  }, [player]);
 
   const replay = useCallback(() => {
     player.replay();
-  }, []);
+  }, [player]);
 
   const toggleMute = useCallback(() => {
     player.muted = !player.muted;
-  }, []);
+  }, [player]);
 
   const togglePictureInPicture = useCallback(() => {
     if (!isInPictureInPicture) {
@@ -90,7 +104,7 @@ export default function VideoScreen() {
       player.staysActiveInBackground = staysActive;
       setStaysActiveInBackground(staysActive);
     },
-    [staysActiveInBackground]
+    [staysActiveInBackground, player]
   );
 
   const updateLoop = useCallback(
@@ -98,18 +112,34 @@ export default function VideoScreen() {
       player.loop = loop;
       setLoop(loop);
     },
-    [loop]
+    [loop, player]
   );
 
-  const updatePreservesPitch = useCallback((correctPitch: boolean) => {
-    player.preservesPitch = correctPitch;
-    setCorrectsPitch(correctPitch);
-  }, []);
+  const updatePreservesPitch = useCallback(
+    (preservesPitch: boolean) => {
+      player.preservesPitch = preservesPitch;
+      setPreservePitch(preservesPitch);
+    },
+    [player]
+  );
 
   useEffect(() => {
-    player.play();
-    player.preservesPitch = shouldCorrectPitch;
-  }, []);
+    if (logEvents) {
+      eventsToListen.forEach((eventName) => {
+        player.addListener(eventName, (newValue: any, _: any, error: any) => {
+          console.log(
+            `${eventName}: ${JSON.stringify(newValue)} ${(error && JSON.stringify(error)) ?? ''}`
+          );
+        });
+      });
+    }
+
+    return () => {
+      eventsToListen.forEach((eventName) => {
+        player.removeAllListeners(eventName);
+      });
+    };
+  }, [logEvents, player]);
 
   return (
     <View style={styles.contentContainer}>
@@ -141,10 +171,9 @@ export default function VideoScreen() {
           itemStyle={Platform.OS === 'ios' && { height: 150 }}
           style={styles.picker}
           mode="dropdown"
-          selectedValue={selectedSource}
+          selectedValue={videoSources.indexOf(currentSource)}
           onValueChange={(value: number) => {
-            setSelectedSource(value);
-            player.replace(videoSources[value]);
+            setCurrentSource(videoSources[value]);
           }}>
           {videoSources.map((source, index) => (
             <Picker.Item key={index} label={videoLabels[index]} value={index} />
@@ -232,8 +261,15 @@ export default function VideoScreen() {
         <View style={styles.row}>
           <TitledSwitch
             title="Should correct pitch"
-            value={shouldCorrectPitch}
+            value={preservePitch}
             setValue={updatePreservesPitch}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Log events"
+            value={logEvents}
+            setValue={setLogEvents}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />

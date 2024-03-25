@@ -160,55 +160,6 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "file",
   },
   {
-    "filePath": "node_modules/chalk/index.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/node_modules/ansi-styles/index.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/node_modules/ansi-styles/node_modules/color-convert/index.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/node_modules/ansi-styles/node_modules/color-convert/conversions.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/node_modules/ansi-styles/node_modules/color-convert/node_modules/color-name/index.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/node_modules/ansi-styles/node_modules/color-convert/route.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
-    "filePath": "node_modules/chalk/templates.js",
-    "reasons": [
-      "expoConfigPlugins",
-    ],
-    "type": "file",
-  },
-  {
     "filePath": ".gitignore",
     "reasons": [
       "bareGitIgnore",

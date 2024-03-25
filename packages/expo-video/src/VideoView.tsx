@@ -1,18 +1,29 @@
-import { ReactNode, PureComponent, useMemo, createRef } from 'react';
+import { SharedObject } from 'expo-modules-core';
+import {
+  ReactNode,
+  PureComponent,
+  DependencyList,
+  createRef,
+  useRef,
+  useMemo,
+  useEffect,
+} from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
 import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
 
-export function useVideoPlayer(source: VideoSource): VideoPlayer {
-  return useMemo(() => {
-    if (typeof source === 'string') {
-      return new NativeVideoModule.VideoPlayer({
-        uri: source,
-      });
-    }
-    return new NativeVideoModule.VideoPlayer(source);
-  }, []);
+export function useVideoPlayer(
+  source: VideoSource,
+  setup?: (player: VideoPlayer) => void
+): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return useReleasingSharedObject(() => {
+    const player = new NativeVideoModule.VideoPlayer(parsedSource);
+    setup?.(player);
+    return player;
+  }, [JSON.stringify(parsedSource)]);
 }
 
 /**
@@ -83,4 +94,52 @@ function getPlayerId(player: number | VideoPlayer): number | null {
     return player;
   }
   return null;
+}
+
+/**
+ * Returns a shared object, which is automatically cleaned up when the component is unmounted.
+ */
+function useReleasingSharedObject<T extends SharedObject>(
+  factory: () => T,
+  dependencies: DependencyList
+): T {
+  const objectRef = useRef<T | null>(null);
+  const isFastRefresh = useRef(false);
+  const previousDependencies = useRef<DependencyList>(dependencies);
+
+  if (objectRef.current == null) {
+    objectRef.current = factory();
+  }
+
+  const object = useMemo(() => {
+    let newObject = objectRef.current;
+    const dependenciesAreEqual =
+      previousDependencies.current?.length === dependencies.length &&
+      dependencies.every((value, index) => value === previousDependencies.current[index]);
+
+    // If the dependencies have changed, release the previous object and create a new one, otherwise this has been called
+    // because of a fast refresh, and we don't want to release the object.
+    if (!newObject || !dependenciesAreEqual) {
+      objectRef.current?.release();
+      newObject = factory();
+      objectRef.current = newObject;
+      previousDependencies.current = dependencies;
+    } else {
+      isFastRefresh.current = true;
+    }
+    return newObject;
+  }, dependencies);
+
+  useEffect(() => {
+    isFastRefresh.current = false;
+
+    return () => {
+      // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
+      if (!isFastRefresh.current && objectRef.current) {
+        objectRef.current.release();
+      }
+    };
+  }, []);
+
+  return object;
 }

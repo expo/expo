@@ -124,6 +124,10 @@ class CameraViewNextModule : Module() {
         view.setShouldScanBarcodes(enabled ?: false)
       }
 
+      Prop("pictureSize") { view, pictureSize: String? ->
+        view.pictureSize = pictureSize ?: ""
+      }
+
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
           view.takePicture(options, promise, cacheDirectory)
@@ -136,6 +140,10 @@ class CameraViewNextModule : Module() {
           }
         }
       }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("getAvailablePictureSizes") { view: ExpoCameraView ->
+        return@AsyncFunction view.getAvailablePictureSizes()
+      }
 
       AsyncFunction("record") { view: ExpoCameraView, options: RecordingOptions, promise: Promise ->
         if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {

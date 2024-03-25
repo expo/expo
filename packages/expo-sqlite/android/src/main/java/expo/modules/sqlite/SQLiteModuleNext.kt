@@ -60,6 +60,7 @@ class SQLiteModuleNext : Module() {
 
           // Try to find opened database for fast refresh
           findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
+            it.addRef()
             return@Constructor it
           }
 

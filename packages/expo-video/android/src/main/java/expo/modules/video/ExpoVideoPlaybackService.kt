@@ -8,16 +8,16 @@ import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
-import androidx.media3.session.MediaSession
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.CommandButton
+import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.MediaStyleNotificationHelper
 import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
-import androidx.annotation.OptIn
-import androidx.media3.common.util.UnstableApi
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
@@ -25,7 +25,6 @@ class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 class ExpoVideoPlaybackService : MediaSessionService() {
   private val mediaSessions = mutableMapOf<ExoPlayer, MediaSession>()
   private val binder = PlaybackServiceBinder(this)
-  private var mediaSession: MediaSession? = null
 
   private val commandSeekForward = SessionCommand(SEEK_FORWARD_COMMAND, Bundle.EMPTY)
   private val commandSeekBackward = SessionCommand(SEEK_BACKWARD_COMMAND, Bundle.EMPTY)
@@ -58,8 +57,12 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
   fun unregisterPlayer(player: ExoPlayer) {
     hidePlayerNotification(player)
-    mediaSessions[player]?.release()
-    mediaSessions.remove(player)
+    val session = mediaSessions.remove(player)
+    session?.release()
+    if (mediaSessions.isEmpty()) {
+      cleanup()
+      stopSelf()
+    }
   }
 
   override fun onBind(intent: Intent?): IBinder {
@@ -72,21 +75,17 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   override fun onTaskRemoved(rootIntent: Intent?) {
+    cleanup()
     stopSelf()
   }
 
   override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-    return mediaSession
+    return null
   }
 
   override fun onDestroy() {
     cleanup()
     super.onDestroy()
-  }
-
-  override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    super.onStartCommand(intent, flags, startId)
-    return START_NOT_STICKY
   }
 
   private fun createNotification(session: MediaSession) {
@@ -112,11 +111,11 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   private fun cleanup() {
+    hideAllNotifications()
     mediaSessions.forEach { (_, session) ->
       session.release()
     }
     mediaSessions.clear()
-    hideAllNotifications()
   }
 
   private fun hidePlayerNotification(player: ExoPlayer) {

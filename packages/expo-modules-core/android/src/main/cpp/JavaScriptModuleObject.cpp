@@ -150,7 +150,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
-      ) {
+      ) -> jsi::Value {
         auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
         decorateObjectWithProperties(runtime, thisObject.get(),
                                      classObject);
@@ -170,7 +170,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
             count
           );
           if (result == nullptr) {
-            return;
+            return jsi::Value(runtime, thisValue);
           }
           jobject unpackedResult = result.get();
           jclass resultClass = env->GetObjectClass(unpackedResult);
@@ -187,6 +187,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
             );
             jsiContext->registerSharedObject(result, jsThisObject);
           }
+          return jsi::Value(runtime, thisValue);
         } catch (jni::JniException &jniException) {
           rethrowAsCodedError(runtime, jniException);
         }

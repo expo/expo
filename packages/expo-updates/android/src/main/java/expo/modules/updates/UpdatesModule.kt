@@ -42,14 +42,15 @@ class UpdatesModule : Module() {
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-      mutableMapOf<String, Any>().apply {
+      mutableMapOf<String, Any?>().apply {
         val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
         // keep these keys in sync with ExpoGoUpdatesModule
-        this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
+        this["isEmergencyLaunch"] = constantsForModule.emergencyLaunchException != null
+        this["emergencyLaunchReason"] = constantsForModule.emergencyLaunchException?.message
         this["isEmbeddedLaunch"] = isEmbeddedLaunch
         this["isEnabled"] = constantsForModule.isEnabled
         this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
@@ -77,15 +78,15 @@ class UpdatesModule : Module() {
     }
 
     OnCreate {
-      UpdatesController.instance.appContext = WeakReference(appContext)
+      UpdatesController.bindAppContext(WeakReference(appContext))
     }
 
     OnStartObserving {
-      UpdatesController.instance.shouldEmitJsEvents = true
+      UpdatesController.shouldEmitJsEvents = true
     }
 
     OnStopObserving {
-      UpdatesController.instance.shouldEmitJsEvents = false
+      UpdatesController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { promise: Promise ->

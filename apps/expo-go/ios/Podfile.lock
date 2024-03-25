@@ -156,6 +156,8 @@ PODS:
   - ExpoSQLite (13.1.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
+    - sqlite3/fts (~> 3.42.0)
+    - sqlite3/fts5 (~> 3.42.0)
   - ExpoStoreReview (6.8.2):
     - ExpoModulesCore
   - ExpoSymbols (0.0.1):
@@ -164,7 +166,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.3.0):
     - ExpoModulesCore
-  - ExpoVideo (0.3.1):
+  - ExpoVideo (1.0.0-alpha.1):
     - ExpoModulesCore
   - ExpoVideoThumbnails (7.9.0):
     - ExpoModulesCore
@@ -1448,6 +1450,10 @@ PODS:
   - sqlite3 (3.42.0):
     - sqlite3/common (= 3.42.0)
   - sqlite3/common (3.42.0)
+  - sqlite3/fts (3.42.0):
+    - sqlite3/common
+  - sqlite3/fts5 (3.42.0):
+    - sqlite3/common
   - Stripe (23.18.3):
     - StripeApplePay (= 23.18.3)
     - StripeCore (= 23.18.3)
@@ -1970,7 +1976,7 @@ SPEC CHECKSUMS:
   EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
   Expo: 2d88b1f9b7a511015414d8c40cc8c6af13c469eb
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
-  ExpoAsset: 518654245b6a5f4d498b96d49eaa9888070e70e8
+  ExpoAsset: 751d84b1c4d91a1eddf4a4e356c9e9948ae20153
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
@@ -1981,7 +1987,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
   ExpoContacts: f38a91d87fa5e5e25ef144f2619de24fdd0f9eb7
-  ExpoCrypto: f1c0cbaa168759159e781abf16cf8055a9a1a624
+  ExpoCrypto: 37237535ce83cad43186b5998cdb3f2ae421dd7c
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
   ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
@@ -1999,7 +2005,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
   ExpoModulesCore: 7944dab86cc6d2cd3fd291293296aa33fd0d5b2c
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
-  ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
+  ExpoNetwork: ce6ddfce15230a6585c2aea973033abf783ca84e
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
   ExpoScreenCapture: c3c120b095594bf7ae003251c1b89260566587f6
@@ -2009,12 +2015,12 @@ SPEC CHECKSUMS:
   ExpoSharing: 752ad6ae2b693de9cd4e7fddb78297bdc658b815
   ExpoSMS: aca5b62dbfef73670cb35d0ebd9a2017899bbb2d
   ExpoSpeech: 5e108798facd5e77e0ff040bdae6907aebeed6c5
-  ExpoSQLite: d94fa32e0c3c0038f6bd345530f4816abb0b89fb
+  ExpoSQLite: 9ef28fb70cdf40a134cbb6b59c85d5e7b8b3acb4
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
   ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
-  ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd
+  ExpoVideo: 48de519a2cbd639218f2fcff8da50f650dc21b22
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279

@@ -55,9 +55,6 @@ class DisabledUpdatesController(
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
 
-  override var isEmergencyLaunch = false
-    private set
-
   @get:Synchronized
   override val launchAssetFile: String?
     get() {
@@ -84,7 +81,6 @@ class DisabledUpdatesController(
     isStarted = true
 
     launcher = NoDatabaseLauncher(context, fatalException)
-    isEmergencyLaunch = fatalException != null
     notifyController()
     return
   }
@@ -95,7 +91,7 @@ class DisabledUpdatesController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
       embeddedUpdate = null,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = fatalException,
       isEnabled = false,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,

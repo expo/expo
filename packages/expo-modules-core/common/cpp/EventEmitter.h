@@ -16,10 +16,10 @@ namespace expo::EventEmitter {
 class Listeners {
 private:
   friend class NativeState;
-  friend void addListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
-  friend void removeListener(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
-  friend void removeAllListeners(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName);
-  friend void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
+  friend void addListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeAllListeners(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName);
+  friend void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
 
   /**
    Type of the list containing listeners for the specific event name.
@@ -86,20 +86,7 @@ public:
    Gets event emitter's native state from the given object.
    If `createIfMissing` is set to `true`, the state will be automatically created.
    */
-  static Shared get(jsi::Runtime &runtime, jsi::Object &object, bool createIfMissing = false);
-};
-
-/**
- Native state for the event listener subscription. Holds the related emitter and listener.
- */
-class JSI_EXPORT SubscriptionNativeState : public jsi::NativeState {
-public:
-  using Shared = std::shared_ptr<SubscriptionNativeState>;
-
-  SubscriptionNativeState(jsi::Object emitter, jsi::Function listener);
-
-  jsi::Object emitter;
-  const jsi::Function listener;
+  static Shared get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing = false);
 };
 
 /**

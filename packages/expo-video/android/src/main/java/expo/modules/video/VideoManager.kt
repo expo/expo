@@ -1,7 +1,10 @@
 package expo.modules.video
 
 import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.records.VideoSource
+import java.lang.ref.WeakReference
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
 @OptIn(UnstableApi::class)
@@ -12,7 +15,10 @@ object VideoManager {
   private var videoViews = mutableMapOf<String, VideoView>()
 
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
-  private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, ArrayList<VideoView>>()
+  private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
+
+  // Keeps track of all existing MediaItems and their corresponding VideoSources. Used for recognizing source of MediaItems.
+  private var mediaItemsToVideoSources = mutableMapOf<String, WeakReference<VideoSource>>()
 
   fun registerVideoView(videoView: VideoView) {
     videoViews[videoView.id] = videoView
@@ -27,11 +33,22 @@ object VideoManager {
   }
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
-    videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: arrayListOf()
+    videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
   }
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews.remove(videoPlayer)
+  }
+
+  fun registerVideoSourceToMediaItem(mediaItem: MediaItem, videoSource: VideoSource) {
+    mediaItemsToVideoSources[mediaItem.mediaId] = WeakReference(videoSource)
+  }
+
+  fun getVideoSourceFromMediaItem(mediaItem: MediaItem?): VideoSource? {
+    if (mediaItem == null) {
+      return null
+    }
+    return mediaItemsToVideoSources[mediaItem.mediaId]?.get()
   }
 
   fun onVideoPlayerAttachedToView(videoPlayer: VideoPlayer, videoView: VideoView) {
@@ -56,9 +73,7 @@ object VideoManager {
     }
   }
 
-  fun onAppForegrounded() {
-    // TODO: Left here for future use
-  }
+  fun onAppForegrounded() = Unit
 
   fun onAppBackgrounded() {
     for (videoView in videoViews.values) {

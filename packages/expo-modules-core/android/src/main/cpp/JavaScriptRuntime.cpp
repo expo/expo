@@ -9,6 +9,8 @@
 
 #if UNIT_TEST
 
+#include "TestingSyncJSCallInvoker.h"
+
 #if USE_HERMES
 
 #include <hermes/hermes.h>
@@ -27,31 +29,7 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-namespace {
-
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func)
-
-  noexcept override{
-    func();
-  }
-
-  void invokeSync(std::function<void()> &&func) override {
-    func();
-  }
-
-  ~SyncCallInvoker() override = default;
-};
-
-} // namespace
-
-JavaScriptRuntime::JavaScriptRuntime()
-  : jsInvoker(std::make_shared<SyncCallInvoker>()) {
+JavaScriptRuntime::JavaScriptRuntime() {
 #if !UNIT_TEST
   throw std::logic_error(
     "The JavaScriptRuntime constructor is only available when UNIT_TEST is defined.");
@@ -84,6 +62,8 @@ JavaScriptRuntime::JavaScriptRuntime()
 #else
   runtime = facebook::jsc::makeJSCRuntime();
 #endif
+
+  jsInvoker = std::make_shared<TestingSyncJSCallInvoker>(runtime);
 
   // By default "global" property isn't set.
   runtime->global().setProperty(

@@ -18,7 +18,7 @@
 - Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323), [#27387](https://github.com/expo/expo/pull/27387) by [@wschurman](https://github.com/wschurman))
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Add ability to override build-time fingerprint. ([#27597](https://github.com/expo/expo/pull/27597) by [@wschurman](https://github.com/wschurman))
-
+- Expose emergency launch reason on constants. ([#27714](https://github.com/expo/expo/pull/27714) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
@@ -27,6 +27,7 @@
 - Make error messages consistent across platforms for dev client and disabled controllers. ([#26988](https://github.com/expo/expo/pull/26988) by [@wschurman](https://github.com/wschurman))
 - Fixed ANR issue from Detox testing on Android. ([#27031](https://github.com/expo/expo/pull/27031) by [@kudo](https://github.com/kudo))
 - Fix inconsistent hashes for autolinking for fingerprint policy. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
+- Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
