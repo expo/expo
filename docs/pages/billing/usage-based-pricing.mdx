@@ -24,24 +24,24 @@ For EAS Build, a flat fee is charged for an individual build executed at higher-
 For example, consider an account subscribed to the Production plan which does 15 medium Android builds, and 10 large iOS builds in a billing cycle:
 
 | Description             | Price | Quantity | Total |
-| ----------------------- | ----- | -------- | ----- |
-| Android builds (medium) | $1    | 15       | $15   |
-| iOS builds (large)      | $4    | 10       | $40   |
-| EAS Build Credit        |       |          | -$55  |
-| **Total**               |       |          | $0    |
+| ----------------------- | ----: | -------: | ----: |
+| Android builds (medium) |    $1 |       15 |   $15 |
+| iOS builds (large)      |    $4 |       10 |   $40 |
+| EAS Build Credit        |       |          |  -$55 |
+| **Total**               |       |          |    $0 |
 
 Since the credit is included in the Production plan, the subscriber pays $0 for their 25 builds.
 
 Next, consider another example where the credit limit is exceeded:
 
 | Description             | Price | Quantity | Total |
-| ----------------------- | ----- | -------- | ----- |
-| Android builds (medium) | $1    | 20       | $20   |
-| Android builds (large)  | $2    | 10       | $20   |
-| iOS builds (medium)     | $2    | 15       | $30   |
-| iOS builds (large)      | $4    | 15       | $60   |
-| EAS Build Credit        |       |          | -$99  |
-| **Total**               |       |          | $31   |
+| ----------------------- | ----: | -------: | ----: |
+| Android builds (medium) |    $1 |       20 |   $20 |
+| Android builds (large)  |    $2 |       10 |   $20 |
+| iOS builds (medium)     |    $2 |       15 |   $30 |
+| iOS builds (large)      |    $4 |       15 |   $60 |
+| EAS Build Credit        |       |          |  -$99 |
+| **Total**               |       |          |   $31 |
 
 In this scenario, the subscriber pays $31 for 60 builds instead of $130 because the EAS Build Credit covers $99.
 
@@ -67,8 +67,8 @@ Each plan has a number of monthly updated users and global edge bandwidth includ
 For example, let's consider a subscriber to the On-demand plan who deploys 5 updates of 20 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's overage bill will be:
 
 | Description           | Price           | Quantity | Total |
-| --------------------- | --------------- | -------- | ----- |
-| Updated users         | $0.005 per user | 9,000    | $45   |
+| --------------------- | --------------- | -------- | ----: |
+| Updated users         | $0.005 per user | 9,000    |   $45 |
 | Global edge bandwidth | $0.10 per GiB   | 525 GiB  | $52.5 |
 | **Total**             |                 |          | $97.5 |
 
