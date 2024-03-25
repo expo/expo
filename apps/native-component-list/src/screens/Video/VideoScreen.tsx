@@ -1,8 +1,8 @@
-import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
 import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
+import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 

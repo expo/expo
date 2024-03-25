@@ -501,7 +501,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.3.0):
     - ExpoModulesCore
-  - ExpoVideo (0.3.1):
+  - ExpoVideo (1.0.0-alpha.1):
     - ExpoModulesCore
   - ExpoVideoThumbnails (7.9.0):
     - ExpoModulesCore
@@ -2484,7 +2484,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 3f87f2b892d4dd30f2ab3fe2a356a72fe0e3de11
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
-  ExpoAsset: 518654245b6a5f4d498b96d49eaa9888070e70e8
+  ExpoAsset: 751d84b1c4d91a1eddf4a4e356c9e9948ae20153
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
   ExpoBackgroundFetch: 094377b73648adb55032a440f50cad1a5d3c3a89
   ExpoBattery: c75a7c094d64d89d96d3e3f419627b152da94f29
@@ -2495,7 +2495,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 463763547a7489d8fc68d3cc539b666f308a0fe9
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
   ExpoContacts: f38a91d87fa5e5e25ef144f2619de24fdd0f9eb7
-  ExpoCrypto: f1c0cbaa168759159e781abf16cf8055a9a1a624
+  ExpoCrypto: 37237535ce83cad43186b5998cdb3f2ae421dd7c
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
   ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
@@ -2514,7 +2514,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
   ExpoModulesCore: 39172e342cd3015c0b2ece5e71986d96211b21af
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
-  ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
+  ExpoNetwork: ce6ddfce15230a6585c2aea973033abf783ca84e
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
   ExpoScreenCapture: c3c120b095594bf7ae003251c1b89260566587f6
@@ -2529,7 +2529,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
-  ExpoVideo: 5c7f090a003df15ab6a0e73184995cc22529b4dd
+  ExpoVideo: 48de519a2cbd639218f2fcff8da50f650dc21b22
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
   EXSplashScreen: 91d2f07e12c7dbbf3bad42ddab15588042a2500a
