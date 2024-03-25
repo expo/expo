@@ -6,7 +6,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.video.enums.DRMType
 import java.io.Serializable
 
-internal class DRMOptions(
+class DRMOptions(
   @Field var type: DRMType = DRMType.WIDEVINE,
   @Field var licenseServer: String? = null,
   @Field var headers: Map<String, String>? = null,

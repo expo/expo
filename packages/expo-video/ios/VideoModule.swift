@@ -81,30 +81,24 @@ public final class VideoModule: Module {
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
-        if let url = source.uri {
-          let asset = AVURLAsset(url: url)
-
-          if let drm = source.drm {
-            try drm.type.assertIsSupported()
-            videoPlayer.contentKeyManager.addContentKeyRequest(videoSource: source, asset: asset)
-          }
-          let playerItem = AVPlayerItem(asset: asset)
-          player.replaceCurrentItem(with: playerItem)
-        }
-
+        try videoPlayer.replaceCurrentItem(with: source)
         player.pause()
         return videoPlayer
       }
 
       Property("playing") { player -> Bool in
-        return player.pointer.timeControlStatus == .playing
+        return player.isPlaying
       }
 
       Property("muted") { player -> Bool in
-        return player.pointer.isMuted
+        return player.isMuted
       }
       .set { (player, muted: Bool) in
-        player.pointer.isMuted = muted
+        player.isMuted = muted
+      }
+
+      Property("currentTime") { player -> Double in
+        return player.pointer.currentTime().seconds
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -145,11 +139,15 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
+      Property("status") { player -> PlayerStatus in
+        return player.status
+      }
+
       Property("volume") { player -> Float in
-        return player.pointer.volume
+        return player.volume
       }
       .set { (player, volume: Float) in
-        player.pointer.volume = volume
+        player.volume = volume
       }
 
       Function("play") { player in

@@ -26,12 +26,12 @@ open class SharedObject(appContext: AppContext? = null) {
       )
   }
 
-  fun sendEvent(eventName: String, vararg args: Any) {
+  fun sendEvent(eventName: String, vararg args: Any?) {
     val jsThis = getJavaScriptObject() ?: return
 
     try {
       jsThis.getProperty("emit")
-        .getFunction<Unit>()
+        .getFunction<Unit?>()
         .invoke(
           eventName,
           *args,
