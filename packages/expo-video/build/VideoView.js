@@ -1,9 +1,13 @@
 import { PureComponent, createRef, useRef, useMemo, useEffect, } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-export function useVideoPlayer(source) {
+export function useVideoPlayer(source, setup) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
-    return useReleasingSharedObject(() => new NativeVideoModule.VideoPlayer(parsedSource), [JSON.stringify(parsedSource)]);
+    return useReleasingSharedObject(() => {
+        const player = new NativeVideoModule.VideoPlayer(parsedSource);
+        setup?.(player);
+        return player;
+    }, [JSON.stringify(parsedSource)]);
 }
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.

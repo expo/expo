@@ -20,3 +20,6 @@ internal class PictureInPictureUnsupportedException :
 
 internal class UnsupportedDRMTypeException(type: DRMType) :
   CodedException("DRM type `$type` is not supported on Android")
+
+internal class PlaybackException(reason: String?, cause: Throwable? = null) :
+  CodedException("A playback exception has occurred: ${reason ?: "reason unknown"}", cause)

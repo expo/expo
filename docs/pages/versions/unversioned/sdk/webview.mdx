@@ -22,13 +22,10 @@ You should refer to the [react-native-webview docs](https://github.com/react-nat
 <SnackInline label="Basic Webview usage" dependencies={["react-native-webview", "expo-constants"]}>
 
 {/* prettier-ignore */}
-```jsx
-import * as React from 'react';
+```jsx collapseHeight=310
 import { WebView } from 'react-native-webview';
-/* @hide */
-import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-/* @end */
+import { StyleSheet } from 'react-native';
 
 export default function App() {
   return (
@@ -39,14 +36,12 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Constants.statusBarHeight,
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -55,13 +50,10 @@ Minimal example with inline HTML:
 
 <SnackInline label="Webview inline HTML" dependencies={["react-native-webview", "expo-constants"]}>
 
-```jsx
-import * as React from 'react';
+```jsx collapseHeight=310
 import { WebView } from 'react-native-webview';
-/* @hide */
-import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-/* @end */
+import { StyleSheet } from 'react-native';
 
 export default function App() {
   return (
@@ -73,14 +65,12 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Constants.statusBarHeight,
   },
 });
-/* @end */
 ```
 
 </SnackInline>
