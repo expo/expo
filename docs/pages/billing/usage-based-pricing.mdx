@@ -54,10 +54,7 @@ In this scenario, the subscriber pays $31 for 60 builds instead of $130 because 
 
 ### EAS Update
 
-Usage-based pricing for EAS Update comprises two metrics:
-
-- Monthly updated users
-- Global edge bandwidth
+Usage-based pricing for EAS Update comprises two metrics monthly updated users and global edge bandwidth.
 
 Monthly updated users reflect the number of unique users who download an update in a billing cycle. At the same time, global edge bandwidth represents the total amount of bandwidth used for all update downloads. Moreover, each monthly updated user includes 40 MiB of global edge bandwidth, up to that plan's global edge bandwidth limit.
 
@@ -65,7 +62,7 @@ Monthly updated users reflect the number of unique users who download an update 
 
 Each plan has a number of monthly updated users and global edge bandwidth included as part of the subscription. These differ for each plan and the most updated numbers. See our [Pricing page](https://expo.dev/pricing), for more information.
 
-> **Note**: The On-demand plan includes the same amount of monthly updated users and global edge bandwidth as the Free plan.
+> **Note**: The [On-demand plan](/billing/plans/#on-demand) includes the same amount of monthly updated users and global edge bandwidth as the Free plan.
 
 For example, let's consider a subscriber to the On-demand plan who deploys 5 updates of 20 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's overage bill will be:
 
@@ -87,7 +84,7 @@ The global edge bandwidth calculation is:
 | Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB |
 | **Total**                                         | 976.5625 - 100 - 351.5625           | 525 GiB      |
 
-> **Note**: If the subscriber then sends another 20 MiB update to the same 10,000 users in the current billing cycle, they will only pay for any bandwidth overage used. This is because Expo only charges for [**unique monthly updated users**](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle).
+> **Note**: If the subscriber then sends another 20 MiB update to the same 10,000 users in the current billing cycle, they will only pay for any bandwidth overage used. This is because Expo only charges for [unique monthly updated users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle).
 
 If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 20,000 monthly updated users and 1 TiB (1024 GiB). As such, there is no overage.
 
@@ -100,7 +97,7 @@ To see the current billing cycle's usage summary, go to the [Billing](https://ex
 <ImageSpotlight
   alt="Billing usage summary for EAS Build and EAS update in the Expo dashboard."
   src="/static/images/billing/usage-01.png"
-  style={{ maxWidth: 600 }}
+  style={{ maxWidth: 640 }}
 />
 
 ### EAS Build usage history
@@ -153,3 +150,11 @@ For most apps, the JavaScript code changes more frequently than the underlying n
 When using Continuous Integration (CI)/Continuous Deployment (CD) to build pre-production code, you can reduce unnecessary usage by automating the process of building only when changes are made to the native code. You can create a workflow in your CI/CD using [Expo Fingerprint](https://expo.dev/blog/fingerprint-your-native-runtime) to detect when your native code has changed, and only execute a build if it has changed. Otherwise, publish an update if the native code has not changed.
 
 A development build can run any EAS Update that is compatible with its native runtime. If you are using EAS Update with multiple testing channels, you can reduce the need for creating additional builds by having your testers or test devices use the same development build.
+
+### How to optimize update usage
+
+You can manage certain assets to include or exclude when using EAS Update. It reduces the number of assets uploaded or downloaded from the updates server and the global edge bandwidth used.
+
+To optimize the update usage, you can choose to exclude assets that haven't been modified. For example, images or videos that haven't been changed can be excluded. Excluded assets won't be uploaded to the update server and won't be downloaded by the app. However, it's important to make sure that assets that are not part of an update are included in the native build of the app.
+
+You can use `npx expo-updates assets:verify <dir>` to check all required assets are included in the update. For more information, see [Asset selection and exclusion](/eas-update/asset-selection/).
