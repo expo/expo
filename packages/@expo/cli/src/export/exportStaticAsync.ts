@@ -248,6 +248,7 @@ async function exportFromServerAsync(
       outputDir,
       server: devServer,
       manifest: serverManifest,
+      includeSourceMaps,
     });
 
     // Add the api routes to the files to export.
@@ -412,16 +413,18 @@ export function getPathVariations(routePath: string): string[] {
 }
 
 async function exportApiRoutesAsync({
+  includeSourceMaps,
   outputDir,
   server,
   ...props
-}: Pick<Options, 'outputDir'> & {
+}: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
+    includeSourceMaps,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
