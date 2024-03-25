@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
-
+import { PlayerStatus, VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
 /**
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
  * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -17,13 +16,12 @@ if (audioContext && zeroGainNode) {
     "Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player."
   );
 }
-
 class VideoPlayerWeb implements VideoPlayer {
-  constructor(source: string | null = null) {
+  constructor(source: VideoSource) {
     this.src = source;
   }
 
-  src: string | null = null;
+  src: VideoSource = null;
   _mountedVideos: Set<HTMLVideoElement> = new Set();
   _audioNodes: Set<MediaElementAudioSourceNode> = new Set();
   playing: boolean = false;
@@ -32,6 +30,7 @@ class VideoPlayerWeb implements VideoPlayer {
   _loop: boolean = false;
   _playbackRate: number = 1.0;
   _preservesPitch: boolean = true;
+  _status: PlayerStatus = 'idle';
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
@@ -100,6 +99,10 @@ class VideoPlayerWeb implements VideoPlayer {
     this._preservesPitch = value;
   }
 
+  get status(): PlayerStatus {
+    return this._status;
+  }
+
   mountVideoView(video: HTMLVideoElement) {
     this._mountedVideos.add(video);
     this._synchronizeWithFirstVideo(video);
@@ -134,12 +137,17 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this.playing = false;
   }
-  replace(source: string): void {
+  replace(source: VideoSource): void {
     this._mountedVideos.forEach((video) => {
+      const uri = getSourceUri(source);
       video.pause();
-      video.setAttribute('src', source);
-      video.load();
-      video.play();
+      if (uri) {
+        video.setAttribute('src', uri);
+        video.load();
+        video.play();
+      } else {
+        video.removeAttribute('src');
+      }
     });
     this.playing = true;
   }
@@ -219,6 +227,18 @@ class VideoPlayerWeb implements VideoPlayer {
         mountedVideo.playbackRate = video.playbackRate;
       });
     };
+
+    video.onerror = () => {
+      this._status = 'error';
+    };
+
+    video.onloadeddata = () => {
+      this._status = 'readyToPlay';
+    };
+
+    video.onwaiting = () => {
+      this._status = 'loading';
+    };
   }
 
   release(): void {
@@ -253,11 +273,24 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
   return flattenedStyles as React.CSSProperties;
 }
 
-export function useVideoPlayer(source: string | null = null): VideoPlayer {
-  return React.useMemo(() => {
-    return new VideoPlayerWeb(source);
-    // should this not include source?
-  }, []);
+export function useVideoPlayer(
+  source: VideoSource,
+  setup?: (player: VideoPlayer) => void
+): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return useMemo(() => {
+    const player = new VideoPlayerWeb(parsedSource);
+    setup?.(player);
+    return player;
+  }, [JSON.stringify(source)]);
+}
+
+function getSourceUri(source: VideoSource): string | null {
+  if (typeof source == 'string') {
+    return source;
+  }
+  return source?.uri ?? null;
 }
 
 export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
@@ -310,7 +343,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
           videoRef.current = newRef;
         }
       }}
-      src={props.player?.src ?? ''}
+      src={getSourceUri(props.player?.src) ?? ''}
     />
   );
 });

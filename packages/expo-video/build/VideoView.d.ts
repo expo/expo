@@ -1,6 +1,6 @@
 import { ReactNode, PureComponent } from 'react';
 import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
-export declare function useVideoPlayer(source: VideoSource): VideoPlayer;
+export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
