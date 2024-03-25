@@ -47,9 +47,10 @@ public struct EventObservingDecorator: JavaScriptObjectDecorator {
 
     let startObserving = AsyncFunctionDefinition(
       EventObservingType.startObserving.rawValue,
-      firstArgType: String.self,
-      dynamicArgumentTypes: [~String.self]
-    ) { (event: String) in
+      firstArgType: String?.self,
+      dynamicArgumentTypes: [~String?.self]
+    ) { (event: String?) in
+      // TODO: Make event non-optional when we remove the legacy EventEmitter in JS
       observingEvents += 1
 
       for definition in definitions where definition.type == .startObserving {
@@ -61,9 +62,10 @@ public struct EventObservingDecorator: JavaScriptObjectDecorator {
 
     let stopObserving = AsyncFunctionDefinition(
       EventObservingType.stopObserving.rawValue,
-      firstArgType: String.self,
-      dynamicArgumentTypes: [~String.self]
-    ) { (event: String) in
+      firstArgType: String?.self,
+      dynamicArgumentTypes: [~String?.self]
+    ) { (event: String?) in
+      // TODO: Make event non-optional when we remove the legacy EventEmitter in JS
       observingEvents -= 1
 
       for definition in definitions where definition.type == .stopObserving {

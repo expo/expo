@@ -318,17 +318,6 @@ public final class AppContext: NSObject {
   }
 
   /**
-   Modifies listeners count for module with given name. Depending on the listeners count,
-   `onStartObserving` and `onStopObserving` are called.
-   */
-  @objc
-  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
-    moduleRegistry
-      .get(moduleHolderForName: moduleName)?
-      .modifyListenersCount(count)
-  }
-
-  /**
    Asynchronously calls module's function with given arguments.
    */
   @objc

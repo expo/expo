@@ -58,9 +58,8 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 {
   [self addListener:eventName];
 
-  // Backwards compatibility for the new architecture
   if ([_appContext hasModule:moduleName]) {
-    [_appContext modifyEventListenersCount:moduleName count:1];
+    // Swift modules don't need to handle this
     return;
   }
 
@@ -101,9 +100,8 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 {
   [self removeListeners:count];
 
-  // Backwards compatibility for the new architecture
   if ([_appContext hasModule:moduleName]) {
-    [_appContext modifyEventListenersCount:moduleName count:-count];
+    // Swift modules don't need to handle this
     return;
   }
 

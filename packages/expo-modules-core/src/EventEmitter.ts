@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 
@@ -49,7 +49,7 @@ export class EventEmitter {
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
+    if (!this._listenerCount && this._nativeModule.startObserving) {
       this._nativeModule.startObserving();
     }
 
@@ -78,7 +78,7 @@ export class EventEmitter {
       `EventEmitter must have a non-negative number of listeners`
     );
 
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
@@ -101,7 +101,7 @@ export class EventEmitter {
     // Release closed-over references to the emitter
     subscription.remove = () => {};
 
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }

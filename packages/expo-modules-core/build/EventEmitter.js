@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 export class EventEmitter {
     _listenerCount = 0;
@@ -18,7 +18,7 @@ export class EventEmitter {
         this._eventEmitter = new NativeEventEmitter(nativeModule);
     }
     addListener(eventName, listener) {
-        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
+        if (!this._listenerCount && this._nativeModule.startObserving) {
             this._nativeModule.startObserving();
         }
         this._listenerCount++;
@@ -41,7 +41,7 @@ export class EventEmitter {
         this._eventEmitter.removeAllListeners(eventName);
         this._listenerCount -= removedListenerCount;
         invariant(this._listenerCount >= 0, `EventEmitter must have a non-negative number of listeners`);
-        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
+        if (!this._listenerCount && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
     }
@@ -59,7 +59,7 @@ export class EventEmitter {
         delete subscription[nativeEmitterSubscriptionKey];
         // Release closed-over references to the emitter
         subscription.remove = () => { };
-        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
+        if (!this._listenerCount && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
     }
