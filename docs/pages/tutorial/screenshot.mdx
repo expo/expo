@@ -85,7 +85,7 @@ The `react-native-view-shot` library provides a method called `captureRef()` tha
 To capture a `<View>`, wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass a reference to it. Using the `useRef()` hook from React, let's create an `imageRef` variable inside `<App>`.
 
 {/* prettier-ignore */}
-```jsx App.js
+```jsx App.js|collapseHeight=440
 import { useState, /* @info Import the useRef hook from React. */useRef/* @end */ } from 'react';
 
 export default function App() {
@@ -148,7 +148,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```jsx
+```jsx collapseHeight=440
 export default function App() {
   /* @info Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {
