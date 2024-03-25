@@ -10,10 +10,5 @@ import expo.modules.kotlin.AppContext
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-open class SharedRef<RefType>(val ref: RefType, appContext: AppContext? = null) : SharedObject(appContext) {
-
-  @DoNotStrip
-  private val mHybridData = initHybrid()
-
-  private external fun initHybrid(): HybridData
-}
+open class SharedRef<RefType>(val ref: RefType, appContext: AppContext? = null) :
+  SharedObject(appContext)
