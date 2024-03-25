@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { TransformOptions } from './babel-core';
+import type { TransformOptions } from './babel-core';
 
 /**
  * Returns a memoized function that checks for the existence of a
