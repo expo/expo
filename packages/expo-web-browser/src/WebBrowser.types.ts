@@ -95,7 +95,7 @@ export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
    * Whether the request is honored depends on the user’s default web browser.
    *
    * @default false
-   * @platform ios 13+
+   * @platform ios
    */
   preferEphemeralSession?: boolean;
 };
@@ -186,7 +186,7 @@ export enum WebBrowserPresentationStyle {
    * The default presentation style chosen by the system.
    * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
    *
-   * @platform ios 13+
+   * @platform ios
    */
   AUTOMATIC = 'automatic',
 }
