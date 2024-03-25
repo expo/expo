@@ -9,6 +9,8 @@ const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : 
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function getPermissionsAsync() {
     return ExponentAV.getPermissionsAsync();
@@ -16,6 +18,8 @@ export async function getPermissionsAsync() {
 /**
  * Asks the user to grant permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function requestPermissionsAsync() {
     return ExponentAV.requestPermissionsAsync();
@@ -60,6 +64,8 @@ export const usePermissions = createPermissionHook({
  * ```
  *
  * @return A newly constructed instance of `Audio.Recording`.
+ * @platform android
+ * @platform ios
  */
 export class Recording {
     _subscription = null;
