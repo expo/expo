@@ -32,14 +32,13 @@ You can also direct your teammate to the build page in the Expo dashboard. From 
   src="/static/images/share-dev-build/expo-dashboard.png"
 />
 
-### Get development build with EAS CLI
+### Use EAS CLI
 
-Your teammate can also download and install the development build using EAS CLI.
-Make sure to sign in to the Expo Account associated with the app before running the command.
+Your teammate can also download and install the development build using EAS CLI. They have to make sure that they are signed from the Expo account associated with the development build and then can run the following command:
 
 <Terminal cmd={['$ eas build:run --profile development']} />
 
-Change the build profile if you define a different name for the development build.
+If the profile name for the development build is different from `development`, use it instead with `--profile`.
 
 ### iOS-only instructions
 
