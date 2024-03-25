@@ -1,6 +1,5 @@
 package expo.modules.kotlin.sharedobjects
 
-import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 
