@@ -45,7 +45,7 @@
       "policy": "appVersion"
     },
     "plugins": [
-      "@expo/video",
+      "expo-video",
       "expo-background-fetch",
       [
         "expo-font",
