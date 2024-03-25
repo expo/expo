@@ -43,7 +43,7 @@ function isIndexPath(state: State) {
   // So we need to do a positive lookahead to check if the route ends with /index
   // Nested routes that are hoisted will have a name ending with /index
   // e.g name could be /user/[id]/index
-  if (route.name.match(/.+(?=\/index$).+/)) return true;
+  if (route.name.match(/.+\/index$/)) return true;
 
   // The state will either have params (because there are multiple _layout) or it will be hoisted with a name
   // If we don't match the above cases, then it's not an index route
