@@ -28,25 +28,28 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline dependencies={["expo-status-bar"]}>
 
-```js
+```js collapseHeight=310
 import React from 'react';
 import { Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-const App = () => (
-  <View
-    style={{
-      flex: 1,
-      backgroundColor: '#000',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-    <Text style={{ color: '#fff' }}>Notice that the status bar has light text!</Text>
-    <StatusBar style="light" />
-  </View>
-);
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={{ color: '#fff' }}>Notice that the status bar has light text!</Text>
+      <StatusBar style="light" />
+    </View>
+  );
+}
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 ```
 
 </SnackInline>

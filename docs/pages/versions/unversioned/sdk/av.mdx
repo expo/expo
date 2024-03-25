@@ -84,7 +84,6 @@ const { sound: playbackObject } = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
-...
 ```
 
 See the [audio documentation](audio.mdx) for further information on `Audio.Sound.createAsync()`.
@@ -92,25 +91,21 @@ See the [audio documentation](audio.mdx) for further information on `Audio.Sound
 ### Example: `Video`
 
 ```js
-...
+/* @hide ... */ /* @end */
 _handleVideoRef = component => {
   const playbackObject = component;
   ...
 }
-
-...
+/* @hide ... */ /* @end */
 
 render() {
   return (
-    ...
       <Video
         ref={this._handleVideoRef}
-        ...
       />
-    ...
+      /* @hide ... */ /* @end */
   )
 }
-...
 ```
 
 See the [video documentation](video.mdx) for further information.
@@ -142,22 +137,21 @@ _onPlaybackStatusUpdate = playbackStatus => {
       // The player has just finished playing and will stop. Maybe you want to play something else?
     }
 
-    ... // etc
+    /* @hide ... */ /* @end */
   }
 };
 
-... // Load the playbackObject and obtain the reference.
+// Load the playbackObject and obtain the reference.
 playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
-...
 ```
 
 ### Example: Loop media exactly 20 times
 
 ```js
 const N = 20;
-...
+/* @hide ... */ /* @end */
 
-_onPlaybackStatusUpdate = (playbackStatus) => {
+_onPlaybackStatusUpdate = playbackStatus => {
   if (playbackStatus.didJustFinish) {
     if (this.state.numberOfLoops == N - 1) {
       playbackObject.setIsLooping(false);
@@ -166,12 +160,11 @@ _onPlaybackStatusUpdate = (playbackStatus) => {
   }
 };
 
-...
+/* @hide ... */ /* @end */
 this.setState({ numberOfLoops: 0 });
-... // Load the playbackObject and obtain the reference.
+// Load the playbackObject and obtain the reference.
 playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 playbackObject.setIsLooping(true);
-...
 ```
 
 ## What is seek tolerance and why would I want to use it [iOS only]
