@@ -287,7 +287,7 @@ import Video from '~/components/plugins/Video';
 
 ### Add code block
 
-Code blocks are a great way to add code snippets to our docs. We leverage the usuall code block Markdown syntax, but it's expanded to support code block titles, and an additional params.
+Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
 
 <!-- prettier-ignore -->
 ```mdx
@@ -296,7 +296,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
     // Your code goes in here
     ```
 
-    {/* To add a title, just enter it right after language, in the code block starting line: */}
+    {/* To add a title, enter it right after the language, in the code block starting line: */}
     ```js myFile.js
     // Your code goes in here
     ```
@@ -317,7 +317,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 | Param            | Type   | Description                                                                                                                                                            |
 | ---------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `collapseHeight` | number | The custom height to which code block should be automatically collapsed, the default value is `408` and it's applied unless `collapseHeight` param has been specified. |
+| `collapseHeight` | number | The custom height that the code block uses to collapse automatically. The default value is `408` and is applied unless the `collapseHeight` param has been specified. |
 
 ### Add inline Snack examples
 
