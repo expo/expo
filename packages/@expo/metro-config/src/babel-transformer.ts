@@ -9,14 +9,10 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import assert from 'node:assert';
-import crypto from 'node:crypto';
-import fs from 'node:fs';
 
-import { TransformOptions } from './babel-core';
+import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-
-const cacheKeyParts = [fs.readFileSync(__filename)];
 
 function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';
@@ -166,15 +162,8 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
-function getCacheKey() {
-  const key = crypto.createHash('md5');
-  cacheKeyParts.forEach((part) => key.update(part));
-  return key.digest('hex');
-}
-
 const babelTransformer: BabelTransformer = {
   transform,
-  getCacheKey,
 };
 
 module.exports = babelTransformer;
