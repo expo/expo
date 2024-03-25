@@ -713,6 +713,7 @@ export async function initAsync(
     [
       '',
       '-keep class org.apache.commons.** { *; }',
+      '-keep class com.facebook.react.** { *; }',
       '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
       '-dontwarn com.facebook.react.views.slider.**',
       '-dontwarn javax.lang.model.element.Modifier',
