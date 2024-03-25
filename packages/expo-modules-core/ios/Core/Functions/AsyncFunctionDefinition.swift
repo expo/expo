@@ -118,10 +118,11 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
   // MARK: - JavaScriptObjectBuilder
 
   func build(appContext: AppContext) throws -> JavaScriptObject {
-    // It seems to be safe to capture a strong reference to `self` here. This is needed for detached functions, that are not part of the module definition.
-    // Module definitions are held in memory anyway, but detached definitions (returned by other functions) are not, so we need to capture them here.
-    // It will be deallocated when that JS host function is garbage-collected by the JS VM.
-    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [self] this, args, resolve, reject in
+    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
+      guard let self = self else {
+        let exception = NativeFunctionUnavailableException(name)
+        return reject(exception.code, exception.description, nil)
+      }
       self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
         case .failure(let error):

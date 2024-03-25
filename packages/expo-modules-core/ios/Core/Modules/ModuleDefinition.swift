@@ -23,8 +23,6 @@ public final class ModuleDefinition: ObjectDefinition {
    */
   let eventNames: [String]
 
-  let eventObservers: [AnyEventObservingDefinition]
-
   /**
    Initializer that is called by the `ModuleDefinitionBuilder` results builder.
    */
@@ -45,9 +43,6 @@ public final class ModuleDefinition: ObjectDefinition {
         .compactMap { ($0 as? EventsDefinition)?.names }
         .joined()
     )
-
-    self.eventObservers = definitions
-      .compactMap { $0 as? AnyEventObservingDefinition }
 
     super.init(definitions: definitions)
   }
@@ -75,11 +70,6 @@ public final class ModuleDefinition: ObjectDefinition {
     if let viewDefinition = view {
       let reactComponentPrototype = try viewDefinition.createReactComponentPrototype(appContext: appContext)
       object.setProperty("ViewPrototype", value: reactComponentPrototype)
-    }
-
-    if !eventObservers.isEmpty {
-      try EventObservingDecorator(definitions: eventObservers)
-        .decorate(object: object, appContext: appContext)
     }
 
     // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
