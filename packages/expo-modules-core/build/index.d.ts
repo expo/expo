@@ -12,7 +12,7 @@ export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, requireNativeViewManager, CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
-export * from './createNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`

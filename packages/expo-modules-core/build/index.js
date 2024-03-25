@@ -12,7 +12,7 @@ export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, require
 // Errors
 CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
-export * from './createNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
