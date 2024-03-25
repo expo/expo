@@ -71,7 +71,7 @@
     "react-string-replace": "^0.4.4",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "url": "^0.11.0"
   },
   "devDependencies": {
@@ -84,7 +84,7 @@
     "@types/lodash": "^4.14.161",
     "@types/react": "~18.0.14",
     "@types/react-redux": "^7.1.16",
-    "@types/semver": "^7.5.0",
+    "@types/semver": "^7.5.8",
     "expo-module-scripts": "^3.0.0",
     "jest-expo": "~51.0.0-unreleased",
     "react-native-bundle-visualizer": "^3.0.0"
