@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Fully remove "exotic" transformer (`@expo/metro-config/transformer`) in favor of the default Expo transformer.
+- Fully remove "exotic" transformer (`@expo/metro-config/transformer`) in favor of the default Expo transformer. ([#27855](https://github.com/expo/expo/pull/27855) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
