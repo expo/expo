@@ -14,6 +14,8 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 `Audio` from `expo-av` allows you to implement audio playback and recording in your app.
 
+> **Info** Audio recording APIs are not available on tvOS (Apple TV).
+
 Note that audio automatically stops if headphones/bluetooth audio devices are disconnected.
 
 Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
@@ -69,7 +71,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -78,7 +79,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -141,7 +141,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -150,7 +149,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-/* @end */
 ```
 
 </SnackInline>

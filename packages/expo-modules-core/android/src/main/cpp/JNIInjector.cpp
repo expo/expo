@@ -33,7 +33,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptFunction::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
     expo::JavaCallback::registerNatives();
-    expo::SharedRef::registerNatives();
 #if RN_FABRIC_ENABLED
     expo::FabricComponentsRegistry::registerNatives();
 #endif

@@ -6,22 +6,30 @@ import expo.modules.kotlin.records.Record
 import expo.modules.video.UnsupportedDRMTypeException
 import java.io.Serializable
 
-internal class VideoSource(
+class VideoSource(
   @Field var uri: String? = null,
   @Field var drm: DRMOptions? = null
 ) : Record, Serializable {
-  fun toMediaItem(): MediaItem {
-    val mediaItem = MediaItem
-      .Builder()
-      .setUri(this.uri ?: "")
+  private fun toMediaId(): String {
+    return "uri:${this.uri}" +
+      "DrmType:${this.drm?.type}" +
+      "DrmLicenseServer:${this.drm?.licenseServer}" +
+      "DrmMultiKey:${this.drm?.multiKey}" +
+      "DRMHeadersKeys:${this.drm?.headers?.keys?.joinToString {it}}}" +
+      "DRMHeadersValues:${this.drm?.headers?.values?.joinToString {it}}}"
+  }
 
-    this.drm?.let {
-      if (it.type.isSupported()) {
-        mediaItem.setDrmConfiguration(it.toDRMConfiguration())
-      } else {
-        throw UnsupportedDRMTypeException(it.type)
+  fun toMediaItem() = MediaItem
+    .Builder()
+    .apply {
+      setUri(uri ?: "")
+      drm?.let {
+        if (it.type.isSupported()) {
+          setDrmConfiguration(it.toDRMConfiguration())
+        } else {
+          throw UnsupportedDRMTypeException(it.type)
+        }
       }
     }
-    return mediaItem.build()
-  }
+    .build()
 }

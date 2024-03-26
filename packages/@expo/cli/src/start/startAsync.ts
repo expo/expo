@@ -13,11 +13,11 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
+import { logEventAsync } from '../utils/telemetry';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,

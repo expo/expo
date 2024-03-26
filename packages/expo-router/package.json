@@ -19,6 +19,7 @@
     "types",
     "_ctx.*",
     "_ctx-html.js",
+    "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
     "babel.js",

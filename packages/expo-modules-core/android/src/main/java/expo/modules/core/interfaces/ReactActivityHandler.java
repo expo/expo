@@ -17,15 +17,6 @@ import androidx.annotation.Nullable;
  */
 public interface ReactActivityHandler {
   /**
-   * Given modules a chance to override the default {@link ReactRootView}
-   * @return the override ReactRootView instance or null if not to override
-   */
-  @Nullable
-  default ReactRootView createReactRootView(Activity activity) {
-    return null;
-  }
-
-  /**
    * Gives modules a chance to create a ViewGroup that is used as a container for the ReactRootView,
    * which is added as a child to the container if non-null.
    * @return a ViewGroup to be used as a container, or null if no container is needed

@@ -182,7 +182,7 @@ function parseLogBoxException(error) {
             componentStack: [],
             codeFrame: {
                 fileName,
-                location: null,
+                location: null, // We are not given the location.
                 content: codeFrame,
             },
             message: {

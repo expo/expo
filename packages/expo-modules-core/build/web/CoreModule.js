@@ -1,15 +1,6 @@
 import uuid from '../uuid';
 class EventEmitter {
     listeners;
-    removeListener(eventName, listener) {
-        this.listeners?.get(eventName)?.delete(listener);
-    }
-    removeAllListeners(eventName) {
-        this.listeners?.get(eventName)?.clear();
-    }
-    emit(eventName, ...args) {
-        this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
-    }
     addListener(eventName, listener) {
         if (!this.listeners) {
             this.listeners = new Map();
@@ -18,6 +9,20 @@ class EventEmitter {
             this.listeners?.set(eventName, new Set());
         }
         this.listeners?.get(eventName)?.add(listener);
+        return {
+            remove: () => {
+                this.removeListener(eventName, listener);
+            },
+        };
+    }
+    removeListener(eventName, listener) {
+        this.listeners?.get(eventName)?.delete(listener);
+    }
+    removeAllListeners(eventName) {
+        this.listeners?.get(eventName)?.clear();
+    }
+    emit(eventName, ...args) {
+        this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
     }
 }
 class NativeModule extends EventEmitter {

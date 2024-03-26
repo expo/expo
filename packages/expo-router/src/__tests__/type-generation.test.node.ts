@@ -76,12 +76,11 @@ it('allows spaces in the filename', () => {
   });
 });
 
-//TODO: This should error
-it('expands groups - invalid group syntax', () => {
+it('expands groups', () => {
   const generated = getGeneratedRoutes(inMemoryContext({ '(a,b,c)/test': () => null }));
 
   expect(generated).toEqual({
-    staticRoutes: ['/_sitemap', '/(a)/test', '/(b)/test', '/(c)/test'],
+    staticRoutes: ['/_sitemap', '/test', '/(a)/test', '/(b)/test', '/(c)/test'],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
@@ -98,10 +97,16 @@ it('expands groups', () => {
   expect(generated).toEqual({
     staticRoutes: [
       '/_sitemap',
+      '/apple',
       '/(a)/apple',
+      '/banana',
+      '/(e)/banana',
+      '/(a)/banana',
       '/(a)/(e)/banana',
+      '/(f)/banana',
       '/(a)/(f)/banana',
       '/(b)/apple',
+      '/(b)/banana',
       '/(b)/(e)/banana',
       '/(b)/(f)/banana',
       '/(c)/apple',

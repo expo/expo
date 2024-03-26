@@ -2,7 +2,7 @@ import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 import nock from 'nock';
 
-import { logEventAsync } from '../../../../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../../../../utils/telemetry';
 import { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer, getDeepLinkHandler } from '../MetroBundlerDevServer';
@@ -43,7 +43,7 @@ jest.mock('../instantiateMetro', () => ({
 jest.mock('../../middleware/mutations');
 jest.mock('../../../../log');
 jest.mock('../../../../utils/analytics/getDevClientProperties', () => jest.fn(() => ({})));
-jest.mock('../../../../utils/analytics/rudderstackClient');
+jest.mock('../../../../utils/telemetry');
 
 beforeEach(() => {
   vol.reset();
