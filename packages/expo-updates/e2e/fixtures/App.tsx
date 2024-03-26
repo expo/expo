@@ -63,10 +63,6 @@ export default function App() {
     setStartTime(Date.now());
   }, []);
 
-  // Updates.useUpdateEvents((event) => {
-  //   setLastUpdateEventType(event.type);
-  // });
-
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
     const handleAsync = async () => {
