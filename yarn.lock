@@ -16579,7 +16579,7 @@ react-native-webview@13.6.3:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.74.0-rc.3, react-native@0.74.0-rc.4:
+react-native@0.74.0-rc.4:
   version "0.74.0-rc.4"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.74.0-rc.4.tgz#8983862b0b66d00606a343c0ea4cf59e82545cc1"
   integrity sha512-uptd+VdE9mS00Gatzh1f2ZEcHk8e4DYeiHg8TsQGoAP7PRlQUlt11WexBOBLztSo+n/K4v6NpE6iikR6JCapnA==
