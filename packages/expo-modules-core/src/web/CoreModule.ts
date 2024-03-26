@@ -1,30 +1,19 @@
-import type { EventEmitter as EventEmitterType } from '../ts-declarations/EventEmitter';
+import type {
+  EventEmitter as EventEmitterType,
+  EventSubscription,
+  EventsMap,
+} from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
 import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
 import uuid from '../uuid';
 
-class EventEmitter<TEventsMap extends Record<never, never>> implements EventEmitterType {
+class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
   private listeners?: Map<keyof TEventsMap, Set<Function>>;
 
-  removeListener<EventName extends keyof TEventsMap>(
-    eventName: EventName,
-    listener: TEventsMap[EventName]
-  ): void {
-    this.listeners?.get(eventName)?.delete(listener);
-  }
-  removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
-    this.listeners?.get(eventName)?.clear();
-  }
-  emit<EventName extends keyof TEventsMap>(
-    eventName: EventName,
-    ...args: Parameters<TEventsMap[EventName]>
-  ): void {
-    this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
-  }
   addListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
     listener: TEventsMap[EventName]
-  ): void {
+  ): EventSubscription {
     if (!this.listeners) {
       this.listeners = new Map();
     }
@@ -32,6 +21,30 @@ class EventEmitter<TEventsMap extends Record<never, never>> implements EventEmit
       this.listeners?.set(eventName, new Set());
     }
     this.listeners?.get(eventName)?.add(listener);
+
+    return {
+      remove: () => {
+        this.removeListener(eventName, listener);
+      },
+    };
+  }
+
+  removeListener<EventName extends keyof TEventsMap>(
+    eventName: EventName,
+    listener: TEventsMap[EventName]
+  ): void {
+    this.listeners?.get(eventName)?.delete(listener);
+  }
+
+  removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
+    this.listeners?.get(eventName)?.clear();
+  }
+
+  emit<EventName extends keyof TEventsMap>(
+    eventName: EventName,
+    ...args: Parameters<TEventsMap[EventName]>
+  ): void {
+    this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
   }
 }
 
