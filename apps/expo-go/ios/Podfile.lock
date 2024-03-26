@@ -2263,7 +2263,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: ab5f9522d9bdd8aecb1a5d6429606052869d7adc
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMediaLibrary: 512b00e9f87f1de8ed0dba60cbe2eb7dc251248e
-  ExpoModulesCore: 7944dab86cc6d2cd3fd291293296aa33fd0d5b2c
+  ExpoModulesCore: 39172e342cd3015c0b2ece5e71986d96211b21af
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: ce6ddfce15230a6585c2aea973033abf783ca84e
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
@@ -2286,7 +2286,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 91d2f07e12c7dbbf3bad42ddab15588042a2500a
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: baabe1da1d6013e7655b40f5674f933d772cae5c
-  EXUpdates: eedf5578c7d6b9587e8dc81f35cf1f73efadca0f
+  EXUpdates: 4320d12641f34919a38efda0914046d2013ccfc6
   EXUpdatesInterface: 431fbb833aefbc9b7252b24a6a563209ff94f87d
   FBLazyVector: 2a48dc257abbee54cc5c9a2895654bad4246fcaa
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f

@@ -384,10 +384,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
-          default: physicalOrientation)
+          default: self.physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
-          onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
+          self.onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
         }
       }
     } else {

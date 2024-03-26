@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow users using xcode 14 to still build when including camera.
+
 ### 💡 Others
 
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
