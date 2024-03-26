@@ -369,7 +369,7 @@ export function getIgnoreList(options?: Options) {
  *
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
-function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<string> {
+export function extrapolateGroups(key: string, keys: Set<string> = new Set()): Set<string> {
   const match = matchArrayGroupName(key);
 
   if (!match) {
