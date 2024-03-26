@@ -78,7 +78,7 @@ function getDirectoryTree(contextModule, options) {
                 }
             },
             contextKey: filePath,
-            route: '',
+            route: '', // This is overwritten during hoisting based upon the _layout
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
@@ -396,7 +396,7 @@ function getLayoutNode(node, options) {
     return {
         ...node,
         route: node.route.replace(/\/?_layout$/, ''),
-        children: [],
+        children: [], // Each layout should have its own children
         initialRouteName,
     };
 }

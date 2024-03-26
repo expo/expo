@@ -133,7 +133,7 @@ export function parseTrigger(userFacingTrigger) {
     }
     else {
         return Platform.select({
-            default: null,
+            default: null, // There's no notion of channels on platforms other than Android.
             android: { type: 'channel', channelId: userFacingTrigger.channelId },
         });
     }
