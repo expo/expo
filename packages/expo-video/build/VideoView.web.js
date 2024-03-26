@@ -13,8 +13,9 @@ if (audioContext && zeroGainNode) {
 else {
     console.warn("Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player.");
 }
-class VideoPlayerWeb {
+class VideoPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source) {
+        super();
         this.src = source;
     }
     src = null;
@@ -215,21 +216,6 @@ class VideoPlayerWeb {
         video.onwaiting = () => {
             this._status = 'loading';
         };
-    }
-    release() {
-        console.warn('The `VideoPlayer.release` method is not supported on web');
-    }
-    addListener(eventName, listener) {
-        console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
-    }
-    removeListener(eventName, listener) {
-        console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
-    }
-    removeAllListeners(eventName) {
-        console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
-    }
-    emit(eventName, ...args) {
-        console.warn('The `VideoPlayer.emit` method is not yet supported on web');
     }
 }
 function mapStyles(style) {
