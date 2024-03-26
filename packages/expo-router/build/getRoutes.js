@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
+exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
 const matchers_1 = require("./matchers");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -311,6 +311,7 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
+exports.extrapolateGroups = extrapolateGroups;
 function generateDynamic(path) {
     const dynamic = path
         .split('/')

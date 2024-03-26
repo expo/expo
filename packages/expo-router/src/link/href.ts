@@ -19,7 +19,7 @@ export const resolveHref = (href: ExpoRouter.Href): string => {
 function createQualifiedPathname(
   pathname: string,
   params: Record<string, any>
-): Omit<Required<ExpoRouter.HrefObject>, 'query'> {
+): { pathname: string; params: ExpoRouter.UnknownInputParams } {
   for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;

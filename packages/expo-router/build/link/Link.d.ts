@@ -2,8 +2,8 @@ import * as React from 'react';
 import { resolveHref } from './href';
 import { ExpoRouter } from '../../types/expo-router';
 /** Redirects to the href as soon as the component is mounted. */
-export declare function Redirect<T = ''>({ href }: {
-    href: ExpoRouter.Href<T>;
+export declare function Redirect({ href }: {
+    href: ExpoRouter.Href;
 }): null;
 export interface LinkComponent {
     (props: React.PropsWithChildren<ExpoRouter.LinkProps>): JSX.Element;

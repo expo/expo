@@ -11,7 +11,7 @@ import { useRouter } from '../hooks';
 import { useFocusEffect } from '../useFocusEffect';
 
 /** Redirects to the href as soon as the component is mounted. */
-export function Redirect<T = ''>({ href }: { href: ExpoRouter.Href<T> }) {
+export function Redirect({ href }: { href: ExpoRouter.Href }) {
   const router = useRouter();
   useFocusEffect(() => {
     try {
