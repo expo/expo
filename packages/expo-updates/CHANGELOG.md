@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+- Remove deprecated APIs: useUpdateEvents(), addListener(), and UpdateEvent type. ([#27881](https://github.com/expo/expo/pull/27881) by [@douglowder](https://github.com/douglowder))
 
 ### 🎉 New features
 
