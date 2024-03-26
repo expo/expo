@@ -22,6 +22,7 @@
 - Add additional tests for undefined platform minification behavior. ([#27515](https://github.com/expo/expo/pull/27515) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases. ([#27214](https://github.com/expo/expo/pull/27214) by [@EvanBacon](https://github.com/EvanBacon))
 - Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
+- Simplify react server code injection by using more expensive template code.
 
 ## 10.0.1 - 2023-12-19
 
