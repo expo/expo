@@ -23,6 +23,7 @@
     result[@"exists"] = @(YES);
     result[@"isDirectory"] = @(NO);
     result[@"uri"] = fileUri;
+    // Uses required reason API based on the following reason: 3B52.1
     result[@"modificationTime"] = @(asset.modificationDate.timeIntervalSince1970);
     if (options[@"md5"] || options[@"size"]) {
       [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:asset options:nil resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, CGImagePropertyOrientation orientation, NSDictionary * _Nullable info) {
