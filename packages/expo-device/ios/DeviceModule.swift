@@ -28,7 +28,7 @@ public class DeviceModule: Module {
     }
 
     AsyncFunction("getUptimeAsync") { () -> Double in
-    // Uses required reason API based on the following reason: 35F9.1 – there's not really a matching reason here
+      // Uses required reason API based on the following reason: 35F9.1 – there's not really a matching reason here
       return ProcessInfo.processInfo.systemUptime * 1000
     }
 
