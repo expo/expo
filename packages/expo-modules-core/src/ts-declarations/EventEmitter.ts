@@ -34,7 +34,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
   addListener<EventName extends keyof TEventsMap>(
     eventName: EventName,
     listener: TEventsMap[EventName]
-  ): void;
+  ): EventSubscription;
 
   /**
    * Removes a listener for the given event name.
