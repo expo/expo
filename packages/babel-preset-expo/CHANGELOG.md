@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Relax forbidden React server API errors to better support shared components.
+- Relax forbidden React server API errors to better support shared components. ([#27878](https://github.com/expo/expo/pull/27878) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused peer dependency on `@babel/preset-env`. ([#27705](https://github.com/expo/expo/pull/27705) by [@EvanBacon](https://github.com/EvanBacon))
 - Disable color in snapshot tests in CI. ([#27301](https://github.com/expo/expo/pull/27301) by [@EvanBacon](https://github.com/EvanBacon))
 - Add additional tests for undefined platform minification behavior. ([#27515](https://github.com/expo/expo/pull/27515) by [@EvanBacon](https://github.com/EvanBacon))
