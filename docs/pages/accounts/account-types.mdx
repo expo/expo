@@ -78,11 +78,11 @@ The example below is Step 3 in the conversion process on a Personal Account with
 
 After completing the conversion process, you can no longer log in as your old user. To continue using Expo services, log into [expo.dev](https://expo.dev/) with the user you selected or created during the conversion process. Then, select the organization from the top left dropdown to access the organization.
 
-### Invite members
+### Invite a member
 
 Other Expo users can be invited to join your Organization. To invite a new member:
 
-- From the Organization's dashboard, under Organization settings from the navigation menu, select **Members**.
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Click the button **Invite**. This will open a form to invite a member to the organization.
 - In the form, enter the email of the user you want to invite and select the role they should have upon joining the organization. For more information, see [role privileges](/accounts/working-together/#manage-access).
 
@@ -97,6 +97,33 @@ When inviting a new member, keep in mind:
 - Members with an Owner role can grant members and invitees any role.
 - Members with an Admin role can only give members and invitees up to and including Admin role (every role but Owner).
 
+### Role privileges of a member
+
+In an Organization, a member can have an Owner, Admin, Developer, or Viewer role. Each role provides different levels of access to the organization's resources.
+
+| Role          | Description                                                                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Owner**     | Can take any action on an account or any projects, including deleting them.                                                                               |
+| **Admin**     | Can control most settings on your account, including signing up for paid services, changing permissions of other users, and managing programmatic access. |
+| **Developer** | Can create a new project, make new builds, release updates, and manage credentials.                                                                       |
+| **Viewer**    | Can only view your projects through Expo Go. However, they cannot modify a project in any way.                                                            |
+
+### Change the role of a member
+
+To change the role privileges of a member:
+
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
+- Verify that you have either an [**Owner** or **Admin** role](/accounts/working-together/#manage-access) in your organization.
+- Next to the member whose role you want to change, click on the three-dotted menu icon and change the role.
+
+### Remove a member
+
+To remove a member:
+
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
+- Next to the member you want to remove, click on the three-dotted menu icon.
+- Click **Remove member**.
+
 ### Rename an account
 
 Accounts can be renamed a limited number of times. Only Owners can rename accounts. To rename an account, visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [**Rename account**](https://expo.dev/accounts/[account]/settings#rename-account).
@@ -106,10 +133,6 @@ Accounts can be renamed a limited number of times. Only Owners can rename accoun
   src="/static/images/accounts/rename-account.png"
   style={{ maxWidth: 720 }}
 />
-
-#### Caveats
-
-After renaming an account, new publishes to projects within the account must be on Expo SDK 43 or above.
 
 ### Transfer projects between accounts
 
