@@ -4,18 +4,6 @@
 <dict>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
-		<dict>
-			<key>NSPrivacyCollectedDataType</key>
-			<string>NSPrivacyCollectedDataTypeContacts</string>
-			<key>NSPrivacyCollectedDataTypeLinked</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypeTracking</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypePurposes</key>
-			<array>
-				<string></string>
-			</array>
-		</dict>
 	</array>
 	<key>NSPrivacyTracking</key>
 	<false/>
