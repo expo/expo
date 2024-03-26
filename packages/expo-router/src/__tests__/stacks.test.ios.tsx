@@ -95,7 +95,7 @@ test('dismissAll', () => {
   expect(router.canDismiss()).toBe(false);
 });
 
-test.only('dismissAll nested', () => {
+test('dismissAll nested', () => {
   renderRouter(
     {
       _layout: () => <Tabs />,
@@ -158,15 +158,12 @@ test.only('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          params: {
-            params: {},
-            screen: 'page',
-          },
-          screen: 'two',
+          params: {},
+          screen: 'index',
         },
         path: undefined,
         state: {
-          index: 2,
+          index: 3,
           key: expect.any(String),
           routeNames: ['index', 'two', 'page'],
           routes: [
@@ -183,14 +180,20 @@ test.only('dismissAll nested', () => {
             },
             {
               key: expect.any(String),
+              name: 'page',
+              params: {},
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
               name: 'two',
               params: {
                 params: {},
-                screen: 'page',
+                screen: 'index',
               },
               path: undefined,
               state: {
-                index: 1,
+                index: 2,
                 key: expect.any(String),
                 routeNames: ['index', 'page'],
                 routes: [
@@ -198,6 +201,12 @@ test.only('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'page',
+                    params: {},
+                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -264,15 +273,12 @@ test.only('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          params: {
-            params: {},
-            screen: 'page',
-          },
-          screen: 'two',
+          params: {},
+          screen: 'index',
         },
         path: undefined,
         state: {
-          index: 2,
+          index: 3,
           key: expect.any(String),
           routeNames: ['index', 'two', 'page'],
           routes: [
@@ -289,10 +295,16 @@ test.only('dismissAll nested', () => {
             },
             {
               key: expect.any(String),
+              name: 'page',
+              params: {},
+              path: undefined,
+            },
+            {
+              key: expect.any(String),
               name: 'two',
               params: {
                 params: {},
-                screen: 'page',
+                screen: 'index',
               },
               path: undefined,
               state: {
@@ -364,11 +376,8 @@ test.only('dismissAll nested', () => {
         key: expect.any(String),
         name: 'one',
         params: {
-          params: {
-            params: {},
-            screen: 'page',
-          },
-          screen: 'two',
+          params: {},
+          screen: 'index',
         },
         path: undefined,
         state: {
