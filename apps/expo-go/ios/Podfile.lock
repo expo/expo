@@ -1964,16 +1964,16 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
-  EXApplication: 7d3063cc3cbd14a0d3c6e1c73854f4a71901ac67
+  EXApplication: 885cfd16a950e18cf8be3051f08c8db00fdbf6ac
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
-  EXConstants: cefee7155f9ed25c610d0b6cf96972f485e4cbae
+  EXConstants: 4306ffc6035e1dfb6fd97ae2f10bf88d27e36cb1
   EXFont: b4a7dd9f19df9c55e9b9a1849e801d6726e7a8a3
   EXImageLoader: 55080616b2fe9da19ef8c7f706afd9814e279b6b
   EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
   EXLocation: 4cdbc108ff5bd944d981b7d0c0cf98630104a84a
   EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
-  EXNotifications: 6e3b49fa7f916bc2783d37fbd5599509b160776c
+  EXNotifications: 5ad946b961f4d31ffdb75b489a97dadd8068e7ee
   Expo: 2d88b1f9b7a511015414d8c40cc8c6af13c469eb
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoAsset: 751d84b1c4d91a1eddf4a4e356c9e9948ae20153
@@ -1988,9 +1988,9 @@ SPEC CHECKSUMS:
   ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
   ExpoContacts: f38a91d87fa5e5e25ef144f2619de24fdd0f9eb7
   ExpoCrypto: 37237535ce83cad43186b5998cdb3f2ae421dd7c
-  ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
+  ExpoDevice: ef12cfe995dab38657f2ef4c47e89503f96a14c4
   ExpoDocumentPicker: 015978166ecdb556dbeff1db7413a051f8c03bc7
-  ExpoFileSystem: d36501dcf237026e7ddb26324abcbfe44461aecc
+  ExpoFileSystem: d77b9a51d734890d4ce82a0fc7c4a10948a0be22
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoHead: 573e78cb221b5461376d0cc88ee0611337c3c3cb
@@ -2000,9 +2000,9 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: fe7be5056ccf39dd1e05afcdb32a5569973f3685
   ExpoLinearGradient: c50eade5d1279fdcc1a0b127690547584640776c
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
-  ExpoLocalization: b3b77d35b8c7653700ae3045bf6d8175ab91d042
+  ExpoLocalization: ab5f9522d9bdd8aecb1a5d6429606052869d7adc
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
-  ExpoMediaLibrary: 488827a3f563c2242b318553ca018a7b8c0c4644
+  ExpoMediaLibrary: 512b00e9f87f1de8ed0dba60cbe2eb7dc251248e
   ExpoModulesCore: 7944dab86cc6d2cd3fd291293296aa33fd0d5b2c
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: ce6ddfce15230a6585c2aea973033abf783ca84e
@@ -2018,14 +2018,14 @@ SPEC CHECKSUMS:
   ExpoSQLite: 9ef28fb70cdf40a134cbb6b59c85d5e7b8b3acb4
   ExpoStoreReview: c39b480799f1d7239f6100e9a79edbef64f2e733
   ExpoSymbols: 01f91e307a4b8bee4da4fc5bc47efe912a5cfcde
-  ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
+  ExpoSystemUI: d7d4313e5ec2f009bb25f250aac7b84963ba4d17
   ExpoTrackingTransparency: bbae3e495bc58c79b9430cfbc217a56c2ddc9354
   ExpoVideo: 48de519a2cbd639218f2fcff8da50f650dc21b22
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
-  EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
+  EXTaskManager: baabe1da1d6013e7655b40f5674f933d772cae5c
   EXUpdates: eedf5578c7d6b9587e8dc81f35cf1f73efadca0f
   EXUpdatesInterface: 431fbb833aefbc9b7252b24a6a563209ff94f87d
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
