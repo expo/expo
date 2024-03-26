@@ -22,7 +22,7 @@ const DEF_OPTIONS = {
   filename: '/unknown',
 
   babelrc: false,
-  presets: [[preset, { disableImportExportTransform: true }]],
+  presets: [[preset, {}]],
   sourceMaps: true,
   configFile: false,
   compact: false,
@@ -49,42 +49,50 @@ function getOpts(caller: Record<string, string | boolean>) {
 }
 
 describe('forbidden React server APIs', () => {
-  function runServerPass(src: string) {
+  function runServerPass(src: string, options = {}) {
     return babel.transform(
       src,
       getOpts({
         isReactServer: true,
         platform: 'ios',
+        ...options,
       })
     );
   }
   it(`does not assert importing client-side APIs in client components (react server mode)`, () => {
     // This test covers the order of server registry running before the assertion to remove the import.
-    expect(runServerPass(`"use client"; import { useState } from 'react';`).code).toMatch(
+    expect(runServerPass(`"use client"; import { useState } from 'react';`)!.code).toMatch(
       'react-server-dom-webpack'
     );
   });
+  it(`does not assert importing client-side React functions in server components`, () => {
+    runServerPass(`import { useState } from 'react';`);
+    runServerPass(`import { useRef, useContext } from 'react';`);
+    runServerPass(`import React, { useRef } from 'react';`);
+    runServerPass(`import { useRandom } from 'react';`);
+  });
   it(`asserts importing client-side React APIs in server components`, () => {
-    expect(() => runServerPass(`import { useState } from 'react';`)).toThrowErrorMatchingSnapshot();
-    expect(() => runServerPass(`import { useRef, useContext } from 'react';`)).toThrowError();
-    expect(() => runServerPass(`import React, { useRef } from 'react';`)).toThrowError();
+    expect(() => runServerPass(`import React, { PureComponent } from 'react';`)).toThrowError();
     expect(() => runServerPass(`import { PureComponent } from 'react';`)).toThrowError();
     expect(() => runServerPass(`import { Component } from 'react';`)).toThrowError();
-    expect(() => runServerPass(`import { useRandom } from 'react';`)).not.toThrowError();
   });
-  it(`asserts importing client-side react-dom APIs in server components`, () => {
-    expect(() =>
-      runServerPass(`import { findDOMNode } from 'react-dom';`)
-    ).toThrowErrorMatchingSnapshot();
-    expect(() => runServerPass(`import { useRandom } from 'react-dom';`)).not.toThrowError();
+  // Support importing but not using. This allows for shared components to import React APIs and only have assertions on usage.
+  it(`does not assert importing client-side react-dom APIs in server components`, () => {
+    runServerPass(`import { findDOMNode } from 'react-dom';`);
+    runServerPass(`import { useRandom } from 'react-dom';`);
   });
   it(`does not assert importing client-side react-dom APIs in server components if they are in node modules`, () => {
     expect(
       babel.transform(`import { findDOMNode } from 'react-dom';`, {
         ...DEF_OPTIONS,
         filename: '/bacon/node_modules/@bacons/breakfast.js',
-        caller: getCaller({ ...ENABLED_CALLER, isReactServer: true, platform: 'ios' }),
-      }).code
+        caller: getCaller({
+          ...ENABLED_CALLER,
+          supportsStaticESM: true,
+          isReactServer: true,
+          platform: 'ios',
+        }),
+      })!.code
     ).toBe(`import { findDOMNode } from 'react-dom';`);
   });
 
@@ -99,6 +107,32 @@ describe('forbidden React server APIs', () => {
     }
     `)
     ).toThrow(/cannot be used in a React server component/);
+  });
+  it(`asserts if client-side React APIs are used in server components from a named import`, () => {
+    expect(() =>
+      runServerPass(`
+    import { useState } from 'react';
+    
+    export default function App() {
+      const [index, setIndex] = useState(0)
+      return <div>{index}</div>;
+    }
+    `)
+    ).toThrow(/cannot be used in a React server component/);
+  });
+  it(`does not asserts client-side code without React API usage in server components (named import)`, () => {
+    expect(() =>
+      runServerPass(`
+    import { useState } from 'react';
+    
+    export default function App() {
+      const [index, setIndex] = foo()
+      return <div>{index}</div>;
+    }
+
+    function foo() {}
+    `)
+    ).not.toThrow();
   });
   it(`asserts client-side React API usage in server components (default import)`, () => {
     expect(() =>

@@ -67,10 +67,22 @@ export function environmentRestrictedReactAPIsPlugin(
               const isForbidden = forbiddenList.includes(importName);
 
               if (isForbidden) {
-                // Add special handling for `Component` since it is different to a function API.
-                throw path.buildCodeFrameError(
-                  `Client-only "${sourceValue}" API "${importName}" cannot be imported in a React server component. Add the "use client" directive to the top of this file or one of the parent files to enable running this stateful code on a user's device.`
-                );
+                if (['Component', 'PureComponent'].includes(importName)) {
+                  // Add special handling for `Component` since it is different to a function API.
+                  throw path.buildCodeFrameError(
+                    `Client-only "${sourceValue}" API "${importName}" cannot be imported in a React server component. Add the "use client" directive to the top of this file or one of the parent files to enable running this stateful code on a user's device.`
+                  );
+                } else {
+                  const forbiddenImports: Map<string, Set<string>> = path.scope.getData(
+                    'forbiddenImports'
+                  ) || new Map();
+
+                  if (!forbiddenImports.has(sourceValue))
+                    forbiddenImports.set(sourceValue, new Set());
+                  forbiddenImports.get(sourceValue)!.add(importName);
+
+                  path.scope.setData('forbiddenImports', forbiddenImports);
+                }
               }
             } else {
               const importName = t.isStringLiteral(specifier.local)
@@ -83,6 +95,23 @@ export function environmentRestrictedReactAPIsPlugin(
           });
         }
       },
+
+      // Match against `var _useState = useState(0),`
+      VariableDeclarator(path) {
+        const importedSpecifiers: undefined | Map<string, Set<string>> =
+          path.scope.getData('forbiddenImports');
+        if (!importedSpecifiers) return;
+        importedSpecifiers.forEach((forbiddenApis, importName) => {
+          if (t.isCallExpression(path.node.init) && t.isIdentifier(path.node.init.callee)) {
+            if (forbiddenApis.has(path.node.init.callee.name)) {
+              throw path.buildCodeFrameError(
+                `Client-only "useState" API cannot be used in a React server component. Add the "use client" directive to the top of this file or one of the parent files to enable running this stateful code on a user's device.`
+              );
+            }
+          }
+        });
+      },
+
       MemberExpression(path) {
         const importedNamespaces = path.scope.getData('importedNamespace') || {};
         Object.keys(importedNamespaces).forEach((namespace) => {
