@@ -136,6 +136,14 @@ function babelPresetExpo(api, options = {}) {
             },
         ]);
     }
+    if (platformOptions.decoratorsPluginVersion !== false) {
+        extraPlugins.push([
+            require('@babel/plugin-proposal-decorators'),
+            {
+                version: platformOptions.decoratorsPluginVersion ?? 'legacy',
+            },
+        ]);
+    }
     return {
         presets: [
             [
@@ -202,7 +210,6 @@ function babelPresetExpo(api, options = {}) {
         plugins: [
             ...extraPlugins,
             // TODO: Remove
-            [require('@babel/plugin-proposal-decorators'), { legacy: true }],
             require('@babel/plugin-transform-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
