@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- [iOS] Describe data use of the package in the privacy manifest. ([#27868](https://github.com/expo/expo/pull/27868) by [@aleqsio](https://github.com/aleqsio))
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.10.1 - 2023-12-19
