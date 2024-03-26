@@ -96,6 +96,8 @@ function getIconElement(iconName?: string) {
       return PlanEnterpriseIcon;
     case 'Get started':
       return HandWaveIcon;
+    case 'EAS tutorial':
+      return PlanEnterpriseIcon;
     default:
       return undefined;
   }
