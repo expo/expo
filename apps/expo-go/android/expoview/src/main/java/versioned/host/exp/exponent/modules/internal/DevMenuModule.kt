@@ -247,7 +247,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   private fun openJsInspector() {
     reactApplicationContext.runOnNativeModulesQueueThread {
       val devSupportManager = getDevSupportManager()
-      devSupportManager?.devSettings?.packagerConnectionSettings?.inspectorServerHost?.let {
+      devSupportManager?.devSettings?.packagerConnectionSettings?.debugServerHost?.let {
         val url = "http://$it/_expo/debugger?applicationId=${reactApplicationContext.packageName}"
         val request = Request.Builder().url(url).put("".toRequestBody()).build()
         Exponent.instance.exponentNetwork.noCacheClient.newCall(request).execute()

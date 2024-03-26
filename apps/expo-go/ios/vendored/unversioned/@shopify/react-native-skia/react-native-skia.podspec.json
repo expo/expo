@@ -18,9 +18,10 @@
   "requires_arc": true,
   "pod_target_xcconfig": {
     "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) SK_METAL=1 SK_GANESH=1",
-    "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
     "DEFINES_MODULE": "YES",
-    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/cpp/\"/** \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\""
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/cpp/\"/** \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\"",
+    "OTHER_CPLUSPLUSFLAGS": "$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32"
   },
   "frameworks": [
     "GLKit",
@@ -39,9 +40,73 @@
     "ios/**/*.{h,c,cc,cpp,m,mm,swift}",
     "cpp/**/*.{h,cpp}"
   ],
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32",
   "dependencies": {
-    "React": [],
-    "React-callinvoker": [],
-    "React-Core": []
+    "React-Core": [
+
+    ],
+    "RCT-Folly": [
+      "2024.01.01.00"
+    ],
+    "glog": [
+
+    ],
+    "React-RCTFabric": [
+
+    ],
+    "React-Codegen": [
+
+    ],
+    "RCTRequired": [
+
+    ],
+    "RCTTypeSafety": [
+
+    ],
+    "ReactCommon/turbomodule/bridging": [
+
+    ],
+    "ReactCommon/turbomodule/core": [
+
+    ],
+    "React-NativeModulesApple": [
+
+    ],
+    "Yoga": [
+
+    ],
+    "React-Fabric": [
+
+    ],
+    "React-graphics": [
+
+    ],
+    "React-utils": [
+
+    ],
+    "React-featureflags": [
+
+    ],
+    "React-debug": [
+
+    ],
+    "React-ImageManager": [
+
+    ],
+    "React-rendererdebug": [
+
+    ],
+    "DoubleConversion": [
+
+    ],
+    "hermes-engine": [
+
+    ],
+    "React": [
+
+    ],
+    "React-callinvoker": [
+
+    ]
   }
 }
