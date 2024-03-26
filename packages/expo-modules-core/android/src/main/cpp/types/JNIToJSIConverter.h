@@ -20,6 +20,11 @@ jsi::Value convert(
 );
 
 /**
+ * Convert a string with FollyDynamicExtensionConverter support.
+ */
+std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, const std::string& string);
+
+/**
  * Decorate jsi::Value with FollyDynamicExtensionConverter support.
  */
 std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value);
