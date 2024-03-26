@@ -118,8 +118,6 @@ class QueryArguments(
 )
 
 class ContactsModule : Module() {
-  private var mPendingPromise: Promise? = null
-  private var mModuleRegistry: ModuleRegistry? = null
   private var contactPickingPromise: Promise? = null
   private var contactManipulationPromise: Promise? = null
 
