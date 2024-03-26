@@ -73,7 +73,7 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     if (display == RNTimePickerDisplay.SPINNER) {
         return new RNDismissableTimePickerDialog(
                 activityContext,
-                host.exp.expoview.R.style.SpinnerTimePickerDialog,
+								host.exp.expoview.R.style.SpinnerTimePickerDialog,
                 onTimeSetListener,
                 hour,
                 minute,
