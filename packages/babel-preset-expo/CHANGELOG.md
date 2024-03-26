@@ -50,6 +50,7 @@ _This version does not introduce any user-facing changes._
 - Minify `typeof window` in server and web contexts. ([#27530](https://github.com/expo/expo/pull/27530) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for using `process.env.EXPO_OS` to detect the platform without platform shaking imports. ([#27509](https://github.com/expo/expo/pull/27509) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `decoratorsPluginVersion` option to configure or disable `@babel/plugin-proposal-decorators`. ([#27857](https://github.com/expo/expo/pull/27857) by [@Nodonisko](https://github.com/Nodonisko))
 
 ### 🐛 Bug fixes
 
