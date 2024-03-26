@@ -40,7 +40,6 @@ export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
-  const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
@@ -64,9 +63,9 @@ export default function App() {
     setStartTime(Date.now());
   }, []);
 
-  Updates.useUpdateEvents((event) => {
-    setLastUpdateEventType(event.type);
-  });
+  // Updates.useUpdateEvents((event) => {
+  //   setLastUpdateEventType(event.type);
+  // });
 
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
@@ -180,7 +179,6 @@ export default function App() {
         testID="didCheckAndDownloadHappenInParallel"
         value={`${didCheckAndDownloadHappenInParallel}`}
       />
-      <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
