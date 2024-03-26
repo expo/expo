@@ -16,6 +16,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
+  s.resource_bundles = {'ExpoContacts_privacy' => ['PrivacyInfo.xcprivacy']}
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',

@@ -17,6 +17,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'ExpoMaps/**/*.{h,m,swift}'
   s.requires_arc   = true
 
+  s.resource_bundles = {'ExpoMaps_privacy' => ['PrivacyInfo.xcprivacy']}
+
   s.dependency 'ExpoModulesCore'
   s.dependency 'GoogleMaps', '7.3.0'
 #  s.dependency 'Google-Maps-iOS-Utils', '4.1.0'
