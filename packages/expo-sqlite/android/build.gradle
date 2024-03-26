@@ -36,7 +36,6 @@ def getSQLiteBuildFlags() {
   def buildFlags = ''
   if (findProperty('expo.sqlite.enableFTS') !== 'false') {
     buildFlags <<= '-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
-  } else {
   }
   def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
   if (customBuildFlags != '') {
@@ -166,7 +165,7 @@ def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories') 
   SQLITE3_SRC_DIR.mkdirs()
 }
 
-def downloadSQLite = tasks.create('downloadSQLite', Download) {
+def downloadSQLite = tasks.register('downloadSQLite', Download) {
   dependsOn(createNativeDepsDirectories)
   src("https://www.sqlite.org/2023/sqlite-amalgamation-${SQLITE_VERSION}.zip")
   onlyIfNewer(true)
@@ -174,13 +173,13 @@ def downloadSQLite = tasks.create('downloadSQLite', Download) {
   dest(new File(downloadsDir, "sqlite-amalgamation-${SQLITE_VERSION}.zip"))
 }
 
-def prepareSQLite = tasks.register('prepareSQLite', Copy) {
+def prepareSQLite = tasks.register("prepareSQLite", Copy) {
   dependsOn(downloadSQLite)
-  from(zipTree(downloadSQLite.dest))
+  from(zipTree(downloadSQLite.get().dest))
   into(SQLITE3_SRC_DIR)
-  eachFile {
+  eachFile { file ->
     // flatten files
-    path = name
+    file.path = file.name
   }
 }
 
@@ -188,10 +187,7 @@ void nativeBuildDependsOn(project, dependsOnTask) {
   def buildTasks = project.tasks.findAll { task ->
     def taskName = task.name
     if (taskName.contains("Clean")) { return false }
-    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
-      return true
-    }
-    return false
+    return taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")
   }
   buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
 }

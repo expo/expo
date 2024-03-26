@@ -48,12 +48,6 @@ afterEvaluate {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
-def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
-def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
-logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
-
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
   apply from: expoModulesCorePlugin
@@ -186,13 +180,8 @@ dependencies {
 
   api project(':packages:react-native:ReactAndroid')
 
-  if (!buildHermesSource) {
-    debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
-    releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
-  } else {
-    implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
-      exclude(group:'com.facebook.fbjni', module: 'fbjni')
-    }
+  implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
+    exclude(group:'com.facebook.fbjni', module: 'fbjni')
   }
 
   // Expo modules
