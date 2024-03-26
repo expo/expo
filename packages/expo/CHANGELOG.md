@@ -14,6 +14,7 @@
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 - Fixed breaking changes from React Native 0.75. ([#27773](https://github.com/expo/expo/pull/27773) by [@kudo](https://github.com/kudo))
+- Added `ReactNativeHost.getJSBundleFile()` support for bridgeless mode. ([#27804](https://github.com/expo/expo/pull/27804) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

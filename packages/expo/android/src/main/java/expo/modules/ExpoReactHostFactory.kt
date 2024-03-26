@@ -41,6 +41,12 @@ object ExpoReactHostFactory {
     override val jsBundleLoader: JSBundleLoader
       get() {
         val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
+          if (jsBundleFile.startsWith("assets://")) {
+            return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
+          }
+          return JSBundleLoader.createFileLoader(jsBundleFile)
+        }
         val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
         return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
       }
