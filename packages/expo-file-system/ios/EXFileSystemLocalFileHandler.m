@@ -21,6 +21,7 @@
       result[@"md5"] = [[NSData dataWithContentsOfFile:path] md5String];
     }
     result[@"size"] = @([EXFileSystemLocalFileHandler getFileSize:path attributes:attributes]);
+    // Uses required reason API based on the following reason: 0A2A.1
     result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
     resolve(result);
   } else {

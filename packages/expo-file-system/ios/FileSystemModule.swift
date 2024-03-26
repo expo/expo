@@ -256,6 +256,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("getFreeDiskStorageAsync") { () -> Int in
+    // Uses required reason API based on the following reason: E174.1 85F4.1
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityKey])
 
       guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
@@ -265,6 +266,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("getTotalDiskCapacityAsync") { () -> Int in
+        // Uses required reason API based on the following reason: E174.1 85F4.1
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeTotalCapacityKey])
 
       guard let totalCapacity = resourceValues?.volumeTotalCapacity else {

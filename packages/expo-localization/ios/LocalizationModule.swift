@@ -57,6 +57,7 @@ public class LocalizationModule: Module {
     // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
     // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
     // On iOS we need to set both forceRTL and allowRTL so apps don't have to include localization strings.
+    // Uses required reason API based on the following reason: CA92.1
     UserDefaults.standard.set(supportsRTL, forKey: "RCTI18nUtil_allowRTL")
     UserDefaults.standard.set(supportsRTL ? isRTLPreferredForCurrentLocale() : false, forKey: "RCTI18nUtil_forceRTL")
     UserDefaults.standard.synchronize()
