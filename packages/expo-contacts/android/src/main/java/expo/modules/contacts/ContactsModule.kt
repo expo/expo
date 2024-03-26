@@ -123,7 +123,6 @@ class ContactsModule : Module() {
   private var contactPickingPromise: Promise? = null
   private var contactManipulationPromise: Promise? = null
 
-
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
@@ -293,22 +292,10 @@ class ContactsModule : Module() {
       }
     }
 
-     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (mPendingPromise != null) {
-         throw ContactPickingInProgressException()
-       }
-
-       val intent = Intent(Intent.ACTION_PICK)
-       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
-
-       mPendingPromise = promise
-       activity.startActivityForResult(intent, RC_PICK_CONTACT)
-    }
-
-     AsyncFunction("presentContactPickerAsync") { promise: Promise ->
-       if (contactPickingPromise != null) {
-         throw ContactPickingInProgressException()
-       }
+    AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+      if (contactPickingPromise != null) {
+        throw ContactPickingInProgressException()
+      }
 
       val intent = Intent(Intent.ACTION_PICK)
       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
