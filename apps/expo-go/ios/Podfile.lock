@@ -382,8 +382,14 @@ PODS:
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
   - hermes-engine (0.74.0-rc.4):
-    - hermes-engine/Pre-built (= 0.74.0-rc.4)
-  - hermes-engine/Pre-built (0.74.0-rc.4)
+    - hermes-engine/Hermes (= 0.74.0-rc.4)
+    - hermes-engine/inspector (= 0.74.0-rc.4)
+    - hermes-engine/inspector_chrome (= 0.74.0-rc.4)
+    - hermes-engine/Public (= 0.74.0-rc.4)
+  - hermes-engine/Hermes (0.74.0-rc.4)
+  - hermes-engine/inspector (0.74.0-rc.4)
+  - hermes-engine/inspector_chrome (0.74.0-rc.4)
+  - hermes-engine/Public (0.74.0-rc.4)
   - JKBigInteger (0.0.6)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
@@ -2292,7 +2298,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: dfdcadd89a22aa872ef552b07e415d88df68af55
+  hermes-engine: ea8e50ab18f27b09a7e7e60a4657be46a7e64c13
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
