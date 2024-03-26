@@ -1,11 +1,11 @@
 import './expect';
+import './mocks';
 
 import { NavigationState, PartialState } from '@react-navigation/native';
 import { act, render, RenderResult, screen } from '@testing-library/react-native';
 import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
-import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
 import { stateCache } from '../getLinkingConfig';
@@ -53,24 +53,11 @@ export function renderRouter(
 
   const mockContext = getMockContext(context);
 
-  // Reset the initial URL
-  setInitialUrl(initialUrl);
-
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
 
-  let location: URL | undefined;
-
-  if (typeof initialUrl === 'string') {
-    location = new URL(initialUrl, 'test://');
-  } else if (initialUrl instanceof URL) {
-    location = initialUrl;
-  }
-
-  const result = render(<ExpoRoot context={mockContext} location={location} />, {
-    ...options,
-  });
+  const result = render(<ExpoRoot context={mockContext} location={initialUrl} />, options);
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {

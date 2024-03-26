@@ -1,4 +1,5 @@
 import './expect';
+import './mocks';
 import { NavigationState, PartialState } from '@react-navigation/native';
 import { render } from '@testing-library/react-native';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
