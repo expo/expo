@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -311,11 +313,43 @@ const renderAPI = (
   }
 };
 
+const isDevMode = process.env.NODE_ENV === 'development';
+
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+
+  useEffect(() => {
+    if (isDevMode) {
+      const contentLinks = document.querySelectorAll(
+        `div.size-full.overflow-x-hidden.overflow-y-auto a`
+      ) as NodeListOf<HTMLAnchorElement>;
+
+      const wantedHashes = Array.from(contentLinks)
+        .map(link => {
+          if (link.hostname !== 'localhost' || !link.href.startsWith(link.baseURI.split('#')[0])) {
+            return '';
+          }
+          return link.hash.substring(1);
+        })
+        .filter(hash => hash !== '');
+      const availableIDs = Array.from(document.querySelectorAll('*[id]')).map(link => link.id);
+      const missingEntries = wantedHashes.filter(x => !availableIDs.includes(x));
+
+      if (missingEntries.length) {
+        console.group(
+          `🚨 DEV MODE ERROR ONLY
+-----------------------
+The following links targets are missing in the '${restProps.packageName}' API reference:`
+        );
+        console.table(missingEntries);
+        console.groupEnd();
+      }
+    }
+  }, []);
+
   return renderAPI(resolvedVersion, restProps);
 };
 
