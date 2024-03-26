@@ -369,10 +369,10 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (1.11.0):
     - ExpoModulesCore
-    - SDWebImage (~> 5.17.0)
-    - SDWebImageAVIFCoder (~> 0.10.1)
+    - SDWebImage (~> 5.18.7)
+    - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.13.0)
+    - SDWebImageWebPCoder (~> 0.14.2)
   - ExpoImageManipulator (11.8.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -605,15 +605,7 @@ PODS:
   - hermes-engine (0.74.0-rc.4):
     - hermes-engine/Pre-built (= 0.74.0-rc.4)
   - hermes-engine/Pre-built (0.74.0-rc.4)
-  - libaom (3.0.0):
-    - libvmaf (>= 2.2.0)
-  - libavif (0.11.1):
-    - libavif/libaom (= 0.11.1)
   - libavif/core (0.11.1)
-  - libavif/libaom (0.11.1):
-    - libaom (>= 2.0.0)
-    - libavif/core
-  - libvmaf (2.3.1)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -1906,15 +1898,15 @@ PODS:
     - Yoga
   - RNSVG (14.0.0):
     - React-Core
-  - SDWebImage (5.17.0):
-    - SDWebImage/Core (= 5.17.0)
-  - SDWebImage/Core (5.17.0)
-  - SDWebImageAVIFCoder (0.10.1):
-    - libavif (>= 0.11.0)
+  - SDWebImage (5.18.12):
+    - SDWebImage/Core (= 5.18.12)
+  - SDWebImage/Core (5.18.12)
+  - SDWebImageAVIFCoder (0.11.0):
+    - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.13.0):
+  - SDWebImageWebPCoder (0.14.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
@@ -2094,9 +2086,7 @@ SPEC REPOS:
   trunk:
     - GoogleMaps
     - GooglePlaces
-    - libaom
     - libavif
-    - libvmaf
     - libwebp
     - Nimble
     - OHHTTPStubs
@@ -2501,7 +2491,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: d77b9a51d734890d4ce82a0fc7c4a10948a0be22
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
-  ExpoImage: 390c524542b258f8173f475c1cc71f016444a7be
+  ExpoImage: 79d61d4ca87ed9e08005353ee65500db93145d0e
   ExpoImageManipulator: c1d7cb865eacd620a35659f3da34c70531f10b59
   ExpoImagePicker: 247fc7d2c13426a835525b67d5fb221864b79612
   ExpoInsights: 28a5bab3d75d32c6266b00c5166668561a0bf756
@@ -2543,9 +2533,7 @@ SPEC CHECKSUMS:
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: dfdcadd89a22aa872ef552b07e415d88df68af55
-  libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
-  libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
@@ -2614,10 +2602,10 @@ SPEC CHECKSUMS:
   RNReanimated: ba5db5a81395c0cac529dbb1719453dd5c4c6f24
   RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
-  SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
-  SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
+  SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
+  SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
