@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Allow users using xcode 14 to still build when including camera.
+- Allow users using xcode 14 to still build when including camera. ([#27873](https://github.com/expo/expo/pull/27873) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
