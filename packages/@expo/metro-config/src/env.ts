@@ -25,6 +25,11 @@ class Env {
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
+
+  /** Rename `require` statements to `_$$_REQUIRE` in an additional traversal pass during transformation. */
+  get EXPO_METRO_RENAME_REQUIRES(): boolean {
+    return boolish('EXPO_METRO_RENAME_REQUIRES', false);
+  }
 }
 
 export const env = new Env();
