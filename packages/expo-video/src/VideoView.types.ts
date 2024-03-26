@@ -55,7 +55,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * Indicates the current status of the player.
    * > This property is get-only
    */
-  status: PlayerStatus;
+  status: VideoPlayerStatus;
 
   /**
    * Determines whether the player should continue playing after the app enters the background.
@@ -97,7 +97,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
  * - `cover`: The video maintains its aspect ratio and covers the entire container, potentially cropping some portions.
  * - `fill`: The video stretches/squeezes to completely fill the container, potentially causing distortion.
  */
-type VideoContentFit = 'contain' | 'cover' | 'fill';
+export type VideoContentFit = 'contain' | 'cover' | 'fill';
 
 /**
  * Describes the current status of the player.
@@ -106,7 +106,7 @@ type VideoContentFit = 'contain' | 'cover' | 'fill';
  * - `readyToPlay`: The player has loaded enough data to start playing or to continue playback.
  * - `error`: The player has encountered an error while loading or playing the video.
  */
-export type PlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
+export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
 export interface VideoViewProps extends ViewProps {
   /**
@@ -189,12 +189,12 @@ export interface VideoViewProps extends ViewProps {
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
  * */
-type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
+export type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
 
 /**
  * Specifies DRM options which will be used by the player while loading the video.
  */
-type DRMOptions = {
+export type DRMOptions = {
   /**
    * Determines which type of DRM to use.
    */
@@ -238,7 +238,11 @@ export type VideoPlayerEvents = {
   /**
    * Handler for an event emitted when the status of the player changes.
    */
-  statusChange: (newStatus: PlayerStatus, oldStatus: PlayerStatus, error: PlayerError) => void;
+  statusChange: (
+    newStatus: VideoPlayerStatus,
+    oldStatus: VideoPlayerStatus,
+    error: PlayerError
+  ) => void;
   /**
    * Handler for an event emitted when the player starts or stops playback.
    */
@@ -264,14 +268,14 @@ export type VideoPlayerEvents = {
 /**
  * Contains information about any errors that the player encountered during the playback
  */
-type PlayerError = {
+export type PlayerError = {
   message: string;
 };
 
 /**
  * Contains information about the current volume and whether the player is muted.
  */
-type VolumeEvent = {
+export type VolumeEvent = {
   volume: number;
   isMuted: boolean;
 };
