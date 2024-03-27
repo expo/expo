@@ -18,11 +18,7 @@ public final class UpdatesModule: Module {
     Name("ExpoUpdates")
 
     Events(
-      EXUpdatesEventName,
-      EXUpdatesStateChangeEventName,
-      UpdateAvailableEventName,
-      NoUpdateAvailableEventName,
-      ErrorEventName
+      EXUpdatesStateChangeEventName
     )
 
     Constants {

@@ -33,11 +33,7 @@ class UpdatesModule : Module() {
     Name("ExpoUpdates")
 
     Events(
-      UPDATES_EVENT_NAME,
-      UPDATES_STATE_CHANGE_EVENT_NAME,
-      UPDATE_AVAILABLE_EVENT,
-      UPDATE_NO_UPDATE_AVAILABLE_EVENT,
-      UPDATE_ERROR_EVENT
+      UPDATES_STATE_CHANGE_EVENT_NAME
     )
 
     Constants {

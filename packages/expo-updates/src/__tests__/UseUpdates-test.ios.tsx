@@ -5,7 +5,7 @@ import React from 'react';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 import ExpoUpdates from '../ExpoUpdates';
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
-import { emitStateChangeEvent } from '../UpdatesEmitter';
+import { emitTestStateChangeEvent } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
 
 type UpdatesNativeStateChangeTestEvent = {
@@ -132,10 +132,10 @@ describe('useUpdates()', () => {
     it('Shows available update after receiving state change', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isCheckingEvent);
+        emitTestStateChangeEvent(isCheckingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(updateAvailableEvent);
+        emitTestStateChangeEvent(updateAvailableEvent);
       });
       const updateIdView = await screen.findByTestId('availableUpdate_updateId');
       expect(updateIdView).toHaveTextContent('0000-2222');
@@ -151,10 +151,10 @@ describe('useUpdates()', () => {
     it('Shows no available update after receiving state change', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isCheckingEvent);
+        emitTestStateChangeEvent(isCheckingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(updateUnavailableEvent);
+        emitTestStateChangeEvent(updateUnavailableEvent);
       });
       const updateIdView = await screen.findByTestId('availableUpdate_updateId');
       // No update so text is empty
@@ -171,10 +171,10 @@ describe('useUpdates()', () => {
     it('Handles error in checkForUpdate()', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isCheckingEvent);
+        emitTestStateChangeEvent(isCheckingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(checkErrorEvent);
+        emitTestStateChangeEvent(checkErrorEvent);
       });
       const errorView = await screen.findByTestId('checkError');
       expect(errorView).toHaveTextContent('test message');
@@ -185,10 +185,10 @@ describe('useUpdates()', () => {
     it('Shows downloaded update after receiving state change', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isDownloadingEvent);
+        emitTestStateChangeEvent(isDownloadingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(updateDownloadedEvent);
+        emitTestStateChangeEvent(updateDownloadedEvent);
       });
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('true');
@@ -201,10 +201,10 @@ describe('useUpdates()', () => {
     it('Handles error during downloadUpdate()', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isDownloadingEvent);
+        emitTestStateChangeEvent(isDownloadingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(downloadErrorEvent);
+        emitTestStateChangeEvent(downloadErrorEvent);
       });
       const errorView = await screen.findByTestId('downloadError');
       expect(errorView).toHaveTextContent('test message');
@@ -217,10 +217,10 @@ describe('useUpdates()', () => {
     it('Handles rollback', async () => {
       render(<UseUpdatesTestApp />);
       await act(async () => {
-        emitStateChangeEvent(isCheckingEvent);
+        emitTestStateChangeEvent(isCheckingEvent);
       });
       await act(async () => {
-        emitStateChangeEvent(updateAvailableWithRollbackEvent);
+        emitTestStateChangeEvent(updateAvailableWithRollbackEvent);
       });
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('true');
