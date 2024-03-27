@@ -1,1 +1,0 @@
-{"version":3,"file":"NativeVideoView.js","sourceRoot":"","sources":["../src/NativeVideoView.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,mBAAmB,CAAC;AAE7D,eAAe,wBAAwB,CAAC,WAAW,CAAC,CAAC","sourcesContent":["import { requireNativeViewManager } from 'expo-modules-core';\n\nexport default requireNativeViewManager('ExpoVideo');\n"]}
