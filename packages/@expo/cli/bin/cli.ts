@@ -32,6 +32,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
   customize: () => import('../src/customize/index.js').then((i) => i.expoCustomize),
+  lint: () => import('../src/lint/index.js').then((i) => i.expoLint),
 
   // Auth
   login: () => import('../src/login/index.js').then((i) => i.expoLogin),
