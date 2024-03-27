@@ -10,9 +10,9 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-> **info** expo-video is a new, experimental package that aims to replace the `Video` component from expo-av with a more modern and reliable implementation. If you are concerned about using a new package, consider [expo-av](video.mdx) until expo-video has stabilized.
+> **info** `expo-video` is a new, experimental library that aims to replace the `Video` component from `expo-av` with a more modern and reliable implementation. If you are looking for a more stable API, use [`expo-av`](video.mdx) until this library has stabilized.
 
-A cross-platform, performant video component for React Native and Expo with Web support.
+`expo-video` is a cross-platform, performant video component for React Native and Expo with Web support.
 
 ## Installation
 
@@ -20,20 +20,20 @@ A cross-platform, performant video component for React Native and Expo with Web 
 
 ## Usage
 
-Here's a simple example of a video with a play/pause button.
+Here's a simple example of a video with a play and pause button.
 
 <SnackInline label='Video' dependencies={['expo-video']}>
 
 ```jsx
-import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
-import React, { useEffect, useRef, useState } from 'react';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEffect, useRef, useState } from 'react';
 import { PixelRatio, StyleSheet, View, Button } from 'react-native';
 
-const videoSource: VideoSource =
+const videoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 export default function VideoScreen() {
-  const ref = useRef<VideoView>(null);
+  const ref = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = true;
