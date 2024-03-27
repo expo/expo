@@ -12,11 +12,9 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.min
-import kotlin.time.Duration.Companion.seconds
 
 const val recordingStatus = "onRecordingStatusUpdate"
 const val playbackStatus = "onPlaybackStatusUpdate"
