@@ -1,4 +1,4 @@
-import JsonFile from '@expo/json-file';
+import JsonFile, { type JSONObject } from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
@@ -79,12 +79,16 @@ const setupLinting = async (projectRoot: string) => {
 
   const scripts = JsonFile.read(path.join(projectRoot, 'package.json')).scripts;
 
-  await JsonFile.setAsync(
-    path.join(projectRoot, 'package.json'),
-    'scripts',
-    typeof scripts === 'object' ? { ...scripts, lint: 'eslint .' } : { lint: 'eslint .' },
-    { json5: false }
-  );
+  if ((scripts as JSONObject)?.lint) {
+    Log.log('Skipped adding the lint scrip as one exists already');
+  } else {
+    await JsonFile.setAsync(
+      path.join(projectRoot, 'package.json'),
+      'scripts',
+      typeof scripts === 'object' ? { ...scripts, lint: 'eslint .' } : { lint: 'eslint .' },
+      { json5: false }
+    );
+  }
 
   Log.log();
   Log.log('Your eslint config has been set up 🎉');
@@ -93,6 +97,7 @@ const setupLinting = async (projectRoot: string) => {
 
 export const lintAsync = async (projectRoot: string) => {
   try {
+    // TODO(Kadi): check for all config files https://eslint.org/docs/latest/use/configure/configuration-files#configuration-file-formats
     await fs.readFile(path.join(projectRoot, '.eslintrc.js'), 'utf8');
   } catch {
     return setupLinting(projectRoot);
