@@ -346,7 +346,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   }
 
   func didCancelPickingContact() {
-    currentContactPickingContext?.promise.resolve(nil)
+    currentContactPickingContext?.promise.resolve()
     currentContactPickingContext = nil
   }
 

@@ -277,7 +277,7 @@ class ContactsModule : Module() {
         val pendingPromise = contactPickingPromise ?: return@OnActivityResult
 
         if (resultCode == Activity.RESULT_CANCELED) {
-          pendingPromise.resolve(null)
+          pendingPromise.resolve()
         }
 
         if (resultCode == Activity.RESULT_OK) {
