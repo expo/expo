@@ -4,6 +4,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { Log } from '../log';
 import { selectAsync } from '../utils/prompts';
 
 const WITH_PRETTIER = `module.exports = {
@@ -88,6 +89,10 @@ const setupLinting = async (projectRoot: string) => {
     typeof scripts === 'object' ? { ...scripts, lint: 'eslint .' } : { lint: 'eslint .' },
     { json5: false }
   );
+
+  Log.log();
+  Log.log('Your eslint config has been set up 🎉');
+  Log.log('Run "npx expo lint" again to lint your code');
 };
 
 export const lintAsync = async (projectRoot: string) => {
