@@ -50,7 +50,11 @@ function babelPresetExpo(api, options = {}) {
         }
     }
     if (platformOptions.unstable_transformProfile == null) {
-        platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
+        // Using hermes canary will disable the destructuring transform. Disabling this transform reduces
+        // an additional import on a babel helper in every file with destructuring, i.e. `useState`.
+        // This may have outstanding performance regressions for development Hermes.
+        // Ref: https://github.com/facebook/react-native/pull/43662
+        platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-canary' : 'default';
     }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
     // `@react-native/babel-preset` will handle it.

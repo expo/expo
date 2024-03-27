@@ -184,14 +184,17 @@ it(`supports nested React components in destructured props in Metro + developmen
 
   expect(code).toMatch(/"react\/jsx-dev-runtime"/);
   expect(code).toMatch(/var _this = this;/);
-  expect(code).toMatch(/var _ref\$button/);
+  const lines = code!.split('\n');
+  expect(lines.findIndex((line) => line.match(/_this = this;/))).toBeLessThan(
+    lines.findIndex((line) => line.match(/_this\);/))
+  );
   expect(code).toMatchInlineSnapshot(`
     "var _jsxDevRuntime = require("react/jsx-dev-runtime");
     var _jsxFileName = "/unknown";
     function Foo(_ref) {
       var _this = this;
-      var _ref$button = _ref.button,
-        button = _ref$button === void 0 ? function () {
+      var {
+        button = function () {
           return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(Text, {
             children: "Foo"
           }, void 0, false, {
@@ -199,7 +202,8 @@ it(`supports nested React components in destructured props in Metro + developmen
             lineNumber: 4,
             columnNumber: 14
           }, _this);
-        } : _ref$button;
+        }
+      } = _ref;
       return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_jsxDevRuntime.Fragment, {
         children: button()
       }, void 0, false);

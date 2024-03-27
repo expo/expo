@@ -41,6 +41,10 @@ var obj = {
   bar: "bar"
 };
 
+// @babel/plugin-transform-destructuring
+var { x, y } = { x: "x", y: "y" };
+var [a, b, ...c] = [1, 2, 3];
+
 // @babel/plugin-transform-shorthand-properties
 var a1 = 0;
 var c = { a1 };
