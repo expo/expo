@@ -51,6 +51,12 @@ class UpdatesPackage : Package {
         }
         // WHEN_VERSIONING_REMOVE_TO_HERE
       }
+
+      override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
+        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
+          UpdatesController.instance.onReactInstanceException(exception)
+        }
+      }
     }
     return listOf(handler)
   }

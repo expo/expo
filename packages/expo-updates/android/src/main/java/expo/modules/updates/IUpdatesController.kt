@@ -46,6 +46,8 @@ interface IUpdatesController {
 
   fun onDidCreateReactInstanceManager(reactContext: ReactContext)
 
+  fun onReactInstanceException(exception: java.lang.Exception)
+
   /**
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
    * check for a new update from the server. This method should be called as early as possible in

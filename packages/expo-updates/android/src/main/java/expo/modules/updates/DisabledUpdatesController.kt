@@ -1,10 +1,9 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
@@ -34,17 +33,15 @@ class DisabledUpdatesController(
   private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   override var appContext: WeakReference<AppContext>? = null
+
+  /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
   override var shouldEmitJsEvents = false
     set(value) {
       field = value
       UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
     }
 
-  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference(context.reactNativeHost)
-  } else {
-    null
-  }
   private val logger = UpdatesLogger(context)
 
   // disabled controller state machine can only be idle or restarting
@@ -71,7 +68,11 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
+  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
 
   @Synchronized
   override fun start() {
@@ -104,7 +105,8 @@ class DisabledUpdatesController(
 
   override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
     val procedure = RecreateReactContextProcedure(
-      reactNativeHost,
+      context,
+      weakActivity,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           callback.onFailure(e.toCodedException())
