@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import { FileStatus } from './FileStatus';
@@ -12,6 +13,7 @@ export type SnippetHeaderProps = PropsWithChildren<{
   float?: boolean;
   operationType?: 'delete' | 'add' | 'modify' | undefined;
   showOperation?: boolean;
+  linkUrl?: string;
 }>;
 
 export const SnippetHeader = ({
@@ -22,6 +24,7 @@ export const SnippetHeader = ({
   alwaysDark = false,
   operationType,
   showOperation = false,
+  linkUrl,
 }: SnippetHeaderProps) => (
   <div
     className={mergeClasses(
@@ -39,6 +42,12 @@ export const SnippetHeader = ({
       {Icon && <Icon className="icon-sm" />}
       {title}
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
+      {linkUrl && (
+        <ArrowUpRightIcon
+          onClick={() => window.open(linkUrl, '_blank')}
+          className="text-icon-secondary shrink-0 icon-sm"
+        />
+      )}
     </LABEL>
     {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
