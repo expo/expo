@@ -19,7 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.74.0-rc.4",
+    "react-native": "0.74.0-rc.5",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
     "**/util": "~0.12.4"
