@@ -3,7 +3,7 @@ import { FontSource } from './Font.types';
  * ```ts
  * const [loaded, error] = useFonts({ ... });
  * ```
- * Load a map of fonts with [`loadAsync`](#loadasync). This returns a `boolean` if the fonts are
+ * Load a map of fonts with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
