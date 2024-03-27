@@ -10,7 +10,7 @@
     "expo": "~51.0.0-unreleased",
     "expo-router": "^3.0.0",
     "react": "18.2.0",
-    "react-native": "0.74.0-rc.4"
+    "react-native": "0.74.0-rc.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
