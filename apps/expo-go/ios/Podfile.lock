@@ -381,15 +381,15 @@ PODS:
     - GoogleUtilities/MethodSwizzler
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
-  - hermes-engine (0.74.0-rc.4):
-    - hermes-engine/Hermes (= 0.74.0-rc.4)
-    - hermes-engine/inspector (= 0.74.0-rc.4)
-    - hermes-engine/inspector_chrome (= 0.74.0-rc.4)
-    - hermes-engine/Public (= 0.74.0-rc.4)
-  - hermes-engine/Hermes (0.74.0-rc.4)
-  - hermes-engine/inspector (0.74.0-rc.4)
-  - hermes-engine/inspector_chrome (0.74.0-rc.4)
-  - hermes-engine/Public (0.74.0-rc.4)
+  - hermes-engine (0.74.0-rc.5):
+    - hermes-engine/Hermes (= 0.74.0-rc.5)
+    - hermes-engine/inspector (= 0.74.0-rc.5)
+    - hermes-engine/inspector_chrome (= 0.74.0-rc.5)
+    - hermes-engine/Public (= 0.74.0-rc.5)
+  - hermes-engine/Hermes (0.74.0-rc.5)
+  - hermes-engine/inspector (0.74.0-rc.5)
+  - hermes-engine/inspector_chrome (0.74.0-rc.5)
+  - hermes-engine/Public (0.74.0-rc.5)
   - JKBigInteger (0.0.6)
   - libavif/core (0.11.1)
   - libwebp (1.3.2):
@@ -2288,7 +2288,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: ea8e50ab18f27b09a7e7e60a4657be46a7e64c13
+  hermes-engine: 37cdde7b2691971fa6212e9189adfe1ccc2fd4ab
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
