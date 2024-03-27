@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk';
+
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
@@ -15,7 +17,11 @@ export const expoLint: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(`Utility for setting up linting for an expo project`, 'Usage', 'Options');
+    printHelp(
+      `Utility for setting up linting on an Expo project`,
+      chalk`npx expo lint`,
+      [`-h, --help                 Usage info`].join('\n')
+    );
   }
 
   // Load modules after the help prompt so `npx expo lint -h` shows as fast as possible.
