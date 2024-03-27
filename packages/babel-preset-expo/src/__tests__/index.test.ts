@@ -18,6 +18,46 @@ jest.mock('../common.ts', () => ({
   }),
 }));
 
+xit(`compiles samples with Metro`, () => {
+  const options = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    filename: '/unknown',
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: true,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'web',
+      supportsStaticESM: true,
+    }),
+  };
+
+  // All of this code should remain intact.
+  const sourceCode = `
+  import { useState } from 'react';
+
+  class Foo {
+    bar = true;
+  }
+
+
+  export function App() {
+    const [index, setIndex] = useState(1_000);
+    
+    const foo = { index, ["octal"]: 0b11 }
+
+    return <div>Count: {foo?.index ?? "zero"}</div>
+  }
+  `;
+  const withHermes = babel.transform(sourceCode, options)!;
+
+  expect(withHermes.code).toEqual('');
+});
+
 it(`compiles samples with Metro targeting Hermes`, () => {
   const options = {
     babelrc: false,
@@ -83,6 +123,83 @@ var m = {}?.x;
 // @babel/plugin-proposal-nullish-coalescing-operator
 var obj2 = {};
 var foo = obj2.foo ?? "default";`;
+  const withHermes = babel.transform(sourceCode, options)!;
+
+  expect(withHermes.code).toEqual(sourceCode);
+});
+
+it(`compiles samples with Metro targeting Hermes (web)`, () => {
+  const options = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    filename: '/unknown',
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: true,
+    caller: getCaller({
+      name: 'metro',
+      // NOTE: Hermes shouldn't be needed here.
+      engine: 'hermes',
+      platform: 'web',
+    }),
+  };
+
+  // All of this code should remain intact.
+  const sourceCode = `
+// @babel/plugin-transform-computed-properties
+const obj = {
+  ["x" + foo]: "heh",
+  ["y" + bar]: "noo",
+  foo: "foo",
+  bar: "bar"
+};
+
+// @babel/plugin-transform-shorthand-properties
+const a1 = 0;
+let c = { a1 };
+
+// @babel/plugin-proposal-optional-catch-binding
+try {
+  throw 0;
+} catch {
+}
+
+// @babel/plugin-transform-literals
+const d = 0b11; // binary integer literal
+var e = 0o7; // octal integer literal
+let f = "Hello\\u{000A}\\u{0009}!"; // unicode string literals, newline and tab
+
+// @babel/plugin-proposal-numeric-separator
+const budget = 1_000_000_000_000;
+const nibbles = 0b1010_0001_1000_0101;
+const message = 0xa0_b0_c0;
+
+// @babel/plugin-transform-sticky-regex
+const g = /o+/y;
+
+// @babel/plugin-transform-spread
+const h = ["a", "b", "c"];
+
+const i = [...h, "foo"];
+
+const j = foo(...h);
+
+// @babel/plugin-transform-object-rest-spread
+const y = {};
+const x = 1;
+const k = { x, ...y };
+
+
+// @babel/plugin-proposal-optional-chaining
+const m = {}?.x;
+
+// @babel/plugin-proposal-nullish-coalescing-operator
+const obj2 = {};
+const foo = obj2.foo ?? "default";
+
+class Foo {}`;
   const withHermes = babel.transform(sourceCode, options)!;
 
   expect(withHermes.code).toEqual(sourceCode);
