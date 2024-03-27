@@ -1,3 +1,4 @@
+import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
@@ -51,6 +52,15 @@ const setupLinting = async (projectRoot: string) => {
 };`,
     'utf8'
   );
+
+  const scripts = JsonFile.read(path.join(projectRoot, 'package.json')).scripts;
+
+  await JsonFile.setAsync(
+    path.join(projectRoot, 'package.json'),
+    'scripts',
+    typeof scripts === 'object' ? { ...scripts, lint: 'eslint .' } : { lint: 'eslint .' },
+    { json5: false }
+  );
 };
 
 export const lintAsync = async (projectRoot: string) => {
@@ -62,7 +72,7 @@ export const lintAsync = async (projectRoot: string) => {
 
   const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'yarn';
 
-  // TODO(Kadi): check if there's a lint command?
+  // TODO(Kadi): check if there's a lint command first?
   const commands = packageManager === 'npm' ? ['run', 'lint'] : ['lint'];
 
   await spawnAsync(packageManager, commands, {
