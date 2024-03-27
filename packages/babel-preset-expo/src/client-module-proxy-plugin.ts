@@ -42,7 +42,9 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
           path.node.directives = [];
           path.pushContainer(
             'body',
-            template.ast`module.exports = require("react-server-dom-webpack/server").createClientModuleProxy('${outputKey}')`
+            template.ast`module.exports = require("react-server-dom-webpack/server").createClientModuleProxy(${JSON.stringify(
+              outputKey
+            )});`
           );
         } else {
           path.pushContainer(
@@ -50,11 +52,15 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
             template.ast`
             ;(() => {
               if (typeof module.exports === 'function') {
-                require('react-server-dom-webpack/server').registerServerReference(module.exports, '${outputKey}', null)
+                require('react-server-dom-webpack/server').registerServerReference(module.exports, ${JSON.stringify(
+                  outputKey
+                )}, null);
               } else {
                 for (const key in module.exports) {
                   if (typeof module.exports[key] === 'function') {
-                    require('react-server-dom-webpack/server').registerServerReference(module.exports[key], '${outputKey}', key);
+                    require('react-server-dom-webpack/server').registerServerReference(module.exports[key], ${JSON.stringify(
+                      outputKey
+                    )}, key);
                   }
                 }
               }
