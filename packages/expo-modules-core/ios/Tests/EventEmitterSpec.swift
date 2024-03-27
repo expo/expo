@@ -87,6 +87,38 @@ final class EventEmitterSpec: ExpoSpec {
         expect(args[2]) == 24
       }
 
+      it("returns listener count with listeners added") {
+        let listenerCount = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "emitter.addListener('test', () => {})",
+          "emitter.addListener('test', () => {})",
+          "emitter.listenerCount('test')"
+        ])
+        expect(listenerCount.kind) == .number
+        expect(try listenerCount.asInt()) == 2
+      }
+
+      it("returns listener count without any listeners") {
+        let listenerCount = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "emitter.listenerCount('test')"
+        ])
+        expect(listenerCount.kind) == .number
+        expect(try listenerCount.asInt()) == 0
+      }
+
+      it("returns listener count for the proper event") {
+        let listenerCount = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "emitter.addListener('test1', () => {})",
+          "emitter.addListener('test1', () => {})",
+          "emitter.addListener('test2', () => {})",
+          "emitter.listenerCount('test2')"
+        ])
+        expect(listenerCount.kind) == .number
+        expect(try listenerCount.asInt()) == 1
+      }
+
       it("calls startObserving on addListener") {
         var calls: Int = 0
         let eventName = "testEvent"

@@ -42,5 +42,9 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
      * The event can include any number of arguments that will be passed to the listeners.
      */
     emit<EventName extends keyof TEventsMap>(eventName: EventName, ...args: Parameters<TEventsMap[EventName]>): void;
+    /**
+     * Returns a number of listeners added to the given event.
+     */
+    listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
 }
 //# sourceMappingURL=EventEmitter.d.ts.map
