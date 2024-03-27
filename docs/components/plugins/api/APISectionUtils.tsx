@@ -123,6 +123,7 @@ const nonLinkableTypes = [
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
+  'SharedObject',
   'T',
   'TaskOptions',
   'Uint8Array',
