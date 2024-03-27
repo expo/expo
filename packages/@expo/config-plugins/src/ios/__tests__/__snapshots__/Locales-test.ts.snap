@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`e2e: iOS locales writes all the image files expected 1`] = `"CFBundleDisplayName = "french-name";"`;

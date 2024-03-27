@@ -1,5 +1,0 @@
-#!/usr/bin/env node
-
-// Execute the CLI using node module resolution, instead of creating a new process.
-// This avoids resolving issues with pnpm and yarn 2+ package managers.
-require('@expo/cli');

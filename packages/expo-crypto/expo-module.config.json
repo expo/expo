@@ -1,9 +1,0 @@
-{
-  "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["CryptoModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.crypto.CryptoModule"]
-  }
-}

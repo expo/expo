@@ -1,6 +1,0 @@
-<resources>
-  <string name="app_name">BareExpo</string>
-  <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-  <string name="expo_runtime_version">1.0.0</string>
-</resources>

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoFontLoader.js","sourceRoot":"","sources":["../src/ExpoFontLoader.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,gBAAgB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoFontLoader');\n"]}

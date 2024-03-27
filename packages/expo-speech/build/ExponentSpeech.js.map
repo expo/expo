@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentSpeech.js","sourceRoot":"","sources":["../src/Speech/ExponentSpeech.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,YAAY,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoSpeech');\n"]}

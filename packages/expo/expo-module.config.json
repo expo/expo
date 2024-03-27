@@ -1,6 +1,0 @@
-{
-  "platforms": ["apple", "android"],
-  "apple": {
-    "podspecPath": "Expo.podspec"
-  }
-}

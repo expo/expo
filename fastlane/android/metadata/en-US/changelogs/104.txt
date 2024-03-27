@@ -1,1 +1,0 @@
-Updated Facebook SDK to 4.39.0.

@@ -1,8 +1,0 @@
-extends: existence
-message: "Don't use %s. Use gender-neutral language instead."
-link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#use-gender-neutral-terms'
-ignorecase: false
-level: warning
-tokens:
-  - he
-  - she

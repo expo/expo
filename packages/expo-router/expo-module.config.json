@@ -1,8 +1,0 @@
-{
-  "platforms": ["ios", "web"],
-  "ios": {
-    "modules": ["ExpoHeadModule"],
-    "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
-  }
-}
-

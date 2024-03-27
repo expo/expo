@@ -1,3 +1,0 @@
-# <%- project.slug %>
-
-<%- project.description %>

@@ -1,1 +1,0 @@
-{"version":3,"file":"index.web.js","sourceRoot":"","sources":["../../src/web/index.web.ts"],"names":[],"mappings":"AAAA,OAAO,cAAc,CAAC","sourcesContent":["import './CoreModule';\n"]}

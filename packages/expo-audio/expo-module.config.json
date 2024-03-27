@@ -1,6 +1,0 @@
-{
-  "platforms": ["ios"],
-  "ios": {
-    "modules": ["AudioModule"]
-  }
-}

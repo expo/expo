@@ -1,2 +1,0 @@
-- fix issues when using `ImageManipulator` and `ImagePicker` on SDKs lower than 32
-- fix `Location.watchPositionAsync` never resolving on SDK32

@@ -1,6 +1,0 @@
-{
-  "platforms": ["apple", "android"],
-  "android": {
-    "modules": ["expo.modules.splashscreen.SplashScreenModule"]
-  }
-}

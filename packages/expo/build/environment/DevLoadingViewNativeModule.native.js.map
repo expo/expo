@@ -1,1 +1,0 @@
-{"version":3,"file":"DevLoadingViewNativeModule.native.js","sourceRoot":"","sources":["../../src/environment/DevLoadingViewNativeModule.native.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAE7C,eAAe,aAAa,CAAC,cAAc,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\n\nexport default NativeModules.DevLoadingView;\n"]}

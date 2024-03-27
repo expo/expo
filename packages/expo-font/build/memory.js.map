@@ -1,1 +1,0 @@
-{"version":3,"file":"memory.js","sourceRoot":"","sources":["../src/memory.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,MAAM,GAAgC,EAAE,CAAC;AACtD,MAAM,CAAC,MAAM,YAAY,GAAsC,EAAE,CAAC","sourcesContent":["export const loaded: { [name: string]: boolean } = {};\nexport const loadPromises: { [name: string]: Promise<void> } = {};\n"]}

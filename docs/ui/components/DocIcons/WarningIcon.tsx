@@ -1,7 +1,0 @@
-import { AlertTriangleSolidIcon } from '@expo/styleguide-icons';
-
-import { IconBase, DocIconProps } from './IconBase';
-
-export const WarningIcon = ({ small }: DocIconProps) => (
-  <IconBase Icon={AlertTriangleSolidIcon} className="text-icon-warning" small={small} />
-);

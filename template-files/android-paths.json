@@ -1,9 +1,0 @@
-{
-  "paths": {
-    "AndroidManifest.xml": "apps/expo-go/android/app/src/main/AndroidManifest.xml",
-    "google-services.json": "apps/expo-go/android/app/google-services.json"
-  },
-  "generateOnly": {
-    "bare-expo/android/app/google-services.json": "apps/bare-expo/android/app/google-services.json"
-  }
-}

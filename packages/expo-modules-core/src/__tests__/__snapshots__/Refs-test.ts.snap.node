@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Refs refs should be snapshot friendly 1`] = `
-{
-  "current": null,
-}
-`;

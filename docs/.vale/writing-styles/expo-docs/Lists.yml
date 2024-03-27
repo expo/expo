@@ -1,8 +1,0 @@
-extends: existence
-message: "Use '1.' instead of '0.' for numbered lists."
-link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#numbered-lists'
-level: warning
-scope: raw
-nonword: true
-tokens:
-  - '^\s0\.'

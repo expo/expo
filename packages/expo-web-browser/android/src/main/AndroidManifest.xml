@@ -1,8 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-  <queries>
-    <intent>
-      <!-- Required for opening tabs if targeting API 30 -->
-      <action android:name="android.support.customtabs.action.CustomTabsService" />
-    </intent>
-  </queries>
-</manifest>

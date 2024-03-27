@@ -1,9 +1,0 @@
-{
-  "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["LocalizationModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.localization.LocalizationModule"]
-  }
-}

@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`computes the correct gradient background image for a complex set of props 1`] = `"linear-gradient(135deg, rgba(255,0,0,1.00) 50%, rgba(0,255,255,0.00) 100%)"`;
-
-exports[`computes the correct gradient background image for a simple set of props 1`] = `"linear-gradient(180deg, rgba(0,255,255,1.00), rgba(255,0,255,1.00), rgba(0,0,0,0.00), rgba(0,255,255,0.50))"`;

@@ -1,1 +1,0 @@
-{"version":3,"file":"Schemes.d.ts","sourceRoot":"","sources":["../src/Schemes.ts"],"names":[],"mappings":"AAMA,wBAAgB,eAAe,IAAI,OAAO,CAWzC;AAkCD;;;;;;;;GAQG;AACH,wBAAgB,sBAAsB,IAAI,MAAM,EAAE,CAYjD;AAeD;;GAEG;AACH,wBAAgB,oBAAoB,IAAI,OAAO,CAE9C;AAGD,wBAAgB,aAAa,CAAC,OAAO,EAAE;IAAE,MAAM,CAAC,EAAE,MAAM,CAAC;IAAC,QAAQ,CAAC,EAAE,OAAO,CAAA;CAAE,GAAG,MAAM,CAiGtF"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"createURL.d.ts","sourceRoot":"","sources":["../src/createURL.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,gBAAgB,EAAE,SAAS,EAAE,MAAM,iBAAiB,CAAC;AAoD9D;;;;;;;;;;;;;;;;;;;;;;GAsBG;AACH,wBAAgB,SAAS,CACvB,IAAI,EAAE,MAAM,EACZ,EAAE,MAAM,EAAE,WAAgB,EAAE,eAAuB,EAAE,GAAE,gBAAqB,GAC3E,MAAM,CAsDR;AAGD;;;;GAIG;AACH,wBAAgB,KAAK,CAAC,GAAG,EAAE,MAAM,GAAG,SAAS,CAoD5C"}

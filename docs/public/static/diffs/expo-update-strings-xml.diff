@@ -1,9 +1,0 @@
-diff --git a/android/app/src/main/res/values/strings.xml b/android/app/src/main/res/values/strings.xml
-index ef1de86..d3d75b0 100644
---- a/android/app/src/main/res/values/strings.xml
-+++ b/android/app/src/main/res/values/strings.xml
-@@ -1,3 +1,4 @@
- <resources>
-     <string name="app_name">MyApp</string>
-+    <string name="expo_runtime_version">1.0.0</string>
- </resources>

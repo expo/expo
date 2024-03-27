@@ -1,9 +1,0 @@
-{
-  "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["KeepAwakeModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.keepawake.KeepAwakeModule"]
-  }
-}

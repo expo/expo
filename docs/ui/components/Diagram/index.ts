@@ -1,1 +1,0 @@
-export { Diagram } from './Diagram';

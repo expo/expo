@@ -1,9 +1,0 @@
-target 'HelloWorld' do
-  config = use_native_modules!
-
-  use_react_native!(:path => config["reactNativePath"])
-
-  post_integrate do |installer|
-    puts "Existing post_integrate hook"
-  end
-end

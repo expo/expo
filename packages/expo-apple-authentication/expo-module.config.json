@@ -1,7 +1,0 @@
-{
-  "name": "expo-apple-authentication",
-  "platforms": ["ios"],
-  "ios": {
-    "modules": ["AppleAuthenticationModule"]
-  }
-}

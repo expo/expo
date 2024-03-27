@@ -1,1 +1,0 @@
-{"version":3,"file":"PushTokenManager.types.d.ts","sourceRoot":"","sources":["../src/PushTokenManager.types.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,mBAAmB,CAAC;AAEtD,MAAM,WAAW,sBAAuB,SAAQ,iBAAiB;IAC/D,uBAAuB,CAAC,EAAE,MAAM,OAAO,CAAC,MAAM,CAAC,CAAC;IAChD,+BAA+B,CAAC,EAAE,MAAM,OAAO,CAAC,IAAI,CAAC,CAAC;CACvD"}

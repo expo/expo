@@ -1,1 +1,0 @@
-Added missing AppAuthBrowserActivity to template of AndroidManifest.xml

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoBarCodeScannerModule.js","sourceRoot":"","sources":["../src/ExpoBarCodeScannerModule.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,oBAAoB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoBarCodeScanner');\n"]}

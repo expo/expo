@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "tvos", "android", "web"],
-  "ios": {
-    "modules": ["<%- project.moduleName %>"]
-  },
-  "android": {
-    "modules": ["<%- project.package %>.<%- project.moduleName %>"]
-  }
-}

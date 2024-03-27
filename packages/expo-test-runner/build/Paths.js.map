@@ -1,1 +1,0 @@
-{"version":3,"file":"Paths.js","sourceRoot":"","sources":["../src/Paths.ts"],"names":[],"mappings":";;;AAAA,+BAA4B;AACf,QAAA,QAAQ,GAAG,IAAA,WAAI,EAAC,SAAS,EAAE,IAAI,CAAC,CAAC","sourcesContent":["import { join } from 'path';\nexport const SelfPath = join(__dirname, '..');\n"]}

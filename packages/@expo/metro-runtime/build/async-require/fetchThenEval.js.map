@@ -1,1 +1,0 @@
-{"version":3,"file":"fetchThenEval.js","sourceRoot":"","sources":["../../src/async-require/fetchThenEval.ts"],"names":[],"mappings":";;;AAAA,qDAAuD;AAA9C,qHAAA,kBAAkB,OAAA","sourcesContent":["export { fetchThenEvalAsync } from './fetchThenEvalJs';\n"]}

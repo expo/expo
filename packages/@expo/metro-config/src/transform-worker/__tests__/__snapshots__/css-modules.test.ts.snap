@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`transformCssModuleWeb minifies CSS 1`] = `":root{--accent-color:hotpink}.a3Dm-a_container{background-color:var(--accent-color);animation:2s infinite a3Dm-a_pulse}.a3Dm-a_betterContainer{border-radius:50px;}@keyframes a3Dm-a_pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}to{transform:scale(1)}}"`;

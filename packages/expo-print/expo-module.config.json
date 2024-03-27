@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modules": ["ExpoPrintModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.print.PrintModule"]
-  }
-}

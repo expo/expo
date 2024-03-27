@@ -1,6 +1,0 @@
-/.eslintrc.js
-/src/__generated__/
-/babel.config.js
-/metro.config.js
-/src/graphql/types.ts
-**/*.generated.ts

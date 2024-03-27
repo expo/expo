@@ -1,7 +1,0 @@
-{
-  "name": "expo-intent-launcher",
-  "platforms": ["android"],
-  "android": {
-    "modules": ["expo.modules.intentlauncher.IntentLauncherModule"]
-  }
-}

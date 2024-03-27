@@ -1,9 +1,0 @@
-query Home_MyApps($limit: Int!, $offset: Int!) {
-  meUserActor {
-    id
-    appCount
-    apps(limit: $limit, offset: $offset, includeUnpublished: true) {
-      ...CommonAppData
-    }
-  }
-}

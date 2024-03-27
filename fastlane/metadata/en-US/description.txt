@@ -1,4 +1,0 @@
-Start building projects using web technologies with just your iOS device and your computer. Expo is a developer tool for creating experiences with interactive gestures and graphics using JavaScript and React.
-
-Note: some programming experience is recommended.
-Technical specs: this version of Expo uses React Native 0.71.

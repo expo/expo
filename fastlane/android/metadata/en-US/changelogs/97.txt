@@ -1,2 +1,0 @@
-Add support for Expo SDK 31
-Fix issue with Maps

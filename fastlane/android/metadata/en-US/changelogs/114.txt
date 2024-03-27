@@ -1,3 +1,0 @@
-Version 2.11.0 introduced support for Expo SDK 33.
-
-Version 2.11.4 fixed crashes happening on Android 9.0 devices when displaying some animations using Lottie.

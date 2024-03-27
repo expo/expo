@@ -1,8 +1,0 @@
-fragment CommonAppData on App {
-  id
-  name
-  fullName
-  ownerAccount {
-    name
-  }
-}
