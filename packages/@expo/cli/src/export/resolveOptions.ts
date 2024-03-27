@@ -47,7 +47,7 @@ export function resolvePlatformOption(
       )}].`;
 
       if (platform === 'web') {
-        error += ' ' + learnMore("https://docs.expo.dev/guides/customizing-metro/#web-support");
+        error += ' ' + learnMore('https://docs.expo.dev/guides/customizing-metro/#web-support');
       }
 
       throw new CommandError('BAD_ARGS', error);
