@@ -1,3 +1,5 @@
+import * as PackageManager from '@expo/package-manager';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -9,7 +11,14 @@ export const lintAsync = async (projectRoot: string) => {
     console.log('No eslint file found');
   }
 
-  console.log('Hello again');
+  const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'yarn';
 
-  return Promise.resolve('Done');
+  // TODO(Kadi): check if there's a lint command?
+  const commands = packageManager === 'npm' ? ['run', 'lint'] : ['lint'];
+
+  await spawnAsync(packageManager, commands, {
+    stdio: 'inherit',
+    cwd: projectRoot,
+    env: { ...process.env },
+  });
 };
