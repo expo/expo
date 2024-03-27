@@ -55,7 +55,7 @@ You can request a refund directly from the **Receipts** page. The approval proce
 
 To request a refund:
 
-- Next to a receipt, click the a three-dot menu and then click **Request Refund:**
+- Next to a receipt, click the three-dot menu and then click **Request Refund:**
 
 <ImageSpotlight
   alt="Receipts page in the Expo dashboard."
@@ -71,3 +71,52 @@ To request a refund:
 />
 
 - The refund request goes through our vetting process before it is granted. When it is granted, the amount is credited to your account.
+
+## Read an invoice
+
+An invoice contains your legally registered business name, address, tax ID, invoice number, due date, and more. It also includes a description of any charges and the total amount due. In a typical invoice, the charges are divided into:
+
+- Current plan's subscription amount (if subscribed to a plan)
+- Any overage charges (if applicable)
+- A plan's credit limit
+
+Let's consider three different examples to understand how your invoice might look. If you subscribe to a production, enterprise, or on-demand plan, one of these scenarios may apply to you.
+
+### Subscription charges
+
+In the first example, the invoice table shows a subscription charge for a Production plan:
+
+| Description                                                                                | Qty | Unit price |     Amount |
+| ------------------------------------------------------------------------------------------ | --- | ---------- | ---------: |
+| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) | 1   | $40.00     |     $40.00 |
+| Expo Application Services - Production                                                     | 1   | $99.00     |     $99.00 |
+| EAS Build - Plan credit                                                                    | 1   | -$99.00    |    -$99.00 |
+| **Total**                                                                                  |     |            | $99.00 USD |
+
+In the above table, the first unit item describes the EAS Build usage. It contains all the details about how many Android and iOS builds were created during this billing period and their cost. The second unit item describes the amount of the Production plan's subscription. The third unit item describes the credit limit for the Production plan for a monthly billing period.
+
+Since the EAS Build usage doesn't exceed the plan's credit amount, the subscriber only has to pay the subscription amount of the Production plan.
+
+### Overage charges
+
+In the second example, the invoice table shows a subscription charge for a Production plan with an overage charge:
+
+| Description                                                                                  | Qty | Unit price |     Amount |
+| -------------------------------------------------------------------------------------------- | --- | ---------- | ---------: |
+| EAS Build - Build Android: 15 large and 10 medium builds; iOS 10 large and 15 medium builds) | 1   | $110.00    |    $110.00 |
+| Expo Application Services - Production                                                       | 1   | $99.00     |     $99.00 |
+| EAS Build - Plan credit                                                                      | 1   | -$99.00    |    -$99.00 |
+| **Total**                                                                                    |     |            | $11.00 USD |
+
+The first unit item in the above table describes the EAS Build usage. It contains all the details about how many Android and iOS builds were created during this billing period and their cost. The amount of the EAS Build usage exceeds the plan's monthly credit limit, so the subscriber has to pay the overage charge of $11.00.
+
+### On-demand charges
+
+In the third example, the subscriber is on an On-demand plan. Any charges incurred during the billing period are listed in the invoice:
+
+| Description                                                        | Qty | Unit price |     Amount |
+| ------------------------------------------------------------------ | --- | ---------- | ---------: |
+| EAS Build - Build Android: 10 medium builds; iOS 10 medium builds) | 1   | $30.00     |     $30.00 |
+| **Total**                                                          |     |            | $30.00 USD |
+
+The above table shows the total amount due based on usage only since the On-demand plan doesn't include any credits.
