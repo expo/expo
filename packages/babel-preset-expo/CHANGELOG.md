@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Add Hermes language support tests.
 - Remove unused peer dependency on `@babel/preset-env`. ([#27705](https://github.com/expo/expo/pull/27705) by [@EvanBacon](https://github.com/EvanBacon))
 - Disable color in snapshot tests in CI. ([#27301](https://github.com/expo/expo/pull/27301) by [@EvanBacon](https://github.com/EvanBacon))
 - Add additional tests for undefined platform minification behavior. ([#27515](https://github.com/expo/expo/pull/27515) by [@EvanBacon](https://github.com/EvanBacon))

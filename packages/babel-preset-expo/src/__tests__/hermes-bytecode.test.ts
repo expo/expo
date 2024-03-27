@@ -1,9 +1,7 @@
 import * as babel from '@babel/core';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 
-import preset from '..';
 import { hermesAsync } from './hermes-util';
+import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
@@ -94,7 +92,7 @@ const LANGUAGE_SAMPLES: {
         }
       }`,
     getCompiledCode() {
-      return `var _interopRequireDefault=require(\"@babel/runtime/helpers/interopRequireDefault\");var _classCallCheck2=_interopRequireDefault(require(\"@babel/runtime/helpers/classCallCheck\"));var _createClass2=_interopRequireDefault(require(\"@babel/runtime/helpers/createClass\"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require(\"@babel/runtime/helpers/classPrivateFieldLooseKey\"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError(\"right-hand side of 'in' should be an object, got \"+(null!==e?typeof e:\"null\"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)(\"bar\");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:\"bar\"});}(0,_createClass2.default)(Foo,[{key:\"test\",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);return Foo;}();`;
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);return Foo;}();`;
     },
     hermesError: /private properties are not supported/,
   },
