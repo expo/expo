@@ -6,6 +6,32 @@ import path from 'path';
 
 import { selectAsync } from '../utils/prompts';
 
+const WITH_PRETTIER = `module.exports = {
+  root: true,
+  plugins: ['expo', 'prettier'],
+  extends: [
+    'prettier',
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended'
+  ],
+  extends: ['prettier'],
+  rules: {
+    'prettier/prettier': ['warn'],
+  },
+};`;
+
+const ESLINT_ONLY = `module.exports = {
+  root: true,
+  plugins: ['expo'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended'
+  ],
+};
+`;
+
 const setupLinting = async (projectRoot: string) => {
   const result = await selectAsync(
     'No eslint config found. Would you like to set up linting for this project?',
@@ -29,10 +55,19 @@ const setupLinting = async (projectRoot: string) => {
     return;
   }
 
-  const commandSegments = ['expo', 'install', 'eslint', 'eslint-config-expo'];
+  const commandSegments = [
+    'expo',
+    'install',
+    'eslint',
+    'eslint-plugin-expo',
+    'eslint-plugin-react', // TODO(Kadi): these will be in eslint-config-expo instad
+    'eslint-plugin-react-hooks',
+  ];
 
   if (result === 'eslint-and-prettier') {
     commandSegments.push('prettier');
+    commandSegments.push('eslint-config-prettier');
+    commandSegments.push('eslint-plugin-prettier');
   }
 
   // TODO(Kadi): how to add this as dev dependencies?
@@ -44,12 +79,7 @@ const setupLinting = async (projectRoot: string) => {
 
   await fs.writeFile(
     path.join(projectRoot, '.eslintrc.js'),
-    `module.exports = {
-  root: true,
-  extends: [
-    'expo',
-  ],
-};`,
+    result === 'eslint' ? ESLINT_ONLY : WITH_PRETTIER,
     'utf8'
   );
 
