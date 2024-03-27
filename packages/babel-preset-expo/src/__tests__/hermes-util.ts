@@ -63,7 +63,7 @@ export async function hermesAsync({ code, minify = false }: BuildHermesOptions):
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
     const hermesCommand = importHermesCommandFromProject();
-    const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile];
+    const args = ['-emit-binary', '-strict', '-out', tempHbcFile, tempBundleFile];
     if (minify) {
       args.push('-O');
     }
