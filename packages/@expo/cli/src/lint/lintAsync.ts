@@ -3,12 +3,37 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { selectAsync } from '../utils/prompts';
+
 export const lintAsync = async (projectRoot: string) => {
   console.log('projectRoot, ', projectRoot);
   try {
-    await fs.readFile(path.join(projectRoot, '.eslintrc.js'), 'utf8');
+    await fs.readFile(path.join(projectRoot, '.eslintrc.js '), 'utf8');
   } catch {
-    console.log('No eslint file found');
+    const result = await selectAsync(
+      'No eslint config found. Would you like to set up linting for this project?',
+      [
+        {
+          title: 'Yes, eslint only',
+          value: 'eslint',
+        },
+        {
+          title: 'Yes, eslint and prettier',
+          value: 'eslint-and-prettier',
+        },
+        {
+          title: 'No',
+          value: 'no',
+        },
+      ]
+    );
+
+    if (result === 'no') {
+      return;
+    }
+    console.log('result', result);
+
+    return;
   }
 
   const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'yarn';
