@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext

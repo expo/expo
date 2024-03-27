@@ -24,7 +24,6 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
-import org.json.JSONObject
 import java.io.File
 
 class StartupProcedure(
