@@ -86,6 +86,173 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 </Collapsible>
 
+<Collapsible summary="Necessary files in .gitignore">
+
+EAS Build does not have access to any files or directories listed in your project's **.gitignore** file. When you run `eas build`, your project files are uploaded to Expo's build servers; however, any files or directories in your **.gitignore** are **not** uploaded. This is intentional since files in the **.gitignore** may contain sensitive information, such as API keys or other secrets, that should not be sent to external servers, including Expo's build servers.
+
+If one of your files imports a file listed in your **.gitignore**, the build will fail and return an error like this:
+
+<Terminal
+  cmd={[
+   `❌ Metro encountered an error:`,
+    `Unable to resolve module ../src/aws-exports from /Users/expo/workingdir/build/App.js`,
+    ``,
+    `None of these files exist:`,
+  ]}
+/>
+
+In this case, as EAS Build was processing the project's code, one JavaScript file tried to import **../src/aws-exports**.
+```js
+import awsconfig from '../src/aws-exports';
+```
+
+However, it was not found because it was in the **.gitignore**.
+```sh
+aws-exports.js
+```
+
+There are a number of different ways to solve this error, but your specific solution will depend on the needs of your project and organization.
+
+**Make sure your project actually needs the import statement referencing the gitignored file.** Before trying other solutions, if you are not certain the import statement is needed for your project to function, remove the import statement and test your project. If your project functions as expected, that import statement may have been outdated or unnecessary.
+
+**Remove file(s) from .gitignore.** The easiest way to fix this build error is to remove any files or directories Metro was unable to resolve from your **.gitignore**. However, this poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
+
+**Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook.** See ["How can I upload files to EAS Build if they are gitignored?"](https://github.com/expo/fyi/blob/main/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
+
+**Refactor your source code to not import sensitive files client-side.** If your project uses auto-generated code from a third-party backend services provider, such as AWS, and the provider automatically listed files in your **.gitignore**, those files probably contain sensitive information you should not include in client-side code. It may take considerable effort to refactor your project to use server-side code and no longer be dependent on the gitignored files, but it is the most secure long-term solution.
+
+</Collapsible>
+
+#### Package dependency errors
+
+> **warning** This section is written for projects that use npm as their package manager and have configured the `eas build` command to use `npm install`. If your project uses a different package manager, you may have to adjust some of the commands. Additionally, the **package.json** examples omit much of the original code and should not be copied.
+
+When you run `eas build`, your project's **node_modules/** directory is **not** uploaded to Expo's build servers. During the build process, the build server runs a fresh `npm install` based on your project's **package.json** and **package-lock.json** files, and if this results in an error, your build will fail. The easiest way to prevent this issue is to run `npm ci` and fix any errors that appear before running `eas build`. Sometimes, just running `npm ci` is enough to fix the build error.
+
+<Terminal
+  cmdCopy="npm ci"
+  cmd={[
+    '# Clean install dependencies',
+    '$ npm ci',
+  ]}
+/>
+
+If your project is a team project, the risk of package dependency errors increases since team members may install new packages and commit the package references to Git before you can verify a fresh npm installation will work. In team projects, closely monitor **package.json** for changes.
+
+Before running `eas build`, you should make sure your project actually uses all the packages in **package.json**. Sometimes, you or a team member may install a package, test it, decide to not use it, and forget to remove the package from **package.json**. Even if this package is not used anywhere in the project, it can still cause `eas build` to fail.
+
+- Search your project files for packages that are never referenced in an `import` statement. Remove these packages from **package.json**, run `npm ci`, and thoroughly test your project to make sure everything still works.
+
+- Search your project files for `import` statements that are not utilized anywhere within the file's code. Comment out these import statements and thoroughly test your project. If everything works, delete the unused import statements and remove the package from **package.json**.
+
+Many package dependency errors are outside Expo's control and must be resolved locally by modifying your project's **package.json** before running `eas build`. Some package dependency errors are listed below.
+
+
+<Collapsible summary="404 Not Found">
+
+If npm is unable to download a package listed in your project's **package.json** or in a dependency's **package.json**, the build may fail and result in an error like this:
+
+<Terminal
+  cmd={[
+    'npm ERR! code E404',
+    'npm ERR! 404 Not Found - GET http://10.94.183.70:4873/-/-/ahdudjsi-0.0.1.tgz - File not found',
+    'npm ERR! 404 \'-@http://10.94.183.70:4873/-/-/ahdudjsi-0.0.1.tgz\' is not in this registry.',
+    'npm ERR! 404',
+    'npm ERR! 404 Note that you can also install from a',
+    'npm ERR! 404 tarball, folder, http url, or git url.',
+  ]}
+/>
+
+This error means that one of your project’s dependencies is invalid. This can be caused by a typo in a package name in your project's **package.json**. Try going through the dependencies section of your **package.json** and running `npm view package-name` to see if any package is Not Found. If you find a Not Found package, remove it from package.json.
+
+```js
+  "dependencies": {
+    "ahdudjsi": "0.0.1",
+    "expo": "^49.0.9",
+    "react-native":"0.72.6"
+  }
+```
+In this example, "ahdudjsi" is not a valid npm package. Running `npm view ahdudjsi` will result in a Not Found error, so the line `"ahdudjsi": "0.0.1",` must be removed.
+
+> **info** Sometimes 404 Not Found package errors are inconsistent. In the upcoming example, an untrustworthy package allowed `eas build` to succeed the first few builds but then caused `eas build` to fail in later builds.
+
+```js
+  "dependencies": {
+    "-": "0.0.1",
+    "expo": "^49.0.9",
+    "react-native":"0.72.6"
+  }
+```
+In this example, "-" is a valid name for an npm package, but analyzing its source code reveals it does not serve any purpose. "-" was probably installed accidentally through a command such as `npm install - expo`, which installs two packages: "-" and "expo". Because "-" was installed accidentally and is not required by the project, the line `"-": "0.0.1",` must be removed.
+
+</Collapsible>
+
+<Collapsible summary="Conflicting peer dependency">
+
+If two or more packages require different, incompatible versions of a certain package, `npm install` will result in a conflicting peer dependency error like this:
+
+<Terminal
+  cmd={[
+    'npm ERR!',
+    'code ERESOLVE',
+    'npm ERR! ERESOLVE could not resolve',
+    'npm ERR!',
+    'npm ERR! While resolving: react-native-orientation-locker@1.5.0',
+    '# This line means the package "react-native" is version "0.72.5",',
+    '# as defined in package.json.',
+    'npm ERR! Found: react-native@0.72.5',
+    'npm ERR! node_modules/react-native',
+    'npm ERR!   react-native@"0.72.5" from the root project',
+    'npm ERR!   peer react-native@">= 0.63.4" from @aws-amplify/ui-react-native@1.2.28',
+    'npm ERR!   node_modules/@aws-amplify/ui-react-native',
+    'npm ERR!     @aws-amplify/ui-react-native@"^1.2.27" from the root project',
+    'npm ERR!   22 more (@react-native-async-storage/async-storage, ...)',
+    'npm ERR!',
+    'npm ERR! Could not resolve dependency:',
+    'npm ERR! peer react-native-windows@">=0.63.3" from react-native-orientation-locker@1.5.0',
+    'npm ERR! node_modules/react-native-orientation-locker',
+    'npm ERR!   react-native-orientation-locker@"^1.5.0" from the root project',
+    'npm ERR!',
+    'npm ERR! Conflicting peer dependency: react-native@0.72.7',
+    'npm ERR! node_modules/react-native',
+    '# This line means the package "react-native-windows" is version "0.72.19"',
+    '# and requires "react-native" version "0.72.6" or higher.',
+    '# This is a problem since "react-native" version "0.72.5" is below "0.72.6".',
+    'npm ERR!   peer react-native@"^0.72.6" from react-native-windows@0.72.19',
+    'npm ERR!   node_modules/react-native-windows',
+    'npm ERR!     peer react-native-windows@">=0.63.3" from react-native-orientation-locker@1.5.0',
+    'npm ERR!     node_modules/react-native-orientation-locker',
+    'npm ERR!       react-native-orientation-locker@"^1.5.0" from the root project',
+    'npm ERR!',
+    '# Here, npm suggests running npm install --force or',
+    '# npm install --legacy-peer-deps, but this is not the best solution.',
+    'npm ERR! Fix the upstream dependency conflict, or retry',
+    'npm ERR! this command with --force, or --legacy-peer-deps',
+    'npm ERR! to accept an incorrect (and potentially broken) dependency resolution.',
+  ]}
+/>
+
+In this example, the peer dependency error can be fixed by specifying `"react-native": "0.72.6"` in **package.json**.
+
+Conflicting peer dependency errors should be solved by analyzing the error message and adjusting version numbers in **package.json** as needed. After adjusting version numbers, run `npm ci` to see if the error has been solved.
+
+> **warning** A common way to dodge conflicting peer dependency errors is to run `npm install --force` or `npm install --legacy-peer-deps`. You may be able to run these commands and fix the error locally, but `eas build` will use `npm install` by default to install the dependencies on Expo's build server.
+
+You can override the default `eas build` build command to use `legacy-peer-deps` by creating a file named **.npmrc** in your project's root directory and adding the line `legacy-peer-deps=true` in the file's contents. However, this is a workaround and the long-term solution is to manually adjust version numbers until the error is resolved.
+
+</Collapsible>
+
+<Collapsible summary="Other package errors">
+
+There are many different package-related errors that can occur at different stages of the build process. If you encounter an unfamiliar error, the general troubleshooting strategy is as follows:
+
+1. Identify the package name that caused the error.
+2. Determine if your project actually needs the package. If your project does not, remove any references to the package from your project files and **package.json**.
+3. If your project needs the package, try updating the package to the latest version. To find the latest version of a package, run `npm view package-name`, go to the "dist-tags" section in the terminal output, and find the version number after "latest". In your **package.json**, set this version number for the package.
+4. If updating the version doesn't fix the error, your remaining options are to search the Internet for advice or refactor your project to not use the specific package.
+
+</Collapsible>
+
 ## Verify that your JavaScript bundles locally
 
 When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
