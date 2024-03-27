@@ -8,27 +8,25 @@ import { selectAsync } from '../utils/prompts';
 
 const WITH_PRETTIER = `module.exports = {
   root: true,
-  plugins: ['expo', 'prettier'],
-  extends: [
-    'prettier',
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended'
-  ],
-  extends: ['prettier'],
+  extends: ["universe/native", "prettier"],
+  plugins: ["prettier", "expo"],
   rules: {
-    'prettier/prettier': ['warn'],
+    "prettier/prettier": ["warn"],
+    "expo/no-env-var-destructuring": ["error"],
+    "expo/no-dynamic-env-var": ["error"],
   },
-};`;
+};
+
+`;
 
 const ESLINT_ONLY = `module.exports = {
   root: true,
-  plugins: ['expo'],
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended'
-  ],
+  extends: ["universe/native"],
+  plugins: ["expo"],
+  rules: {
+    "expo/no-env-var-destructuring": ["error"],
+    "expo/no-dynamic-env-var": ["error"],
+  },
 };
 `;
 
@@ -60,8 +58,7 @@ const setupLinting = async (projectRoot: string) => {
     'install',
     'eslint',
     'eslint-plugin-expo',
-    'eslint-plugin-react', // TODO(Kadi): these will be in eslint-config-expo instad
-    'eslint-plugin-react-hooks',
+    'eslint-config-universe', // TODO(Kadi): eslit-config-expo once published
   ];
 
   if (result === 'eslint-and-prettier') {
