@@ -40,6 +40,17 @@ const setupLinting = async (projectRoot: string) => {
     cwd: projectRoot,
     env: { ...process.env },
   });
+
+  await fs.writeFile(
+    path.join(projectRoot, '.eslintrc.js'),
+    `module.exports = {
+  root: true,
+  extends: [
+    'expo',
+  ],
+};`,
+    'utf8'
+  );
 };
 
 export const lintAsync = async (projectRoot: string) => {
