@@ -2,7 +2,7 @@ import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } fr
 import { StyleSheet } from 'react-native';
 
 import {
-  PlayerStatus,
+  VideoPlayerStatus,
   VideoPlayer,
   VideoSource,
   VideoViewProps,
@@ -42,7 +42,7 @@ class VideoPlayerWeb
   _loop: boolean = false;
   _playbackRate: number = 1.0;
   _preservesPitch: boolean = true;
-  _status: PlayerStatus = 'idle';
+  _status: VideoPlayerStatus = 'idle';
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
@@ -113,7 +113,7 @@ class VideoPlayerWeb
     this._preservesPitch = value;
   }
 
-  get status(): PlayerStatus {
+  get status(): VideoPlayerStatus {
     return this._status;
   }
 
