@@ -101,93 +101,69 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   );
 });
 
+/**
+ * Asserts that the placeholder values for the app name have been renamed to the
+ * values configured by the user
+ *
+ * @see packages/create-expo/README.md for an explanation of placeholder values.
+ */
 async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
-  const renamedFiles: Record<
-    string,
-    { negativeMatch: string; positiveMatch: string; contents?: string }
-  > = {
-    'app.json': {
-      negativeMatch: 'HelloWorld',
-      positiveMatch: 'com.example.minimal',
-    },
-    'android/settings.gradle': {
-      negativeMatch: 'HelloWorld',
-      positiveMatch: 'basic-prebuild',
-    },
-    'android/app/build.gradle': {
-      negativeMatch: 'com.helloworld',
-      // Although renameTemplateAppName() renames to "com.basicprebuild"
-      // post-extraction, there seems to be a follow-up step that (correctly)
-      // renames it once again to the value configured in `exp.android.package`.
-      positiveMatch: 'com.example.minimal',
-    },
-    'android/app/src/main/java/com/example/minimal/MainApplication.kt': {
-      negativeMatch: 'com.helloworld',
-      positiveMatch: 'com.example.minimal',
-    },
-    'android/app/src/main/java/com/example/minimal/MainActivity.kt': {
-      negativeMatch: 'com.helloworld',
-      positiveMatch: 'com.example.minimal',
-    },
-    'ios/Podfile': {
-      negativeMatch: 'HelloWorld',
-      positiveMatch: 'basicprebuild',
-    },
-    'ios/basicprebuild.xcodeproj/project.pbxproj': {
-      negativeMatch: 'HelloWorld',
-      positiveMatch: 'basicprebuild',
-    },
-    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme': {
-      negativeMatch: 'HelloWorld',
-      positiveMatch: 'basicprebuild',
-    },
+  // We could read the files in parallel to save a tiny bit of time, but the
+  // test code and stack trace is far easier to follow when arranged like this.
+  const read = (filePath: string) => fs.readFile(path.resolve(projectRoot, filePath), 'utf-8');
+  let contents: string;
 
-    // Other typical files to look out for, in case this test is adapted for
-    // other templates in future:
-    // android/app/BUCK
-    // android/app/src/main/AndroidManifest.xml
-    // android/app/src/main/res/values/strings.xml
-    // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
-    // android/app/src/main/java/com/minimal/MainActivity.java
-    // android/app/src/main/java/com/minimal/MainApplication.java
-  };
+  // For each of these tests, we provide both positive and negative test cases.
+  // - We expect it *not to match* the template's initial value.
+  //   - … This guards against renaming some, but not all cases of the string.
+  // - We expect it *to match* the renamed value configured by the user.
+  //   - … This guards against renaming the string, but to the wrong value.
 
-  // Read each of the renamedFiles, setting the 'contents' field for each entry.
-  await Promise.all(
-    Object.keys(renamedFiles).map(async (filePath) => {
-      renamedFiles[filePath].contents = await fs.readFile(
-        path.resolve(projectRoot, filePath),
-        'utf-8'
-      );
-    })
+  contents = await read('app.json');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/settings.gradle');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basic-prebuild');
+
+  // Although renameTemplateAppName() renames to "com.basicprebuild"
+  // post-extraction, there seems to be a follow-up step that (correctly)
+  // renames it once again to the value configured in `exp.android.package`.
+  contents = await read('android/app/build.gradle');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainApplication.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainActivity.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('ios/Podfile');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read(
+    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
   );
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
 
-  for (const relativeFilePath in renamedFiles) {
-    const entry = renamedFiles[relativeFilePath];
-    if (!('contents' in entry)) {
-      throw new Error('Expected to have populated the contents for this entry.');
-    }
-
-    // Rethrow the error to improve the error message to indicate which file it
-    // concerns, as Jest doesn't support custom error messages, nor nesting
-    // it.each().
-    try {
-      expect(entry.contents).toMatch(entry.positiveMatch);
-      expect(entry.contents).not.toMatch(entry.negativeMatch);
-    } catch (error) {
-      throw new Error(
-        `Failed assertion for renaming template app name in file: "${relativeFilePath}".\nFile can be inspected on-disk at: "${path.resolve(
-          projectRoot,
-          relativeFilePath
-        )}".`,
-        // @ts-ignore - Despite our tsconfig.node.json referencing
-        // @tsconfig/node18/tsconfig.json (which specifies `lib: ["es2023"]`,
-        // which pulls in the necessary lib.es2022.error.d.ts), this is still
-        // giving a compilation error in the IDE for some reason.
-        { cause: error }
-      );
-    }
-  }
+  // In case this template ever changes in future, other typical files to look
+  // out for include:
+  // android/app/BUCK
+  // android/app/src/main/AndroidManifest.xml
+  // android/app/src/main/res/values/strings.xml
+  // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
+  // android/app/src/main/java/com/minimal/MainActivity.java
+  // android/app/src/main/java/com/minimal/MainApplication.java
 }
 
 it(
