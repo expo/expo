@@ -96,6 +96,25 @@ const LANGUAGE_SAMPLES: {
     },
     hermesError: /private properties are not supported/,
   },
+  {
+    // Sanity check. It appears Hermes can parse JSX optionally.
+    name: `JSX`,
+    code: `const value = (<div />)`,
+    getCompiledCode() {
+      return `var _jsxRuntime=require("react/jsx-runtime");var value=(0,_jsxRuntime.jsx)("div",{});`;
+    },
+    hermesError: /possible JSX: pass -parse-jsx to parse/,
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-export-namespace-from
+    // babel-preset-expo adds support for this.
+    name: `export-namespace-from`,
+    code: `export * as ns from "mod";`,
+    getCompiledCode() {
+      return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&Object.prototype.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}`;
+    },
+    hermesError: /error: 'export' statement requires module mode/,
+  },
 
   // Supported natively
   {
@@ -108,6 +127,15 @@ const LANGUAGE_SAMPLES: {
       };`,
     getCompiledCode() {
       return `var obj={["x"+foo]:"heh",["y"+bar]:"noo",foo:"foo",bar:"bar"};`;
+    },
+  },
+  {
+    // No babel transform is run on this but we did observe runtime issues with Reflect when adopting bridgeless mode and the new architecture.
+    // These tests will likely not be capable of replicating the failure but it's a public reference to the issue in case anything changes in the future.
+    name: 'Reflect',
+    code: `const obj = Reflect.get({ foo: 'bar' }, 'foo');`,
+    getCompiledCode() {
+      return `var obj=Reflect.get({foo:'bar'},'foo');`;
     },
   },
   {
