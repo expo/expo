@@ -6,6 +6,9 @@ import semver from 'semver';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
+  if (process.platform !== 'darwin') {
+    return null;
+  }
   try {
     const cocoapodsVersionResponse = await spawnAsync('pod', ['--version']);
     const cocoapodsVersion = cocoapodsVersionResponse.stdout.trim();
