@@ -185,7 +185,7 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   /**
-   * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+   * Same as static [`takeSnapshotAsync()`](#takesnapshotasyncoptions),
    * but uses WebGL context that is associated with the view on which the method is called.
    * @param options
    */

@@ -65,7 +65,7 @@ export var AppleAuthenticationUserDetectionStatus;
 })(AppleAuthenticationUserDetectionStatus || (AppleAuthenticationUserDetectionStatus = {}));
 // @needsAudit
 /**
- * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export var AppleAuthenticationButtonType;
 (function (AppleAuthenticationButtonType) {
@@ -85,7 +85,7 @@ export var AppleAuthenticationButtonType;
 })(AppleAuthenticationButtonType || (AppleAuthenticationButtonType = {}));
 // @needsAudit
 /**
- * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export var AppleAuthenticationButtonStyle;
 (function (AppleAuthenticationButtonStyle) {

@@ -227,7 +227,7 @@ export class Asset {
   // @needsAudit
   /**
    * Downloads the asset data to a local file in the device's cache directory. Once the returned
-   * promise is fulfilled without error, the [`localUri`](#assetlocaluri) field of this asset points
+   * promise is fulfilled without error, the [`localUri`](#localuri) field of this asset points
    * to a local file containing the asset data. The asset is only downloaded if an up-to-date local
    * file for the asset isn't already present due to an earlier download. The downloaded `Asset`
    * will be returned when the promise is resolved.
