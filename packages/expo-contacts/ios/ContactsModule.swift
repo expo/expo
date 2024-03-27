@@ -2,19 +2,12 @@ import ExpoModulesCore
 import Contacts
 import ContactsUI
 
-/**
- Helper struct storing single picking operation context variables that have their own non-sharable state.
- */
-struct ContactPickingContext {
-  let promise: Promise
-}
-
 public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
-  private var currentContactPickingContext: ContactPickingContext?
+  private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
   public func definition() -> ModuleDefinition {
@@ -152,7 +145,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }.runOnQueue(.main)
 
     AsyncFunction("presentContactPickerAsync") { (promise: Promise) in
-      if currentContactPickingContext != nil {
+      if contactPickingPromise != nil {
         throw ContactPickingInProgressException()
       }
 
@@ -160,11 +153,11 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
 
-      currentContactPickingContext = ContactPickingContext(promise: promise)
-
       pickerController.delegate = self.contactPickerDelegate
 
       let currentController = appContext?.utilities?.currentViewController()
+
+      contactPickingPromise = promise
 
       currentController?.present(pickerController, animated: true)
     }.runOnQueue(.main)
@@ -332,22 +325,16 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
   }
 
-  func didPickContact(contact: CNContact) {
-    do {
-      let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
+  func didPickContact(contact: CNContact) throws {
+    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
 
-      currentContactPickingContext?.promise.resolve(serializedContact)
-    } catch {
-      // TODO: handle error
-
-    }
-
-    currentContactPickingContext = nil
+    contactPickingPromise?.resolve(serializedContact)
+    contactPickingPromise = nil
   }
 
   func didCancelPickingContact() {
-    currentContactPickingContext?.promise.resolve()
-    currentContactPickingContext = nil
+    contactPickingPromise?.resolve()
+    contactPickingPromise = nil
   }
 
   private func getContact(withId identifier: String) throws -> CNContact {
