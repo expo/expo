@@ -3383,7 +3383,7 @@
   resolved "https://registry.yarnpkg.com/@react-native-segmented-control/segmented-control/-/segmented-control-2.4.1.tgz#ea612c8b12bfea7712c7ea456b7b98dfc6748485"
   integrity sha512-c8Q7TP14CD6vJ38VO5SWoIcxfwLPIz/4zRKJnJOJ0xKkMxkrUu089m86Y0dSvo+T3c1NQyvBFRtKWrPqbqG6tg==
 
-"@react-native/assets-registry@0.74.76", "@react-native/assets-registry@~0.74.75":
+"@react-native/assets-registry@0.74.76", "@react-native/assets-registry@~0.74.76":
   version "0.74.76"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.74.76.tgz#74b61538db408b48018d87c673c45af3439a2fe0"
   integrity sha512-on9rShqwo0HpNvXlQkTZKn1esT9B1ZachOS0KY/PYj4P7MbigT/nrbNVC8nbTVYeyjrBPrP7dOFUR8crFNxPPw==
@@ -3524,7 +3524,7 @@
   resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-2.1.0.tgz#939b87a9849e81687d3640c5efa2a486ac266f91"
   integrity sha512-Z1jQI2NpdFJCVgpY+8Dq/Bt3d+YUi1928Q+/CZm/oh66fzM0RUl54vvuXlPJKybH4pdCZey1eDTPaLHkMPNgWA==
 
-"@react-native/normalize-colors@0.74.76", "@react-native/normalize-colors@~0.74.75":
+"@react-native/normalize-colors@0.74.76", "@react-native/normalize-colors@~0.74.76":
   version "0.74.76"
   resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.74.76.tgz#8f7e8bb041b8074647ccd194b957113cfbe7acf0"
   integrity sha512-Cy7S07n7UCFRpJLXnva3eTwXGj0/ns15Ts+6VE3ljDtldyV68PKs/1F5CGMUSeTUqIYRBx3CTlRwsvUNqKexLw==
