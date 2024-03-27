@@ -97,7 +97,7 @@ const setupLinting = async (projectRoot: string) => {
 
 export const lintAsync = async (projectRoot: string) => {
   try {
-    await fs.readFile(path.join(projectRoot, '.eslintrc.js '), 'utf8');
+    await fs.readFile(path.join(projectRoot, '.eslintrc.js'), 'utf8');
   } catch {
     return setupLinting(projectRoot);
   }
