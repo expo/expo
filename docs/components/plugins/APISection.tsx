@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+
+import { listMissingHashLinkTargets } from '~/common/utilities';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -311,11 +314,20 @@ const renderAPI = (
   }
 };
 
+const isDevMode = process.env.NODE_ENV === 'development';
+
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+
+  useEffect(() => {
+    if (isDevMode) {
+      listMissingHashLinkTargets(restProps.apiName);
+    }
+  }, []);
+
   return renderAPI(resolvedVersion, restProps);
 };
 
