@@ -80,13 +80,13 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction("clearMemoryCache") {
+    AsyncFunction<Boolean>("clearMemoryCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       Glide.get(activity).clearMemory()
       return@AsyncFunction true
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("clearDiskCache") {
+    AsyncFunction<Boolean>("clearDiskCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       activity.let {
         Glide.get(activity).clearDiskCache()

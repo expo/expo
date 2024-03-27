@@ -35,6 +35,7 @@ import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.BoolAsyncFunctionComponent
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -161,7 +162,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@AsyncFunction getCurrentPositionAsync(options, promise)
     }
 
-    AsyncFunction("getProviderStatusAsync") {
+    AsyncFunction<LocationProviderStatus>("getProviderStatusAsync") {
       val state = SmartLocation.with(mContext).location().state()
 
       return@AsyncFunction LocationProviderStatus().apply {
@@ -253,7 +254,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
 
-    AsyncFunction("hasServicesEnabledAsync") {
+    AsyncFunction<Boolean>("hasServicesEnabledAsync") {
       return@AsyncFunction LocationHelpers.isAnyProviderAvailable(mContext)
     }
 

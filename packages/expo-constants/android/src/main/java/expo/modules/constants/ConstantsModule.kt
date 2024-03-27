@@ -13,7 +13,7 @@ class ConstantsModule : Module() {
       return@Constants appContext.constants?.constants ?: emptyMap()
     }
 
-    AsyncFunction("getWebViewUserAgentAsync") {
+    AsyncFunction<String?>("getWebViewUserAgentAsync") {
       return@AsyncFunction System.getProperty("http.agent")
     }
   }

@@ -22,8 +22,8 @@ class StoreReviewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoStoreReview")
 
-    AsyncFunction("isAvailableAsync") {
-      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
+    AsyncFunction<Boolean>("isAvailableAsync") {
+      return@AsyncFunction isPlayStoreInstalled()
     }
 
     AsyncFunction("requestReview") { promise: Promise ->
