@@ -326,10 +326,12 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   }
 
   func didPickContact(contact: CNContact) throws {
-    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
+    defer {
+      contactPickingPromise = nil
+    }
 
+    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
     contactPickingPromise?.resolve(serializedContact)
-    contactPickingPromise = nil
   }
 
   func didCancelPickingContact() {
