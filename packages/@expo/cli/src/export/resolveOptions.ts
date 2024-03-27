@@ -2,6 +2,7 @@ import { ExpoConfig, getConfig, Platform } from '@expo/config';
 
 import { getPlatformBundlers, PlatformBundlers } from '../start/server/platformBundlers';
 import { CommandError } from '../utils/errors';
+import { learnMore } from '../utils/link';
 
 export type Options = {
   outputDir: string;
@@ -47,7 +48,7 @@ export function resolvePlatformOption(
 
       if (platform === 'web') {
         error +=
-          ' More information: https://docs.expo.dev/guides/customizing-metro/#adding-web-support-to-metro.';
+          ' ' + learnMore("https://docs.expo.dev/guides/customizing-metro/#web-support");
       }
 
       throw new CommandError('BAD_ARGS', error);
