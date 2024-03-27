@@ -43,16 +43,14 @@ export function resolvePlatformOption(
 
       let error = `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
         ', '
-      )}].`
+      )}].`;
 
       if (platform === 'web') {
-        error += ' More information: https://docs.expo.dev/guides/customizing-metro/#adding-web-support-to-metro.'
+        error += 
+          ' More information: https://docs.expo.dev/guides/customizing-metro/#adding-web-support-to-metro.'
       }
 
-      throw new CommandError(
-        'BAD_ARGS',
-        error
-      );
+      throw new CommandError('BAD_ARGS', error);
     }
 
     return platform;
