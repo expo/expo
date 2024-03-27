@@ -54,26 +54,22 @@ const setupLinting = async (projectRoot: string) => {
     return;
   }
 
-  const commandSegments = [
-    'expo',
-    'install',
+  const packages = [
     'eslint',
     'eslint-plugin-expo',
     'eslint-config-universe', // TODO(Kadi): eslit-config-expo once published
   ];
 
   if (result === 'eslint-and-prettier') {
-    commandSegments.push('prettier');
-    commandSegments.push('eslint-config-prettier');
-    commandSegments.push('eslint-plugin-prettier');
+    packages.push('prettier');
+    packages.push('eslint-config-prettier');
+    packages.push('eslint-plugin-prettier');
   }
 
+  const manager = PackageManager.createForProject(projectRoot);
+
   // TODO(Kadi): how to add this as dev dependencies?
-  await spawnAsync('npx', commandSegments, {
-    stdio: 'inherit',
-    cwd: projectRoot,
-    env: { ...process.env },
-  });
+  await manager.addAsync(packages);
 
   await fs.writeFile(
     path.join(projectRoot, '.eslintrc.js'),
@@ -102,7 +98,7 @@ export const lintAsync = async (projectRoot: string) => {
     return setupLinting(projectRoot);
   }
 
-  const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'yarn';
+  const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'npm';
 
   // TODO(Kadi): check if there's a lint command first?
   const commands = packageManager === 'npm' ? ['run', 'lint'] : ['lint'];
@@ -110,6 +106,5 @@ export const lintAsync = async (projectRoot: string) => {
   await spawnAsync(packageManager, commands, {
     stdio: 'inherit',
     cwd: projectRoot,
-    env: { ...process.env },
   });
 };
