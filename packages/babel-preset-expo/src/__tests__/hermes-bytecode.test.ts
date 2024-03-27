@@ -30,14 +30,14 @@ try {
 const LANGUAGE_SAMPLES: {
   name: string;
   code: string;
-  getCompiledCode: (props: { platform: string }) => string;
+  getCompiledCode: () => string;
   hermesError?: RegExp;
 }[] = [
   // Unsupported features
   {
     name: `destructuring in catch statement (ES10)`,
     code: SAMPLE_CODE,
-    getCompiledCode({ platform }) {
+    getCompiledCode() {
       return 'try{}catch(_ref){var message=_ref.message;}';
     },
     hermesError: /Destructuring in catch parameters is currently unsupported/,
@@ -53,26 +53,96 @@ const LANGUAGE_SAMPLES: {
           console.log("Hello", this.name);
         }
       }`,
-    getCompiledCode({ platform }) {
+    getCompiledCode() {
       return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var Test=function(){function Test(name){(0,_classCallCheck2.default)(this,Test);this.name=name;}(0,_createClass2.default)(Test,[{key:"logger",value:function logger(){console.log("Hello",this.name);}}]);return Test;}();';
     },
     hermesError: /invalid statement encountered\./,
   },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-async-generator-functions
+    // Hermes docs say this is supported, but I can't get it to work (March 27, 2024). https://hermesengine.dev/docs/language-features#supported
+    name: `async-generator-functions`,
+    code: `async function* agf() {
+        await 1;
+        yield 2;
+      }`,
+    getCompiledCode() {
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _awaitAsyncGenerator2=_interopRequireDefault(require("@babel/runtime/helpers/awaitAsyncGenerator"));var _wrapAsyncGenerator2=_interopRequireDefault(require("@babel/runtime/helpers/wrapAsyncGenerator"));function agf(){return _agf.apply(this,arguments);}function _agf(){_agf=(0,_wrapAsyncGenerator2.default)(function*(){yield(0,_awaitAsyncGenerator2.default)(1);yield 2;});return _agf.apply(this,arguments);}';
+    },
+    hermesError: /async generators are unsupported/,
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-private-methods
+    name: `private-methods`,
+    code: `class Counter {
+        #xValue = 0;
+      
+      }`,
+    getCompiledCode() {
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _xValue=(0,_classPrivateFieldLooseKey2.default)("xValue");var Counter=(0,_createClass2.default)(function Counter(){(0,_classCallCheck2.default)(this,Counter);Object.defineProperty(this,_xValue,{writable:true,value:0});});';
+    },
+    hermesError: /private properties are not supported/,
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-private-property-in-object
+    name: `private-property-in-object`,
+    code: `class Foo {
+        #bar = "bar";
+      
+        test(obj) {
+          return #bar in obj;
+        }
+      }`,
+    getCompiledCode() {
+      return `var _interopRequireDefault=require(\"@babel/runtime/helpers/interopRequireDefault\");var _classCallCheck2=_interopRequireDefault(require(\"@babel/runtime/helpers/classCallCheck\"));var _createClass2=_interopRequireDefault(require(\"@babel/runtime/helpers/createClass\"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require(\"@babel/runtime/helpers/classPrivateFieldLooseKey\"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError(\"right-hand side of 'in' should be an object, got \"+(null!==e?typeof e:\"null\"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)(\"bar\");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:\"bar\"});}(0,_createClass2.default)(Foo,[{key:\"test\",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);return Foo;}();`;
+    },
+    hermesError: /private properties are not supported/,
+  },
 
   // Supported natively
   {
-    name: 'numeric-separator',
-    code: `var budget = 1_000_000_000_000;
-    var nibbles = 0b1010_0001_1000_0101;
-    var message = 0xa0_b0_c0;`,
-    getCompiledCode({ platform }) {
-      return `var budget=1_000_000_000_000;var nibbles=0b1010_0001_1000_0101;var message=0xa0_b0_c0;`;
+    name: 'computed-properties',
+    code: `const obj = {
+        ["x" + foo]: "heh",
+        ["y" + bar]: "noo",
+        foo: "foo",
+        bar: "bar"
+      };`,
+    getCompiledCode() {
+      return `var obj={["x"+foo]:"heh",["y"+bar]:"noo",foo:"foo",bar:"bar"};`;
+    },
+  },
+  {
+    name: 'shorthand-properties',
+    code: `var a1 = 0;
+    var c = { a1 };`,
+    getCompiledCode() {
+      return `var a1=0;var c={a1};`;
+    },
+  },
+  {
+    name: 'optional-catch-binding',
+    code: `try {
+        throw 0;
+      } catch {
+      }`,
+    getCompiledCode() {
+      return `try{throw 0;}catch{}`;
+    },
+  },
+  {
+    name: 'literals',
+    code: `const d = 0b11; // binary integer literal
+    const e = 0o7; // octal integer literal
+    const f = "Hello\\u{000A}\\u{0009}!"; // unicode string literals, newline and tab`,
+    getCompiledCode() {
+      return `var d=0b11;var e=0o7;var f="Hello\\u{000A}\\u{0009}!";`;
     },
   },
   {
     name: 'sticky-regex',
     code: `var regex = /foo+/y;`,
-    getCompiledCode({ platform }) {
+    getCompiledCode() {
       return `var regex=/foo+/y;`;
     },
   },
@@ -83,16 +153,92 @@ const LANGUAGE_SAMPLES: {
     var i = [...h, "foo"];
     
     var j = foo(...h);`,
-    getCompiledCode({ platform }) {
+    getCompiledCode() {
       return `var h=["a","b","c"];var i=[...h,"foo"];var j=foo(...h);`;
     },
+  },
+  {
+    name: 'object-rest-spread',
+    code: `var y = {};
+    var x = 1;
+    var k = { x, ...y };`,
+    getCompiledCode() {
+      return `var y={};var x=1;var k={x,...y};`;
+    },
+  },
+  {
+    name: 'optional-chaining',
+    code: `var m = {}?.x;`,
+    getCompiledCode() {
+      return `var m={}?.x;`;
+    },
+  },
+  {
+    name: 'nullish-coalescing-operator',
+    code: `var obj2 = {};
+    var foo = obj2.foo ?? "default";`,
+    getCompiledCode() {
+      return `var obj2={};var foo=obj2.foo??"default";`;
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-async-to-generator
+    // Hermes says this isn't supported but it appears to work when compiled.
+    name: `async/await`,
+    code: `async function foo() {
+        await bar();
+      }`,
+    getCompiledCode() {
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _asyncToGenerator2=_interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));function foo(){return _foo.apply(this,arguments);}function _foo(){_foo=(0,_asyncToGenerator2.default)(function*(){yield bar();});return _foo.apply(this,arguments);}';
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-named-capturing-groups-regex
+    // Hermes says this isn't supported but it appears to work when compiled.
+    name: `named-capturing-groups-regex`,
+    code: `var re = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
+    console.log(re.exec("1999-02-29").groups.year);`,
+    getCompiledCode() {
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _setPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));function _wrapRegExp(){_wrapRegExp=function(e,r){return new BabelRegExp(e,void 0,r);};var e=RegExp.prototype,r=new WeakMap();function BabelRegExp(e,t,p){var o=new RegExp(e,t);return r.set(o,p||r.get(e)),(0,_setPrototypeOf2.default)(o,BabelRegExp.prototype);}function buildGroups(e,t){var p=r.get(t);return Object.keys(p).reduce(function(r,t){var o=p[t];if("number"==typeof o)r[t]=e[o];else{for(var i=0;void 0===e[o[i]]&&i+1<o.length;)i++;r[t]=e[o[i]];}return r;},Object.create(null));}return(0,_inherits2.default)(BabelRegExp,RegExp),BabelRegExp.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=buildGroups(t,this);var p=t.indices;p&&(p.groups=buildGroups(p,this));}return t;},BabelRegExp.prototype[Symbol.replace]=function(t,p){if("string"==typeof p){var o=r.get(this);return e[Symbol.replace].call(this,t,p.replace(/\\$<([^>]+)>/g,function(e,r){var t=o[r];return"$"+(Array.isArray(t)?t.join("$"):t);}));}if("function"==typeof p){var i=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return"object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(buildGroups(e,i)),p.apply(this,e);});}return e[Symbol.replace].call(this,t,p);},_wrapRegExp.apply(this,arguments);}var re=_wrapRegExp(/(\\d{4})\\x2D(\\d{2})\\x2D(\\d{2})/,{year:1,month:2,day:3});console.log(re.exec("1999-02-29").groups.year);';
+    },
+  },
+
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-unicode-regex
+    // Hermes doesn't claim that this doesn't work but it is in the upstream transform.
+    name: `unicode-regex`,
+    code: `var string = "foo💩bar";
+    var match = string.match(/foo(.)bar/u);`,
+    getCompiledCode() {
+      return 'var string="foo💩bar";var match=string.match(/foo((?:[\\0-\\t\\x0B\\f\\x0E-\\u2027\\u202A-\\uD7FF\\uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF]))bar/);';
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-arrow-functions
+    // This works with Hermes but we seem to transpile it out anyways, presumably for fast refresh?
+    // https://github.com/facebook/react-native/blob/b1047d49ff45f0f795c9e336e18deb9e09c34887/packages/react-native-babel-preset/src/configs/main.js#L89
+    name: `arrow-functions`,
+    code: `var a = () => {};
+    var a = b => b;`,
+    getCompiledCode() {
+      return `var a=function(){};var a=function(b){return b;};`;
+    },
+  },
+  {
+    // Requires module mode to be enabled, which we don't currently do in React Native.
+    name: `export`,
+    code: `export {}`,
+    getCompiledCode() {
+      return 'Object.defineProperty(exports,"__esModule",{value:true});';
+    },
+    hermesError: /'export' statement requires module mode/,
   },
 ];
 
 LANGUAGE_SAMPLES.forEach((sample) => {
   describe(sample.name, () => {
     ['ios', 'web'].forEach((platform) => {
-      it(`babel-preset-expo shims support (platform: ${platform})`, async () => {
+      it(`babel-preset-expo ensures Hermes compiles (platform: ${platform})`, async () => {
         const options = {
           babelrc: false,
           presets: [preset],
@@ -102,7 +248,7 @@ LANGUAGE_SAMPLES.forEach((sample) => {
         };
 
         const babelResults = babel.transform(sample.code, options)!;
-        expect(babelResults.code).toEqual(sample.getCompiledCode({ platform }));
+        expect(babelResults.code).toEqual(sample.getCompiledCode());
 
         // Will not throw
         await hermesAsync({ code: babelResults.code! });
