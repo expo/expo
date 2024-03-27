@@ -77,6 +77,10 @@ const setupLinting = async (projectRoot: string) => {
     'utf8'
   );
 
+  if (result === 'eslint-and-prettier') {
+    await fs.writeFile(path.join(projectRoot, '.prettierrc'), '{}', 'utf8');
+  }
+
   const scripts = JsonFile.read(path.join(projectRoot, 'package.json')).scripts;
 
   if ((scripts as JSONObject)?.lint) {
