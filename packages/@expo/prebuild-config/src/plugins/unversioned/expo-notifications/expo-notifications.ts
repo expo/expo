@@ -7,13 +7,6 @@ import {
 } from './withAndroidNotifications';
 import { createLegacyPlugin } from '../createLegacyPlugin';
 
-const withNotificationsEntitlement: ConfigPlugin<'production' | 'development'> = (config, mode) => {
-  return withEntitlementsPlist(config, (config) => {
-    config.modResults['aps-environment'] = mode;
-    return config;
-  });
-};
-
 export default createLegacyPlugin({
   packageName: 'expo-notifications',
   fallback: [
@@ -22,6 +15,6 @@ export default createLegacyPlugin({
     withNotificationIconColor,
     withNotificationIcons,
     // iOS
-    [withNotificationsEntitlement, 'development'],
+    // Automatic setting of APNS entitlement is no longer needed
   ],
 });
