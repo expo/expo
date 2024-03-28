@@ -101,6 +101,71 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   );
 });
 
+/**
+ * Asserts that the placeholder values for the app name have been renamed to the
+ * values configured by the user
+ *
+ * @see packages/create-expo/README.md for an explanation of placeholder values.
+ */
+async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
+  // We could read the files in parallel to save a tiny bit of time, but the
+  // test code and stack trace is far easier to follow when arranged like this.
+  const read = (filePath: string) => fs.readFile(path.resolve(projectRoot, filePath), 'utf-8');
+  let contents: string;
+
+  // For each of these tests, we provide both positive and negative test cases.
+  // - We expect it *not to match* the template's initial value.
+  //   - … This guards against renaming some, but not all cases of the string.
+  // - We expect it *to match* the renamed value configured by the user.
+  //   - … This guards against renaming the string, but to the wrong value.
+
+  contents = await read('app.json');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/settings.gradle');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basic-prebuild');
+
+  // Although renameTemplateAppName() renames to "com.basicprebuild"
+  // post-extraction, there seems to be a follow-up step that (correctly)
+  // renames it once again to the value configured in `exp.android.package`.
+  contents = await read('android/app/build.gradle');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainApplication.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainActivity.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('ios/Podfile');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read(
+    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
+  );
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  // In case this template ever changes in future, other typical files to look
+  // out for include:
+  // android/app/BUCK
+  // android/app/src/main/AndroidManifest.xml
+  // android/app/src/main/res/values/strings.xml
+  // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
+  // android/app/src/main/java/com/minimal/MainActivity.java
+  // android/app/src/main/java/com/minimal/MainApplication.java
+}
+
 it(
   'runs `npx expo prebuild`',
   async () => {
@@ -126,6 +191,8 @@ it(
       .filter(Boolean);
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
     // Added new packages
     expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
