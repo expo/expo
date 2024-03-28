@@ -1,4 +1,4 @@
-import { Symbol, SymbolViewProps } from 'expo-symbols';
+import { Symbol, SymbolViewProps, SFSymbol } from 'expo-symbols';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 
 import { Symbols } from '../constants';
@@ -20,7 +20,7 @@ function SymbolRow({ title, ...props }: RowProps) {
         {getRandomRow(Symbols).map((symbol, index) => (
           <Symbol
             {...props}
-            name={symbol}
+            name={symbol as SFSymbol}
             key={index}
             style={styles.symbol}
             resizeMode="scaleAspectFit"
@@ -53,7 +53,7 @@ function SymbolWeights({ title, ...props }: RowProps) {
             <View key={index} style={{ alignItems: 'center' }}>
               <Symbol
                 {...props}
-                name={symbol}
+                name={symbol as SFSymbol}
                 style={styles.symbol}
                 type="hierarchical"
                 weight={weight}
@@ -78,7 +78,7 @@ function SymbolScales({ title, ...props }: RowProps) {
           const scale = scales[index % scales.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
-              <Symbol {...props} name={symbol} style={styles.symbol} scale={scale} />
+              <Symbol {...props} name={symbol as SFSymbol} style={styles.symbol} scale={scale} />
               <Text style={{ color: 'white', fontSize: 8 }}>{scale}</Text>
             </View>
           );

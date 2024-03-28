@@ -4580,9 +4580,9 @@
   integrity sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==
 
 "@types/node@^18.0.0", "@types/node@^18.16.3":
-  version "18.19.19"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.19.tgz#fe8bdbf85683a461ad685ead52a57ab2ee2315e4"
-  integrity sha512-qqV6hSy9zACEhQUy5CEGeuXAZN0fNjqLWRIvOXOwdFYhFoKBiY08VKR5kgchr90+TitLVhpUEb54hk4bYaArUw==
+  version "18.19.23"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.23.tgz#e02c759218bc9957423a3f7d585d511b17be2351"
+  integrity sha512-wtE3d0OUfNKtZYAqZb8HAWGxxXsImJcPUAgZNw+dWFxO6s5tIwIjyKnY76tsTatsNCLJPkVYwUpq15D38ng9Aw==
   dependencies:
     undici-types "~5.26.4"
 
@@ -16351,9 +16351,9 @@ react-dev-utils@~11.0.1:
     text-table "0.2.0"
 
 react-devtools-core@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-5.0.0.tgz#50b04a4dbfa62badbe4d86529e9478c396988b31"
-  integrity sha512-SAAMLacNDfFjMJjmbXURNWtrTyARi9xTqGkY48Btw5cIWlr1wgxfWYZKxoUZav1qqmhbpgTzSmmF+cpMHGHY3A==
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-5.0.2.tgz#c3c11c7b91857131d694457885ef49b7ae590857"
+  integrity sha512-+fDp3kDfPpF5xbAACJmihPHL0iDKpnKr7MyRvW0nZq71xwHWDW3zRCNpiiAJWd85vAGT+GbV9O87zAIDgvV1gw==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
@@ -17577,6 +17577,11 @@ setprototypeof@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
+
+sf-symbols-typescript@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/sf-symbols-typescript/-/sf-symbols-typescript-2.0.0.tgz#52548c84d124914faed1868c55bb71bffac472f1"
+  integrity sha512-Fc8Uhhl2plqXMw7GQ8q83t/zj1xhNCJvteDNJUDULaH/4a/Eqw5aW1UYEznyEIgkokw7QYXuQ9hOw8jhBLXL0A==
 
 sha.js@^2.4.0, sha.js@^2.4.8:
   version "2.4.11"
