@@ -33,6 +33,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     appName: props.appName,
     buildCache: props.buildCache,
     architectures: props.architectures,
+    gradleArgs: options.gradleArgs,
   });
 
   // Ensure the port hasn't become busy during the build.

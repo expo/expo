@@ -26,12 +26,16 @@ function resolveGradleWPath(androidProjectPath: string): string {
   return path.join(androidProjectPath, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew');
 }
 
-function getPortArg(port: number): string {
-  return `-PreactNativeDevServerPort=${port}`;
+function addReactNativePortGradleArg(args: string[], port?: number) {
+  if (!args.find((arg) => arg.startsWith('-PreactNativeDevServerPort'))) {
+    args.push(`-PreactNativeDevServerPort=${port}`);
+  }
 }
 
-function getActiveArchArg(architectures: string): string {
-  return `-PreactNativeArchitectures=${architectures}`;
+function addReactNativeActiveArgsGradleArg(args: string[], architectures?: string) {
+  if (!args.find((arg) => arg.startsWith('-PreactNativeArchitectures'))) {
+    args.push(`-PreactNativeArchitectures=${architectures}`);
+  }
 }
 
 /**
@@ -53,12 +57,14 @@ export async function assembleAsync(
     appName,
     buildCache,
     architectures,
+    gradleArgs,
   }: {
     variant: string;
     port?: number;
     appName: string;
     buildCache?: boolean;
     architectures?: string;
+    gradleArgs?: string[];
   }
 ): Promise<SpawnResult> {
   const task = formatGradleArguments('assemble', { variant, appName });
@@ -71,6 +77,8 @@ export async function assembleAsync(
     '-x',
     'test',
     '--configure-on-demand',
+    // Pass custom gradle arguments
+    ...(gradleArgs ?? []),
   ];
 
   if (buildCache) args.push('--build-cache');
@@ -111,8 +119,10 @@ export async function spawnGradleAsync(
   { port, architectures, args }: { port?: number; architectures?: string; args: string[] }
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
-  if (port != null) args.push(getPortArg(port));
-  if (architectures) args.push(getActiveArchArg(architectures));
+
+  addReactNativePortGradleArg(args, port);
+  addReactNativeActiveArgsGradleArg(args, architectures);
+
   debug(`  ${gradlew} ${args.join(' ')}`);
   try {
     return await spawnAsync(gradlew, args, {
