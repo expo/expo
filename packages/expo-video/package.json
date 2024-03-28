@@ -3,11 +3,10 @@
   "title": "Expo Video",
   "version": "1.0.0-alpha.1",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "src/index.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "typecheck": "expo-module typecheck",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
