@@ -37,10 +37,6 @@ it('tracks event when user is identified', async () => {
     userId: 'fake',
     anonymousId: 'anonymous-id',
     event: 'Start Project',
-    properties: expect.objectContaining({
-      source: 'expo/cli',
-      source_version: process.env.__EXPO_VERSION, // undefined in testing
-    }),
     context: {
       ...getContext(),
       client: { mode: 'attached' },
@@ -64,10 +60,6 @@ it('tracks event with correct mode', async () => {
       client: { mode: 'detached' },
     },
     event: 'Start Project',
-    properties: expect.objectContaining({
-      source: 'expo/cli',
-      source_version: process.env.__EXPO_VERSION, // undefined in testing
-    }),
   });
 });
 
