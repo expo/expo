@@ -16,4 +16,9 @@ export declare function requireNativeModule<ModuleType = any>(moduleName: string
  * @returns Object representing the native module or `null` when it cannot be found.
  */
 export declare function requireOptionalNativeModule<ModuleType = any>(moduleName: string): ModuleType | null;
+/**
+ * Ensures that the native modules are installed in the current runtime.
+ * Otherwise, it synchronously calls a native function that installs them.
+ */
+export declare function ensureNativeModulesAreInstalled(): void;
 //# sourceMappingURL=requireNativeModule.d.ts.map

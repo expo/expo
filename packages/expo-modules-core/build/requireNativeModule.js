@@ -31,7 +31,7 @@ export function requireOptionalNativeModule(moduleName) {
  * Ensures that the native modules are installed in the current runtime.
  * Otherwise, it synchronously calls a native function that installs them.
  */
-function ensureNativeModulesAreInstalled() {
+export function ensureNativeModulesAreInstalled() {
     if (globalThis.expo) {
         return;
     }
