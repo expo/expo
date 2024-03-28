@@ -12,7 +12,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 ## Receipts
 
-To view your account's payment history, click [**Receipts**](https://expo.dev/settings/receipts) in the navigation menu under **Account settings** or **Organization settings**.
+To view your account's payment history, click [Receipts](https://expo.dev/settings/receipts) in the navigation menu under **Account settings** or **Organization settings**.
 
 For example, an [Organization account's](/accounts/account-types/#organizations) receipts are shown below:
 
@@ -23,7 +23,7 @@ For example, an [Organization account's](/accounts/account-types/#organizations)
 
 ### Download and view an invoice
 
-To download and view an invoice for a billing period, go to **Receipts** and:
+To download and view an invoice for a billing period, go to [Receipts](https://expo.dev/settings/receipts) and:
 
 - Click the **Date** for the billing period corresponding to the invoice. You will be navigated to a page hosted by Stripe. As an example, the March 22, 2024 invoice below links to this page:
 
@@ -37,7 +37,7 @@ To download and view an invoice for a billing period, go to **Receipts** and:
 
 ### Download and view a receipt
 
-To download and view a receipt for a billing period, go to **Receipts** and:
+To download and view a receipt for a billing period, go to [Receipts](https://expo.dev/settings/receipts) and:
 
 - Click the **Date** for the billing period corresponding to the receipt. You will be navigated to the appropriate receipt hosted by Stripe. As an example, the March 22, 2024 receipt below links to this page:
 
@@ -51,7 +51,7 @@ To download and view a receipt for a billing period, go to **Receipts** and:
 
 ### Request a refund
 
-You can request a refund directly from the **Receipts** page. The approval process is manual and our team investigates any errors before providing a refund.
+You can request a refund directly from the [Receipts](https://expo.dev/settings/receipts) page. The approval process is manual and our team investigates any errors before providing a refund.
 
 To request a refund:
 
@@ -80,18 +80,18 @@ An invoice contains your legally registered business name, address, tax ID, invo
 - Any overage charges (if applicable)
 - A plan's credit limit
 
-Let's consider three different examples to understand how your invoice might look. If you subscribe to a Production, Enterprise, or On-demand plan, one of these scenarios may apply to you.
+Let's consider three different examples to understand how your invoice might look. If you subscribe to a [Production](/billing/plans/#production), [Enterprise](/billing/plans/#enterprise), or [On-demand](/billing/plans/#on-demand) plan, one of these scenarios may apply to you.
 
 ### Subscription charges
 
 In the first example, the invoice table shows a subscription charge for a Production plan:
 
-| Description                                                                                | Quantity | Unit price |  Amount |
-| ------------------------------------------------------------------------------------------ | -------- | ---------- | ------: |
-| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) | 1        | $40.00     |  $40.00 |
-| Expo Application Services - Production                                                     | 1        | $99.00     |  $99.00 |
-| EAS Build - Plan credit                                                                    | 1        | -$99.00    | -$99.00 |
-| **Total (USD)**                                                                            |          |            |  $99.00 |
+| Description                                                                                | Quantity | Unit price |     Amount |
+| ------------------------------------------------------------------------------------------ | -------: | ---------: | ---------: |
+| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) |        1 |     $40.00 |     $40.00 |
+| Expo Application Services - Production                                                     |        1 |     $99.00 |     $99.00 |
+| EAS Build - Plan credit                                                                    |        1 |    -$99.00 |    -$99.00 |
+| **Total (USD)**                                                                            |          |            | **$99.00** |
 
 In the above table, the first line item describes the EAS Build usage. It contains all the details about how many Android and iOS builds were created during this billing period and their cost. The second line item describes the amount of the Production plan's subscription. The third line item describes the credit limit for the Production plan for a monthly billing period.
 
@@ -101,12 +101,12 @@ Since the EAS Build usage doesn't exceed the plan's credit amount, the subscribe
 
 In the second example, the invoice table shows a subscription charge for a Production plan with an overage charge:
 
-| Description                                                                                   | Quantity | Unit price |  Amount |
-| --------------------------------------------------------------------------------------------- | -------- | ---------- | ------: |
-| EAS Build - Build (Android: 15 large and 10 medium builds; iOS 10 large and 15 medium builds) | 1        | $110.00    | $110.00 |
-| Expo Application Services - Production                                                        | 1        | $99.00     |  $99.00 |
-| EAS Build - Plan credit                                                                       | 1        | -$99.00    | -$99.00 |
-| **Total (USD)**                                                                               |          |            | $110.00 |
+| Description                                                                                   | Quantity | Unit price |      Amount |
+| --------------------------------------------------------------------------------------------- | -------: | ---------: | ----------: |
+| EAS Build - Build (Android: 15 large and 10 medium builds; iOS 10 large and 15 medium builds) |        1 |    $110.00 |     $110.00 |
+| Expo Application Services - Production                                                        |        1 |     $99.00 |      $99.00 |
+| EAS Build - Plan credit                                                                       |        1 |    -$99.00 |     -$99.00 |
+| **Total (USD)**                                                                               |          |            | **$110.00** |
 
 The first line item in the above table describes the EAS Build usage. It contains all the details about how many Android and iOS builds were created during this billing period and their cost. The amount of the EAS Build usage exceeds the plan's monthly credit limit, so the subscriber has to pay the overage charge of $110.00.
 
@@ -115,8 +115,8 @@ The first line item in the above table describes the EAS Build usage. It contain
 In the third example, the subscriber is on an On-demand plan. Any charges incurred during the billing period are listed in the invoice:
 
 | Description                                                         | Quantity | Unit price |     Amount |
-| ------------------------------------------------------------------- | -------- | ---------- | ---------: |
-| EAS Build - Build (Android: 10 medium builds; iOS 10 medium builds) | 1        | $30.00     |     $30.00 |
-| **Total (USD)**                                                     |          |            | $30.00 USD |
+| ------------------------------------------------------------------- | -------: | ---------: | ---------: |
+| EAS Build - Build (Android: 10 medium builds; iOS 10 medium builds) |        1 |     $30.00 |     $30.00 |
+| **Total (USD)**                                                     |          |            | **$30.00** |
 
 The above table shows the total amount due based on usage only since the On-demand plan doesn't include any credits.
