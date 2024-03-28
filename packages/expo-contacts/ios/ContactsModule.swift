@@ -2,10 +2,13 @@ import ExpoModulesCore
 import Contacts
 import ContactsUI
 
-public class ContactsModule: Module {
+public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
+  private var contactPickerDelegate: ContactPickerControllerDelegate?
+  private var contactPickingPromise: Promise?
+  private var contactManipulationPromise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
@@ -70,7 +73,13 @@ public class ContactsModule: Module {
       }
     }.runOnQueue(.main)
 
+    // swiftlint:disable closure_body_length
     AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact?, options: FormOptions, promise: Promise) in
+      // swiftlint:enable closure_body_length
+      if contactManipulationPromise != nil {
+        throw ContactManipulationInProgressException()
+      }
+
       var controller: ContactsViewController?
 
       if let identifier {
@@ -128,9 +137,29 @@ public class ContactsModule: Module {
 
       controller.onViewDisappeared = {
         promise.resolve()
+        self.contactManipulationPromise = nil
       }
 
+      contactManipulationPromise = promise
       parent?.present(navController, animated: animated)
+    }.runOnQueue(.main)
+
+    AsyncFunction("presentContactPickerAsync") { (promise: Promise) in
+      if contactPickingPromise != nil {
+        throw ContactPickingInProgressException()
+      }
+
+      let pickerController = CNContactPickerViewController()
+
+      contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
+
+      pickerController.delegate = self.contactPickerDelegate
+
+      let currentController = appContext?.utilities?.currentViewController()
+
+      contactPickingPromise = promise
+
+      currentController?.present(pickerController, animated: true)
     }.runOnQueue(.main)
 
     AsyncFunction("addExistingContactToGroupAsync") { (identifier: String, groupId: String) in
@@ -294,6 +323,20 @@ public class ContactsModule: Module {
         reject: promise.legacyRejecter
       )
     }
+  }
+
+  func didPickContact(contact: CNContact) throws {
+    defer {
+      contactPickingPromise = nil
+    }
+
+    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
+    contactPickingPromise?.resolve(serializedContact)
+  }
+
+  func didCancelPickingContact() {
+    contactPickingPromise?.resolve()
+    contactPickingPromise = nil
   }
 
   private func getContact(withId identifier: String) throws -> CNContact {

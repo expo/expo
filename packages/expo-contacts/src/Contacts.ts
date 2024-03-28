@@ -944,6 +944,18 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
 }
 
 /**
+ * Presents a native contact picker to select a single contact from the system. On iOS, no permissions are required to use this method. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method.
+ * @return A promise that fulfills with a single `Contact` object if a contact was selected, or `null` if no contact was selected (picking was cancelled).
+ */
+export async function presentContactPickerAsync(): Promise<Contact | null> {
+  if (!ExpoContacts.presentContactPickerAsync) {
+    throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+  }
+  return await ExpoContacts.presentContactPickerAsync();
+}
+
+/**
  * Get the default container's ID.
  * @return A promise that fulfills with default container ID.
  * @example

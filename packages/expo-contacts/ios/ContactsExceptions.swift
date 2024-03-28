@@ -77,3 +77,15 @@ internal class FailedToFindContactException: Exception {
     "Failed to find contact"
   }
 }
+
+internal class ContactPickingInProgressException: Exception {
+  override var reason: String {
+    "Different contact picking in progress. Await other contact picking first"
+  }
+}
+
+internal class ContactManipulationInProgressException: Exception {
+  override var reason: String {
+    "Different contact manipulation in progress. Await other contact manipulation first"
+  }
+}
