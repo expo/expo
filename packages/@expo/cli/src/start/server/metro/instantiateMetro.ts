@@ -14,6 +14,7 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
+import { withAtlas } from './withAtlas';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
@@ -211,6 +212,9 @@ export async function instantiateMetroAsync(
   const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
   prependMiddleware(middleware, debugMiddleware);
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+
+  // Initialize Expo Atlas, if possible
+  withAtlas({ projectRoot, middleware, metroConfig });
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api

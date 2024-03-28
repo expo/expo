@@ -155,6 +155,7 @@
     "@types/wrap-ansi": "^8.0.1",
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
+    "expo-atlas": "0.0.14",
     "expo-module-scripts": "^3.0.0",
     "find-process": "^1.4.7",
     "jest-runner-tsd": "^6.0.0",
