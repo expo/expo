@@ -77,14 +77,8 @@
 
   // The RCTHost/RCTBridge instance is retained by the RCTRootViewFactory.
   // We will have to replace these instance from the app to the newly created instance.
-  if (appDelegate.bridgelessEnabled) {
-    appRootViewFactory.reactHost = factory.reactHost;
-  } else {
-    appRootViewFactory.bridge = factory.bridge;
-  }
-  
   appDelegate.rootViewFactory = factory;
-
+  
   return rootView;
 }
 
