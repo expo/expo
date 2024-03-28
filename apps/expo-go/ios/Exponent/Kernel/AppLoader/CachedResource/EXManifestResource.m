@@ -205,10 +205,13 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   return [[sdkVersion substringToIndex: snackSdkVersionRange.location] intValue];
 }
 
-- (NSString *)supportedSdkVersionsConjunctionString:(nonnull NSString *)conjuction {
+- (NSString *)supportedSdkVersionsConjunctionString:(nonnull NSString *)conjunction {
   NSArray *supportedSDKVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
   NSString *stringBeginning = [[supportedSDKVersions subarrayWithRange:NSMakeRange(0, supportedSDKVersions.count - 1)] componentsJoinedByString:@", "];
-  return [NSString stringWithFormat:@"%@ %@ %@", stringBeginning, conjuction, [supportedSDKVersions lastObject]];
+  if (supportedSDKVersions.count > 1) {
+    return [NSString stringWithFormat:@"%@ %@ %@", stringBeginning, conjunction, [supportedSDKVersions lastObject]];
+  }
+  return [supportedSDKVersions firstObject];
 }
 
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest
@@ -299,12 +302,41 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSDictionary *metadata = userInfo[@"metadata"];
     NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
-    NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
+    int requiredVersionNum = [sdkVersionRequired intValue];
+    NSArray *supportedSDKVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
+    NSString *maybePluralSdkString = [supportedSDKVersions count] == 1 ? @"SDK" : @"SDKs";
 
-    formattedMessage = [NSString stringWithFormat:@"This project uses SDK %@, but this version of Expo Go supports only SDKs %@. \n\n To open this project: \n • Update it to SDK %@. \n • Install an older version of Expo Go that supports the project's SDK version. \n\nIf you are unsure how to update the project or install a suitable version of Expo Go, refer to the https://docs.expo.dev/get-started/expo-go/#sdk-versions", sdkVersionRequired, [self supportedSdkVersionsConjunctionString:@"and"], [self supportedSdkVersionsConjunctionString:@"or"]];
+#if (TARGET_OS_SIMULATOR)
+    NSString * expoDevLink = [NSString stringWithFormat: @"https://expo.dev/go?sdkVersion=%d&platform=ios&device=false", requiredVersionNum];
+    formattedMessage = [NSString stringWithFormat:
+                          @"This project uses SDK %@, but this version of Expo Go supports only %@ %@.\n\n"
+                        @"To open this project you can either:\n"
+                        @"• Update it to SDK %@.\n"
+                        @"• Install an older version of Expo Go that supports the project's SDK version.\n\n"
+                        @"If you are unsure how to update the project refer to the [https://docs.expo.dev/get-started/expo-go/#sdk-versions](SDK Versions Guide).\n"
+                        @"You can also learn how to [%@](install a suitable Expo Go version).",
+                        sdkVersionRequired,
+                        maybePluralSdkString,
+                        [self supportedSdkVersionsConjunctionString:@"and"],
+                        [self supportedSdkVersionsConjunctionString:@"or"],
+                        expoDevLink
+    ];
+#else
+    NSString * expoDevLink = [NSString stringWithFormat: @"https://expo.dev/go?sdkVersion=%d&platform=ios&device=true", requiredVersionNum];
+    formattedMessage = [NSString stringWithFormat:
+                          @"This project uses SDK %@, but this version of Expo Go supports only %@ %@.\n\n"
+                        @"To open this project on a physical iOS device you have to update it to SDK %@.\n\n"
+                        @"[%@](Learn more about SDK compatibility for Expo Go running on iOS devices.)",
+                        sdkVersionRequired,
+                        maybePluralSdkString,
+                        [self supportedSdkVersionsConjunctionString:@"and"],
+                        [self supportedSdkVersionsConjunctionString:@"or"],
+                        expoDevLink
+    ];
+#endif
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
     NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
-    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A development build must be used to load other runtimes.\nhttps://docs.expo.dev/develop/development-builds/introduction/", supportedSDKVersions];
+    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A development build must be used to load other runtimes.\n[https://docs.expo.dev/develop/development-builds/introduction/](Learn more about development builds).", supportedSDKVersions];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
@@ -322,15 +354,16 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSInteger snackSdkVersionValue = [self sdkVersionStringToInt: snackSdkVersion];
     NSArray *supportedSdkVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
     NSInteger latestSupportedSdkVersionValue = [self sdkVersionStringToInt: supportedSdkVersions[0]];
+    NSString *maybePluralSdkString = [supportedSdkVersions count] == 1 ? @"SDK" : @"SDKs";
 
-    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only SDKs %@.", fullName, snackSdkVersion, [self supportedSdkVersionsConjunctionString:@"and"]];
+    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only %@ %@.", fullName, snackSdkVersion, maybePluralSdkString, [self supportedSdkVersionsConjunctionString:@"and"]];
 
     if (snackSdkVersionValue > latestSupportedSdkVersionValue) {
       formattedMessage = [NSString stringWithFormat:@"%@\n\nYou need to update your Expo Go app in order to run this snack.", formattedMessage];
     } else {
-      formattedMessage = [NSString stringWithFormat:@"%@\n\nSnack needs to be upgraded to a current SDK version. To do it, open the project at https://snack.expo.dev. It will be automatically upgraded to a supported SDK version.", formattedMessage];
+      formattedMessage = [NSString stringWithFormat:@"%@\n\nSnack needs to be upgraded to a current SDK version. To do it, open the project at [https://snack.expo.dev](Expo Snack website). It will be automatically upgraded to a supported SDK version.", formattedMessage];
     }
-    formattedMessage = [NSString stringWithFormat:@"%@\n\nLearn more about SDK versions and Expo Go in the https://docs.expo.dev/get-started/expo-go/#sdk-versions.", formattedMessage];
+    formattedMessage = [NSString stringWithFormat:@"%@\n\nLearn more about SDK versions and Expo Go in the [https://docs.expo.dev/get-started/expo-go/#sdk-versions](SDK Versions Guide).", formattedMessage];
   }
   userInfo[NSLocalizedDescriptionKey] = formattedMessage;
   
@@ -350,20 +383,28 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   return nil;
 }
 
-+ (NSAttributedString * _Nonnull)addErrorStringHyperlinks:(NSString * _Nonnull)errorString {
-  NSDictionary *linkMappings = @{
-    @"https://docs.expo.dev/get-started/expo-go/#sdk-versions": @"SDK Versions Guide",
-    @"https://snack.expo.dev": @"Expo Snack website",
-    @"https://docs.expo.dev/develop/development-builds/introduction/": @"Learn more about development builds",
-  };
-  NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:errorString];
++ (NSAttributedString * _Nonnull)parseUrls:(NSString * _Nonnull)inputString {
+  NSError *error = NULL;
 
-  for (NSString *link in linkMappings) {
-    NSString *replacement = linkMappings[link];
-    NSRange linkRange = [errorString rangeOfString:link];
-    if (linkRange.location != NSNotFound) {
-      [attributedString replaceCharactersInRange:linkRange withString:replacement];
-      [attributedString addAttribute:NSLinkAttributeName value:link range:NSMakeRange(linkRange.location, replacement.length)];
+  // [anystring](anystring)
+  NSString *pattern = @"\\[(.*?)\\]\\((.*?)\\)";
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                         options:NSRegularExpressionCaseInsensitive
+                                                                           error:&error];
+  NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:inputString];
+  NSArray *matches = [regex matchesInString:inputString
+                                    options:0
+                                      range:NSMakeRange(0, [inputString length])];
+  NSArray* reverseMatches = [[matches reverseObjectEnumerator] allObjects];
+
+  // Iterate the matches in reverse order to avoid index problems when replacing text
+  for (NSTextCheckingResult *match in reverseMatches) {
+    for (int i = [match numberOfRanges] - 1; i > 1; i--) { // Ignore match no.1, which is a full match
+      NSString *link = [inputString substringWithRange:[match rangeAtIndex:1]];
+      NSString *replacement = [inputString substringWithRange:[match rangeAtIndex:2]];
+
+      [attributedString replaceCharactersInRange:match.range withString:replacement];
+      [attributedString addAttribute:NSLinkAttributeName value:link range:NSMakeRange(match.range.location, replacement.length)];
     }
   }
   return attributedString;
