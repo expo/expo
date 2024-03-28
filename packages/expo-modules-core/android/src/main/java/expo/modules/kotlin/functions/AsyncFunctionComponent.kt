@@ -4,7 +4,6 @@ import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.objects.enforceType
 import expo.modules.kotlin.types.AnyType
 
 @Suppress("UNCHECKED_CAST")
@@ -17,10 +16,7 @@ inline fun <reified T> createAsyncFunctionComponent(
     return AsyncFunctionComponent<Any?>(name, desiredArgsTypes, body)
   }
   return when (T::class.java) {
-    Int::class.java -> {
-      enforceType<(args: Array<out Any?>) -> Int>(body)
-      IntAsyncFunctionComponent(name, desiredArgsTypes, body)
-    }
+    Int::class.java -> IntAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Int)
     Boolean::class.java -> BoolAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Boolean)
     Double::class.java -> DoubleAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Double)
     Float::class.java -> FloatAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Float)
