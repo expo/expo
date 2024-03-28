@@ -308,6 +308,20 @@ public final class ErrorRecovery: NSObject {
   }
 
   @objc private func handleContentDidAppear() {
+    if !RCTIsNewArchEnabled() {
+      self.runContentDidAppearTask()
+      return
+    }
+
+    // In new architecture mode, the `RCTSurfaceHostingProxyRootView` sends the `RCTContentDidAppearNotification` very quick.
+    // Even if the JS bundle throwing exception right away, it will also sends the notification.
+    // We should postpone the notification to make the ErrorRecovery to catch the launch crash.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      self.runContentDidAppearTask()
+    }
+  }
+
+  private func runContentDidAppearTask() {
     unregisterObservers()
     delegate?.markSuccessfulLaunchForLaunchedUpdate()
     errorRecoveryQueue.async {
