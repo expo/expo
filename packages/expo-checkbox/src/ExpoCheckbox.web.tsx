@@ -15,7 +15,19 @@ import { StyleSheet, View, unstable_createElement as createElement } from 'react
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
 const ExpoCheckbox = React.forwardRef(
-  ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
+  (
+    {
+      color,
+      borderColor,
+      disabled,
+      onChange,
+      onValueChange,
+      style,
+      value,
+      ...other
+    }: CheckboxProps,
+    ref
+  ) => {
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
       const value = event.nativeEvent.target.checked;
       event.nativeEvent.value = value;
@@ -28,8 +40,12 @@ const ExpoCheckbox = React.forwardRef(
         style={[
           styles.fakeControl,
           value && styles.fakeControlChecked,
-          // custom color
-          !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+          !!color && {
+            backgroundColor: value ? color : undefined,
+          },
+          !!borderColor && {
+            borderColor: value ? borderColor : undefined,
+          },
           disabled && styles.fakeControlDisabled,
           value && disabled && styles.fakeControlCheckedAndDisabled,
         ]}

@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+- Add an optional borderColor prop to the Checkbox component. ([#27827](https://github.com/expo/expo/pull/27827) by [@kalon-robson](https://github.com/kalon-robson))
 
 ### 🐛 Bug fixes
 

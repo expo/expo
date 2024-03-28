@@ -14,6 +14,7 @@ declare const ExpoCheckbox: React.ForwardRefExoticComponent<import("react-native
     value?: boolean | undefined;
     disabled?: boolean | undefined;
     color?: import("react-native").ColorValue | undefined;
+    borderColor?: import("react-native").ColorValue | undefined;
     onChange?: ((event: import("react-native").NativeSyntheticEvent<CheckboxEvent> | React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => void) | undefined;
     onValueChange?: ((value: boolean) => void) | undefined;
 } & React.RefAttributes<unknown>>;
