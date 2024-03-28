@@ -1,6 +1,4 @@
-import { NativeModule } from './web/CoreModule';
 export function createWebModule(moduleImplementation) {
-    const module = new NativeModule();
-    return Object.assign(module, moduleImplementation);
+    return moduleImplementation;
 }
 //# sourceMappingURL=createWebModule.js.map
