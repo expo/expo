@@ -2,6 +2,7 @@
 type LoadOptions = {
     silent?: boolean;
     force?: boolean;
+    prefix?: string;
 };
 export declare function isEnabled(): boolean;
 export declare function createControlledEnvironment(): {

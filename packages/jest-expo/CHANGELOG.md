@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
+- Load dotenv files with `@expo/env` before starting tests. ([#26766](https://github.com/expo/expo/pull/26766) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

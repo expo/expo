@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Add prefix filter to only load envvars starting with prefix. ([#26766](https://github.com/expo/expo/pull/26766) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 - Upgrade `dotenv-expand` to avoid recursive expansion loops. ([#27764](https://github.com/expo/expo/pull/27764) by [@byCedric](https://github.com/byCedric))
+- Do not log when using `silent: true`. ([#26766](https://github.com/expo/expo/pull/26766) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

@@ -14,6 +14,7 @@ import * as path from 'path';
 type LoadOptions = {
   silent?: boolean;
   force?: boolean;
+  prefix?: string;
 };
 
 const debug = require('debug')('expo:env') as typeof console.log;
@@ -61,6 +62,14 @@ export function createControlledEnvironment() {
 
       try {
         const result = dotenv.parse(fs.readFileSync(absoluteDotenvFile, 'utf-8'));
+
+        if (options.prefix) {
+          for (const key of Object.keys(result)) {
+            if (!key.startsWith(options.prefix)) {
+              delete result[key];
+            }
+          }
+        }
 
         if (!result) {
           debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
@@ -153,7 +162,7 @@ export function createControlledEnvironment() {
 
     if (!options.force) {
       const keys = Object.keys(envInfo.env);
-      if (keys.length) {
+      if (keys.length && !options.silent) {
         console.log(
           chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
         );

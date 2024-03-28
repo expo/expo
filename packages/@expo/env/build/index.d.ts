@@ -9,11 +9,13 @@ import { getFiles, isEnabled } from './env';
 declare const get: (projectRoot: string, options?: {
     silent?: boolean | undefined;
     force?: boolean | undefined;
+    prefix?: string | undefined;
 }) => {
     env: Record<string, string | undefined>;
     files: string[];
 }, load: (projectRoot: string, options?: {
     silent?: boolean | undefined;
     force?: boolean | undefined;
+    prefix?: string | undefined;
 }) => NodeJS.ProcessEnv;
 export { getFiles, get, load, isEnabled };

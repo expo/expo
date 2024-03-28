@@ -100,6 +100,13 @@ function createControlledEnvironment() {
       }
       try {
         const result = dotenv().parse(fs().readFileSync(absoluteDotenvFile, 'utf-8'));
+        if (options.prefix) {
+          for (const key of Object.keys(result)) {
+            if (!key.startsWith(options.prefix)) {
+              delete result[key];
+            }
+          }
+        }
         if (!result) {
           debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
         } else {
@@ -184,7 +191,7 @@ function createControlledEnvironment() {
     const envInfo = get(projectRoot, options);
     if (!options.force) {
       const keys = Object.keys(envInfo.env);
-      if (keys.length) {
+      if (keys.length && !options.silent) {
         console.log(_chalk().default.gray('env: load', envInfo.files.map(file => path().basename(file)).join(' ')));
         console.log(_chalk().default.gray('env: export', keys.join(' ')));
       }

@@ -347,6 +347,21 @@ describe('_getForce', () => {
 
     expect(createControlledEnvironment()._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
   });
+
+  it('only loads envvars starting with prefix', () => {
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': ['SECRET=should-not-be-loaded', 'EXPO_PUBLIC_SETTING=test'].join('\n'),
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/', { prefix: 'EXPO_PUBLIC_' })).toEqual({
+      env: { EXPO_PUBLIC_SETTING: 'test' },
+      files: ['/.env'],
+    });
+  });
 });
 
 it('does not leak environment variables between tests', () => {
