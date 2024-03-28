@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -176,6 +177,16 @@ describe('server-output', () => {
       expect(
         await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
       ).toEqual({ value: 'multi-group-api-get' });
+
+      // Load the sourcemap and check that the paths are relative
+      const map = JSON.parse(
+        await fs.readFile(
+          path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
+          { encoding: 'utf8' },
+        )
+      );
+
+      expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
     });
 
     it(`can serve up API route in specific array group`, async () => {
