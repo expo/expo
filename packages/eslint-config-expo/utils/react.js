@@ -1,6 +1,9 @@
 module.exports = {
   parserOptions: { ecmaFeatures: { jsx: true } },
-  plugins: ['plugin:react/recommended', 'plugin:react-hooks/recommended'],
+  extends: [
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
   rules: {
     'react/jsx-boolean-value': ['warn', 'never'],
     'react/jsx-closing-bracket-location': [
@@ -38,6 +41,7 @@ module.exports = {
 
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   settings: {
     react: { version: 'detect' },
