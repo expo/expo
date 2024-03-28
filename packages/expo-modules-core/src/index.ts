@@ -30,6 +30,7 @@ export {
 };
 
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 
 /**
