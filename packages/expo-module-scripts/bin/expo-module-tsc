@@ -4,4 +4,4 @@ set -eo pipefail
 
 script_dir="$(dirname "$0")"
 
-"$script_dir/npx" tsc "$@"
+"$script_dir/npx" --package=typescript tsc "$@"

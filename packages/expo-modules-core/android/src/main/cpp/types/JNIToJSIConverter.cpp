@@ -11,7 +11,7 @@
 
 namespace react = facebook::react;
 
-namespace {
+namespace expo {
 
 // This value should be synced with the value in **FollyDynamicExtensionConverter.kt**
 constexpr char DYNAMIC_EXTENSION_PREFIX[] = "__expo_dynamic_extension__#";
@@ -46,10 +46,6 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
   }
   return std::nullopt;
 }
-
-} // namespace
-
-namespace expo {
 
 jsi::Value convert(
   JNIEnv *env,

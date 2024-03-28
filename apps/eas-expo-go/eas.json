@@ -10,9 +10,6 @@
       "credentialsSource": "local",
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
-        "cache": {
-          "customPaths": ["../expo-go/android/prebuiltHermes"]
-        },
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
@@ -23,7 +20,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk50-0.73.4",
+          "key": "sdk51-0.74.0-rc.5",
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.0",

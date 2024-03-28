@@ -13,7 +13,6 @@
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -30,7 +29,6 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
   "files": [
     "build",
-    "transformer",
     "file-store",
     "babel-transformer"
   ],
@@ -43,7 +41,6 @@
     "@expo/env": "~0.2.0",
     "@expo/json-file": "~8.3.0",
     "@expo/spawn-async": "^1.7.2",
-    "babel-preset-fbjs": "^3.4.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",
@@ -53,11 +50,7 @@
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.19.0",
     "postcss": "~8.4.32",
-    "resolve-from": "^5.0.0",
-    "sucrase": "3.34.0"
-  },
-  "peerDependencies": {
-    "@react-native/babel-preset": "*"
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",

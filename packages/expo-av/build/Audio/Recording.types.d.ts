@@ -3,23 +3,33 @@ import { AndroidAudioEncoder, AndroidOutputFormat, IOSAudioQuality, IOSOutputFor
 export type RecordingStatus = {
     /**
      * A boolean describing if the `Recording` can initiate the recording.
+     * @platform android
+     * @platform ios
      */
     canRecord: boolean;
     /**
      * A boolean describing if the `Recording` is currently recording.
+     * @platform android
+     * @platform ios
      */
     isRecording: boolean;
     /**
      * A boolean describing if the `Recording` has been stopped.
+     * @platform android
+     * @platform ios
      */
     isDoneRecording: boolean;
     /**
      * The current duration of the recorded audio or the final duration is the recording has been stopped.
+     * @platform android
+     * @platform ios
      */
     durationMillis: number;
     /**
      * A number that's the most recent reading of the loudness in dB. The value ranges from `–160` dBFS, indicating minimum power,
      * to `0` dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
+     * @platform android
+     * @platform ios
      */
     metering?: number;
     uri?: string | null;
@@ -33,6 +43,9 @@ export type RecordingStatus = {
      */
     mediaServicesDidReset?: boolean;
 };
+/**
+ * @platform android
+ */
 export type RecordingOptionsAndroid = {
     /**
      * The desired file extension. Example valid values are `.3gp` and `.m4a`.
@@ -90,6 +103,9 @@ export type RecordingOptionsAndroid = {
      */
     maxFileSize?: number;
 };
+/**
+ * @platform ios
+ */
 export type RecordingOptionsIOS = {
     /**
      * The desired file extension.
@@ -195,11 +211,19 @@ export type RecordingOptions = {
      */
     web: RecordingOptionsWeb;
 };
+/**
+ * @platform android
+ * @platform ios
+ */
 export type RecordingInput = {
     name: string;
     type: string;
     uid: string;
 };
+/**
+ * @platform android
+ * @platform ios
+ */
 export type RecordingObject = {
     /**
      * The newly created and started `Recording` object.

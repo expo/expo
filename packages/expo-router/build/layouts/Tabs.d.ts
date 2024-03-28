@@ -148,10 +148,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         unmountOnBlur?: boolean | undefined;
         freezeOnBlur?: boolean | undefined;
     } & {
-        href?: string | {
-            pathname: P;
-            params?: ExpoRouter.InputRouteParams<P> | undefined;
-        } | null | undefined;
+        href?: ExpoRouter.Href | null | undefined;
     }, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
 };
 export default Tabs;

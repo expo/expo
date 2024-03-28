@@ -38,7 +38,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@react-native-async-storage/async-storage": "1.18.2",
-    "@react-native-community/datetimepicker": "7.6.1",
+    "@react-native-community/datetimepicker": "7.6.3",
     "@react-native-community/netinfo": "11.1.0",
     "@react-native-community/slider": "4.4.2",
     "@react-native-masked-view/masked-view": "0.3.0",
@@ -58,7 +58,7 @@
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.74.0-rc.4",
+    "react-native": "0.74.0-rc.5",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-pager-view": "6.2.3",
     "react-native-reanimated": "~3.6.0",

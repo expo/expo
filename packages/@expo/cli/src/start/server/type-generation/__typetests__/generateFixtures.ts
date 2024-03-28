@@ -1,46 +1,38 @@
+import { getTypedRoutesDeclarationFile } from 'expo-router/build/typed-routes/generate';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 
-import { getTemplateString } from '../routes';
+function getMockContext(context: string[]) {
+  return Object.assign(
+    function (id: string) {
+      return null;
+    },
+    {
+      resolve: (key: string) => key,
+      id: '0',
+      keys: () => context,
+    }
+  );
+}
 
-type Fixture = {
-  staticRoutes: string[];
-  dynamicRoutes: string[];
-  dynamicRouteTemplates: string[];
-};
-
-const fixtures: Record<string, Fixture> = {
-  basic: {
-    staticRoutes: ['/apple', '/banana'],
-    dynamicRoutes: [
-      '/colors/${SingleRoutePart<T>}',
-      '/animals/${CatchAllRoutePart<T>}',
-      '/mix/${SingleRoutePart<T>}/${SingleRoutePart<T>}/${CatchAllRoutePart<T>}',
-    ],
-    dynamicRouteTemplates: [
-      '/colors/[color]',
-      '/animals/[...animal]',
-      '/mix/[fruit]/[color]/[...animals]',
-    ],
-  },
+const fixtures: Record<string, string[]> = {
+  basic: [
+    '/apple',
+    '/banana',
+    '/colors/[color]',
+    '/animals/[...animal]',
+    '/mix/[fruit]/[color]/[...animals]',
+    '/(group)/static',
+    '/(group)/(a,b)/folder/index',
+    '/(group)/(a,b)/folder/[slug]',
+    '/(group)/(a,b)/folder/[...slug]',
+  ],
 };
 
 export default async function () {
   await Promise.all(
     Object.entries(fixtures).map(async ([key, value]) => {
-      const template = getTemplateString(
-        new Set(value.staticRoutes),
-        new Set(value.dynamicRoutes),
-        new Set(value.dynamicRouteTemplates)
-      )
-        // The Template produces a global module .d.ts declaration
-        // These replacements turn it into a local module
-        .replaceAll(/^  /gm, '')
-        .replace(/declare module "expo-router" {/, '')
-        .replaceAll(/export function/g, 'export declare function')
-        .replaceAll(/export const/g, 'export declare const')
-        // Remove the last `}`
-        .slice(0, -2);
+      const template = getTypedRoutesDeclarationFile(getMockContext(value));
 
       return writeFile(join(__dirname, './fixtures/', key + '.ts'), template);
     })
