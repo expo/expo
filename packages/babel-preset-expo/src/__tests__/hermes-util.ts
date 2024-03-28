@@ -15,7 +15,7 @@ function importHermesCommandFromProject(): string {
   const hermescLocations = [
     // Override hermesc dir by environment variables
     process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
-      ? `${process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
+      ? path.join(process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR'], 'build/bin/hermesc')
       : '',
 
     // Building hermes from source
@@ -54,7 +54,10 @@ type BuildHermesOptions = {
   minify?: boolean;
 };
 
-export async function hermesAsync({ code, minify = false }: BuildHermesOptions): Promise<Buffer> {
+export async function compileToHermesBytecodeAsync({
+  code,
+  minify = false,
+}: BuildHermesOptions): Promise<Buffer> {
   const tempDir = path.join(os.tmpdir(), `expo-babel-test-${Math.random()}-${Date.now()}`);
   await fs.promises.mkdir(tempDir, { recursive: true });
   try {

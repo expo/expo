@@ -1,6 +1,6 @@
 import * as babel from '@babel/core';
 
-import { hermesAsync } from './hermes-util';
+import { compileToHermesBytecodeAsync } from './hermes-util';
 import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
@@ -277,17 +277,19 @@ LANGUAGE_SAMPLES.forEach((sample) => {
         expect(babelResults.code).toEqual(sample.getCompiledCode());
 
         // Will not throw
-        await hermesAsync({ code: babelResults.code! });
+        await compileToHermesBytecodeAsync({ code: babelResults.code! });
       });
     });
 
     if (sample.hermesError) {
       it(`Hermes does not have native support`, async () => {
-        await expect(hermesAsync({ code: sample.code })).rejects.toThrowError(sample.hermesError);
+        await expect(compileToHermesBytecodeAsync({ code: sample.code })).rejects.toThrowError(
+          sample.hermesError
+        );
       });
     } else {
       it(`Hermes compiles directly`, async () => {
-        await hermesAsync({ code: sample.code });
+        await compileToHermesBytecodeAsync({ code: sample.code });
       });
     }
   });
