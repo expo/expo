@@ -64,13 +64,13 @@ Each plan has a number of monthly updated users and global edge bandwidth includ
 
 > **Note**: The [On-demand plan](/billing/plans/#on-demand) includes the same amount of monthly updated users and global edge bandwidth as the Free plan.
 
-For example, let's consider a subscriber to the On-demand plan who deploys 5 updates of 20 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's overage bill will be:
+For example, let's consider a subscriber to the On-demand plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
 
-| Description           | Price           | Quantity | Total |
-| --------------------- | --------------- | -------- | ----: |
-| Updated users         | $0.005 per user | 9,000    |   $45 |
-| Global edge bandwidth | $0.10 per GiB   | 525 GiB  | $52.5 |
-| **Total**             |                 |          | $97.5 |
+| Description           | Price           | Quantity |     Total |
+| --------------------- | --------------- | -------- | --------: |
+| Updated users         | $0.005 per user | 9,000    |       $45 |
+| Global edge bandwidth | $0.10 per GiB   | 525 GiB  |     $52.5 |
+| **Total**             |                 |          | **$97.5** |
 
 Out of the 10,000 users, 1,000 are included in the On-demand plan. As a result, 9,000 are billed for as part of usage-based billing. Paying for 9,000 updated users also includes approximately 351.6 GiB (9000 users \* 40 MiB / 1024).
 
@@ -78,13 +78,29 @@ The global edge bandwidth calculation is:
 
 | Description                                       | Calculation                         | Quantity     |
 | ------------------------------------------------- | ----------------------------------- | ------------ |
-| Bandwidth used to send updates                    | 5 updates \* 20 MiB \* 10,000 users | 976.5625 GiB |
+| Bandwidth used to send updates                    | 20 updates \* 5 MiB \* 10,000 users | 976.5625 GiB |
 |                                                   |
 | Bandwidth included in plan                        |                                     | 100 GiB      |
 | Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB |
-| **Total**                                         | 976.5625 - 100 - 351.5625           | 525 GiB      |
+| **Total**                                         | **976.5625 - 100 - 351.5625 **      | **525 GiB ** |
 
-> **Note**: If the subscriber then sends another 20 MiB update to the same 10,000 users in the current billing period, they will only pay for any extra bandwidth used. This is because Expo only charges for [unique monthly updated users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle).
+If the subscriber sends the 21st update of 5 MiB to the same 10,000 users in the current billing period, they will only pay for any extra bandwidth used.
+
+| Description                                       | Calculation                         | Quantity        |
+| ------------------------------------------------- | ----------------------------------- | --------------- |
+| Bandwidth used to send updates                    | 21 updates \* 5 MiB \* 10,000 users | 1,025.39 GiB    |
+|                                                   |
+| Bandwidth included in plan                        |                                     | 100 GiB         |
+| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB    |
+| **Total**                                         | **1,025.39 - 100 - 351.5625 **      | **573.83 GiB ** |
+
+This is because Expo only charges for [unique monthly updated users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle). As a result, the subscriber's bill for extra usage will be:
+
+| Description           | Price           | Quantity   |      Total |
+| --------------------- | --------------- | ---------- | ---------: |
+| Updated users         | $0.005 per user | 9,000      |        $45 |
+| Global edge bandwidth | $0.10 per GiB   | 573.83 GiB |      $57.4 |
+| **Total**             |                 |            | **$102.4** |
 
 If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 20,000 monthly updated users and 1 TiB (1024 GiB). As such, there is no extra bandwidth usage.
 
@@ -155,6 +171,8 @@ A development build can run any EAS Update that is compatible with its native ru
 
 You can manage certain assets to include or exclude when using EAS Update. This reduces the number of assets uploaded or downloaded from the updates server and the global edge bandwidth used.
 
-To optimize the update usage, you can choose to exclude assets that haven't been modified. For example, images or videos that haven't been changed can be excluded. Excluded assets won't be uploaded to the update server and won't be downloaded by the app. However, it's important to make sure that assets that are not part of an update are included in the native build of the app.
+To optimize storage and bandwidth usage, you can choose to exclude assets that haven't been modified. For example, images or videos that haven't been changed can be excluded. Excluded assets won't be uploaded to the update server and won't be downloaded by the app. However, it's important to make sure that assets that are not part of an update are included in the native build of the app.
+
+> **Note**: If an app has already downloaded an asset that is also part of a new update, the app will not re-download that asset. This will also not add to your account's bandwidth usage.
 
 You can use `npx expo-updates assets:verify <dir>` to check all required assets are included in the update. For more information, see [Asset selection and exclusion](/eas-update/asset-selection/).
