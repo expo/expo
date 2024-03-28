@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove all unused babel plugins on web and SSR.
+
 ### 🎉 New features
 
 - Add faster `Platform.select` transform. ([#27533](https://github.com/expo/expo/pull/27533) by [@EvanBacon](https://github.com/EvanBacon))

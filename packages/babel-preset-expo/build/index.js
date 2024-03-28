@@ -50,12 +50,7 @@ function babelPresetExpo(api, options = {}) {
         }
     }
     if (platformOptions.unstable_transformProfile == null) {
-        // Using hermes canary will disable the destructuring transform. Disabling this transform reduces
-        // an additional import on a babel helper in every file with destructuring, i.e. `useState`.
-        // This may have outstanding performance regressions for development Hermes.
-        // Ref: https://github.com/facebook/react-native/pull/43662
-        platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-canary' : 'default';
-        // platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
+        platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
     }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
     // `@react-native/babel-preset` will handle it.
@@ -148,7 +143,7 @@ function babelPresetExpo(api, options = {}) {
                 // specifically use the `@react-native/babel-preset` installed by this package (ex:
                 // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
                 // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-                platform === 'web' ? require('./v8') : require('@react-native/babel-preset'),
+                platform === 'web' ? require('./web-preset') : require('@react-native/babel-preset'),
                 {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
