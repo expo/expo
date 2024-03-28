@@ -9,14 +9,6 @@
  * https://github.com/facebook/react-native/blob/2af1da42ff517232f1309efed7565fe9ddbbac77/packages/react-native-babel-preset/src/configs/main.js#L1
  */
 
-function isTypeScriptSource(fileName: string) {
-  return !!fileName && fileName.endsWith('.ts');
-}
-
-function isTSXSource(fileName: string) {
-  return !!fileName && fileName.endsWith('.tsx');
-}
-
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
@@ -36,7 +28,6 @@ const defaultPlugins = [
 module.exports = function (
   babel: unknown,
   options: {
-    disableStaticViewConfigsCodegen?: boolean;
     disableImportExportTransform?: boolean;
     lazyImportExportTransform?: any;
     enableBabelRuntime?: boolean;
@@ -44,9 +35,7 @@ module.exports = function (
 ) {
   const extraPlugins = [];
 
-  if (!options.disableStaticViewConfigsCodegen) {
-    extraPlugins.push([require('@react-native/babel-plugin-codegen')]);
-  }
+  // NOTE: We also remove `@react-native/babel-plugin-codegen` since it doesn't seem needed on web.
 
   if (!options || !options.disableImportExportTransform) {
     extraPlugins.push(
@@ -84,6 +73,10 @@ module.exports = function (
   return {
     comments: false,
     compact: true,
+    presets: [
+      // TypeScript support
+      [require('@babel/preset-typescript'), { allowNamespaces: true }],
+    ],
     overrides: [
       // the flow strip types plugin must go BEFORE class properties!
       // there'll be a test case that fails if you don't.
@@ -92,30 +85,6 @@ module.exports = function (
       },
       {
         plugins: defaultPlugins,
-      },
-      {
-        test: isTypeScriptSource,
-        plugins: [
-          [
-            require('@babel/plugin-transform-typescript'),
-            {
-              isTSX: false,
-              allowNamespaces: true,
-            },
-          ],
-        ],
-      },
-      {
-        test: isTSXSource,
-        plugins: [
-          [
-            require('@babel/plugin-transform-typescript'),
-            {
-              isTSX: true,
-              allowNamespaces: true,
-            },
-          ],
-        ],
       },
       {
         plugins: extraPlugins,
