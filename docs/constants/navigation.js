@@ -18,7 +18,7 @@ const homeDirectories = [
   'config-plugins',
   'debugging',
   'deploy',
-  'routing',
+  'review',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
@@ -107,6 +107,7 @@ const home = [
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
+  makeSection('Review', [makePage('review/overview.mdx'), makePage('review/with-orbit.mdx')]),
   makeSection('Deploy', [
     makePage('deploy/build-project.mdx'),
     makePage('deploy/submit-to-app-stores.mdx'),
