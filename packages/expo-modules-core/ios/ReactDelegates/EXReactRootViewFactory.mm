@@ -82,6 +82,7 @@
   } else {
     appRootViewFactory.bridge = factory.bridge;
   }
+  appDelegate.rootViewFactory = factory;
   return rootView;
 }
 
