@@ -26,6 +26,7 @@
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 - Included groups in Expo Router typed routes generation ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
+- Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
