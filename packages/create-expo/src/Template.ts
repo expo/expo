@@ -247,6 +247,9 @@ export async function getTemplateFilesToRenameAsync({
     // in all subdirs.
     baseNameMatch: true,
     dot: true,
+    // Prevent climbing out of the template directory in case a template
+    // includes a symlink to an external directory.
+    followSymbolicLinks: false,
   });
 }
 
