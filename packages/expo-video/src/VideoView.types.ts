@@ -4,7 +4,7 @@ import { ViewProps } from 'react-native';
 /**
  * A class that represents an instance of the video player.
  */
-export declare class VideoPlayer extends SharedObject {
+export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Boolean value whether the player is currently playing.
    * > This property is get-only, use `play` and `pause` methods to control the playback.
@@ -52,6 +52,12 @@ export declare class VideoPlayer extends SharedObject {
   playbackRate: number;
 
   /**
+   * Indicates the current status of the player.
+   * > This property is get-only
+   */
+  status: VideoPlayerStatus;
+
+  /**
    * Determines whether the player should continue playing after the app enters the background.
    * @default false
    * @platform ios
@@ -87,11 +93,20 @@ export declare class VideoPlayer extends SharedObject {
 
 /**
  * Describes how a video should be scaled to fit in a container.
- * 'contain': The video maintains its aspect ratio and fits inside the container, with possible letterboxing/pillarboxing.
- * 'cover': The video maintains its aspect ratio and covers the entire container, potentially cropping some portions.
- * 'fill': The video stretches/squeezes to completely fill the container, potentially causing distortion.
+ * - `contain`: The video maintains its aspect ratio and fits inside the container, with possible letterboxing/pillarboxing.
+ * - `cover`: The video maintains its aspect ratio and covers the entire container, potentially cropping some portions.
+ * - `fill`: The video stretches/squeezes to completely fill the container, potentially causing distortion.
  */
-type VideoContentFit = 'contain' | 'cover' | 'fill';
+export type VideoContentFit = 'contain' | 'cover' | 'fill';
+
+/**
+ * Describes the current status of the player.
+ * - `idle`: The player is not playing or loading any videos.
+ * - `loading`: The player is loading video data from the provided source
+ * - `readyToPlay`: The player has loaded enough data to start playing or to continue playback.
+ * - `error`: The player has encountered an error while loading or playing the video.
+ */
+export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
 export interface VideoViewProps extends ViewProps {
   /**
@@ -103,27 +118,27 @@ export interface VideoViewProps extends ViewProps {
    * Determines whether native controls should be displayed or not.
    * @default true
    */
-  nativeControls: boolean | undefined;
+  nativeControls?: boolean;
 
   /**
    * Describes how the video should be scaled to fit in the container.
    * Options are 'contain', 'cover', and 'fill'.
    * @default 'contain'
    */
-  contentFit: VideoContentFit | undefined;
+  contentFit?: VideoContentFit;
 
   /**
    * Determines whether fullscreen mode is allowed or not.
    * @default true
    */
-  allowsFullscreen: boolean | undefined;
+  allowsFullscreen?: boolean;
 
   /**
    * Determines whether the timecodes should be displayed or not.
    * @default true
    * @platform ios
    */
-  showsTimecodes: boolean | undefined;
+  showsTimecodes?: boolean;
 
   /**
    * Determines whether the player allows the user to skip media content.
@@ -131,14 +146,14 @@ export interface VideoViewProps extends ViewProps {
    * @platform android
    * @platform ios
    */
-  requiresLinearPlayback: boolean | undefined;
+  requiresLinearPlayback?: boolean;
 
   /**
    * Determines the position offset of the video inside the container.
    * @default { dx: 0, dy: 0 }
    * @platform ios
    */
-  contentPosition: { dx?: number; dy?: number } | undefined;
+  contentPosition?: { dx?: number; dy?: number };
 
   /**
    * A callback to call after the video player enters Picture in Picture (PiP) mode.
@@ -174,12 +189,12 @@ export interface VideoViewProps extends ViewProps {
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
  * */
-type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
+export type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
 
 /**
  * Specifies DRM options which will be used by the player while loading the video.
  */
-type DRMOptions = {
+export type DRMOptions = {
   /**
    * Determines which type of DRM to use.
    */
@@ -215,3 +230,52 @@ type DRMOptions = {
 };
 
 export type VideoSource = string | { uri: string; drm?: DRMOptions } | null;
+
+/**
+ * Handlers for events which can be emitted by the player.
+ */
+export type VideoPlayerEvents = {
+  /**
+   * Handler for an event emitted when the status of the player changes.
+   */
+  statusChange: (
+    newStatus: VideoPlayerStatus,
+    oldStatus: VideoPlayerStatus,
+    error: PlayerError
+  ) => void;
+  /**
+   * Handler for an event emitted when the player starts or stops playback.
+   */
+  playingChange: (newIsPlaying: boolean, oldIsPlaying: boolean) => void;
+  /**
+   * Handler for an event emitted when the `playbackRate` property of the player changes.
+   */
+  playbackRateChange: (newPlaybackRate: number, oldPlaybackRate: number) => void;
+  /**
+   * Handler for an event emitted when the `volume` property of the player changes.
+   */
+  volumeChange: (newVolume: VolumeEvent, oldVolume: VolumeEvent) => void;
+  /**
+   * Handler for an event emitted when the player plays to the end of the current source.
+   */
+  playToEnd: () => void;
+  /**
+   * Handler for an event emitted when the current media source of the player changes.
+   */
+  sourceChange: (newSource: VideoSource, previousSource: VideoSource) => void;
+};
+
+/**
+ * Contains information about any errors that the player encountered during the playback
+ */
+export type PlayerError = {
+  message: string;
+};
+
+/**
+ * Contains information about the current volume and whether the player is muted.
+ */
+export type VolumeEvent = {
+  volume: number;
+  isMuted: boolean;
+};

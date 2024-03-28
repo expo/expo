@@ -55,7 +55,9 @@ async function _lockAsync(webOrientationLock) {
     if (webOrientationLock === WebOrientationLock.UNKNOWN) {
         throw new Error(`expo-screen-orientation: WebOrientationLock.UNKNOWN is not a valid lock that can be applied to the device.`);
     }
+    // @ts-expect-error: This is missing in the TypeScript definitions
     if (screen.orientation && screen.orientation.lock) {
+        // @ts-expect-error
         await screen.orientation.lock(webOrientationLock);
     }
     else if (screen['lockOrientation'] ||

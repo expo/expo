@@ -6,7 +6,7 @@ import { DocumentPickerOptions, DocumentPickerResult } from './types';
  * > intended. The `cancel` event will not be returned in the browser due to platform restrictions and
  * > inconsistencies across browsers.
  *
- * @return On success returns a promise that fulfils with [`DocumentResult`](#documentresult) object.
+ * @return On success returns a promise that fulfils with [`DocumentPickerResult`](#documentpickerresult) object.
  *
  * If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
  */

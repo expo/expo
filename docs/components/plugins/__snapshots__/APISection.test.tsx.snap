@@ -134,7 +134,7 @@ available via the provided properties.
       You should only attempt to render this if 
       <a
         class="css-1na8e0o-A"
-        href="#isavailableasync"
+        href="#appleauthenticationisavailableasync"
       >
         <code
           class="css-qyuze8-TextComponent"
@@ -642,7 +642,7 @@ for more details.
           The method to call when the user presses the button. You should call 
           <a
             class="css-1na8e0o-A"
-            href="#isavailableasync"
+            href="#appleauthenticationisavailableasync"
           >
             <code
               class="css-qyuze8-TextComponent"
@@ -4319,7 +4319,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined color scheme to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -4579,7 +4579,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined text to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -6954,7 +6954,7 @@ This uses both
     </p>
     <pre>
       <pre
-        class="last:mb-0 css-1r21cuo-Code"
+        class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
         data-text="true"
       >
         <code

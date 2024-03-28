@@ -1,9 +1,18 @@
 import { PureComponent, createRef, useRef, useMemo, useEffect, } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-export function useVideoPlayer(source) {
+/**
+ * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
+ * @param source - A video source that is used to initialize the player.
+ * @param setup - A function that allows setting up the player. It will run after the player is created.
+ */
+export function useVideoPlayer(source, setup) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
-    return useReleasingSharedObject(() => new NativeVideoModule.VideoPlayer(parsedSource), [JSON.stringify(parsedSource)]);
+    return useReleasingSharedObject(() => {
+        const player = new NativeVideoModule.VideoPlayer(parsedSource);
+        setup?.(player);
+        return player;
+    }, [JSON.stringify(parsedSource)]);
 }
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
@@ -16,16 +25,15 @@ export function isPictureInPictureSupported() {
 }
 export class VideoView extends PureComponent {
     nativeRef = createRef();
-    replace(source) {
-        if (typeof source === 'string') {
-            this.nativeRef.current?.replace({ uri: source });
-            return;
-        }
-        this.nativeRef.current?.replace(source);
-    }
+    /**
+     * Enters fullscreen mode.
+     */
     enterFullscreen() {
         this.nativeRef.current?.enterFullscreen();
     }
+    /**
+     * Exits fullscreen mode.
+     */
     exitFullscreen() {
         this.nativeRef.current?.exitFullscreen();
     }

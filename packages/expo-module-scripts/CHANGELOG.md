@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use appropriate version of `tsc` when executing `expo-module build` in monorepos with multiple typescript versions installed ([#27779](https://github.com/expo/expo/pull/27779) by [@peter.jozsa](https://github.com/peter.jozsa)
+
 ### 💡 Others
 
 - Target Node 18 in the Babel CLI preset. ([#26847](https://github.com/expo/expo/pull/26847) by [@simek](https://github.com/simek))

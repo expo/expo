@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.SurfaceView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -20,6 +21,10 @@ import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -36,7 +41,25 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
   var playing = false
-  var isLoading = true
+    set(value) {
+      if (field != value) {
+        sendEventOnJSThread("playingChange", value, field)
+      }
+      field = value
+    }
+
+  var status: PlayerStatus = IDLE
+
+  var currentMediaItem: MediaItem? = null
+    set(newMediaItem) {
+      if (field != newMediaItem) {
+        val oldVideoSource = VideoManager.getVideoSourceFromMediaItem(field)
+        val newVideoSource = VideoManager.getVideoSourceFromMediaItem(newMediaItem)
+
+        sendEventOnJSThread("sourceChange", newVideoSource, oldVideoSource)
+      }
+      field = newMediaItem
+    }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
@@ -44,7 +67,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   var staysActiveInBackground = false
   var preservesPitch = false
     set(preservesPitch) {
-      applyPitchCorrection()
+      playbackParameters = applyPitchCorrection(playbackParameters)
       field = preservesPitch
     }
 
@@ -56,21 +79,29 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
     set(volume) {
       if (player.volume == volume) return
       player.volume = if (muted) 0f else volume
+      sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(field, muted))
       field = volume
     }
 
   var muted = false
     set(muted) {
+      if (field == muted) return
+      sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(volume, field))
+      player.volume = if (muted) 0f else userVolume
       field = muted
-      volume = if (muted) 0f else userVolume
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
-    set(value) {
-      if (player.playbackParameters == value) return
-      player.playbackParameters = value
-      field = value
-      applyPitchCorrection()
+    set(newPlaybackParameters) {
+      if (playbackParameters.speed != newPlaybackParameters.speed) {
+        sendEventOnJSThread("playbackRateChange", newPlaybackParameters.speed, playbackParameters.speed)
+      }
+      val pitchCorrectedPlaybackParameters = applyPitchCorrection(newPlaybackParameters)
+      field = pitchCorrectedPlaybackParameters
+
+      if (player.playbackParameters != pitchCorrectedPlaybackParameters) {
+        player.playbackParameters = pitchCorrectedPlaybackParameters
+      }
     }
 
   private val playerListener = object : Player.Listener {
@@ -82,8 +113,20 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       this@VideoPlayer.timeline = timeline
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-      this@VideoPlayer.isLoading = isLoading
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      this@VideoPlayer.currentMediaItem = mediaItem
+      if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+        sendEventOnJSThread("playToEnd")
+      }
+      super.onMediaItemTransition(mediaItem, reason)
+    }
+
+    override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+      if (playbackState == Player.STATE_IDLE && player.playerError != null) {
+        return
+      }
+      setStatus(playerStateToPlayerStatus(playbackState), null)
+      super.onPlaybackStateChanged(playbackState)
     }
 
     override fun onVolumeChanged(volume: Float) {
@@ -93,6 +136,16 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
       this@VideoPlayer.playbackParameters = playbackParameters
       super.onPlaybackParametersChanged(playbackParameters)
+    }
+
+    override fun onPlayerErrorChanged(error: PlaybackException?) {
+      error?.let {
+        setStatus(ERROR, error)
+      } ?: run {
+        setStatus(playerStateToPlayerStatus(player.playbackState), null)
+      }
+
+      super.onPlayerErrorChanged(error)
     }
   }
 
@@ -167,9 +220,47 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
     player.prepare()
   }
 
-  private fun applyPitchCorrection() {
+  private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
     val speed = playbackParameters.speed
     val pitch = if (preservesPitch) 1f else speed
-    playbackParameters = PlaybackParameters(speed, pitch)
+    return PlaybackParameters(speed, pitch)
+  }
+
+  private fun playerStateToPlayerStatus(@Player.State state: Int): PlayerStatus {
+    return when (state) {
+      Player.STATE_IDLE -> IDLE
+      Player.STATE_BUFFERING -> LOADING
+      Player.STATE_READY -> READY_TO_PLAY
+      Player.STATE_ENDED -> {
+        // When an error occurs, the player state changes to ENDED.
+        if (player.playerError != null) {
+          ERROR
+        } else {
+          IDLE
+        }
+      }
+
+      else -> IDLE
+    }
+  }
+  private fun setStatus(status: PlayerStatus, error: PlaybackException?) {
+    val playbackError = error?.let {
+      PlaybackError(it)
+    }
+
+    if (playbackError == null && player.playbackState == Player.STATE_ENDED) {
+      sendEventOnJSThread("playToEnd")
+    }
+
+    if (this.status != status) {
+      sendEventOnJSThread("statusChange", status.value, this.status.value, playbackError)
+    }
+    this.status = status
+  }
+
+  private fun sendEventOnJSThread(eventName: String, vararg args: Any?) {
+    appContext?.executeOnJavaScriptThread {
+      sendEvent(eventName, *args)
+    }
   }
 }

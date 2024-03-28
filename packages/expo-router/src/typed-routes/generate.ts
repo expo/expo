@@ -80,17 +80,25 @@ function addRouteNode(
   if (!routeNode?.route) return;
   if (!isTypedRoute(routeNode.route)) return;
 
-  const routePath = `/${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+  let routePath = `${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+
+  if (!routePath.startsWith('/')) {
+    routePath = `/${routePath}`;
+  }
 
   if (routeNode.dynamic) {
-    dynamicRouteContextKeys.add(routePath);
-    dynamicRoutes.add(
-      `${routePath
-        .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
-        .replaceAll(SLUG, '${SingleRoutePart<T>}')}`
-    );
+    for (const path of generateCombinations(routePath)) {
+      dynamicRouteContextKeys.add(path);
+      dynamicRoutes.add(
+        `${path
+          .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
+          .replaceAll(SLUG, '${SingleRoutePart<T>}')}`
+      );
+    }
   } else {
-    staticRoutes.add(routePath);
+    for (const combination of generateCombinations(routePath)) {
+      staticRoutes.add(combination);
+    }
   }
 }
 
@@ -100,3 +108,23 @@ function addRouteNode(
 const setToUnionType = <T>(set: Set<T>) => {
   return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
 };
+
+function generateCombinations(pathname) {
+  const groups = pathname.split('/').filter((part) => part.startsWith('(') && part.endsWith(')'));
+  const combinations: string[] = [];
+
+  function generate(currentIndex, currentPath) {
+    if (currentIndex === groups.length) {
+      combinations.push(currentPath.replace(/\/{2,}/g, '/'));
+      return;
+    }
+
+    const group = groups[currentIndex];
+    const withoutGroup = currentPath.replace(group, '');
+    generate(currentIndex + 1, withoutGroup);
+    generate(currentIndex + 1, currentPath);
+  }
+
+  generate(0, pathname);
+  return combinations;
+}

@@ -139,17 +139,14 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        VideoPlayer(activity.applicationContext, appContext, source.toMediaItem())
+        val mediaItem = source.toMediaItem()
+        VideoManager.registerVideoSourceToMediaItem(mediaItem, source)
+        VideoPlayer(activity.applicationContext, appContext, mediaItem)
       }
 
       Property("playing")
         .get { ref: VideoPlayer ->
           ref.playing
-        }
-
-      Property("isLoading")
-        .get { ref: VideoPlayer ->
-          ref.isLoading
         }
 
       Property("muted")
@@ -209,6 +206,11 @@ class VideoModule : Module() {
           }
         }
 
+      Property("status")
+        .get { ref: VideoPlayer ->
+          ref.status
+        }
+
       Property("staysActiveInBackground")
         .get { ref: VideoPlayer ->
           ref.staysActiveInBackground
@@ -249,9 +251,11 @@ class VideoModule : Module() {
         } else {
           VideoSource(source.get(String::class))
         }
+        val mediaItem = videoSource.toMediaItem()
+        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
-          ref.player.setMediaItem(videoSource.toMediaItem())
+          ref.player.setMediaItem(mediaItem)
         }
       }
 
