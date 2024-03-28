@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove all unused babel plugins on web and SSR.
+- Remove all unused babel plugins on web and SSR. ([#27907](https://github.com/expo/expo/pull/27907) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
