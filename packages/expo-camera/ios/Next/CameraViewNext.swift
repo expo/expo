@@ -218,18 +218,15 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     sessionQueue.async {
-      self.session.beginConfiguration()
-
       let photoOutput = AVCapturePhotoOutput()
+      photoOutput.isLivePhotoCaptureEnabled = false
       if self.session.canAddOutput(photoOutput) {
         self.session.addOutput(photoOutput)
-        photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
 
       self.addErrorNotification()
       self.changePreviewOrientation()
-      self.session.commitConfiguration()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
