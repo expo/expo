@@ -248,7 +248,8 @@ async function exportFromServerAsync(
       outputDir,
       server: devServer,
       manifest: serverManifest,
-      includeSourceMaps,
+      // NOTE(kitten): For now, we always output source maps for API route exports
+      includeSourceMaps: true,
     });
 
     // Add the api routes to the files to export.

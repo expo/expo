@@ -173,7 +173,7 @@ export async function exportAppAsync(
         outputDir: outputPath,
         minify,
         baseUrl,
-        includeSourceMaps: true,
+        includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
         maxWorkers,
