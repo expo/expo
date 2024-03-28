@@ -1,0 +1,27 @@
+{
+  "name": "react-is",
+  "version": "0.0.0-experimental-9372c6311-20240315",
+  "description": "Brand checking of React Elements.",
+  "main": "index.js",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react.git",
+    "directory": "packages/react-is"
+  },
+  "keywords": [
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facebook/react/issues"
+  },
+  "homepage": "https://react.dev/",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "cjs/",
+    "umd/"
+  ]
+}
