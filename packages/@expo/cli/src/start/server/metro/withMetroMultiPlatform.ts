@@ -117,7 +117,7 @@ export function withExtendedResolver(
     Log.warn(`Experimental bundling features are enabled.`);
   }
   if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Server Components support is enabled.`);
+    Log.warn(`Experimental React Canary version is enabled.`);
   }
 
   // Get the `transformer.assetRegistryPath`
