@@ -186,7 +186,9 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    imageCaptureUseCase?.flashMode = mode.mapToLens()
+    if (imageCaptureUseCase?.flashMode != mode.mapToLens()) {
+      imageCaptureUseCase?.flashMode = mode.mapToLens()
+    }
   }
 
   fun setTorchEnabled(enabled: Boolean) {
