@@ -14,7 +14,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  plugins: ['import', 'node', 'expo'],
+  plugins: ['import', 'expo'],
   rules: {
     'array-bracket-spacing': ['warn', 'never'],
     'arrow-spacing': ['warn', { before: true, after: true }],
@@ -155,9 +155,6 @@ module.exports = {
         },
       },
     ],
-
-    'node/handle-callback-err': ['warn', '^(e|err|error|.+Error)$'],
-    'node/no-new-require': 'warn',
   },
   settings: {
     'import/extensions': jsExtensions,
