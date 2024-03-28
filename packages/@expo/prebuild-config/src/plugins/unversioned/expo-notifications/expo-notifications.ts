@@ -1,5 +1,3 @@
-import { ConfigPlugin, withEntitlementsPlist } from '@expo/config-plugins';
-
 import {
   withNotificationIconColor,
   withNotificationIcons,
