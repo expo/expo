@@ -223,7 +223,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // specifically use the `@react-native/babel-preset` installed by this package (ex:
         // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        require('@react-native/babel-preset'),
+        platform === 'web' ? require('./web-preset') : require('@react-native/babel-preset'),
         {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
