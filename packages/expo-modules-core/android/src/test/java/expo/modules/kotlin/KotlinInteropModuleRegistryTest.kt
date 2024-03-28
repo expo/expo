@@ -31,7 +31,8 @@ private class TestModule1 : Module() {
     AsyncFunction("f1") {
       throw NullPointerException()
     }
-    AsyncFunction<Int, TestRecord>("f2") {
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    AsyncFunction<Int, TestRecord>("f2") { record ->
       throw NullPointerException()
     }
     Constants {
