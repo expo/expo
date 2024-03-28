@@ -13,6 +13,16 @@ interface Promise {
     resolve(null)
   }
 
+  fun resolve(result: Int) = resolve(result as Any?)
+
+  fun resolve(result: Boolean) = resolve(result as Any?)
+
+  fun resolve(result: Double) = resolve(result as Any?)
+
+  fun resolve(result: Float) = resolve(result as Any?)
+
+  fun resolve(result: String) = resolve(result as Any?)
+
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {

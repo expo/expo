@@ -11,23 +11,57 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
-  operator fun invoke(result: Any?) {
+  operator fun invoke(result: Any?) = checkIfValid {
+    if (result == null) {
+      invokeNative()
+      return
+    }
+    when (result) {
+      is Int -> invokeNative(result)
+      is Boolean -> invokeNative(result)
+      is Double -> invokeNative(result)
+      is Float -> invokeNative(result)
+      is String -> invokeNative(result)
+      is WritableNativeArray -> invokeNative(result)
+      is WritableNativeMap -> invokeNative(result)
+      is SharedRef<*> -> invokeNative(result)
+      else -> throw UnexpectedException("Unknown type: ${result.javaClass}")
+    }
+  }
+
+  operator fun invoke(result: Int) = checkIfValid {
+    invokeNative(result)
+  }
+
+  operator fun invoke(result: Boolean) = checkIfValid {
+    invokeNative(result)
+  }
+
+  operator fun invoke(result: Double) = checkIfValid {
+    invokeNative(result)
+  }
+
+  operator fun invoke(result: Float) = checkIfValid {
+    invokeNative(result)
+  }
+
+  operator fun invoke(result: String) = checkIfValid {
+    invokeNative(result)
+  }
+
+  private external fun invokeNative()
+  private external fun invokeNative(result: Int)
+  private external fun invokeNative(result: Boolean)
+  private external fun invokeNative(result: Double)
+  private external fun invokeNative(result: Float)
+  private external fun invokeNative(result: String)
+  private external fun invokeNative(result: WritableNativeArray)
+  private external fun invokeNative(result: WritableNativeMap)
+  private external fun invokeNative(result: SharedRef<*>)
+
+  private inline fun checkIfValid(body: () -> Unit) {
     try {
-      if (result == null) {
-        invoke()
-        return
-      }
-      when (result) {
-        is Int -> invoke(result)
-        is Boolean -> invoke(result)
-        is Double -> invoke(result)
-        is Float -> invoke(result)
-        is String -> invoke(result)
-        is WritableNativeArray -> invoke(result)
-        is WritableNativeMap -> invoke(result)
-        is SharedRef<*> -> invoke(result)
-        else -> throw UnexpectedException("Unknown type: ${result.javaClass}")
-      }
+      body()
     } catch (e: Throwable) {
       if (!mHybridData.isValid) {
         // We know that this particular JavaCallback was invalidated, so it shouldn't be invoked.
@@ -38,16 +72,6 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
       throw e
     }
   }
-
-  private external fun invoke()
-  private external fun invoke(result: Int)
-  private external fun invoke(result: Boolean)
-  private external fun invoke(result: Double)
-  private external fun invoke(result: Float)
-  private external fun invoke(result: String)
-  private external fun invoke(result: WritableNativeArray)
-  private external fun invoke(result: WritableNativeMap)
-  private external fun invoke(result: SharedRef<*>)
 
   @Throws(Throwable::class)
   protected fun finalize() {

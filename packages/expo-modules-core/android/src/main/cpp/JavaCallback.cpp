@@ -18,15 +18,15 @@ JavaCallback::JavaCallback(std::shared_ptr<CallbackContext> callbackContext)
 
 void JavaCallback::registerNatives() {
   registerHybrid({
-                   makeNativeMethod("invoke", JavaCallback::invoke),
-                   makeNativeMethod("invoke", JavaCallback::invokeBool),
-                   makeNativeMethod("invoke", JavaCallback::invokeInt),
-                   makeNativeMethod("invoke", JavaCallback::invokeDouble),
-                   makeNativeMethod("invoke", JavaCallback::invokeFloat),
-                   makeNativeMethod("invoke", JavaCallback::invokeString),
-                   makeNativeMethod("invoke", JavaCallback::invokeArray),
-                   makeNativeMethod("invoke", JavaCallback::invokeMap),
-                   makeNativeMethod("invoke", JavaCallback::invokeSharedRef),
+                   makeNativeMethod("invokeNative", JavaCallback::invoke),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeBool),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeInt),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeDouble),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeFloat),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeString),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeArray),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeMap),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeSharedRef),
                  });
 }
 
@@ -56,7 +56,6 @@ void JavaCallback::invokeJSFunction(
         throw std::runtime_error(
           "JavaCallback was already settled. Cannot invoke it again"
         );
-        return;
       }
 
       jsi::Function &jsFunction = context->jsFunctionHolder.value();
