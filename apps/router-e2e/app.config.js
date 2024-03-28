@@ -26,7 +26,7 @@ module.exports = {
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
-    serverComponents: process.env.EXPO_E2E_RSC,
+    reactCanary: process.env.EXPO_E2E_RSC,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',

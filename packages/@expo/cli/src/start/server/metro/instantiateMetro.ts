@@ -138,8 +138,8 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    // @ts-expect-error: `serverComponents` is not in the Expo Config type yet.
-    isReactCanaryEnabled: exp.experiments?.serverComponents ?? false,
+    // @ts-expect-error: `reactCanary` is not in the Expo Config type yet.
+    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
   });
 
   if (process.env.NODE_ENV !== 'test') {
