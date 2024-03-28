@@ -104,7 +104,7 @@
       break;
     }
   }
-  NSAttributedString *attributedErrorString = [EXManifestResource addErrorStringHyperlinks:errorDetail];
+  NSAttributedString *attributedErrorString = [EXManifestResource parseUrls:errorDetail];
 
   UIFont *font = _txtErrorDetail.font;
   _txtErrorDetail.attributedText = attributedErrorString;
