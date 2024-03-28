@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `withPodfile` config plugin to replace `withDangerousMods` for Podfile actions. ([#27209](https://github.com/expo/expo/pull/27209) by [@bycedric](https://github.com/byCedric)))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
