@@ -329,14 +329,16 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   inline fun OnStartObserving(crossinline body: () -> Unit) {
-    AsyncFunction("startObserving", body)
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    AsyncFunction("startObserving") { eventName: String? -> body() }
   }
 
   /**
    * Creates module's lifecycle listener that is called right after all event listeners are removed.
    */
   inline fun OnStopObserving(crossinline body: () -> Unit) {
-    AsyncFunction("stopObserving", body)
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    AsyncFunction("stopObserving") { eventName: String? -> body() }
   }
 
   /**

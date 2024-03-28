@@ -5,6 +5,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/ReadableNativeArray.h>
+#include <react/jni/ReadableNativeMap.h>
 #include <jni/JCallback.h>
 
 #include <unordered_map>
@@ -123,6 +124,17 @@ public:
     jboolean setterTakesOwner,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> setterExpectedArgsTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> setter
+  );
+
+  /**
+   * Emits an event using cached jsi::Object with the given name and body.
+   * @param eventName
+   * @param eventBody
+   */
+  void emitEvent(
+    jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
+    jni::alias_ref<jstring> eventName,
+    jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
   );
 
 private:

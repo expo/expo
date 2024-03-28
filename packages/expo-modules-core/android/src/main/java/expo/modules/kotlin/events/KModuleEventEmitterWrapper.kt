@@ -3,12 +3,14 @@ package expo.modules.kotlin.events
 import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.toJSValue
 import java.lang.ref.WeakReference
 
 /**
@@ -23,22 +25,27 @@ class KModuleEventEmitterWrapper(
 ) : KEventEmitterWrapper(legacyEventEmitter, reactContextHolder) {
   override fun emit(eventName: String, eventBody: Bundle?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
   }
 
   override fun emit(eventName: String, eventBody: WritableMap?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody as? ReadableNativeMap)
   }
 
   override fun emit(eventName: String, eventBody: Record?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
+  }
+
+  private fun emitNative(eventName: String, eventBody: ReadableNativeMap?) {
+    val appContext = moduleHolder.module.appContext
+    moduleHolder.jsObject.emitEvent(appContext.jsiInterop, eventName, eventBody)
   }
 
   private fun checkIfEventWasExported(eventName: String) {
