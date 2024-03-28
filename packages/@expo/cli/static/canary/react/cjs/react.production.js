@@ -10,7 +10,7 @@
 
 'use strict';
 
-var ReactVersion = '18.3.0-experimental-9372c6311-20240315';
+var ReactVersion = '19.0.0-experimental-78328c0c4-20240328';
 
 // ATTENTION
 // When adding new symbols to this file,
@@ -21,7 +21,8 @@ const REACT_PORTAL_TYPE = Symbol.for('react.portal');
 const REACT_FRAGMENT_TYPE = Symbol.for('react.fragment');
 const REACT_STRICT_MODE_TYPE = Symbol.for('react.strict_mode');
 const REACT_PROFILER_TYPE = Symbol.for('react.profiler');
-const REACT_PROVIDER_TYPE = Symbol.for('react.provider'); // TODO: Delete with enableRenderableContext
+
+const REACT_CONSUMER_TYPE = Symbol.for('react.consumer');
 const REACT_CONTEXT_TYPE = Symbol.for('react.context');
 const REACT_FORWARD_REF_TYPE = Symbol.for('react.forward_ref');
 const REACT_SUSPENSE_TYPE = Symbol.for('react.suspense');
@@ -872,14 +873,11 @@ function createContext(defaultValue) {
   };
 
   {
-    context.Provider = {
-      $$typeof: REACT_PROVIDER_TYPE,
+    context.Provider = context;
+    context.Consumer = {
+      $$typeof: REACT_CONSUMER_TYPE,
       _context: context
     };
-
-    {
-      context.Consumer = context;
-    }
   }
 
   return context;
@@ -1203,6 +1201,43 @@ function useOptimistic(passthrough, reducer) {
 
   return dispatcher.useOptimistic(passthrough, reducer);
 }
+function useActionState(action, initialState, permalink) {
+  {
+    const dispatcher = resolveDispatcher(); // $FlowFixMe[not-a-function] This is unstable, thus optional
+
+    return dispatcher.useActionState(action, initialState, permalink);
+  }
+}
+
+const reportGlobalError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
+// emulating an uncaught JavaScript error.
+reportError : error => {
+  if (typeof window === 'object' && typeof window.ErrorEvent === 'function') {
+    // Browser Polyfill
+    const message = typeof error === 'object' && error !== null && typeof error.message === 'string' ? // eslint-disable-next-line react-internal/safe-string-coercion
+    String(error.message) : // eslint-disable-next-line react-internal/safe-string-coercion
+    String(error);
+    const event = new window.ErrorEvent('error', {
+      bubbles: true,
+      cancelable: true,
+      message: message,
+      error: error
+    });
+    const shouldLog = window.dispatchEvent(event);
+
+    if (!shouldLog) {
+      return;
+    }
+  } else if (typeof process === 'object' && // $FlowFixMe[method-unbinding]
+  typeof process.emit === 'function') {
+    // Node Polyfill
+    process.emit('uncaughtException', error);
+    return;
+  } // eslint-disable-next-line react-internal/no-production-logging
+
+
+  console['error'](error);
+};
 
 function startTransition(scope, options) {
   const prevTransition = ReactCurrentBatchConfig.transition; // Each renderer registers a callback to receive the return value of
@@ -1221,27 +1256,17 @@ function startTransition(scope, options) {
 
       if (typeof returnValue === 'object' && returnValue !== null && typeof returnValue.then === 'function') {
         callbacks.forEach(callback => callback(currentTransition, returnValue));
-        returnValue.then(noop, onError);
+        returnValue.then(noop, reportGlobalError);
       }
     } catch (error) {
-      onError(error);
+      reportGlobalError(error);
     } finally {
       ReactCurrentBatchConfig.transition = prevTransition;
     }
   }
 }
 
-function noop() {} // Use reportError, if it exists. Otherwise console.error. This is the same as
-// the default for onRecoverableError.
-
-
-const onError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
-// emulating an uncaught JavaScript error.
-reportError : error => {
-  // In older browsers and test environments, fallback to console.error.
-  // eslint-disable-next-line react-internal/no-production-logging
-  console['error'](error);
-};
+function noop() {}
 
 function act(callback) {
   {
@@ -1294,6 +1319,7 @@ exports.unstable_postpone = postpone;
 exports.unstable_useCacheRefresh = useCacheRefresh;
 exports.unstable_useMemoCache = useMemoCache;
 exports.use = use;
+exports.useActionState = useActionState;
 exports.useCallback = useCallback;
 exports.useContext = useContext;
 exports.useDebugValue = useDebugValue;

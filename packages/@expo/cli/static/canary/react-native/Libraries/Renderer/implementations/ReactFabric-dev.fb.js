@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<48c206274b16ddb872dd142a6fc17769>>
+ * @generated SignedSource<<524dd707c3c266c4090532051a299e80>>
  */
 
 "use strict";
@@ -24,10 +24,10 @@ if (__DEV__) {
     ) {
       __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
     }
-    var React = require("react");
     require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
+    var React = require("react");
     var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface");
-    var dynamicFlags = require("ReactNativeInternalFeatureFlags");
+    var dynamicFlagsUntyped = require("ReactNativeInternalFeatureFlags");
     var Scheduler = require("scheduler");
 
     var ReactSharedInternals =
@@ -2969,13 +2969,15 @@ to return true:wantsResponderID|                            |
       // where it would do it.
     }
 
-    // NOTE: There are no flags, currently. Uncomment the stuff below if we add one.
+    // Re-export dynamic flags from the internal module.
+    var dynamicFlags = dynamicFlagsUntyped; // We destructure each value before re-exporting to avoid a dynamic look-up on
     // the exports object every time a flag is read.
 
     var alwaysThrottleRetries = dynamicFlags.alwaysThrottleRetries,
       consoleManagedByDevToolsDuringStrictMode =
         dynamicFlags.consoleManagedByDevToolsDuringStrictMode,
       enableAsyncActions = dynamicFlags.enableAsyncActions,
+      enableBigIntSupport = dynamicFlags.enableBigIntSupport,
       enableComponentStackLocations =
         dynamicFlags.enableComponentStackLocations,
       enableDeferRootSchedulingToMicrotask =
@@ -2996,7 +2998,6 @@ to return true:wantsResponderID|                            |
     var transitionLaneExpirationMs = 5000;
     var enableLazyContextPropagation = false;
     var enableLegacyHidden = false;
-    var enableBigIntSupport = false; // Flow magic to verify the exports of this file match the original version.
 
     var NoFlags$1 =
       /*                      */
@@ -4700,11 +4701,12 @@ to return true:wantsResponderID|                            |
           "Please file an issue."
       );
     } // Hydration (when unsupported)
+
+    var supportsHydration = false;
     var isSuspenseInstancePending = shim$1;
     var isSuspenseInstanceFallback = shim$1;
     var getSuspenseInstanceFallbackErrorDetails = shim$1;
     var registerSuspenseInstanceRetry = shim$1;
-    var errorHydratingContainer = shim$1;
 
     // Renderers that don't support hydration
     // can re-export everything from this module.
@@ -6026,14 +6028,6 @@ to return true:wantsResponderID|                            |
 
     var objectIs = typeof Object.is === "function" ? Object.is : is; // $FlowFixMe[method-unbinding]
 
-    // This is imported by the event replaying implementation in React DOM. It's
-    // in a separate file to break a circular dependency between the renderer and
-    // the reconciler.
-    function isRootDehydrated(root) {
-      var currentState = root.current.memoizedState;
-      return currentState.isDehydrated;
-    }
-
     var contextStackCursor = createCursor(null);
     var contextFiberStackCursor = createCursor(null);
     var rootInstanceStackCursor = createCursor(null); // Represents the nearest host transition provider (in React DOM, a <form />)
@@ -6050,11 +6044,11 @@ to return true:wantsResponderID|                            |
 
     var HostTransitionContext = {
       $$typeof: REACT_CONTEXT_TYPE,
+      Provider: null,
+      Consumer: null,
       _currentValue: null,
       _currentValue2: null,
-      _threadCount: 0,
-      Provider: null,
-      Consumer: null
+      _threadCount: 0
     };
 
     function requiredContext(c) {
@@ -6155,7 +6149,668 @@ to return true:wantsResponderID|                            |
       }
     }
 
+    var maxRowLength = 120;
+    var idealDepth = 15;
+
+    function findNotableNode(node, indent) {
+      if (
+        node.serverProps === undefined &&
+        node.serverTail.length === 0 &&
+        node.children.length === 1 &&
+        node.distanceFromLeaf > 3 &&
+        node.distanceFromLeaf > idealDepth - indent
+      ) {
+        // This is not an interesting node for contextual purposes so we can skip it.
+        var child = node.children[0];
+        return findNotableNode(child, indent);
+      }
+
+      return node;
+    }
+
+    function indentation(indent) {
+      return "  " + "  ".repeat(indent);
+    }
+
+    function added(indent) {
+      return "+ " + "  ".repeat(indent);
+    }
+
+    function removed(indent) {
+      return "- " + "  ".repeat(indent);
+    }
+
+    function describeFiberType(fiber) {
+      switch (fiber.tag) {
+        case HostHoistable:
+        case HostSingleton:
+        case HostComponent:
+          return fiber.type;
+
+        case LazyComponent:
+          return "Lazy";
+
+        case SuspenseComponent:
+          return "Suspense";
+
+        case SuspenseListComponent:
+          return "SuspenseList";
+
+        case FunctionComponent:
+        case IndeterminateComponent:
+        case SimpleMemoComponent:
+          var fn = fiber.type;
+          return fn.displayName || fn.name || null;
+
+        case ForwardRef:
+          var render = fiber.type.render;
+          return render.displayName || render.name || null;
+
+        case ClassComponent:
+          var ctr = fiber.type;
+          return ctr.displayName || ctr.name || null;
+
+        default:
+          // Skip
+          return null;
+      }
+    }
+
+    var needsEscaping = /["'&<>\n\t]/;
+
+    function describeTextNode(content, maxLength) {
+      if (needsEscaping.test(content)) {
+        var encoded = JSON.stringify(content);
+
+        if (encoded.length > maxLength - 2) {
+          if (maxLength < 8) {
+            return '{"..."}';
+          }
+
+          return "{" + encoded.slice(0, maxLength - 7) + '..."}';
+        }
+
+        return "{" + encoded + "}";
+      } else {
+        if (content.length > maxLength) {
+          if (maxLength < 5) {
+            return '{"..."}';
+          }
+
+          return content.slice(0, maxLength - 3) + "...";
+        }
+
+        return content;
+      }
+    }
+
+    function describeTextDiff(clientText, serverProps, indent) {
+      var maxLength = maxRowLength - indent * 2;
+
+      if (serverProps === null) {
+        return added(indent) + describeTextNode(clientText, maxLength) + "\n";
+      } else if (typeof serverProps === "string") {
+        var serverText = serverProps;
+        var firstDiff = 0;
+
+        for (
+          ;
+          firstDiff < serverText.length && firstDiff < clientText.length;
+          firstDiff++
+        ) {
+          if (
+            serverText.charCodeAt(firstDiff) !==
+            clientText.charCodeAt(firstDiff)
+          ) {
+            break;
+          }
+        }
+
+        if (firstDiff > maxLength - 8 && firstDiff > 10) {
+          // The first difference between the two strings would be cut off, so cut off in
+          // the beginning instead.
+          clientText = "..." + clientText.slice(firstDiff - 8);
+          serverText = "..." + serverText.slice(firstDiff - 8);
+        }
+
+        return (
+          added(indent) +
+          describeTextNode(clientText, maxLength) +
+          "\n" +
+          removed(indent) +
+          describeTextNode(serverText, maxLength) +
+          "\n"
+        );
+      } else {
+        return (
+          indentation(indent) + describeTextNode(clientText, maxLength) + "\n"
+        );
+      }
+    }
+
+    function objectName(object) {
+      // $FlowFixMe[method-unbinding]
+      var name = Object.prototype.toString.call(object);
+      return name.replace(/^\[object (.*)\]$/, function (m, p0) {
+        return p0;
+      });
+    }
+
+    function describeValue(value, maxLength) {
+      switch (typeof value) {
+        case "string": {
+          var encoded = JSON.stringify(value);
+
+          if (encoded.length > maxLength) {
+            if (maxLength < 5) {
+              return '"..."';
+            }
+
+            return encoded.slice(0, maxLength - 4) + '..."';
+          }
+
+          return encoded;
+        }
+
+        case "object": {
+          if (value === null) {
+            return "null";
+          }
+
+          if (isArray(value)) {
+            return "[...]";
+          }
+
+          if (value.$$typeof === REACT_ELEMENT_TYPE) {
+            var type = getComponentNameFromType(value.type);
+            return type ? "<" + type + ">" : "<...>";
+          }
+
+          var name = objectName(value);
+
+          if (name === "Object") {
+            var properties = "";
+            maxLength -= 2;
+
+            for (var propName in value) {
+              if (!value.hasOwnProperty(propName)) {
+                continue;
+              }
+
+              var jsonPropName = JSON.stringify(propName);
+
+              if (jsonPropName !== '"' + propName + '"') {
+                propName = jsonPropName;
+              }
+
+              maxLength -= propName.length - 2;
+              var propValue = describeValue(
+                value[propName],
+                maxLength < 15 ? maxLength : 15
+              );
+              maxLength -= propValue.length;
+
+              if (maxLength < 0) {
+                properties += properties === "" ? "..." : ", ...";
+                break;
+              }
+
+              properties +=
+                (properties === "" ? "" : ",") + propName + ":" + propValue;
+            }
+
+            return "{" + properties + "}";
+          }
+
+          return name;
+        }
+
+        case "function": {
+          var _name = value.displayName || value.name;
+
+          return _name ? "function " + _name : "function";
+        }
+
+        default:
+          // eslint-disable-next-line react-internal/safe-string-coercion
+          return String(value);
+      }
+    }
+
+    function describePropValue(value, maxLength) {
+      if (typeof value === "string" && !needsEscaping.test(value)) {
+        if (value.length > maxLength - 2) {
+          if (maxLength < 5) {
+            return '"..."';
+          }
+
+          return '"' + value.slice(0, maxLength - 5) + '..."';
+        }
+
+        return '"' + value + '"';
+      }
+
+      return "{" + describeValue(value, maxLength - 2) + "}";
+    }
+
+    function describeCollapsedElement(type, props, indent) {
+      // This function tries to fit the props into a single line for non-essential elements.
+      // We also ignore children because we're not going deeper.
+      var maxLength = maxRowLength - indent * 2 - type.length - 2;
+      var content = "";
+
+      for (var propName in props) {
+        if (!props.hasOwnProperty(propName)) {
+          continue;
+        }
+
+        if (propName === "children") {
+          // Ignored.
+          continue;
+        }
+
+        var propValue = describePropValue(props[propName], 15);
+        maxLength -= propName.length + propValue.length + 2;
+
+        if (maxLength < 0) {
+          content += " ...";
+          break;
+        }
+
+        content += " " + propName + "=" + propValue;
+      }
+
+      return indentation(indent) + "<" + type + content + ">\n";
+    }
+
+    function describeExpandedElement(type, props, rowPrefix) {
+      // This function tries to fit the props into a single line for non-essential elements.
+      // We also ignore children because we're not going deeper.
+      var remainingRowLength = maxRowLength - rowPrefix.length - type.length; // We add the properties to a set so we can choose later whether we'll put it on one
+      // line or multiple lines.
+
+      var properties = [];
+
+      for (var propName in props) {
+        if (!props.hasOwnProperty(propName)) {
+          continue;
+        }
+
+        if (propName === "children") {
+          // Ignored.
+          continue;
+        }
+
+        var maxLength = maxRowLength - rowPrefix.length - propName.length - 1;
+        var propValue = describePropValue(props[propName], maxLength);
+        remainingRowLength -= propName.length + propValue.length + 2;
+        properties.push(propName + "=" + propValue);
+      }
+
+      if (properties.length === 0) {
+        return rowPrefix + "<" + type + ">\n";
+      } else if (remainingRowLength > 0) {
+        // We can fit all on one row.
+        return rowPrefix + "<" + type + " " + properties.join(" ") + ">\n";
+      } else {
+        // Split into one row per property:
+        return (
+          rowPrefix +
+          "<" +
+          type +
+          "\n" +
+          rowPrefix +
+          "  " +
+          properties.join("\n" + rowPrefix + "  ") +
+          "\n" +
+          rowPrefix +
+          ">\n"
+        );
+      }
+    }
+
+    function describePropertiesDiff(clientObject, serverObject, indent) {
+      var properties = "";
+      var remainingServerProperties = assign({}, serverObject);
+
+      for (var propName in clientObject) {
+        if (!clientObject.hasOwnProperty(propName)) {
+          continue;
+        }
+
+        delete remainingServerProperties[propName];
+        var maxLength = maxRowLength - indent * 2 - propName.length - 2;
+        var clientValue = clientObject[propName];
+        var clientPropValue = describeValue(clientValue, maxLength);
+
+        if (serverObject.hasOwnProperty(propName)) {
+          var serverValue = serverObject[propName];
+          var serverPropValue = describeValue(serverValue, maxLength);
+          properties +=
+            added(indent) + propName + ": " + clientPropValue + "\n";
+          properties +=
+            removed(indent) + propName + ": " + serverPropValue + "\n";
+        } else {
+          properties +=
+            added(indent) + propName + ": " + clientPropValue + "\n";
+        }
+      }
+
+      for (var _propName in remainingServerProperties) {
+        if (!remainingServerProperties.hasOwnProperty(_propName)) {
+          continue;
+        }
+
+        var _maxLength = maxRowLength - indent * 2 - _propName.length - 2;
+
+        var _serverValue = remainingServerProperties[_propName];
+
+        var _serverPropValue = describeValue(_serverValue, _maxLength);
+
+        properties +=
+          removed(indent) + _propName + ": " + _serverPropValue + "\n";
+      }
+
+      return properties;
+    }
+
+    function describeElementDiff(type, clientProps, serverProps, indent) {
+      var content = ""; // Maps any previously unmatched lower case server prop name to its full prop name
+
+      var serverPropNames = new Map();
+
+      for (var propName in serverProps) {
+        if (!serverProps.hasOwnProperty(propName)) {
+          continue;
+        }
+
+        serverPropNames.set(propName.toLowerCase(), propName);
+      }
+
+      if (serverPropNames.size === 1 && serverPropNames.has("children")) {
+        content += describeExpandedElement(
+          type,
+          clientProps,
+          indentation(indent)
+        );
+      } else {
+        for (var _propName2 in clientProps) {
+          if (!clientProps.hasOwnProperty(_propName2)) {
+            continue;
+          }
+
+          if (_propName2 === "children") {
+            // Handled below.
+            continue;
+          }
+
+          var maxLength =
+            maxRowLength - (indent + 1) * 2 - _propName2.length - 1;
+          var serverPropName = serverPropNames.get(_propName2.toLowerCase());
+
+          if (serverPropName !== undefined) {
+            serverPropNames.delete(_propName2.toLowerCase()); // There's a diff here.
+
+            var clientValue = clientProps[_propName2];
+            var serverValue = serverProps[serverPropName];
+            var clientPropValue = describePropValue(clientValue, maxLength);
+            var serverPropValue = describePropValue(serverValue, maxLength);
+
+            if (
+              typeof clientValue === "object" &&
+              clientValue !== null &&
+              typeof serverValue === "object" &&
+              serverValue !== null &&
+              objectName(clientValue) === "Object" &&
+              objectName(serverValue) === "Object" && // Only do the diff if the object has a lot of keys or was shortened.
+              (Object.keys(clientValue).length > 2 ||
+                Object.keys(serverValue).length > 2 ||
+                clientPropValue.indexOf("...") > -1 ||
+                serverPropValue.indexOf("...") > -1)
+            ) {
+              // We're comparing two plain objects. We can diff the nested objects instead.
+              content +=
+                indentation(indent + 1) +
+                _propName2 +
+                "={{\n" +
+                describePropertiesDiff(clientValue, serverValue, indent + 2) +
+                indentation(indent + 1) +
+                "}}\n";
+            } else {
+              content +=
+                added(indent + 1) + _propName2 + "=" + clientPropValue + "\n";
+              content +=
+                removed(indent + 1) + _propName2 + "=" + serverPropValue + "\n";
+            }
+          } else {
+            // Considered equal.
+            content +=
+              indentation(indent + 1) +
+              _propName2 +
+              "=" +
+              describePropValue(clientProps[_propName2], maxLength) +
+              "\n";
+          }
+        }
+
+        serverPropNames.forEach(function (propName) {
+          if (propName === "children") {
+            // Handled below.
+            return;
+          }
+
+          var maxLength = maxRowLength - (indent + 1) * 2 - propName.length - 1;
+          content +=
+            removed(indent + 1) +
+            propName +
+            "=" +
+            describePropValue(serverProps[propName], maxLength) +
+            "\n";
+        });
+
+        if (content === "") {
+          // No properties
+          content = indentation(indent) + "<" + type + ">\n";
+        } else {
+          // Had properties
+          content =
+            indentation(indent) +
+            "<" +
+            type +
+            "\n" +
+            content +
+            indentation(indent) +
+            ">\n";
+        }
+      }
+
+      var serverChildren = serverProps.children;
+      var clientChildren = clientProps.children;
+
+      if (
+        typeof serverChildren === "string" ||
+        typeof serverChildren === "number" ||
+        typeof serverChildren === "bigint"
+      ) {
+        // There's a diff of the children.
+        // $FlowFixMe[unsafe-addition]
+        var serverText = "" + serverChildren;
+        var clientText = "";
+
+        if (
+          typeof clientChildren === "string" ||
+          typeof clientChildren === "number" ||
+          typeof clientChildren === "bigint"
+        ) {
+          // $FlowFixMe[unsafe-addition]
+          clientText = "" + clientChildren;
+        }
+
+        content += describeTextDiff(clientText, serverText, indent + 1);
+      } else if (
+        typeof clientChildren === "string" ||
+        typeof clientChildren === "number" ||
+        typeof clientChildren === "bigint"
+      ) {
+        // The client has children but it's not considered a difference from the server.
+        // $FlowFixMe[unsafe-addition]
+        content += describeTextDiff("" + clientChildren, undefined, indent + 1);
+      }
+
+      return content;
+    }
+
+    function describeSiblingFiber(fiber, indent) {
+      var type = describeFiberType(fiber);
+
+      if (type === null) {
+        // Skip this type of fiber. We currently treat this as a fragment
+        // so it's just part of the parent's children.
+        var flatContent = "";
+        var childFiber = fiber.child;
+
+        while (childFiber) {
+          flatContent += describeSiblingFiber(childFiber, indent);
+          childFiber = childFiber.sibling;
+        }
+
+        return flatContent;
+      }
+
+      return indentation(indent) + "<" + type + ">" + "\n";
+    }
+
+    function describeNode(node, indent) {
+      var skipToNode = findNotableNode(node, indent);
+
+      if (
+        skipToNode !== node &&
+        (node.children.length !== 1 || node.children[0] !== skipToNode)
+      ) {
+        return (
+          indentation(indent) + "...\n" + describeNode(skipToNode, indent + 1)
+        );
+      } // Prefix with any server components for context
+
+      var parentContent = "";
+      var debugInfo = node.fiber._debugInfo;
+
+      if (debugInfo) {
+        for (var i = 0; i < debugInfo.length; i++) {
+          var serverComponentName = debugInfo[i].name;
+
+          if (typeof serverComponentName === "string") {
+            parentContent +=
+              indentation(indent) + "<" + serverComponentName + ">" + "\n";
+            indent++;
+          }
+        }
+      } // Self
+
+      var selfContent = ""; // We use the pending props since we might be generating a diff before the complete phase
+      // when something throws.
+
+      var clientProps = node.fiber.pendingProps;
+
+      if (node.fiber.tag === HostText) {
+        // Text Node
+        selfContent = describeTextDiff(clientProps, node.serverProps, indent);
+      } else {
+        var type = describeFiberType(node.fiber);
+
+        if (type !== null) {
+          // Element Node
+          if (node.serverProps === undefined) {
+            // Just a reference node for context.
+            selfContent = describeCollapsedElement(type, clientProps, indent);
+            indent++;
+          } else if (node.serverProps === null) {
+            selfContent = describeExpandedElement(
+              type,
+              clientProps,
+              added(indent)
+            ); // If this was an insertion we won't step down further. Any tail
+            // are considered siblings so we don't indent.
+            // TODO: Model this a little better.
+          } else if (typeof node.serverProps === "string") {
+            {
+              error(
+                "Should not have matched a non HostText fiber to a Text node. This is a bug in React."
+              );
+            }
+          } else {
+            selfContent = describeElementDiff(
+              type,
+              clientProps,
+              node.serverProps,
+              indent
+            );
+            indent++;
+          }
+        }
+      } // Compute children
+
+      var childContent = "";
+      var childFiber = node.fiber.child;
+      var diffIdx = 0;
+
+      while (childFiber && diffIdx < node.children.length) {
+        var childNode = node.children[diffIdx];
+
+        if (childNode.fiber === childFiber) {
+          // This was a match in the diff.
+          childContent += describeNode(childNode, indent);
+          diffIdx++;
+        } else {
+          // This is an unrelated previous sibling.
+          childContent += describeSiblingFiber(childFiber, indent);
+        }
+
+        childFiber = childFiber.sibling;
+      }
+
+      if (childFiber && node.children.length > 0) {
+        // If we had any further siblings after the last mismatch, we can't be sure if it's
+        // actually a valid match since it might not have found a match. So we exclude next
+        // siblings to avoid confusion.
+        childContent += indentation(indent) + "..." + "\n";
+      } // Deleted tail nodes
+
+      var serverTail = node.serverTail;
+
+      for (var _i = 0; _i < serverTail.length; _i++) {
+        var tailNode = serverTail[_i];
+
+        if (typeof tailNode === "string") {
+          // Removed text node
+          childContent +=
+            removed(indent) +
+            describeTextNode(tailNode, maxRowLength - indent * 2) +
+            "\n";
+        } else {
+          // Removed element
+          childContent += describeExpandedElement(
+            tailNode.type,
+            tailNode.props,
+            removed(indent)
+          );
+        }
+      }
+
+      return parentContent + selfContent + childContent;
+    }
+
+    function describeDiff(rootNode) {
+      try {
+        return "\n\n" + describeNode(rootNode, 0);
+      } catch (x) {
+        return "";
+      }
+    }
+
     var isHydrating = false; // This flag allows for warning supression when we expect there to be mismatches
+
+    var hydrationDiffRootDEV = null; // Hydration errors that were thrown inside this boundary
 
     var hydrationErrors = null;
 
@@ -6211,6 +6866,35 @@ to return true:wantsResponderID|                            |
         hydrationErrors = [error];
       } else {
         hydrationErrors.push(error);
+      }
+    }
+    function emitPendingHydrationWarnings() {
+      {
+        // If we haven't yet thrown any hydration errors by the time we reach the end we've successfully
+        // hydrated, however, we might still have DEV-only mismatches that we log now.
+        var diffRoot = hydrationDiffRootDEV;
+
+        if (diffRoot !== null) {
+          hydrationDiffRootDEV = null;
+          var diff = describeDiff(diffRoot);
+
+          error(
+            "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. " +
+              "This can happen if a SSR-ed Client Component used:\n" +
+              "\n" +
+              "- A server/client branch `if (typeof window !== 'undefined')`.\n" +
+              "- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.\n" +
+              "- Date formatting in a user's locale which doesn't match the server.\n" +
+              "- External changing data without sending a snapshot of it along with the HTML.\n" +
+              "- Invalid HTML tag nesting.\n" +
+              "\n" +
+              "It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.\n" +
+              "\n" +
+              "%s%s",
+            "https://react.dev/link/hydration-mismatch",
+            diff
+          );
+        }
       }
     }
 
@@ -6432,7 +7116,7 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    var ReactCurrentActQueue$3 = ReactSharedInternals.ReactCurrentActQueue; // A linked list of all the roots with pending work. In an idiomatic app,
+    var ReactCurrentActQueue$4 = ReactSharedInternals.ReactCurrentActQueue; // A linked list of all the roots with pending work. In an idiomatic app,
     // there's only a single root, but we do support multi root apps, hence this
     // extra complexity. But this module is optimized for the single root case.
 
@@ -6471,7 +7155,7 @@ to return true:wantsResponderID|                            |
       mightHavePendingSyncWork = true; // At the end of the current event, go through each of the roots and ensure
       // there's a task scheduled for each one at the correct priority.
 
-      if (ReactCurrentActQueue$3.current !== null) {
+      if (ReactCurrentActQueue$4.current !== null) {
         // We're inside an `act` scope.
         if (!didScheduleMicrotask_act) {
           didScheduleMicrotask_act = true;
@@ -6492,9 +7176,9 @@ to return true:wantsResponderID|                            |
         scheduleTaskForRootDuringMicrotask(root, now$1());
       }
 
-      if (ReactCurrentActQueue$3.isBatchingLegacy && root.tag === LegacyRoot) {
+      if (ReactCurrentActQueue$4.isBatchingLegacy && root.tag === LegacyRoot) {
         // Special `act` case: Record whenever a legacy update is scheduled.
-        ReactCurrentActQueue$3.didScheduleLegacyUpdate = true;
+        ReactCurrentActQueue$4.didScheduleLegacyUpdate = true;
       }
     }
     function flushSyncWorkOnAllRoots() {
@@ -6522,7 +7206,6 @@ to return true:wantsResponderID|                            |
       } // There may or may not be synchronous work scheduled. Let's check.
 
       var didPerformSomeWork;
-      var errors = null;
       isFlushingWork = true;
 
       do {
@@ -6544,17 +7227,8 @@ to return true:wantsResponderID|                            |
 
             if (includesSyncLane(nextLanes)) {
               // This root has pending sync work. Flush it now.
-              try {
-                didPerformSomeWork = true;
-                performSyncWorkOnRoot(root, nextLanes);
-              } catch (error) {
-                // Collect errors so we can rethrow them at the end
-                if (errors === null) {
-                  errors = [error];
-                } else {
-                  errors.push(error);
-                }
-              }
+              didPerformSomeWork = true;
+              performSyncWorkOnRoot(root, nextLanes);
             }
           }
 
@@ -6562,32 +7236,7 @@ to return true:wantsResponderID|                            |
         }
       } while (didPerformSomeWork);
 
-      isFlushingWork = false; // If any errors were thrown, rethrow them right before exiting.
-      // TODO: Consider returning these to the caller, to allow them to decide
-      // how/when to rethrow.
-
-      if (errors !== null) {
-        if (errors.length > 1) {
-          if (typeof AggregateError === "function") {
-            // eslint-disable-next-line no-undef
-            throw new AggregateError(errors);
-          } else {
-            for (var i = 1; i < errors.length; i++) {
-              scheduleImmediateTask(throwError.bind(null, errors[i]));
-            }
-
-            var firstError = errors[0];
-            throw firstError;
-          }
-        } else {
-          var error = errors[0];
-          throw error;
-        }
-      }
-    }
-
-    function throwError(error) {
-      throw error;
+      isFlushingWork = false;
     }
 
     function processRootScheduleInMicrotask() {
@@ -6718,7 +7367,7 @@ to return true:wantsResponderID|                            |
           // Scheduler task, rather than an `act` task, cancel it and re-schedule
           // on the `act` queue.
           !(
-            ReactCurrentActQueue$3.current !== null &&
+            ReactCurrentActQueue$4.current !== null &&
             existingCallbackNode !== fakeActCallbackNode$1
           )
         ) {
@@ -6785,11 +7434,11 @@ to return true:wantsResponderID|                            |
     var fakeActCallbackNode$1 = {};
 
     function scheduleCallback$2(priorityLevel, callback) {
-      if (ReactCurrentActQueue$3.current !== null) {
+      if (ReactCurrentActQueue$4.current !== null) {
         // Special case: We're inside an `act` scope (a testing utility).
         // Instead of scheduling work in the host environment, add it to a
         // fake internal queue that's managed by the `act` implementation.
-        ReactCurrentActQueue$3.current.push(callback);
+        ReactCurrentActQueue$4.current.push(callback);
         return fakeActCallbackNode$1;
       } else {
         return scheduleCallback$3(priorityLevel, callback);
@@ -6804,13 +7453,13 @@ to return true:wantsResponderID|                            |
     }
 
     function scheduleImmediateTask(cb) {
-      if (ReactCurrentActQueue$3.current !== null) {
+      if (ReactCurrentActQueue$4.current !== null) {
         // Special case: Inside an `act` scope, we push microtasks to the fake `act`
         // callback queue. This is because we currently support calling `act`
         // without awaiting the result. The plan is to deprecate that, and require
         // that you always await the result so that the microtasks have a chance to
         // run. But it hasn't happened yet.
-        ReactCurrentActQueue$3.current.push(function () {
+        ReactCurrentActQueue$4.current.push(function () {
           cb();
           return null;
         });
@@ -8516,7 +9165,7 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    var ReactCurrentActQueue$2 = ReactSharedInternals.ReactCurrentActQueue;
+    var ReactCurrentActQueue$3 = ReactSharedInternals.ReactCurrentActQueue;
 
     function getThenablesFromState(state) {
       {
@@ -8571,8 +9220,8 @@ to return true:wantsResponderID|                            |
     function noop() {}
 
     function trackUsedThenable(thenableState, thenable, index) {
-      if (ReactCurrentActQueue$2.current !== null) {
-        ReactCurrentActQueue$2.didUsePromise = true;
+      if (ReactCurrentActQueue$3.current !== null) {
+        ReactCurrentActQueue$3.didUsePromise = true;
       }
 
       var trackedThenables = getThenablesFromState(thenableState);
@@ -9334,7 +9983,7 @@ to return true:wantsResponderID|                            |
         if (
           (typeof newChild === "string" && newChild !== "") ||
           typeof newChild === "number" ||
-          enableBigIntSupport
+          (enableBigIntSupport && typeof newChild === "bigint")
         ) {
           // Text nodes don't have keys. If the previous node is implicitly keyed
           // we can continue to replace it without aborting even if it is not a text
@@ -9469,7 +10118,7 @@ to return true:wantsResponderID|                            |
         if (
           (typeof newChild === "string" && newChild !== "") ||
           typeof newChild === "number" ||
-          enableBigIntSupport
+          (enableBigIntSupport && typeof newChild === "bigint")
         ) {
           // Text nodes don't have keys. If the previous node is implicitly keyed
           // we can continue to replace it without aborting even if it is not a text
@@ -9596,7 +10245,7 @@ to return true:wantsResponderID|                            |
         if (
           (typeof newChild === "string" && newChild !== "") ||
           typeof newChild === "number" ||
-          enableBigIntSupport
+          (enableBigIntSupport && typeof newChild === "bigint")
         ) {
           // Text nodes don't have keys, so we neither have to check the old nor
           // new node for the key. If both are text nodes, they match.
@@ -10445,7 +11094,7 @@ to return true:wantsResponderID|                            |
         if (
           (typeof newChild === "string" && newChild !== "") ||
           typeof newChild === "number" ||
-          enableBigIntSupport
+          (enableBigIntSupport && typeof newChild === "bigint")
         ) {
           return placeSingleChild(
             reconcileSingleTextNode(
@@ -12302,10 +12951,10 @@ to return true:wantsResponderID|                            |
       hook.baseState = passthrough;
       var dispatch = hook.queue.dispatch;
       return [passthrough, dispatch];
-    } // useFormState actions run sequentially, because each action receives the
+    } // useActionState actions run sequentially, because each action receives the
     // previous state as an argument. We store pending actions on a queue.
 
-    function dispatchFormState(
+    function dispatchActionState(
       fiber,
       actionQueue,
       setPendingState,
@@ -12326,7 +12975,7 @@ to return true:wantsResponderID|                            |
           next: null // circular
         };
         newLast.next = actionQueue.pending = newLast;
-        runFormStateAction(actionQueue, setPendingState, setState, payload);
+        runActionStateAction(actionQueue, setPendingState, setState, payload);
       } else {
         // There's already an action running. Add to the queue.
         var first = last.next;
@@ -12338,7 +12987,7 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function runFormStateAction(
+    function runActionStateAction(
       actionQueue,
       setPendingState,
       setState,
@@ -12375,14 +13024,14 @@ to return true:wantsResponderID|                            |
           thenable.then(
             function (nextState) {
               actionQueue.state = nextState;
-              finishRunningFormStateAction(
+              finishRunningActionStateAction(
                 actionQueue,
                 setPendingState,
                 setState
               );
             },
             function () {
-              return finishRunningFormStateAction(
+              return finishRunningActionStateAction(
                 actionQueue,
                 setPendingState,
                 setState
@@ -12394,10 +13043,14 @@ to return true:wantsResponderID|                            |
           setState(returnValue);
           var nextState = returnValue;
           actionQueue.state = nextState;
-          finishRunningFormStateAction(actionQueue, setPendingState, setState);
+          finishRunningActionStateAction(
+            actionQueue,
+            setPendingState,
+            setState
+          );
         }
       } catch (error) {
-        // This is a trick to get the `useFormState` hook to rethrow the error.
+        // This is a trick to get the `useActionState` hook to rethrow the error.
         // When it unwraps the thenable with the `use` algorithm, the error
         // will be thrown.
         var rejectedThenable = {
@@ -12406,7 +13059,7 @@ to return true:wantsResponderID|                            |
           reason: error // $FlowFixMe: Not sure why this doesn't work
         };
         setState(rejectedThenable);
-        finishRunningFormStateAction(actionQueue, setPendingState, setState);
+        finishRunningActionStateAction(actionQueue, setPendingState, setState);
       } finally {
         ReactCurrentBatchConfig$2.transition = prevTransition;
 
@@ -12428,7 +13081,7 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function finishRunningFormStateAction(
+    function finishRunningActionStateAction(
       actionQueue,
       setPendingState,
       setState
@@ -12448,7 +13101,7 @@ to return true:wantsResponderID|                            |
           var next = first.next;
           last.next = next; // Run the next action.
 
-          runFormStateAction(
+          runActionStateAction(
             actionQueue,
             setPendingState,
             setState,
@@ -12458,11 +13111,11 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function formStateReducer(oldState, newState) {
+    function actionStateReducer(oldState, newState) {
       return newState;
     }
 
-    function mountFormState(action, initialStateProp, permalink) {
+    function mountActionState(action, initialStateProp, permalink) {
       var initialState = initialStateProp;
       // the `use` algorithm during render.
 
@@ -12474,7 +13127,7 @@ to return true:wantsResponderID|                            |
         pending: null,
         lanes: NoLanes,
         dispatch: null,
-        lastRenderedReducer: formStateReducer,
+        lastRenderedReducer: actionStateReducer,
         lastRenderedState: initialState
       };
       stateHook.queue = stateQueue;
@@ -12506,7 +13159,7 @@ to return true:wantsResponderID|                            |
         pending: null
       };
       actionQueueHook.queue = actionQueue;
-      var dispatch = dispatchFormState.bind(
+      var dispatch = dispatchActionState.bind(
         null,
         currentlyRenderingFiber$1,
         actionQueue,
@@ -12521,13 +13174,13 @@ to return true:wantsResponderID|                            |
       return [initialState, dispatch, false];
     }
 
-    function updateFormState(action, initialState, permalink) {
+    function updateActionState(action, initialState, permalink) {
       var stateHook = updateWorkInProgressHook();
       var currentStateHook = currentHook;
-      return updateFormStateImpl(stateHook, currentStateHook, action);
+      return updateActionStateImpl(stateHook, currentStateHook, action);
     }
 
-    function updateFormStateImpl(
+    function updateActionStateImpl(
       stateHook,
       currentStateHook,
       action,
@@ -12537,7 +13190,7 @@ to return true:wantsResponderID|                            |
       var _updateReducerImpl = updateReducerImpl(
           stateHook,
           currentStateHook,
-          formStateReducer
+          actionStateReducer
         ),
         actionResult = _updateReducerImpl[0];
 
@@ -12560,7 +13213,7 @@ to return true:wantsResponderID|                            |
         currentlyRenderingFiber$1.flags |= Passive$1;
         pushEffect(
           HasEffect | Passive,
-          formStateActionEffect.bind(null, actionQueue, action),
+          actionStateActionEffect.bind(null, actionQueue, action),
           createEffectInstance(),
           null
         );
@@ -12569,12 +13222,12 @@ to return true:wantsResponderID|                            |
       return [state, dispatch, isPending];
     }
 
-    function formStateActionEffect(actionQueue, action) {
+    function actionStateActionEffect(actionQueue, action) {
       actionQueue.action = action;
     }
 
-    function rerenderFormState(action, initialState, permalink) {
-      // Unlike useState, useFormState doesn't support render phase updates.
+    function rerenderActionState(action, initialState, permalink) {
+      // Unlike useState, useActionState doesn't support render phase updates.
       // Also unlike useState, we need to replay all pending updates again in case
       // the passthrough value changed.
       //
@@ -12586,8 +13239,11 @@ to return true:wantsResponderID|                            |
 
       if (currentStateHook !== null) {
         // This is an update. Process the update queue.
-        return updateFormStateImpl(stateHook, currentStateHook, action);
-      } // This is a mount. No updates to process.
+        return updateActionStateImpl(stateHook, currentStateHook, action);
+      }
+
+      updateWorkInProgressHook(); // State
+      // This is a mount. No updates to process.
 
       var state = stateHook.memoizedState;
       var actionQueueHook = updateWorkInProgressHook();
@@ -13570,8 +14226,8 @@ to return true:wantsResponderID|                            |
       useContext: throwInvalidHookError,
       useEffect: throwInvalidHookError,
       useImperativeHandle: throwInvalidHookError,
-      useInsertionEffect: throwInvalidHookError,
       useLayoutEffect: throwInvalidHookError,
+      useInsertionEffect: throwInvalidHookError,
       useMemo: throwInvalidHookError,
       useReducer: throwInvalidHookError,
       useRef: throwInvalidHookError,
@@ -13594,6 +14250,7 @@ to return true:wantsResponderID|                            |
     if (enableAsyncActions) {
       ContextOnlyDispatcher.useHostTransitionStatus = throwInvalidHookError;
       ContextOnlyDispatcher.useFormState = throwInvalidHookError;
+      ContextOnlyDispatcher.useActionState = throwInvalidHookError;
     }
 
     if (enableAsyncActions) {
@@ -13767,7 +14424,17 @@ to return true:wantsResponderID|                            |
         ) {
           currentHookNameInDev = "useFormState";
           mountHookTypesDev();
-          return mountFormState(action, initialState);
+          return mountActionState(action, initialState);
+        };
+
+        HooksDispatcherOnMountInDEV.useActionState = function useActionState(
+          action,
+          initialState,
+          permalink
+        ) {
+          currentHookNameInDev = "useActionState";
+          mountHookTypesDev();
+          return mountActionState(action, initialState);
         };
       }
 
@@ -13913,7 +14580,14 @@ to return true:wantsResponderID|                            |
           function useFormState(action, initialState, permalink) {
             currentHookNameInDev = "useFormState";
             updateHookTypesDev();
-            return mountFormState(action, initialState);
+            return mountActionState(action, initialState);
+          };
+
+        HooksDispatcherOnMountWithHookTypesInDEV.useActionState =
+          function useActionState(action, initialState, permalink) {
+            currentHookNameInDev = "useActionState";
+            updateHookTypesDev();
+            return mountActionState(action, initialState);
           };
       }
 
@@ -14060,7 +14734,17 @@ to return true:wantsResponderID|                            |
         ) {
           currentHookNameInDev = "useFormState";
           updateHookTypesDev();
-          return updateFormState(action);
+          return updateActionState(action);
+        };
+
+        HooksDispatcherOnUpdateInDEV.useActionState = function useActionState(
+          action,
+          initialState,
+          permalink
+        ) {
+          currentHookNameInDev = "useActionState";
+          updateHookTypesDev();
+          return updateActionState(action);
         };
       }
 
@@ -14209,7 +14893,17 @@ to return true:wantsResponderID|                            |
         ) {
           currentHookNameInDev = "useFormState";
           updateHookTypesDev();
-          return rerenderFormState(action);
+          return rerenderActionState(action);
+        };
+
+        HooksDispatcherOnRerenderInDEV.useActionState = function useActionState(
+          action,
+          initialState,
+          permalink
+        ) {
+          currentHookNameInDev = "useActionState";
+          updateHookTypesDev();
+          return rerenderActionState(action);
         };
       }
 
@@ -14380,7 +15074,15 @@ to return true:wantsResponderID|                            |
             currentHookNameInDev = "useFormState";
             warnInvalidHookAccess();
             mountHookTypesDev();
-            return mountFormState(action, initialState);
+            return mountActionState(action, initialState);
+          };
+
+        InvalidNestedHooksDispatcherOnMountInDEV.useActionState =
+          function useActionState(action, initialState, permalink) {
+            currentHookNameInDev = "useActionState";
+            warnInvalidHookAccess();
+            mountHookTypesDev();
+            return mountActionState(action, initialState);
           };
       }
 
@@ -14550,7 +15252,15 @@ to return true:wantsResponderID|                            |
             currentHookNameInDev = "useFormState";
             warnInvalidHookAccess();
             updateHookTypesDev();
-            return updateFormState(action);
+            return updateActionState(action);
+          };
+
+        InvalidNestedHooksDispatcherOnUpdateInDEV.useActionState =
+          function useActionState(action, initialState, permalink) {
+            currentHookNameInDev = "useActionState";
+            warnInvalidHookAccess();
+            updateHookTypesDev();
+            return updateActionState(action);
           };
       }
 
@@ -14720,7 +15430,15 @@ to return true:wantsResponderID|                            |
             currentHookNameInDev = "useFormState";
             warnInvalidHookAccess();
             updateHookTypesDev();
-            return rerenderFormState(action);
+            return rerenderActionState(action);
+          };
+
+        InvalidNestedHooksDispatcherOnRerenderInDEV.useActionState =
+          function useActionState(action, initialState, permalink) {
+            currentHookNameInDev = "useActionState";
+            warnInvalidHookAccess();
+            updateHookTypesDev();
+            return rerenderActionState(action);
           };
       }
 
@@ -16114,78 +16832,150 @@ to return true:wantsResponderID|                            |
       };
     }
 
-    if (
-      typeof ReactNativePrivateInterface.ReactFiberErrorDialog
-        .showErrorDialog !== "function"
-    ) {
-      throw new Error(
-        "Expected ReactFiberErrorDialog.showErrorDialog to be a function."
-      );
-    }
+    var reportGlobalError =
+      typeof reportError === "function" // In modern browsers, reportError will dispatch an error event,
+        ? // emulating an uncaught JavaScript error.
+          reportError
+        : function (error) {
+            if (
+              typeof window === "object" &&
+              typeof window.ErrorEvent === "function"
+            ) {
+              // Browser Polyfill
+              var message =
+                typeof error === "object" &&
+                error !== null &&
+                typeof error.message === "string" // eslint-disable-next-line react-internal/safe-string-coercion
+                  ? String(error.message) // eslint-disable-next-line react-internal/safe-string-coercion
+                  : String(error);
+              var event = new window.ErrorEvent("error", {
+                bubbles: true,
+                cancelable: true,
+                message: message,
+                error: error
+              });
+              var shouldLog = window.dispatchEvent(event);
 
-    function showErrorDialog(boundary, errorInfo) {
-      var capturedError = {
-        componentStack: errorInfo.stack !== null ? errorInfo.stack : "",
-        error: errorInfo.value,
-        errorBoundary:
-          boundary !== null && boundary.tag === ClassComponent
-            ? boundary.stateNode
-            : null
-      };
-      return ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog(
-        capturedError
-      );
-    }
+              if (!shouldLog) {
+                return;
+              }
+            } else if (
+              typeof process === "object" && // $FlowFixMe[method-unbinding]
+              typeof process.emit === "function"
+            ) {
+              // Node Polyfill
+              process.emit("uncaughtException", error);
+              return;
+            } // eslint-disable-next-line react-internal/no-production-logging
 
-    function logCapturedError(boundary, errorInfo) {
+            console["error"](error);
+          };
+
+    var ReactCurrentActQueue$2 = ReactSharedInternals.ReactCurrentActQueue; // Side-channel since I'm not sure we want to make this part of the public API
+
+    var componentName = null;
+    var errorBoundaryName = null;
+    function defaultOnUncaughtError(error, errorInfo) {
+      // Overriding this can silence these warnings e.g. for tests.
+      // See https://github.com/facebook/react/pull/13384
+      // For uncaught root errors we report them as uncaught to the browser's
+      // onerror callback. This won't have component stacks and the error addendum.
+      // So we add those into a separate console.warn.
+      reportGlobalError(error);
+
+      {
+        var componentStack =
+          errorInfo.componentStack != null ? errorInfo.componentStack : "";
+        var componentNameMessage = componentName
+          ? "An error occurred in the <" + componentName + "> component:"
+          : "An error occurred in one of your React components:";
+        console["warn"](
+          "%s\n%s\n\n%s",
+          componentNameMessage,
+          componentStack || "",
+          "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
+            "Visit https://react.dev/link/error-boundaries to learn more about error boundaries."
+        );
+      }
+    }
+    function defaultOnCaughtError(error, errorInfo) {
+      // Overriding this can silence these warnings e.g. for tests.
+      // See https://github.com/facebook/react/pull/13384
+      // Caught by error boundary
+      {
+        var componentStack =
+          errorInfo.componentStack != null ? errorInfo.componentStack : "";
+        var componentNameMessage = componentName
+          ? "The above error occurred in the <" + componentName + "> component:"
+          : "The above error occurred in one of your React components:"; // In development, we provide our own message which includes the component stack
+        // in addition to the error.
+        // Don't transform to our wrapper
+
+        console["error"](
+          "%o\n\n%s\n%s\n\n%s",
+          error,
+          componentNameMessage,
+          componentStack,
+          "React will try to recreate this component tree from scratch " +
+            ("using the error boundary you provided, " +
+              (errorBoundaryName || "Anonymous") +
+              ".")
+        );
+      }
+    }
+    function defaultOnRecoverableError(error, errorInfo) {
+      reportGlobalError(error);
+    }
+    function logUncaughtError(root, errorInfo) {
       try {
-        var logError = showErrorDialog(boundary, errorInfo); // Allow injected showErrorDialog() to prevent default console.error logging.
-        // This enables renderers like ReactNative to better manage redbox behavior.
-
-        if (logError === false) {
-          return;
+        if (true) {
+          componentName = errorInfo.source
+            ? getComponentNameFromFiber(errorInfo.source)
+            : null;
+          errorBoundaryName = null;
         }
 
         var error = errorInfo.value;
 
-        if (true) {
-          var source = errorInfo.source;
-          var stack = errorInfo.stack;
-          var componentStack = stack !== null ? stack : ""; // TODO: There's no longer a way to silence these warnings e.g. for tests.
-          // See https://github.com/facebook/react/pull/13384
-
-          var componentName = source ? getComponentNameFromFiber(source) : null;
-          var componentNameMessage = componentName
-            ? "The above error occurred in the <" +
-              componentName +
-              "> component:"
-            : "The above error occurred in one of your React components:";
-          var errorBoundaryMessage;
-
-          if (boundary.tag === HostRoot) {
-            errorBoundaryMessage =
-              "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
-              "Visit https://react.dev/link/error-boundaries to learn more about error boundaries.";
-          } else {
-            var errorBoundaryName =
-              getComponentNameFromFiber(boundary) || "Anonymous";
-            errorBoundaryMessage =
-              "React will try to recreate this component tree from scratch " +
-              ("using the error boundary you provided, " +
-                errorBoundaryName +
-                ".");
-          } // In development, we provide our own message which includes the component stack
-          // in addition to the error.
-
-          console["error"](
-            // Don't transform to our wrapper
-            "%o\n\n%s\n%s\n\n%s",
-            error,
-            componentNameMessage,
-            componentStack,
-            errorBoundaryMessage
-          );
+        if (true && ReactCurrentActQueue$2.current !== null) {
+          // For uncaught errors inside act, we track them on the act and then
+          // rethrow them into the test.
+          ReactCurrentActQueue$2.thrownErrors.push(error);
+          return;
         }
+
+        var onUncaughtError = root.onUncaughtError;
+        onUncaughtError(error, {
+          componentStack: errorInfo.stack
+        });
+      } catch (e) {
+        // This method must not throw, or React internal state will get messed up.
+        // If console.error is overridden, or logCapturedError() shows a dialog that throws,
+        // we want to report this error outside of the normal stack as a last resort.
+        // https://github.com/facebook/react/issues/13188
+        setTimeout(function () {
+          throw e;
+        });
+      }
+    }
+    function logCaughtError(root, boundary, errorInfo) {
+      try {
+        if (true) {
+          componentName = errorInfo.source
+            ? getComponentNameFromFiber(errorInfo.source)
+            : null;
+          errorBoundaryName = getComponentNameFromFiber(boundary);
+        }
+
+        var error = errorInfo.value;
+        var onCaughtError = root.onCaughtError;
+        onCaughtError(error, {
+          componentStack: errorInfo.stack,
+          errorBoundary:
+            boundary.tag === ClassComponent
+              ? boundary.stateNode // This should always be the case as long as we only have class boundaries
+              : null
+        });
       } catch (e) {
         // This method must not throw, or React internal state will get messed up.
         // If console.error is overridden, or logCapturedError() shows a dialog that throws,
@@ -16197,7 +16987,7 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function createRootErrorUpdate(fiber, errorInfo, lane) {
+    function createRootErrorUpdate(root, errorInfo, lane) {
       var update = createUpdate(lane); // Unmount the root by rendering null.
 
       update.tag = CaptureUpdate; // Caution: React DevTools currently depends on this property
@@ -16206,19 +16996,21 @@ to return true:wantsResponderID|                            |
       update.payload = {
         element: null
       };
-      var error = errorInfo.value;
 
       update.callback = function () {
-        onUncaughtError(error);
-        logCapturedError(fiber, errorInfo);
+        logUncaughtError(root, errorInfo);
       };
 
       return update;
     }
 
-    function createClassErrorUpdate(fiber, errorInfo, lane) {
+    function createClassErrorUpdate(lane) {
       var update = createUpdate(lane);
       update.tag = CaptureUpdate;
+      return update;
+    }
+
+    function initializeClassErrorUpdate(update, root, fiber, errorInfo) {
       var getDerivedStateFromError = fiber.type.getDerivedStateFromError;
 
       if (typeof getDerivedStateFromError === "function") {
@@ -16233,7 +17025,7 @@ to return true:wantsResponderID|                            |
             markFailedErrorBoundaryForHotReloading(fiber);
           }
 
-          logCapturedError(fiber, errorInfo);
+          logCaughtError(root, fiber, errorInfo);
         };
       }
 
@@ -16246,7 +17038,7 @@ to return true:wantsResponderID|                            |
             markFailedErrorBoundaryForHotReloading(fiber);
           }
 
-          logCapturedError(fiber, errorInfo);
+          logCaughtError(root, fiber, errorInfo);
 
           if (typeof getDerivedStateFromError !== "function") {
             // To preserve the preexisting retry behavior of error boundaries,
@@ -16279,8 +17071,6 @@ to return true:wantsResponderID|                            |
           }
         };
       }
-
-      return update;
     }
 
     function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
@@ -16624,7 +17414,7 @@ to return true:wantsResponderID|                            |
             var lane = pickArbitraryLane(rootRenderLanes);
             workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
             var update = createRootErrorUpdate(
-              workInProgress,
+              workInProgress.stateNode,
               _errorInfo,
               lane
             );
@@ -16651,12 +17441,14 @@ to return true:wantsResponderID|                            |
 
               workInProgress.lanes = mergeLanes(workInProgress.lanes, _lane); // Schedule the error boundary to re-render using updated state
 
-              var _update = createClassErrorUpdate(
-                workInProgress,
-                errorInfo,
-                _lane
-              );
+              var _update = createClassErrorUpdate(_lane);
 
+              initializeClassErrorUpdate(
+                _update,
+                root,
+                workInProgress,
+                errorInfo
+              );
               enqueueCapturedUpdate(workInProgress, _update);
               return false;
             }
@@ -17439,10 +18231,20 @@ to return true:wantsResponderID|                            |
             var lane = pickArbitraryLane(renderLanes);
             workInProgress.lanes = mergeLanes(workInProgress.lanes, lane); // Schedule the error boundary to re-render using updated state
 
-            var update = createClassErrorUpdate(
+            var root = getWorkInProgressRoot();
+
+            if (root === null) {
+              throw new Error(
+                "Expected a work-in-progress root. This is a bug in React. Please file an issue."
+              );
+            }
+
+            var update = createClassErrorUpdate(lane);
+            initializeClassErrorUpdate(
+              update,
+              root,
               workInProgress,
-              createCapturedValueAtFiber(error$1, workInProgress),
-              lane
+              createCapturedValueAtFiber(error$1, workInProgress)
             );
             enqueueCapturedUpdate(workInProgress, update);
             break;
@@ -18658,15 +19460,6 @@ to return true:wantsResponderID|                            |
       if (!didSuspend) {
         // This is the first render pass. Attempt to hydrate.
         pushPrimaryTreeSuspenseHandler(workInProgress); // We should never be hydrating at this point because it is the first pass,
-
-        if ((workInProgress.mode & ConcurrentMode) === NoMode) {
-          return retrySuspenseComponentWithoutHydrating(
-            current,
-            workInProgress,
-            renderLanes,
-            null
-          );
-        }
 
         if (isSuspenseInstanceFallback()) {
           // This boundary is in a permanent fallback state. In this case, we'll never
@@ -21166,6 +21959,8 @@ to return true:wantsResponderID|                            |
 
           return false;
         } else {
+          emitPendingHydrationWarnings(); // We might have reentered this boundary to hydrate it. If so, we need to reset the hydration
+
           if ((workInProgress.flags & DidCapture) === NoFlags$1) {
             // This boundary did not suspend so it's now hydrated and unsuspended.
             workInProgress.memoizedState = null;
@@ -21269,8 +22064,9 @@ to return true:wantsResponderID|                            |
             var wasHydrated = popHydrationState();
 
             if (wasHydrated) {
-              // If we hydrated, then we'll need to schedule an update for
+              emitPendingHydrationWarnings(); // If we hydrated, then we'll need to schedule an update for
               // the commit side-effects on the root.
+
               markUpdate(workInProgress);
             } else {
               if (current !== null) {
@@ -21388,9 +22184,7 @@ to return true:wantsResponderID|                            |
             var _wasHydrated3 = popHydrationState();
 
             if (_wasHydrated3) {
-              if (prepareToHydrateHostTextInstance()) {
-                markUpdate(workInProgress);
-              }
+              prepareToHydrateHostTextInstance();
             } else {
               workInProgress.stateNode = createTextInstance(
                 newText,
@@ -25358,9 +26152,7 @@ to return true:wantsResponderID|                            |
 
     var entangledRenderLanes = NoLanes; // Whether to root completed, errored, suspended, etc.
 
-    var workInProgressRootExitStatus = RootInProgress; // A fatal error, if one is thrown
-
-    var workInProgressRootFatalError = null; // The work left over by components that were visited during this render. Only
+    var workInProgressRootExitStatus = RootInProgress; // The work left over by components that were visited during this render. Only
     // includes unprocessed updates, not work in bailed out children.
 
     var workInProgressRootSkippedLanes = NoLanes; // Lanes that were updated (in an interleaved event) during this render.
@@ -25402,8 +26194,6 @@ to return true:wantsResponderID|                            |
     function getRenderTargetTime() {
       return workInProgressRootRenderTargetTime;
     }
-    var hasUncaughtError = false;
-    var firstUncaughtError = null;
     var legacyErrorBoundariesThatAlreadyFailed = null;
     var rootDoesHavePassiveEffects = false;
     var rootWithPendingPassiveEffects = null;
@@ -25752,11 +26542,9 @@ to return true:wantsResponderID|                            |
             }
 
             if (exitStatus === RootFatalErrored) {
-              var fatalError = workInProgressRootFatalError;
               prepareFreshStack(root, NoLanes);
               markRootSuspended(root, lanes, NoLane);
-              ensureRootIsScheduled(root);
-              throw fatalError;
+              break;
             } // We now have a consistent tree. The next step is either to commit it,
             // or, if something suspended, wait to commit it after a timeout.
 
@@ -25782,27 +26570,7 @@ to return true:wantsResponderID|                            |
       // back to client side render.
       // Before rendering again, save the errors from the previous attempt.
       var errorsFromFirstAttempt = workInProgressRootConcurrentErrors;
-      var wasRootDehydrated = isRootDehydrated(root);
-
-      if (wasRootDehydrated) {
-        // The shell failed to hydrate. Set a flag to force a client rendering
-        // during the next attempt. To do this, we call prepareFreshStack now
-        // to create the root work-in-progress fiber. This is a bit weird in terms
-        // of factoring, because it relies on renderRootSync not calling
-        // prepareFreshStack again in the call below, which happens because the
-        // root and lanes haven't changed.
-        //
-        // TODO: I think what we should do is set ForceClientRender inside
-        // throwException, like we do for nested Suspense boundaries. The reason
-        // it's here instead is so we can switch to the synchronous work loop, too.
-        // Something to consider for a future refactor.
-        var rootWorkInProgress = prepareFreshStack(root, errorRetryLanes);
-        rootWorkInProgress.flags |= ForceClientRender;
-
-        {
-          errorHydratingContainer();
-        }
-      }
+      var wasRootDehydrated = supportsHydration;
 
       var exitStatus = renderRootSync(root, errorRetryLanes);
 
@@ -25881,7 +26649,15 @@ to return true:wantsResponderID|                            |
           break;
         }
 
-        case RootErrored:
+        case RootErrored: {
+          // This render errored. Ignore any recoverable errors because we weren't actually
+          // able to recover. Instead, whatever the final errors were is the ones we log.
+          // This ensures that we only log the actual client side error if it's just a plain
+          // error thrown from a component on the server and the client.
+          workInProgressRootRecoverableErrors = null;
+          break;
+        }
+
         case RootSuspended:
         case RootCompleted: {
           break;
@@ -26168,11 +26944,10 @@ to return true:wantsResponderID|                            |
       }
 
       if (exitStatus === RootFatalErrored) {
-        var fatalError = workInProgressRootFatalError;
         prepareFreshStack(root, NoLanes);
         markRootSuspended(root, lanes, NoLane);
         ensureRootIsScheduled(root);
-        throw fatalError;
+        return null;
       }
 
       if (exitStatus === RootDidNotComplete) {
@@ -26331,7 +27106,6 @@ to return true:wantsResponderID|                            |
       workInProgressThrownValue = null;
       workInProgressRootDidAttachPingListener = false;
       workInProgressRootExitStatus = RootInProgress;
-      workInProgressRootFatalError = null;
       workInProgressRootSkippedLanes = NoLanes;
       workInProgressRootInterleavedUpdatedLanes = NoLanes;
       workInProgressRootPingedLanes = NoLanes;
@@ -26434,7 +27208,10 @@ to return true:wantsResponderID|                            |
       if (erroredWork === null) {
         // This is a fatal error
         workInProgressRootExitStatus = RootFatalErrored;
-        workInProgressRootFatalError = thrownValue;
+        logUncaughtError(
+          root,
+          createCapturedValueAtFiber(thrownValue, root.current)
+        );
         return;
       }
 
@@ -27193,7 +27970,7 @@ to return true:wantsResponderID|                            |
         );
 
         if (didFatal) {
-          panicOnRootError(thrownValue);
+          panicOnRootError(root, thrownValue);
           return;
         }
       } catch (error) {
@@ -27205,7 +27982,7 @@ to return true:wantsResponderID|                            |
           workInProgress = returnFiber;
           throw error;
         } else {
-          panicOnRootError(thrownValue);
+          panicOnRootError(root, thrownValue);
           return;
         }
       }
@@ -27227,13 +28004,13 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function panicOnRootError(error) {
+    function panicOnRootError(root, error) {
       // There's no ancestor that can handle this exception. This should never
       // happen because the root is supposed to capture all errors that weren't
       // caught by an error boundary. This is a fatal error, or panic condition,
       // because we've run out of ways to recover.
       workInProgressRootExitStatus = RootFatalErrored;
-      workInProgressRootFatalError = error; // Set `workInProgress` to null. This represents advancing to the next
+      logUncaughtError(root, createCapturedValueAtFiber(error, root.current)); // Set `workInProgress` to null. This represents advancing to the next
       // sibling, or the parent if there are no siblings. But since the root
       // has no siblings nor a parent, we set it to null. Usually this is
       // handled by `completeUnitOfWork` or `unwindWork`, but since we're
@@ -27642,19 +28419,9 @@ to return true:wantsResponderID|                            |
 
         for (var i = 0; i < recoverableErrors.length; i++) {
           var recoverableError = recoverableErrors[i];
-          var errorInfo = makeErrorInfo(
-            recoverableError.digest,
-            recoverableError.stack
-          );
+          var errorInfo = makeErrorInfo(recoverableError.stack);
           onRecoverableError(recoverableError.value, errorInfo);
         }
-      }
-
-      if (hasUncaughtError) {
-        hasUncaughtError = false;
-        var error$1 = firstUncaughtError;
-        firstUncaughtError = null;
-        throw error$1;
       } // If the passive effects are the result of a discrete render, flush them
       // synchronously at the end of the current task so that the result is
       // immediately observable. Otherwise, we assume that they are not
@@ -27709,26 +28476,35 @@ to return true:wantsResponderID|                            |
       return null;
     }
 
-    function makeErrorInfo(digest, componentStack) {
+    function makeErrorInfo(componentStack) {
       {
         var errorInfo = {
-          componentStack: componentStack,
-          digest: digest
+          componentStack: componentStack
         };
-        Object.defineProperty(errorInfo, "digest", {
-          configurable: false,
-          enumerable: true,
-          get: function () {
-            error(
-              'You are accessing "digest" from the errorInfo object passed to onRecoverableError.' +
-                " This property is deprecated and will be removed in a future version of React." +
-                " To access the digest of an Error look for this property on the Error instance itself."
-            );
+        return new Proxy(errorInfo, {
+          get: function (target, prop, receiver) {
+            if (prop === "digest") {
+              error(
+                'You are accessing "digest" from the errorInfo object passed to onRecoverableError.' +
+                  " This property is no longer provided as part of errorInfo but can be accessed as a property" +
+                  " of the Error instance itself."
+              );
+            }
 
-            return digest;
+            return Reflect.get(target, prop, receiver);
+          },
+          has: function (target, prop) {
+            if (prop === "digest") {
+              error(
+                'You are accessing "digest" from the errorInfo object passed to onRecoverableError.' +
+                  " This property is no longer provided as part of errorInfo but can be accessed as a property" +
+                  " of the Error instance itself."
+              );
+            }
+
+            return Reflect.has(target, prop);
           }
         });
-        return errorInfo;
       }
     }
 
@@ -27899,18 +28675,13 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function prepareToThrowUncaughtError(error) {
-      if (!hasUncaughtError) {
-        hasUncaughtError = true;
-        firstUncaughtError = error;
-      }
-    }
-
-    var onUncaughtError = prepareToThrowUncaughtError;
-
     function captureCommitPhaseErrorOnRoot(rootFiber, sourceFiber, error) {
       var errorInfo = createCapturedValueAtFiber(error, sourceFiber);
-      var update = createRootErrorUpdate(rootFiber, errorInfo, SyncLane);
+      var update = createRootErrorUpdate(
+        rootFiber.stateNode,
+        errorInfo,
+        SyncLane
+      );
       var root = enqueueUpdate(rootFiber, update, SyncLane);
 
       if (root !== null) {
@@ -27951,10 +28722,11 @@ to return true:wantsResponderID|                            |
               !isAlreadyFailedLegacyErrorBoundary(instance))
           ) {
             var errorInfo = createCapturedValueAtFiber(error$1, sourceFiber);
-            var update = createClassErrorUpdate(fiber, errorInfo, SyncLane);
+            var update = createClassErrorUpdate(SyncLane);
             var root = enqueueUpdate(fiber, update, SyncLane);
 
             if (root !== null) {
+              initializeClassErrorUpdate(update, root, fiber, errorInfo);
               markRootUpdated(root, SyncLane);
               ensureRootIsScheduled(root);
             }
@@ -29681,6 +30453,8 @@ to return true:wantsResponderID|                            |
       tag,
       hydrate,
       identifierPrefix,
+      onUncaughtError,
+      onCaughtError,
       onRecoverableError,
       formState
     ) {
@@ -29709,6 +30483,8 @@ to return true:wantsResponderID|                            |
       this.entanglements = createLaneMap(NoLanes);
       this.hiddenUpdates = createLaneMap(null);
       this.identifierPrefix = identifierPrefix;
+      this.onUncaughtError = onUncaughtError;
+      this.onCaughtError = onCaughtError;
       this.onRecoverableError = onRecoverableError;
 
       {
@@ -29758,6 +30534,8 @@ to return true:wantsResponderID|                            |
       // them through the root constructor. Perhaps we should put them all into a
       // single type, like a DynamicHostConfig that is defined by the renderer.
       identifierPrefix,
+      onUncaughtError,
+      onCaughtError,
       onRecoverableError,
       transitionCallbacks,
       formState
@@ -29768,6 +30546,8 @@ to return true:wantsResponderID|                            |
         tag,
         hydrate,
         identifierPrefix,
+        onUncaughtError,
+        onCaughtError,
         onRecoverableError,
         formState
       );
@@ -29801,7 +30581,7 @@ to return true:wantsResponderID|                            |
       return root;
     }
 
-    var ReactVersion = "18.3.0-canary-d8f61ba2";
+    var ReactVersion = "19.0.0-canary-50157059";
 
     function createPortal$1(
       children,
@@ -29933,6 +30713,8 @@ to return true:wantsResponderID|                            |
       isStrictMode,
       concurrentUpdatesByDefaultOverride,
       identifierPrefix,
+      onUncaughtError,
+      onCaughtError,
       onRecoverableError,
       transitionCallbacks
     ) {
@@ -29947,6 +30729,8 @@ to return true:wantsResponderID|                            |
         isStrictMode,
         concurrentUpdatesByDefaultOverride,
         identifierPrefix,
+        onUncaughtError,
+        onCaughtError,
         onRecoverableError,
         transitionCallbacks,
         null
@@ -30808,10 +31592,50 @@ to return true:wantsResponderID|                            |
       }
     }
 
-    function onRecoverableError(error$1) {
-      // TODO: Expose onRecoverableError option to userspace
-      // eslint-disable-next-line react-internal/no-production-logging, react-internal/warning-args
-      error(error$1);
+    if (
+      typeof ReactNativePrivateInterface.ReactFiberErrorDialog
+        .showErrorDialog !== "function"
+    ) {
+      throw new Error(
+        "Expected ReactFiberErrorDialog.showErrorDialog to be a function."
+      );
+    }
+
+    function nativeOnUncaughtError(error, errorInfo) {
+      var componentStack =
+        errorInfo.componentStack != null ? errorInfo.componentStack : "";
+      var logError =
+        ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog({
+          errorBoundary: null,
+          error: error,
+          componentStack: componentStack
+        }); // Allow injected showErrorDialog() to prevent default console.error logging.
+      // This enables renderers like ReactNative to better manage redbox behavior.
+
+      if (logError === false) {
+        return;
+      }
+
+      defaultOnUncaughtError(error, errorInfo);
+    }
+
+    function nativeOnCaughtError(error, errorInfo) {
+      var errorBoundary = errorInfo.errorBoundary;
+      var componentStack =
+        errorInfo.componentStack != null ? errorInfo.componentStack : "";
+      var logError =
+        ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog({
+          errorBoundary: errorBoundary,
+          error: error,
+          componentStack: componentStack
+        }); // Allow injected showErrorDialog() to prevent default console.error logging.
+      // This enables renderers like ReactNative to better manage redbox behavior.
+
+      if (logError === false) {
+        return;
+      }
+
+      defaultOnCaughtError(error, errorInfo);
     }
 
     function render(element, containerTag, callback, concurrentRoot) {
@@ -30827,7 +31651,9 @@ to return true:wantsResponderID|                            |
           false,
           null,
           "",
-          onRecoverableError,
+          nativeOnUncaughtError,
+          nativeOnCaughtError,
+          defaultOnRecoverableError,
           null
         );
         roots.set(containerTag, root);

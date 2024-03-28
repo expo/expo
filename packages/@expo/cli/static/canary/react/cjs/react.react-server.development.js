@@ -136,7 +136,6 @@ var enableScopeAPI = false; // Experimental Create Event Handle API.
 var enableTransitionTracing = false; // No known bugs, but needs performance testing
 
 var enableLegacyHidden = false; // Enables unstable_avoidThisFallback feature in Fiber
-var enableRenderableContext = false;
 // Ready for next major.
 //
 // Alias __NEXT_MAJOR__ to true for easier skimming.
@@ -148,6 +147,8 @@ var __NEXT_MAJOR__ = true; // Removes legacy style context
 // during element creation.
 
 var enableRefAsProp = __NEXT_MAJOR__;
+
+var enableRenderableContext = __NEXT_MAJOR__; // -----------------------------------------------------------------------------
 // stuff. Intended to enable React core members to more easily debug scheduling
 // issues in DEV builds.
 
@@ -489,20 +490,20 @@ function getComponentNameFromType(type) {
     switch (type.$$typeof) {
       case REACT_PROVIDER_TYPE:
         {
-          var provider = type;
-          return getContextName(provider._context) + '.Provider';
+          return null;
         }
 
       case REACT_CONTEXT_TYPE:
         var context = type;
 
         {
-          return getContextName(context) + '.Consumer';
+          return getContextName(context) + '.Provider';
         }
 
       case REACT_CONSUMER_TYPE:
         {
-          return null;
+          var consumer = type;
+          return getContextName(consumer._context) + '.Consumer';
         }
 
       case REACT_FORWARD_REF_TYPE:
@@ -550,7 +551,7 @@ function isValidElementType(type) {
   }
 
   if (typeof type === 'object' && type !== null) {
-    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || enableRenderableContext  || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || !enableRenderableContext  || type.$$typeof === REACT_CONSUMER_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
     // types supported by any Flight configuration anywhere since
     // we don't know which Flight build this will end up being used
     // with.
@@ -1046,7 +1047,7 @@ function elementRefGetterWithDeprecationWarning() {
     if (!didWarnAboutElementRef[componentName]) {
       didWarnAboutElementRef[componentName] = true;
 
-      error('Accessing element.ref is no longer supported. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
+      error('Accessing element.ref was removed in React 19. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
     } // An undefined `element.ref` is coerced to `null` for
     // backwards compatibility.
 
@@ -1997,6 +1998,13 @@ function use(usable) {
   var dispatcher = resolveDispatcher();
   return dispatcher.use(usable);
 }
+function useActionState(action, initialState, permalink) {
+  {
+    var dispatcher = resolveDispatcher(); // $FlowFixMe[not-a-function] This is unstable, thus optional
+
+    return dispatcher.useActionState(action, initialState, permalink);
+  }
+}
 
 function forwardRef(render) {
   {
@@ -2322,6 +2330,36 @@ var ReactCurrentBatchConfig = {
   transition: null
 };
 
+var reportGlobalError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
+// emulating an uncaught JavaScript error.
+reportError : function (error) {
+  if (typeof window === 'object' && typeof window.ErrorEvent === 'function') {
+    // Browser Polyfill
+    var message = typeof error === 'object' && error !== null && typeof error.message === 'string' ? // eslint-disable-next-line react-internal/safe-string-coercion
+    String(error.message) : // eslint-disable-next-line react-internal/safe-string-coercion
+    String(error);
+    var event = new window.ErrorEvent('error', {
+      bubbles: true,
+      cancelable: true,
+      message: message,
+      error: error
+    });
+    var shouldLog = window.dispatchEvent(event);
+
+    if (!shouldLog) {
+      return;
+    }
+  } else if (typeof process === 'object' && // $FlowFixMe[method-unbinding]
+  typeof process.emit === 'function') {
+    // Node Polyfill
+    process.emit('uncaughtException', error);
+    return;
+  } // eslint-disable-next-line react-internal/no-production-logging
+
+
+  console['error'](error);
+};
+
 function startTransition(scope, options) {
   var prevTransition = ReactCurrentBatchConfig.transition; // Each renderer registers a callback to receive the return value of
   // the scope function. This is used to implement async actions.
@@ -2345,10 +2383,10 @@ function startTransition(scope, options) {
         callbacks.forEach(function (callback) {
           return callback(currentTransition, returnValue);
         });
-        returnValue.then(noop, onError);
+        returnValue.then(noop, reportGlobalError);
       }
     } catch (error) {
-      onError(error);
+      reportGlobalError(error);
     } finally {
       warnAboutTransitionSubscriptions(prevTransition, currentTransition);
       ReactCurrentBatchConfig.transition = prevTransition;
@@ -2370,17 +2408,7 @@ function warnAboutTransitionSubscriptions(prevTransition, currentTransition) {
   }
 }
 
-function noop() {} // Use reportError, if it exists. Otherwise console.error. This is the same as
-// the default for onRecoverableError.
-
-
-var onError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
-// emulating an uncaught JavaScript error.
-reportError : function (error) {
-  // In older browsers and test environments, fallback to console.error.
-  // eslint-disable-next-line react-internal/no-production-logging
-  console['error'](error);
-};
+function noop() {}
 
 function postpone(reason) {
   // eslint-disable-next-line react-internal/prod-error-codes
@@ -2389,7 +2417,7 @@ function postpone(reason) {
   throw postponeInstance;
 }
 
-var ReactVersion = '18.3.0-experimental-9372c6311-20240315';
+var ReactVersion = '19.0.0-experimental-78328c0c4-20240328';
 
 var getPrototypeOf = Object.getPrototypeOf;
 
@@ -2522,6 +2550,7 @@ exports.unstable_getCacheForType = getCacheForType;
 exports.unstable_getCacheSignal = getCacheSignal;
 exports.unstable_postpone = postpone;
 exports.use = use;
+exports.useActionState = useActionState;
 exports.useCallback = useCallback;
 exports.useDebugValue = useDebugValue;
 exports.useId = useId;

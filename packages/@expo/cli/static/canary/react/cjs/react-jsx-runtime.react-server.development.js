@@ -97,7 +97,6 @@ var enableScopeAPI = false; // Experimental Create Event Handle API.
 var enableTransitionTracing = false; // No known bugs, but needs performance testing
 
 var enableLegacyHidden = false; // Enables unstable_avoidThisFallback feature in Fiber
-var enableRenderableContext = false;
 // Ready for next major.
 //
 // Alias __NEXT_MAJOR__ to true for easier skimming.
@@ -109,6 +108,8 @@ var __NEXT_MAJOR__ = true; // Removes legacy style context
 // during element creation.
 
 var enableRefAsProp = __NEXT_MAJOR__;
+
+var enableRenderableContext = __NEXT_MAJOR__; // -----------------------------------------------------------------------------
 // stuff. Intended to enable React core members to more easily debug scheduling
 // issues in DEV builds.
 
@@ -187,20 +188,20 @@ function getComponentNameFromType(type) {
     switch (type.$$typeof) {
       case REACT_PROVIDER_TYPE:
         {
-          var provider = type;
-          return getContextName(provider._context) + '.Provider';
+          return null;
         }
 
       case REACT_CONTEXT_TYPE:
         var context = type;
 
         {
-          return getContextName(context) + '.Consumer';
+          return getContextName(context) + '.Provider';
         }
 
       case REACT_CONSUMER_TYPE:
         {
-          return null;
+          var consumer = type;
+          return getContextName(consumer._context) + '.Consumer';
         }
 
       case REACT_FORWARD_REF_TYPE:
@@ -318,7 +319,7 @@ function isValidElementType(type) {
   }
 
   if (typeof type === 'object' && type !== null) {
-    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || enableRenderableContext  || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || !enableRenderableContext  || type.$$typeof === REACT_CONSUMER_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
     // types supported by any Flight configuration anywhere since
     // we don't know which Flight build this will end up being used
     // with.
@@ -820,7 +821,7 @@ function elementRefGetterWithDeprecationWarning() {
     if (!didWarnAboutElementRef[componentName]) {
       didWarnAboutElementRef[componentName] = true;
 
-      error('Accessing element.ref is no longer supported. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
+      error('Accessing element.ref was removed in React 19. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
     } // An undefined `element.ref` is coerced to `null` for
     // backwards compatibility.
 

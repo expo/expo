@@ -37,7 +37,14 @@ const enableScopeAPI = false; // Experimental Create Event Handle API.
 const enableTransitionTracing = false; // No known bugs, but needs performance testing
 
 const enableLegacyHidden = false; // Enables unstable_avoidThisFallback feature in Fiber
-const enableRenderableContext = false;
+// Ready for next major.
+//
+// Alias __NEXT_MAJOR__ to true for easier skimming.
+// -----------------------------------------------------------------------------
+
+const __NEXT_MAJOR__ = true; // Removes legacy style context
+
+const enableRenderableContext = __NEXT_MAJOR__; // -----------------------------------------------------------------------------
 // stuff. Intended to enable React core members to more easily debug scheduling
 // issues in DEV builds.
 
@@ -55,7 +62,7 @@ function isValidElementType(type) {
   }
 
   if (typeof type === 'object' && type !== null) {
-    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || enableRenderableContext  || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+    if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || !enableRenderableContext && type.$$typeof === REACT_PROVIDER_TYPE || enableRenderableContext && type.$$typeof === REACT_CONSUMER_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
     // types supported by any Flight configuration anywhere since
     // we don't know which Flight build this will end up being used
     // with.
@@ -94,11 +101,14 @@ function typeOf(object) {
                 return $$typeofType;
 
               case REACT_CONSUMER_TYPE:
+                if (enableRenderableContext) {
+                  return $$typeofType;
+                }
 
               // Fall through
 
               case REACT_PROVIDER_TYPE:
-                {
+                if (!enableRenderableContext) {
                   return $$typeofType;
                 }
 
@@ -117,8 +127,8 @@ function typeOf(object) {
 
   return undefined;
 }
-const ContextConsumer = REACT_CONTEXT_TYPE;
-const ContextProvider = REACT_PROVIDER_TYPE;
+const ContextConsumer = enableRenderableContext ? REACT_CONSUMER_TYPE : REACT_CONTEXT_TYPE;
+const ContextProvider = enableRenderableContext ? REACT_CONTEXT_TYPE : REACT_PROVIDER_TYPE;
 const Element = REACT_ELEMENT_TYPE;
 const ForwardRef = REACT_FORWARD_REF_TYPE;
 const Fragment = REACT_FRAGMENT_TYPE;
@@ -130,12 +140,16 @@ const StrictMode = REACT_STRICT_MODE_TYPE;
 const Suspense = REACT_SUSPENSE_TYPE;
 const SuspenseList = REACT_SUSPENSE_LIST_TYPE;
 function isContextConsumer(object) {
-  {
+  if (enableRenderableContext) {
+    return typeOf(object) === REACT_CONSUMER_TYPE;
+  } else {
     return typeOf(object) === REACT_CONTEXT_TYPE;
   }
 }
 function isContextProvider(object) {
-  {
+  if (enableRenderableContext) {
+    return typeOf(object) === REACT_CONTEXT_TYPE;
+  } else {
     return typeOf(object) === REACT_PROVIDER_TYPE;
   }
 }

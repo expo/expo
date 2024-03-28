@@ -44,7 +44,9 @@
     // Tracks whether something called `use` during the current batch of work.
     // Determines whether we should yield to microtasks to unwrap already resolved
     // promises without suspending.
-    didUsePromise: false
+    didUsePromise: false,
+    // Track first uncaught error within this act
+    thrownErrors: []
   };
 
   /**
@@ -157,7 +159,7 @@
     }
   }
 
-  var ReactVersion = '18.3.0-experimental-9372c6311-20240315';
+  var ReactVersion = '19.0.0-experimental-78328c0c4-20240328';
 
   // ATTENTION
   // When adding new symbols to this file,
@@ -435,7 +437,6 @@
   var enableTransitionTracing = false; // No known bugs, but needs performance testing
 
   var enableLegacyHidden = false; // Enables unstable_avoidThisFallback feature in Fiber
-  var enableRenderableContext = false;
   // Ready for next major.
   //
   // Alias __NEXT_MAJOR__ to true for easier skimming.
@@ -447,6 +448,8 @@
   // during element creation.
 
   var enableRefAsProp = __NEXT_MAJOR__;
+
+  var enableRenderableContext = __NEXT_MAJOR__; // -----------------------------------------------------------------------------
   // stuff. Intended to enable React core members to more easily debug scheduling
   // issues in DEV builds.
 
@@ -593,20 +596,20 @@
       switch (type.$$typeof) {
         case REACT_PROVIDER_TYPE:
           {
-            var provider = type;
-            return getContextName(provider._context) + '.Provider';
+            return null;
           }
 
         case REACT_CONTEXT_TYPE:
           var context = type;
 
           {
-            return getContextName(context) + '.Consumer';
+            return getContextName(context) + '.Provider';
           }
 
         case REACT_CONSUMER_TYPE:
           {
-            return null;
+            var consumer = type;
+            return getContextName(consumer._context) + '.Consumer';
           }
 
         case REACT_FORWARD_REF_TYPE:
@@ -654,7 +657,7 @@
     }
 
     if (typeof type === 'object' && type !== null) {
-      if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || enableRenderableContext  || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+      if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || !enableRenderableContext  || type.$$typeof === REACT_CONSUMER_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
@@ -1150,7 +1153,7 @@
       if (!didWarnAboutElementRef[componentName]) {
         didWarnAboutElementRef[componentName] = true;
 
-        error('Accessing element.ref is no longer supported. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
+        error('Accessing element.ref was removed in React 19. ref is now a ' + 'regular prop. It will be removed from the JSX Element ' + 'type in a future release.');
       } // An undefined `element.ref` is coerced to `null` for
       // backwards compatibility.
 
@@ -2082,63 +2085,11 @@
     };
 
     {
-      context.Provider = {
-        $$typeof: REACT_PROVIDER_TYPE,
+      context.Provider = context;
+      context.Consumer = {
+        $$typeof: REACT_CONSUMER_TYPE,
         _context: context
       };
-
-      {
-        var Consumer = {
-          $$typeof: REACT_CONTEXT_TYPE,
-          _context: context
-        };
-        Object.defineProperties(Consumer, {
-          Provider: {
-            get: function () {
-              return context.Provider;
-            },
-            set: function (_Provider) {
-              context.Provider = _Provider;
-            }
-          },
-          _currentValue: {
-            get: function () {
-              return context._currentValue;
-            },
-            set: function (_currentValue) {
-              context._currentValue = _currentValue;
-            }
-          },
-          _currentValue2: {
-            get: function () {
-              return context._currentValue2;
-            },
-            set: function (_currentValue2) {
-              context._currentValue2 = _currentValue2;
-            }
-          },
-          _threadCount: {
-            get: function () {
-              return context._threadCount;
-            },
-            set: function (_threadCount) {
-              context._threadCount = _threadCount;
-            }
-          },
-          Consumer: {
-            get: function () {
-              return context.Consumer;
-            }
-          },
-          displayName: {
-            get: function () {
-              return context.displayName;
-            },
-            set: function (displayName) {}
-          }
-        });
-        context.Consumer = Consumer;
-      }
     }
 
     {
@@ -2609,6 +2560,13 @@
     var dispatcher = resolveDispatcher(); // $FlowFixMe[not-a-function] This is unstable, thus optional
 
     return dispatcher.useOptimistic(passthrough, reducer);
+  }
+  function useActionState(action, initialState, permalink) {
+    {
+      var dispatcher = resolveDispatcher(); // $FlowFixMe[not-a-function] This is unstable, thus optional
+
+      return dispatcher.useActionState(action, initialState, permalink);
+    }
   }
 
   var enableSchedulerDebugging = false;
@@ -3223,6 +3181,36 @@
     ReactSharedInternalsClient.ReactDebugCurrentFrame = ReactDebugCurrentFrame$1;
   }
 
+  var reportGlobalError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
+  // emulating an uncaught JavaScript error.
+  reportError : function (error) {
+    if (typeof window === 'object' && typeof window.ErrorEvent === 'function') {
+      // Browser Polyfill
+      var message = typeof error === 'object' && error !== null && typeof error.message === 'string' ? // eslint-disable-next-line react-internal/safe-string-coercion
+      String(error.message) : // eslint-disable-next-line react-internal/safe-string-coercion
+      String(error);
+      var event = new window.ErrorEvent('error', {
+        bubbles: true,
+        cancelable: true,
+        message: message,
+        error: error
+      });
+      var shouldLog = window.dispatchEvent(event);
+
+      if (!shouldLog) {
+        return;
+      }
+    } else if (typeof process === 'object' && // $FlowFixMe[method-unbinding]
+    typeof process.emit === 'function') {
+      // Node Polyfill
+      process.emit('uncaughtException', error);
+      return;
+    } // eslint-disable-next-line react-internal/no-production-logging
+
+
+    console['error'](error);
+  };
+
   function startTransition(scope, options) {
     var prevTransition = ReactCurrentBatchConfig.transition; // Each renderer registers a callback to receive the return value of
     // the scope function. This is used to implement async actions.
@@ -3246,10 +3234,10 @@
           callbacks.forEach(function (callback) {
             return callback(currentTransition, returnValue);
           });
-          returnValue.then(noop, onError);
+          returnValue.then(noop, reportGlobalError);
         }
       } catch (error) {
-        onError(error);
+        reportGlobalError(error);
       } finally {
         warnAboutTransitionSubscriptions(prevTransition, currentTransition);
         ReactCurrentBatchConfig.transition = prevTransition;
@@ -3271,17 +3259,7 @@
     }
   }
 
-  function noop() {} // Use reportError, if it exists. Otherwise console.error. This is the same as
-  // the default for onRecoverableError.
-
-
-  var onError = typeof reportError === 'function' ? // In modern browsers, reportError will dispatch an error event,
-  // emulating an uncaught JavaScript error.
-  reportError : function (error) {
-    // In older browsers and test environments, fallback to console.error.
-    // eslint-disable-next-line react-internal/no-production-logging
-    console['error'](error);
-  };
+  function noop() {}
 
   var didWarnAboutMessageChannel = false;
   var enqueueTaskImpl = null;
@@ -3325,6 +3303,16 @@
   var actScopeDepth = 0; // We only warn the first time you neglect to await an async `act` scope.
 
   var didWarnNoAwaitAct = false;
+
+  function aggregateErrors(errors) {
+    if (errors.length > 1 && typeof AggregateError === 'function') {
+      // eslint-disable-next-line no-undef
+      return new AggregateError(errors);
+    }
+
+    return errors[0];
+  }
+
   function act(callback) {
     {
       // When ReactCurrentActQueue.current is not null, it signals to React that
@@ -3375,9 +3363,15 @@
         // one used to track `act` scopes. Why, you may be wondering? Because
         // that's how it worked before version 18. Yes, it's confusing! We should
         // delete legacy mode!!
+        ReactCurrentActQueue.thrownErrors.push(error);
+      }
+
+      if (ReactCurrentActQueue.thrownErrors.length > 0) {
         ReactCurrentActQueue.isBatchingLegacy = prevIsBatchingLegacy;
         popActScope(prevActQueue, prevActScopeDepth);
-        throw error;
+        var thrownError = aggregateErrors(ReactCurrentActQueue.thrownErrors);
+        ReactCurrentActQueue.thrownErrors.length = 0;
+        throw thrownError;
       }
 
       if (result !== null && typeof result === 'object' && // $FlowFixMe[method-unbinding]
@@ -3417,14 +3411,29 @@
                   // `thenable` might not be a real promise, and `flushActQueue`
                   // might throw, so we need to wrap `flushActQueue` in a
                   // try/catch.
-                  reject(error);
+                  ReactCurrentActQueue.thrownErrors.push(error);
+                }
+
+                if (ReactCurrentActQueue.thrownErrors.length > 0) {
+                  var _thrownError = aggregateErrors(ReactCurrentActQueue.thrownErrors);
+
+                  ReactCurrentActQueue.thrownErrors.length = 0;
+                  reject(_thrownError);
                 }
               } else {
                 resolve(returnValue);
               }
             }, function (error) {
               popActScope(prevActQueue, prevActScopeDepth);
-              reject(error);
+
+              if (ReactCurrentActQueue.thrownErrors.length > 0) {
+                var _thrownError2 = aggregateErrors(ReactCurrentActQueue.thrownErrors);
+
+                ReactCurrentActQueue.thrownErrors.length = 0;
+                reject(_thrownError2);
+              } else {
+                reject(error);
+              }
             });
           }
         };
@@ -3469,6 +3478,13 @@
 
 
           ReactCurrentActQueue.current = null;
+        }
+
+        if (ReactCurrentActQueue.thrownErrors.length > 0) {
+          var _thrownError3 = aggregateErrors(ReactCurrentActQueue.thrownErrors);
+
+          ReactCurrentActQueue.thrownErrors.length = 0;
+          throw _thrownError3;
         }
 
         return {
@@ -3519,15 +3535,21 @@
             enqueueTask(function () {
               return recursivelyFlushAsyncActWork(returnValue, resolve, reject);
             });
+            return;
           } catch (error) {
             // Leave remaining tasks on the queue if something throws.
-            reject(error);
+            ReactCurrentActQueue.thrownErrors.push(error);
           }
         } else {
           // The queue is empty. We can finish.
           ReactCurrentActQueue.current = null;
-          resolve(returnValue);
         }
+      }
+
+      if (ReactCurrentActQueue.thrownErrors.length > 0) {
+        var thrownError = aggregateErrors(ReactCurrentActQueue.thrownErrors);
+        ReactCurrentActQueue.thrownErrors.length = 0;
+        reject(thrownError);
       } else {
         resolve(returnValue);
       }
@@ -3573,7 +3595,7 @@
         } catch (error) {
           // If something throws, leave the remaining callbacks on the queue.
           queue.splice(0, i + 1);
-          throw error;
+          ReactCurrentActQueue.thrownErrors.push(error);
         } finally {
           isFlushing = false;
         }
@@ -3645,6 +3667,7 @@
   exports.unstable_useCacheRefresh = useCacheRefresh;
   exports.unstable_useMemoCache = useMemoCache;
   exports.use = use;
+  exports.useActionState = useActionState;
   exports.useCallback = useCallback;
   exports.useContext = useContext;
   exports.useDebugValue = useDebugValue;
