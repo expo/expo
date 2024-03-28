@@ -169,6 +169,7 @@ describe('server-output', () => {
 
     it(`can serve up API route in array group`, async () => {
       expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
       expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
       expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
@@ -348,11 +349,15 @@ describe('server-output', () => {
 
       // Has functions
       expect(files).toContain('server/_expo/functions/methods+api.js');
+      expect(files).toContain('server/_expo/functions/methods+api.js.map');
       expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+      expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
       expect(files).toContain('server/_expo/functions/api/externals+api.js');
+      expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
       // TODO: We shouldn't export this
       expect(files).toContain('server/_expo/functions/api/empty+api.js');
+      expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
       // Has single variation of group file
       expect(files).toContain('server/(alpha)/beta.html');
