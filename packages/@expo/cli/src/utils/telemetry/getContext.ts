@@ -8,7 +8,7 @@ export function getContext() {
     os: { name: os.platform(), version: os.release() },
     device: { arch: os.arch(), version: os.version(), memory: summarizeMemory() },
     cpu: summarizeCpuInfo(),
-    app: { name: 'expo', version: process.env.__EXPO_VERSION },
+    app: { name: 'expo/cli', version: process.env.__EXPO_VERSION },
     ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,
   };
 }

@@ -24,7 +24,7 @@ it('contains os name and version', () => {
 it('contains app name and version', () => {
   process.env.__EXPO_VERSION = '1337';
   expect(getContext().app).toMatchObject({
-    name: 'expo',
+    name: 'expo/cli',
     version: '1337',
   });
 });
