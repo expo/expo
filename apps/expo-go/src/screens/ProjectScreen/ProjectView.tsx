@@ -4,11 +4,10 @@ import dedent from 'dedent';
 import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
+import { SectionHeader } from 'src/components/SectionHeader';
 
 import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
-import { EmptySection } from './EmptySection';
 import { ProjectHeader } from './ProjectHeader';
-import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { ProjectsQuery } from '../../graphql/types';
@@ -24,8 +23,6 @@ type Props = {
   error?: Error;
   data?: ProjectsQuery;
 } & StackScreenProps<HomeStackRoutes, 'ProjectDetails'>;
-
-type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 export function ProjectView({ loading, error, data, navigation }: Props) {
   const theme = useExpoTheme();
@@ -49,27 +46,14 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
     );
   } else {
     const app = data.app.byId;
-    const hasEASUpdates = appHasEASUpdates(app);
 
     contents = (
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {hasEASUpdates && (
-            <>
-              <EASUpdateLaunchSection app={app} />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          {!hasEASUpdates && (
-            <>
-              <EmptySection />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          <View bg="default" border="default" overflow="hidden" rounded="large">
-            <ConstantItem title="Owner" value={app.ownerAccount.name} />
-          </View>
+          <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
+          <EASUpdateLaunchSection app={app} />
+          <Spacer.Vertical size="xl" />
         </View>
       </ScrollView>
     );
@@ -87,8 +71,4 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
   }, [navigation, data?.app?.byId]);
 
   return <View flex="1">{contents}</View>;
-}
-
-function appHasEASUpdates(app: ProjectPageApp): boolean {
-  return app.updateBranches.some((branch) => branch.updates.length > 0);
 }
