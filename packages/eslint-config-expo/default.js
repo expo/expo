@@ -15,6 +15,7 @@ module.exports = {
     './utils/core.js',
     './utils/typescript.js',
     './utils/react.js',
+    './utils/expo.js',
   ],
   globals: {
     __DEV__: false,

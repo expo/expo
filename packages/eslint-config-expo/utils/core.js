@@ -14,7 +14,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  plugins: ['import', 'node'],
+  plugins: ['import', 'node', 'expo'],
   rules: {
     'array-bracket-spacing': ['warn', 'never'],
     'arrow-spacing': ['warn', { before: true, after: true }],
