@@ -9,12 +9,10 @@ import { selectAsync } from '../utils/prompts';
 
 const WITH_PRETTIER = `module.exports = {
   root: true,
-  extends: ["universe/native", "prettier"],
-  plugins: ["prettier", "expo"],
+  extends: ["expo", "prettier"],
+  plugins: ["expo", "prettier"],
   rules: {
     "prettier/prettier": ["warn"],
-    "expo/no-env-var-destructuring": ["error"],
-    "expo/no-dynamic-env-var": ["error"],
   },
 };
 
@@ -22,12 +20,7 @@ const WITH_PRETTIER = `module.exports = {
 
 const ESLINT_ONLY = `module.exports = {
   root: true,
-  extends: ["universe/native"],
-  plugins: ["expo"],
-  rules: {
-    "expo/no-env-var-destructuring": ["error"],
-    "expo/no-dynamic-env-var": ["error"],
-  },
+  extends: ["expo"],
 };
 `;
 
@@ -56,8 +49,7 @@ const setupLinting = async (projectRoot: string) => {
 
   const packages = [
     'eslint',
-    'eslint-plugin-expo',
-    'eslint-config-universe', // TODO(Kadi): eslit-config-expo once published
+    // 'eslint-config-expo',
   ];
 
   if (result === 'eslint-and-prettier') {
