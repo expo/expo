@@ -1,12 +1,14 @@
 ---
 title: Get started
-description: Learn how to get started with EAS Update and use it in your project.
+description: Learn how to get started with the setup required to configure and use EAS Update in your project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { LayersTwo02Icon } from '@expo/styleguide-icons';
 
-Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
+Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in your project.
 
 <Step label="1">
 ## Install the latest EAS CLI
@@ -22,7 +24,7 @@ You can also use the above command to check if a new version of EAS CLI is avail
 </Step>
 
 <Step label="2">
-## Log in to your Expo account
+## Login to your Expo account
 
 If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
 
@@ -104,25 +106,11 @@ Then, make any desired changes to your project's JavaScript, styling, or image a
 
 </Step>
 
-<Step label="7">
-## Publish an update
-
-To publish an update to the build, run the following command:
-
-<Terminal
-  cmd={[
-    '# eas update --branch [branch] --message [message]',
-    '',
-    '# Example',
-    '$ eas update --branch preview --message "Updating the app"',
-  ]}
-  cmdCopy={null}
-/>
-
-Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update. By default, `expo-updates` checks for updates every time the app is loaded. However, you can also implement a custom strategy with the [Updates API](/versions/latest/sdk/updates) and [app config](/versions/latest/config/app/#updates). If your app is not updating as expected, [validate your configuration](/eas-update/debug).
-
-</Step>
-
 ## Next step
 
-You can publish updates continuously with GitHub Actions. See [Using GitHub Actions with EAS Update](/eas-update/github-actions) for more information.
+<BoxLink
+  title="Publish an update"
+  description="Learn how to publish an update to a specific branch with EAS Update."
+  href="/eas-update/publish/"
+  Icon={LayersTwo02Icon}
+/>
