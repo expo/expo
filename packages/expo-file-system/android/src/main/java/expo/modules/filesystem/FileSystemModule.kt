@@ -368,7 +368,7 @@ open class FileSystemModule : Module() {
       }
     }
 
-    AsyncFunction("getTotalDiskCapacityAsync") {
+    AsyncFunction<Double>("getTotalDiskCapacityAsync") {
       val root = StatFs(Environment.getDataDirectory().absolutePath)
       val blockCount = root.blockCountLong
       val blockSize = root.blockSizeLong
@@ -377,7 +377,7 @@ open class FileSystemModule : Module() {
       return@AsyncFunction capacity.toDouble().coerceAtMost(2.0.pow(53.0) - 1)
     }
 
-    AsyncFunction("getFreeDiskStorageAsync") {
+    AsyncFunction<Double>("getFreeDiskStorageAsync") {
       val external = StatFs(Environment.getDataDirectory().absolutePath)
       val availableBlocks = external.availableBlocksLong
       val blockSize = external.blockSizeLong

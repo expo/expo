@@ -65,7 +65,7 @@ class WebBrowserModule : Module() {
     }
 
     // throws CurrentActivityNotFoundException
-    AsyncFunction("getCustomTabsSupportingBrowsersAsync") {
+    AsyncFunction<Bundle>("getCustomTabsSupportingBrowsersAsync") {
       val activities = customTabsResolver.customTabsResolvingActivities
       val services = customTabsResolver.customTabsResolvingServices
       val preferredPackage = customTabsResolver.getPreferredCustomTabsResolvingActivity(activities)

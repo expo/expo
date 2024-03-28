@@ -28,7 +28,7 @@ class NavigationBarModule : Module() {
       NavigationBar.setBackgroundColor(activity, color, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBackgroundColorAsync") {
+    AsyncFunction<String>("getBackgroundColorAsync") {
       return@AsyncFunction colorToHex(activity.window.navigationBarColor)
     }.runOnQueue(Queues.MAIN)
 
@@ -36,7 +36,7 @@ class NavigationBarModule : Module() {
       NavigationBar.setBorderColor(activity, color, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBorderColorAsync") {
+    AsyncFunction<String>("getBorderColorAsync") {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         return@AsyncFunction colorToHex(activity.window.navigationBarDividerColor)
       } else {
@@ -55,7 +55,7 @@ class NavigationBarModule : Module() {
       )
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getButtonStyleAsync") {
+    AsyncFunction<String>("getButtonStyleAsync") {
       WindowInsetsControllerCompat(activity.window, activity.window.decorView).let { controller ->
         return@AsyncFunction if (controller.isAppearanceLightNavigationBars) "dark" else "light"
       }
@@ -65,7 +65,7 @@ class NavigationBarModule : Module() {
       NavigationBar.setVisibility(activity, visibility, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getVisibilityAsync") {
+    AsyncFunction<String>("getVisibilityAsync") {
       val isVisible = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         activity.window.decorView.rootWindowInsets.isVisible(WindowInsets.Type.navigationBars())
       } else {
@@ -79,7 +79,7 @@ class NavigationBarModule : Module() {
       NavigationBar.setPosition(activity, position, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("unstable_getPositionAsync") {
+    AsyncFunction<String>("unstable_getPositionAsync") {
       return@AsyncFunction if (ViewCompat.getFitsSystemWindows(activity.window.decorView)) "relative" else "absolute"
     }.runOnQueue(Queues.MAIN)
 
@@ -87,7 +87,7 @@ class NavigationBarModule : Module() {
       NavigationBar.setBehavior(activity, behavior, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBehaviorAsync") {
+    AsyncFunction<String>("getBehaviorAsync") {
       WindowInsetsControllerCompat(activity.window, activity.window.decorView).let { controller ->
         val behavior = when (controller.systemBarsBehavior) {
           // TODO: Maybe relative / absolute
@@ -103,7 +103,7 @@ class NavigationBarModule : Module() {
 
     // We are not using `OnStartObserving` and `OnStopObserving` here because when switching threads
     // they will resolve the promise quicker and the JS won't wait for observer removal
-    AsyncFunction("startObserving") {
+    AsyncFunction<Unit>("startObserving") {
       val decorView = activity.window.decorView
       @Suppress("DEPRECATION")
       decorView.setOnSystemUiVisibilityChangeListener { visibility: Int ->
@@ -119,7 +119,7 @@ class NavigationBarModule : Module() {
       }
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("stopObserving") {
+    AsyncFunction<Unit>("stopObserving") {
       val decorView = activity.window.decorView
       @Suppress("DEPRECATION")
       decorView.setOnSystemUiVisibilityChangeListener(null)

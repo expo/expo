@@ -24,7 +24,7 @@ class DevMenuInternalModule : Module() {
       "doesDeviceSupportKeyCommands" to EmulatorUtilities.isRunningOnEmulator()
     )
 
-    AsyncFunction("loadFontsAsync") {
+    AsyncFunction<Unit>("loadFontsAsync") {
       DevMenuManager.loadFonts(context)
     }
 
@@ -32,11 +32,11 @@ class DevMenuInternalModule : Module() {
       DevMenuManager.dispatchCallable(callableId, args)
     }
 
-    AsyncFunction("hideMenu") {
+    AsyncFunction<Unit>("hideMenu") {
       DevMenuManager.hideMenu()
     }
 
-    AsyncFunction("closeMenu") {
+    AsyncFunction<Unit>("closeMenu") {
       DevMenuManager.closeMenu()
     }
 

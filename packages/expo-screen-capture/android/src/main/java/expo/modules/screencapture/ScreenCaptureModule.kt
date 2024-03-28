@@ -55,11 +55,11 @@ class ScreenCaptureModule : Module() {
       }
     }
 
-    AsyncFunction("preventScreenCapture") {
+    AsyncFunction<Unit>("preventScreenCapture") {
       currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("allowScreenCapture") {
+    AsyncFunction<Unit>("allowScreenCapture") {
       currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 

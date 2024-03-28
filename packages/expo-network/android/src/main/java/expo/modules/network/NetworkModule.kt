@@ -67,11 +67,11 @@ class NetworkModule : Module() {
       }
     }
 
-    AsyncFunction("getIpAddressAsync") {
+    AsyncFunction<String>("getIpAddressAsync") {
       return@AsyncFunction rawIpToString(wifiInfo.ipAddress)
     }
 
-    AsyncFunction("isAirplaneModeEnabledAsync") {
+    AsyncFunction<Boolean>("isAirplaneModeEnabledAsync") {
       return@AsyncFunction Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
     }
   }
