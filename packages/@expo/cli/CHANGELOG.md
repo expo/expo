@@ -27,6 +27,7 @@
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 - Included groups in Expo Router typed routes generation ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
 - Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
+- Use correct script src path when exporting web development builds. ([#27946](https://github.com/expo/expo/pull/27946) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
