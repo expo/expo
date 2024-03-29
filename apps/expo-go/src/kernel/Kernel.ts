@@ -17,6 +17,10 @@ export const sdkVersions: string = Array.isArray(NativeKernel.sdkVersions)
   ? NativeKernel.sdkVersions.join(',')
   : NativeKernel.sdkVersions;
 
+export const sdkVersionsArray = Array.isArray(NativeKernel.sdkVersions)
+  ? NativeKernel.sdkVersions
+  : [NativeKernel.sdkVersions];
+
 export const iosClientReleaseType: ExpoClientReleaseType =
   NativeKernel.IOSClientReleaseType || ExpoClientReleaseType.UNKNOWN;
 

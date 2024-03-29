@@ -4,20 +4,24 @@ import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-component
 import React from 'react';
 import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { BranchDetailsQuery } from 'src/graphql/types';
 
 import { DateFormats } from '../constants/DateFormats';
+import * as Kernel from '../kernel/Kernel';
 import * as UrlUtils from '../utils/UrlUtils';
 
 type Props = {
-  id: string;
-  message?: string;
-  createdAt: string;
-  manifestPermalink: string;
+  update: NonNullable<BranchDetailsQuery['app']['byId']['updateBranchByName']>['updates'][0];
   first: boolean;
   last: boolean;
 };
 
-export function UpdateListItem({ id, message, createdAt, manifestPermalink, first, last }: Props) {
+export function UpdateListItem({ update, first, last }: Props) {
+  const { id, message, createdAt, manifestPermalink, expoGoSDKVersion } = update;
+
+  const isCompatibleWithThisExpoGo =
+    !!expoGoSDKVersion && Kernel.sdkVersionsArray.includes(expoGoSDKVersion);
+
   const theme = useExpoTheme();
 
   const handlePress = () => {
@@ -33,7 +37,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink, firs
         borderBottomWidth: last ? 1 : 0,
         borderTopWidth: first ? 1 : 0,
       }}>
-      <TouchableOpacity onPress={handlePress}>
+      <TouchableOpacity onPress={handlePress} disabled={!isCompatibleWithThisExpoGo}>
         <View
           padding="medium"
           bg="default"
@@ -57,14 +61,29 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink, firs
                     numberOfLines={1}>
                     Published {format(new Date(createdAt), DateFormats.timestamp)}
                   </Text>
+                  {!isCompatibleWithThisExpoGo && (
+                    <>
+                      <Spacer.Vertical size="tiny" />
+                      <Text
+                        type="InterRegular"
+                        color="secondary"
+                        size="small"
+                        ellipsizeMode="tail"
+                        numberOfLines={1}>
+                        Not compatible with this version of Expo Go
+                      </Text>
+                    </>
+                  )}
                 </View>
               </Row>
             </View>
             <Spacer.Horizontal size="tiny" />
-            <ChevronDownIcon
-              style={{ transform: [{ rotate: '-90deg' }] }}
-              color={theme.icon.secondary}
-            />
+            {isCompatibleWithThisExpoGo && (
+              <ChevronDownIcon
+                style={{ transform: [{ rotate: '-90deg' }] }}
+                color={theme.icon.secondary}
+              />
+            )}
           </Row>
         </View>
       </TouchableOpacity>

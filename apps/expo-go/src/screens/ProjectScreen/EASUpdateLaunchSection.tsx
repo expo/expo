@@ -4,9 +4,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { BranchManifest } from 'src/screens/BranchListScreen/BranchListView';
 
 import { BranchListItem } from '../../components/BranchListItem';
-import { SectionHeader } from '../../components/SectionHeader';
 import { ProjectsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
@@ -17,7 +17,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
     (updateBranch) => updateBranch.updates.length > 0
   );
 
-  const branchManifests = branchesToRender.slice(0, 3).map((branch) => ({
+  const branchManifests: BranchManifest[] = branchesToRender.slice(0, 3).map((branch) => ({
     name: branch.name,
     id: branch.id,
     latestUpdate: branch.updates[0],
@@ -30,9 +30,16 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
     navigation.navigate('Branches', { appId: app.id });
   }
 
+  if (branchManifests.length === 0) {
+    return (
+      <Text align="center" type="InterRegular" color="secondary" size="small">
+        No EAS Update branches
+      </Text>
+    );
+  }
+
   return (
     <View>
-      <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
       {branchManifests.map((branch, i) => {
         return (
           <Fragment key={branch.id}>
