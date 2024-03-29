@@ -9,7 +9,7 @@ internal struct DRMOptions: Record {
 
   @Field
   var licenseServer: String?
-  
+
   @Field
   var getLicense: ((String, String, String) -> Promise<String>)?
 

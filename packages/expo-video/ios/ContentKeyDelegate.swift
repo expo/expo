@@ -147,18 +147,17 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
     }
 
     if let getLicense = videoSource?.drm?.getLicense {
-        let spcString = String(data: spcData, encoding: .utf8) ?? ""
-        let contentId = videoSource?.drm?.contentId ?? ""
-        do {
-            let ckcString = try getLicense(spcString, contentId, licenseServerUri)
-            if let ckcData = ckcString.data(using: .utf8) {
-                return ckcData
-            } else {
-                throw DRMLoadException("Failed to convert license response to Data")
-            }
-        } catch {
-            throw DRMLoadException("Failed to get license using custom function: \(error.localizedDescription)")
+      let spcString = String(data: spcData, encoding: .utf8) ?? ""
+      let contentId = videoSource?.drm?.contentId ?? ""
+      do {
+        let ckcString = try getLicense(spcString, contentId, licenseServerUri)
+        if let ckcData = ckcString.data(using: .utf8) {
+          return ckcData
         }
+        throw DRMLoadException("Failed to convert license response to Data")
+      } catch {
+        throw DRMLoadException("Failed to get license using custom function: \(error.localizedDescription)")
+      }
     } else {
       let (data, response, error) = URLSession.shared.synchronousDataTask(with: ckcRequest)
 
