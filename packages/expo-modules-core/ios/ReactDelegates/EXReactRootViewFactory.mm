@@ -5,7 +5,6 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RCTHost.h>
-#import <ReactCommon/RCTHost+Internal.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -18,12 +17,9 @@
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling> {
+@interface RCTRootViewFactory () {
   RCTHost *_reactHost;
-  __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
 }
-
-- (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory;
 
 @property (nonatomic, strong, nullable) RCTHost *reactHost;
 @end
@@ -107,41 +103,6 @@
 - (void)setReactHost:(RCTHost *)reactHost
 {
   return [self setValue:reactHost forKey:@"_reactHost"];
-}
-
-/**
- Override `createReactHostIfNeeded`:
- - Reuse `RCTAppDelegate.rootViewFactory` for jsEngineProvider and ContextContainerHandler.
-   Since we just customize bundleURL, all the other references we could reuse from `RCTAppDelegate.rootViewFactory`.
-   That would also prevent `[weakSelf createJSRuntimeFactory]` from unretained self.
- */
-- (void)createReactHostIfNeeded
-{
-  if ([self reactHost]) {
-    return;
-  }
-
-  RCTAppDelegate *appDelegate = [EXReactRootViewFactory getRCTAppDelegate];
-  RCTRootViewFactory *appRootViewFactory = (RCTRootViewFactory *)appDelegate.rootViewFactory;
-  __weak RCTRootViewFactory *weakAppRootViewFactory = appRootViewFactory;
-
-  RCTRootViewFactoryConfiguration *configuration = [self valueForKey:@"_configuration"];
-  NSURL *bundleURL = configuration.bundleURL;
-  id<RCTTurboModuleManagerDelegate> turboModuleManagerDelegate = [self valueForKey:@"_turboModuleManagerDelegate"];
-
-  RCTHost *reactHost = [[RCTHost alloc] initWithBundleURL:bundleURL
-                                     hostDelegate:nil
-                       turboModuleManagerDelegate:turboModuleManagerDelegate
-                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
-                                   return [weakAppRootViewFactory createJSRuntimeFactory];
-                                 }];
-  [reactHost setBundleURLProvider:^NSURL *() {
-    return bundleURL;
-  }];
-  [reactHost setContextContainerHandler:appRootViewFactory];
-  [reactHost start];
-
-  [self setReactHost:reactHost];
 }
 
 + (RCTAppDelegate *)getRCTAppDelegate
