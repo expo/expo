@@ -1,3 +1,4 @@
+import { ApolloQueryResult } from '@apollo/client';
 import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
@@ -6,16 +7,18 @@ import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 import { BranchListItem } from '../../components/BranchListItem';
 import { BranchesForProjectQuery } from '../../graphql/types';
 
-type BranchManifest = {
+export type BranchManifest = {
   name: string;
   id: string;
-  latestUpdate: BranchesForProjectQuery['app']['byId']['updateBranches'][0]['updates'][0];
+  latestUpdate:
+    | BranchesForProjectQuery['app']['byId']['updateBranches'][0]['updates'][0]
+    | undefined;
 };
 
 type Props = {
   appId: string;
   data: BranchManifest[];
-  loadMoreAsync: () => Promise<any>;
+  loadMoreAsync: () => Promise<ApolloQueryResult<BranchesForProjectQuery>>;
 };
 
 export function BranchListView(props: Props) {
