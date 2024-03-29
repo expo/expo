@@ -1,5 +1,6 @@
 import * as babel from '@babel/core';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
@@ -18,6 +19,14 @@ const DEF_OPTIONS = {
   retainLines: true,
   caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios' }),
 };
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 it(`compiles React auto jsx import`, () => {
   const options = {

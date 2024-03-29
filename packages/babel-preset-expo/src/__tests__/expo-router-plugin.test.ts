@@ -1,6 +1,7 @@
 import * as babel from '@babel/core';
 import { getConfig } from '@expo/config';
 
+import { resetEnv } from './test-utils';
 import { expoRouterBabelPlugin } from '../expo-router-plugin';
 
 jest.mock('@expo/config', () => ({
@@ -27,16 +28,14 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 
 beforeEach(() => {
   jest.mocked(getConfig).mockClear();
-
+  resetEnv();
   process.env._EXPO_INTERNAL_TESTING = '1';
-  delete process.env.EXPO_ROUTER_ABS_APP_ROOT;
-  delete process.env.EXPO_ROUTER_IMPORT_MODE;
-  delete process.env.EXPO_PROJECT_ROOT;
 });
 
 afterEach(() => {
-  delete process.env._EXPO_INTERNAL_TESTING;
   process.env.NODE_ENV = 'test';
+  process.env.BABEL_ENV = 'test';
+  resetEnv();
 });
 
 const DEF_OPTIONS = {

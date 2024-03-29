@@ -4,7 +4,16 @@
 
 import * as babel from '@babel/core';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 const ENABLED_CALLER = {
   name: 'metro',
@@ -60,7 +69,7 @@ describe('forbidden React server APIs', () => {
   }
   it(`does not assert importing client-side APIs in client components (react server mode)`, () => {
     // This test covers the order of server registry running before the assertion to remove the import.
-    expect(runServerPass(`"use client"; import { useState } from 'react';`).code).toMatch(
+    expect(runServerPass(`"use client"; import { useState } from 'react';`)?.code).toMatch(
       'react-server-dom-webpack'
     );
   });
@@ -84,7 +93,7 @@ describe('forbidden React server APIs', () => {
         ...DEF_OPTIONS,
         filename: '/bacon/node_modules/@bacons/breakfast.js',
         caller: getCaller({ ...ENABLED_CALLER, isReactServer: true, platform: 'ios' }),
-      }).code
+      })?.code
     ).toBe(`import { findDOMNode } from 'react-dom';`);
   });
 

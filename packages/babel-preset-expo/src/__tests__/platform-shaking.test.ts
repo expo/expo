@@ -1,11 +1,20 @@
 import * as babel from '@babel/core';
 
 import { minifyLikeMetroAsync } from './minify-util';
+import { resetEnv } from './test-utils';
 import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 const DEFAULT_OPTS = {
   babelrc: false,

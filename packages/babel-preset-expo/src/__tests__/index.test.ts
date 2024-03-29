@@ -2,11 +2,20 @@ import * as babel from '@babel/core';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
+
+beforeEach(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 jest.mock('../common.ts', () => ({
   ...jest.requireActual('../common.ts'),

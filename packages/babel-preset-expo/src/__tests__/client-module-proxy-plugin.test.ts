@@ -4,7 +4,16 @@
 
 import * as babel from '@babel/core';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 const ENABLED_CALLER = {
   name: 'metro',
@@ -91,7 +100,7 @@ describe('use client', () => {
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents.code).toMatch('react-server-dom-webpack');
+    expect(contents?.code).toMatch('react-server-dom-webpack');
   });
 
   it(`does not collect metadata when bundling for the client`, () => {
@@ -112,9 +121,9 @@ describe('use client', () => {
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents.metadata).toEqual({});
+    expect(contents?.metadata).toEqual({});
 
-    expect(contents.code).not.toMatch('react-server-dom-webpack');
+    expect(contents?.code).not.toMatch('react-server-dom-webpack');
   });
 
   it(`replaces client exports with React client references`, () => {

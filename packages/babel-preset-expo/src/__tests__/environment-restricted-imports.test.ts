@@ -4,7 +4,16 @@
 
 import * as babel from '@babel/core';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 const ENABLED_CALLER = {
   name: 'metro',
@@ -61,7 +70,7 @@ describe('forbidden server imports', () => {
 
     it(`does not assert importing client-side modules in client components (react server mode)`, () => {
       // This test covers the order of server registry running before the assertion to remove the import.
-      expect(runServerPass(`"use client"; import 'client-only';`).code).toMatch(
+      expect(runServerPass(`"use client"; import 'client-only';`)!.code).toMatch(
         'react-server-dom-webpack'
       );
     });
@@ -105,6 +114,7 @@ describe('forbidden server imports', () => {
       return babel.transform(
         src,
         getOpts({
+          // @ts-expect-error
           isReactServer: undefined,
         })
       );

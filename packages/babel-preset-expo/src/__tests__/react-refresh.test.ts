@@ -1,5 +1,6 @@
 import * as babel from '@babel/core';
 
+import { resetEnv } from './test-utils';
 import preset from '..';
 
 type Caller = {
@@ -10,6 +11,14 @@ type Caller = {
   isServer: boolean;
   isNodeModule: boolean;
 };
+
+beforeAll(() => {
+  resetEnv();
+});
+
+afterEach(() => {
+  resetEnv();
+});
 
 const ENABLED_CALLER: Caller = {
   name: 'metro',
