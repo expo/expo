@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
@@ -95,24 +94,6 @@ class EnabledUpdatesController(
         onStartupProcedureFinished()
       }
 
-      override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {
-        when (event) {
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.Error -> sendLegacyUpdateEventToJS(
-            UPDATE_ERROR_EVENT,
-            Arguments.createMap().apply {
-              putString("message", event.exception.message)
-            }
-          )
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable -> sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.UpdateAvailable -> sendLegacyUpdateEventToJS(
-            UPDATE_AVAILABLE_EVENT,
-            Arguments.createMap().apply {
-              putString("manifestString", event.manifest.toString())
-            }
-          )
-        }
-      }
-
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
         relaunchReactApplication(shouldRunReaper, callback)
       }
@@ -179,10 +160,6 @@ class EnabledUpdatesController(
 
   override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
     sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
-  }
-
-  private fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {
-    sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {

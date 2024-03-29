@@ -207,10 +207,6 @@ commands[command]().then((exec) => {
     // We do this to determine how well deprecations are going before removing a command.
     const { logEventAsync } =
       require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
-    logEventAsync('action', {
-      action: `expo ${command}`,
-      source: 'expo/cli',
-      source_version: process.env.__EXPO_VERSION,
-    });
+    logEventAsync('action', { action: `expo ${command}` });
   }
 });

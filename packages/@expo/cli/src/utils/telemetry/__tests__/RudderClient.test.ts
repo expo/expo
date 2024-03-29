@@ -37,10 +37,6 @@ it('tracks event when user is identified', async () => {
     userId: 'fake',
     anonymousId: 'anonymous-id',
     event: 'Start Project',
-    properties: expect.objectContaining({
-      source: 'expo/cli',
-      source_version: process.env.__EXPO_VERSION, // undefined in testing
-    }),
     context: {
       ...getContext(),
       client: { mode: 'attached' },
@@ -64,7 +60,6 @@ it('tracks event with correct mode', async () => {
       client: { mode: 'detached' },
     },
     event: 'Start Project',
-    properties: { source: 'expo/cli', source_version: undefined },
   });
 });
 
@@ -146,6 +141,8 @@ it('only re-identifies when user has changed', async () => {
   const client = new RudderClient(sdk);
 
   await client.identify({ ...mockActor, id: 'old' });
+  await client.identify({ ...mockActor, id: 'old' });
+  await client.identify({ ...mockActor, id: 'new' });
   await client.identify({ ...mockActor, id: 'new' });
 
   expect(sdk.identify).toHaveBeenCalledWith(expect.objectContaining({ userId: 'old' }));

@@ -79,3 +79,27 @@ export const chunkArray = (array: any[], chunkSize: number) => {
     return acc;
   }, []);
 };
+
+export function listMissingHashLinkTargets(apiName?: string) {
+  const contentLinks = document.querySelectorAll(
+    `div.size-full.overflow-x-hidden.overflow-y-auto a`
+  ) as NodeListOf<HTMLAnchorElement>;
+
+  const wantedHashes = Array.from(contentLinks)
+    .map(link => {
+      if (link.hostname !== 'localhost' || !link.href.startsWith(link.baseURI.split('#')[0])) {
+        return '';
+      }
+      return link.hash.substring(1);
+    })
+    .filter(hash => hash !== '');
+
+  const availableIDs = Array.from(document.querySelectorAll('*[id]')).map(link => link.id);
+  const missingEntries = wantedHashes.filter(hash => !availableIDs.includes(hash));
+
+  if (missingEntries.length) {
+    console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
+    console.table(missingEntries);
+    console.groupEnd();
+  }
+}

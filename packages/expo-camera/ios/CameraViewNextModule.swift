@@ -42,56 +42,66 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
     View(CameraViewNext.self) {
       Events(cameraNextEvents)
 
-      Prop("facing") { (view, type: CameraTypeNext) in
-        if view.presetCamera != type.toPosition() {
+      Prop("facing") { (view, type: CameraTypeNext?) in
+        if let type, view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
       }
 
-      Prop("flashMode") { (view, flashMode: CameraFlashModeNext) in
-        if view.flashMode != flashMode {
+      Prop("flashMode") { (view, flashMode: CameraFlashModeNext?) in
+        if let flashMode, view.flashMode != flashMode {
           view.flashMode = flashMode
         }
       }
 
-      Prop("enableTorch") { (view, enabled: Bool) in
-        view.torchEnabled = enabled
+      Prop("enableTorch") { (view, enabled: Bool?) in
+        view.torchEnabled = enabled ?? false
       }
 
       Prop("pictureSize") { (view, pictureSize: PictureSize?) in
-        view.pictureSize = pictureSize ?? .high
+        if let pictureSize, view.pictureSize != pictureSize {
+          view.pictureSize = pictureSize
+        }
       }
 
-      Prop("zoom") { (view, zoom: Double) in
-        if fabs(view.zoom - zoom) > Double.ulpOfOne {
+      Prop("zoom") { (view, zoom: Double?) in
+        if let zoom, fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
         }
       }
 
-      Prop("mode") { (view, mode: CameraModeNext) in
-        if view.mode != mode {
+      Prop("mode") { (view, mode: CameraModeNext?) in
+        if let mode, view.mode != mode {
           view.mode = mode
         }
       }
 
       Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
-        view.isScanningBarcodes = scanBarcodes ?? false
+        if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
+          view.isScanningBarcodes = scanBarcodes
+        }
       }
 
-      Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings) in
-        view.setBarcodeScannerSettings(settings: settings)
+      Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
+        if let settings {
+          view.setBarcodeScannerSettings(settings: settings)
+        }
       }
 
-      Prop("mute") { (view, muted: Bool) in
-        view.isMuted = muted
+      Prop("mute") { (view, muted: Bool?) in
+        if let muted, view.isMuted != muted {
+          view.isMuted = muted
+        }
       }
 
-      Prop("videoQuality") { (view, quality: VideoQuality) in
-        view.videoQuality = quality
+      Prop("videoQuality") { (view, quality: VideoQuality?) in
+        if let quality, view.videoQuality != quality {
+          view.videoQuality = quality
+        }
       }
 
-      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
-        if view.responsiveWhenOrientationLocked != responsiveOrientation {
+      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool?) in
+        if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
