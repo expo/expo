@@ -66,7 +66,7 @@ const Video = ({ controls, spaceAfter, url, file, loop = true, caption }: VideoP
             </div>
             <p
               style={{
-                marginTop: 16,
+                marginTop: 14,
                 fontSize: 14,
                 color: theme.text.secondary,
                 textAlign: 'center',
