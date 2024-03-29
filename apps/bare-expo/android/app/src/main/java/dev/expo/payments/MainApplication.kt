@@ -60,6 +60,6 @@ class MainApplication : Application(), ReactApplication {
   }
 
   companion object {
-    private const val USE_DEV_CLIENT = true
+    private const val USE_DEV_CLIENT = false
   }
 }
