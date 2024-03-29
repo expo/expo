@@ -26,7 +26,6 @@ import {
   baseJSBundleWithDependencies,
   getBaseUrlOption,
   getPlatformOption,
-  getSplitChunksOption,
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
@@ -44,6 +43,7 @@ type ChunkSettings = {
 
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
+  splitChunks: boolean;
 } & SerializerConfigOptions;
 
 // Convert file paths to regex matchers.
@@ -252,7 +252,7 @@ export class Chunk {
       modulesOnly: this.preModules.size === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
-      splitChunks: getSplitChunksOption(this.graph, this.options),
+      splitChunks: !!this.options.serializerOptions?.splitChunks,
       skipWrapping: true,
       computedAsyncModulePaths: null,
       ...options,
@@ -560,14 +560,12 @@ function gatherChunks(
 
   chunks.add(entryChunk);
 
-  const splitChunks = getSplitChunksOption(graph, options);
-
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
       if (
         dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
-        splitChunks
+        entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
         gatherChunks(
           chunks,

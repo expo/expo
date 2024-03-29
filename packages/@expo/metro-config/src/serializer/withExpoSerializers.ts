@@ -212,6 +212,7 @@ function getDefaultSerializer(
       if (customSerializerOptions) {
         return {
           outputMode: customSerializerOptions.output,
+          splitChunks: customSerializerOptions.splitChunks,
           includeSourceMaps: customSerializerOptions.includeSourceMaps,
         };
       }
@@ -224,6 +225,7 @@ function getDefaultSerializer(
 
         return {
           outputMode: url.searchParams.get('serializer.output'),
+          splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
         };
       }
@@ -244,6 +246,7 @@ function getDefaultSerializer(
       config,
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
+        splitChunks: !!serializerOptions.splitChunks,
         ...configOptions,
       },
       ...props

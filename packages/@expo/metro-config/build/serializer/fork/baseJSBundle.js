@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getSplitChunksOption = exports.getPlatformOption = void 0;
+exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getPlatformOption = void 0;
 const jsc_safe_url_1 = require("jsc-safe-url");
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
@@ -33,11 +33,6 @@ function getPlatformOption(graph, options) {
     return url.searchParams.get('platform') ?? null;
 }
 exports.getPlatformOption = getPlatformOption;
-function getSplitChunksOption(graph, options) {
-    // Only enable when the entire bundle is being split, and only run on web.
-    return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
-}
-exports.getSplitChunksOption = getSplitChunksOption;
 function getBaseUrlOption(graph, options) {
     const baseUrl = graph.transformOptions?.customTransformOptions?.baseUrl;
     if (typeof baseUrl === 'string') {
@@ -57,7 +52,7 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
     return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
         ...options,
         baseUrl: getBaseUrlOption(graph, options),
-        splitChunks: getSplitChunksOption(graph, options),
+        splitChunks: !!options.serializerOptions?.splitChunks,
         platform,
         skipWrapping: !!options.serializerOptions?.skipWrapping,
         computedAsyncModulePaths: null,

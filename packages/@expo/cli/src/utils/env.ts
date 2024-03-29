@@ -184,6 +184,11 @@ class Env {
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
   }
+
+  /** Unstable: Force single-bundle exports in production. */
+  get EXPO_NO_BUNDLE_SPLITTING(): boolean {
+    return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
+  }
 }
 
 export const env = new Env();

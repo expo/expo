@@ -22,6 +22,7 @@ import {
   ExpoMetroBundleOptions,
   getMetroDirectBundleOptionsForExpoConfig,
 } from '../start/server/middleware/metroOptions';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 
 export type MetroDevServerOptions = LoadOptions;
@@ -154,6 +155,7 @@ async function bundleProductionMetroClientAsync(
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
+        splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && bundle.platform === 'web',
         minify: bundle.minify,
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,

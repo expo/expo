@@ -137,6 +137,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             if (customSerializerOptions) {
                 return {
                     outputMode: customSerializerOptions.output,
+                    splitChunks: customSerializerOptions.splitChunks,
                     includeSourceMaps: customSerializerOptions.includeSourceMaps,
                 };
             }
@@ -147,6 +148,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 const url = new URL(sourceUrl, 'https://expo.dev');
                 return {
                     outputMode: url.searchParams.get('serializer.output'),
+                    splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
                     includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
                 };
             }
@@ -162,6 +164,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
         };
         const assets = await (0, serializeChunks_1.graphToSerialAssetsAsync)(config, {
             includeSourceMaps: !!serializerOptions.includeSourceMaps,
+            splitChunks: !!serializerOptions.splitChunks,
             ...configOptions,
         }, ...props);
         if (supportsNonSerialReturn) {
