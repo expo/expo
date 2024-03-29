@@ -15,7 +15,6 @@ const loose = true;
 const defaultPlugins = [
   [require('@babel/plugin-syntax-flow')],
   [require('babel-plugin-transform-flow-enums')],
-  [require('@babel/plugin-proposal-class-properties'), { loose }],
   [require('@babel/plugin-transform-private-methods'), { loose }],
   [require('@babel/plugin-transform-private-property-in-object'), { loose }],
   [require('@babel/plugin-syntax-dynamic-import')],
