@@ -36,39 +36,40 @@ const Video = ({ controls, spaceAfter, url, file, loop = true, caption }: VideoP
       onMouseLeave={() => setHover(false)}>
       <VisibilitySensor partialVisibility>
         {({ isVisible }: { isVisible: boolean }) => (
-          <div css={[videoWrapperStyle, { marginBottom: getInitialMarginBottom(spaceAfter) }]}>
-            <ReactPlayer
-              url={isVisible ? url || `/static/videos/${file}` : undefined}
-              className="react-player"
-              width={PLAYER_WIDTH}
-              height={PLAYER_HEIGHT}
-              style={{
-                outline: 'none',
-                backgroundColor: '#000',
-                borderRadius: borderRadius.md,
-              }}
-              muted
-              playing={isVisible && !!file}
-              controls={typeof controls === 'undefined' ? forceShowControls : controls}
-              playsinline
-              loop={loop}
-            />
-            <div
-              css={[
-                videoWrapperStyle,
-                dimmerStyle,
-                {
-                  opacity: isVisible ? 0 : 0.7,
-                },
-              ]}
-            />
+          <div css={{ marginBottom: getInitialMarginBottom(spaceAfter) }}>
+            <div css={videoWrapperStyle}>
+              <ReactPlayer
+                url={isVisible ? url || `/static/videos/${file}` : undefined}
+                className="react-player"
+                width={PLAYER_WIDTH}
+                height={PLAYER_HEIGHT}
+                style={{
+                  outline: 'none',
+                  backgroundColor: '#000',
+                  borderRadius: borderRadius.md,
+                }}
+                muted
+                playing={isVisible && !!file}
+                controls={typeof controls === 'undefined' ? forceShowControls : controls}
+                playsinline
+                loop={loop}
+              />
+              <div
+                css={[
+                  videoWrapperStyle,
+                  dimmerStyle,
+                  {
+                    opacity: isVisible ? 0 : 0.7,
+                  },
+                ]}
+              />
+            </div>
             <p
               style={{
                 marginTop: 14,
                 fontSize: 14,
                 color: theme.text.secondary,
                 textAlign: 'center',
-                marginBottom: 30,
                 lineHeight: 1.15,
               }}>
               {caption}
