@@ -78,12 +78,12 @@ it('serializes development export static html with correct baseUrl and script sr
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     // Note, when `isExporting` is true, we combine `baseUrl` with the filename
     // Wehn empty, this caused an additional `/` to be added at the beginning of the `<script src="" />` tag
-    baseUrl: 'custom/base/url',
+    baseUrl: '/custom/base/url/',
     isExporting: true,
   });
   expect(res).toMatchSnapshot();
   expect(res).toMatch(
     // Note the explicit `/Users` part, not adding a double `//` by accident
-    /<script src="custom\/base\/url\/Users\/path\/to\/expo\/app\/node_modules\/expo\/AppEntry.js" defer>/
+    /<script src="\/custom\/base\/url\/Users\/path\/to\/expo\/app\/node_modules\/expo\/AppEntry.js" defer>/
   );
 });

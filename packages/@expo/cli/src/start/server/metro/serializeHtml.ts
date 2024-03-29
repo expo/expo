@@ -65,8 +65,8 @@ function htmlFromSerialAssets(
     .map(({ metadata, filename, source }) => {
       if (isExporting) {
         return [
-          `<link rel="preload" href="${combineUrlPath(baseUrl || '/', filename)}" as="style">`,
-          `<link rel="stylesheet" href="${combineUrlPath(baseUrl || '/', filename)}">`,
+          `<link rel="preload" href="/${combineUrlPath(baseUrl, filename)}" as="style">`,
+          `<link rel="stylesheet" href="/${combineUrlPath(baseUrl, filename)}">`,
         ].join('');
       } else {
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
@@ -105,7 +105,7 @@ function htmlFromSerialAssets(
             // return `<script src="/${combineUrlPath(baseUrl, filename)" defer></script>`;
           }
 
-          return `<script src="${combineUrlPath(baseUrl || '/', filename)}" defer></script>`;
+          return `<script src="/${combineUrlPath(baseUrl, filename)}" defer></script>`;
         })
         .join('');
 
