@@ -32,6 +32,7 @@
 - Fix missing types from typed routes ([#27412](https://github.com/expo/expo/pull/27412) by [@marklawlor](https://github.com/marklawlor))
 - Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative navigation on hoisted routes ([#27778](https://github.com/expo/expo/pull/27778) by [@marklawlor](https://github.com/marklawlor))
+- Fix setting an initial location to a hoisted index router in a group
 
 ### 💡 Others
 

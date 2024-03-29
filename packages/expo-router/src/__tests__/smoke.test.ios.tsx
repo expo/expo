@@ -31,6 +31,78 @@ it('can render a route', async () => {
   expect(screen).toHaveSearchParams({});
 });
 
+describe('initialUrl', () => {
+  /*
+   * initialUrl sets the initial URL for the router.
+   * This is not only useful for testing, but is critical for static rendering
+   * which must set the initial URL for every page
+   */
+  it('can render with an initial URL', () => {
+    renderRouter(
+      {
+        home: () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/home',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/home');
+    expect(screen).toHaveSegments(['home']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('can render with an initial URL in a group', () => {
+    renderRouter(
+      {
+        '(a)/home': () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/home',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/home');
+    expect(screen).toHaveSegments(['(a)', 'home']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('can render with an index initial URL in a group', () => {
+    renderRouter(
+      {
+        '(a)/index': () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSegments(['(a)']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('will render the correct group', () => {
+    renderRouter(
+      {
+        '(a)/index': () => <Text>Hello</Text>,
+        '(b)/index': () => <Text>World</Text>,
+      },
+      {
+        initialUrl: '/(b)',
+      }
+    );
+
+    expect(screen.getByText('World')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSegments(['(b)']);
+    expect(screen).toHaveSearchParams({});
+  });
+});
+
 it('can handle dynamic routes', async () => {
   renderRouter(
     {
