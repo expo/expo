@@ -307,9 +307,10 @@ const general = [
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
-    makePage('eas-update/github-actions.mdx'),
+    makePage('eas-update/publish.mdx'),
     makePage('eas-update/eas-cli.mdx'),
     makePage('eas-update/develop-faster.mdx'),
+    makePage('eas-update/github-actions.mdx'),
     makePage('eas-update/faq.mdx'),
     makeGroup('Concepts', [
       makePage('eas-update/how-it-works.mdx'),
