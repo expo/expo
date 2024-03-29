@@ -8,7 +8,7 @@ class BadgeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBadgeModule")
 
-    AsyncFunction("getBadgeCountAsync") {
+    AsyncFunction<Int>("getBadgeCountAsync") {
       BadgeHelper.badgeCount
     }
 

@@ -37,7 +37,7 @@ class ApplicationModule : Module() {
       Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    AsyncFunction("getInstallationTimeAsync") {
+    AsyncFunction<Double>("getInstallationTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
       packageManager
@@ -46,7 +46,7 @@ class ApplicationModule : Module() {
         .toDouble()
     }
 
-    AsyncFunction("getLastUpdateTimeAsync") {
+    AsyncFunction<Double>("getLastUpdateTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
       packageManager

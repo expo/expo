@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.channels
 
 import android.os.Build
+import android.os.Bundle
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -34,7 +35,7 @@ class NotificationChannelGroupManagerModule : Module() {
       }
     }
 
-    AsyncFunction("getNotificationChannelGroupsAsync") {
+    AsyncFunction<List<Bundle?>?>("getNotificationChannelGroupsAsync") {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         groupManager
           .notificationChannelGroups

@@ -50,7 +50,7 @@ class SystemUIModule : Module() {
       setBackgroundColor(color ?: systemBackgroundColor)
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBackgroundColorAsync") {
+    AsyncFunction<String?>("getBackgroundColorAsync") {
       val background = currentActivity.window.decorView.background
       return@AsyncFunction if (background is ColorDrawable) {
         colorToHex((background.mutate() as ColorDrawable).color)
