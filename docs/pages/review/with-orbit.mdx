@@ -1,0 +1,48 @@
+---
+title: How to launch an update using Expo Orbit
+sidebar_title: View updates with Orbit
+description: Learn about different strategies you can use for reviewing your app using internal distribution and EAS Update.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import Video from '~/components/plugins/Video';
+import { Step } from '~/ui/components/Step';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+[Expo Orbit](https://expo.dev/orbit) is a macOS and Windows app designed to speed up installing and running builds from EAS. It makes running your builds and updates as easy as pressing **Open in Orbit**.
+
+<Collapsible summary="How does automatic installation and launching of updates work?">
+
+When you launch an update, Orbit will look for the latest development build that matches the runtime version and target platform of the update. If a compatible build is found, the update will install automatically on the target device and launch with a deep link that points to the update.
+
+If you don't have any development builds available, either because they have all expired, you haven't created one, you don't use EAS Build, or you are [building your app locally](/guides/local-app-development/), then Orbit will prompt you on how to proceed. Click **Launch with deep link** in the prompt to open the update if you already have a compatible development build installed on your target device.
+
+</Collapsible>
+
+## Prerequisites
+
+- **Install the Orbit app** before following the steps in this guide. You can download it directly from [GitHub releases](https://github.com/expo/orbit/releases) or see the [alternative method](/build/orbit/#installation) to install it.
+- After installing the app, sign in to your Expo account from **Settings**.
+
+## Preview an update with Expo Orbit
+
+<Video
+  url="https://www.youtube.com/watch?v=l-Lx7BglNUE"
+  spaceAfter={50}
+  caption="Expo Orbit launching an update directly from Expo dashboard to an Android Emulator."
+/>
+
+Previewing with Expo Orbit requires you to have an update published. If you haven't published an update, see [Publish an update](/eas-update/publish/) before following the steps in the next section.
+
+### Install and launch the update
+
+> **Note**: Launching updates using Expo Orbit is not supported on physical iOS devices. It is supported on Android devices/emulators or iOS Simulators.
+
+After the update is published, follow these steps to open it on an Android Emulator or iOS Simulator:
+
+- Navigate your project's **Updates** tab
+- Select the update you want to preview
+- Under the **Platform-specific updates** section, click the three-dotted menu next to the target platform and select **Open in Orbit**
+- Orbit will install and launch the update on the selected Android Emulator or iOS Simulator
+
+You can now seamlessly launch and review updates using Expo Orbit.

@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { borderRadius, breakpoints } from '@expo/styleguide-base';
 import dynamic from 'next/dynamic';
 import { PropsWithChildren, useState } from 'react';
@@ -16,9 +17,10 @@ type VideoProps = PropsWithChildren<{
   url?: string;
   file?: string;
   loop?: boolean;
+  caption?: string;
 }>;
 
-const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => {
+const Video = ({ controls, spaceAfter, url, file, loop = true, caption }: VideoProps) => {
   const [hover, setHover] = useState(false);
   const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
 
@@ -60,6 +62,17 @@ const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => 
                 },
               ]}
             />
+            <p
+              style={{
+                marginTop: 14,
+                fontSize: 14,
+                color: theme.text.secondary,
+                textAlign: 'center',
+                marginBottom: 30,
+                lineHeight: 1.15,
+              }}>
+              {caption}
+            </p>
           </div>
         )}
       </VisibilitySensor>
