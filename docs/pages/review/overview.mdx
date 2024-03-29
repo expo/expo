@@ -1,7 +1,7 @@
 ---
-title: Overview of strategies for reviewing an app
+title: Overview of distributing apps for review
 sidebar_title: Overview
-description: Learn about different strategies you can use for reviewing your app using internal distribution and EAS Update.
+description: Learn about how to distribute your app for review using app stores, internal distribution, and EAS Update.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -10,17 +10,36 @@ import { CODE } from '~/ui/components/Text';
 import { BuildIcon, LayersTwo02Icon, GithubIcon } from '@expo/styleguide-icons';
 import Video from '~/components/plugins/Video';
 
-This page outlines different strategies to share a preview version of your app using internal distribution and EAS Update. Sharing a preview version with testers allows them to download and run it on their devices as if it were distributed through a store.
+import {
+  EasSubmitIcon,
+} from '@expo/styleguide-icons';
 
-## Internal distribution
+This page outlines three approaches to sharing a preview version of your app with your team for QA and review: app store testing tracks, internal distribution, and development builds with EAS Update.
 
-Internal distribution is a strategy for sharing an app with a limited audience. It is used for testing purposes within a team or organization, or a selected group of testers, or by an individual developer that is testing their own app. Android and iOS provide different ways to install a build of your application directly on a device.
+<Collapsible summary="Can I use Expo Go for reviewing releases?">
 
-Google Play beta provides both closed and open tracks. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program. You could alternatively distribute the APK directly to testers.
+Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
 
-Apple offers ad hoc provisioning to distribute your app to test on devices registered to your Apple Developer account. You can also use TestFlight to share your app with up to 10,000 external testers by [uploading your app](/submit/ios/).
+</Collapsible>
 
-EAS Build makes it easy to generate a shareable URL that your team can use to download an installable APK for Android or an ad hoc provisioned app for iOS.
+## App store testing tracks
+
+When distributing apps through app store testing tracks, you can only use release builds — you cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution), which works with both release and development builds.
+
+**Android**: Google Play beta provides both closed and open tracks for Android apps. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program.
+
+**iOS**: Apple provides TestFlight for iOS apps, which allows you to share your app with up to 100 internal testers, or up to 10,000 external testers.
+
+<BoxLink
+  title="EAS Submit"
+  description="Learn how to upload your app to app store testing and release tracks."
+  href="/submit/introduction"
+  Icon={EasSubmitIcon}
+/>
+
+## Internal distribution with EAS Build
+
+[Internal distribution](/build/internal-distribution/) is a feature provided by EAS that allows developers to create builds that can easily be shared over with a URL that can be opened on a device to install the app. The app is provided as an installable APK for Android, or an ad hoc provisioned app for iOS. As soon as an internal distribution build is created, it is available for download and installation — no need to fill out any forms or wait for approval/processing. You can use internal distribution to share both release and development builds.
 
 <BoxLink
   title="How to set up an internal distribution build"
@@ -29,23 +48,29 @@ EAS Build makes it easy to generate a shareable URL that your team can use to do
   Icon={BuildIcon}
 />
 
-## Using EAS Update with development builds
+## Development builds and EAS Update
 
-You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing an update with EAS Update.
+You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing an update with [EAS Update](/eas-update/introduction/). Development builds can be shared through internal distibution, and once you have a development build installed you can launch any update that you publish with EAS Update that is compatible with the installed build ([learn more in "Runtime versions and updates"](/eas-update/runtime-versions/)).
 
-<Collapsible summary="Can I use Expo Go for reviewing releases?">
+<Collapsible summary="You can use the Expo dashboard to launch updates and share a link to a specific update.">
 
-Even though Expo Go is an open-source sandbox that can be good for previewing isolated prototypes on Android and iOS, it is not intended for production apps. It should be avoided during the preview process of your app.
+<Video controls file="review/eas-update-01.mp4" />
 
 </Collapsible>
 
-### Get started
+<Collapsible summary="You can explore and launch updates directly from a development build.">
 
-<Video
-  file="review/eas-update-01.mp4"
-  spaceAfter={70}
-  caption="When an update is published, you can use the Expo dashboard to generate and share links with your team."
-/>
+<Video controls file="review/eas-update-02.mp4" />
+
+</Collapsible>
+
+<Collapsible summary="You can configure GitHub actions to automatically publish updates on PRs and commits.">
+
+<Video controls file="review/eas-update-03.mp4" />
+
+</Collapsible>
+
+This approach is uniquely powerful because it allows you to respond to feedback as quickly you can run `eas update` — it can take seconds to share a new version of your app with your team, and you can do so without needing to rebuild the app or upload it to a store test track.
 
 <BoxLink
   title="Get started with EAS Update"
@@ -59,12 +84,11 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
   Icon={LayersTwo02Icon}
 />
 
-### `expo-dev-client` library
-
-<Video
-  file="review/eas-update-02.mp4"
-  spaceAfter={70}
-  caption="Using the development build on a device allows you to fetch and view updates directly."
+<BoxLink
+  title="Use GitHub Actions"
+  description="Learn how to use GitHub Actions to automate the process of publishing updates with EAS Update. It also makes deploying updates consistent and fast, leaving you more time to develop your app."
+  href="/eas-update/github-actions/"
+  Icon={GithubIcon}
 />
 
 <BoxLink
@@ -81,19 +105,4 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
   }
   href="/eas-update/expo-dev-client/"
   Icon={LayersTwo02Icon}
-/>
-
-### GitHub Actions
-
-<Video
-  file="review/eas-update-03.mp4"
-  spaceAfter={70}
-  caption="Using GitHub actions, you can generate previews on your PR and use the generated QR code to fetch and view the update."
-/>
-
-<BoxLink
-  title="Use GitHub Actions"
-  description="Learn how to use GitHub Actions to automate the process of publishing updates with EAS Update. It also makes deploying updates consistent and fast, leaving you more time to develop your app."
-  href="/eas-update/github-actions/"
-  Icon={GithubIcon}
 />
