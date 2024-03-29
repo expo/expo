@@ -60,7 +60,7 @@ function environmentRestrictedReactAPIsPlugin(api) {
                                     throw path.buildCodeFrameError(`Client-only "${sourceValue}" API "${importName}" cannot be imported in a React server component. Add the "use client" directive to the top of this file or one of the parent files to enable running this stateful code on a user's device.`);
                                 }
                                 else {
-                                    const forbiddenImports = path.scope.getData('forbiddenImports') || new Map();
+                                    const forbiddenImports = path.scope.getData('forbiddenImports') ?? new Map();
                                     if (!forbiddenImports.has(sourceValue))
                                         forbiddenImports.set(sourceValue, new Set());
                                     forbiddenImports.get(sourceValue).add(importName);

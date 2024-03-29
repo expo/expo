@@ -75,7 +75,7 @@ export function environmentRestrictedReactAPIsPlugin(
                 } else {
                   const forbiddenImports: Map<string, Set<string>> = path.scope.getData(
                     'forbiddenImports'
-                  ) || new Map();
+                  ) ?? new Map();
 
                   if (!forbiddenImports.has(sourceValue))
                     forbiddenImports.set(sourceValue, new Set());
