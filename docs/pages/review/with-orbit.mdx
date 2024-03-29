@@ -9,11 +9,11 @@ import Video from '~/components/plugins/Video';
 import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-[Expo Orbit](https://expo.dev/orbit) is a macOS and Windows app designed to speed up installing and running builds from EAS. It makes running your builds and updates as easy as pressing "Open in Orbit".
+[Expo Orbit](https://expo.dev/orbit) is a macOS and Windows app designed to speed up installing and running builds from EAS. It makes running your builds and updates as easy as pressing **Open in Orbit**.
 
 <Collapsible summary="How does automatic installation and launching of updates work?">
 
-When you launch an update, Orbit will look for the latest development build that matches the runtime version and target platform of the update. If a compatible build is found, it will be automatically installed on the target device and launched with a deep link that points to the update.
+When you launch an update, Orbit will look for the latest development build that matches the runtime version and target platform of the update. If a compatible build is found, the update will install automatically on the target device and launch with a deep link that points to the update.
 
 If you don't have any development builds available, either because they have all expired, you haven't created one, you don't use EAS Build, or you are [building your app locally](/guides/local-app-development/), then Orbit will prompt you on how to proceed. Click **Launch with deep link** in the prompt to open the update if you already have a compatible development build installed on your target device.
 
@@ -36,7 +36,7 @@ Previewing with Expo Orbit requires you to have an update published. If you have
 
 ### Install and launch the update
 
-> **Note**: Launching updates using Expo Orbit is not supported on physical iOS devices. It is supported on iOS simulators and Android devices/emulators.
+> **Note**: Launching updates using Expo Orbit is not supported on physical iOS devices. It is supported on Android devices/emulators or iOS Simulators.
 
 After the update is published, follow these steps to open it on an Android Emulator or iOS Simulator:
 
