@@ -206,6 +206,12 @@ export type DRMOptions = {
   licenseServer: string;
 
   /**
+   * Custom method to get the license for the DRM.
+   * @platform ios
+   */
+  getLicense?: (spcString: string, contentId: string, licenseServer: string) => Promise<string>;
+
+  /**
    * Determines headers sent to the license server on license requests.
    */
   headers?: { [key: string]: string };

@@ -146,21 +146,38 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
       }
     }
 
-    let (data, response, error) = URLSession.shared.synchronousDataTask(with: ckcRequest)
+    if let getLicense = videoSource?.drm?.getLicense {
+        let spcString = String(data: spcData, encoding: .utf8) ?? ""
+        let contentId = videoSource?.drm?.contentId ?? ""
+        do {
+            let ckcString = try getLicense(spcString, contentId, licenseServerUri)
+            if let ckcData = ckcString.data(using: .utf8) {
+                return ckcData
+            } else {
+                throw DRMLoadException("Failed to convert license response to Data")
+            }
+        } catch {
+            throw DRMLoadException("Failed to get license using custom function: \(error.localizedDescription)")
+        }
+    } else {
+      let (data, response, error) = URLSession.shared.synchronousDataTask(with: ckcRequest)
 
-    guard error == nil else {
-      throw DRMLoadException("Fetching the content key has failed with error: \(error?.localizedDescription)")
-    }
-
-    if let httpResponse = response as? HTTPURLResponse {
-      guard httpResponse.statusCode == 200 else {
-        throw DRMLoadException("Fetching the content key has failed with status: \(httpResponse.statusCode)")
+      guard error == nil else {
+        throw DRMLoadException("Fetching the content key has failed with error: \(error?.localizedDescription)")
       }
+
+      if let httpResponse = response as? HTTPURLResponse {
+        guard httpResponse.statusCode == 200 else {
+          throw DRMLoadException("Fetching the content key has failed with status: \(httpResponse.statusCode)")
+        }
+      }
+
+      guard let data else {
+        throw DRMLoadException("Fetched content key data is empty")
+      }
+
+      return data
     }
-    guard let data else {
-      throw DRMLoadException("Fetched content key data is empty")
-    }
-    return data
   }
 
   private func findAssetIdString(keyRequest: AVContentKeyRequest) -> String? {
