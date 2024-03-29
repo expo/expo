@@ -36,7 +36,7 @@ const Video = ({ controls, spaceAfter, url, file, loop = true, caption }: VideoP
       onMouseLeave={() => setHover(false)}>
       <VisibilitySensor partialVisibility>
         {({ isVisible }: { isVisible: boolean }) => (
-          <div css={{ marginBottom: getInitialMarginBottom(spaceAfter) }}>
+          <div css={{ marginBottom: getInitialMarginBottom(20) }}>
             <div css={videoWrapperStyle}>
               <ReactPlayer
                 url={isVisible ? url || `/static/videos/${file}` : undefined}
