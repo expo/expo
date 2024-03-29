@@ -7,14 +7,6 @@ import * as babel from '@babel/core';
 import { resetEnv } from './test-utils';
 import preset from '..';
 
-beforeAll(() => {
-  resetEnv();
-});
-
-afterEach(() => {
-  resetEnv();
-});
-
 const ENABLED_CALLER = {
   name: 'metro',
   isDev: false,
@@ -43,10 +35,12 @@ const DEF_OPTIONS = {
 const originalEnv = process.env;
 
 beforeEach(() => {
+  resetEnv();
   process.env = { ...originalEnv, FORCE_COLOR: '0' };
 });
 
 afterAll(() => {
+  resetEnv();
   process.env = { ...originalEnv };
 });
 
