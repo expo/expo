@@ -30,7 +30,7 @@ open class NotificationChannelManagerModule : Module() {
       channelSerializer = provider.channelSerializer
     }
 
-    AsyncFunction("getNotificationChannelsAsync") {
+    AsyncFunction<List<Bundle?>>("getNotificationChannelsAsync") {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
         return@AsyncFunction emptyList<Bundle>()
       }

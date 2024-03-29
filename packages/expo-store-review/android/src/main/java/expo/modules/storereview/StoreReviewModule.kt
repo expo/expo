@@ -2,7 +2,6 @@ package expo.modules.storereview
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -22,8 +21,8 @@ class StoreReviewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoStoreReview")
 
-    AsyncFunction("isAvailableAsync") {
-      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
+    AsyncFunction<Boolean>("isAvailableAsync") {
+      return@AsyncFunction isPlayStoreInstalled()
     }
 
     AsyncFunction("requestReview") { promise: Promise ->
