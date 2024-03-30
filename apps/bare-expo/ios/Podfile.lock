@@ -1827,7 +1827,7 @@ PODS:
     - React-Core
   - RNCMaskedView (0.3.0):
     - React-Core
-  - RNCPicker (2.5.1):
+  - RNCPicker (2.7.2):
     - React-Core
   - RNDateTimePicker (7.6.3):
     - React-Core
@@ -2595,7 +2595,7 @@ SPEC CHECKSUMS:
   ReactCommon: 9e56154615276b73abffa10c09905da40f6ad638
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCMaskedView: f7c74478c83c4fdfc5cf4df51f80c0dd5cf125c6
-  RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
+  RNCPicker: 82ccad5b08259dc09310082118cbb6c136d7da67
   RNDateTimePicker: 7b38b71bcd7c4cfa1cb95f2dff9a4f1faed2dced
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: ce6dc347cb4edb664bfc250fc37cd753ae7432ec
