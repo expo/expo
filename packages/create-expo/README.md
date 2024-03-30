@@ -106,35 +106,7 @@ By convention, Expo templates use several placeholder values to be searched for 
 - `HelloWorld` → The name of the project with sanitization as described below (example [Android](../../templates/expo-template-bare-minimum//android/settings.gradle#L1), [iOS](../../templates/expo-template-bare-minimum/ios/Podfile#L16))
 - `helloworld` → The _lower-cased_ name of the project with sanitization as described below (example [Android](../../templates/expo-template-bare-minimum/android/app/build.gradle#L86))
 
-While all file and folder names are rewritten, only files specified by the "rename config" have their contents rewritten. Create Expo App looks for an `.expo-rename` file in the root of the unpacked template, and uses that as the rename config if present. Otherwise, it'll fall back to the default internal config: the `defaultRenameConfig` constant in [./src/Template.ts](./src/Template.ts). This default config should cover most cases, so it's recommended that templates only provide a custom config if the default one is insufficient.
-
-### The rename config (`.expo-rename`)
-
-To customize the rename config, provide a plain-text `.expo-rename` file in the root of your template. If your template is intended to be cloned from a subdirectory of a monorepo, the root refers to that subdirectory rather than the monorepo root.
-
-The `.expo-rename` file is a list of glob expressions to be interpreted by [fast-glob](https://github.com/mrmlnc/fast-glob). Comments are supported with the `#` symbol. Whitespace is trimmed and whitespace-only lines are ignored. It is recommended to use only basic glob features, namely `!`, `*`, and `**`, in case a different glob package (like the experimental one in [Node.js core](https://github.com/nodejs/node/pull/51912) or [Bun](https://bun.sh/docs/api/glob)) is used in future.
-
-As an example:
-
-```
-# Common
-!**/node_modules
-app.json
-
-# Android
-android/**/*.gradle
-android/app/BUCK
-android/app/src/**/*.java
-android/app/src/**/*.kt
-android/app/src/**/*.xml
-
-# iOS
-ios/Podfile
-ios/**/*.xcodeproj/project.pbxproj
-ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme
-```
-
-If you don't want any files in your template to be renamed, simply provide an empty (or comments-only) `.expo-rename` file in the root of your template.
+Although all file and folder names are rewritten, only files specified by the "rename config" have their contents rewritten. This is determined by the `defaultRenameConfig` constant in [./src/Template.ts](./src/Template.ts).
 
 ### Sanitization
 

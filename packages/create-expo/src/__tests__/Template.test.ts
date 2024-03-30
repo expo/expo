@@ -74,7 +74,7 @@ describe('getTemplateFilesToRenameAsync', () => {
     expect(spyGlob).toHaveBeenCalledTimes(1);
   });
 
-  it('uses the config in the template root if present, when an explicit user config has not been passed', async () => {
+  it('falls back to the default config when an explicit user config is not passed', async () => {
     const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
       return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
     });
@@ -83,35 +83,6 @@ describe('getTemplateFilesToRenameAsync', () => {
       .spyOn(fs.promises, 'readFile')
       .mockImplementation(async (filePath, _encoding) => {
         switch (path.basename(filePath as string)) {
-          case '.expo-rename': {
-            return 'app.json';
-          }
-        }
-
-        throw new Error(`Accessed unexpected file: ${filePath}`);
-      });
-
-    const files = await getTemplateFilesToRenameAsync({ cwd });
-    expect(files).toEqual(['app.json']);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
-    expect(spyReadFile).toHaveBeenCalledTimes(1);
-  });
-
-  it('falls back to the default config when neither an explicit user config is passed, nor a template config is found', async () => {
-    const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
-    const spyReadFile = jest
-      .spyOn(fs.promises, 'readFile')
-      .mockImplementation(async (filePath, _encoding) => {
-        switch (path.basename(filePath as string)) {
-          case '.expo-rename': {
-            // Simulate the file not being found.
-            const err = new Error();
-            (err as Error & { code: string }).code = 'ENOENT';
-            throw err;
-          }
           case 'app.json': {
             return '{ "expo": { "name": "HelloWorld" } }';
           }
@@ -146,8 +117,8 @@ describe('renameTemplateAppNameAsync', () => {
       await renameTemplateAppNameAsync({ cwd, files: [], name: 'ByeWorld' });
 
       // We expect readFile to not have been called, as passing an empty
-      // renameConfig should skip the check for the .expo-rename file and cause an
-      // empty set of patterns to be passed to glob.
+      // renameConfig should cause an empty set of patterns to be passed to
+      // glob.
       expect(spyReadFile).not.toHaveBeenCalled();
 
       // As no files were read, none should be overwritten, either.

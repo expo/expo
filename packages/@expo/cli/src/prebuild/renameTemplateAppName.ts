@@ -35,12 +35,10 @@ function escapeXMLCharacters(original: string): string {
  * "rename config" to determine explicitly which files – relative to the root of
  * the template – to perform find-and-replace on, to update the app name.
  *
- * ## The rename config, AKA the `.expo-rename` file
+ * ## The rename config
  *
  * The rename config can be passed directly as a string array to
- * `getTemplateFilesToRenameAsync()`, or written into the root of the template
- * as a plain-text file named `.expo-rename` (where
- * `getTemplateFilesToRenameAsync()` will check for it automatically).
+ * `getTemplateFilesToRenameAsync()`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
  * [fast-glob](https://github.com/mrmlnc/fast-glob). Comments are supported with
@@ -48,11 +46,8 @@ function escapeXMLCharacters(original: string): string {
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
  * If no rename config has been passed directly to
- * `getTemplateFilesToRenameAsync()`, and if the template furthermore lacks an
- * `.expo-rename` file, then this default rename config will be used.
- *
- * If you don't want any files in your template to be renamed, simply put an
- * empty (or comments-only) `.expo-rename` file in the root of your template.
+ * `getTemplateFilesToRenameAsync()` then this default rename config will be
+ * used instead.
  */
 export const defaultRenameConfig = [
   // Common
@@ -77,38 +72,18 @@ export const defaultRenameConfig = [
  * config.
  *
  * The rename config is resolved in the order of preference:
- * Config provided as function param > Template-own config > defaultRenameConfig
+ * Config provided as function param > defaultRenameConfig
  */
 export async function getTemplateFilesToRenameAsync({
   cwd,
   /**
-   * An array of patterns following the `.expo-rename` config format. If
-   * omitted, the template-own config will used if present; and if that's
-   * missing too, then we fall back to defaultRenameConfig.
+   * An array of patterns following the rename config format. If omitted, then
+   * we fall back to defaultRenameConfig.
    * @see defaultRenameConfig
    */
   renameConfig: userConfig,
 }: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
-  let templateConfig: string[] | null = null;
-
-  if (userConfig) {
-    debug(`Skipping looking for .expo-rename file, as an explicit user config was provided.`);
-  } else {
-    try {
-      const contents = await fs.promises.readFile(path.resolve(cwd, '.expo-rename'), 'utf-8');
-      debug(`Found .expo-rename file: ${contents}`);
-
-      templateConfig = contents.split('\n');
-    } catch (error) {
-      if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) {
-        throw new Error(`Unexpected error checking for .expo-rename file`, { cause: error });
-      }
-    }
-  }
-
-  // Resolve the `.expo-rename` config with the following order of preference:
-  // config provided to this function > template-own config > default config
-  let config = userConfig ?? templateConfig ?? defaultRenameConfig;
+  let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
   config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');

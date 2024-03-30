@@ -17,7 +17,7 @@
 
 ### 🐛 Bug fixes
 
-- Rename templates post-extraction (rather than whilst extracting), with an optional `.expo-rename` config, to avoid corrupting binary files ([#27212](https://github.com/expo/expo/pull/27212) by [@shirakaba](https://github.com/shirakaba))
+- Rename templates post-extraction (rather than whilst extracting) via an internal "rename config", to avoid corrupting binary files ([#27212](https://github.com/expo/expo/pull/27212) by [@shirakaba](https://github.com/shirakaba))
 - Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `console.log` statements from colliding with Metro logs. ([#27217](https://github.com/expo/expo/pull/27217) by [@EvanBacon](https://github.com/EvanBacon))
