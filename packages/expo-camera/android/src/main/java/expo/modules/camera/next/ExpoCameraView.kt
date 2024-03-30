@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
@@ -92,29 +93,30 @@ class ExpoCameraView(
 
   private var previewView = PreviewView(context)
   private val scope = CoroutineScope(Dispatchers.Main)
+  private var shouldCreateCamera = false
 
   var lenFacing = CameraType.BACK
     set(value) {
       field = value
-      createCamera()
+      shouldCreateCamera = true
     }
 
   var cameraMode: CameraMode = CameraMode.PICTURE
     set(value) {
       field = value
-      createCamera()
+      shouldCreateCamera = true
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
     set(value) {
       field = value
-      createCamera()
+      shouldCreateCamera = true
     }
 
   var pictureSize: String = ""
     set(value) {
       field = value
-      createCamera()
+      shouldCreateCamera = true
     }
 
   var mute: Boolean = false
@@ -236,7 +238,11 @@ class ExpoCameraView(
   }
 
   @SuppressLint("UnsafeOptInUsageError")
-  private fun createCamera() {
+  fun createCamera() {
+    if (!shouldCreateCamera) {
+      return
+    }
+    shouldCreateCamera = false
     providerFuture.addListener(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
@@ -266,13 +272,7 @@ class ExpoCameraView(
           }
           .build()
 
-        val cameraInfo = cameraProvider.availableCameraInfos.filter {
-          Camera2CameraInfo
-            .from(it)
-            .getCameraCharacteristic(CameraCharacteristics.LENS_FACING) == lenFacing.mapToCharacteristic()
-        }
-
-        val videoCapture = createVideoCapture(cameraInfo)
+        val videoCapture = createVideoCapture()
         imageAnalysisUseCase = createImageAnalyzer()
 
         val useCases = UseCaseGroup.Builder().apply {
@@ -326,7 +326,7 @@ class ExpoCameraView(
         }
       }
 
-  private fun createVideoCapture(info: List<CameraInfo>): VideoCapture<Recorder> {
+  private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
     val fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
@@ -365,15 +365,18 @@ class ExpoCameraView(
 
   fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
     this.shouldScanBarcodes = shouldScanBarcodes
-    createCamera()
+    shouldCreateCamera = true
   }
 
   fun setBarcodeScannerSettings(settings: BarcodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
-  private fun getDeviceOrientation() =
+  private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    appContext.reactContext?.display?.rotation ?: 0
+  } else {
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+  }
 
   fun releaseCamera() {
     appContext.mainQueue.launch {
