@@ -133,24 +133,15 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
       throw DRMLoadException("LicenseServer uri is invalid")
     }
 
-    var ckcRequest = URLRequest(url: licenseServerUrl)
-    ckcRequest.httpMethod = "POST"
-    ckcRequest.httpBody = spcData
+    let onGetDRMLicense = EventDispatcher()
 
-    if let headers = videoSource?.drm?.headers {
-      for item in headers {
-        guard let key = item.key as? String, let value = item.value as? String else {
-          continue
-        }
-        ckcRequest.setValue(value, forHTTPHeaderField: key)
-      }
-    }
-
-    if let getLicense = videoSource?.drm?.getLicense {
-      let spcString = String(data: spcData, encoding: .utf8) ?? ""
-      let contentId = videoSource?.drm?.contentId ?? ""
+    if onGetDRMLicense != nil {
       do {
-        let ckcString = try getLicense(spcString, contentId, licenseServerUri)
+        let ckcString = try onGetDRMLicense([
+          "spcString": spcData.base64EncodedString(options: []),
+          "contentId": assetID,
+          "licenseUrl": licenseServerUri,
+        ])
         if let ckcData = ckcString.data(using: .utf8) {
           return ckcData
         }
@@ -159,6 +150,19 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
         throw DRMLoadException("Failed to get license using custom function: \(error.localizedDescription)")
       }
     } else {
+      var ckcRequest = URLRequest(url: licenseServerUrl)
+      ckcRequest.httpMethod = "POST"
+      ckcRequest.httpBody = spcData
+
+      if let headers = videoSource?.drm?.headers {
+        for item in headers {
+          guard let key = item.key as? String, let value = item.value as? String else {
+            continue
+          }
+          ckcRequest.setValue(value, forHTTPHeaderField: key)
+        }
+      }
+
       let (data, response, error) = URLSession.shared.synchronousDataTask(with: ckcRequest)
 
       guard error == nil else {

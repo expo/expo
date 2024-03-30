@@ -147,6 +147,11 @@ export interface VideoViewProps extends ViewProps {
      */
     onPictureInPictureStop?: () => void;
     /**
+     * A callback to call when the player requests a DRM license.
+     * @platform ios
+     */
+    onGetDRMLicense?: (spcString: string, contentId: string, licenseUrl: string) => Promise<string>;
+    /**
      * Determines whether the player allows Picture in Picture (PiP) mode.
      * @default false
      * @platform ios 14+
@@ -177,11 +182,6 @@ export type DRMOptions = {
      * Determines the license server URL.
      */
     licenseServer: string;
-    /**
-     * Custom method to get the license for the DRM.
-     * @platform ios
-     */
-    getLicense?: (spcString: string, contentId: string, licenseServer: string) => Promise<string>;
     /**
      * Determines headers sent to the license server on license requests.
      */

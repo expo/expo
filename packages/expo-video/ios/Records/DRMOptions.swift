@@ -11,9 +11,6 @@ internal struct DRMOptions: Record {
   var licenseServer: String?
 
   @Field
-  var getLicense: ((String, String, String) -> Promise<String>)?
-
-  @Field
   var headers: [String: Any]?
 
   @Field

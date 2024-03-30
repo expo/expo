@@ -13,7 +13,8 @@ public final class VideoModule: Module {
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onGetDRMLicense"
       )
 
       Prop("player") { (view, player: VideoPlayer?) in
