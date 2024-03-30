@@ -102,5 +102,5 @@ function createFilesPatterns(podspec: Podspec): string[] {
     );
   }
 
-  return result;
+  return result.filter(Boolean);
 }
