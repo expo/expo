@@ -140,7 +140,7 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
         let ckcString = try onGetDRMLicense([
           "spcString": spcData.base64EncodedString(options: []),
           "contentId": assetID,
-          "licenseUrl": licenseServerUri,
+          "licenseUrl": licenseServerUri
         ])
         if let ckcData = ckcString.data(using: .utf8) {
           return ckcData
