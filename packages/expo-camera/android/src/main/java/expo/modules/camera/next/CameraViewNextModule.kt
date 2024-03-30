@@ -148,6 +148,10 @@ class CameraViewNextModule : Module() {
         }
       }
 
+      OnViewDidUpdateProps { view ->
+        view.createCamera()
+      }
+
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
           view.takePicture(options, promise, cacheDirectory)
