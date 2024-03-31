@@ -33,12 +33,17 @@ export function serializeHtmlWithAssets({
 
 /**
  * Combine the path segments of a URL.
- * This filters out empty segments and joins them with `/`.
+ * This filters out empty segments and avoids duplicate slashes when joining.
+ * If base url is empty, it will be treated as a root path, adding `/` to the beginning.
  */
-function combineUrlPath(...segments: string[]) {
-  return segments
+function combineUrlPath(baseUrl: string, ...segments: string[]) {
+  return [baseUrl || '/', ...segments]
     .filter(Boolean)
-    .map((segment) => segment.replace(/^\/+|\/+$/g, ''))
+    .map((segment, index) => {
+      const segmentIsBaseUrl = index === 0;
+      // Do not remove leading slashes from baseUrl
+      return segment.replace(segmentIsBaseUrl ? /\/+$/g : /^\/+|\/+$/g, '');
+    })
     .join('/');
 }
 
@@ -65,8 +70,8 @@ function htmlFromSerialAssets(
     .map(({ metadata, filename, source }) => {
       if (isExporting) {
         return [
-          `<link rel="preload" href="/${combineUrlPath(baseUrl, filename)}" as="style">`,
-          `<link rel="stylesheet" href="/${combineUrlPath(baseUrl, filename)}">`,
+          `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
+          `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
         ].join('');
       } else {
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
@@ -102,10 +107,10 @@ function htmlFromSerialAssets(
               return '';
             }
             // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="/${combineUrlPath(baseUrl, filename)" defer></script>`;
+            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
           }
 
-          return `<script src="/${combineUrlPath(baseUrl, filename)}" defer></script>`;
+          return `<script src="${combineUrlPath(baseUrl, filename)}" defer></script>`;
         })
         .join('');
 
