@@ -1,0 +1,38 @@
+{
+  "name": "expo-modules-exception-test",
+  "version": "0.1.0",
+  "description": "Expo module that returns various exceptions (used to test exception serialization)",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-modules-exception-test",
+    "ExpoModulesExceptionTest"
+  ],
+  "repository": "https://github.com/expo/expo",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "Colton Schlosser <1498529+cltnschlosser@users.noreply.github.com> (https://github.com/cltnschlosser)",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^3.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

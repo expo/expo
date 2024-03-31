@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoModulesExceptionTest.types.js","sourceRoot":"","sources":["../src/ExpoModulesExceptionTest.types.ts"],"names":[],"mappings":"","sourcesContent":["export type ChangeEventPayload = {\n  value: string;\n};\n\nexport type ExpoModulesExceptionTestViewProps = {\n  name: string;\n};\n"]}

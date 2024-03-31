@@ -75,6 +75,7 @@ export function getTestModules() {
 
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/SQLiteNext'));
+    modules.push(require('./tests/ExpoModulesException'));
   }
 
   if (Platform.OS === 'android') {

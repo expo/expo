@@ -36,6 +36,7 @@
     "expo-localization": "~14.8.0",
     "expo-location": "~16.5.0",
     "expo-media-library": "~15.9.0",
+    "expo-modules-exception-test": "./packages/expo-modules-exception-test/",
     "expo-network": "~5.8.0",
     "expo-notifications": "~0.27.0",
     "expo-random": "~13.6.0",
