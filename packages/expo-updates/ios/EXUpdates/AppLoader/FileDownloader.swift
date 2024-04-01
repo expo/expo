@@ -239,7 +239,10 @@ public final class FileDownloader {
 
     do {
       if let extraClientParams = try database.extraParams(withScopeKey: scopeKey) {
-        extraHeaders["Expo-Extra-Params"] = try StringStringDictionarySerializer.serialize(dictionary: extraClientParams)
+        let structuredHeaderDictionary = try StringDictionary(value: extraClientParams.mapValues({ value in
+          try StringItem(value: value)
+        }))
+        extraHeaders["Expo-Extra-Params"] = structuredHeaderDictionary.serialize()
       }
     } catch {
       NSLog("Error adding extra params to headers: %@", [error.localizedDescription])
@@ -251,6 +254,18 @@ public final class FileDownloader {
 
     if let embeddedUpdate = embeddedUpdate {
       extraHeaders["Expo-Embedded-Update-ID"] = embeddedUpdate.updateId.uuidString.lowercased()
+    }
+
+    do {
+      let failedUpdateIDs = try database.recentUpdateIdsWithFailedLaunch()
+      if !failedUpdateIDs.isEmpty {
+        let structuredHeaderList = try StringList(value: failedUpdateIDs.map({ item in
+          try StringItem(value: item)
+        }))
+        extraHeaders["Expo-Recent-Failed-Update-IDs"] = structuredHeaderList.serialize()
+      }
+    } catch {
+      NSLog("Error selecting failedUpdateIDs from database: %@", [error.localizedDescription])
     }
 
     return extraHeaders

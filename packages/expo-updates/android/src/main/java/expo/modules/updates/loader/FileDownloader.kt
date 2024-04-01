@@ -20,6 +20,7 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
+import expo.modules.structuredheaders.OuterList
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
@@ -736,6 +737,15 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
       }
       embeddedUpdate?.let {
         extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+
+      database.updateDao().loadRecentUpdateIdsWithFailedLaunch().let {
+        if (it.isNotEmpty()) {
+          extraHeaders.put(
+            "Expo-Recent-Failed-Update-IDs",
+            OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) })
+          )
+        }
       }
 
       return extraHeaders
