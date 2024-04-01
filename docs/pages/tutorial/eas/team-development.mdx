@@ -11,6 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import Video from '~/components/plugins/Video';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import ProgressTracker from '~/ui/components/ProgressTracker';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
 
@@ -176,6 +177,8 @@ In this chapter, we:
 - Published updates using `eas update --branch development --message "Change description"`.
 - Used a development build to view updates by logging into an Expo account and accessing the update through the Extensions tab.
 - Published updates that affect preview and production builds. We also learned that they fetch and download new updates when the app opens, which requires us to force close and reopen the app a second time to see the update applied. We can also extend this behavior to programmatically control the behavior of available updates by using [`useUpdates()`](/versions/latest/sdk/updates/#useupdates) hook.
+
+<ProgressTracker currentChapterIndex={9} />
 
 ## Next step
 

@@ -8,6 +8,7 @@ import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import ProgressTracker from '~/ui/components/ProgressTracker';
 
 [Expo GitHub App](/build/building-from-github/) automatically triggers builds from our GitHub projects with EAS. We can trigger builds for any build profile based on our development team's preferences. It also allows triggering builds for `git` push committed directly to a repository or a pull request.
 
@@ -96,6 +97,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
     }
     /* @hide ... */ /* @end */
   }
+  ```
 
 - Next, let's create a new branch called `dev`, and make a change in our app's JavaScript code. Then, commit the change, push the branch, and create a PR from that branch.
 - In the PR link, under **Labels**, create a label called `eas-build-all:development`.
@@ -139,6 +141,8 @@ In this chapter, we:
 - Connected and authorized our GitHub account with Expo.
 - Linked our GitHub repository to our EAS project.
 - Automated creating builds by applying GitHub PR labels.
+
+<ProgressTracker currentChapterIndex={10} />
 
 ## Next step
 
