@@ -228,7 +228,7 @@ class StartupProcedure(
   }
 
   fun onReactInstanceException(exception: Exception) {
-    errorRecovery.handleException(exception)
+    errorRecovery.onReactInstanceException(exception)
   }
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {

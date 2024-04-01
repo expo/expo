@@ -51,7 +51,7 @@ public interface ReactNativeHostHandler {
    *
    * @return custom DevSupportManagerFactory, or null if not to override
    *
-   * NOTE: This callback is not support on bridgeless mode
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default Object getDevSupportManagerFactory() { return null; }
@@ -59,7 +59,7 @@ public interface ReactNativeHostHandler {
   /**
    * Given chance for modules to override the javascript executor factory.
    *
-   * NOTE: This callback is not support on bridgeless mode
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default JavaScriptExecutorFactory getJavaScriptExecutorFactory() { return null; }

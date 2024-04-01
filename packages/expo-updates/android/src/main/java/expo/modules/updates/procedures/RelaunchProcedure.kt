@@ -37,7 +37,7 @@ class RelaunchProcedure(
   override val loggerTimerLabel = "timer-relaunch"
 
   override fun run(procedureContext: ProcedureContext) {
-    val reactApplication = context as? ReactApplication ?: run {
+    val reactApplication = context as? ReactApplication ?: run inner@ {
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
       return
     }
