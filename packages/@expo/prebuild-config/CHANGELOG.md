@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] remove default APNS entitlement. ([#27924](https://github.com/expo/expo/pull/27924) by [@douglowder](https://github.com/douglowder))
+
 ### 🎉 New features
 
 - Add default icon on iOS to prevent submission failure when no `icon` is defined. ([#27774](https://github.com/expo/expo/pull/27774) by [@EvanBacon](https://github.com/EvanBacon))
