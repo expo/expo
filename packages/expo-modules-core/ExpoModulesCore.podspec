@@ -46,6 +46,12 @@ Pod::Spec.new do |s|
     '"${PODS_ROOT}/Headers/Private/React-Core"',
   ]
 
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
+    ])
+  end
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
