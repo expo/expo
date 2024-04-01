@@ -1,4 +1,5 @@
 import { useLocalStorage } from '~/common/useLocalStorage';
+import { reportEasTutorialCompleted } from '~/providers/Analytics';
 
 type Chapter = {
   id: number;
@@ -43,6 +44,10 @@ export function ProgressTracker({ currentChapterIndex, name }: ProgressTrackerPr
 
   const currentChapter = chapters[currentChapterIndex];
   const allChaptersCompleted = completedChapters === chapters.length;
+
+  if (allChaptersCompleted) {
+    reportEasTutorialCompleted();
+  }
 
   return (
     <div className="w-full border border-solid border-default rounded-md p-4 mx-auto mt-6">
