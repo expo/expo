@@ -3738,14 +3738,6 @@
     recyclerlistview "4.2.0"
     tslib "2.4.0"
 
-"@shopify/react-native-skia@0.1.221":
-  version "0.1.221"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.221.tgz#79e610d28537fa7bff397df9d41ffaccc682f82b"
-  integrity sha512-hbwl6NJzVRBKVP39JrjVUg6r3sGNlDt17WUluPoF3h1Pv3A4qzwc9VrWNqvWr3H/0XZPuZPCop7EEz2ereYDfA==
-  dependencies:
-    canvaskit-wasm "0.39.1"
-    react-reconciler "^0.27.0"
-
 "@shopify/react-native-skia@1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-1.0.4.tgz#17049742eed595ac2abc21c343dce5899e476f56"
@@ -16634,7 +16626,7 @@ react-query@^3.34.16:
     broadcast-channel "^3.4.1"
     match-sorter "^6.0.2"
 
-react-reconciler@0.27.0, react-reconciler@^0.27.0:
+react-reconciler@0.27.0:
   version "0.27.0"
   resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.27.0.tgz#360124fdf2d76447c7491ee5f0e04503ed9acf5b"
   integrity sha512-HmMDKciQjYmBRGuuhIaKA1ba/7a+UsM5FzOZsMO2JYHt9Jh8reCb7j1eDC95NOyUlKM9KRyvdx0flBuDvYSBoA==
