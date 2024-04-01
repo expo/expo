@@ -6,6 +6,7 @@
 -keep class * implements expo.modules.kotlin.records.Record {
   *;
 }
+-keep class * extends expo.modules.kotlin.sharedobjects.SharedRef
 -keep enum * implements expo.modules.kotlin.types.Enumerable {
   *;
 }
