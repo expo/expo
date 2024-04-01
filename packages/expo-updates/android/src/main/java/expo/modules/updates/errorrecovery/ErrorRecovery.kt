@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -38,6 +39,7 @@ class ErrorRecovery(
 
   private var weakReactContext: WeakReference<ReactContext>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null
+  private var shouldHandleReactInstanceException = false
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
     if (!::handler.isInitialized) {
@@ -49,6 +51,16 @@ class ErrorRecovery(
   fun startMonitoring(reactContext: ReactContext) {
     registerContentAppearedListener()
     registerErrorHandler(reactContext)
+  }
+
+  /**
+   * Exception notifications sending from [expo.modules.core.interfaces.ReactNativeHostHandler]
+   * This is only used for bridgeless mode.
+   */
+  internal fun onReactInstanceException(exception: Exception) {
+    if (shouldHandleReactInstanceException) {
+      handleException(exception)
+    }
   }
 
   fun notifyNewRemoteLoadStatus(newStatus: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -91,11 +103,28 @@ class ErrorRecovery(
 
   private fun getDevSupportManager(reactContext: ReactContext): DevSupportManager {
     val reactApplication = reactContext.applicationContext as ReactApplication
-    return reactApplication.reactHost?.devSupportManager
-      ?: reactApplication.reactNativeHost.reactInstanceManager.devSupportManager
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      val reactHost = reactApplication.reactHost
+      check(reactHost != null)
+      return reactHost.devSupportManager ?: throw IllegalStateException("Unable to get DevSupportManager from ReactHost")
+    }
+
+    return reactApplication.reactNativeHost.reactInstanceManager.devSupportManager
   }
 
   private fun registerErrorHandler(reactContext: ReactContext) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      registerErrorHandlerImplBridgeless(reactContext)
+    } else {
+      registerErrorHandlerImplBridge(reactContext)
+    }
+  }
+
+  private fun registerErrorHandlerImplBridgeless(reactContext: ReactContext) {
+    shouldHandleReactInstanceException = true
+  }
+
+  private fun registerErrorHandlerImplBridge(reactContext: ReactContext) {
     val devSupportManager = getDevSupportManager(reactContext)
     if (devSupportManager !is DisabledDevSupportManager) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
@@ -118,6 +147,18 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandler() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      unregisterErrorHandlerImplBridgeless()
+    } else {
+      unregisterErrorHandlerImplBridge()
+    }
+  }
+
+  private fun unregisterErrorHandlerImplBridgeless() {
+    shouldHandleReactInstanceException = false
+  }
+
+  private fun unregisterErrorHandlerImplBridge() {
     weakReactContext?.get()?.let { reactContext ->
       val devSupportManager = getDevSupportManager(reactContext)
       if (devSupportManager !is DisabledDevSupportManager) {

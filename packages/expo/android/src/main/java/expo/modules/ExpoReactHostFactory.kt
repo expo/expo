@@ -34,7 +34,6 @@ object ExpoReactHostFactory {
     private val reactNativeHostWrapper: ReactNativeHostWrapper,
     override val bindingsInstaller: BindingsInstaller? = null,
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-    private val exceptionHandler: (Exception) -> Unit = {},
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder()
   ) : ReactHostDelegate {
@@ -66,7 +65,12 @@ object ExpoReactHostFactory {
 
     override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
 
-    override fun handleInstanceException(error: Exception) = exceptionHandler(error)
+    override fun handleInstanceException(error: Exception) {
+      val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
+      reactNativeHostWrapper.reactNativeHostHandlers.forEach { handler ->
+        handler.onReactInstanceException(useDeveloperSupport, error)
+      }
+    }
   }
 
   @OptIn(UnstableReactNativeAPI::class)
