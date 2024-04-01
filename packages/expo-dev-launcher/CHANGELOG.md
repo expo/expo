@@ -24,6 +24,7 @@
 - Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573) by [@kudo](https://github.com/kudo))
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 - Deprecate `experimentalLaunchMode` config plugin option and introduce new `launchMode` option. ([#27845](https://github.com/expo/expo/pull/27845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
