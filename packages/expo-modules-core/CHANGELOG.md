@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed SharedRef class names are obfuscated when R8 is enabled. ([#27965](https://github.com/expo/expo/pull/27965) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.11.12 — 2024-03-13
