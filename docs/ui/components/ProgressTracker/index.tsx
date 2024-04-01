@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+
+import { useLocalStorage } from '~/common/useLocalStorage';
 
 type Chapter = {
   id: number;
@@ -19,19 +20,11 @@ const initialChapters: Chapter[] = [
   // { id: 5, title: 'Chapter 5', completed: false },
 ];
 
-const STORAGE_KEY = '@expo-docs/useLocalStorage/EAS_TUTORIAL_PROGRESS';
-
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentChapterIndex }) => {
-  const [chapters, setChapters] = useState<Chapter[]>([]);
-
-  useEffect(() => {
-    const savedChapters = localStorage.getItem(STORAGE_KEY);
-    setChapters(savedChapters ? JSON.parse(savedChapters) : initialChapters);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chapters));
-  }, [chapters]);
+  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
+    name: 'EAS_TUTORIAL_PROGRESS',
+    defaultValue: initialChapters,
+  });
 
   const handleCompleteChapter = () => {
     const updatedChapters = chapters.map((chapter, index) =>
@@ -50,15 +43,19 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentChapterIndex }
     <div css={containerStyle}>
       <div css={progressBarContainerStyle}>
         <div css={progressBarStyle(progressPercentage)} />
+        <p
+          css={
+            progressTextStyle
+          }>{`${completedChapters} out of ${chapters.length} chapters completed`}</p>
       </div>
       {allChaptersCompleted ? (
         <div css={completedAllStyle}>🎉 All chapters completed!</div>
       ) : (
         currentChapter && (
-          <div>
+          <div css={buttonContainerStyle}>
             {!currentChapter.completed && (
               <button onClick={handleCompleteChapter} css={buttonStyle}>
-                Mark {currentChapter.title} as complete?
+                Mark {currentChapter.title} as Complete
               </button>
             )}
             {currentChapter.completed && <p css={completedMessageStyle}>Chapter completed!</p>}
@@ -93,10 +90,14 @@ const progressBarStyle = (progressPercentage: number) => css`
   width: ${progressPercentage}%;
 `;
 
-const chapterTitleStyle = css`
-  margin-top: 20px;
-  font-size: 24px;
-  font-weight: bold;
+const progressTextStyle = css`
+  margin-top: 10px;
+  text-align: center;
+`;
+
+const buttonContainerStyle = css`
+  margin-top: 40px;
+  text-align: center;
 `;
 
 const buttonStyle = css`
@@ -104,9 +105,8 @@ const buttonStyle = css`
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
-  margin-top: 10px;
 
   &:hover {
     background-color: #0056b3;
@@ -119,7 +119,7 @@ const completedMessageStyle = css`
 `;
 
 const completedAllStyle = css`
-  margin-top: 20px;
+  margin-top: 30px;
   font-size: 24px;
   color: #4caf50;
   text-align: center;
