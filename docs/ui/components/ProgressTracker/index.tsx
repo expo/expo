@@ -2,7 +2,7 @@ import { useLocalStorage } from '~/common/useLocalStorage';
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
 
 type Chapter = {
-  id: number;
+  title: string;
   completed: boolean;
 };
 
@@ -13,17 +13,17 @@ type ProgressTrackerProps = {
 
 // The following data is for the EAS Tutorial (/tutorial/eas/).
 const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
-  { id: 1, completed: false },
-  { id: 2, completed: false },
-  { id: 3, completed: false },
-  { id: 4, completed: false },
-  { id: 5, completed: false },
-  { id: 6, completed: false },
-  { id: 7, completed: false },
-  { id: 8, completed: false },
-  { id: 9, completed: false },
-  { id: 10, completed: false },
-  { id: 11, completed: false },
+  { title: 'Configure development build', completed: false },
+  { title: 'Android development build', completed: false },
+  { title: 'iOS development build for simulators', completed: false },
+  { title: 'Android development build for devices', completed: false },
+  { title: 'Multiple app variants', completed: false },
+  { title: 'Internal distribution build', completed: false },
+  { title: 'Manage app versions', completed: false },
+  { title: 'Android production build', completed: false },
+  { title: 'iOS production build', completed: false },
+  { title: 'Share previews', completed: false },
+  { title: 'Builds from GitHub', completed: false },
 ];
 
 export function ProgressTracker({ currentChapterIndex, name }: ProgressTrackerProps) {
