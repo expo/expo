@@ -7,9 +7,11 @@ type Chapter = {
 
 type ProgressTrackerProps = {
   currentChapterIndex: number;
+  name: string;
 };
 
-const initialChapters: Chapter[] = [
+// The following data is for the EAS Tutorial (/tutorial/eas/).
+const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
   { id: 1, completed: false },
   { id: 2, completed: false },
   { id: 3, completed: false },
@@ -23,10 +25,10 @@ const initialChapters: Chapter[] = [
   { id: 11, completed: false },
 ];
 
-const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentChapterIndex }) => {
+export function ProgressTracker({ currentChapterIndex, name }: ProgressTrackerProps) {
   const [chapters, setChapters] = useLocalStorage<Chapter[]>({
-    name: 'EAS_TUTORIAL_PROGRESS',
-    defaultValue: initialChapters,
+    name,
+    defaultValue: name === 'EAS_TUTORIAL' ? EAS_TUTORIAL_INITIAL_CHAPTERS : [],
   });
 
   const handleCompleteChapter = () => {
@@ -64,7 +66,7 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentChapterIndex }
                 </button>
               )}
               {currentChapter.completed && (
-                <p className="mt-2 text-center text-palette-black dark:text-palette-white">{`${completedChapters} out of ${chapters.length} chapters completed.`}</p>
+                <p className="mt-4 text-center text-palette-black dark:text-palette-white">{`${completedChapters} out of ${chapters.length} chapters completed.`}</p>
               )}
             </div>
           </div>
@@ -72,6 +74,4 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ currentChapterIndex }
       )}
     </div>
   );
-};
-
-export default ProgressTracker;
+}
