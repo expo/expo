@@ -125,6 +125,9 @@ describe('server-output', () => {
       expect(await fetch('http://localhost:3000/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
+      expect(await fetch('http://localhost:3000/(alpha)/').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-index">/
+      );
       expect(await fetch('http://localhost:3000/(alpha)/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
@@ -355,6 +358,7 @@ describe('server-output', () => {
       expect(files).toContain('server/_expo/functions/api/empty+api.js');
 
       // Has single variation of group file
+      expect(files).toContain('server/(alpha)/index.html');
       expect(files).toContain('server/(alpha)/beta.html');
       expect(files).not.toContain('server/beta.html');
 
