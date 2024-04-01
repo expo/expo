@@ -92,6 +92,7 @@ You can also [learn more](/guides/customizing-metro/) about customizing Metro.
     </Tabs>
 
     </Tab>
+
   </Tabs>
 </Step>
 
@@ -332,7 +333,7 @@ This generates the following static HTML:
 </style>
 ```
 
-- Static font optimization requires the font to be loaded syncronously. If the font isn't statically optimized, it could be because it was loaded inside a `useEffect`, deferred component, or async function.
+- Static font optimization requires the font to be loaded synchronously. If the font isn't statically optimized, it could be because it was loaded inside a `useEffect`, deferred component, or async function.
 - Static optimization is only supported with `Font.loadAsync` and `Font.useFonts` from `expo-font`. Wrapper functions are supported as long as the wrappers are synchronous.
 
 ## FAQ

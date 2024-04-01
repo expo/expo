@@ -51,7 +51,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
     // then we shouldn't show the title twice. You might want to organize your group like
-    // so it is collapsable
+    // so it is collapsible
     return true;
   } else if (
     info.children &&

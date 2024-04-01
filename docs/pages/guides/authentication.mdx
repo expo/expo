@@ -369,9 +369,9 @@ export default function App() {
 <Tab>
 - Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Automatic**.
 
-- If **Automatic** is selected, Beyond Identity will automatically redirect to your application using the **Invoke URL** (the App Scheme or Univeral URL pointing to your application).
-  {/* prettier-ignore */}
+- If **Automatic** is selected, Beyond Identity will automatically redirect to your application using the **Invoke URL** (the App Scheme or Universal URL pointing to your application).
 
+{/* prettier-ignore */}
 ```jsx Auth Code
 import { useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
@@ -401,7 +401,7 @@ export default function App() {
 
   useEffect(() => {
     const authenticate = async url => {
-      // Display UI for user to select a passwordless passkey
+      // Display UI for the user to select a passwordless passkey
       const passkeys = await Embedded.getPasskeys();
 
       if (await Embedded.isAuthenticateUrl(url)) {
@@ -461,7 +461,7 @@ export default function App() {
     });
     const data = await response.json();
 
-    // Display UI for user to select a passwordless passkey
+    // Display UI for the user to select a passwordless passkey
     const passkeys = await Embedded.getPasskeys();
 
     if (await Embedded.isAuthenticateUrl(data.authenticate_url)) {
@@ -488,7 +488,8 @@ export default function App() {
 </Box>
 {/* End Beyond Identity */}
 
-{/* Start Calendly*/}
+{/* Start Calendly */}
+
 <Box
   name="Calendly"
   createUrl="https://developer.calendly.com/getting-started"
@@ -531,12 +532,12 @@ export default function App() {
       clientId: /* @info Your client id. Can be hardcoded or put it in .env file */ process.env.EXPO_PUBLIC_Client_ID /* @end */,
       usePKCE: true,
       redirectUri: makeRedirectUri({
-        native: /* @info Set up scheme property in your app.json or app.config.js. For example, app.json {scheme: "myapp"} */ "myapp://" /* @end */, 
+        native: /* @info Set up scheme property in your app.json or app.config.js. For example, app.json {scheme: "myapp"} */ "myapp://" /* @end */,
       }),
     },
     discovery
   );
-  
+
   useEffect(() => {
     const exchange = async (exchangeTokenReq) => {
       try {
@@ -593,6 +594,7 @@ export default function App() {
 }
 
 ```
+
 </Tab>
 </Tabs>
 </Box>
