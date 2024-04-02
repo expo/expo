@@ -26,17 +26,14 @@ module.exports = {
     cancelAnimationFrame: false,
     cancelIdleCallback: false,
     clearImmediate: false,
-    clearInterval: false,
-    clearTimeout: false,
     fetch: false,
     navigator: false,
     process: false,
     requestAnimationFrame: false,
     requestIdleCallback: false,
     setImmediate: false,
-    setInterval: false,
-    setTimeout: false,
     window: false,
+    "shared-node-browser": true
   },
   settings: {
     'import/extensions': allExtensions,

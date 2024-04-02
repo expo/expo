@@ -48,10 +48,6 @@ module.exports = {
                 message: 'Use `string` instead.',
                 fixWith: 'string',
               },
-              '{}': {
-                message: 'Use `object` instead.',
-                fixWith: 'object',
-              },
             },
             extendDefaults: false,
           },
