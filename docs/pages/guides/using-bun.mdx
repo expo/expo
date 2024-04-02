@@ -7,9 +7,11 @@ import { Terminal } from '~/ui/components/Snippet';
 
 [Bun](https://bun.sh/) is a JavaScript runtime and a drop-in alternative for [Node.js](https://nodejs.org/en). In Expo projects, Bun can be used to install npm packages and run Node.js scripts. The benefits of using Bun are faster package installation than npm, pnpm, or yarn and [at least 4x faster startup time compared to Node.js](https://bun.sh/docs#design-goals), which gives a huge boost to your local development experience.
 
-## Start a new Expo project with Bun
+## Prerequisites
 
-To create a new app using Bun, [install Bun on your local machine](https://bun.sh/) by running the command:
+To create a new app using Bun, [install Bun on your local machine](https://bun.sh/docs/installation#installing).
+
+## Start a new Expo project with Bun
 
 <Terminal cmd={['$ curl -fsSL https://bun.sh/install | bash']} />
 
@@ -31,7 +33,9 @@ EAS decides which package manager to use based on the lockfile in your codebase.
 
 ### Customize Bun version on EAS
 
-EAS uses `bun@1.0.14` by default. If you need to use a particular version of Bun, you can configure the exact version in each build in your **eas.json**:
+Bun is installed by default when using EAS. To check the default version of Bun when creating an EAS Build, see [Android latest server image](/build-reference/infrastructure/#details) and [iOS latest server image](/build-reference/infrastructure/#details-7).
+
+If you need to use a particular version of Bun, you can configure the exact version in each build in your **eas.json**:
 
 {/* prettier-ignore */}
 ```json eas.json
