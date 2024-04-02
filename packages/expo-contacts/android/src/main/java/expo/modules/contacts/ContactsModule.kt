@@ -20,7 +20,6 @@ import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -28,18 +27,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
-
-class MissingPermissionException(permission: String) : CodedException("Missing $permission permission")
-
-class RetrieveIdException : CodedException("Couldn't get the contact id")
-
-class AddContactException : CodedException("Given contact couldn't be added")
-
-class ContactNotFoundException : CodedException("Couldn't find contact")
-
-class ContactUpdateException : CodedException("Given contact couldn't be updated")
-
-class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for contact")
 
 data class ContactPage(
   val data: List<Contact>,
@@ -79,6 +66,7 @@ private val defaultFields = setOf(
 )
 
 const val RC_EDIT_CONTACT = 2137
+const val RC_PICK_CONTACT = 2138
 
 // TODO: Evan: default API is confusing. Duplicate data being requested.
 private val DEFAULT_PROJECTION = listOf(
@@ -130,7 +118,8 @@ class QueryArguments(
 )
 
 class ContactsModule : Module() {
-  private var mPendingPromise: Promise? = null
+  private var contactPickingPromise: Promise? = null
+  private var contactManipulationPromise: Promise? = null
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -257,6 +246,10 @@ class ContactsModule : Module() {
     AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, options: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
 
+      if (contactManipulationPromise != null) {
+        throw ContactManipulationInProgressException()
+      }
+
       if (contactId != null) {
         val contact = getContactById(contactId, defaultFields) ?: throw ContactNotFoundException()
         presentEditForm(contact, promise)
@@ -265,18 +258,48 @@ class ContactsModule : Module() {
       // Create contact from supplied data.
       if (contactData != null) {
         val contact = mutateContact(null, contactData)
-        mPendingPromise = promise
+        contactManipulationPromise = promise
         presentForm(contact)
       }
       promise.resolve()
     }
 
     OnActivityResult { _, payload ->
-      val (requestCode, _, _) = payload
-      val pendingPromise = mPendingPromise ?: return@OnActivityResult
+      val (requestCode, resultCode, intent) = payload
       if (requestCode == RC_EDIT_CONTACT) {
+        val pendingPromise = contactManipulationPromise ?: return@OnActivityResult
+
         pendingPromise.resolve(0)
+
+        contactManipulationPromise = null
       }
+      if (requestCode == RC_PICK_CONTACT) {
+        val pendingPromise = contactPickingPromise ?: return@OnActivityResult
+
+        if (resultCode == Activity.RESULT_CANCELED) {
+          pendingPromise.resolve()
+        }
+
+        if (resultCode == Activity.RESULT_OK) {
+          val contactId = intent?.data?.lastPathSegment
+          val contact = getContactById(contactId, defaultFields)
+          pendingPromise.resolve(contact?.toMap(defaultFields))
+        }
+
+        contactPickingPromise = null
+      }
+    }
+
+    AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+      if (contactPickingPromise != null) {
+        throw ContactPickingInProgressException()
+      }
+
+      val intent = Intent(Intent.ACTION_PICK)
+      intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+
+      contactPickingPromise = promise
+      activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
@@ -295,7 +318,7 @@ class ContactsModule : Module() {
     )
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-    mPendingPromise = promise
+    contactManipulationPromise = promise
     activity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
