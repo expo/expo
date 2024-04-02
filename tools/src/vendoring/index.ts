@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import semver from 'semver';
@@ -7,6 +8,7 @@ import {
   VendoringProvider,
   VendoringTargetModulesConfig,
 } from './types';
+import { EXPO_GO_DIR } from '../Constants';
 import { link } from '../Formatter';
 import logger from '../Logger';
 import * as Npm from '../Npm';
@@ -41,8 +43,9 @@ export async function listAvailableVendoredModulesAsync(
   modules: VendoringTargetModulesConfig,
   onlyOutdated: boolean = false
 ) {
-  const bundledNativeModules = await getBundledVersionsAsync();
-  const vendoredPackageNames = Object.keys(modules);
+  const autolinkedModules = await listExpoGoAutoLinkingModulesAsync();
+  const bundledNativeModules = { ...(await getBundledVersionsAsync()), ...autolinkedModules };
+  const vendoredPackageNames = [...Object.keys(modules), ...Object.keys(autolinkedModules)];
   const packageViews: Npm.PackageViewType[] = await Promise.all(
     vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
   );
@@ -65,7 +68,12 @@ export async function listAvailableVendoredModulesAsync(
     const isOutdated = !bundledVersion || semver.gtr(latestVersion, bundledVersion);
 
     if (!onlyOutdated || isOutdated) {
-      const { source } = modules[packageName];
+      let source: string;
+      if (packageName in modules) {
+        source = modules[packageName].source;
+      } else {
+        source = `https://www.npmjs.com/package/${packageName}`;
+      }
 
       table.push([
         link(chalk.bold.green(packageName), source),
@@ -76,6 +84,28 @@ export async function listAvailableVendoredModulesAsync(
     }
   }
   logger.log(table.toString());
+}
+
+/**
+ * Lists all modules that are linked with Expo Go.
+ * @returns Object with module names as keys and their versions as values.
+ */
+async function listExpoGoAutoLinkingModulesAsync(): Promise<Record<string, string>> {
+  const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
+    cwd: EXPO_GO_DIR,
+  });
+  const { dependencies } = JSON.parse(stdout);
+  const result = {};
+  for (const [moduleName, moduleInfo] of Object.entries<Record<string, any>>(dependencies)) {
+    if (moduleName === 'expo') {
+      // Skip Expo package since it's not vendored.
+      continue;
+    }
+    const packageRoot = moduleInfo.root;
+    const { version } = require(`${packageRoot}/package.json`);
+    result[moduleName] = version;
+  }
+  return result;
 }
 
 /**
