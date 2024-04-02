@@ -2505,7 +2505,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..08c6c20587 100644
+index d5ca09a584..e7e9e23831 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2531,7 +2531,7 @@ index d5ca09a584..08c6c20587 100644
 +    "expo": "~51.0.0-unreleased",
 +    "expo-status-bar": "~1.11.0",
 +    "react": "18.2.0",
-+    "react-native": "0.74.0-rc.4"
++    "react-native": "0.74.0-rc.5"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"
