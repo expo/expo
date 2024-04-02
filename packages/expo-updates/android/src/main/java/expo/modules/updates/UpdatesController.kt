@@ -23,6 +23,9 @@ class UpdatesController {
     private var singletonInstance: IUpdatesController? = null
     private var overrideConfiguration: UpdatesConfiguration? = null
 
+    @JvmStatic val wasInitialized: Boolean
+      get() = singletonInstance != null
+
     @JvmStatic val instance: IUpdatesController
       get() {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
