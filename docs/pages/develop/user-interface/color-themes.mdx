@@ -49,14 +49,12 @@ If the project is misconfigured, you'll see a warning as shown below:
 
 ### Android
 
-> Appearance locking requires `react-native@0.63.3` to work correctly.
+> Appearance locking requires at least `react-native@0.63.3` to work correctly.
 
 Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in **AndroidManifest.xml**:
 
 ```xml
-<activity
-...
-android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
+<activity android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
 ```
 
 Implement the `onConfigurationChanged` method in **MainActivity.java**:
@@ -65,7 +63,8 @@ Implement the `onConfigurationChanged` method in **MainActivity.java**:
 import android.content.Intent; // <--- import
 import android.content.res.Configuration; // <--- import
 public class MainActivity extends ReactActivity {
-  ......
+  // ...
+
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
@@ -73,13 +72,13 @@ public class MainActivity extends ReactActivity {
     intent.putExtra("newConfig", newConfig);
     sendBroadcast(intent);
   }
-  ......
+  // ...
 }
 ```
 
 ### iOS
 
-You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
+You can configure supported styles with the [`UIUserInterfaceStyle`](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
 
 </Collapsible>
 
