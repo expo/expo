@@ -27,7 +27,7 @@ const ESLINT_ONLY = `module.exports = {
 
 const setupLinting = async (projectRoot: string) => {
   const result = await selectAsync(
-    'No eslint config found. Would you like to set up linting for this project?',
+    'No ESLint config found. Install and configure ESLint in this project?',
     [
       {
         title: 'Yes, eslint only',
@@ -77,7 +77,7 @@ const setupLinting = async (projectRoot: string) => {
   const scripts = JsonFile.read(path.join(projectRoot, 'package.json')).scripts;
 
   if ((scripts as JSONObject)?.lint) {
-    Log.log('Skipped adding the lint scrip as one exists already');
+    Log.log('Skipped adding the lint script as one exists already');
   } else {
     await JsonFile.setAsync(
       path.join(projectRoot, 'package.json'),
