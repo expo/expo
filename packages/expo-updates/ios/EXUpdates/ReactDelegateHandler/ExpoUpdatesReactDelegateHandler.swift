@@ -79,11 +79,13 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
-
-    let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
-      AppController.sharedInstance.launchAssetUrl(),
+    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
+      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+    }
+    let rootView = rctAppDelegate.recreateRootView(
+      withBundleURL: AppController.sharedInstance.launchAssetUrl(),
       moduleName: self.rootViewModuleName,
-      initialProperties: self.rootViewInitialProperties,
+      initialProps: self.rootViewInitialProperties,
       launchOptions: self.launchOptions
     )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white

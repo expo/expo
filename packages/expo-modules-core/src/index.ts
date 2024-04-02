@@ -41,3 +41,5 @@ export * from './PermissionsInterface';
 export * from './PermissionsHook';
 
 export * from './Refs';
+
+export * from './hooks/useReleasingSharedObject';

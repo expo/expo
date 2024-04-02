@@ -42,7 +42,7 @@ class ReactActivityDelegateWrapper(
     invokeDelegateMethod("getReactNativeHost")
   }
   private val _reactHost: ReactHost? by lazy {
-    invokeDelegateMethod("getReactHost")
+    delegate.reactHost
   }
 
   /**

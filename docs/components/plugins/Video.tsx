@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { borderRadius, breakpoints } from '@expo/styleguide-base';
 import dynamic from 'next/dynamic';
 import { PropsWithChildren, useState } from 'react';
@@ -16,9 +17,10 @@ type VideoProps = PropsWithChildren<{
   url?: string;
   file?: string;
   loop?: boolean;
+  caption?: string;
 }>;
 
-const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => {
+const Video = ({ controls, spaceAfter, url, file, loop = true, caption }: VideoProps) => {
   const [hover, setHover] = useState(false);
   const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
 
@@ -34,32 +36,44 @@ const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => 
       onMouseLeave={() => setHover(false)}>
       <VisibilitySensor partialVisibility>
         {({ isVisible }: { isVisible: boolean }) => (
-          <div css={[videoWrapperStyle, { marginBottom: getInitialMarginBottom(spaceAfter) }]}>
-            <ReactPlayer
-              url={isVisible ? url || `/static/videos/${file}` : undefined}
-              className="react-player"
-              width={PLAYER_WIDTH}
-              height={PLAYER_HEIGHT}
+          <div css={{ marginBottom: getInitialMarginBottom(spaceAfter) }}>
+            <div css={videoWrapperStyle}>
+              <ReactPlayer
+                url={isVisible ? url || `/static/videos/${file}` : undefined}
+                className="react-player"
+                width={PLAYER_WIDTH}
+                height={PLAYER_HEIGHT}
+                style={{
+                  outline: 'none',
+                  backgroundColor: '#000',
+                  borderRadius: borderRadius.md,
+                }}
+                muted
+                playing={isVisible && !!file}
+                controls={typeof controls === 'undefined' ? forceShowControls : controls}
+                playsinline
+                loop={loop}
+              />
+              <div
+                css={[
+                  videoWrapperStyle,
+                  dimmerStyle,
+                  {
+                    opacity: isVisible ? 0 : 0.7,
+                  },
+                ]}
+              />
+            </div>
+            <p
               style={{
-                outline: 'none',
-                backgroundColor: '#000',
-                borderRadius: borderRadius.md,
-              }}
-              muted
-              playing={isVisible && !!file}
-              controls={typeof controls === 'undefined' ? forceShowControls : controls}
-              playsinline
-              loop={loop}
-            />
-            <div
-              css={[
-                videoWrapperStyle,
-                dimmerStyle,
-                {
-                  opacity: isVisible ? 0 : 0.7,
-                },
-              ]}
-            />
+                marginTop: 14,
+                fontSize: 14,
+                color: theme.text.secondary,
+                textAlign: 'center',
+                lineHeight: 1.15,
+              }}>
+              {caption}
+            </p>
           </div>
         )}
       </VisibilitySensor>
