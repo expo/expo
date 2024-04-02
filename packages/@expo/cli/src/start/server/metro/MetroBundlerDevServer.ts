@@ -147,9 +147,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             contents: JSON.stringify({
               version: contents.map.version,
               sources: contents.map.sources.map((source: string) => {
-                source = typeof source === 'string' && source.startsWith(this.projectRoot)
-                  ? path.relative(this.projectRoot, source)
-                  : source;
+                source =
+                  typeof source === 'string' && source.startsWith(this.projectRoot)
+                    ? path.relative(this.projectRoot, source)
+                    : source;
                 return source.split(path.sep).join('/');
               }),
               sourcesContent: new Array(contents.map.sources.length).fill(null),
