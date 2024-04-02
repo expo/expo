@@ -218,9 +218,6 @@ const config: VendoringTargetConfig = {
         ],
       },
     },
-    'react-native-maps': {
-      source: 'https://github.com/react-native-maps/react-native-maps',
-    },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
       ios: {

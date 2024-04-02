@@ -582,26 +582,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-maps': {
-    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
-    installableInManagedApps: true,
-    moduleModifier: MapsModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios/AirGoogleMaps',
-        targetIosPath: 'Api/Components/GoogleMaps',
-      },
-      {
-        recursive: true,
-        sourceIosPath: 'ios/AirMaps',
-        targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/rnmaps/maps',
-        targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.rnmaps.maps',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
-      },
-    ],
-  },
   '@react-native-community/netinfo': {
     repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
     installableInManagedApps: true,
