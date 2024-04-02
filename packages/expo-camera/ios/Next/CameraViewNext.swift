@@ -227,6 +227,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.addErrorNotification()
       self.changePreviewOrientation()
+      self.updateSessionAudioIsMuted()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {

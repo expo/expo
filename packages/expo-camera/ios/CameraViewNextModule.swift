@@ -139,7 +139,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
-        try await MainActor.run {
+        await MainActor.run {
           let delegate = VisionScannerDelegate(handler: self)
           scannerContext = ScannerContext(delegate: delegate)
           launchScanner(with: options)
