@@ -229,7 +229,16 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
 export async function getAttachedDevicesAsync(): Promise<Device[]> {
   const output = await getServer().runAsync(['devices', '-l']);
 
-  const splitItems = output.trim().replace(/\n$/, '').split(os.EOL);
+  const splitItems = output
+    .trim()
+    .replace(/\n$/, '')
+    .split(os.EOL)
+    // Filter ADB trace logs from the output, e.g.
+    // adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l
+    // 03-04 12:29:44.557 16415 16415 D adb     : commandline.cpp:1646 Using server socket: tcp:172.27.192.1:5037
+    // 03-04 12:29:44.557 16415 16415 D adb     : adb_client.cpp:160 _adb_connect: host:version
+    .filter((line) => !line.match(/\.cpp:[0-9]+/));
+
   // First line is `"List of devices attached"`, remove it
   // @ts-ignore: todo
   const attachedDevices: {

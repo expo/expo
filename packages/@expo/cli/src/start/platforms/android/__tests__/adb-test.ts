@@ -209,7 +209,40 @@ describe(getAttachedDevicesAsync, () => {
         isAuthorized: true,
         isBooted: true,
         name: 'Pixel_4_XL_API_30',
+        pid: 'emulator-5554',
+        type: 'emulator',
+      },
+    ]);
+  });
 
+  it(`gets devices when ADB_TRACE is set`, async () => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce(
+        [
+          'List of devices attached',
+          'adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l',
+          'adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:351] adb_connect: service: host:devices-l',
+          'adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:160] _adb_connect: host:devices-l',
+          'adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:194] _adb_connect: return fd 3',
+          'adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:369] adb_connect: return fd 3',
+          // Emulator
+          'emulator-5554          offline transport_id:1',
+          '',
+        ].join('\n')
+      )
+      .mockResolvedValueOnce(
+        // Return the emulator name
+        ['Pixel_4_XL_API_30', 'OK'].join('\n')
+      );
+
+    const devices = await getAttachedDevicesAsync();
+
+    expect(devices).toEqual([
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_4_XL_API_30',
         pid: 'emulator-5554',
         type: 'emulator',
       },

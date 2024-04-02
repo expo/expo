@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 
 import { BranchDetailsView } from './BranchDetailsView';
 import { AppPlatform, useBranchDetailsQuery } from '../../graphql/types';
-import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 export function BranchDetailsContainer(
@@ -17,7 +16,6 @@ export function BranchDetailsContainer(
       appId: props.appId,
       name: props.branchName,
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-      sdkVersions: Kernel.sdkVersions.split(','),
     },
   });
 

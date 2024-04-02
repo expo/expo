@@ -80,7 +80,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
     }
 
-    AsyncFunction("isAvailableAsync") {
+    AsyncFunction<Boolean>("isAvailableAsync") {
       val mSensorManager = appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         ?: return@AsyncFunction false
       val sensorTypes = arrayListOf(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY)
