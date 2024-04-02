@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { Log } from '../log';
+import { isInteractive } from '../utils/interactive';
 import { selectAsync } from '../utils/prompts';
 
 const WITH_PRETTIER = `module.exports = {
@@ -96,7 +97,11 @@ export const lintAsync = async (projectRoot: string) => {
     // TODO(Kadi): check for all config files https://eslint.org/docs/latest/use/configure/configuration-files#configuration-file-formats
     await fs.readFile(path.join(projectRoot, '.eslintrc.js'), 'utf8');
   } catch {
-    return setupLinting(projectRoot);
+    if (isInteractive()) {
+      return setupLinting(projectRoot);
+    } else {
+      Log.log('No ESLint setup found. Skipping linting.');
+    }
   }
 
   const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'npm';
