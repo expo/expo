@@ -22,6 +22,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@gorhom/bottom-sheet": "4.4.6",
     "@graphql-codegen/introspection": "^2.1.1",
+    "@shopify/react-native-skia": "1.0.4",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/netinfo": "11.1.0",
     "@react-navigation/bottom-tabs": "~6.4.0",

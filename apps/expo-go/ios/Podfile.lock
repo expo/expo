@@ -1359,7 +1359,7 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
-  - react-native-skia (0.1.221):
+  - react-native-skia (1.0.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1856,7 +1856,7 @@ DEPENDENCIES:
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
   - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `./vendored/unversioned/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-nativeconfig (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
@@ -2137,7 +2137,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "./vendored/unversioned/@shopify/react-native-skia"
+    :path: "../../../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "./vendored/unversioned/@react-native-community/slider"
   react-native-webview:
@@ -2293,7 +2293,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 7519b943444dd491b1f10b646161ac3e8675915b
+  hermes-engine: 48a8f9b0b579b5d4f7e9b11159e6b52812512bdd
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -2334,7 +2334,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
-  react-native-skia: 51b0d93895db5051095048039d207114736c7f93
+  react-native-skia: 9ede31b12c287a93564a1b24db151749ae931eb4
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-nativeconfig: 83f91b53a8d6a6ecf16a8acd845c99570db7a548
@@ -2370,7 +2370,7 @@ SPEC CHECKSUMS:
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: e046335ab6e3f25d39f1a55bd98620a85269cffa
@@ -2386,6 +2386,6 @@ SPEC CHECKSUMS:
   Yoga: b394856da42917bd03aa7c6b37614ffaf72a8b96
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: ba2da38b1c358dd85d6beed85aa41ca1bb11d217
+PODFILE CHECKSUM: 8a6f0f254954975fbb7f41919c6fdea43c3ebc92
 
 COCOAPODS: 1.14.2
