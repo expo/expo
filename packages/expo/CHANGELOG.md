@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added missing `getJSEngineResolutionAlgorithm()` to `ReactNativeHostWrapper`. ([#27994](https://github.com/expo/expo/pull/27994) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 50.0.14 — 2024-03-20
