@@ -1,7 +1,11 @@
 module.exports = {
   root: true,
-  extends: './default.js',
+  extends: ['./default.js', 'prettier'],
+  plugins: ['prettier'],
   env: {
-    node: true
-  }
+    node: true,
+  },
+  rules: {
+    'prettier/prettier': 'error',
+  },
 };

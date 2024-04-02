@@ -36,7 +36,9 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "eslint-plugin-prettier": "^5.1.3"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

@@ -1,9 +1,6 @@
 module.exports = {
   parserOptions: { ecmaFeatures: { jsx: true } },
-  extends: [
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
-  ],
+  extends: ['plugin:react/recommended', 'plugin:react-hooks/recommended'],
   rules: {
     'react/jsx-no-duplicate-props': 'error',
     'react/jsx-no-undef': 'error',

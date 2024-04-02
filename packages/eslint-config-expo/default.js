@@ -7,16 +7,11 @@ const {
 
 const allExtensions = computeExpoExtensions(
   [...jsExtensions, ...tsExtensions],
-  platformSubextensions,
+  platformSubextensions
 );
 
 module.exports = {
-  extends: [
-    './utils/core.js',
-    './utils/typescript.js',
-    './utils/react.js',
-    './utils/expo.js',
-  ],
+  extends: ['./utils/core.js', './utils/typescript.js', './utils/react.js', './utils/expo.js'],
   globals: {
     __DEV__: 'readonly',
     ErrorUtils: false,
@@ -33,7 +28,7 @@ module.exports = {
     requestIdleCallback: false,
     setImmediate: false,
     window: false,
-    "shared-node-browser": true
+    'shared-node-browser': true,
   },
   settings: {
     'import/extensions': allExtensions,
