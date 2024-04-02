@@ -35,9 +35,9 @@
     // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
     // we don't want to loop the ReactDelegate again. Otherwise it will be infinite loop.
     EXReactRootViewFactory *factory = (EXReactRootViewFactory *)rootViewFactory;
-    rootView = [factory superViewWithModuleName:moduleName initialProperties:initialProps launchOptions:launchOptions];
+    rootView = [factory superViewWithModuleName:self.moduleName initialProperties:self.initialProps launchOptions:launchOptions];
   } else {
-    rootView = [rootViewFactory viewWithModuleName:moduleName initialProperties:initialProps launchOptions:launchOptions];
+    rootView = [rootViewFactory viewWithModuleName:self.moduleName initialProperties:self.initialProps launchOptions:launchOptions];
   }
   return rootView;
 }
