@@ -166,7 +166,7 @@ export async function requireFileContentsWithMetro(
 async function metroFetchAsync(
   projectRoot: string,
   url: string
-): Promise<{ src: string; filename: string }> {
+): Promise<{ src: string; filename: string; map?: any }> {
   debug('Fetching from Metro:', url);
   // TODO: Skip the dev server and use the Metro instance directly for better results, faster.
   const res = await fetch(url);
@@ -191,7 +191,11 @@ async function metroFetchAsync(
   const map = await fetch(url.replace('.bundle?', '.map?')).then((r) => r.json());
   cachedSourceMaps.set(url, { url: projectRoot, map });
 
-  return { src: wrapBundle(content), filename: url };
+  return {
+    src: wrapBundle(content),
+    filename: url,
+    map,
+  };
 }
 
 export async function getStaticRenderFunctionsForEntry<T = any>(
