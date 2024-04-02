@@ -16,32 +16,8 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
-  private lazy var shouldEnableAutoSetup: Bool = {
-    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
-      return false
-    }
-    // if Expo.plist not found or its content is invalid, disable the auto setup
-    guard
-      let configPath = Bundle.main.path(forResource: UpdatesConfig.PlistName, ofType: "plist"),
-      let config = NSDictionary(contentsOfFile: configPath)
-    else {
-      return false
-    }
-
-    // if `EXUpdatesAutoSetup` is false, disable the auto setup
-    let enableAutoSetupValue = config[UpdatesConfig.EXUpdatesConfigEnableAutoSetupKey]
-    if let enableAutoSetup = enableAutoSetupValue as? NSNumber, enableAutoSetup.boolValue == false {
-      return false
-    }
-
-    // Backward compatible if main AppDelegate already has expo-updates setup,
-    // we just skip in this case.
-    if AppController.isInitialized() {
-      return false
-    }
-
-    return true
-  }()
+  private var shouldActivateUpdates: Bool =
+    UpdatesUtils.isNativeDebuggingEnabled() || !EXAppDefines.APP_DEBUG
 
   public override func createReactRootView(
     reactDelegate: ExpoReactDelegate,
@@ -49,14 +25,11 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
-    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
-      // In development builds with expo-dev-client, completes the auto-setup for development
-      // builds with the expo-updates integration by passing a reference to DevLauncherController
-      // over to the registry, which expo-dev-client can access.
+    if !shouldActivateUpdates {
+      // When updates is not activated, just completes the setup for expo-dev-client with the expo-updates integration
+      // by passing a reference to DevLauncherController over to the registry,
+      // which expo-dev-client can access.
       UpdatesControllerRegistry.sharedInstance.controller = AppController.initializeAsDevLauncherWithoutStarting()
-      return nil
-    }
-    if !shouldEnableAutoSetup {
       return nil
     }
 
