@@ -52,7 +52,7 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
   }
 }
 
-class NativeModule<TEventsMap extends Record<never, never>>
+export class NativeModule<TEventsMap extends Record<never, never>>
   extends EventEmitter<TEventsMap>
   implements NativeModuleType
 {
