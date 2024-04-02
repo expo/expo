@@ -23,6 +23,9 @@ export function ProjectHeader(props: { app: ProjectPageApp }) {
           <Text color="secondary" size="small" type="InterRegular">
             {props.app.slug}
           </Text>
+          <Text color="secondary" size="small" type="InterRegular">
+            Owned by {props.app.ownerAccount.name}
+          </Text>
         </View>
       </Row>
     </View>

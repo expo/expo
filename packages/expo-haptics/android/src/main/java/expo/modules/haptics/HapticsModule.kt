@@ -31,7 +31,7 @@ class HapticsModule : Module() {
       vibrate(HapticsNotificationType.fromString(type))
     }
 
-    AsyncFunction("selectionAsync") {
+    AsyncFunction<Unit>("selectionAsync") {
       vibrate(HapticsSelectionType)
     }
 

@@ -93,11 +93,7 @@ export class RudderClient implements TelemetryClient {
       await this.rudderstack.track({
         event: record.event,
         originalTimestamp,
-        properties: {
-          ...(record.properties ?? {}),
-          source: 'expo/cli',
-          source_version: process.env.__EXPO_VERSION,
-        },
+        properties: record.properties,
         ...this.identity,
         context: {
           ...getContext(),

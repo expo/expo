@@ -22,4 +22,5 @@ export declare const SyntheticPlatformEmitter: import("react-native").DeviceEven
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
 //# sourceMappingURL=index.d.ts.map

@@ -26,6 +26,7 @@
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 - Included groups in Expo Router typed routes generation ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
+- Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -35,6 +36,7 @@
 - Update to remove `ExpoRequest/ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
 - Update the legacy inspector overrides to new device middleware API. ([#27425](https://github.com/expo/expo/pull/27425) by [@byCedric](https://github.com/byCedric))
 - Add new telemetry API to replace legacy analytics. ([#27787](https://github.com/expo/expo/pull/27787) by [@byCedric](https://github.com/byCedric))
+- Skip building and packing `__typetests__` files. ([#27089](https://github.com/expo/expo/pull/27089) by [@byCedric](https://github.com/byCedric))
 
 ### 📚 3rd party library updates
 

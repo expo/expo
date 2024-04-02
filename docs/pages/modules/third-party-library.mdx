@@ -80,7 +80,7 @@ In another terminal window, compile and run the example app:
 
 Now, add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
 
-```diff android/build.grade
+```diff android/build.gradle
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
@@ -114,7 +114,7 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
-```diff android/build.grade
+```diff android/build.gradle
   repositories {
     mavenCentral()
 +   flatDir {
@@ -125,7 +125,7 @@ Inside the **android** directory, create another directory called **libs** and p
 
 Finally, add the dependency to the `dependencies` list. Instead of the filename, use the package path, which includes the `@aar` at the end:
 
-```diff android/build.grade
+```diff android/build.gradle
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"

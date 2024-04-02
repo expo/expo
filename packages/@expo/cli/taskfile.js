@@ -11,7 +11,7 @@ export async function bin(task, opts) {
 export async function cli(task, opts) {
   await task
     .source('src/**/*.+(js|ts)', {
-      ignore: ['**/__tests__/**', '**/__mocks__/**'],
+      ignore: ['**/__tests__/**', '**/__mocks__/**', '**/__typetests__/**'],
     })
     .swc('cli', { dev: opts.dev })
     .target('build/src');

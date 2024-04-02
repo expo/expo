@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 
 import { ProjectView } from './ProjectView';
 import { AppPlatform, useProjectsQuery } from '../../graphql/types';
-import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 export function ProjectContainer(
@@ -15,7 +14,6 @@ export function ProjectContainer(
     variables: {
       appId: props.appId,
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-      sdkVersions: Kernel.sdkVersions.split(','),
     },
   });
   return <ProjectView {...props} {...query} />;

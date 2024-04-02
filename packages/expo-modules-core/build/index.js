@@ -21,4 +21,5 @@ export const SyntheticPlatformEmitter = DeviceEventEmitter;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
 //# sourceMappingURL=index.js.map

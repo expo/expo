@@ -81,6 +81,8 @@ class UpdatesDevLauncherController(
 
   override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
 
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
+
   override fun start() {
     throw Exception("IUpdatesController.start should not be called in dev client")
   }

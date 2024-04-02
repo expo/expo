@@ -53,6 +53,7 @@ target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # React Native
+  use_native_modules!
   use_react_native!(
     :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,

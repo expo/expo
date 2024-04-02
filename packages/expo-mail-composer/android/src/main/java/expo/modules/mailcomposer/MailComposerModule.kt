@@ -20,7 +20,7 @@ class MailComposerModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoMailComposer")
 
-    AsyncFunction("isAvailableAsync") {
+    AsyncFunction<Boolean>("isAvailableAsync") {
       return@AsyncFunction true
     }
 

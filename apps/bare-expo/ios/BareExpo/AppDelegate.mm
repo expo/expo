@@ -17,7 +17,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 #if DEBUG
-  BOOL useDevClient = YES;
+  BOOL useDevClient = NO;
 
   if (!useDevClient) {
     ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
