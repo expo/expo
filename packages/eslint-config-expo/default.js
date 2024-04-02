@@ -18,11 +18,9 @@ module.exports = {
     './utils/expo.js',
   ],
   globals: {
-    __DEV__: false,
-    Atomics: false,
+    __DEV__: 'readonly',
     ErrorUtils: false,
     FormData: false,
-    SharedArrayBuffer: false,
     XMLHttpRequest: false,
     alert: false,
     cancelAnimationFrame: false,
