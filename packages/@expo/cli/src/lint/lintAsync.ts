@@ -6,7 +6,7 @@ import path from 'path';
 
 import { Log } from '../log';
 import { isInteractive } from '../utils/interactive';
-import { selectAsync } from '../utils/prompts';
+import { confirmAsync } from '../utils/prompts';
 
 const WITH_PRETTIER = `module.exports = {
   root: true,
@@ -26,34 +26,25 @@ const ESLINT_ONLY = `module.exports = {
 `;
 
 const setupLinting = async (projectRoot: string) => {
-  const result = await selectAsync(
-    'No ESLint config found. Install and configure ESLint in this project?',
-    [
-      {
-        title: 'Yes, eslint only',
-        value: 'eslint',
-      },
-      {
-        title: 'Yes, eslint and prettier',
-        value: 'eslint-and-prettier',
-      },
-      {
-        title: 'No',
-        value: 'no',
-      },
-    ]
-  );
+  const shouldSetupLint = await confirmAsync({
+    message: 'No ESLint config found. Install and configure ESLint in this project?',
+  });
 
-  if (result === 'no') {
+  if (!shouldSetupLint) {
     return;
   }
 
+  const shouldIncludePrettier = await confirmAsync({
+    message: 'Include prettier?',
+  });
+
   const packages = [
     'eslint',
+    // TODO(Kadi) uncomment once published
     // 'eslint-config-expo',
   ];
 
-  if (result === 'eslint-and-prettier') {
+  if (shouldIncludePrettier) {
     packages.push('prettier');
     packages.push('eslint-config-prettier');
     packages.push('eslint-plugin-prettier');
@@ -66,11 +57,11 @@ const setupLinting = async (projectRoot: string) => {
 
   await fs.writeFile(
     path.join(projectRoot, '.eslintrc.js'),
-    result === 'eslint' ? ESLINT_ONLY : WITH_PRETTIER,
+    shouldIncludePrettier ? WITH_PRETTIER : ESLINT_ONLY,
     'utf8'
   );
 
-  if (result === 'eslint-and-prettier') {
+  if (shouldIncludePrettier) {
     await fs.writeFile(path.join(projectRoot, '.prettierrc'), '{}', 'utf8');
   }
 
