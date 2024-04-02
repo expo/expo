@@ -720,9 +720,10 @@ export declare function removeContactFromGroupAsync(contactId: string, groupId: 
  */
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
 /**
- * Presents a native contact picker to select a single contact from the system. On iOS, no permissions are required to use this method. On Android, the `READ_CONTACTS` permission is required. You can
- * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method.
- * @return A promise that fulfills with a single `Contact` object if a contact was selected, or `null` if no contact was selected (picking was cancelled).
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
  */
 export declare function presentContactPickerAsync(): Promise<Contact | null>;
 /**
