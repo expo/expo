@@ -401,7 +401,7 @@ public final class UpdatesDatabase: NSObject {
     }
   }
 
-  public func recentUpdateIdsWithFailedLaunch() throws -> [String] {
+  public func recentUpdateIdsWithFailedLaunch() throws -> [UUID] {
     let sql = "SELECT id FROM updates WHERE failed_launch_count > 0 ORDER BY commit_time DESC LIMIT 5;"
     let rows = try execute(sql: sql, withArgs: nil)
     return rows.map { row in row.requiredValue(forKey: "id") }

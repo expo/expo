@@ -13,8 +13,10 @@ public class StringList {
   }
 
   public func serialize() -> String {
-    return value.map({ item in
-      item.serialize()
-    }).joined(separator: ", ")
+    return value
+      .map({ item in
+        item.serialize()
+      })
+      .joined(separator: ", ")
   }
 }

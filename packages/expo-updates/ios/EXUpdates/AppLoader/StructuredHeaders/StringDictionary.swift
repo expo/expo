@@ -14,7 +14,7 @@ public enum SerializerError: Error {
 public class StringDictionary {
   private let value: [String: StringItem]
 
-  required init(value: [String : StringItem]) throws {
+  required init(value: [String: StringItem]) throws {
     self.value = try StringDictionary.checkKeys(value: value)
   }
 

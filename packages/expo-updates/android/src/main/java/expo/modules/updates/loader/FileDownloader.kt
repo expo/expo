@@ -743,7 +743,7 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
         if (it.isNotEmpty()) {
           extraHeaders.put(
             "Expo-Recent-Failed-Update-IDs",
-            OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) })
+            OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) }).serialize()
           )
         }
       }
