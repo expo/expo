@@ -1,6 +1,5 @@
 import * as babel from '@babel/core';
 
-import { resetEnv } from './test-utils';
 import preset from '..';
 import { getInlineEnvVarsEnabled } from '../common';
 
@@ -9,14 +8,6 @@ const ENABLED_CALLER = {
   isDev: false,
   isServer: false,
 };
-
-beforeEach(() => {
-  resetEnv();
-});
-
-afterEach(() => {
-  resetEnv();
-});
 
 describe(getInlineEnvVarsEnabled, () => {
   it(`enables under the correct conditions`, () => {

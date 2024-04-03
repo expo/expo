@@ -4,7 +4,6 @@
 
 import * as babel from '@babel/core';
 
-import { resetEnv } from './test-utils';
 import preset from '..';
 
 const ENABLED_CALLER = {
@@ -35,12 +34,10 @@ const DEF_OPTIONS = {
 const originalEnv = process.env;
 
 beforeEach(() => {
-  resetEnv();
   process.env = { ...originalEnv, FORCE_COLOR: '0' };
 });
 
 afterAll(() => {
-  resetEnv();
   process.env = { ...originalEnv };
 });
 

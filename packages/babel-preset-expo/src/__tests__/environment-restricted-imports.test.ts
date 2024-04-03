@@ -4,16 +4,7 @@
 
 import * as babel from '@babel/core';
 
-import { resetEnv } from './test-utils';
 import preset from '..';
-
-beforeAll(() => {
-  resetEnv();
-});
-
-afterEach(() => {
-  resetEnv();
-});
 
 const ENABLED_CALLER = {
   name: 'metro',

@@ -1,20 +1,11 @@
 import * as babel from '@babel/core';
 
 import { compileToHermesBytecodeAsync } from './hermes-util';
-import { resetEnv } from './test-utils';
 import preset from '..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
-
-beforeAll(() => {
-  resetEnv();
-});
-
-afterEach(() => {
-  resetEnv();
-});
 
 jest.mock('../common.ts', () => ({
   ...jest.requireActual('../common.ts'),

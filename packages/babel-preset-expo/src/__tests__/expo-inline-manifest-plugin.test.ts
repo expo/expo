@@ -1,16 +1,7 @@
 import * as babel from '@babel/core';
 import { getConfig } from '@expo/config';
 
-import { resetEnv } from './test-utils';
 import { expoInlineManifestPlugin } from '../expo-inline-manifest-plugin';
-
-beforeAll(() => {
-  resetEnv();
-});
-
-afterEach(() => {
-  resetEnv();
-});
 
 jest.mock('@expo/config', () => ({
   ...jest.requireActual('@expo/config'),
