@@ -11,6 +11,7 @@ module.exports = {
     'react/no-unknown-property': 'warn',
     'react/require-render-return': 'warn',
     'react/react-in-jsx-scope': 'off',
+    'react/no-unescaped-entities': 'off',
   },
   settings: {
     react: { version: 'detect' },
