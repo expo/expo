@@ -16,8 +16,8 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
       setState({
         ...state,
         ...status,
-        positionMillis: status.currentPosition ?? 0,
-        durationMillis: isNaN(status.totalDuration) ? 0 : status.totalDuration,
+        positionMillis: status.currentTime ?? 0,
+        durationMillis: isNaN(status.duration) ? 0 : status.duration,
         volume: player.volume,
       });
     }, [])
@@ -25,11 +25,11 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
 
   const [state, setState] = useState<AudioPlayerState>({
     isLoaded: player.isLoaded,
-    isLooping: player.isLooping,
-    isMuted: player.isMuted,
-    positionMillis: player.currentPosition,
-    durationMillis: isNaN(player.totalDuration) ? 0 : player.totalDuration,
-    rate: player.rate,
+    isLooping: player.loop,
+    isMuted: player.muted,
+    positionMillis: player.currentTime,
+    durationMillis: isNaN(player.duration) ? 0 : player.duration,
+    rate: player.playbackRate,
     volume: player.volume,
     isPlaying: player.isPlaying,
     audioPan: 0,
@@ -42,19 +42,19 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   };
 
   const setIsMuted = (isMuted: boolean) => {
-    player.isMuted = isMuted;
+    player.muted = isMuted;
     setState({ ...state, isMuted });
   };
 
   const setIsLooping = (isLooping: boolean) => {
-    player.isLooping = isLooping;
+    player.loop = isLooping;
     setState({ ...state, isLooping });
   };
 
   const setRate = (rate: number, shouldCorrectPitch: boolean) => {
     player.shouldCorrectPitch = shouldCorrectPitch;
-    player.setRate(rate);
-    setState({ ...state, rate: player.rate, shouldCorrectPitch });
+    player.setPlaybackRate(rate);
+    setState({ ...state, rate: player.playbackRate, shouldCorrectPitch });
   };
 
   useEffect(() => {

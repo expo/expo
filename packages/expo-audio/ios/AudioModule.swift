@@ -139,7 +139,7 @@ public class AudioModule: Module, RecordingResultHandler {
         player.isBuffering
       }
 
-      Property("isLooping") { player in
+      Property("loop") { player in
         player.isLooping
       }.set { (player, isLooping: Bool) in
         player.isLooping = isLooping
@@ -153,7 +153,7 @@ public class AudioModule: Module, RecordingResultHandler {
         player.isPlaying
       }
 
-      Property("isMuted") { player in
+      Property("mute") { player in
         player.pointer.isMuted
       }.set { (player, isMuted: Bool) in
         player.pointer.isMuted = isMuted
@@ -165,16 +165,20 @@ public class AudioModule: Module, RecordingResultHandler {
         player.shouldCorrectPitch = shouldCorrectPitch
       }
 
-      Property("currentPosition") { player in
+      Property("currentTime") { player in
         player.pointer.currentItem?.currentTime().seconds
       }
 
-      Property("totalDuration") { player in
+      Property("duration") { player in
         player.pointer.currentItem?.duration.seconds
       }
 
-      Property("rate") { player in
+      Property("playbackRate") { player in
         player.pointer.rate
+      }
+      
+      Property("paused") { player in
+        return player.pointer.rate == 0.0
       }
 
       Property("volume") { player in
@@ -193,7 +197,7 @@ public class AudioModule: Module, RecordingResultHandler {
         player.pointer.playImmediately(atRate: rate)
       }
 
-      Function("setRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
+      Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         if player.isPlaying {
           player.pointer.rate = playerRate
@@ -509,16 +513,16 @@ public class AudioModule: Module, RecordingResultHandler {
     let avPlayer = player.pointer
     var body: [String: Any] = [
       "id": player.sharedObjectId,
-      "currentPosition": (avPlayer.currentItem?.currentTime().seconds ?? 0) * 1000,
+      "currentTime": (avPlayer.currentItem?.currentTime().seconds ?? 0) * 1000,
       "status": statusToString(status: avPlayer.status),
       "timeControlStatus": timeControlStatusString(status: avPlayer.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: avPlayer.reasonForWaitingToPlay),
-      "isMuted": avPlayer.isMuted,
-      "totalDuration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
+      "mute": avPlayer.isMuted,
+      "duration": (avPlayer.currentItem?.duration.seconds ?? 0) * 1000,
       "isPlaying": player.pointer.timeControlStatus == .playing,
-      "isLooping": player.isLooping,
+      "loop": player.isLooping,
       "isLoaded": avPlayer.currentItem?.status == .readyToPlay,
-      "rate": avPlayer.rate,
+      "playbackRate": avPlayer.rate,
       "shouldCorrectPitch": player.shouldCorrectPitch,
       "isBuffering": player.isBuffering
     ]

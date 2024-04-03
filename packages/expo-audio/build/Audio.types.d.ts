@@ -30,17 +30,17 @@ export type AudioPlayerState = {
 export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 export type AudioStatus = {
     id: number;
-    currentPosition: number;
+    currentTime: number;
     status: string;
     timeControlStatus: string;
     reasonForWaitingToPlay: string;
-    isMuted: boolean;
-    totalDuration: number;
+    mute: boolean;
+    duration: number;
     isPlaying: boolean;
-    isLooping: boolean;
+    loop: boolean;
     isBuffering: boolean;
     isLoaded: boolean;
-    rate: number;
+    playbackRate: number;
     shouldCorrectPitch: boolean;
 };
 export type RecordingStatus = {
