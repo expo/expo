@@ -4,20 +4,15 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.adapters.react.NativeModulesProxy
-import expo.modules.kotlin.views.ViewManagerType
-import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
+import expo.modules.kotlin.views.ViewManagerType
 import expo.modules.kotlin.views.ViewManagerWrapperDelegate
 import expo.modules.kotlin.views.ViewWrapperDelegateHolder
 import java.lang.ref.WeakReference
-
-private typealias ModuleName = String
-private typealias ModuleConstants = Map<String, Any?>
-private typealias ModuleMethodInfo = Map<String, Any?>
 
 class KotlinInteropModuleRegistry(
   modulesProvider: ModulesProvider,

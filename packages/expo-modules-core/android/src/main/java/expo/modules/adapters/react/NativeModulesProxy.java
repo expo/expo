@@ -2,13 +2,11 @@ package expo.modules.adapters.react;
 
 import android.util.SparseArray;
 
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableType;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
