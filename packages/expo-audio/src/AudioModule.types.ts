@@ -37,12 +37,17 @@ export interface AudioPlayer {
   /**
    * Boolean value indicating whether the player is currently muted.
    */
-  isMuted: boolean;
+  muted: boolean;
 
   /**
    * Boolean value indicating whether the player is currently looping.
    */
-  isLooping: boolean;
+  loop: boolean;
+
+  /**
+   * Boolean value indicating whether the player is currently paused.
+   */
+  paused: boolean;
 
   /**
    * Boolean value indicating whether the player is finished loading.
@@ -57,12 +62,12 @@ export interface AudioPlayer {
   /**
    * The current position through the audio item, in seconds.
    */
-  currentPosition: number;
+  currentTime: number;
 
   /**
    * The total duration of the audio, in seconds.
    */
-  totalDuration: number;
+  duration: number;
 
   /**
    * The current volume of the audio.
@@ -72,7 +77,7 @@ export interface AudioPlayer {
   /**
    * The current playback rate of the audio.
    */
-  rate: number;
+  playbackRate: number;
 
   /**
    * A boolean describing if we are correcting the pitch for a changed rate.
@@ -100,7 +105,7 @@ export interface AudioPlayer {
    * @param rate The playback rate of the audio.
    * @param pitchCorrectionQuality The quality of the pitch correction.
    */
-  setRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
+  setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 
   /**
    * Release the player and frees up resources.

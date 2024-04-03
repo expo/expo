@@ -10,9 +10,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
   var isLoaded: Bool {
     pointer.currentItem?.status == .readyToPlay
   }
+  
   var isPlaying: Bool {
     pointer.timeControlStatus == .playing
   }
+  
   var isBuffering: Bool {
     playerIsBuffering()
   }
