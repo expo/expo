@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Ensure default config is compatible with the tabs template  ([#28020](https://github.com/expo/expo/pull/28020) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
