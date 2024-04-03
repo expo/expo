@@ -238,17 +238,31 @@ void installClass(jsi::Runtime &runtime) {
     return jsi::Value((int)getListenerCount(runtime, thisObject, eventName));
   };
 
+  // Added for compatibility with the old EventEmitter API.
+  jsi::HostFunctionType removeSubscriptionHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    jsi::Object subscription = args[0].asObject(runtime);
+
+    subscription.getProperty(runtime, "remove")
+      .asObject(runtime)
+      .asFunction(runtime)
+      .callWithThis(runtime, subscription, {});
+
+    return jsi::Value::undefined();
+  };
+
   jsi::PropNameID addListenerProp = jsi::PropNameID::forAscii(runtime, "addListener", 11);
   jsi::PropNameID removeListenerProp = jsi::PropNameID::forAscii(runtime, "removeListener", 14);
   jsi::PropNameID removeAllListenersProp = jsi::PropNameID::forAscii(runtime, "removeAllListeners", 18);
   jsi::PropNameID emitProp = jsi::PropNameID::forAscii(runtime, "emit", 4);
   jsi::PropNameID listenerCountProp = jsi::PropNameID::forAscii(runtime, "listenerCount", 13);
+  jsi::PropNameID removeSubscriptionProp = jsi::PropNameID::forAscii(runtime, "removeSubscription", 18);
 
   prototype.setProperty(runtime, addListenerProp, jsi::Function::createFromHostFunction(runtime, addListenerProp, 2, addListenerHost));
   prototype.setProperty(runtime, removeListenerProp, jsi::Function::createFromHostFunction(runtime, removeListenerProp, 2, removeListenerHost));
   prototype.setProperty(runtime, removeAllListenersProp, jsi::Function::createFromHostFunction(runtime, removeAllListenersProp, 1, removeAllListenersHost));
   prototype.setProperty(runtime, emitProp, jsi::Function::createFromHostFunction(runtime, emitProp, 2, emit));
   prototype.setProperty(runtime, listenerCountProp, jsi::Function::createFromHostFunction(runtime, listenerCountProp, 1, listenerCountHost));
+  prototype.setProperty(runtime, removeSubscriptionProp, jsi::Function::createFromHostFunction(runtime, removeSubscriptionProp, 1, removeSubscriptionHost));
 
   common::getCoreObject(runtime)
     .setProperty(runtime, "EventEmitter", eventEmitterClass);
