@@ -1,5 +1,8 @@
 {
   "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["FontLoaderModule"]
+  },
   "android": {
     "modules": ["expo.modules.font.FontLoaderModule"]
   }
