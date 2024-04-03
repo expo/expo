@@ -6,7 +6,7 @@ module.exports = {
     ecmaVersion: 2022,
     ecmaFeatures: { impliedStrict: true, jsx: true },
   },
-  env: { es2022: true, jest: true },
+  env: { es2022: true },
   globals: {
     console: 'readonly',
     exports: false,
@@ -67,6 +67,10 @@ module.exports = {
       rules: {
         'import/order': 'off',
       },
+    },
+    {
+      files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+      env: { jest: true },
     },
   ],
 };
