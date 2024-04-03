@@ -21,6 +21,7 @@ import * as Updates from './Updates';
 import * as UsesNonExemptEncryption from './UsesNonExemptEncryption';
 import * as Version from './Version';
 import * as XcodeProjectFile from './XcodeProjectFile';
+import * as PrivacyInfo from './PrivacyInfo';
 import * as XcodeUtils from './utils/Xcodeproj';
 
 // We can change this to export * as X with TypeScript 3.8+
@@ -48,4 +49,5 @@ export {
   UsesNonExemptEncryption,
   Version,
   XcodeProjectFile,
+  PrivacyInfo,
 };
