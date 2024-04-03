@@ -157,6 +157,18 @@ const LANGUAGE_SAMPLES: {
   },
 
   // Supported natively
+  // This isn't transformed but also should be handled since the current minimum iOS version is 13.4 and logical assignment operators are iOS +14.
+  {
+    name: 'logical-assignment-operators',
+    code: `var a = 1;
+    a &&= 2;
+    a ||= 3;
+    a ??= 4;`,
+
+    getCompiledCode({ platform }) {
+      return `var a=1;a&&=2;a||=3;a??=4;`;
+    },
+  },
   {
     name: 'computed-properties',
     code: `var obj = {
