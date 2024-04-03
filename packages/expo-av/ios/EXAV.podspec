@@ -1,6 +1,7 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
 Pod::Spec.new do |s|
   s.name           = 'EXAV'
@@ -30,6 +31,7 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.{h,m,mm,swift}"
     s.tvos.exclude_files = "#{s.name}/**/EXAudioRecordingPermissionRequester.{h,m}",
                            "#{s.name}/**/EXAV.m"
-    s.ios.exclude_files  = "#{s.name}/**/EXAVTV.m"
+    s.ios.exclude_files  = "#{s.name}/**/EXAVTV.m",
+                           "#{s.name}/**/EXAudioRecordingPermissionRequester#{podfile_properties['MICROPHONE_PERMISSION'] == 'false' ? '' : 'Disabled'}.m"
   end
 end

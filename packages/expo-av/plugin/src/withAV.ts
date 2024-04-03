@@ -3,6 +3,7 @@ import {
   ConfigPlugin,
   createRunOncePlugin,
   withInfoPlist,
+  withPodfileProperties,
 } from 'expo/config-plugins';
 
 const pkg = require('expo-av/package.json');
@@ -17,6 +18,11 @@ const withAV: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
     config = withInfoPlist(config, (config) => {
       config.modResults.NSMicrophoneUsageDescription =
         microphonePermission || config.modResults.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
+      return config;
+    });
+  } else {
+    config = withPodfileProperties(config, (config) => {
+      config.modResults.MICROPHONE_PERMISSION = 'false';
       return config;
     });
   }
