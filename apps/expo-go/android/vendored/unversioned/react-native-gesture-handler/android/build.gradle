@@ -200,7 +200,7 @@ dependencies {
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation (rootProject.subprojects.find { it.name == 'vendored_unversioned_react-native-reanimated' }) {
+        implementation (rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
             exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
         }
     }
