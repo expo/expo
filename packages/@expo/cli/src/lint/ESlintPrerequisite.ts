@@ -51,7 +51,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
     }
 
     const shouldIncludePrettier = await confirmAsync({
-      message: 'Include prettier?',
+      message: 'Include Prettier?',
     });
 
     const packages: ResolvedPackage[] = [
