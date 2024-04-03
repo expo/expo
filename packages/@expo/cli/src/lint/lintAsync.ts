@@ -1,7 +1,7 @@
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 
-import { ESLintProjectPrerequisite } from './EslintPrerequisite';
+import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
 import { Log } from '../log';
 import { isInteractive } from '../utils/interactive';
 
