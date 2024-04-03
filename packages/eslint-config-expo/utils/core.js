@@ -46,8 +46,9 @@ module.exports = {
     'unicode-bom': ['warn', 'never'],
     'use-isnan': 'error',
     'valid-typeof': 'error',
-    'import/first': 'warn', //keep
+    'import/first': 'warn',
     'import/default': 'off',
+    'import/no-unresolved': 'off',
   },
   settings: {
     'import/extensions': jsExtensions,
