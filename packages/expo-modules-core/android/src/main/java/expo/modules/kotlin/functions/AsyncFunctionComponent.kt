@@ -5,8 +5,8 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.enforceType
 
-@Suppress("UNCHECKED_CAST")
 inline fun <reified T> createAsyncFunctionComponent(
   name: String,
   desiredArgsTypes: Array<AnyType>,
@@ -16,11 +16,26 @@ inline fun <reified T> createAsyncFunctionComponent(
     return AsyncFunctionComponent<Any?>(name, desiredArgsTypes, body)
   }
   return when (T::class.java) {
-    Int::class.java -> IntAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Int)
-    Boolean::class.java -> BoolAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Boolean)
-    Double::class.java -> DoubleAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Double)
-    Float::class.java -> FloatAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> Float)
-    String::class.java -> StringAsyncFunctionComponent(name, desiredArgsTypes, body as (Array<out Any?>) -> String)
+    Int::class.java -> {
+      enforceType<(Array<out Any?>) -> Int>(body)
+      IntAsyncFunctionComponent(name, desiredArgsTypes, body)
+    }
+    Boolean::class.java -> {
+      enforceType<(Array<out Any?>) -> Boolean>(body)
+      BoolAsyncFunctionComponent(name, desiredArgsTypes, body)
+    }
+    Double::class.java -> {
+      enforceType<(Array<out Any?>) -> Double>(body)
+      DoubleAsyncFunctionComponent(name, desiredArgsTypes, body)
+    }
+    Float::class.java -> {
+      enforceType<(Array<out Any?>) -> Float>(body)
+      FloatAsyncFunctionComponent(name, desiredArgsTypes, body)
+    }
+    String::class.java -> {
+      enforceType<(Array<out Any?>) -> String>(body)
+      StringAsyncFunctionComponent(name, desiredArgsTypes, body)
+    }
     else -> AsyncFunctionComponent<Any?>(name, desiredArgsTypes, body)
   }
 }
