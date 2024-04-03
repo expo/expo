@@ -9,11 +9,11 @@ import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-The following guide explains how to install and configure `expo-dev-client` in an exisitng React Native project.
+The following guide explains how to install and configure `expo-dev-client` in an existing React Native project.
 
 <Collapsible summary="Do you need to create a new project?">
 
-If you're starting a project, you can create a new project with with `with-dev-client` template. Run the following command to initialize the project:
+If you're starting a project, you can create a new project with the `with-dev-client` template. Run this command to initialize the project:
 
 <Terminal cmd={['$ npx create-expo-app -e with-dev-client']} />
 
@@ -51,7 +51,7 @@ If your project doesn't have an **ios/** directory, you can skip this step.
 
 ## Configure deep links
 
-Expo CLI uses a deep link to launch your project, and it's also useful if you use plan to [use `expo-dev-client` for launching preview updates](/eas-update/getting-started/) If you have added a custom deep link scheme to your project. If you haven't configured a `scheme` for your app yet to support deep linking, then you can use `uri-scheme` package to do this for you.
+Expo CLI uses a deep link to launch your project, and it's also useful if you use plan to [use `expo-dev-client` for launching preview updates](/eas-update/getting-started/) if you have added a custom deep link scheme to your project. If you haven't configured a `scheme` for your app yet to support deep linking, then you can use `uri-scheme` package to do this for you.
 
 <Terminal
   cmd={[
