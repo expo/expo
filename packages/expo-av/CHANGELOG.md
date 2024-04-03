@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix recording audio on Android after converting to Expo Modules ([#26657](https://github.com/expo/expo/pull/26657) by [@jpudysz](https://github.com/jpudysz))
+- [iOS] Allow excluding Microphone Permissions API's ([#28006](https://github.com/expo/expo/pull/28006) by [@ijzerenhein](https://github.com/ijzerenhein))
 
 ### 💡 Others
 
