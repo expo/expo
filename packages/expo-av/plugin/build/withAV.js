@@ -11,6 +11,12 @@ const withAV = (config, { microphonePermission } = {}) => {
             return config;
         });
     }
+    else {
+        config = (0, config_plugins_1.withPodfileProperties)(config, (config) => {
+            config.modResults.MICROPHONE_PERMISSION = 'false';
+            return config;
+        });
+    }
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         microphonePermission !== false && 'android.permission.RECORD_AUDIO',
         'android.permission.MODIFY_AUDIO_SETTINGS',
