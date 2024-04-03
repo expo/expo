@@ -29,6 +29,7 @@
 - Fixed ANR issue from Detox testing on Android. ([#27031](https://github.com/expo/expo/pull/27031) by [@kudo](https://github.com/kudo))
 - Fix inconsistent hashes for autolinking for fingerprint policy. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
 - Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
+- Fixed bridgeless error recovery support for launch errors on Android. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -45,6 +46,7 @@
 - Remove legacy expo bundle-assets utilities. ([#27123](https://github.com/expo/expo/pull/27123) by [@wschurman](https://github.com/wschurman))
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 - [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+- Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
 
 ## 0.24.12 - 2024-03-13
 

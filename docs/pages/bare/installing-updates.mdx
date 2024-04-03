@@ -1,18 +1,32 @@
 ---
-title: Add expo-updates to an existing project
-description: Learn how to add expo-updates to an existing React Native project.
+title: Install expo-updates in a bare React Native project
+sidebar_title: Install expo-updates
+description: Learn how to install and configure expo-updates in bare React Native projects.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { DiffBlock } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
-The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
+The `expo-updates` library fetches and manages updates to app JavaScript and assets received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates and provides a variety of tools for managing them. It can also be configured to work with a [custom server](/eas-update/custom-updates-server/). This guide explains how set it up for use with EAS Update.
 
-> If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/config-plugins/introduction/), which will handle the following steps for you.
+<Collapsible summary="Do you need to create a new project?">
+
+If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/config-plugins/introduction/), which will handle the installation steps for you.
+
+</Collapsible>
+
+<Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
+
+You may be reading the wrong guide then! To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), refer to the [EAS Update "Get started" guide](/eas-update/getting-started/).
+
+</Collapsible>
+
+## Prerequisites
+
+**The `expo` package must be installed and configured**: if you created your project with `npx react-native init` and do not have any other Expo packages installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
 
 ## Installation
-
-The `expo-updates` library requires that your project already has [Expo modules configured](/bare/installing-expo-modules). Be sure to install it before continuing.
 
 To get started, install `expo-updates`:
 
@@ -24,7 +38,7 @@ Then, install pods:
 
 Once installation is complete, apply the changes from the following diffs to configure `expo-updates` in your project.
 
-## Configuration in JavaScript and JSON
+### Configuration in JavaScript and JSON
 
 Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.)
 The changes below add the updates URL to the Expo configuration.
@@ -79,7 +93,7 @@ If you want to set up a [custom server](/eas-update/custom-updates-server) inste
  }
 ```
 
-## Configuration for iOS
+### Configuration for iOS
 
 Add the file **Podfile.properties.json** to the **ios** directory:
 
@@ -137,7 +151,7 @@ Add the **Supporting** directory containing **Expo.plist** to your project in Xc
 </plist>
 ```
 
-## Configuration for Android
+### Configuration for Android
 
 Modify **android/app/build.gradle** to check for the JS engine configuration (JSC or Hermes) in Expo files:
 
