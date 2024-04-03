@@ -21,67 +21,6 @@ First, add the `expo` package to your project. Ensure you are using a version of
 
 <Terminal cmd={['npm install expo']} />
 
-## Configure your iOS app
-
-<Step label="1">
-  Add the following to your `Podfile` in the `ios` directory:
-  <DiffBlock
-    raw={`
-diff --git a/ios/Podfile b/ios/Podfile
-index 2d3a979..825a9d4 100644
---- a/ios/Podfile
-+++ b/ios/Podfile
-@@ -1,3 +1,4 @@
-+require File.join(File.dirname(\`node --print "require.resolve('expo/package.json')"\`), "scripts/autolinking")
- require Pod::Executable.execute_command('node', ['-p',
-   'require.resolve(
-   "react-native/scripts/react_native_pods.rb",
-@@ -14,6 +15,7 @@ if linkage != nil
- end
- 
- target '<YourAppTarget>' do
-+  use_expo_modules!
-   config = use_native_modules!
-  `}
-  />
-</Step>
-
-<Step label="2">
-  Open your `ios` directory in Xcode. From the project navigator, select your project and then
-  select your app target under `TARGETS`. In `Build Settings`, using the search bar, search for
-  `ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`.
-</Step>
-
-<Step label="3">
-  Run `pod install` in the `ios` directory.
-  <Terminal cmd={['cd ios && pod install']} />
-  You will need to do this everytime you add a dependency that uses native code.
-</Step>
-
-<Step label="4">
-  **(Optional)** Complete the following if you would like to use [AppDelegate subscribers](/modules/appdelegate-subscribers/).
-  <DiffBlock
-    raw={`diff --git a/ios/<MyAppProject>/AppDelegate.swift b/ios/<MyAppProject>/AppDelegate.swift
-index ff83531..bd8651d 100644
---- a/ios/<MyAppProject>/AppDelegate.swift
-+++ b/ios/<MyAppProject>/AppDelegate.swift
-@@ -1,31 +1,29 @@
- import UIKit
-+import ExpoModulesCore
- 
- @main
--class AppDelegate: UIResponder, UIApplicationDelegate {
-+class AppDelegate: ExpoAppDelegate {
- 
--  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
--    return true
-+    super.application(application, didFinishLaunchingWithOptions: launchOptions)
-   }
- `}
-  />
-</Step>
-
 ## Configure your Android app
 
 <Step label="1">
@@ -123,7 +62,7 @@ index a26c7c6..dd8802a 100644
 
 <Step label="4">
   **(Optional)** Complete the following steps if you would like to use [lifecycle listeners](/modules/android-lifecycle-listeners/)
-  in your app:
+  in your app. If you do not set up lifecycle listeners, then additional setup will be required for each module that uses them.
 <Step label="1">
 If you already have a class that extends the `Application` class you can move to step 3.
 If you do not have it, we need to create one. Add a file called `MainApplication.kt` file to your `android/app/src/main/java/com/<your-app-package>` directory with the following content:
@@ -190,4 +129,65 @@ class MainApplication() : Application() {
 Override `onConfigurationChanged` if you have not done so already.
 
 </Step>
+</Step>
+
+## Configure your iOS app
+
+<Step label="1">
+  Add the following to your `Podfile` in the `ios` directory:
+  <DiffBlock
+    raw={`
+diff --git a/ios/Podfile b/ios/Podfile
+index 2d3a979..825a9d4 100644
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -1,3 +1,4 @@
++require File.join(File.dirname(\`node --print "require.resolve('expo/package.json')"\`), "scripts/autolinking")
+ require Pod::Executable.execute_command('node', ['-p',
+   'require.resolve(
+   "react-native/scripts/react_native_pods.rb",
+@@ -14,6 +15,7 @@ if linkage != nil
+ end
+ 
+ target '<YourAppTarget>' do
++  use_expo_modules!
+   config = use_native_modules!
+  `}
+  />
+</Step>
+
+<Step label="2">
+  Open your `ios` directory in Xcode. From the project navigator, select your project and then
+  select your app target under `TARGETS`. In `Build Settings`, using the search bar, search for
+  `ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`.
+</Step>
+
+<Step label="3">
+  Run `pod install` in the `ios` directory.
+  <Terminal cmd={['cd ios && pod install']} />
+  You will need to do this everytime you add a dependency that uses native code.
+</Step>
+
+<Step label="4">
+  **(Optional)** Complete the following if you would like to use [AppDelegate subscribers](/modules/appdelegate-subscribers/). If you do not set up AppDelegate subscribers, then additional setup will be required for each module that uses them.
+  <DiffBlock
+    raw={`diff --git a/ios/<MyAppProject>/AppDelegate.swift b/ios/<MyAppProject>/AppDelegate.swift
+index ff83531..bd8651d 100644
+--- a/ios/<MyAppProject>/AppDelegate.swift
++++ b/ios/<MyAppProject>/AppDelegate.swift
+@@ -1,31 +1,29 @@
+ import UIKit
++import ExpoModulesCore
+ 
+ @main
+-class AppDelegate: UIResponder, UIApplicationDelegate {
++class AppDelegate: ExpoAppDelegate {
+ 
+-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
++  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+-    return true
++    super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
+ `}
+  />
 </Step>
