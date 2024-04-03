@@ -44,6 +44,11 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
+    "updates": {
+      "checkAutomatically": "NEVER",
+      // Workaround to use expo/expo URL since we don't have an EAS update project for bare-expo yet.
+      "url": "https://github.com/expo/expo"
+    },
     "plugins": [
       "expo-video",
       "expo-background-fetch",
