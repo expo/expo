@@ -4,4 +4,5 @@ module.exports = {
   clearMocks: true,
   displayName: require('./package').name,
   rootDir: __dirname,
+  setupFilesAfterEnv: ['./jest.setup.js'],
 };
