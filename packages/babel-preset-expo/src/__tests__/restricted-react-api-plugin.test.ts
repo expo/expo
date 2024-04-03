@@ -61,7 +61,7 @@ describe('forbidden React server APIs', () => {
   }
   it(`does not assert importing client-side APIs in client components (react server mode)`, () => {
     // This test covers the order of server registry running before the assertion to remove the import.
-    expect(runServerPass(`"use client"; import { useState } from 'react';`)!.code).toMatch(
+    expect(runServerPass(`"use client"; import { useState } from 'react';`)?.code).toMatch(
       'react-server-dom-webpack'
     );
   });
@@ -92,7 +92,7 @@ describe('forbidden React server APIs', () => {
           isReactServer: true,
           platform: 'ios',
         }),
-      })!.code
+      })?.code
     ).toBe(`import { findDOMNode } from 'react-dom';`);
   });
 
