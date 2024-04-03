@@ -1064,7 +1064,7 @@ index 2402cc34b2..eaf07ca4c2 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a02dbebe41..08c6c20587 100644
+index a02dbebe41..e7e9e23831 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1087,7 +1087,7 @@ index a02dbebe41..08c6c20587 100644
 +    "expo-status-bar": "~1.11.0",
      "react": "18.2.0",
 -    "react-native": "0.72.12"
-+    "react-native": "0.74.0-rc.4"
++    "react-native": "0.74.0-rc.5"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

@@ -157,6 +157,18 @@ const general = [
       ],
       { expanded: false }
     ),
+    makeSection('Existing React Native apps', [
+      makePage('bare/overview.mdx'),
+      makePage('bare/installing-expo-modules.mdx'),
+      makePage('bare/using-expo-cli.mdx'),
+      makePage('bare/installing-updates.mdx'),
+      makePage('bare/install-dev-builds-in-bare.mdx'),
+      makePage('bare/upgrade.mdx'),
+    ]),
+    makeSection('Existing native apps', [
+      makePage('brownfield/overview.mdx'),
+      makePage('brownfield/installing-expo-modules.mdx'),
+    ]),
     makeGroup(
       'Reference',
       [
@@ -414,15 +426,6 @@ const general = [
         makePage('accounts/programmatic-access.mdx'),
         makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
-      ]),
-      makeSection('Bare React Native', [
-        makePage('bare/overview.mdx'),
-        makePage('bare/installing-expo-modules.mdx'),
-        makePage('bare/using-expo-cli.mdx'),
-        makePage('bare/installing-updates.mdx'),
-        makePage('bare/using-expo-client.mdx'),
-        makePage('bare/install-dev-builds-in-bare.mdx'),
-        makePage('bare/upgrade.mdx'),
       ]),
     ],
     { expanded: true }
