@@ -126,7 +126,8 @@ class FileDownloaderSpec : ExpoSpec {
           isDevelopmentMode: false,
           assetsFromManifest: []
         )
-        
+        launchedUpdate.failedLaunchCount = 1
+
         let embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
         let embeddedUpdate = Update(
           manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -134,15 +135,19 @@ class FileDownloaderSpec : ExpoSpec {
           database: db,
           updateId: UUID(uuidString: embeddedUpdateUUIDString)!,
           scopeKey: "test",
-          commitTime: Date(),
+          commitTime: Calendar.current.date(byAdding: .day, value: -1, to: Date())!,
           runtimeVersion: "1.0",
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
           assetsFromManifest: []
         )
-        
+        embeddedUpdate.failedLaunchCount = 1
+
         db.databaseQueue.sync {
+          try! db.addUpdate(launchedUpdate)
+          try! db.addUpdate(embeddedUpdate)
+
           try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey)
           try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey)
 
@@ -156,6 +161,7 @@ class FileDownloaderSpec : ExpoSpec {
           expect(extraHeaders["Expo-Embedded-Update-ID"] as? String) == embeddedUpdateUUIDString
           expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("what=\"123\""))
           expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("hello=\"world\""))
+          expect(extraHeaders["Expo-Recent-Failed-Update-IDs"] as? String).to(contain("\"\(launchedUpdateUUIDString.uppercased())\", \"\(embeddedUpdateUUIDString.uppercased())\""))
         }
       }
       

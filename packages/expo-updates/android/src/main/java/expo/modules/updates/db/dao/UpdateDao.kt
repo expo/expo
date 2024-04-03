@@ -59,6 +59,9 @@ abstract class UpdateDao {
   @Query("SELECT id FROM updates WHERE status = :status;")
   abstract fun loadAllUpdateIdsWithStatus(status: UpdateStatus): List<UUID>
 
+  @Query("SELECT id FROM updates WHERE failed_launch_count > 0 ORDER BY commit_time DESC LIMIT 5;")
+  abstract fun loadRecentUpdateIdsWithFailedLaunch(): List<UUID>
+
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
     val updateEntities = _loadUpdatesWithId(id)
     return if (updateEntities.isNotEmpty()) updateEntities[0] else null

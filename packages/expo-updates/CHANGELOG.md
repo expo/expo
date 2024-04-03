@@ -20,6 +20,7 @@
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Add ability to override build-time fingerprint. ([#27597](https://github.com/expo/expo/pull/27597) by [@wschurman](https://github.com/wschurman))
 - Expose emergency launch reason on constants. ([#27714](https://github.com/expo/expo/pull/27714) by [@wschurman](https://github.com/wschurman))
+- Add header to manifest request containing recently-errored update IDs. ([#27991](https://github.com/expo/expo/pull/27991) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
