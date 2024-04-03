@@ -220,6 +220,7 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics:18.3.6'
   api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
+  implementation 'com.google.android.material:material:1.3.0'
 
   api(expoLibs.fresco.animated.gif)
   api(expoLibs.fresco.animated.webp)
@@ -316,14 +317,6 @@ dependencies {
 
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
-
-  // stripe-react-native
-  implementation('com.stripe:stripe-android:20.34.+')
-  implementation('com.stripe:financial-connections:20.34.+')
-  compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-  implementation 'com.google.android.material:material:1.3.0'
 
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"

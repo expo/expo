@@ -98,6 +98,7 @@ def ktlintTarget = '**/*.kt'
 subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
+  if (project.projectDir.toString().contains("/node_modules/")) { return; }
 
   plugins.apply("com.diffplug.spotless")
   spotless {
