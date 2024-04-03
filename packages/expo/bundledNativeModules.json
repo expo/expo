@@ -94,7 +94,7 @@
   "react-native-safe-area-context": "4.8.2",
   "react-native-svg": "14.0.0",
   "react-native-view-shot": "3.8.0",
-  "react-native-webview": "13.6.3",
+  "react-native-webview": "13.8.4",
   "sentry-expo": "~7.0.0",
   "unimodules-app-loader": "~4.5.0",
   "unimodules-image-loader-interface": "~6.1.0",

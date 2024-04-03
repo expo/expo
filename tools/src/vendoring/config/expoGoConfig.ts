@@ -339,6 +339,9 @@ const config: VendoringTargetConfig = {
           ],
         },
       },
+      android: {
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     'react-native-safe-area-context': {
       source: 'https://github.com/th3rdwave/react-native-safe-area-context',
