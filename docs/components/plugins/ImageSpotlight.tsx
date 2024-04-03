@@ -19,7 +19,7 @@ export default function ImageSpotlight({ alt, src, style, containerClassName, ca
         src={src}
         alt={alt}
         style={style}
-        className="inline rounded-md transition duration-300 ease-in-out hover:opacity-70"
+        className="inline rounded-md transition duration-300 ease-in-out hover:opacity-80"
       />
       {caption && (
         <figcaption className="mt-[14px] text-secondary text-center text-xs px-8 py-2">
