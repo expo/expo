@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add privacy info config plugin.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
