@@ -26,6 +26,7 @@ function babelPresetExpo(api, options = {}) {
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
+    const isServerEnv = isServer || isReactServer;
     // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
     const isProduction = api.caller(common_1.getIsProd);
@@ -62,13 +63,12 @@ function babelPresetExpo(api, options = {}) {
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
     }
-    else {
+    else if (!isServerEnv) {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
         // JSX is used in a function body. This is technically not required in production, but we
         // should retain the same behavior since it's hard to debug the differences.
         extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
-    const isServerEnv = isServer || isReactServer;
     const inlines = {
         'process.env.EXPO_OS': platform,
         // 'typeof document': isServerEnv ? 'undefined' : 'object',
@@ -136,6 +136,8 @@ function babelPresetExpo(api, options = {}) {
             },
         ]);
     }
+    // Use the simpler babel preset for web and server environments (both web and native SSR).
+    const isModernEngine = platform === 'web' || isServerEnv;
     return {
         presets: [
             [
@@ -143,7 +145,7 @@ function babelPresetExpo(api, options = {}) {
                 // specifically use the `@react-native/babel-preset` installed by this package (ex:
                 // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
                 // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-                require('@react-native/babel-preset'),
+                isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
                 {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
