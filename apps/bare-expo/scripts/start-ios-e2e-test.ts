@@ -5,10 +5,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
-const TARGET_DEVICE = 'iPhone 14';
-const TARGET_DEVICE_IOS_VERSION = 16;
-// const TARGET_DEVICE = 'iPhone 15';
-// const TARGET_DEVICE_IOS_VERSION = 17;
+const TARGET_DEVICE = 'iPhone 15';
+const TARGET_DEVICE_IOS_VERSION = '17.4';
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
@@ -123,7 +121,7 @@ async function delayAsync(timeMs: number): Promise<void> {
 /**
  * Query simulator UDID
  */
-async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<string | null> {
+async function queryDeviceIdAsync(iosVersion: string, device: string): Promise<string | null> {
   const { stdout } = await spawnAsync('xcrun', [
     'simctl',
     'list',
@@ -138,7 +136,9 @@ async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<s
   for (const [runtime, devices] of Object.entries<{ name: string; udid: string }[]>(
     deviceWithRuntimes
   )) {
-    if (runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${iosVersion}-`)) {
+    if (
+      runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${iosVersion.replace(/\./g, '-')}`)
+    ) {
       for (const { name, udid } of devices) {
         if (name === device) {
           return udid;
