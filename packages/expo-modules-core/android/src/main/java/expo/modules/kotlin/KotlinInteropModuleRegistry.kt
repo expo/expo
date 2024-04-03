@@ -44,33 +44,6 @@ class KotlinInteropModuleRegistry(
     }
   }
 
-  fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> =
-    trace("KotlinInteropModuleRegistry.exportedModulesConstants") {
-      registry
-        // prevent infinite recursion - exclude NativeProxyModule constants
-        .filter { holder -> holder.name != NativeModulesProxyModuleName }
-        .associate { holder ->
-          holder.name to holder.definition.constantsProvider()
-        }
-    }
-
-  fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> =
-    trace("KotlinInteropModuleRegistry.exportMethods") {
-      registry.associate { holder ->
-        val methodsInfo = holder
-          .definition
-          .asyncFunctions
-          .map { (name, method) ->
-            mapOf(
-              "name" to name,
-              "argumentsCount" to method.argsCount
-            )
-          }
-        exportKey(holder.name, methodsInfo)
-        holder.name to methodsInfo
-      }
-    }
-
   fun exportViewManagers(): List<ViewManager<*, *>> =
     trace("KotlinInteropModuleRegistry.exportViewManagers") {
       registry

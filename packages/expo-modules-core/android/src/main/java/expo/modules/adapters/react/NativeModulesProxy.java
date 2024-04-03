@@ -96,11 +96,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     kotlinModuleRegistry.installJSIInterop();
 
     Map<String, Object> constants = new HashMap<>(3);
-    constants.put(MODULES_CONSTANTS_KEY, mKotlinInteropModuleRegistry.exportedModulesConstants());
-    constants.put(EXPORTED_METHODS_KEY, mKotlinInteropModuleRegistry.exportMethods((name, info) -> {
-      assignExportedMethodsKeys(name, (List<Map<String, Object>>) info);
-      return null;
-    }));
+    constants.put(MODULES_CONSTANTS_KEY, new HashMap<>());
+    constants.put(EXPORTED_METHODS_KEY, new HashMap<>());
     constants.put(VIEW_MANAGERS_METADATA_KEY, mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     CoreLoggerKt.getLogger().info("✅ Constants were exported");
