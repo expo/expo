@@ -1,33 +1,37 @@
 ---
-title: Install development builds in bare React Native
-sidebar_title: Install development builds in bare React Native
-description: Learn how to configure development builds for bare React Native projects.
+title: Install expo-dev-client in a bare React Native project
+sidebar_title: Install expo-dev-client
+description: Learn how to install and configure expo-dev-client in bare React Native projects.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
 
+The following guide explains how to install and configure `expo-dev-client` in an existing React Native project.
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project. To add the `expo-dev-client` library to an existing managed project, see ["Create a development build"](/develop/development-builds/create-a-build/).
+<Collapsible summary="Do you need to create a new project?">
 
-If you're starting your project, you can create a new project with our `with-dev-client` template. Run the following command to initialize the project:
+If you're starting a project, you can create a new project with the `with-dev-client` template. Run this command to initialize the project:
 
 <Terminal cmd={['$ npx create-expo-app -e with-dev-client']} />
 
-Otherwise, if you already have an existing React Native or a bare project, follow the steps below to add `expo-dev-client` to it.
+</Collapsible>
+
+<Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
+
+You may be reading the wrong guide then! To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-native-generation/), see ["Create a development build"](/develop/development-builds/create-a-build/).
+
+</Collapsible>
+
+## Prerequisites
+
+**The `expo` package must be installed and configured**: if you created your project with `npx react-native init` and do not have any other Expo packages installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
+
+## Installation
 
 <Step label="1">
-
-## Install Expo modules
-
-If you created your project with `npx react-native init` and do not have any other Expo packages installed, **you will need to [install Expo modules](/bare/installing-expo-modules)** before proceeding.
-
-Otherwise, if you already have `expo` and/or other Expo modules up and running, you can skip this step.
-
-</Step>
-
-<Step label="2">
 
 ## Install expo-dev-client
 
@@ -43,19 +47,27 @@ If your project doesn't have an **ios/** directory, you can skip this step.
 
 </Step>
 
-<Step label="3">
+<Step label="2">
 
 ## Configure deep links
 
-Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
+Expo CLI uses a deep link to launch your project, and it's also useful if you use plan to [use `expo-dev-client` for launching preview updates](/eas-update/getting-started/) if you have added a custom deep link scheme to your project. If you haven't configured a `scheme` for your app yet to support deep linking, then you can use `uri-scheme` package to do this for you.
 
-<Terminal cmd={['$ npx uri-scheme add <your scheme>']} />
+<Terminal
+  cmd={[
+    "# List your project's schemes",
+    '$ npx uri-scheme list',
+    '',
+    '# Add a scheme to your project',
+    '$ npx uri-scheme add <your scheme>',
+  ]}
+/>
 
 For more information, see [uri-scheme package](https://www.npmjs.com/package/uri-scheme).
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 ## Add additional optional configuration
 
@@ -71,10 +83,10 @@ For more information, see [Error handling](/develop/development-builds/use-devel
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
-## Build and install
+## Build and install the app
 
-You're now ready to [build your first development build](/develop/development-builds/create-a-build/#initialize-eas-build).
+Create a debug build of your app using the tools of your choice. For example, you can do this [locally with Expo CLI](/guides/local-app-development/) or [in the cloud with EAS Build](/develop/development-builds/create-a-build/).
 
 </Step>

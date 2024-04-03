@@ -446,4 +446,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
+
+  // Stop encouraging usage of Expo Go when using native modules
+  '/bare/using-expo-client': '/archive/using-expo-client',
 };
