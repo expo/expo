@@ -30,6 +30,7 @@ const LANGUAGE_SAMPLES: {
   code: string;
   getCompiledCode: (props: { platform: string }) => string;
   hermesError?: RegExp;
+  unhandledInBabel?: boolean;
 }[] = [
   // Unsupported features
   {
@@ -105,7 +106,7 @@ const LANGUAGE_SAMPLES: {
       }`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `function _checkInRHS(e){if(Object(e)!==e)throw TypeError(\"right-hand side of 'in' should be an object, got \"+(null!==e?typeof e:\"null\"));return e;}var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),\"bar\");test(obj){return _barBrandCheck.has(_checkInRHS(obj));}}`;
+        return `function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has(_checkInRHS(obj));}}`;
       }
       return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);return Foo;}();`;
     },
@@ -117,9 +118,9 @@ const LANGUAGE_SAMPLES: {
     code: `const value = (<div />)`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `var _jsxDevRuntime=require(\"react/jsx-dev-runtime\");var _jsxFileName=\"/unknown\";const value=(0,_jsxDevRuntime.jsxDEV)(\"div\",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+        return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";const value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
       }
-      return `var _jsxDevRuntime=require(\"react/jsx-dev-runtime\");var _jsxFileName=\"/unknown\";var value=(0,_jsxDevRuntime.jsxDEV)(\"div\",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+      return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";var value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
     },
     hermesError: /possible JSX: pass -parse-jsx to parse/,
   },
@@ -132,6 +133,27 @@ const LANGUAGE_SAMPLES: {
       return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&Object.prototype.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}`;
     },
     hermesError: /error: 'export' statement requires module mode/,
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-proposal-export-default-from
+    // Web preset doesn't transform this
+    name: `export-default-from`,
+    code: `export v from "mod";`,
+    getCompiledCode() {
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"v",{enumerable:true,get:function(){return _mod.default;}});var _mod=_interopRequireDefault(require("mod"));`;
+    },
+    hermesError: /error: expected declaration in export/,
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-syntax-dynamic-import
+    name: `dynamic-import`,
+    code: `import("mod").then(function(){});`,
+    getCompiledCode() {
+      return `import("mod").then(function(){});`;
+    },
+    hermesError: /error: Invalid expression encountered/,
+    // This syntax is handled by the bundler (Metro) and not the compiler (Babel).
+    unhandledInBabel: true,
   },
 
   // Supported natively
@@ -263,13 +285,13 @@ const LANGUAGE_SAMPLES: {
     // https://babeljs.io/docs/babel-plugin-transform-unicode-regex
     // Hermes doesn't claim that this doesn't work but it is in the upstream transform.
     name: `unicode-regex`,
-    code: `var string = "foo💩bar";
+    code: `var string = "foo🥓bar";
     var match = string.match(/foo(.)bar/u);`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return 'var string="foo💩bar";var match=string.match(/foo(.)bar/u);';
+        return 'var string="foo🥓bar";var match=string.match(/foo(.)bar/u);';
       }
-      return 'var string="foo💩bar";var match=string.match(/foo((?:[\\0-\\t\\x0B\\f\\x0E-\\u2027\\u202A-\\uD7FF\\uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF]))bar/);';
+      return 'var string="foo🥓bar";var match=string.match(/foo((?:[\\0-\\t\\x0B\\f\\x0E-\\u2027\\u202A-\\uD7FF\\uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF]))bar/);';
     },
   },
   {
@@ -279,7 +301,10 @@ const LANGUAGE_SAMPLES: {
     name: `arrow-functions`,
     code: `var a = () => {};
     var a = b => b;`,
-    getCompiledCode() {
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var a=()=>{};var a=b=>b;`;
+      }
       return `var a=function(){};var a=function(b){return b;};`;
     },
   },
@@ -310,8 +335,14 @@ LANGUAGE_SAMPLES.forEach((sample) => {
         expect(babelResults.code).toEqual(sample.getCompiledCode({ platform }));
 
         if (platform !== 'web') {
-          // Will not throw on native
-          await compileToHermesBytecodeAsync({ code: babelResults.code! });
+          if (sample.unhandledInBabel) {
+            await expect(
+              compileToHermesBytecodeAsync({ code: babelResults.code! })
+            ).rejects.toThrow();
+          } else {
+            // Will not throw on native
+            await compileToHermesBytecodeAsync({ code: babelResults.code! });
+          }
         }
       });
     });

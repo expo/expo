@@ -17,11 +17,11 @@ const defaultPlugins = [
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-private-methods'), { loose }],
   [require('@babel/plugin-transform-private-property-in-object'), { loose }],
-  [require('@babel/plugin-syntax-dynamic-import')],
+  // [require('@babel/plugin-syntax-dynamic-import')],
   [require('@babel/plugin-syntax-export-default-from')],
-  [require('@babel/plugin-syntax-nullish-coalescing-operator')],
-  [require('@babel/plugin-syntax-optional-chaining')],
-  //   [require('@babel/plugin-transform-unicode-regex')],
+  // [require('@babel/plugin-syntax-nullish-coalescing-operator')],
+  // [require('@babel/plugin-syntax-optional-chaining')],
+  // [require('@babel/plugin-transform-unicode-regex')],
 ];
 
 module.exports = function (
@@ -50,10 +50,6 @@ module.exports = function (
       ]
     );
   }
-
-  // TODO(gaearon): put this back into '=>' indexOf bailout
-  // and patch react-refresh to not depend on this transform.
-  extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
 
   if (!options || options.enableBabelRuntime !== false) {
     // Allows configuring a specific runtime version to optimize output
