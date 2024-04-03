@@ -187,7 +187,6 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     });
 
     if (contentRef?.current?.clientHeight) {
-      console.warn(contentRef.current.clientHeight, collapseHeight);
       if (contentRef.current.clientHeight > collapseHeight) {
         setExpanded(false);
       }

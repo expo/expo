@@ -2,28 +2,6 @@ import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
 
 export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 
-/**
- * The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
- * @deprecated These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
- * Use [`useUpdates()`](#useupdates) instead.
- */
-export enum UpdateEventType {
-  /**
-   * A new update has finished downloading to local storage. If you would like to start using this
-   * update at any point before the user closes and restarts the app on their own, you can call
-   * [`Updates.reloadAsync()`](#reloadasync) to launch this new update.
-   */
-  UPDATE_AVAILABLE = 'updateAvailable',
-  /**
-   * No updates are available, and the most up-to-date update is already running.
-   */
-  NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
-  /**
-   * An error occurred trying to fetch the latest update.
-   */
-  ERROR = 'error',
-}
-
 export enum UpdateCheckResultNotAvailableReason {
   /**
    * No update manifest or rollback directive received from the update server.
@@ -198,25 +176,6 @@ export type UpdateFetchResult =
   | UpdateFetchResultSuccess
   | UpdateFetchResultFailure
   | UpdateFetchResultRollBackToEmbedded;
-
-/**
- * An object that is passed into each event listener when an auto-update check occurs.
- */
-export type UpdateEvent = {
-  /**
-   * Type of the event.
-   */
-  type: UpdateEventType;
-  /**
-   * If `type` is `Updates.UpdateEventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded
-   * update, and `undefined` otherwise.
-   */
-  manifest?: Manifest;
-  /**
-   * If `type` is `Updates.UpdateEventType.ERROR`, the error message, and `undefined` otherwise.
-   */
-  message?: string;
-};
 
 /**
  * An object representing a single log entry from expo-updates logging on the client.

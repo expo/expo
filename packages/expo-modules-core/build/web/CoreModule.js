@@ -24,8 +24,11 @@ class EventEmitter {
     emit(eventName, ...args) {
         this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
     }
+    listenerCount(eventName) {
+        return this.listeners?.get(eventName)?.size ?? 0;
+    }
 }
-class NativeModule extends EventEmitter {
+export class NativeModule extends EventEmitter {
     ViewPrototype;
     __expo_module_name__;
 }

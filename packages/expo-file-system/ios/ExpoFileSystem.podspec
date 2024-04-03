@@ -26,6 +26,8 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES'
   }
 
+  s.resource_bundles = {'ExpoFileSystem_privacy' => ['PrivacyInfo.xcprivacy']}
+
   s.source_files = "**/*.{h,m,swift}"
 
   s.exclude_files = 'Tests/'

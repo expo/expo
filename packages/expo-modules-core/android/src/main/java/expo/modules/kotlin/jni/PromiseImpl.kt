@@ -44,6 +44,26 @@ class PromiseImpl @DoNotStrip internal constructor(
     )
   }
 
+  override fun resolve(result: Int) = checkIfWasSettled {
+    resolveBlock.invoke(result)
+  }
+
+  override fun resolve(result: Boolean) = checkIfWasSettled {
+    resolveBlock.invoke(result)
+  }
+
+  override fun resolve(result: Double) = checkIfWasSettled {
+    resolveBlock.invoke(result)
+  }
+
+  override fun resolve(result: Float) = checkIfWasSettled {
+    resolveBlock.invoke(result)
+  }
+
+  override fun resolve(result: String) = checkIfWasSettled {
+    resolveBlock.invoke(result)
+  }
+
   // Copy of the reject method from [com.facebook.react.bridge.PromiseImpl]
   override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
     val errorInfo = WritableNativeMap()

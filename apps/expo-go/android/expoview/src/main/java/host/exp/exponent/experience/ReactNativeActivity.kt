@@ -253,9 +253,11 @@ abstract class ReactNativeActivity :
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     devSupportManager?.let { devSupportManager ->
       if (!isCrashed && devSupportManager.call("getDevSupportEnabled") as Boolean) {
-        val didDoubleTapR = Assertions.assertNotNull(doubleTapReloadRecognizer)
-          .didDoubleTapR(keyCode, currentFocus)
-        if (didDoubleTapR) {
+        val didDoubleTapR = currentFocus?.let {
+          Assertions.assertNotNull(doubleTapReloadRecognizer)
+            .didDoubleTapR(keyCode, it)
+        }
+        if (didDoubleTapR == true) {
           devSupportManager.call("reloadExpoApp")
           return true
         }

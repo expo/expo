@@ -57,4 +57,9 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
     eventName: EventName,
     ...args: Parameters<TEventsMap[EventName]>
   ): void;
+
+  /**
+   * Returns a number of listeners added to the given event.
+   */
+  listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
 }

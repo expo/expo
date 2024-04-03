@@ -36,7 +36,7 @@ You can configure development client launcher using its built-in [config plugin]
       [
         "expo-dev-launcher",
         {
-          "launchModeExperimental": "most-recent"
+          "launchMode": "most-recent"
         }
       ]
     ]
@@ -49,14 +49,13 @@ You can configure development client launcher using its built-in [config plugin]
 <ConfigPluginProperties
   properties={[
     {
-      name: 'launchModeExperimental',
+      name: 'launchMode',
       description: [
         'Determines whether to launch the most recently opened project or navigate to the launcher screen.',
         '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
         '* `launcher` - Opens the launcher screen.',
       ].join('\n'),
       default: '"most-recent"',
-      experimental: true,
     },
   ]}
 />

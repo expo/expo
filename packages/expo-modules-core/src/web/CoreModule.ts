@@ -46,9 +46,13 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
   ): void {
     this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
   }
+
+  listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number {
+    return this.listeners?.get(eventName)?.size ?? 0;
+  }
 }
 
-class NativeModule<TEventsMap extends Record<never, never>>
+export class NativeModule<TEventsMap extends Record<never, never>>
   extends EventEmitter<TEventsMap>
   implements NativeModuleType
 {

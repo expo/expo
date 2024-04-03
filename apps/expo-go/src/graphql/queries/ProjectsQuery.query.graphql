@@ -1,7 +1,6 @@
 query ProjectsQuery(
   $appId: String!
   $platform: AppPlatform!
-  $sdkVersions: [String!]!
 ) {
   app {
     byId(appId: $appId) {
@@ -15,7 +14,7 @@ query ProjectsQuery(
       updateBranches(limit: 100, offset: 0) {
         id
         name
-        updates(limit: 1, offset: 0, filter: { platform: $platform, sdkVersions: $sdkVersions }) {
+        updates(limit: 1, offset: 0, filter: { platform: $platform }) {
           id
           group
           message

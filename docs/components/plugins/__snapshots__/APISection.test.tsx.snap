@@ -134,7 +134,7 @@ available via the provided properties.
       You should only attempt to render this if 
       <a
         class="css-1na8e0o-A"
-        href="#isavailableasync"
+        href="#appleauthenticationisavailableasync"
       >
         <code
           class="css-qyuze8-TextComponent"
@@ -642,7 +642,7 @@ for more details.
           The method to call when the user presses the button. You should call 
           <a
             class="css-1na8e0o-A"
-            href="#isavailableasync"
+            href="#appleauthenticationisavailableasync"
           >
             <code
               class="css-qyuze8-TextComponent"
@@ -4319,7 +4319,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined color scheme to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -4579,7 +4579,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined text to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -6129,23 +6129,38 @@ exports[`APISection expo-barcode-scanner 1`] = `
             >
               Deprecated.
             </strong>
-             BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use 
+             BarCodeScanner has been deprecated and will be removed in a future SDK version. Use 
             <code
               class="css-qyuze8-TextComponent"
               data-text="true"
             >
               expo-camera
             </code>
-             instead. see 
+             instead.
+See 
             <a
               class="css-1na8e0o-A"
               href="https://expo.fyi/barcode-scanner-to-expo-camera"
               rel="noopener noreferrer"
               target="_blank"
             >
-              barcode-scanner-to-expo-camera
+              How to migrate from 
+              <code
+                class="css-qyuze8-TextComponent"
+                data-text="true"
+              >
+                expo-barcode-scanner
+              </code>
+               to 
+              <code
+                class="css-qyuze8-TextComponent"
+                data-text="true"
+              >
+                expo-camera
+              </code>
             </a>
-             for more details on how to migrate.
+            
+for more details.
           </p>
         </div>
       </blockquote>
@@ -9019,7 +9034,7 @@ you don't get this value.
                 class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                The information encoded in the bar code.
+                The parsed information encoded in the bar code.
               </p>
             </td>
           </tr>

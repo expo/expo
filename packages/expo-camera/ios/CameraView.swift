@@ -384,10 +384,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
-          default: physicalOrientation)
+          default: self.physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
-          onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
+          self.onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
         }
       }
     } else {
@@ -891,7 +891,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         barCodeScanner.stopBarCodeScanning()
       }
 
-      self.session.stopRunning()
       self.session.beginConfiguration()
       self.motionManager.stopAccelerometerUpdates()
       self.previewLayer?.removeFromSuperlayer()
@@ -904,6 +903,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.session.removeOutput(output)
       }
       self.session.commitConfiguration()
+      self.session.stopRunning()
     }
   }
 

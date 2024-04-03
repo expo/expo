@@ -108,7 +108,7 @@
     "remark-supersub": "^1.0.0",
     "remark-validate-links": "^13.0.0",
     "rimraf": "^5.0.5",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "sitemap": "^7.1.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
