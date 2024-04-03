@@ -67,6 +67,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  var pictureSize = PictureSize.high {
+    didSet {
+      updatePictureSize()
+    }
+  }
+
   var mode = CameraModeNext.picture {
     didSet {
       setCameraMode()
@@ -157,6 +163,19 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  private func updatePictureSize() {
+#if !targetEnvironment(simulator)
+    sessionQueue.async {
+      self.session.beginConfiguration()
+      let preset = self.pictureSize.toCapturePreset()
+      if self.session.canSetSessionPreset(preset) {
+        self.session.sessionPreset = preset
+      }
+      self.session.commitConfiguration()
+    }
+#endif
+  }
+
   private func enableTorch() {
     guard let device = captureDeviceInput?.device, device.hasTorch else {
       return
@@ -199,18 +218,16 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     sessionQueue.async {
-      self.session.beginConfiguration()
-
       let photoOutput = AVCapturePhotoOutput()
+      photoOutput.isLivePhotoCaptureEnabled = false
       if self.session.canAddOutput(photoOutput) {
         self.session.addOutput(photoOutput)
-        photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
 
       self.addErrorNotification()
       self.changePreviewOrientation()
-      self.session.commitConfiguration()
+      self.updateSessionAudioIsMuted()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
@@ -278,10 +295,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
-          default: physicalOrientation)
+          default: self.physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
-          onResponsiveOrientationChanged(["orientation": ExpoCameraUtilsNext.toOrientationString(orientation: deviceOrientation)])
+          self.onResponsiveOrientationChanged(["orientation": ExpoCameraUtilsNext.toOrientationString(orientation: deviceOrientation)])
         }
       }
     } else {
@@ -527,6 +544,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
+        let preset = options.quality?.toPreset() ?? .high
+        self.updateSessionPreset(preset: preset)
+
         if !self.isValidVideoOptions {
           return
         }
@@ -659,6 +679,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
     videoRecordedPromise = nil
     videoCodecType = nil
+
+    if session.sessionPreset != pictureSize.toCapturePreset() {
+      updateSessionPreset(preset: pictureSize.toCapturePreset())
+    }
   }
 
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {

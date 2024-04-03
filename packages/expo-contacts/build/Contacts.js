@@ -82,7 +82,7 @@ export async function getContactByIdAsync(id, fields) {
             pageSize: 1,
             pageOffset: 0,
             fields,
-            id: Array.isArray(id) ? id : [id],
+            id,
         });
         if (results && results.data && results.data.length > 0) {
             return results.data[0];
@@ -332,6 +332,18 @@ export async function getGroupsAsync(groupQuery) {
         throw new UnavailabilityError('Contacts', 'getGroupsAsync');
     }
     return await ExpoContacts.getGroupsAsync(groupQuery);
+}
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export async function presentContactPickerAsync() {
+    if (!ExpoContacts.presentContactPickerAsync) {
+        throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+    }
+    return await ExpoContacts.presentContactPickerAsync();
 }
 /**
  * Get the default container's ID.

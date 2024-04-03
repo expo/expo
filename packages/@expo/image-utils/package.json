@@ -39,7 +39,7 @@
     "node-fetch": "^2.6.0",
     "parse-png": "^2.1.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.5.4",
+    "semver": "^7.6.0",
     "tempy": "0.3.0"
   },
   "devDependencies": {

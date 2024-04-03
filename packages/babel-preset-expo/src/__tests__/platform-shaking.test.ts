@@ -77,9 +77,7 @@ describe('global scoping', () => {
     })
     `;
 
-    expect(babel.transform(sourceCode, options)!.code!).toEqual(
-      `(function(){return console.log('web');});`
-    );
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`()=>console.log('web');`);
     // expect(babel.transform(sourceCode, options)!.code!).toEqual(
     //   `if(Platform.OS==='ios'){console.log('ios');}(function(){return console.log('web');});`
     // );
@@ -177,7 +175,7 @@ it(`supports Platform module default fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('default');});`
+    `()=>console.log('default');`
   );
 });
 
@@ -298,7 +296,7 @@ it(`removes Platform module and native fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('default');});`
+    `()=>console.log('default');`
   );
 });
 
@@ -323,7 +321,7 @@ it(`removes Platform module usage on web`, () => {
     `;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
+    `()=>console.log('web');`
   );
 });
 

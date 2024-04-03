@@ -45,6 +45,11 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /** Disable detaching telemetry to separate process */
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
+  }
+
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
     return string('EXPO_UNIVERSE_DIR', '');

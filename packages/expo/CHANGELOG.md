@@ -13,6 +13,9 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React Native 0.75. ([#27773](https://github.com/expo/expo/pull/27773) by [@kudo](https://github.com/kudo))
+- Added `ReactNativeHost.getJSBundleFile()` support for bridgeless mode. ([#27804](https://github.com/expo/expo/pull/27804) by [@kudo](https://github.com/kudo))
+- Fixed `NoSuchMethodException` on `getReactHost` when R8 is enabled on Android. ([#27964](https://github.com/expo/expo/pull/27964) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -20,10 +23,18 @@
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
 - [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+- [Android] Added `ReactNativeHostHandler.onReactInstanceException()` for expo-updates to handle exceptions on bridgeless mode. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
+
+## 50.0.14 - 2024-03-20
+
+### 🐛 Bug fixes
+
+- Fixed multiple WebSocket connections created on Web when an app containing multiple dev tools plugins. ([#27702](https://github.com/expo/expo/pull/27702) by [@kudo](https://github.com/kudo))
+- Fixed "Error : Unable to send message in a disconnected state." in dev tools plugins from fast refresh. ([#27704](https://github.com/expo/expo/pull/27704) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
-- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 50.0.13 - 2024-03-13
 

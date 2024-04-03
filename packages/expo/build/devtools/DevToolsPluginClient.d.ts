@@ -1,4 +1,5 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
+import { WebSocketBackingStore } from './WebSocketBackingStore';
 import type { ConnectionInfo } from './devtools.types';
 export declare const MESSAGE_PROTOCOL_VERSION = 2;
 export declare const DevToolsPluginMethod = "Expo:DevToolsPlugin";
@@ -9,22 +10,26 @@ export declare const DevToolsPluginMethod = "Expo:DevToolsPlugin";
 export declare abstract class DevToolsPluginClient {
     readonly connectionInfo: ConnectionInfo;
     protected eventEmitter: EventEmitter;
+    private static defaultWSStore;
+    private readonly wsStore;
+    protected isClosed: boolean;
+    protected retries: number;
     constructor(connectionInfo: ConnectionInfo);
     /**
      * Initialize the connection.
      * @hidden
      */
-    abstract initAsync(): Promise<void>;
+    initAsync(): Promise<void>;
     /**
      * Close the connection.
      */
-    abstract closeAsync(): Promise<void>;
+    closeAsync(): Promise<void>;
     /**
      * Send a message to the other end of DevTools.
      * @param method A method name.
      * @param params any extra payload.
      */
-    abstract sendMessage(method: string, params: any): void;
+    sendMessage(method: string, params: any): void;
     /**
      * Subscribe to a message from the other end of DevTools.
      * @param method Subscribe to a message with a method name.
@@ -40,7 +45,16 @@ export declare abstract class DevToolsPluginClient {
     /**
      * Returns whether the client is connected to the server.
      */
-    abstract isConnected(): boolean;
+    isConnected(): boolean;
+    /**
+     * The method to create the WebSocket connection.
+     */
+    protected connectAsync(): Promise<WebSocket>;
     protected handleMessage: (event: WebSocketMessageEvent) => void;
+    /**
+     * Get the WebSocket backing store. Exposed for testing.
+     * @hidden
+     */
+    getWebSocketBackingStore(): WebSocketBackingStore;
 }
 //# sourceMappingURL=DevToolsPluginClient.d.ts.map

@@ -3,6 +3,7 @@
 #include "JavaScriptModuleObject.h"
 #include "JSIContext.h"
 #include "JSIUtils.h"
+#include "EventEmitter.h"
 #include "SharedObject.h"
 #include "NativeModule.h"
 
@@ -94,7 +95,9 @@ void JavaScriptModuleObject::registerNatives() {
                    makeNativeMethod("registerClass",
                                     JavaScriptModuleObject::registerClass),
                    makeNativeMethod("registerViewPrototype",
-                                    JavaScriptModuleObject::registerViewPrototype)
+                                    JavaScriptModuleObject::registerViewPrototype),
+                   makeNativeMethod("emitEvent",
+                                    JavaScriptModuleObject::emitEvent)
                  });
 }
 
@@ -150,7 +153,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
-      ) {
+      ) -> jsi::Value {
         auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
         decorateObjectWithProperties(runtime, thisObject.get(),
                                      classObject);
@@ -170,7 +173,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
             count
           );
           if (result == nullptr) {
-            return;
+            return jsi::Value(runtime, thisValue);
           }
           jobject unpackedResult = result.get();
           jclass resultClass = env->GetObjectClass(unpackedResult);
@@ -187,6 +190,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
             );
             jsiContext->registerSharedObject(result, jsThisObject);
           }
+          return jsi::Value(runtime, thisValue);
         } catch (jni::JniException &jniException) {
           rethrowAsCodedError(runtime, jniException);
         }
@@ -341,6 +345,41 @@ void JavaScriptModuleObject::registerProperty(
   );
 
   properties.insert({cName, std::move(functions)});
+}
+
+void JavaScriptModuleObject::emitEvent(
+  jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
+  jni::alias_ref<jstring> eventName,
+  jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+) {
+  const std::string name = eventName->toStdString();
+  folly::dynamic body;
+  if (eventBody) {
+    body = eventBody->cthis()->consume();
+  }
+
+  const JSIContext *jsiContext = jsiContextRef->cthis();
+
+  jsiContext->runtimeHolder->jsInvoker->invokeAsync([
+    jsiContext,
+    name = std::move(name),
+    body = std::move(body),
+    weakThis = jsiObject
+  ]() {
+    std::shared_ptr<jsi::Object> jsThis = weakThis.lock();
+    if (!jsThis) {
+      return;
+    }
+
+    // TODO(@lukmccall): refactor when jsInvoker recieves a runtime as a parameter
+    jsi::Runtime &rt  = jsiContext->runtimeHolder->get();
+
+    jsi::Value convertedBody = jsi::valueFromDynamic(rt, body);
+    std::vector<jsi::Value> args;
+    args.emplace_back(std::move(convertedBody));
+
+    EventEmitter::emitEvent(rt, *jsThis, name, args);
+  });
 }
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)

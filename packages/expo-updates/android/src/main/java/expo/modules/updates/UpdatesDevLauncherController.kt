@@ -48,7 +48,6 @@ class UpdatesDevLauncherController(
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
   override var shouldEmitJsEvents = false
-  override val isEmergencyLaunch = updatesDirectoryException != null
 
   private var launcher: Launcher? = null
 
@@ -81,6 +80,8 @@ class UpdatesDevLauncherController(
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
   override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
 
   override fun start() {
     throw Exception("IUpdatesController.start should not be called in dev client")
@@ -284,7 +285,7 @@ class UpdatesDevLauncherController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = null, // no embedded update in debug builds
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",

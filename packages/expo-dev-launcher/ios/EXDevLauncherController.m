@@ -8,7 +8,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import <ExpoModulesCore/EXReactRootViewFactory.h>
+#import <ExpoModulesCore/RCTAppDelegate+Recreate.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
@@ -328,7 +328,11 @@
   }
 
   [self _removeInitModuleObserver];
-  UIView *rootView = [EXReactRootViewFactory createDefaultReactRootView:[self getSourceURL] moduleName:nil initialProperties:nil launchOptions:_launchOptions];
+
+  RCTAssert([UIApplication.sharedApplication.delegate isKindOfClass:[RCTAppDelegate class]],
+               @"The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.");
+  RCTAppDelegate *rctAppDelegate = (RCTAppDelegate *)UIApplication.sharedApplication.delegate;
+  UIView *rootView = [rctAppDelegate recreateRootViewWithBundleURL:[self getSourceURL] moduleName:nil initialProps:nil launchOptions:_launchOptions];
   _launcherBridge = _bridgeDelegate.bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self

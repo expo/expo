@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -11,10 +10,6 @@
 // for importing the header from framework, the dash will be transformed to underscore
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
-
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
-
-@end
 
 @implementation EXReactRootViewFactory
 
@@ -38,46 +33,11 @@
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 }
 
-+ (UIView *)createDefaultReactRootView:(nullable NSURL *)_bundleURL
-                            moduleName:(nullable NSString *)_moduleName
-                     initialProperties:(nullable NSDictionary *)_initialProperties
-                         launchOptions:(nullable NSDictionary *)launchOptions
+- (UIView *)superViewWithModuleName:(NSString *)moduleName
+                  initialProperties:(NSDictionary *)initialProperties
+                      launchOptions:(NSDictionary *)launchOptions
 {
-  RCTAppDelegate *appDelegate = [self getRCTAppDelegate];
-  NSURL *bundleURL = _bundleURL ?: appDelegate.bundleURL;
-  NSString *moduleName = _moduleName ?: appDelegate.moduleName;
-  NSDictionary *initialProperties = _initialProperties ?: appDelegate.initialProps;
-  RCTRootViewFactoryConfiguration *configuration =
-  [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:bundleURL
-                                              newArchEnabled:appDelegate.fabricEnabled
-                                          turboModuleEnabled:appDelegate.turboModuleEnabled
-                                           bridgelessEnabled:appDelegate.bridgelessEnabled];
-
-  __weak RCTAppDelegate *weakDelegate = appDelegate;
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
-    return [weakDelegate createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-  };
-
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
-    return [weakDelegate createBridgeWithDelegate:delegate launchOptions:launchOptions];
-  };
-
-  RCTRootViewFactory *factory = [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:appDelegate];
-  return [factory viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
-}
-
-+ (RCTAppDelegate *)getRCTAppDelegate
-{
-  UIApplication *application = UIApplication.sharedApplication;
-  id delegate = application.delegate;
-  if (![delegate isKindOfClass:RCTAppDelegate.class]) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"The UIApplicationDelegate is a RCTAppDelegate."
-                                 userInfo:nil];
-  }
-  return (RCTAppDelegate *)delegate;
+  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 }
 
 @end

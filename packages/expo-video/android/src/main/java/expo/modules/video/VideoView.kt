@@ -34,10 +34,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
 
+  var willEnterPiP: Boolean = false
+  var isInFullscreen: Boolean = false
+    private set
+
   private val currentActivity = appContext.currentActivity
     ?: throw Exceptions.MissingActivity()
   private val decorView = currentActivity.window.decorView
-  private val rootView = decorView.findViewById(android.R.id.content) as ViewGroup
+  private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 
   private val rectHint: Rect = Rect()
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
@@ -144,6 +148,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     } else {
       currentActivity.overridePendingTransition(0, 0)
     }
+    isInFullscreen = true
   }
 
   fun exitFullscreen() {
@@ -151,6 +156,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
     fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
     videoPlayer?.changePlayerView(playerView)
+    isInFullscreen = false
   }
 
   fun enterPictureInPicture() {
@@ -185,6 +191,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
 
     calculateRectHint()
+    willEnterPiP = true
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       currentActivity.enterPictureInPictureMode(PictureInPictureParams.Builder().build())
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

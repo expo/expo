@@ -32,6 +32,19 @@ def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def SQLITE3_SRC_DIR = new File("$buildDir/sqlite3_src")
 
+def getSQLiteBuildFlags() {
+  def buildFlags = ''
+  if (findProperty('expo.sqlite.enableFTS') !== 'false') {
+    buildFlags <<= '-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
+  }
+  def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
+  if (customBuildFlags != '') {
+    buildFlags <<= " ${customBuildFlags}"
+  }
+  logger.info("SQLite build flags: ${buildFlags}")
+  return buildFlags
+}
+
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -123,7 +136,7 @@ android {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
-          "-DSQLITE_CUSTOM_BUILDFLAGS=${findProperty('expo.sqlite.customBuildFlags') ?: ''}"
+          "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}"
       }
     }
   }
@@ -152,7 +165,7 @@ def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories') 
   SQLITE3_SRC_DIR.mkdirs()
 }
 
-def downloadSQLite = tasks.create('downloadSQLite', Download) {
+def downloadSQLite = tasks.register('downloadSQLite', Download) {
   dependsOn(createNativeDepsDirectories)
   src("https://www.sqlite.org/2023/sqlite-amalgamation-${SQLITE_VERSION}.zip")
   onlyIfNewer(true)
@@ -160,13 +173,13 @@ def downloadSQLite = tasks.create('downloadSQLite', Download) {
   dest(new File(downloadsDir, "sqlite-amalgamation-${SQLITE_VERSION}.zip"))
 }
 
-def prepareSQLite = tasks.register('prepareSQLite', Copy) {
+def prepareSQLite = tasks.register("prepareSQLite", Copy) {
   dependsOn(downloadSQLite)
-  from(zipTree(downloadSQLite.dest))
+  from(zipTree(downloadSQLite.get().dest))
   into(SQLITE3_SRC_DIR)
-  eachFile {
+  eachFile { file ->
     // flatten files
-    path = name
+    file.path = file.name
   }
 }
 
@@ -174,10 +187,7 @@ void nativeBuildDependsOn(project, dependsOnTask) {
   def buildTasks = project.tasks.findAll { task ->
     def taskName = task.name
     if (taskName.contains("Clean")) { return false }
-    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
-      return true
-    }
-    return false
+    return taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")
   }
   buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
 }

@@ -61,7 +61,7 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion:
     "checkOnLaunch" to "ALWAYS",
     "enabled" to true,
     "requestHeaders" to requestHeaders,
-    "runtimeVersion" to runtimeVersion,
+    "runtimeVersion" to runtimeVersion
   )
 }
 

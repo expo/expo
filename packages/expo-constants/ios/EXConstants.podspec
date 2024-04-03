@@ -43,7 +43,8 @@ Pod::Spec.new do |s|
   # Generate EXConstants.bundle without existing resources
   # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle
   s.resource_bundles = {
-    'EXConstants' => []
+    'EXConstants' => [],
+    'ExpoConstants_privacy' => ['PrivacyInfo.xcprivacy']
   }
 
 end

@@ -12,6 +12,7 @@
 - Fixed `Unrecognised selector` crash for `extraModulesForBridge:` on iOS. ([#26523](https://github.com/expo/expo/pull/26523) by [@kudo](https://github.com/kudo))
 - Fix runtime version overflow ([#27172](https://github.com/expo/expo/pull/27172) by [@kadikraman](https://github.com/kadikraman))
 - Fixed registerDevMenuItems duplicating items rather than replacing. ([#27356](https://github.com/expo/expo/pull/27356) by [@lukmccall](https://github.com/lukmccall))
+- Fixed breaking changes from React Native 0.75. ([#27773](https://github.com/expo/expo/pull/27773) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -22,8 +23,13 @@
 
 ### 📚 3rd party library updates
 
-- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 4.5.8 - 2024-03-20
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.5.7 - 2024-03-13
 

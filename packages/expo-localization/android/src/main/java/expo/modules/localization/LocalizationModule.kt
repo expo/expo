@@ -36,7 +36,7 @@ class LocalizationModule : Module() {
       bundledConstants.toShallowMap()
     }
 
-    AsyncFunction("getLocalizationAsync") {
+    AsyncFunction<Bundle>("getLocalizationAsync") {
       return@AsyncFunction bundledConstants
     }
 
@@ -51,7 +51,7 @@ class LocalizationModule : Module() {
     Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
 
     OnCreate {
-      appContext?.reactContext?.let {
+      appContext.reactContext?.let {
         setRTLFromStringResources(it)
       }
       observer = {

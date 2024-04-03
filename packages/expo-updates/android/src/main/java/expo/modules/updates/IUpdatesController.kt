@@ -15,8 +15,6 @@ import java.lang.ref.WeakReference
 import java.util.Date
 
 interface IUpdatesController {
-  val isEmergencyLaunch: Boolean
-
   /**
    * The path on disk to the launch asset (JS bundle) file for the React Native host to use.
    * Blocks until the configured timeout runs out, or a new update has been downloaded and is ready
@@ -48,6 +46,8 @@ interface IUpdatesController {
 
   fun onDidCreateReactInstanceManager(reactContext: ReactContext)
 
+  fun onReactInstanceException(exception: java.lang.Exception)
+
   /**
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
    * check for a new update from the server. This method should be called as early as possible in
@@ -66,7 +66,7 @@ interface IUpdatesController {
   data class UpdatesModuleConstants(
     val launchedUpdate: UpdateEntity?,
     val embeddedUpdate: UpdateEntity?,
-    val isEmergencyLaunch: Boolean,
+    val emergencyLaunchException: Exception?,
     val isEnabled: Boolean,
     val isUsingEmbeddedAssets: Boolean,
     val runtimeVersion: String?,

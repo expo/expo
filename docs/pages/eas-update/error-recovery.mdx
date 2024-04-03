@@ -37,7 +37,7 @@ If your app throws a fatal error when executing JS which is early enough in the 
 
 > If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether automatically or manually to ensure you can push out fixes in the event of a future error.
 
-If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`RCTContentDidAppearNotification` on iOS, or `ReactMarkerConstants.CONTENT_APPEARED` on Android)—approximately when your app's first view has been rendered on the screen—for this particular update, either on this launch or a previous one.
+If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`ReactMarkerConstants.CONTENT_APPEARED` on Android or `RCTContentDidAppearNotification` on iOS) &mdash; approximately when your app's first view has been rendered on the screen, for this particular update, either on this launch or a previous one.
 
 > **Why this distinction?** In some cases `expo-updates` may try to automatically roll back to an older (working) update, but this can be dangerous if your new update has modified persistent state in a non-backwards compatible way. We assume that if the error occurs before the first view has rendered, no such code has been able to execute, and so rolling back is safe. After this point `expo-updates` will only fix forward and will not roll back.
 
@@ -52,43 +52,19 @@ Note that if a new update is downloaded, it will launch when the user next tries
 
 ### If content has not appeared
 
-If an error is caught before the "content appeared" event has fired, AND this is the first time the current update is being launched on this device, the following will happen:
+If an error is caught before the "content appeared" event has fired, and this is the first time the current update is being launched on this device, the following will happen:
 
 - The update will be marked as "failed" locally and will not be launched again on this device.
 - A 5 second timer will be started, and (unless `EXUpdatesCheckOnLaunch`/`expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` is set to `NEVER`) the app will check for a new update and download it if there is one.
 - If a new update finishes downloading before the timer runs out, the app will immediately try to reload itself and launch the newly downloaded update.
-- If this newly downloaded update also throws a fatal error, OR there is no new update, OR the timer runs out, the app will immediately try to reload by rolling back to an older update, whichever one was most recently launched successfully.
+- If this newly downloaded update also throws a fatal error, or there is no new update, or the timer runs out, the app will immediately try to reload by rolling back to an older update, whichever one was most recently launched successfully.
 - If this also fails, or there is no older update available on the device, the app will throw the original error and crash.
 
 ## Error stacktraces
 
 If your app encounters a fatal JS error, and the error recovery system cannot recover, it will re-throw the original exception to cause a crash. The stacktrace will look similar to this:
 
-<Tabs tabs={["iOS", "Android"]}>
-
-<Tab>
-
-```
-Last Exception Backtrace:
-0   CoreFoundation                	0xf203feba4 __exceptionPreprocess + 220 (NSException.m:200)
-1   libobjc.A.dylib               	0xf201a1be7 objc_exception_throw + 60 (objc-exception.mm:565)
-2   MyApp                         	0x10926b7ee -[EXUpdatesAppController throwException:] + 24 (EXUpdatesAppController.m:422)
-3   MyApp                         	0x109280352 -[EXUpdatesErrorRecovery _crash] + 984 (EXUpdatesErrorRecovery.m:222)
-4   MyApp                         	0x10927fa3d -[EXUpdatesErrorRecovery _runNextTask] + 148 (EXUpdatesErrorRecovery.m:0)
-5   libdispatch.dylib             	0x109bc1848 _dispatch_call_block_and_release + 32 (init.c:1517)
-6   libdispatch.dylib             	0x109bc2a2c _dispatch_client_callout + 20 (object.m:560)
-7   libdispatch.dylib             	0x109bc93a6 _dispatch_lane_serial_drain + 668 (inline_internal.h:2622)
-8   libdispatch.dylib             	0x109bca0bc _dispatch_lane_invoke + 392 (queue.c:3944)
-9   libdispatch.dylib             	0x109bd6472 _dispatch_workloop_worker_thread + 648 (queue.c:6732)
-10  libsystem_pthread.dylib       	0xf6da2845d _pthread_wqthread + 288 (pthread.c:2599)
-11  libsystem_pthread.dylib       	0xf6da2742f start_wqthread + 8
-```
-
-Even though it appears the exception was thrown from expo-updates, this stacktrace generally indicates **an error that originated in JavaScript**.
-
-Unfortunately, Apple's crash reporting does not include the exception message, which details the underlying error and its location in JavaScript. To see the message and help you narrow down the issue, you may need to reproduce the crash locally with the Xcode debugger or macOS Console app attached.
-
-</Tab>
+<Tabs tabs={["Android", "iOS"]}>
 
 <Tab>
 
@@ -112,6 +88,30 @@ AndroidRuntime: 	at java.lang.Thread.run(Thread.java:923)
 ```
 
 On Android, the stacktrace of the original exception is preserved. Depending on your crash reporting service, you may or may not need to reproduce the crash locally to see more information about the underlying error.
+
+</Tab>
+
+<Tab>
+
+```
+Last Exception Backtrace:
+0   CoreFoundation                	0xf203feba4 __exceptionPreprocess + 220 (NSException.m:200)
+1   libobjc.A.dylib               	0xf201a1be7 objc_exception_throw + 60 (objc-exception.mm:565)
+2   MyApp                         	0x10926b7ee -[EXUpdatesAppController throwException:] + 24 (EXUpdatesAppController.m:422)
+3   MyApp                         	0x109280352 -[EXUpdatesErrorRecovery _crash] + 984 (EXUpdatesErrorRecovery.m:222)
+4   MyApp                         	0x10927fa3d -[EXUpdatesErrorRecovery _runNextTask] + 148 (EXUpdatesErrorRecovery.m:0)
+5   libdispatch.dylib             	0x109bc1848 _dispatch_call_block_and_release + 32 (init.c:1517)
+6   libdispatch.dylib             	0x109bc2a2c _dispatch_client_callout + 20 (object.m:560)
+7   libdispatch.dylib             	0x109bc93a6 _dispatch_lane_serial_drain + 668 (inline_internal.h:2622)
+8   libdispatch.dylib             	0x109bca0bc _dispatch_lane_invoke + 392 (queue.c:3944)
+9   libdispatch.dylib             	0x109bd6472 _dispatch_workloop_worker_thread + 648 (queue.c:6732)
+10  libsystem_pthread.dylib       	0xf6da2845d _pthread_wqthread + 288 (pthread.c:2599)
+11  libsystem_pthread.dylib       	0xf6da2742f start_wqthread + 8
+```
+
+Even though it appears the exception was thrown from expo-updates, this stacktrace generally indicates **an error that originated in JavaScript**.
+
+Unfortunately, Apple's crash reporting does not include the exception message, which details the underlying error and its location in JavaScript. To see the message and help you narrow down the issue, you may need to reproduce the crash locally with the Xcode debugger or macOS Console app attached.
 
 </Tab>
 

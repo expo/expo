@@ -20,27 +20,7 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
-
-namespace {
-
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func) noexcept override {
-    func();
-  }
-
-  void invokeSync(std::function<void()> &&func) override {
-    func();
-  }
-
-  ~SyncCallInvoker() override = default;
-};
-
-} // namespace
+#import <ExpoModulesCore/TestingSyncJSCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -71,7 +51,7 @@ public:
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = std::make_shared<SyncCallInvoker>();
+    _jsCallInvoker = std::make_shared<expo::TestingSyncJSCallInvoker>(_runtime);
   }
   return self;
 }
@@ -168,12 +148,15 @@ public:
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
     EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
+    // Returning something else than `this` is not supported in native constructors.
     constructor(caller, arguments);
+
+    return jsi::Value(runtime, thisValue);
   };
   std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
@@ -196,6 +179,7 @@ public:
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
     constructor(caller, arguments);
+    return jsi::Value(runtime, thisValue);
   };
   std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::SharedObject::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
@@ -232,7 +216,13 @@ public:
 
 - (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
 {
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
+    block();
+  });
+#else
   _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
+#endif
 }
 
 #pragma mark - Private

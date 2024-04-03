@@ -13,9 +13,11 @@
 - Refactor web implementations of `useSourceSelection` to avoid unnecessary rerenders. ([#27569](https://github.com/expo/expo/pull/27569) by [@aleqsio](https://github.com/aleqsio))
 - Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix #available check to account for tvOS. ([#27272](https://github.com/expo/expo/pull/27272) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed jest may cause `RangeError: Invalid string length` error when generating a snapshot. ([#27354](https://github.com/expo/expo/pull/27354) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
+- [iOS] Bump SDWebImage to include 3rd Party Privacy Manifest ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.11.0 — 2024-02-05

@@ -53,7 +53,12 @@ export const localAssets = ExpoUpdates.localAssets ?? {};
  * otherwise. If you are concerned about backwards compatibility of future updates to your app, you
  * can use this constant to provide special behavior for this rare case.
  */
-export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
+export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch;
+/**
+ * If `isEmergencyLaunch` is set to true, this will contain a string error message describing
+ * what failed during initialization.
+ */
+export const emergencyLaunchReason = ExpoUpdates.emergencyLaunchReason;
 /**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.

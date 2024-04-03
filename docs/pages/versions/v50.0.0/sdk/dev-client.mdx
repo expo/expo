@@ -1,17 +1,14 @@
 ---
 title: DevClient
-description: 'A library that allows to create a development build.'
+description: A library that allows creating a development build and includes useful development tools.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-dev-client'
 packageName: 'expo-dev-client'
 iconUrl: '/static/images/packages/expo-dev-client.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection'
-import {
-  ConfigPluginExample,
-  ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `expo-dev-client` adds various useful development tools to your debug builds:
@@ -34,20 +31,20 @@ You can configure development client launcher using its built-in [config plugin]
 
 <ConfigPluginExample>
 
-  ```json app.json
-  {
-    "expo": {
-      "plugins": [
-        [
-          "expo-dev-launcher",
-          {
-            "launchModeExperimental": "most-recent"
-          }
-        ]
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-dev-launcher",
+        {
+          "launchModeExperimental": "most-recent"
+        }
       ]
-    }
+    ]
   }
-  ```
+}
+```
 
 </ConfigPluginExample>
 
@@ -56,9 +53,9 @@ You can configure development client launcher using its built-in [config plugin]
     {
       name: 'launchModeExperimental',
       description: [
-        "Determines whether to launch the most recently opened project or navigate to the launcher screen.",
-        "* `'most-recent'` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.",
-        "* `'launcher'` - Opens the launcher screen."
+        'Determines whether to launch the most recently opened project or navigate to the launcher screen.',
+        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
+        '* `launcher` - Opens the launcher screen.',
       ].join('\n'),
       default: '"most-recent"',
       experimental: true,
@@ -72,4 +69,4 @@ You can configure development client launcher using its built-in [config plugin]
 import * as DevClient from 'expo-dev-client';
 ```
 
-<APISection packageName={["expo-dev-menu", "expo-dev-launcher"]} apiName="DevClient" />
+<APISection packageName={['expo-dev-menu', 'expo-dev-launcher']} apiName="DevClient" />

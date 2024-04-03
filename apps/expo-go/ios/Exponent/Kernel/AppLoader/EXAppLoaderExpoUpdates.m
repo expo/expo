@@ -51,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) EXUpdatesConfig *config;
 @property (nonatomic, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
-@property (nonatomic, assign) BOOL isEmergencyLaunch;
 
 @end
 
@@ -77,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize config = _config;
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
-@synthesize isEmergencyLaunch = _isEmergencyLaunch;
 @synthesize isUpToDate = _isUpToDate;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
@@ -102,7 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
   _appLauncher = nil;
   _error = nil;
   _shouldUseCacheOnly = NO;
-  _isEmergencyLaunch = NO;
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusChecking;
   _shouldShowRemoteUpdateStatus = YES;
   _isUpToDate = NO;

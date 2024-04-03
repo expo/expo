@@ -298,7 +298,7 @@ export type Contact = {
     department?: string;
     /**
      * Additional information.
-     * > On iOS 13+, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+     * > The `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
      * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
      * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
      */
@@ -719,6 +719,13 @@ export declare function removeContactFromGroupAsync(contactId: string, groupId: 
  * @platform ios
  */
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export declare function presentContactPickerAsync(): Promise<Contact | null>;
 /**
  * Get the default container's ID.
  * @return A promise that fulfills with default container ID.

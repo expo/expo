@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add source map outputs when exporting API route bundles. ([#27913](https://github.com/expo/expo/pull/27913) by [@kitten](https://github.com/kitten))
 - Add experimental support for using a canary build of the React Native renderer. ([#27303](https://github.com/expo/expo/pull/27303) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add warnings when URI schemes cannot be resolved for dev client launches. ([#27241](https://github.com/expo/expo/pull/27241) by [@EvanBacon](https://github.com/EvanBacon))
@@ -25,6 +26,9 @@
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
+- Included groups in Expo Router typed routes generation ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
+- Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
+- Use correct script src path when exporting web development builds. ([#27946](https://github.com/expo/expo/pull/27946) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -32,6 +36,9 @@
 - Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable lazy modules with swc when building `@expo/cli`. ([#27061](https://github.com/expo/expo/pull/27061) by [@byCedric](https://github.com/byCedric))
 - Update to remove `ExpoRequest/ExpoResponse` imports from `@expo/server`. ([#27261](https://github.com/expo/expo/pull/27261) by [@kitten](https://github.com/kitten))
+- Update the legacy inspector overrides to new device middleware API. ([#27425](https://github.com/expo/expo/pull/27425) by [@byCedric](https://github.com/byCedric))
+- Add new telemetry API to replace legacy analytics. ([#27787](https://github.com/expo/expo/pull/27787) by [@byCedric](https://github.com/byCedric))
+- Skip building and packing `__typetests__` files. ([#27089](https://github.com/expo/expo/pull/27089) by [@byCedric](https://github.com/byCedric))
 
 ### 📚 3rd party library updates
 

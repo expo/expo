@@ -13,15 +13,15 @@ class DevMenuModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoDevMenu")
 
-    AsyncFunction("openMenu") {
+    AsyncFunction<Unit>("openMenu") {
       DevMenuManager.openMenu(currentActivity)
     }
 
-    AsyncFunction("closeMenu") {
+    AsyncFunction<Unit>("closeMenu") {
       DevMenuManager.closeMenu()
     }
 
-    AsyncFunction("hideMenu") {
+    AsyncFunction<Unit>("hideMenu") {
       DevMenuManager.hideMenu()
     }
 

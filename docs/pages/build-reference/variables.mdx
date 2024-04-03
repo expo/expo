@@ -247,7 +247,7 @@ Upload the file to EAS.
 <Terminal
   cmd={[
     '$ eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value ./path/to/google-services.json',
-    '✔ ️Created a new secret GOOGLE_SERVICES_JSON on project @user/myproject.',
+    '✔ Created a new secret GOOGLE_SERVICES_JSON on project @user/myproject.',
   ]}
 />
 
@@ -259,10 +259,10 @@ Use **app.config.js** to read the path to **google-services.json**.
 
 ```js app.config.js
 export default {
-  // ...
+  /* @hide ...*/ /* @end */
   android: {
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
-    // ...
+    /* @hide ...*/ /* @end */
   },
 };
 ```

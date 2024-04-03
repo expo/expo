@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
-namespace ExpoRouter {
+export namespace ExpoRouter {
   type StaticRoutes = string;
   type DynamicRoutes<T extends string> = string;
   type DynamicRouteTemplate = never;
@@ -17,7 +17,7 @@ namespace ExpoRouter {
    * Route Utils  *
    ****************/
   type SearchOrHash = `?${string}` | `#${string}`;
-  type UnknownInputParams = Record<
+  export type UnknownInputParams = Record<
     string,
     string | number | undefined | null | (string | number)[]
   >;
@@ -69,7 +69,9 @@ namespace ExpoRouter {
   type IsParameter<Part> = Part extends `[${infer ParamName}]` ? ParamName : never;
 
   /**
-   * Return a union of all parameter names. If there are no names return never
+   * Return a union of all raw parameter names. If there are no names return never
+   *
+   * This differs from ParameterNames as it returns the `...` for catch all parameters
    *
    * /[test]         -> 'test'
    * /[abc]/[...def] -> 'abc'|'...def'
@@ -91,6 +93,10 @@ namespace ExpoRouter {
       ? []
       : [Path];
 
+  type AllUngroupedRoutes<Path> = Path extends `(${infer PartA})/${infer PartB}`
+    ? `(${PartA})/${AllUngroupedRoutes<PartB>}` | AllUngroupedRoutes<PartB>
+    : Path;
+
   /**
    * Returns a Record of the routes parameters as strings and CatchAll parameters
    *
@@ -100,10 +106,10 @@ namespace ExpoRouter {
    * /[id]/[...rest] -> { id: string, rest: string[] }
    * /no-params      -> {}
    */
-  type InputRouteParams<Path> = {
+  export type InputRouteParams<Path> = {
     [Key in ParameterNames<Path> as Key extends `...${infer Name}`
       ? Name
-      : Key]: Key extends `...${string}` ? (string | number)[] : string | number | undefined | null;
+      : Key]: Key extends `...${string}` ? (string | number)[] : string | number;
   } & UnknownInputParams;
 
   type OutputRouteParams<Path> = {
@@ -121,56 +127,45 @@ namespace ExpoRouter {
       ? never
       : UnknownOutputParams;
 
-  /**
-   * Route is mostly used as part of Href to ensure that a valid route is provided
-   *
-   * Given a dynamic route, this will return never. This is helpful for conditional logic
-   *
-   * /test         -> /test, /test2, etc
-   * /test/[abc]   -> never
-   * /test/resolve -> /test, /test2, etc
-   *
-   * Note that if we provide a value for [abc] then the route is allowed
-   *
-   * This is named Route to prevent confusion, as users they will often see it in tooltips
-   */
-  export type Route<T> = T extends string
-    ? T extends DynamicRouteTemplate
-      ? never
-      :
-          | StaticRoutes
-          | RelativePathString
-          | ExternalPathString
-          | (T extends `${infer P}${SearchOrHash}`
-              ? P extends DynamicRoutes<infer _>
-                ? T
-                : never
-              : T extends DynamicRoutes<infer _>
-                ? T
-                : never)
-          | {
-              pathname: P;
-              params?: never | InputRouteParams<P>;
-            }
-    : never;
-
   /*********
    * Href  *
    *********/
 
-  export type Href<T = string> = T extends object ? HrefObject<T> : Route<T>;
+  /**
+   * The main routing type for Expo Router. Includes all available routes with strongly typed parameters.
+   *
+   * Allows for static routes, relative paths, external paths, dynamic routes, and the dynamic route provided as a static string
+   */
+  export type Href =
+    | StringRouteToType<AllUngroupedRoutes<StaticRoutes> | RelativePathString | ExternalPathString>
+    | DynamicRouteTemplateToString<DynamicRouteTemplate>
+    | DynamicRouteObject<
+        StaticRoutes | RelativePathString | ExternalPathString | DynamicRouteTemplate
+      >;
 
-  export type HrefObject<
-    R extends object = { pathname: string },
-    P = R extends { pathname: string } ? R['pathname'] : null,
-  > = P extends DynamicRouteTemplate
-    ? { pathname: P; params: InputRouteParams<P> }
-    : P extends Route<P>
-      ? {
-          pathname: Route<P> | DynamicRouteTemplate;
-          params?: never | InputRouteParams<P>;
-        }
-      : { pathname: DynamicRouteTemplate };
+  type StringRouteToType<T extends string> =
+    | T
+    | `${T}${SearchOrHash}`
+    | { pathname: T; params?: UnknownInputParams | never };
+
+  type DynamicRouteTemplateToString<Path> = Path extends `${infer PartA}/${infer PartB}`
+    ? `${PartA extends `[${string}]` ? string : PartA}/${DynamicRouteTemplateToString<PartB>}`
+    : Path extends `[${string}]`
+      ? string
+      : Path;
+
+  type DynamicRouteObject<T> = T extends DynamicRouteTemplate
+    ? {
+        pathname: T;
+        params: InputRouteParams<T>;
+      }
+    : never;
+
+  type IsStaticRoute<T> =
+    | StaticRoutes
+    | RelativePathString
+    | ExternalPathString
+    | (T extends DynamicRoutes<infer _> ? T : never);
 
   /***********************
    * Expo Router Exports *
@@ -186,7 +181,7 @@ namespace ExpoRouter {
     /** Navigate to the provided href. */
     navigate: (href: Href) => void;
     /** Navigate to route without appending to the history. */
-    replace: <T>(href: Href<T>) => void;
+    replace: (href: Href) => void;
     /** Navigate to the provided href using a push operation if possible. */
     dismiss: (count?: number) => void;
     /** Navigate to first screen within the lowest stack. */
@@ -200,7 +195,7 @@ namespace ExpoRouter {
   };
 
   /** The imperative router. */
-  export const router: Router;
+  export declare const router: Router;
 
   /************
    * <Link /> *
@@ -259,7 +254,7 @@ namespace ExpoRouter {
 
   export interface LinkProps<T = string> extends Omit<TextProps, 'href'>, WebAnchorProps {
     /** Path to route to. */
-    href: Href<T>;
+    href: Href;
 
     // TODO(EvanBacon): This may need to be extracted for React Native style support.
     /** Forward props to child component. Useful for custom buttons. */
@@ -277,9 +272,9 @@ namespace ExpoRouter {
   }
 
   export interface LinkComponent {
-    <T>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+    (props: React.PropsWithChildren<LinkProps>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
-    resolveHref: <T>(href: Href<T>) => string;
+    resolveHref: (href: Href) => string;
   }
 
   /**
@@ -292,17 +287,17 @@ namespace ExpoRouter {
    * @param props.children Child elements to render the content.
    * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
-  export const Link: LinkComponent;
+  export declare const Link: LinkComponent;
 
   /** Redirects to the href as soon as the component is mounted. */
-  export const Redirect: <T>(props: React.PropsWithChildren<{ href: Href<T> }>) => ReactNode;
+  export declare const Redirect: (props: React.PropsWithChildren<{ href: Href }>) => ReactNode;
   export type Redirect = typeof Redirect;
 
   /**
    * Hooks
    */
 
-  export function useRouter(): Router;
+  export declare function useRouter(): Router;
   type useRouter = typeof useRouter;
 
   /**
@@ -312,10 +307,15 @@ namespace ExpoRouter {
    * To observe updates even when the invoking route is not focused, use \`useGlobalSearchParams()\`.
    * @see \`useGlobalSearchParams\`
    */
-  export function useLocalSearchParams<
+  export declare function useLocalSearchParams<
     TParams extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
   >(): TParams extends AllRoutes ? SearchParams<TParams> : TParams;
   type useLocalSearchParams = typeof useLocalSearchParams;
+
+  export declare function useSearchParams<
+    TParams extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
+  >(): TParams extends AllRoutes ? SearchParams<TParams> : TParams;
+  type useSearchParams = typeof useSearchParams;
 
   /**
    * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
@@ -326,7 +326,7 @@ namespace ExpoRouter {
    *
    * @see \`useLocalSearchParams\`
    */
-  export function useGlobalSearchParams<
+  export declare function useGlobalSearchParams<
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
   >(): T extends AllRoutes ? SearchParams<T> : T;
   type useGlobalSearchParams = typeof useGlobalSearchParams;
@@ -350,7 +350,7 @@ namespace ExpoRouter {
    * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
    * \`\`\`
    */
-  export function useSegments<
+  export declare function useSegments<
     T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString,
   >(): T extends AbsoluteRoute ? RouteSegments<T> : T extends string ? string[] : T;
   type useSegments = typeof useSegments;

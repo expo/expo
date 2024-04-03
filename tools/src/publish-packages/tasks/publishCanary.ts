@@ -14,7 +14,7 @@ import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import { PACKAGES_DIR } from '../../Constants';
 import Git from '../../Git';
 import logger from '../../Logger';
-import { getPackageViewAsync, publishPackageAsync } from '../../Npm';
+import { addTagAsync, getPackageViewAsync, publishPackageAsync } from '../../Npm';
 import {
   getAvailableProjectTemplatesAsync,
   updateTemplateVersionsAsync,
@@ -100,6 +100,13 @@ const publishCanaryProjectTemplates = new Task<TaskArgs>(
             tagName: 'canary',
             dryRun: options.dry,
           });
+
+          if (!options.dry) {
+            // Add additional `sdk-X` tag for canary templates.
+            // Prebuild command uses this tag to download the proper version of bare-minimum template.
+            const sdkTag = getSdkTagForVersion(canaryVersion);
+            await addTagAsync(template.name, canaryVersion, sdkTag);
+          }
         }
       },
       'Updated and published project templates'
@@ -232,4 +239,12 @@ async function getNextSdkVersion(): Promise<string> {
     throw new Error('Unable to obtain the next major SDK version');
   }
   return nextMajorVersion;
+}
+
+/**
+ * Returns the SDK tag to use for the given package version.
+ */
+function getSdkTagForVersion(version: string): string {
+  const major = semver.major(version);
+  return `sdk-${major}`;
 }

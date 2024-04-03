@@ -30,11 +30,12 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
       if (appLoaderLocal == null) {
         mapOf()
       } else {
-        val constants = mutableMapOf<String, Any>()
+        val constants = mutableMapOf<String, Any?>()
         val configuration = appLoaderLocal.updatesConfiguration
 
         // keep these keys in sync with UpdatesModule
         constants["isEmergencyLaunch"] = false
+        constants["emergencyLaunchReason"] = null
         constants["isEmbeddedLaunch"] = false
         constants["isEnabled"] = true
         constants["isUsingEmbeddedAssets"] = false
