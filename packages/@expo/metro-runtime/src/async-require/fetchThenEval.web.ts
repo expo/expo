@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const currentSrc = typeof document !== 'undefined' && document.currentScript
-  ? ('src' in document.currentScript && document.currentScript.src) || null
-  : null;
+const currentSrc =
+  typeof document !== 'undefined' && document.currentScript
+    ? ('src' in document.currentScript && document.currentScript.src) || null
+    : null;
 
 // Basically `__webpack_require__.l`.
 export function fetchThenEvalAsync(
