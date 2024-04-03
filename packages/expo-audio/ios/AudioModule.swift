@@ -176,7 +176,7 @@ public class AudioModule: Module, RecordingResultHandler {
       Property("playbackRate") { player in
         player.pointer.rate
       }
-      
+
       Property("paused") { player in
         return player.pointer.rate == 0.0
       }
