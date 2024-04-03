@@ -266,7 +266,7 @@ Say you wanted to write a mod to update the Xcode Project's "product name":
 ```ts my-config-plugin.ts
 import { ConfigPlugin, withXcodeProject, IOSConfig } from 'expo/config-plugins';
 
-const withCustomProductName : ConfigPlugin<string> = (config, customName) => {
+const withCustomProductName: ConfigPlugin<string> = (config, customName) => {
   return withXcodeProject(
     config,
     async (
