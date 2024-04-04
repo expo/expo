@@ -102,8 +102,8 @@ public final class PedometerModule: Module {
 
   private func stopUpdates() {
     guard watchHandler != nil,
-          let permissions = appContext?.permissions,
-          permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
+      let permissions = appContext?.permissions,
+      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
       return
     }
 
