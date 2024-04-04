@@ -401,7 +401,7 @@ export interface IOS {
         [k: string]: any;
     };
     /**
-     * Configuration to add to your standalone app's native *.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
+     * Configuration to add to your app's native *.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifests?: {
         NSPrivacyAccessedAPITypes?: {
