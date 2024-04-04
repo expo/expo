@@ -49,6 +49,7 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-module-scripts": "^3.0.0",
+    "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
     "node-fetch": "^2.6.7",
     "ora": "3.4.0",
@@ -56,8 +57,5 @@
     "prompts": "^2.4.2",
     "tar": "6.1.13",
     "update-check": "^1.5.4"
-  },
-  "dependencies": {
-    "fast-glob": "^3.3.2"
   }
 }
