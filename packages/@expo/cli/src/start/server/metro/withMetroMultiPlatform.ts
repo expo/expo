@@ -6,7 +6,9 @@
  */
 import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
+import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
+import { FileSystem } from 'metro-file-map';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import * as metroResolver from 'metro-resolver';
 import path from 'path';
@@ -89,6 +91,83 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   return nodejsSourceExtensions;
 }
 
+export type ExpoPatchedFileSystem = FileSystem & {
+  expoVirtualModules?: Map<string, Buffer>;
+};
+
+function ensureMetroBundlerPatched(bundler: Bundler): Bundler & {
+  setVirtualModule: (id: string, contents: string) => void;
+} {
+  if (!bundler.transformFile.__patched) {
+    const originalTransformFile = bundler.transformFile.bind(bundler);
+
+    bundler.transformFile = async function (
+      filePath: string,
+      transformOptions: any,
+      /** Optionally provide the file contents, this can be used to provide virtual contents for a file. */
+      fileBuffer?: Buffer
+    ) {
+      // file buffer will be defined for virtual modules in Metro, e.g. context modules.
+      if (!fileBuffer) {
+        if (filePath.startsWith('\0')) {
+          const graph = await this.getDependencyGraph();
+
+          // @ts-expect-error: private property
+          if (graph._fileSystem.expoVirtualModules) {
+            // @ts-expect-error: private property
+            fileBuffer = graph._fileSystem.expoVirtualModules.get(filePath);
+          }
+
+          if (!fileBuffer) {
+            throw new Error(`Virtual module "${filePath}" not found.`);
+          }
+        }
+      }
+      const result = await originalTransformFile(filePath, transformOptions, fileBuffer);
+      return result;
+    };
+
+    bundler.transformFile.__patched = true;
+
+    // @ts-expect-error: adding method to bundler.
+    bundler.setVirtualModule = function (this: Bundler, id: string, contents: string) {
+      // @ts-expect-error: private property
+      const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
+
+      if (!id.startsWith('\0')) {
+        throw new Error(`Virtual modules must start with the null character (\\0).`);
+      }
+      fs.expoVirtualModules.set(id, Buffer.from(contents));
+    };
+  }
+
+  return bundler;
+}
+
+function ensureFileSystemPatched(fs: ExpoPatchedFileSystem): FileSystem & {
+  expoVirtualModules: Map<string, Buffer>;
+} {
+  if (!fs.getSha1.__patched) {
+    const original_getSha1 = fs.getSha1.bind(fs);
+    fs.getSha1 = (filename: string) => {
+      // Rollup virtual module format.
+      if (filename.startsWith('\0')) {
+        return filename;
+      }
+
+      return original_getSha1(filename);
+    };
+    fs.getSha1.__patched = true;
+  }
+
+  // TODO: Connect virtual modules to a specific context so they don't cross-bundles.
+  if (!fs.expoVirtualModules) {
+    fs.expoVirtualModules = new Map<string, Buffer>();
+  }
+
+  return fs;
+}
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -105,12 +184,14 @@ export function withExtendedResolver(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (isFastResolverEnabled) {
@@ -356,6 +437,26 @@ export function withExtendedResolver(
       return null;
     },
 
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      const doResolve = getOptionalResolver(context, platform);
+
+      const mod = doResolve(moduleName);
+      if (!mod) {
+        const virtualModuleId = '\0' + 'virtual:' + moduleName;
+
+        const bundler = ensureMetroBundlerPatched(getMetroBundler());
+
+        bundler.setVirtualModule(virtualModuleId, `console.log('Hello from the Matrix!');`);
+
+        debug('Virtualizing module:', moduleName, ' -> ', virtualModuleId);
+        return {
+          type: 'sourceFile',
+          filePath: virtualModuleId,
+        };
+      }
+      return null;
+    },
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -499,6 +600,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
@@ -508,6 +610,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (!config.projectRoot) {
@@ -571,6 +674,7 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isReactCanaryEnabled,
+    getMetroBundler,
   });
 }
 
