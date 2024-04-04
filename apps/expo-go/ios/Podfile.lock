@@ -1355,7 +1355,7 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.3):
     - React-Core
-  - react-native-safe-area-context (4.8.2):
+  - react-native-safe-area-context (4.10.0-rc.1):
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
@@ -1854,7 +1854,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
-  - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
+  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
@@ -2133,7 +2133,7 @@ EXTERNAL SOURCES:
   react-native-pager-view:
     :path: "./vendored/unversioned/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "./vendored/unversioned/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-skia:
@@ -2217,7 +2217,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXApplication: 885cfd16a950e18cf8be3051f08c8db00fdbf6ac
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
@@ -2293,7 +2293,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: bb49ab4ec3d5748f32b96ec24d6cca6549d16ab5
+  hermes-engine: f2df4c8fb24213179deb9ed25d19baf5ade87442
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -2332,7 +2332,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 6a29ddb15979e501733cd3c91679bbfd8af77005
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
-  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
+  react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 9ede31b12c287a93564a1b24db151749ae931eb4
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
@@ -2383,9 +2383,9 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c12de264eda974d91e43a769f53a6c6afc9a1715
   StripeUICore: 090c4fe916d039616ce8f8de30392f4aeb33dd16
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
-  Yoga: 23e49e26d83fc88956084a85f4190563fa1b655e
+  Yoga: 752c49a827984ffb251f347dffa1fc70762b22d7
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 8a6f0f254954975fbb7f41919c6fdea43c3ebc92
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.15.2

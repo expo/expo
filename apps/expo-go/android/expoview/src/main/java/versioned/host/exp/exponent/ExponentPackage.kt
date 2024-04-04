@@ -40,7 +40,6 @@ import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModu
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
-import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
@@ -174,7 +173,6 @@ class ExponentPackage : ReactPackage {
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),
-        SafeAreaContextPackage(),
         RNDateTimePickerPackage(),
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
