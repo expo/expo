@@ -88,10 +88,10 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (1.11.0):
     - ExpoModulesCore
-    - SDWebImage (~> 5.18.7)
+    - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.2)
+    - SDWebImageWebPCoder (~> 0.14.5)
   - ExpoImageManipulator (11.8.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -1693,9 +1693,9 @@ PODS:
     - Yoga
   - RNSVG (14.0.0):
     - React-Core
-  - SDWebImage (5.18.12):
-    - SDWebImage/Core (= 5.18.12)
-  - SDWebImage/Core (5.18.12)
+  - SDWebImage (5.19.1):
+    - SDWebImage/Core (= 5.19.1)
+  - SDWebImage/Core (5.19.1)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -2268,7 +2268,7 @@ SPEC CHECKSUMS:
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoHead: 573e78cb221b5461376d0cc88ee0611337c3c3cb
-  ExpoImage: 79d61d4ca87ed9e08005353ee65500db93145d0e
+  ExpoImage: 59343a34ef7e7cf6b7cdc284e25699f8c9c3476b
   ExpoImageManipulator: c1d7cb865eacd620a35659f3da34c70531f10b59
   ExpoImagePicker: 247fc7d2c13426a835525b67d5fb221864b79612
   ExpoKeepAwake: fe7be5056ccf39dd1e05afcdb32a5569973f3685
@@ -2312,7 +2312,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: f948c97bffe4b5be0d6a65ff93ebe5b6843acfcf
+  hermes-engine: 81feb4c9d990b598dd1026db11a411688c9b8249
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -2386,10 +2386,10 @@ SPEC CHECKSUMS:
   RNReanimated: d5a8d8f30dd0eae33a861240ad909bdcbb4ba282
   RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
-  SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
+  SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
