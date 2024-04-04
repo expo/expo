@@ -2,7 +2,6 @@ const DISABLED_AUTOLINKING_PKGS = [
   '@react-native-async-storage/async-storage',
   '@react-native-community/netinfo',
   'react-native-gesture-handler',
-  'react-native-maps',
   'react-native-reanimated',
   'react-native-safe-area-context',
   'react-native-screens',

@@ -17,6 +17,7 @@ import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
+import com.rnmaps.maps.MapsPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
@@ -38,7 +39,6 @@ import versioned.host.exp.exponent.modules.api.ShakeModule
 import versioned.host.exp.exponent.modules.api.URLHandlerModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule

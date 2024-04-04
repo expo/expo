@@ -87,7 +87,7 @@
   "react-native-web": "~0.19.10",
   "react-native-gesture-handler": "~2.14.0",
   "react-native-get-random-values": "~1.8.0",
-  "react-native-maps": "1.8.0",
+  "react-native-maps": "1.13.0",
   "react-native-pager-view": "6.2.3",
   "react-native-reanimated": "~3.6.0",
   "react-native-screens": "~3.27.0",
