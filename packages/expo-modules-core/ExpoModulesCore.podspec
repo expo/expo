@@ -46,12 +46,6 @@ Pod::Spec.new do |s|
     '"${PODS_ROOT}/Headers/Private/React-Core"',
   ]
 
-  if ENV['USE_FRAMEWORKS']
-    header_search_paths.concat([
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
-    ])
-  end
-
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
@@ -90,6 +84,7 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-RCTAppDelegate' if reactNativeTargetVersion >= 71
   s.dependency 'React-NativeModulesApple' if reactNativeTargetVersion >= 72
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   if fabric_enabled
     compiler_flags << ' ' << fabric_compiler_flags
