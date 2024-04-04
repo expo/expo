@@ -12,6 +12,7 @@ import * as Name from './Name';
 import * as Orientation from './Orientation';
 import * as Paths from './Paths';
 import * as Permissions from './Permissions';
+import * as PrivacyInfo from './PrivacyInfo';
 import * as ProvisioningProfile from './ProvisioningProfile';
 import * as RequiresFullScreen from './RequiresFullScreen';
 import * as Scheme from './Scheme';
@@ -21,7 +22,6 @@ import * as Updates from './Updates';
 import * as UsesNonExemptEncryption from './UsesNonExemptEncryption';
 import * as Version from './Version';
 import * as XcodeProjectFile from './XcodeProjectFile';
-import * as PrivacyInfo from './PrivacyInfo';
 import * as XcodeUtils from './utils/Xcodeproj';
 
 // We can change this to export * as X with TypeScript 3.8+
