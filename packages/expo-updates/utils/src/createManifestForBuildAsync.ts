@@ -44,7 +44,7 @@ export async function createManifestForBuildAsync(
     platform,
     entryFile,
     minify: false,
-    dev: false,
+    dev: process.env.EX_UPDATES_NATIVE_DEBUG === '1',
     sourcemapUseAbsolutePath: false,
   };
 

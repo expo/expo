@@ -32,7 +32,7 @@ async function createManifestForBuildAsync(platform, possibleProjectRoot, destin
         platform,
         entryFile,
         minify: false,
-        dev: false,
+        dev: process.env.EX_UPDATES_NATIVE_DEBUG === '1',
         sourcemapUseAbsolutePath: false,
     };
     const { server, bundleRequest } = (await (0, exportEmbedAsync_1.createMetroServerAndBundleRequestAsync)(projectRoot, options));
