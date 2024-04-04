@@ -293,5 +293,8 @@ try {
   }
 }
 
+// Installs web implementations of global things that are normally installed through JSI.
+require('expo-modules-core/build/web/index.web');
+
 // Ensure the environment globals are installed before the first test runs.
 require('expo/build/winter');
