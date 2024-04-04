@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.regenerateDeclarations = exports.getWatchHandler = void 0;
+const _ctx_shared_1 = require("expo-router/_ctx-shared");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const generate_1 = require("./generate");
-const _ctx_shared_1 = require("../../_ctx-shared");
 const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
 const ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);

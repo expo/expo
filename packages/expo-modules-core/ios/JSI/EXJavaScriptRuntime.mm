@@ -148,12 +148,15 @@
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
     EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
+    // Returning something else than `this` is not supported in native constructors.
     constructor(caller, arguments);
+
+    return jsi::Value(runtime, thisValue);
   };
   std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
@@ -176,6 +179,7 @@
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
     constructor(caller, arguments);
+    return jsi::Value(runtime, thisValue);
   };
   std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::SharedObject::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];

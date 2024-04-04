@@ -30,6 +30,7 @@ export {
 };
 
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 
 /**
@@ -41,3 +42,5 @@ export * from './PermissionsInterface';
 export * from './PermissionsHook';
 
 export * from './Refs';
+
+export * from './hooks/useReleasingSharedObject';

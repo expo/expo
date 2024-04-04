@@ -59,7 +59,7 @@ const InnerTabs = ({
           </TabButton>
         ))}
       </TabList>
-      <TabPanels css={tabsPanelStyle} className="last:[&>*]:!mb-0">
+      <TabPanels css={tabsPanelStyle} className="last:[&>div>*]:!mb-0">
         {children}
       </TabPanels>
     </ReachTabs>

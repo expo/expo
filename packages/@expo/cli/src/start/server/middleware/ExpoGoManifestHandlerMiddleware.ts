@@ -10,13 +10,13 @@ import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
-import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
   getCodeSigningInfoAsync,
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
+import { logEventAsync } from '../../../utils/telemetry';
 import { stripPort } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');

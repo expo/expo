@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -125,6 +126,9 @@ describe('server-output', () => {
       expect(await fetch('http://localhost:3000/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
+      expect(await fetch('http://localhost:3000/(alpha)/').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-index">/
+      );
       expect(await fetch('http://localhost:3000/(alpha)/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
@@ -169,12 +173,23 @@ describe('server-output', () => {
 
     it(`can serve up API route in array group`, async () => {
       expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
       expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
       expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
       expect(
         await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
       ).toEqual({ value: 'multi-group-api-get' });
+
+      // Load the sourcemap and check that the paths are relative
+      const map = JSON.parse(
+        await fs.readFile(
+          path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
+          { encoding: 'utf8' },
+        )
+      );
+
+      expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
     });
 
     it(`can serve up API route in specific array group`, async () => {
@@ -348,13 +363,18 @@ describe('server-output', () => {
 
       // Has functions
       expect(files).toContain('server/_expo/functions/methods+api.js');
+      expect(files).toContain('server/_expo/functions/methods+api.js.map');
       expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+      expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
       expect(files).toContain('server/_expo/functions/api/externals+api.js');
+      expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
       // TODO: We shouldn't export this
       expect(files).toContain('server/_expo/functions/api/empty+api.js');
+      expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
       // Has single variation of group file
+      expect(files).toContain('server/(alpha)/index.html');
       expect(files).toContain('server/(alpha)/beta.html');
       expect(files).not.toContain('server/beta.html');
 

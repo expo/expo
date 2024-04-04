@@ -13,6 +13,7 @@ export type * from './ts-declarations/SharedObject';
 export { default as uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, requireNativeViewManager, CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
@@ -21,4 +22,5 @@ export declare const SyntheticPlatformEmitter: import("react-native").DeviceEven
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
 //# sourceMappingURL=index.d.ts.map

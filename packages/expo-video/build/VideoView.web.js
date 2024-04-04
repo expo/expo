@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 /**
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -13,8 +13,9 @@ if (audioContext && zeroGainNode) {
 else {
     console.warn("Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player.");
 }
-class VideoPlayerWeb {
-    constructor(source = null) {
+class VideoPlayerWeb extends globalThis.expo.SharedObject {
+    constructor(source) {
+        super();
         this.src = source;
     }
     src = null;
@@ -26,6 +27,7 @@ class VideoPlayerWeb {
     _loop = false;
     _playbackRate = 1.0;
     _preservesPitch = true;
+    _status = 'idle';
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
@@ -83,6 +85,9 @@ class VideoPlayerWeb {
         });
         this._preservesPitch = value;
     }
+    get status() {
+        return this._status;
+    }
     mountVideoView(video) {
         this._mountedVideos.add(video);
         this._synchronizeWithFirstVideo(video);
@@ -116,10 +121,16 @@ class VideoPlayerWeb {
     }
     replace(source) {
         this._mountedVideos.forEach((video) => {
+            const uri = getSourceUri(source);
             video.pause();
-            video.setAttribute('src', source);
-            video.load();
-            video.play();
+            if (uri) {
+                video.setAttribute('src', uri);
+                video.load();
+                video.play();
+            }
+            else {
+                video.removeAttribute('src');
+            }
         });
         this.playing = true;
     }
@@ -196,21 +207,15 @@ class VideoPlayerWeb {
                 mountedVideo.playbackRate = video.playbackRate;
             });
         };
-    }
-    release() {
-        console.warn('The `VideoPlayer.release` method is not supported on web');
-    }
-    addListener(eventName, listener) {
-        console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
-    }
-    removeListener(eventName, listener) {
-        console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
-    }
-    removeAllListeners(eventName) {
-        console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
-    }
-    emit(eventName, ...args) {
-        console.warn('The `VideoPlayer.emit` method is not yet supported on web');
+        video.onerror = () => {
+            this._status = 'error';
+        };
+        video.onloadeddata = () => {
+            this._status = 'readyToPlay';
+        };
+        video.onwaiting = () => {
+            this._status = 'loading';
+        };
     }
 }
 function mapStyles(style) {
@@ -218,11 +223,19 @@ function mapStyles(style) {
     // Looking through react-native-web source code they also just pass styles directly without further conversions, so it's just a cast.
     return flattenedStyles;
 }
-export function useVideoPlayer(source = null) {
-    return React.useMemo(() => {
-        return new VideoPlayerWeb(source);
-        // should this not include source?
-    }, []);
+export function useVideoPlayer(source, setup) {
+    const parsedSource = typeof source === 'string' ? { uri: source } : source;
+    return useMemo(() => {
+        const player = new VideoPlayerWeb(parsedSource);
+        setup?.(player);
+        return player;
+    }, [JSON.stringify(source)]);
+}
+function getSourceUri(source) {
+    if (typeof source == 'string') {
+        return source;
+    }
+    return source?.uri ?? null;
 }
 export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
@@ -264,7 +277,7 @@ export const VideoView = forwardRef((props, ref) => {
             if (newRef) {
                 videoRef.current = newRef;
             }
-        }} src={props.player?.src ?? ''}/>);
+        }} src={getSourceUri(props.player?.src) ?? ''}/>);
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map

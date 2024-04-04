@@ -12,6 +12,7 @@ export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, require
 // Errors
 CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
@@ -20,4 +21,5 @@ export const SyntheticPlatformEmitter = DeviceEventEmitter;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
 //# sourceMappingURL=index.js.map

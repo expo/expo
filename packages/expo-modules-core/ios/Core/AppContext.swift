@@ -211,10 +211,10 @@ public final class AppContext: NSObject {
   }
 
   /**
-   Provides access to the event emitter from legacy module registry.
+   Provides an event emitter that is compatible with the legacy interface.
    */
   public var eventEmitter: EXEventEmitterService? {
-    return legacyModule(implementing: EXEventEmitterService.self)
+    return LegacyEventEmitterCompat(appContext: self)
   }
 
   /**

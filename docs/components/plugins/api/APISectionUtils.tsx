@@ -123,6 +123,7 @@ const nonLinkableTypes = [
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
+  'SharedObject',
   'T',
   'TaskOptions',
   'Uint8Array',
@@ -160,6 +161,8 @@ const replaceableTypes: Partial<Record<string, string>> = {
  * Map of entity/type names that should be linked to user specified source, internal or external.
  */
 const hardcodedTypeLinks: Record<string, string> = {
+  ArrayBuffer:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
@@ -196,6 +199,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
+  WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
 };
 
 const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {

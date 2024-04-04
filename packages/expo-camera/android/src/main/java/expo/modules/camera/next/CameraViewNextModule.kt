@@ -81,35 +81,49 @@ class CameraViewNextModule : Module() {
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
-      Prop("facing") { view, facing: CameraType ->
-        view.lenFacing = facing
+      Prop("facing") { view, facing: CameraType? ->
+        facing?.let {
+          if (view.lenFacing != facing) {
+            view.lenFacing = it
+          }
+        }
       }
 
-      Prop("flashMode") { view, flashMode: FlashMode ->
-        view.setCameraFlashMode(flashMode)
+      Prop("flashMode") { view, flashMode: FlashMode? ->
+        flashMode?.let {
+          view.setCameraFlashMode(it)
+        }
       }
 
-      Prop("enableTorch") { view, enabled: Boolean ->
-        view.setTorchEnabled(enabled)
+      Prop("enableTorch") { view, enabled: Boolean? ->
+        view.setTorchEnabled(enabled ?: false)
       }
 
-      Prop("zoom") { view, zoom: Float ->
-        view.camera?.cameraControl?.setLinearZoom(zoom)
+      Prop("zoom") { view, zoom: Float? ->
+        zoom?.let {
+          view.camera?.cameraControl?.setLinearZoom(it)
+        }
       }
 
-      Prop("mode") { view, mode: CameraMode ->
-        view.cameraMode = mode
+      Prop("mode") { view, mode: CameraMode? ->
+        mode?.let {
+          if (view.cameraMode != mode) {
+            view.cameraMode = it
+          }
+        }
       }
 
       Prop("mute") { view, muted: Boolean? ->
-        view.mute = muted ?: false
+        muted?.let {
+          if (it != view.mute) {
+            view.mute = it
+          }
+        }
       }
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
-        if (quality != null) {
-          view.videoQuality = quality
-        } else {
-          view.videoQuality = VideoQuality.VIDEO1080P
+        quality?.let {
+          view.videoQuality = it
         }
       }
 
@@ -121,11 +135,21 @@ class CameraViewNextModule : Module() {
       }
 
       Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
-        view.setShouldScanBarcodes(enabled ?: false)
+        enabled?.let {
+          view.setShouldScanBarcodes(enabled)
+        }
       }
 
       Prop("pictureSize") { view, pictureSize: String? ->
-        view.pictureSize = pictureSize ?: ""
+        pictureSize?.let {
+          if (view.pictureSize != pictureSize) {
+            view.pictureSize = it
+          }
+        }
+      }
+
+      OnViewDidUpdateProps { view ->
+        view.createCamera()
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

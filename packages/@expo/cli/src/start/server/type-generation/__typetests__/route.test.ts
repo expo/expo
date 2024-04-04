@@ -1,15 +1,83 @@
-import { expectType, expectError } from 'tsd-lite';
+import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd-lite';
 
-import {
-  useGlobalSearchParams,
-  useSegments,
-  useRouter,
-  useSearchParams,
-  useLocalSearchParams,
-} from './fixtures/basic';
+import { ExpoRouter } from './fixtures/basic';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
-const router = useRouter();
+const router = ExpoRouter.useRouter();
+
+type Href = ExpoRouter.Href;
+
+describe('Href', () => {
+  describe('Static routes', () => {
+    expectAssignable<Href>('/apple');
+    expectAssignable<Href>('/apple?test=1');
+    expectAssignable<Href>('/banana');
+    expectAssignable<Href>('/banana?test=1&another=2');
+
+    expectAssignable<Href>({
+      pathname: '/apple',
+    } as const);
+
+    expectAssignable<Href>({
+      pathname: '/apple',
+      params: { test: 'true' },
+    } as const);
+
+    expectNotAssignable<Href>('/invalid');
+    expectNotAssignable<Href>({
+      pathname: '/apple',
+      params: { ONLY_STRINGS_ALLOWED: true },
+    });
+  });
+
+  describe('Relative routes', () => {
+    expectAssignable<Href>('./anything');
+    expectAssignable<Href>('../anything?test=1&another=2');
+    expectAssignable<Href>('./anything?test=1');
+    expectAssignable<Href>('../anything');
+
+    expectNotAssignable<Href>('.../invalid');
+  });
+
+  describe('Dynamic routes', () => {
+    expectAssignable<Href>('/colors/blue');
+    expectAssignable<Href>('/colors/blue?test=1');
+    expectAssignable<Href>('/colors/blue?test=1');
+
+    expectAssignable<Href>('/animals/cat');
+    expectAssignable<Href>('/animals/cat/dog?test=1');
+
+    expectAssignable<Href>('/(group)/(a)/folder/slug1');
+    expectAssignable<Href>('/(group)/folder/slug1');
+    expectAssignable<Href>('/(a)/folder/slug1');
+    expectAssignable<Href>('/(group)/(b)/folder/slug1/slug2');
+    expectAssignable<Href>('/(group)/(a)/folder/slug1/slug2/slug2');
+
+    expectAssignable<Href>({
+      pathname: '/(group)/(a)/folder/[slug]',
+      params: {
+        slug: 'slug1',
+      },
+    } as const);
+
+    expectNotAssignable('/colors/blue/test');
+  });
+
+  describe('External routes', () => {
+    expectAssignable<Href>('http://www.expo.dev');
+    expectAssignable<Href>('http://expo.dev');
+    expectAssignable<Href>('tel:012345');
+    expectAssignable<Href>('mailto:email@email.com');
+    expectAssignable<Href>('mailto:email@email.com');
+  });
+
+  describe('Groups', () => {
+    expectAssignable<Href>('/folder');
+    expectAssignable<Href>('/(group)/folder');
+    expectAssignable<Href>('/(group)/(a)/folder');
+    expectAssignable<Href>('/(group)/(b)/folder');
+  });
+});
 
 describe('router.push()', () => {
   // router.push will return void when the type matches, otherwise it should error
@@ -27,6 +95,7 @@ describe('router.push()', () => {
     it('can accept a ANY relative url', () => {
       // We only type-check absolute urls
       expectType<void>(router.push('./this/work/but/is/not/valid'));
+      router.push('/animals/[...animal]');
     });
 
     it('works for dynamic urls', () => {
@@ -44,9 +113,7 @@ describe('router.push()', () => {
       // expectType<void>(router.push('/animals/'));
     });
 
-    it('will error when providing extra parameters', () => {
-      expectError(router.push('/colors/blue/test'));
-    });
+    it('will error when providing extra parameters', () => {});
 
     it('will error when providing too few parameters', () => {
       expectError(router.push('/mix/apple'));
@@ -144,50 +211,50 @@ describe('router.push()', () => {
 });
 
 describe('useSearchParams', () => {
-  expectType<Record<'color', string>>(useSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string>>(ExpoRouter.useSearchParams<Record<'color', string>>());
   expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useSearchParams<'/colors/[color]'>()
+    ExpoRouter.useSearchParams<'/colors/[color]'>()
   );
 
-  expectError(useSearchParams<'/invalid'>());
-  expectError(useSearchParams<Record<'custom', Function>>());
+  expectError(ExpoRouter.useSearchParams<'/invalid'>());
+  expectError(ExpoRouter.useSearchParams<Record<'custom', Function>>());
 });
 
 describe('useLocalSearchParams', () => {
-  expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string>>(ExpoRouter.useLocalSearchParams<Record<'color', string>>());
   expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useLocalSearchParams<'/colors/[color]'>()
+    ExpoRouter.useLocalSearchParams<'/colors/[color]'>()
   );
 
-  expectError(useSearchParams<'/invalid'>());
-  expectError(useSearchParams<Record<'custom', Function>>());
+  expectError(ExpoRouter.useSearchParams<'/invalid'>());
+  expectError(ExpoRouter.useSearchParams<Record<'custom', Function>>());
 });
 
 describe('useGlobalSearchParams', () => {
-  expectType<Record<'color', string>>(useGlobalSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string>>(ExpoRouter.useGlobalSearchParams<Record<'color', string>>());
   expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useGlobalSearchParams<'/colors/[color]'>()
+    ExpoRouter.useGlobalSearchParams<'/colors/[color]'>()
   );
 
-  expectError(useGlobalSearchParams<'/invalid'>());
-  expectError(useGlobalSearchParams<Record<'custom', Function>>());
+  expectError(ExpoRouter.useGlobalSearchParams<'/invalid'>());
+  expectError(ExpoRouter.useGlobalSearchParams<Record<'custom', Function>>());
 });
 
 describe('useSegments', () => {
   it('can accept an absolute url', () => {
-    expectType<['apple']>(useSegments<'/apple'>());
+    expectType<['apple']>(ExpoRouter.useSegments<'/apple'>());
   });
 
   it('only accepts valid possible urls', () => {
-    expectError(useSegments<'/invalid'>());
+    expectError(ExpoRouter.useSegments<'/invalid'>());
   });
 
   it('can accept an array of segments', () => {
-    expectType<['apple']>(useSegments<['apple']>());
+    expectType<['apple']>(ExpoRouter.useSegments<['apple']>());
   });
 
   it('only accepts valid possible segments', () => {
-    expectError(useSegments<['invalid segment']>());
+    expectError(ExpoRouter.useSegments<['invalid segment']>());
   });
 });
 

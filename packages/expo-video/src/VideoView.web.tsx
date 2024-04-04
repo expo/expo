@@ -1,7 +1,13 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
+import {
+  VideoPlayerStatus,
+  VideoPlayer,
+  VideoSource,
+  VideoViewProps,
+  VideoPlayerEvents,
+} from './VideoView.types';
 
 /**
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -18,12 +24,16 @@ if (audioContext && zeroGainNode) {
   );
 }
 
-class VideoPlayerWeb implements VideoPlayer {
-  constructor(source: string | null = null) {
+class VideoPlayerWeb
+  extends globalThis.expo.SharedObject<VideoPlayerEvents>
+  implements VideoPlayer
+{
+  constructor(source: VideoSource) {
+    super();
     this.src = source;
   }
 
-  src: string | null = null;
+  src: VideoSource = null;
   _mountedVideos: Set<HTMLVideoElement> = new Set();
   _audioNodes: Set<MediaElementAudioSourceNode> = new Set();
   playing: boolean = false;
@@ -32,6 +42,7 @@ class VideoPlayerWeb implements VideoPlayer {
   _loop: boolean = false;
   _playbackRate: number = 1.0;
   _preservesPitch: boolean = true;
+  _status: VideoPlayerStatus = 'idle';
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
@@ -40,6 +51,7 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this._muted = value;
   }
+
   get muted(): boolean {
     return this._muted;
   }
@@ -93,11 +105,16 @@ class VideoPlayerWeb implements VideoPlayer {
   get preservesPitch(): boolean {
     return this._preservesPitch;
   }
+
   set preservesPitch(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.preservesPitch = value;
     });
     this._preservesPitch = value;
+  }
+
+  get status(): VideoPlayerStatus {
+    return this._status;
   }
 
   mountVideoView(video: HTMLVideoElement) {
@@ -128,26 +145,35 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this.playing = true;
   }
+
   pause(): void {
     this._mountedVideos.forEach((video) => {
       video.pause();
     });
     this.playing = false;
   }
-  replace(source: string): void {
+
+  replace(source: VideoSource): void {
     this._mountedVideos.forEach((video) => {
+      const uri = getSourceUri(source);
       video.pause();
-      video.setAttribute('src', source);
-      video.load();
-      video.play();
+      if (uri) {
+        video.setAttribute('src', uri);
+        video.load();
+        video.play();
+      } else {
+        video.removeAttribute('src');
+      }
     });
     this.playing = true;
   }
+
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime += seconds;
     });
   }
+
   replay(): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime = 0;
@@ -219,31 +245,18 @@ class VideoPlayerWeb implements VideoPlayer {
         mountedVideo.playbackRate = video.playbackRate;
       });
     };
-  }
 
-  release(): void {
-    console.warn('The `VideoPlayer.release` method is not supported on web');
-  }
-  addListener<EventName extends never>(
-    eventName: EventName,
-    listener: Record<never, never>[EventName]
-  ): void {
-    console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
-  }
-  removeListener<EventName extends never>(
-    eventName: EventName,
-    listener: Record<never, never>[EventName]
-  ): void {
-    console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
-  }
-  removeAllListeners(eventName: never): void {
-    console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
-  }
-  emit<EventName extends never>(
-    eventName: EventName,
-    ...args: Parameters<Record<never, never>[EventName]>
-  ): void {
-    console.warn('The `VideoPlayer.emit` method is not yet supported on web');
+    video.onerror = () => {
+      this._status = 'error';
+    };
+
+    video.onloadeddata = () => {
+      this._status = 'readyToPlay';
+    };
+
+    video.onwaiting = () => {
+      this._status = 'loading';
+    };
   }
 }
 
@@ -253,11 +266,24 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
   return flattenedStyles as React.CSSProperties;
 }
 
-export function useVideoPlayer(source: string | null = null): VideoPlayer {
-  return React.useMemo(() => {
-    return new VideoPlayerWeb(source);
-    // should this not include source?
-  }, []);
+export function useVideoPlayer(
+  source: VideoSource,
+  setup?: (player: VideoPlayer) => void
+): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return useMemo(() => {
+    const player = new VideoPlayerWeb(parsedSource);
+    setup?.(player);
+    return player;
+  }, [JSON.stringify(source)]);
+}
+
+function getSourceUri(source: VideoSource): string | null {
+  if (typeof source == 'string') {
+    return source;
+  }
+  return source?.uri ?? null;
 }
 
 export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
@@ -310,7 +336,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
           videoRef.current = newRef;
         }
       }}
-      src={props.player?.src ?? ''}
+      src={getSourceUri(props.player?.src) ?? ''}
     />
   );
 });

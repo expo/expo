@@ -218,18 +218,16 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
 
     sessionQueue.async {
-      self.session.beginConfiguration()
-
       let photoOutput = AVCapturePhotoOutput()
+      photoOutput.isLivePhotoCaptureEnabled = false
       if self.session.canAddOutput(photoOutput) {
         self.session.addOutput(photoOutput)
-        photoOutput.isLivePhotoCaptureEnabled = false
         self.photoOutput = photoOutput
       }
 
       self.addErrorNotification()
       self.changePreviewOrientation()
-      self.session.commitConfiguration()
+      self.updateSessionAudioIsMuted()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
@@ -297,10 +295,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
-          default: physicalOrientation)
+          default: self.physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
-          onResponsiveOrientationChanged(["orientation": ExpoCameraUtilsNext.toOrientationString(orientation: deviceOrientation)])
+          self.onResponsiveOrientationChanged(["orientation": ExpoCameraUtilsNext.toOrientationString(orientation: deviceOrientation)])
         }
       }
     } else {

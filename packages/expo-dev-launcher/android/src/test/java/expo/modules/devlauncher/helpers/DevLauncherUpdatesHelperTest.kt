@@ -72,7 +72,7 @@ internal class DevLauncherUpdatesHelperTest {
 
     val urlString2 = "https://exp.host/@test/second-app"
     val url2 = Uri.parse(urlString2)
-    val configuration2 = createUpdatesConfigurationWithUrl(url2, url2, runtimeVersion,null)
+    val configuration2 = createUpdatesConfigurationWithUrl(url2, url2, runtimeVersion, null)
 
     val scopeKey1 = configuration1["scopeKey"]
     val scopeKey2 = configuration2["scopeKey"]

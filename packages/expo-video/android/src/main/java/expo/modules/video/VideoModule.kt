@@ -3,21 +3,19 @@
 package expo.modules.video
 
 import android.app.Activity
-import android.view.View
 import androidx.media3.common.PlaybackParameters
-import expo.modules.kotlin.apifeatures.EitherType
-import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.video.records.VideoSource
-import expo.modules.kotlin.views.ViewDefinitionBuilder
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -141,17 +139,14 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        VideoPlayer(activity.applicationContext, appContext, source.toMediaItem())
+        val mediaItem = source.toMediaItem()
+        VideoManager.registerVideoSourceToMediaItem(mediaItem, source)
+        VideoPlayer(activity.applicationContext, appContext, mediaItem)
       }
 
       Property("playing")
         .get { ref: VideoPlayer ->
           ref.playing
-        }
-
-      Property("isLoading")
-        .get { ref: VideoPlayer ->
-          ref.isLoading
         }
 
       Property("muted")
@@ -211,6 +206,11 @@ class VideoModule : Module() {
           }
         }
 
+      Property("status")
+        .get { ref: VideoPlayer ->
+          ref.status
+        }
+
       Property("staysActiveInBackground")
         .get { ref: VideoPlayer ->
           ref.staysActiveInBackground
@@ -251,9 +251,11 @@ class VideoModule : Module() {
         } else {
           VideoSource(source.get(String::class))
         }
+        val mediaItem = videoSource.toMediaItem()
+        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
-          ref.player.setMediaItem(videoSource.toMediaItem())
+          ref.player.setMediaItem(mediaItem)
         }
       }
 
@@ -279,15 +281,5 @@ class VideoModule : Module() {
     OnActivityEntersBackground {
       VideoManager.onAppBackgrounded()
     }
-  }
-}
-
-@Suppress("FunctionName")
-private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
-  vararg props: Pair<String, CustomValueType>,
-  noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
-) {
-  for ((name, value) in props) {
-    Prop<T, PropType>(name) { view, prop -> body(view, value, prop) }
   }
 }

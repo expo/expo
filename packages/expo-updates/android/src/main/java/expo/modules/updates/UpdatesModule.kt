@@ -33,11 +33,7 @@ class UpdatesModule : Module() {
     Name("ExpoUpdates")
 
     Events(
-      UPDATES_EVENT_NAME,
-      UPDATES_STATE_CHANGE_EVENT_NAME,
-      UPDATE_AVAILABLE_EVENT,
-      UPDATE_NO_UPDATE_AVAILABLE_EVENT,
-      UPDATE_ERROR_EVENT
+      UPDATES_STATE_CHANGE_EVENT_NAME
     )
 
     Constants {
@@ -78,15 +74,15 @@ class UpdatesModule : Module() {
     }
 
     OnCreate {
-      UpdatesController.instance.appContext = WeakReference(appContext)
+      UpdatesController.bindAppContext(WeakReference(appContext))
     }
 
     OnStartObserving {
-      UpdatesController.instance.shouldEmitJsEvents = true
+      UpdatesController.shouldEmitJsEvents = true
     }
 
     OnStopObserving {
-      UpdatesController.instance.shouldEmitJsEvents = false
+      UpdatesController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { promise: Promise ->

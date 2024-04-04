@@ -14,7 +14,7 @@ class SafeAreaContextModule(reactContext: ReactApplicationContext?) :
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
-    return MapBuilder.of<String, Any>("initialWindowMetrics", getInitialWindowMetrics())
+    return MapBuilder.of<String, Any>("initialWindowMetrics", getInitialWindowMetrics() as Any)
   }
 
   private fun getInitialWindowMetrics(): Map<String, Any>? {

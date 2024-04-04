@@ -9,7 +9,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.LifecycleState
@@ -201,9 +200,6 @@ object VersionedUtils {
     // Build the instance manager
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
-      .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder? ->
-        emptyList()
-      }
       .addPackage(MainReactPackage())
       .addPackage(
         ExponentPackage(
