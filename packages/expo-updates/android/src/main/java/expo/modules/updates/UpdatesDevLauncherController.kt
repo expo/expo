@@ -245,9 +245,9 @@ class UpdatesDevLauncherController(
           this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
             override val manifest: JSONObject
-            	get() = launcher.launchedUpdate!!.manifest
-            override val launchAssetPath: String 
-            	get() = launcher.launchAssetFile!!
+              get() = launcher.launchedUpdate!!.manifest
+            override val launchAssetPath: String
+              get() = launcher.launchAssetFile!!
           })
           runReaper()
         }
