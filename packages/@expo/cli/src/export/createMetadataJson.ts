@@ -42,13 +42,12 @@ export function createMetadataJson({
             // Collect all of the assets and convert them to the serial format.
             assets: bundle.assets
               .filter((asset) => !embeddedHashSet || !embeddedHashSet.has(asset.hash))
-              .map(
-                (asset) =>
-                  // Each asset has multiple hashes which we convert and then flatten.
-                  asset.fileHashes?.map((hash) => ({
-                    path: path.join('assets', hash),
-                    ext: asset.type,
-                  }))
+              .map((asset) =>
+                // Each asset has multiple hashes which we convert and then flatten.
+                asset.fileHashes?.map((hash) => ({
+                  path: path.join('assets', hash),
+                  ext: asset.type,
+                }))
               )
               .filter(Boolean)
               .flat(),
