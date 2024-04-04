@@ -1,7 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXUpdatesInterface
 
 /**
  * Manages and controls the auto-setup behavior of expo-updates in applicable environments.
@@ -16,8 +15,6 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
-  private var shouldActivateUpdates: Bool =
-    UpdatesUtils.isNativeDebuggingEnabled() || !EXAppDefines.APP_DEBUG
 
   public override func createReactRootView(
     reactDelegate: ExpoReactDelegate,
@@ -25,18 +22,14 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
-    if !shouldActivateUpdates {
-      // When updates is not activated, just completes the setup for expo-dev-client with the expo-updates integration
-      // by passing a reference to DevLauncherController over to the registry,
-      // which expo-dev-client can access.
-      UpdatesControllerRegistry.sharedInstance.controller = AppController.initializeAsDevLauncherWithoutStarting()
+    AppController.initializeWithoutStarting()
+    let controller = AppController.sharedInstance
+    if !controller.isActiveController {
       return nil
     }
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    AppController.initializeWithoutStarting()
-    let controller = AppController.sharedInstance
     controller.delegate = self
     controller.start()
 

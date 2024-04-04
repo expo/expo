@@ -27,11 +27,11 @@ class UpdatesPackage : Package {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-        return if (shouldActivateUpdates(useDeveloperSupport)) UpdatesController.instance.launchAssetFile else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.launchAssetFile else null
       }
 
       override fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-        return if (shouldActivateUpdates(useDeveloperSupport)) UpdatesController.instance.bundleAssetName else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.bundleAssetName else null
       }
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
@@ -57,7 +57,7 @@ class UpdatesPackage : Package {
         }
         val context = activity.applicationContext
         val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-        if (shouldActivateUpdates(useDeveloperSupport)) {
+        if (!useDeveloperSupport || BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
           return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
             CoroutineScope(Dispatchers.IO).launch {
               startUpdatesController(context)
@@ -102,14 +102,6 @@ class UpdatesPackage : Package {
 
     return listOf(handler)
   }
-
-  /**
-   * Indicates that expo-updates should be activated and fully functional:
-   * - Release build (useDeveloperSupport=false)
-   * - or EX_UPDATES_NATIVE_DEBUG=1
-   */
-  private fun shouldActivateUpdates(useDeveloperSupport: Boolean): Boolean =
-    useNativeDebug || !useDeveloperSupport
 
   private fun isRunningAndroidTest(): Boolean {
     try {

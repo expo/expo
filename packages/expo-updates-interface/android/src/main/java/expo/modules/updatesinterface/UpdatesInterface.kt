@@ -2,6 +2,7 @@ package expo.modules.updatesinterface
 
 import android.content.Context
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 
 /**
  * Interface for modules that depend on expo-updates for loading production updates but do not want
@@ -25,6 +26,8 @@ interface UpdatesInterface {
     val manifest: JSONObject
     val launchAssetPath: String
   }
+
+  var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>?
 
   fun reset()
   fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdateCallback)
