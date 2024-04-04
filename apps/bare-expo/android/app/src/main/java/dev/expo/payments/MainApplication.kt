@@ -14,8 +14,6 @@ import com.facebook.soloader.SoLoader
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
-import expo.modules.devlauncher.DevLauncherPackageDelegate
-import expo.modules.devmenu.DevMenuPackageDelegate
 
 class MainApplication : Application(), ReactApplication {
 
@@ -47,19 +45,11 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    if (!USE_DEV_CLIENT) {
-      DevLauncherPackageDelegate.enableAutoSetup = false
-      DevMenuPackageDelegate.enableAutoSetup = false
-    }
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-  }
-
-  companion object {
-    private const val USE_DEV_CLIENT = false
   }
 }
