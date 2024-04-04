@@ -45,11 +45,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     enableTM = YES;
 #endif
 
-#if REACT_NATIVE_MINOR_VERSION >= 74
-    RCTAppSetupPrepareApp(application, enableTM, facebook::react::EmptyReactNativeConfig());
-#else
     RCTAppSetupPrepareApp(application, enableTM);
-#endif
 
     self.rootViewFactory.bridge = [super createBridgeAndSetAdapterWithLaunchOptions:launchOptions];
 
@@ -57,7 +53,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #ifdef RCT_NEW_ARCH_ENABLED
     initProps[kRNConcurrentRoot] = @YES;
 #endif
-
 
     return [super createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
 }

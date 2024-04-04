@@ -16,25 +16,6 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.extensions.DevMenuExtension
-import expo.modules.devmenu.react.DevMenuAwareReactActivity
-
-object DevMenuPackageDelegate {
-  @JvmField
-  var enableAutoSetup: Boolean? = null
-
-  internal fun shouldEnableAutoSetup(activityContext: Context?): Boolean {
-    if (enableAutoSetup != null) {
-      // if someone else has set this explicitly, use that value
-      return enableAutoSetup!!
-    }
-    if (activityContext != null && activityContext is DevMenuAwareReactActivity) {
-      // Backwards compatibility -- if the MainActivity is already an instance of
-      // DevMenuAwareReactActivity, we skip auto-setup.
-      return false
-    }
-    return true
-  }
-}
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -48,7 +29,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
+    if (!BuildConfig.DEBUG) {
       return emptyList()
     }
 
@@ -66,7 +47,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
+    if (!BuildConfig.DEBUG) {
       return emptyList()
     }
 

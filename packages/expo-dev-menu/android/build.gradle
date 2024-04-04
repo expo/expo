@@ -96,8 +96,6 @@ android {
       java {
         if (rnVersion >= versionToNumber(0, 74, 0)) {
           srcDirs += "src/react-native-74/main"
-        } else {
-          srcDirs += "src/react-native-73/main"
         }
       }
     }
