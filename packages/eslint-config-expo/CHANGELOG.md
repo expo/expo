@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Opt into explicit rules from eslint-plugin-react  ([#28032](https://github.com/expo/expo/pull/28032) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
