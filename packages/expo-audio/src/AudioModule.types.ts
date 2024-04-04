@@ -1,9 +1,9 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse, SharedObject } from 'expo-modules-core';
 import { NativeModule } from 'react-native';
 
 import {
   AudioMode,
-  AudioSource,
+  AudioStatus,
   PitchCorrectionQuality,
   RecorderState,
   RecordingInput,
@@ -22,9 +22,11 @@ export interface AudioModule extends NativeModule {
 
 export type RecordingPermissionResponse = PermissionResponse;
 
-export interface AudioPlayer {
-  new (source: AudioSource | string | number | null): AudioPlayer;
+export type AudioPlayerEvents = {
+  onPlaybackStatusUpdate: (status: AudioStatus) => void;
+};
 
+export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
   /**
    * Unique identifier for the player object.
    */
@@ -106,11 +108,6 @@ export interface AudioPlayer {
    * @param pitchCorrectionQuality The quality of the pitch correction.
    */
   setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
-
-  /**
-   * Release the player and frees up resources.
-   */
-  release(): void;
 }
 
 export interface AudioRecorder {

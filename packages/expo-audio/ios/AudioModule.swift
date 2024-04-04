@@ -153,7 +153,7 @@ public class AudioModule: Module, RecordingResultHandler {
         player.isPlaying
       }
 
-      Property("mute") { player in
+      Property("muted") { player in
         player.pointer.isMuted
       }.set { (player, isMuted: Bool) in
         player.pointer.isMuted = isMuted
@@ -197,6 +197,19 @@ public class AudioModule: Module, RecordingResultHandler {
         player.pointer.playImmediately(atRate: rate)
       }
 
+      Function("pause") { player in
+        player.pointer.pause()
+      }
+      
+      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
+        await player.pointer.currentItem?.seek(
+          to: CMTime(
+            seconds: seconds / 1000,
+            preferredTimescale: CMTimeScale(NSEC_PER_SEC)
+          )
+        )
+      }
+      
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         if player.isPlaying {
@@ -207,29 +220,6 @@ public class AudioModule: Module, RecordingResultHandler {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.pointer.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
-      }
-
-      Function("pause") { player in
-        player.pointer.pause()
-      }
-
-      Function("release") { player in
-        let id = player.sharedObjectId
-        if let token = timeTokens[id] {
-          player.pointer.removeTimeObserver(token)
-        }
-        player.pointer.pause()
-        players.removeValue(forKey: player.id)
-        appContext?.sharedObjectRegistry.delete(id)
-      }
-
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
-        await player.pointer.currentItem?.seek(
-          to: CMTime(
-            seconds: seconds / 1000,
-            preferredTimescale: CMTimeScale(NSEC_PER_SEC)
-          )
-        )
       }
     }
 
@@ -368,24 +358,11 @@ public class AudioModule: Module, RecordingResultHandler {
     guard let desc = try? getCurrentInput() else {
       throw NoInputFoundException()
     }
-<<<<<<< HEAD
-
     return [
       "name": desc.portName,
       "type": desc.portType.rawValue,
       "uid": desc.uid
     ]
-||||||| parent of ef66781a2e ([audio] Fix rate after pause)
-    
-    throw NoInputFoundException()
-=======
-    
-    return [
-      "name": desc.portName,
-      "type": desc.portType,
-      "uid": desc.uid
-    ]
->>>>>>> ef66781a2e ([audio] Fix rate after pause)
   }
 
   private func setInput(_ input: String) throws {

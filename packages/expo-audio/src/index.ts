@@ -22,7 +22,7 @@ export function useAudioPlayer(
   const player = useMemo(() => new AudioModule.AudioPlayer(resolveSource(source)), [source]);
 
   useEffect(() => {
-    const subscription = addStatusUpdateListener((status) => {
+    const subscription = player.addListener('onPlaybackStatusUpdate', (status: AudioStatus) => {
       if (status.id === player.id) {
         statusListener?.(status);
       }

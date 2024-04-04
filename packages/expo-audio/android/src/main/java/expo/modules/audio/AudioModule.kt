@@ -32,7 +32,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
-    AsyncFunction("setAudioModeAsync") {
+    AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
 
     }
 
@@ -49,16 +49,22 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
 
     Class(AudioPlayer::class) {
+      Constructor { source: AudioSource ->
+        return@Constructor runBlocking(appContext.mainQueue.coroutineContext) {
+          AudioPlayer(
+            activity.applicationContext,
+            appContext,
+            MediaItem.Builder()
+              .setUri(source.uri ?: "")
+              .build()
+          )
+        }
+      }
+
       Events(playbackStatus)
 
-      Constructor { source: AudioSource ->
-        AudioPlayer(
-          activity.applicationContext,
-          appContext,
-          MediaItem.Builder()
-            .setUri(source.uri ?: "")
-            .build()
-        )
+      Property("id") { ref ->
+        ref.sharedObjectId.value
       }
 
       Property("isBuffering") { ref ->
@@ -67,7 +73,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         }
       }
 
-      Property("isLooping") { ref ->
+      Property("loop") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
         }
@@ -81,13 +87,19 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         }
       }
 
+      Property("isLoaded") { ref ->
+        runBlocking(appContext.mainQueue.coroutineContext) {
+          ref.player.playbackState == Player.STATE_READY
+        }
+      }
+
       Property("isPlaying") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
           ref.player.isPlaying
         }
       }
 
-      Property("isMuted") { ref ->
+      Property("muted") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
           ref.player.volume == 0f
         }
@@ -99,19 +111,19 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         ref.preservesPitch = preservesPitch
       }
 
-      Property("currentPosition") { ref ->
+      Property("currentTime") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
-          ref.player.currentPosition / 1000f
+          ref.player.currentPosition
         }
       }
 
-      Property("totalDuration") { ref ->
+      Property("duration") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
-          ref.player.duration / 1000f
+          ref.player.duration
         }
       }
 
-      Property("rate") { ref ->
+      Property("playbackRate") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
           ref.player.playbackParameters.speed
         }
@@ -145,22 +157,15 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
       Function("seekTo") { ref: AudioPlayer, seekTime: Double ->
         appContext.mainQueue.launch {
-          val seekPos = ref.player.currentPosition + (seekTime * 1000).toLong()
-          ref.player.seekTo(seekPos)
+          ref.player.seekTo(seekTime.toLong())
         }
       }
 
-      Function("setRate") { ref: AudioPlayer, rate: Float ->
+      Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
           val playbackRate = if (rate < 0) 0f else min(rate, 2.0f)
           val pitch = if (ref.preservesPitch) 1f else playbackRate
           ref.player.playbackParameters = PlaybackParameters(playbackRate, pitch)
-        }
-      }
-
-      Function("release") { ref: AudioPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.release()
         }
       }
     }

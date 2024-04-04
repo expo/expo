@@ -37,6 +37,9 @@ class UpdatesModule : Module() {
     )
 
     Constants {
+      if (!UpdatesController.wasInitialized) {
+        return@Constants emptyMap()
+      }
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       mutableMapOf<String, Any?>().apply {
         val constantsForModule = UpdatesController.instance.getConstantsForModule()

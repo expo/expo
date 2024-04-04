@@ -38,7 +38,7 @@ export type AudioStatus = {
   status: string;
   timeControlStatus: string;
   reasonForWaitingToPlay: string;
-  mute: boolean;
+  muted: boolean;
   duration: number;
   isPlaying: boolean;
   loop: boolean;

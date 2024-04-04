@@ -1,12 +1,13 @@
 import { EventEmitter } from 'expo-modules-core';
 import { useMemo, useEffect, useState } from 'react';
 import AudioModule from './AudioModule';
+import { AudioPlayer } from './AudioModule.types';
 import { resolveSource } from './utils/resolveSource';
 const audioModuleEmitter = new EventEmitter(AudioModule);
 export function useAudioPlayer(source = null, statusListener) {
     const player = useMemo(() => new AudioModule.AudioPlayer(resolveSource(source)), [source]);
     useEffect(() => {
-        const subscription = addStatusUpdateListener((status) => {
+        const subscription = player.addListener('onPlaybackStatusUpdate', (status) => {
             if (status.id === player.id) {
                 statusListener?.(status);
             }
@@ -46,6 +47,6 @@ export async function setIsAudioActiveAsync(active) {
 export async function setAudioModeAsync(mode) {
     return await AudioModule.setAudioModeAsync(mode);
 }
-export { AudioModule };
+export { AudioModule, AudioPlayer };
 export * from './Audio.types';
 //# sourceMappingURL=index.js.map

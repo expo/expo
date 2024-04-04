@@ -28,6 +28,9 @@ class UpdatesController {
         return checkNotNull(singletonInstance) { "UpdatesController.instance was called before the module was initialized" }
       }
 
+    @JvmStatic val wasInitialized: Boolean
+      get() = singletonInstance != null
+
     @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance != null) {
         return

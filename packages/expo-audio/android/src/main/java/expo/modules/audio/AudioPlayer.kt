@@ -5,14 +5,17 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.SeekParameters
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.sharedobjects.SharedRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 @UnstableApi
@@ -20,24 +23,19 @@ class AudioPlayer(
   context: Context,
   appContext: AppContext,
   mediaItem: MediaItem
-) : SharedObject(appContext) {
-  val player = ExoPlayer.Builder(context)
-    .setLooper(context.mainLooper)
-    .build()
+) : SharedRef<ExoPlayer>(ExoPlayer.Builder(context)
+  .setLooper(context.mainLooper)
+  .build().apply {
+    addMediaItem(mediaItem)
+    prepare()
+  }, appContext) {
   var preservesPitch = false
+  val player = ref
 
-  private var playerScope = CoroutineScope(Dispatchers.Main)
-  override fun deallocate() {
-    appContext?.mainQueue?.launch {
-      playerScope.cancel()
-      player.release()
-    }
-  }
+  private var playerScope = CoroutineScope(Dispatchers.Default)
 
   init {
     playerScope.launch {
-      player.addMediaItem(mediaItem)
-      player.prepare()
       while (isActive) {
         sendPlayerUpdate()
         delay(1000)
@@ -45,26 +43,39 @@ class AudioPlayer(
     }
   }
 
-  private fun sendPlayerUpdate() {
+  private suspend fun sendPlayerUpdate() = withContext(Dispatchers.Main) {
     val isMuted = player.volume == 0f
     val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
     val ready = player.playbackState == Player.STATE_READY
     val isBuffering = player.playbackState == Player.STATE_BUFFERING
 
-    sendEvent("onPlaybackStatusUpdate", mapOf(
-      "id" to 0,
-      "currentPosition" to player.currentPosition.seconds * 1000,
-      "status" to "unknown",
+    sendEventOnJSThread(mapOf(
+      "id" to sharedObjectId.value,
+      "currentTime" to player.currentPosition,
+      "status" to player.playbackState,
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to "",
-      "isMuted" to isMuted,
-      "totalDuration" to player.duration.seconds * 1000,
+      "muted" to isMuted,
+      "duration" to player.duration,
       "isPlaying" to player.isPlaying,
-      "isLooping" to isLooping,
+      "loop" to isLooping,
       "isLoaded" to ready,
-      "rate" to player.playbackParameters.speed,
+      "playbackRate" to player.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
       "isBuffering" to isBuffering
     ))
+  }
+
+  private fun sendEventOnJSThread(vararg args: Any?) {
+    appContext?.executeOnJavaScriptThread {
+      sendEvent("onPlaybackStatusUpdate", *args)
+    }
+  }
+
+  override fun deallocate() {
+    appContext?.mainQueue?.launch {
+      playerScope.cancel()
+      player.release()
+    }
   }
 }

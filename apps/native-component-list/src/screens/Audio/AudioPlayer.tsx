@@ -13,9 +13,12 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(
     source,
     useCallback((status: AudioStatus) => {
+      console.log({ status });
       setState({
         ...state,
         ...status,
+        isLooping: status.loop,
+        isMuted: status.muted,
         positionMillis: status.currentTime ?? 0,
         durationMillis: isNaN(status.duration) ? 0 : status.duration,
         volume: player.volume,
@@ -65,10 +68,13 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     <Player
       {...state}
       style={style}
-      play={() => player.play()}
+      play={() => {
+        console.log('object');
+        player.play();
+      }}
       pause={() => player.pause()}
       replay={() => {
-        return player.seekTo(0);
+        player.seekTo(0);
       }}
       setPosition={(position: number) => {
         return player.seekTo(position);
