@@ -393,7 +393,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.4.0):
     - ExpoModulesCore
-    - GoogleMaps (= 7.3.0)
+    - GoogleMaps (= 7.4.0)
     - GooglePlaces (= 7.3.0)
   - ExpoMediaLibrary (15.9.0):
     - ExpoModulesCore
@@ -596,10 +596,10 @@ PODS:
   - FBLazyVector (0.74.0-rc.6)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - GoogleMaps (7.3.0):
-    - GoogleMaps/Maps (= 7.3.0)
-  - GoogleMaps/Base (7.3.0)
-  - GoogleMaps/Maps (7.3.0):
+  - GoogleMaps (7.4.0):
+    - GoogleMaps/Maps (= 7.4.0)
+  - GoogleMaps/Base (7.4.0)
+  - GoogleMaps/Maps (7.4.0):
     - GoogleMaps/Base
   - GooglePlaces (7.3.0)
   - hermes-engine (0.74.0-rc.6):
@@ -2519,7 +2519,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: c55ffb179683efed04cb144fc80ccf26891f0cb4
   ExpoLocalization: ab5f9522d9bdd8aecb1a5d6429606052869d7adc
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
-  ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
+  ExpoMaps: 37055d707acdfff980915d582d502574cf2049e1
   ExpoMediaLibrary: 512b00e9f87f1de8ed0dba60cbe2eb7dc251248e
   ExpoModulesCore: 39172e342cd3015c0b2ece5e71986d96211b21af
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
@@ -2549,7 +2549,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 0c069e616db0212f1579d6be2b51438fa262819d
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
+  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 1a846a8f620a08c60f5f89aa65b8664f769f742f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
@@ -2624,7 +2624,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482

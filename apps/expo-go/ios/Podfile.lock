@@ -343,10 +343,10 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (7.3.0):
-    - GoogleMaps/Maps (= 7.3.0)
-  - GoogleMaps/Base (7.3.0)
-  - GoogleMaps/Maps (7.3.0):
+  - GoogleMaps (7.4.0):
+    - GoogleMaps/Maps (= 7.4.0)
+  - GoogleMaps/Base (7.4.0)
+  - GoogleMaps/Maps (7.4.0):
     - GoogleMaps/Base
   - GoogleUtilities (7.11.5):
     - GoogleUtilities/AppDelegateSwizzler (= 7.11.5)
@@ -1351,6 +1351,8 @@ PODS:
   - React-Mapbuffer (0.74.0-rc.6):
     - glog
     - React-debug
+  - react-native-maps (1.13.0):
+    - React-Core
   - react-native-netinfo (11.1.0):
     - React-Core
   - react-native-pager-view (6.2.3):
@@ -1838,7 +1840,7 @@ DEPENDENCIES:
   - fmt (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (from `https://github.com/googlemaps/google-maps-ios-utils.git`)
-  - GoogleMaps (~> 7.3.0)
+  - GoogleMaps (~> 7.4.0)
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
@@ -1871,6 +1873,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
+  - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
   - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
@@ -2147,6 +2150,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
+  react-native-maps:
+    :path: "../../../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "./vendored/unversioned/@react-native-community/netinfo"
   react-native-pager-view:
@@ -2310,9 +2315,9 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
-  GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
+  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 81feb4c9d990b598dd1026db11a411688c9b8249
+  hermes-engine: 74016895c43ca6a114a1ff45b5aafeef1131f35b
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -2349,6 +2354,7 @@ SPEC CHECKSUMS:
   React-jsitracing: cbdf29742ac2bb53393777a2bde00ab6620fe668
   React-logger: 2fa117661e8ee0c133fddcf5772ff28b82241a56
   React-Mapbuffer: 6a29ddb15979e501733cd3c91679bbfd8af77005
+  react-native-maps: fa054512735831f232e822ee6bdb0afcdd88de4a
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
@@ -2389,7 +2395,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
@@ -2405,6 +2411,6 @@ SPEC CHECKSUMS:
   Yoga: 23e49e26d83fc88956084a85f4190563fa1b655e
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 8a6f0f254954975fbb7f41919c6fdea43c3ebc92
+PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
 
 COCOAPODS: 1.14.2
