@@ -17,6 +17,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-maps` from `1.3.2` to `1.7.1`. ([#28007](https://github.com/expo/expo/pull/28007) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-location`**
   - Updated `com.google.android.gms:play-services-location` to `21.0.1`. ([#25028](https://github.com/expo/expo/pull/25028) by [@behenate](https://github.com/behenate))
 
