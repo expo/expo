@@ -20,21 +20,6 @@ import expo.modules.devlauncher.modules.DevLauncherDevMenuExtension
 import expo.modules.devlauncher.rncompatibility.DevLauncherReactNativeHostHandler
 
 object DevLauncherPackageDelegate {
-  @JvmField
-  var enableAutoSetup: Boolean? = null
-  private val shouldEnableAutoSetup: Boolean by lazy {
-    if (enableAutoSetup != null) {
-      // if someone else has set this explicitly, use that value
-      return@lazy enableAutoSetup!!
-    }
-    if (DevLauncherController.wasInitialized()) {
-      // Backwards compatibility -- if the MainApplication has already set up expo-dev-launcher,
-      // we just skip auto-setup in this case.
-      return@lazy false
-    }
-    return@lazy true
-  }
-
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
@@ -47,10 +32,9 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ApplicationLifecycleListener {
         override fun onCreate(application: Application?) {
-          if (shouldEnableAutoSetup && application != null && application is ReactApplication) {
-            DevLauncherController.initialize(application, application.reactNativeHost)
-            DevLauncherUpdatesInterfaceDelegate.initializeUpdatesInterface(application)
-          }
+          check(application is ReactApplication)
+          DevLauncherController.initialize(application, application.reactNativeHost)
+          DevLauncherUpdatesInterfaceDelegate.initializeUpdatesInterface(application)
         }
       }
     )
@@ -59,7 +43,7 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ReactActivityLifecycleListener {
         override fun onNewIntent(intent: Intent?): Boolean {
-          if (!shouldEnableAutoSetup || intent == null || activityContext == null || activityContext !is ReactActivity) {
+          if (intent == null || activityContext == null || activityContext !is ReactActivity) {
             return false
           }
           return DevLauncherController.tryToHandleIntent(activityContext, intent)
@@ -71,9 +55,6 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ReactActivityHandler {
         override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
-          if (!shouldEnableAutoSetup) {
-            return null
-          }
           return DevLauncherController.wrapReactActivityDelegate(
             activity,
             object : DevLauncherReactActivityDelegateSupplier {
