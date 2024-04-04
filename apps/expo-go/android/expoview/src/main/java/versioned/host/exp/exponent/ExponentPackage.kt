@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Looper
 import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
@@ -178,6 +179,7 @@ class ExponentPackage : ReactPackage {
         RNCPickerPackage(),
         ReactSliderPackage(),
         PagerViewPackage(),
+        SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
         ReactNativeFlashListPackage()
