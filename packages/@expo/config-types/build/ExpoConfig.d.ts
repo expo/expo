@@ -401,6 +401,23 @@ export interface IOS {
         [k: string]: any;
     };
     /**
+     * Configuration to add to your app's native *.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
+     */
+    privacyManifests?: {
+        NSPrivacyAccessedAPITypes?: {
+            NSPrivacyAccessedAPIType: string;
+            NSPrivacyAccessedAPITypeReasons: string[];
+        }[];
+        NSPrivacyTrackingDomains?: string[];
+        NSPrivacyTracking?: boolean;
+        NSPrivacyCollectedDataTypes?: {
+            NSPrivacyCollectedDataType: string;
+            NSPrivacyCollectedDataTypeLinked: boolean;
+            NSPrivacyCollectedDataTypeTracking: boolean;
+            NSPrivacyCollectedDataTypePurposes: string[];
+        }[];
+    };
+    /**
      * An array that contains Associated Domains for the standalone app. [Learn more](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
      */
     associatedDomains?: string[];
