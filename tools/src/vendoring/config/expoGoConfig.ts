@@ -27,33 +27,6 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    '@stripe/stripe-react-native': {
-      source: 'https://github.com/stripe/stripe-react-native.git',
-      ios: {
-        async mutatePodspec(podspec: Podspec) {
-          if (!podspec.pod_target_xcconfig) {
-            podspec.pod_target_xcconfig = {};
-          }
-          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"${PODS_ROOT}/Stripe/Stripe3DS2" "${PODS_ROOT}/Headers/Public/Stripe"';
-        },
-      },
-      // android: {
-      //   excludeFiles: [
-      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonManager.kt',
-      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonView.kt',
-      //   ],
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'StripeSdkPackage.kt',
-      //         find: /, GooglePayButtonManager\(\)/,
-      //         replaceWith: '',
-      //       },
-      //     ],
-      //   },
-      // },
-    },
     'lottie-react-native': {
       source: 'lottie-react-native',
       sourceType: 'npm',
@@ -245,9 +218,6 @@ const config: VendoringTargetConfig = {
         ],
       },
     },
-    'react-native-maps': {
-      source: 'https://github.com/react-native-maps/react-native-maps',
-    },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
       ios: {
@@ -339,6 +309,9 @@ const config: VendoringTargetConfig = {
           ],
         },
       },
+      android: {
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
@@ -401,13 +374,6 @@ const config: VendoringTargetConfig = {
       android: {
         includeFiles: 'android/**',
         excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
-    '@shopify/flash-list': {
-      source: 'https://github.com/Shopify/flash-list',
-      ios: {},
-      android: {
-        excludeFiles: ['**/src/test/**'],
       },
     },
     '@react-native-async-storage/async-storage': {
