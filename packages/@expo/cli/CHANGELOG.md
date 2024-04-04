@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add missing type-safe navigation with router.navigate. ([#28034](https://github.com/expo/expo/pull/28034) by [@youssdevx](https://github.com/youssdevx))
 - Add source map outputs when exporting API route bundles. ([#27913](https://github.com/expo/expo/pull/27913) by [@kitten](https://github.com/kitten))
 - Add experimental support for using a canary build of the React Native renderer. ([#27303](https://github.com/expo/expo/pull/27303) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
