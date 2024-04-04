@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove all unused babel plugins on web and SSR. ([#27907](https://github.com/expo/expo/pull/27907) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add faster `Platform.select` transform. ([#27533](https://github.com/expo/expo/pull/27533) by [@EvanBacon](https://github.com/EvanBacon))
@@ -17,6 +19,7 @@
 
 ### 💡 Others
 
+- Reset env in tests. ([#27950](https://github.com/expo/expo/pull/27950) by [@EvanBacon](https://github.com/EvanBacon))
 - Add Hermes language support tests. ([#27900](https://github.com/expo/expo/pull/27900) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused peer dependency on `@babel/preset-env`. ([#27705](https://github.com/expo/expo/pull/27705) by [@EvanBacon](https://github.com/EvanBacon))
 - Disable color in snapshot tests in CI. ([#27301](https://github.com/expo/expo/pull/27301) by [@EvanBacon](https://github.com/EvanBacon))
