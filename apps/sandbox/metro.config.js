@@ -8,7 +8,12 @@ const config = getDefaultConfig(__dirname, {
 
 const root = path.join(__dirname, '../..');
 
-config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
+config.watchFolders = [
+  __dirname,
+
+  ...['node_modules/metro-runtime'].map((v) => path.join(root, v)),
+  // ...['packages', 'node_modules'].map((v) => path.join(root, v))
+];
 
 config.resolver.blockList = [
   // Copied from expo-yarn-workspaces
