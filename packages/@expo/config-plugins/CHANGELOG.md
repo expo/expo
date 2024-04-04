@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add privacy info config plugin. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
