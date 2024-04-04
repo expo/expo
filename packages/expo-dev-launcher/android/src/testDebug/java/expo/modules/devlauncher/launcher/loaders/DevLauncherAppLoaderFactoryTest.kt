@@ -140,8 +140,8 @@ internal class DevLauncherAppLoaderFactoryTest {
       verifyShouldContinue(slot.captured(manifest))
 
       object : UpdatesInterface.Update {
-        override fun getManifest(): JSONObject = manifest
-        override fun getLaunchAssetPath(): String = ""
+        override val manifest: JSONObject = manifest
+        override val launchAssetPath: String = ""
       }
     }
 

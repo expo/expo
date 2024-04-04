@@ -25,6 +25,7 @@
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 - Deprecate `experimentalLaunchMode` config plugin option and introduce new `launchMode` option. ([#27845](https://github.com/expo/expo/pull/27845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

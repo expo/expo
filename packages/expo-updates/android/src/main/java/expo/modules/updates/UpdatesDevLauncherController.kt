@@ -244,13 +244,10 @@ class UpdatesDevLauncherController(
           databaseHolder.releaseDatabase()
           this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
-            override fun getManifest(): JSONObject {
-              return launcher.launchedUpdate!!.manifest
-            }
-
-            override fun getLaunchAssetPath(): String {
-              return launcher.launchAssetFile!!
-            }
+            override val manifest: JSONObject
+              get() = launcher.launchedUpdate!!.manifest
+            override val launchAssetPath: String
+              get() = launcher.launchAssetFile!!
           })
           runReaper()
         }

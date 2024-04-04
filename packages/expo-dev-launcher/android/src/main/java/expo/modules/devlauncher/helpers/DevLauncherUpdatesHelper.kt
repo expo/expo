@@ -34,10 +34,9 @@ suspend fun UpdatesInterface.loadUpdate(
             true
           } else {
             cont.resume(object : UpdatesInterface.Update {
-              override fun getLaunchAssetPath(): String {
-                throw Exception("Tried to access launch asset path for a manifest that was not loaded")
-              }
-              override fun getManifest(): JSONObject = manifest
+              override val manifest: JSONObject = manifest
+              override val launchAssetPath: String
+                get() = throw Exception("Tried to access launch asset path for a manifest that was not loaded")
             })
             false
           }
