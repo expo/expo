@@ -383,13 +383,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    '@shopify/flash-list': {
-      source: 'https://github.com/Shopify/flash-list',
-      ios: {},
-      android: {
-        excludeFiles: ['**/src/test/**'],
-      },
-    },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
       ios: {
