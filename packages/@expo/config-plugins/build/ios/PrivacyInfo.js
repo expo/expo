@@ -4,16 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.withPrivacyInfo = withPrivacyInfo;
-function _XcodeProjectFile() {
-  const data = require("./XcodeProjectFile");
-  _XcodeProjectFile = function () {
+function _plist() {
+  const data = _interopRequireDefault(require("@expo/plist"));
+  _plist = function () {
     return data;
   };
   return data;
 }
-function _plist() {
-  const data = _interopRequireDefault(require("@expo/plist"));
-  _plist = function () {
+function _XcodeProjectFile() {
+  const data = require("./XcodeProjectFile");
+  _XcodeProjectFile = function () {
     return data;
   };
   return data;

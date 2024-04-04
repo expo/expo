@@ -194,6 +194,19 @@ Object.defineProperty(exports, "Permissions", {
     return Permissions();
   }
 });
+function PrivacyInfo() {
+  const data = _interopRequireWildcard(require("./PrivacyInfo"));
+  PrivacyInfo = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "PrivacyInfo", {
+  enumerable: true,
+  get: function () {
+    return PrivacyInfo();
+  }
+});
 function ProvisioningProfile() {
   const data = _interopRequireWildcard(require("./ProvisioningProfile"));
   ProvisioningProfile = function () {
@@ -309,19 +322,6 @@ Object.defineProperty(exports, "XcodeProjectFile", {
   enumerable: true,
   get: function () {
     return XcodeProjectFile();
-  }
-});
-function PrivacyInfo() {
-  const data = _interopRequireWildcard(require("./PrivacyInfo"));
-  PrivacyInfo = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "PrivacyInfo", {
-  enumerable: true,
-  get: function () {
-    return PrivacyInfo();
   }
 });
 function XcodeUtils() {

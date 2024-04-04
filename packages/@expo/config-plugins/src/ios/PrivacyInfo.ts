@@ -1,6 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
-import { withBuildSourceFile } from './XcodeProjectFile';
 import plist from '@expo/plist';
+
+import { withBuildSourceFile } from './XcodeProjectFile';
 
 export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
   if (!config.ios?.privacyManifests) {
