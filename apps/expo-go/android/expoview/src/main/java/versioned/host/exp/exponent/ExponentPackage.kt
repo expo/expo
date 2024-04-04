@@ -24,6 +24,7 @@ import com.swmansion.rnscreens.RNScreensPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.kotlin.ExpoBridgeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
@@ -126,6 +127,7 @@ class ExponentPackage : ReactPackage {
       try {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
+        nativeModules.add(ExpoBridgeModule(reactContext))
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
