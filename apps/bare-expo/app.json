@@ -45,9 +45,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "checkAutomatically": "NEVER",
-      // Workaround to use expo/expo URL since we don't have an EAS update project for bare-expo yet.
-      "url": "https://github.com/expo/expo"
+      "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
     },
     "plugins": [
       "expo-video",

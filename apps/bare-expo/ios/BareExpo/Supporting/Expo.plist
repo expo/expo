@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>EXUpdatesCheckOnLaunch</key>
-    <string>NEVER</string>
+    <string>ALWAYS</string>
     <key>EXUpdatesEnabled</key>
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
@@ -11,6 +11,6 @@
     <key>EXUpdatesRuntimeVersion</key>
     <string>1.0.0</string>
     <key>EXUpdatesURL</key>
-    <string>https://github.com/expo/expo</string>
+    <string>https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774</string>
   </dict>
 </plist>
