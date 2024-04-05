@@ -8,7 +8,6 @@ import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
-import { FileSystem } from 'metro-file-map';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import * as metroResolver from 'metro-resolver';
 import path from 'path';
@@ -16,13 +15,9 @@ import resolveFrom from 'resolve-from';
 
 import { createFastResolver } from './createExpoMetroResolver';
 import {
-  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
-  EXTERNAL_REQUIRE_POLYFILL,
   METRO_SHIMS_FOLDER,
   REACT_CANARY_FOLDER,
-  getNodeExternalModuleId,
   isNodeExternal,
-  setupNodeExternals,
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -40,28 +35,47 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
+import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT): ConfigT {
+function withWebPolyfills(
+  config: ConfigT,
+  {
+    getMetroBundler,
+  }: {
+    getMetroBundler: () => Bundler;
+  }
+): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualModuleId = `\0polyfill:external-require`;
+
+    const contents = (() => {
+      if (ctx.platform === 'web') {
+        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+      } else {
+        // Wrap in try/catch to support Android.
+        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+      }
+    })();
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualModuleId,
+      contents
+    );
+
     if (ctx.platform === 'web') {
-      return [
-        // NOTE: We might need this for all platforms
-        path.join(config.projectRoot, EXTERNAL_REQUIRE_POLYFILL),
-        // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
-      ];
+      return [virtualModuleId];
     }
+
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-
-    return [...polyfills, path.join(config.projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL)];
+    return [...polyfills, virtualModuleId];
   };
 
   return {
@@ -89,83 +103,6 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
 
   return nodejsSourceExtensions;
-}
-
-export type ExpoPatchedFileSystem = FileSystem & {
-  expoVirtualModules?: Map<string, Buffer>;
-};
-
-function ensureMetroBundlerPatched(bundler: Bundler): Bundler & {
-  setVirtualModule: (id: string, contents: string) => void;
-} {
-  if (!bundler.transformFile.__patched) {
-    const originalTransformFile = bundler.transformFile.bind(bundler);
-
-    bundler.transformFile = async function (
-      filePath: string,
-      transformOptions: any,
-      /** Optionally provide the file contents, this can be used to provide virtual contents for a file. */
-      fileBuffer?: Buffer
-    ) {
-      // file buffer will be defined for virtual modules in Metro, e.g. context modules.
-      if (!fileBuffer) {
-        if (filePath.startsWith('\0')) {
-          const graph = await this.getDependencyGraph();
-
-          // @ts-expect-error: private property
-          if (graph._fileSystem.expoVirtualModules) {
-            // @ts-expect-error: private property
-            fileBuffer = graph._fileSystem.expoVirtualModules.get(filePath);
-          }
-
-          if (!fileBuffer) {
-            throw new Error(`Virtual module "${filePath}" not found.`);
-          }
-        }
-      }
-      const result = await originalTransformFile(filePath, transformOptions, fileBuffer);
-      return result;
-    };
-
-    bundler.transformFile.__patched = true;
-
-    // @ts-expect-error: adding method to bundler.
-    bundler.setVirtualModule = function (this: Bundler, id: string, contents: string) {
-      // @ts-expect-error: private property
-      const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
-
-      if (!id.startsWith('\0')) {
-        throw new Error(`Virtual modules must start with the null character (\\0).`);
-      }
-      fs.expoVirtualModules.set(id, Buffer.from(contents));
-    };
-  }
-
-  return bundler;
-}
-
-function ensureFileSystemPatched(fs: ExpoPatchedFileSystem): FileSystem & {
-  expoVirtualModules: Map<string, Buffer>;
-} {
-  if (!fs.getSha1.__patched) {
-    const original_getSha1 = fs.getSha1.bind(fs);
-    fs.getSha1 = (filename: string) => {
-      // Rollup virtual module format.
-      if (filename.startsWith('\0')) {
-        return filename;
-      }
-
-      return original_getSha1(filename);
-    };
-    fs.getSha1.__patched = true;
-  }
-
-  // TODO: Connect virtual modules to a specific context so they don't cross-bundles.
-  if (!fs.expoVirtualModules) {
-    fs.expoVirtualModules = new Map<string, Buffer>();
-  }
-
-  return fs;
 }
 
 /**
@@ -393,9 +330,17 @@ export function withExtendedResolver(
         );
       }
 
-      const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-      debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
-      return getStrictResolver(context, platform)(redirectedModuleName);
+      const contents = `module.exports=$$require_external('node:${moduleId}');`;
+      debug(`Virtualizing Node.js "${moduleId}"`);
+      const virtualModuleId = `\0node:${moduleId}`;
+      getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+        virtualModuleId,
+        contents
+      );
+      return {
+        type: 'sourceFile',
+        filePath: virtualModuleId,
+      };
     },
 
     // Basic moduleId aliases
@@ -434,26 +379,6 @@ export function withExtendedResolver(
         return doResolve('event-target-shim/dist/event-target-shim.js');
       }
 
-      return null;
-    },
-
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      const doResolve = getOptionalResolver(context, platform);
-
-      const mod = doResolve(moduleName);
-      if (!mod) {
-        const virtualModuleId = '\0' + 'virtual:' + moduleName;
-
-        const bundler = ensureMetroBundlerPatched(getMetroBundler());
-
-        bundler.setVirtualModule(virtualModuleId, `console.log('Hello from the Matrix!');`);
-
-        debug('Virtualizing module:', moduleName, ' -> ', virtualModuleId);
-        return {
-          type: 'sourceFile',
-          filePath: virtualModuleId,
-        };
-      }
       return null;
     },
 
@@ -651,7 +576,6 @@ export async function withMetroMultiPlatformAsync(
     shims: true,
     canary: isReactCanaryEnabled,
   });
-  await setupNodeExternals(projectRoot);
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
@@ -666,7 +590,7 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  config = withWebPolyfills(config);
+  config = withWebPolyfills(config, { getMetroBundler });
 
   return withExtendedResolver(config, {
     tsconfig,
