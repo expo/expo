@@ -77,20 +77,6 @@ const SvgModifier: ModuleModifier = async function (
   await addHeaderImport();
 };
 
-const MapsModifier: ModuleModifier = async function (
-  moduleConfig: VendoredModuleConfig,
-  clonedProjectPath: string
-): Promise<void> {
-  const fixGoogleMapsImports = async () => {
-    const targetPath = path.join(clonedProjectPath, 'ios', 'AirGoogleMaps', 'AIRGoogleMap.m');
-    let content = await fs.readFile(targetPath, 'utf8');
-    content = content.replace(/^#import "(GMU.+?\.h)"$/gm, '#import <Google-Maps-iOS-Utils/$1>');
-    await fs.writeFile(targetPath, content, 'utf8');
-  };
-
-  await fixGoogleMapsImports();
-};
-
 const ReanimatedModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
   clonedProjectPath: string
@@ -582,26 +568,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-maps': {
-    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
-    installableInManagedApps: true,
-    moduleModifier: MapsModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios/AirGoogleMaps',
-        targetIosPath: 'Api/Components/GoogleMaps',
-      },
-      {
-        recursive: true,
-        sourceIosPath: 'ios/AirMaps',
-        targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/rnmaps/maps',
-        targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.rnmaps.maps',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
-      },
-    ],
-  },
   '@react-native-community/netinfo': {
     repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
     installableInManagedApps: true,
@@ -756,19 +722,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/picker',
         sourceAndroidPackage: 'com.reactnativecommunity.picker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@stripe/stripe-react-native': {
-    repoUrl: 'https://github.com/stripe/stripe-react-native',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceAndroidPath: 'android/src/main/java/com/reactnativestripesdk',
-        targetAndroidPath: 'modules/api/components/reactnativestripesdk',
-        sourceAndroidPackage: 'com.reactnativestripesdk',
-        targetAndroidPackage:
-          'versioned.host.exp.exponent.modules.api.components.reactnativestripesdk',
       },
     ],
   },

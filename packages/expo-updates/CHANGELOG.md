@@ -20,6 +20,7 @@
 - Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Add ability to override build-time fingerprint. ([#27597](https://github.com/expo/expo/pull/27597) by [@wschurman](https://github.com/wschurman))
 - Expose emergency launch reason on constants. ([#27714](https://github.com/expo/expo/pull/27714) by [@wschurman](https://github.com/wschurman))
+- Add header to manifest request containing recently-errored update IDs. ([#27991](https://github.com/expo/expo/pull/27991) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
@@ -47,6 +48,7 @@
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 - [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
 - Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
 
 ## 0.24.12 - 2024-03-13
 

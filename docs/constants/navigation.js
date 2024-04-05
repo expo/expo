@@ -427,6 +427,14 @@ const general = [
         makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
+      makeSection('Billing', [
+        makePage('billing/overview.mdx'),
+        makePage('billing/plans.mdx'),
+        makePage('billing/manage.mdx'),
+        makePage('billing/invoices-and-receipts.mdx'),
+        makePage('billing/usage-based-pricing.mdx'),
+        makePage('billing/faq.mdx'),
+      ]),
     ],
     { expanded: true }
   ),

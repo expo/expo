@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- [iOS] Bump SDWebImage to include 3rd Party Privacy Manifest ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes))
+- [iOS] Bump SDWebImage to `5.19.1` to include the 3rd-party privacy manifest. ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes), []() by [@tsapeta](https://github.com/tsapeta))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.11.0 — 2024-02-05
