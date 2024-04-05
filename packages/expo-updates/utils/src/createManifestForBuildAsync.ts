@@ -44,7 +44,7 @@ export async function createManifestForBuildAsync(
     platform,
     entryFile,
     minify: false,
-    dev: false,
+    dev: process.env.CONFIGURATION === 'Debug', // ensures debug assets packaged correctly for iOS and native debug
     sourcemapUseAbsolutePath: false,
   };
 
