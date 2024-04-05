@@ -14,12 +14,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { createFastResolver } from './createExpoMetroResolver';
-import {
-  METRO_SHIMS_FOLDER,
-  REACT_CANARY_FOLDER,
-  isNodeExternal,
-  setupShimFiles,
-} from './externals';
+import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import {
   withMetroErrorReportingResolver,
@@ -224,10 +219,6 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  const canaryFolder = path.join(config.projectRoot, REACT_CANARY_FOLDER);
-
-  const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
-
   function getStrictResolver(
     { resolveRequest, ...context }: ResolutionContext,
     platform: string | null
@@ -409,10 +400,19 @@ export function withExtendedResolver(
             // Drop everything up until the `node_modules` folder.
             .replace(/.*node_modules\//, '');
 
-          const shimPath = path.join(shimsFolder, normalName);
-          if (fs.existsSync(shimPath)) {
-            // @ts-expect-error: `readonly` for some reason.
-            result.filePath = shimPath;
+          const shimFile = shouldCreateVirtualShim(normalName);
+          if (shimFile) {
+            const virtualId = `\0shim:${normalName}`;
+            const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+            if (!bundler.hasVirtualModule(virtualId)) {
+              bundler.setVirtualModule(virtualId, fs.readFileSync(shimFile, 'utf8'));
+            }
+            debug(`Redirecting module "${result.filePath}" to shim`);
+
+            return {
+              ...result,
+              filePath: virtualId,
+            };
           }
         }
       } else {
@@ -423,12 +423,19 @@ export function withExtendedResolver(
             // Drop everything up until the `node_modules` folder.
             .replace(/.*node_modules\//, '');
 
-          // Files are added via the `@expo/cli/static/canary` folder.
-          const shimPath = path.join(canaryFolder, normalName);
-          if (fs.existsSync(shimPath)) {
+          const canaryFile = shouldCreateVirtualCanary(normalName);
+          if (canaryFile) {
+            const virtualId = `\0canary:${normalName}`;
+            const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+            if (!bundler.hasVirtualModule(virtualId)) {
+              bundler.setVirtualModule(virtualId, fs.readFileSync(canaryFile, 'utf8'));
+            }
             debug(`Redirecting React Native module "${result.filePath}" to canary build`);
-            // @ts-expect-error: `readonly` for some reason.
-            result.filePath = shimPath;
+
+            return {
+              ...result,
+              filePath: virtualId,
+            };
           }
         }
       }
@@ -571,11 +578,6 @@ export async function withMetroMultiPlatformAsync(
   if (isTsconfigPathsEnabled) {
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
-
-  await setupShimFiles(projectRoot, {
-    shims: true,
-    canary: isReactCanaryEnabled,
-  });
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(

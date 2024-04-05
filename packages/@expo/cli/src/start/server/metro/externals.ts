@@ -8,8 +8,6 @@ import fs from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 
-import { copyAsync } from '../../../utils/dir';
-
 // A list of the Node.js standard library modules that are currently
 // available,
 export const NODE_STDLIB_MODULES: string[] = [
@@ -22,32 +20,22 @@ export const NODE_STDLIB_MODULES: string[] = [
   ).filter((x) => !/^_|^(internal|v8|node-inspect)\/|\//.test(x) && !['sys'].includes(x)),
 ].sort();
 
-export const EXTERNAL_REQUIRE_POLYFILL = '.expo/metro/polyfill.js';
-export const EXTERNAL_REQUIRE_NATIVE_POLYFILL = '.expo/metro/polyfill.native.js';
-export const METRO_SHIMS_FOLDER = '.expo/metro/shims';
-export const REACT_CANARY_FOLDER = '.expo/metro/canary';
+const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
+const canaryFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/canary');
 
-export async function setupShimFiles(
-  projectRoot: string,
-  { shims, canary }: { shims: boolean; canary: boolean }
-) {
-  await Promise.all(
-    (
-      [
-        shims && [METRO_SHIMS_FOLDER, '../static/shims'],
-        canary && [REACT_CANARY_FOLDER, '../static/canary'],
-      ].filter(Boolean) as [string, string][]
-    ).map(async ([folder, shimsId]) => {
-      await fs.promises.mkdir(path.join(projectRoot, folder), { recursive: true });
-      // Copy the shims to the project folder in case we're running in a monorepo.
-      const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), shimsId);
-
-      await copyAsync(shimsFolder, path.join(projectRoot, folder), {
-        overwrite: false,
-        recursive: true,
-      });
-    })
-  );
+export function shouldCreateVirtualShim(normalName: string) {
+  const shimPath = path.join(shimsFolder, normalName);
+  if (fs.existsSync(shimPath)) {
+    return shimPath;
+  }
+  return null;
+}
+export function shouldCreateVirtualCanary(normalName: string): string | null {
+  const canaryPath = path.join(canaryFolder, normalName);
+  if (fs.existsSync(canaryPath)) {
+    return canaryPath;
+  }
+  return null;
 }
 
 export function isNodeExternal(moduleName: string): string | null {

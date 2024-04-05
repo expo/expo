@@ -18,6 +18,7 @@ export type ExpoPatchedBundler = Bundler & {
 function ensureMetroBundlerPatchedWithSetVirtualModule(
   bundler: Bundler & {
     setVirtualModule?: (id: string, contents: string) => void;
+    hasVirtualModule?: (id: string) => boolean;
   }
 ): ExpoPatchedBundler {
   if (!bundler.setVirtualModule) {
@@ -25,6 +26,11 @@ function ensureMetroBundlerPatchedWithSetVirtualModule(
       // @ts-expect-error: private property
       const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
       fs.expoVirtualModules!.set(ensureStartsWithNullByte(id), Buffer.from(contents));
+    };
+    bundler.hasVirtualModule = function (this: Bundler, id: string) {
+      // @ts-expect-error: private property
+      const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
+      return fs.expoVirtualModules!.has(ensureStartsWithNullByte(id));
     };
   }
 
@@ -37,6 +43,7 @@ function ensureStartsWithNullByte(id: string): string {
 
 export function getMetroBundlerWithVirtualModules(bundler: Bundler): Bundler & {
   setVirtualModule: (id: string, contents: string) => void;
+  hasVirtualModule: (id: string) => boolean;
 } {
   // @ts-expect-error: private property
   if (!bundler.transformFile.__patched) {
