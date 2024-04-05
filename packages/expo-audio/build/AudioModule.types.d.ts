@@ -1,6 +1,6 @@
 import { PermissionResponse, SharedObject } from 'expo-modules-core';
 import { NativeModule } from 'react-native';
-import { AudioMode, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions } from './Audio.types';
+import { AudioMode, AudioStatus, PitchCorrectionQuality, RecorderStatus, RecordingInput } from './Audio.types';
 export interface AudioModule extends NativeModule {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
     setAudioModeAsync(category: AudioMode): Promise<void>;
@@ -14,10 +14,6 @@ export type AudioPlayerEvents = {
     onPlaybackStatusUpdate: (status: AudioStatus) => void;
 };
 export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
-    /**
-     * Unique identifier for the player object.
-     */
-    id: number;
     /**
      * Boolean value indicating whether the player is currently playing.
      */
@@ -82,12 +78,10 @@ export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
      */
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 }
-export interface AudioRecorder {
-    new (options: RecordingOptions): AudioRecorder;
-    /**
-     * Unique identifier for the recorder object.
-     */
-    id: number;
+type AudioRecorderEvents = {
+    onRecordingStatusUpdate: (status: RecorderStatus) => void;
+};
+export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
     /**
      * The current length of the recording, in seconds.
      */
@@ -118,7 +112,7 @@ export interface AudioRecorder {
     /**
      * Status of the current recording.
      */
-    getStatus(): RecorderState;
+    getStatus(): RecorderStatus;
     /**
      * Starts the recording at the given time.
      * @param seconds The time in seconds to start recording at.
@@ -134,4 +128,5 @@ export interface AudioRecorder {
      */
     release(): void;
 }
+export {};
 //# sourceMappingURL=AudioModule.types.d.ts.map

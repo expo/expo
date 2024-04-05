@@ -48,14 +48,14 @@ export type AudioStatus = {
   shouldCorrectPitch: boolean;
 };
 
-export type RecordingStatus = {
+export type RecordingState = {
   id: number;
   isFinished: boolean;
   hasError: boolean;
   error: string | null;
 };
 
-export type RecorderState = {
+export type RecorderStatus = {
   canRecord: boolean;
   isRecording: boolean;
   durationMillis: number;

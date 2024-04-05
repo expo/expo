@@ -3,7 +3,6 @@ package expo.modules.audio
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import expo.modules.kotlin.AppContext
@@ -21,13 +20,16 @@ class AudioPlayer(
   context: Context,
   appContext: AppContext,
   mediaItem: MediaItem
-) : SharedRef<ExoPlayer>(ExoPlayer.Builder(context)
-  .setLooper(context.mainLooper)
-  .build()
-  .apply {
-    addMediaItem(mediaItem)
-    prepare()
-  }, appContext) {
+) : SharedRef<ExoPlayer>(
+  ExoPlayer.Builder(context)
+    .setLooper(context.mainLooper)
+    .build()
+    .apply {
+      addMediaItem(mediaItem)
+      prepare()
+    },
+  appContext
+) {
   var preservesPitch = false
   val player = ref
 
@@ -66,7 +68,6 @@ class AudioPlayer(
     val isBuffering = player.playbackState == Player.STATE_BUFFERING
 
     val data = mapOf(
-      "id" to sharedObjectId.value,
       "currentTime" to player.currentPosition,
       "status" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",

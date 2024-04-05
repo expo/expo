@@ -5,9 +5,9 @@ import {
   AudioMode,
   AudioSource,
   AudioStatus,
-  RecorderState,
+  RecorderStatus,
   RecordingOptions,
-  RecordingStatus,
+  RecordingState,
 } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
@@ -23,31 +23,30 @@ export function useAudioPlayer(
 
   useEffect(() => {
     const subscription = player.addListener('onPlaybackStatusUpdate', (status: AudioStatus) => {
-      if (status.id === player.id) {
-        statusListener?.(status);
-      }
+      statusListener?.(status);
     });
     return () => subscription.remove();
-  }, [player.id]);
+  }, []);
 
   return player;
 }
 
 export function useAudioRecorder(
   options: RecordingOptions,
-  statusListener?: (status: RecordingStatus) => void
-): [AudioRecorder, RecorderState] {
+  statusListener?: (state: RecordingState) => void
+): [AudioRecorder, RecorderStatus] {
   const recorder = useMemo(() => new AudioModule.AudioRecorder(options), []);
-  const [state, setState] = useState<RecorderState>(recorder.getStatus());
+  const [state, setState] = useState<RecorderStatus>(recorder.getStatus());
 
   useEffect(() => {
-    const subscription = addRecordingStatusListener((status) => {
-      if (status.id === recorder.id) {
-        statusListener?.(status);
+    const subscription = recorder.addListener(
+      'onRecordingStatusUpdate',
+      (state: RecordingState) => {
+        statusListener?.(state);
       }
-    });
+    );
     return () => subscription.remove();
-  }, [recorder.id]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,19 +54,13 @@ export function useAudioRecorder(
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [recorder.id]);
+  }, []);
 
   return [recorder, state];
 }
 
 export function addStatusUpdateListener(listener: (event: AudioStatus) => void): Subscription {
   return audioModuleEmitter.addListener<AudioStatus>('onPlaybackStatusUpdate', listener);
-}
-
-export function addRecordingStatusListener(
-  listener: (event: RecordingStatus) => void
-): Subscription {
-  return audioModuleEmitter.addListener<RecordingStatus>('onRecordingStatusUpdate', listener);
 }
 
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {

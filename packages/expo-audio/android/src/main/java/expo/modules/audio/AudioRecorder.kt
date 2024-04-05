@@ -47,7 +47,7 @@ class AudioRecorder(
     prepare()
   }
   var isRecording = false
-  
+
   override fun deallocate() {
     recorder.release()
   }
@@ -59,4 +59,3 @@ private fun ensureDirExists(dir: File): File {
   }
   return dir
 }
-

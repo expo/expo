@@ -4,7 +4,7 @@ import {
   OutputFormat,
   useAudioRecorder,
   AudioModule,
-  RecordingStatus,
+  RecordingState,
 } from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
@@ -27,7 +27,7 @@ type RecorderProps = {
 };
 
 export default function Recorder({ onDone, style }: RecorderProps) {
-  const [state, setState] = React.useState<RecordingStatus>({
+  const [state, setState] = React.useState<RecordingState>({
     id: 0,
     hasError: false,
     error: null,

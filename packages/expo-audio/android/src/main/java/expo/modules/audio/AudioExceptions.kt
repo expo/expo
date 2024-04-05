@@ -6,4 +6,4 @@ internal class AudioPermissionsException :
   CodedException("RECORD_AUDIO permission has not been granted")
 
 internal class PausingNotSupportedException :
-  CodedException("Pausing is not supported on this device")
+  CodedException("Pausing is not supported android versions below 24")

@@ -5,9 +5,8 @@ import {
   AudioMode,
   AudioStatus,
   PitchCorrectionQuality,
-  RecorderState,
+  RecorderStatus,
   RecordingInput,
-  RecordingOptions,
 } from './Audio.types';
 
 export interface AudioModule extends NativeModule {
@@ -27,10 +26,6 @@ export type AudioPlayerEvents = {
 };
 
 export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
-  /**
-   * Unique identifier for the player object.
-   */
-  id: number;
   /**
    * Boolean value indicating whether the player is currently playing.
    */
@@ -110,14 +105,10 @@ export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
   setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 }
 
-export interface AudioRecorder {
-  new (options: RecordingOptions): AudioRecorder;
-
-  /**
-   * Unique identifier for the recorder object.
-   */
-  id: number;
-
+type AudioRecorderEvents = {
+  onRecordingStatusUpdate: (status: RecorderStatus) => void;
+};
+export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
   /**
    * The current length of the recording, in seconds.
    */
@@ -155,7 +146,7 @@ export interface AudioRecorder {
   /**
    * Status of the current recording.
    */
-  getStatus(): RecorderState;
+  getStatus(): RecorderStatus;
 
   /**
    * Starts the recording at the given time.

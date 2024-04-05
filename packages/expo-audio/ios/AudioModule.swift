@@ -130,11 +130,6 @@ public class AudioModule: Module, RecordingResultHandler {
         return player
       }
 
-      // Needed to differentiate status updates when there is multiple player instances.
-      Property("id") { player in
-        player.sharedObjectId
-      }
-
       Property("isBuffering") { player in
         player.isBuffering
       }

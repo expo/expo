@@ -22,12 +22,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.File
-import java.io.IOException
 import kotlin.math.min
-
-const val recordingStatus = "onRecordingStatusUpdate"
-const val playbackStatus = "onPlaybackStatusUpdate"
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
@@ -43,7 +38,6 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -69,10 +63,6 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
               .build()
           )
         }
-      }
-
-      Property("id") { ref ->
-        ref.sharedObjectId.value
       }
 
       Property("isBuffering") { ref ->
@@ -190,14 +180,19 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       }
 
       Property("currentTime") { ref ->
-
       }
 
       Function("record") { ref: AudioRecorder ->
         checkRecordingPermission()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
+          if (ref.isRecording) {
+            ref.recorder.resume()
+          } else {
+            ref.isRecording = true
+            ref.recorder.start()
+          }
         } else {
+          ref.isRecording = true
           ref.recorder.start()
         }
       }
@@ -206,13 +201,14 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         checkRecordingPermission()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
           ref.recorder.pause()
+          ref.isRecording = false
         } else {
-          ref.recorder.stop()
         }
       }
 
       Function("stop") { ref: AudioRecorder ->
         checkRecordingPermission()
+        ref.isRecording = false
         ref.recorder.stop()
       }
 
