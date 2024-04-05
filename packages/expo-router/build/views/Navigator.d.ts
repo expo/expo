@@ -270,10 +270,10 @@ export declare function useNavigatorContext(): {
     }>>> & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, string, Record<string, any>]> & Record<string, () => void>, import("@react-navigation/native").RouteProp<import("@react-navigation/native").ParamListBase, string>>>;
     router: RouterFactory<any, any, any>;
 };
-export declare function useSlot(): JSX.Element | null;
+export declare function useSlot(): JSX.Element;
 /** Renders the currently selected content. */
 export declare function Slot(props: Omit<NavigatorProps, 'children'>): JSX.Element;
-export declare function QualifiedSlot(): JSX.Element | null;
+export declare function QualifiedSlot(): JSX.Element;
 export declare function DefaultNavigator(): JSX.Element;
 export {};
 //# sourceMappingURL=Navigator.d.ts.map

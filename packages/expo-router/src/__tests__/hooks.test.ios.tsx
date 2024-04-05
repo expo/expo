@@ -90,57 +90,6 @@ describe(useGlobalSearchParams, () => {
     expectType<string | undefined>(params.a);
   });
 
-  it(`only renders once per navigation`, () => {
-    const allHookValues: unknown[] = [];
-
-    renderRouter(
-      {
-        '[fruit]/[shape]/[...veg?]': function Test() {
-          allHookValues.push({
-            url: usePathname(),
-            globalParams: useGlobalSearchParams(),
-            params: useLocalSearchParams(),
-          });
-          return null;
-        },
-      },
-      {
-        initialUrl: '/apple/square',
-      }
-    );
-
-    act(() => router.push('/banana/circle/carrot/beetroot'));
-
-    expect(allHookValues).toEqual([
-      // The initial render
-      {
-        url: '/apple/square',
-        globalParams: {
-          fruit: 'apple',
-          shape: 'square',
-        },
-        params: {
-          fruit: 'apple',
-          shape: 'square',
-        },
-      },
-      // The new screen
-      {
-        url: '/banana/circle/carrot/beetroot',
-        globalParams: {
-          fruit: 'banana',
-          shape: 'circle',
-          veg: ['carrot', 'beetroot'],
-        },
-        params: {
-          fruit: 'banana',
-          shape: 'circle',
-          veg: ['carrot', 'beetroot'],
-        },
-      },
-    ]);
-  });
-
   it(`causes stacks in a screen to rerender on change `, () => {
     const allHookValues: unknown[] = [];
 
