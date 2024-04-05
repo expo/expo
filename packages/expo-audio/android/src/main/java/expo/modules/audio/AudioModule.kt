@@ -1,19 +1,29 @@
 package expo.modules.audio
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.os.Build
+import android.os.Bundle
+import androidx.core.content.ContextCompat
+import androidx.media3.common.C.VOLUME_FLAG_ALLOW_RINGER_MODES
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.io.IOException
 import kotlin.math.min
 
 const val recordingStatus = "onRecordingStatusUpdate"
@@ -50,7 +60,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource ->
-        return@Constructor runBlocking(appContext.mainQueue.coroutineContext) {
+        runBlocking(appContext.mainQueue.coroutineContext) {
           AudioPlayer(
             activity.applicationContext,
             appContext,
@@ -60,8 +70,6 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
           )
         }
       }
-
-      Events(playbackStatus)
 
       Property("id") { ref ->
         ref.sharedObjectId.value
@@ -101,7 +109,11 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
       Property("muted") { ref ->
         runBlocking(appContext.mainQueue.coroutineContext) {
-          ref.player.volume == 0f
+          ref.player.isDeviceMuted
+        }
+      }.set { ref, muted: Boolean ->
+        appContext.mainQueue.launch {
+          ref.player.setDeviceMuted(muted, VOLUME_FLAG_ALLOW_RINGER_MODES)
         }
       }
 
@@ -127,10 +139,6 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         runBlocking(appContext.mainQueue.coroutineContext) {
           ref.player.playbackParameters.speed
         }
-      }.set { ref, rate: Float ->
-        appContext.mainQueue.launch {
-          ref.player.playbackParameters = PlaybackParameters(rate)
-        }
       }
 
       Property("volume") { ref ->
@@ -155,11 +163,9 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         }
       }
 
-      Function("seekTo") { ref: AudioPlayer, seekTime: Double ->
-        appContext.mainQueue.launch {
-          ref.player.seekTo(seekTime.toLong())
-        }
-      }
+      AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
+        ref.player.seekTo(seekTime.toLong())
+      }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
@@ -170,11 +176,102 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       }
     }
 
-//    Class(AudioRecorder::class) {
-//      Events(recordingStatus)
-//
-//
-//    }
+    Class(AudioRecorder::class) {
+      Constructor { options: RecordingOptions ->
+        AudioRecorder(
+          activity.applicationContext,
+          appContext,
+          options
+        )
+      }
+
+      Property("isRecording") { ref ->
+        ref.isRecording
+      }
+
+      Property("currentTime") { ref ->
+
+      }
+
+      Function("record") { ref: AudioRecorder ->
+        checkRecordingPermission()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+        } else {
+          ref.recorder.start()
+        }
+      }
+
+      Function("pause") { ref: AudioRecorder ->
+        checkRecordingPermission()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          ref.recorder.pause()
+        } else {
+          ref.recorder.stop()
+        }
+      }
+
+      Function("stop") { ref: AudioRecorder ->
+        checkRecordingPermission()
+        ref.recorder.stop()
+      }
+
+      Function("getStatus") { ref: AudioRecorder ->
+        checkRecordingPermission()
+      }
+
+      Function("getAvailableInputs") {
+        return@Function getAvailableInputs()
+      }
+    }
+  }
+
+  private fun getAvailableInputs() = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
+    val type = deviceInfo.type
+    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      getMapFromDeviceInfo(deviceInfo)
+    } else {
+      null
+    }
+  }
+
+  private fun checkRecordingPermission() {
+    val permission = ContextCompat.checkSelfPermission(activity.applicationContext, Manifest.permission.RECORD_AUDIO)
+    if (permission != PackageManager.PERMISSION_GRANTED) {
+      throw AudioPermissionsException()
+    }
+  }
+
+  @SuppressLint("SwitchIntDef")
+  private fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
+    val map = Bundle()
+    val type = deviceInfo.type
+    var typeStr = type.toString()
+    when (type) {
+      AudioDeviceInfo.TYPE_BUILTIN_MIC -> {
+        typeStr = "MicrophoneBuiltIn"
+      }
+
+      AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> {
+        typeStr = "BluetoothSCO"
+      }
+
+      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> {
+        typeStr = "BluetoothA2DP"
+      }
+
+      AudioDeviceInfo.TYPE_TELEPHONY -> {
+        typeStr = "Telephony"
+      }
+
+      AudioDeviceInfo.TYPE_WIRED_HEADSET -> {
+        typeStr = "MicrophoneWired"
+      }
+    }
+    map.putString("name", deviceInfo.getProductName().toString())
+    map.putString("type", typeStr)
+    map.putString("uid", deviceInfo.id.toString())
+    return map
   }
 
   override fun onAudioFocusChange(focusChange: Int) {

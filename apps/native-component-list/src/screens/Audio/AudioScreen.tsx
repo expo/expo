@@ -29,7 +29,7 @@ export default function AudioScreen(props: any) {
         style={styles.player}
       />
       <HeadingText>Local asset player</HeadingText>
-      <Player source={require('../../../assets/sounds/polonez.mp3')} style={styles.player} />
+      {/* <Player source={require('../../../assets/sounds/polonez.mp3')} style={styles.player} /> */}
     </ScrollView>
   );
 }

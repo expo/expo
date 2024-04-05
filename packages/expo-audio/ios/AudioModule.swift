@@ -239,11 +239,7 @@ public class AudioModule: Module, RecordingResultHandler {
         recorders[recorder.id] = recorder
         return recorder
       }
-
-      Property("id") { recorder in
-        recorder.sharedObjectId
-      }
-
+      
       Property("isRecording") { recorder in
         recorder.pointer.isRecording
       }
@@ -271,13 +267,6 @@ public class AudioModule: Module, RecordingResultHandler {
         recorder.pointer.stop()
       }
 
-      Function("release") { recorder in
-        let id = recorder.sharedObjectId
-        recorder.pointer.stop()
-        recorders.removeValue(forKey: recorder.id)
-        appContext?.sharedObjectRegistry.delete(id)
-      }
-
       Function("getStatus") { recorder -> [String: Any] in
         let time = recorder.pointer.deviceCurrentTime * 1000
         let duration = recorder.pointer.currentTime
@@ -296,16 +285,6 @@ public class AudioModule: Module, RecordingResultHandler {
         }
 
         return result
-      }
-
-      Function("startRecordingAtTime") { (recorder, seconds: Double) in
-        try checkPermissions()
-        recorder.pointer.record(atTime: TimeInterval(seconds))
-      }
-
-      Function("recordForDuration") { (recorder, seconds: Double) in
-        try checkPermissions()
-        recorder.pointer.record(forDuration: TimeInterval(seconds))
       }
 
       Function("getAvailableInputs") {
