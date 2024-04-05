@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent unnecessary permissions check when moving app to background (Would crash with certain configs). ([#28045](https://github.com/expo/expo/pull/28045) by [@cltnschlosser](https://github.com/cltnschlosser))
+
 ### 💡 Others
 
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
