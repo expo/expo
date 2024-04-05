@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { PlayerStatus, VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
+import {
+  VideoPlayerStatus,
+  VideoPlayer,
+  VideoSource,
+  VideoViewProps,
+  VideoPlayerEvents,
+} from './VideoView.types';
+
 /**
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
  * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -16,8 +23,13 @@ if (audioContext && zeroGainNode) {
     "Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player."
   );
 }
-class VideoPlayerWeb implements VideoPlayer {
+
+class VideoPlayerWeb
+  extends globalThis.expo.SharedObject<VideoPlayerEvents>
+  implements VideoPlayer
+{
   constructor(source: VideoSource) {
+    super();
     this.src = source;
   }
 
@@ -30,7 +42,7 @@ class VideoPlayerWeb implements VideoPlayer {
   _loop: boolean = false;
   _playbackRate: number = 1.0;
   _preservesPitch: boolean = true;
-  _status: PlayerStatus = 'idle';
+  _status: VideoPlayerStatus = 'idle';
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
@@ -39,6 +51,7 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this._muted = value;
   }
+
   get muted(): boolean {
     return this._muted;
   }
@@ -92,6 +105,7 @@ class VideoPlayerWeb implements VideoPlayer {
   get preservesPitch(): boolean {
     return this._preservesPitch;
   }
+
   set preservesPitch(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.preservesPitch = value;
@@ -99,7 +113,7 @@ class VideoPlayerWeb implements VideoPlayer {
     this._preservesPitch = value;
   }
 
-  get status(): PlayerStatus {
+  get status(): VideoPlayerStatus {
     return this._status;
   }
 
@@ -131,12 +145,14 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this.playing = true;
   }
+
   pause(): void {
     this._mountedVideos.forEach((video) => {
       video.pause();
     });
     this.playing = false;
   }
+
   replace(source: VideoSource): void {
     this._mountedVideos.forEach((video) => {
       const uri = getSourceUri(source);
@@ -151,11 +167,13 @@ class VideoPlayerWeb implements VideoPlayer {
     });
     this.playing = true;
   }
+
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime += seconds;
     });
   }
+
   replay(): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime = 0;
@@ -239,31 +257,6 @@ class VideoPlayerWeb implements VideoPlayer {
     video.onwaiting = () => {
       this._status = 'loading';
     };
-  }
-
-  release(): void {
-    console.warn('The `VideoPlayer.release` method is not supported on web');
-  }
-  addListener<EventName extends never>(
-    eventName: EventName,
-    listener: Record<never, never>[EventName]
-  ): void {
-    console.warn('The `VideoPlayer.addListener` method is not yet supported on web');
-  }
-  removeListener<EventName extends never>(
-    eventName: EventName,
-    listener: Record<never, never>[EventName]
-  ): void {
-    console.warn('The `VideoPlayer.removeListener` method is not yet supported on web');
-  }
-  removeAllListeners(eventName: never): void {
-    console.warn('The `VideoPlayer.removeAllListeners` method is not yet supported on web');
-  }
-  emit<EventName extends never>(
-    eventName: EventName,
-    ...args: Parameters<Record<never, never>[EventName]>
-  ): void {
-    console.warn('The `VideoPlayer.emit` method is not yet supported on web');
   }
 }
 

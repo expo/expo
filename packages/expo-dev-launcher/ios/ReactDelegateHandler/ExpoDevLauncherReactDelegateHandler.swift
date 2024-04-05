@@ -1,37 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXDevMenu
 import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
-  @objc
-  public static var enableAutoSetup: Bool = true
-
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
-  static var shouldEnableAutoSetup: Bool = {
-    // if someone else has set this explicitly, use that value
-    if !enableAutoSetup {
-      return false
-    }
-
-    if !EXAppDefines.APP_DEBUG {
-      return false
-    }
-
-    // Backwards compatibility -- if the main AppDelegate has already set up expo-dev-launcher,
-    // we just skip in this case.
-    if EXDevLauncherController.sharedInstance().isStarted {
-      return false
-    }
-
-    return true
-  }()
 
   public override func createReactRootView(
     reactDelegate: ExpoReactDelegate,
@@ -39,12 +17,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView? {
-    if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
+    if !EXAppDefines.APP_DEBUG {
       return nil
     }
-
-    // DevLauncherController will handle dev menu configuration, so dev menu auto-setup is not needed
-    ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
@@ -66,10 +41,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     developmentClientController.appBridge = RCTBridge.current()
 
-    let rootView = ExpoReactRootViewFactory.createDefaultReactRootView(
-      developmentClientController.sourceUrl(),
+    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
+      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+    }
+    let rootView = rctAppDelegate.recreateRootView(
+      withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
-      initialProperties: self.rootViewInitialProperties,
+      initialProps: self.rootViewInitialProperties,
       launchOptions: self.launchOptions
     )
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white

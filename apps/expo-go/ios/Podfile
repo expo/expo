@@ -13,7 +13,7 @@ $expo_updates_create_updates_resources = false
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 7.3.0'
+  pod 'GoogleMaps', '~> 7.4.0'
   pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
@@ -53,6 +53,7 @@ target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # React Native
+  use_native_modules!
   use_react_native!(
     :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,

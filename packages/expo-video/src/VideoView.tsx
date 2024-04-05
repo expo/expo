@@ -1,18 +1,15 @@
-import { SharedObject } from 'expo-modules-core';
-import {
-  ReactNode,
-  PureComponent,
-  DependencyList,
-  createRef,
-  useRef,
-  useMemo,
-  useEffect,
-} from 'react';
+import { useReleasingSharedObject } from 'expo-modules-core';
+import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
 import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
 
+/**
+ * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
+ * @param source - A video source that is used to initialize the player.
+ * @param setup - A function that allows setting up the player. It will run after the player is created.
+ */
 export function useVideoPlayer(
   source: VideoSource,
   setup?: (player: VideoPlayer) => void
@@ -39,18 +36,16 @@ export function isPictureInPictureSupported(): Promise<boolean> {
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 
-  replace(source: VideoSource) {
-    if (typeof source === 'string') {
-      this.nativeRef.current?.replace({ uri: source });
-      return;
-    }
-    this.nativeRef.current?.replace(source);
-  }
-
+  /**
+   * Enters fullscreen mode.
+   */
   enterFullscreen() {
     this.nativeRef.current?.enterFullscreen();
   }
 
+  /**
+   * Exits fullscreen mode.
+   */
   exitFullscreen() {
     this.nativeRef.current?.exitFullscreen();
   }
@@ -61,7 +56,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  startPictureInPicture() {
+  startPictureInPicture(): void {
     return this.nativeRef.current?.startPictureInPicture();
   }
 
@@ -70,7 +65,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  stopPictureInPicture() {
+  stopPictureInPicture(): void {
     return this.nativeRef.current?.stopPictureInPicture();
   }
 
@@ -94,52 +89,4 @@ function getPlayerId(player: number | VideoPlayer): number | null {
     return player;
   }
   return null;
-}
-
-/**
- * Returns a shared object, which is automatically cleaned up when the component is unmounted.
- */
-function useReleasingSharedObject<T extends SharedObject>(
-  factory: () => T,
-  dependencies: DependencyList
-): T {
-  const objectRef = useRef<T | null>(null);
-  const isFastRefresh = useRef(false);
-  const previousDependencies = useRef<DependencyList>(dependencies);
-
-  if (objectRef.current == null) {
-    objectRef.current = factory();
-  }
-
-  const object = useMemo(() => {
-    let newObject = objectRef.current;
-    const dependenciesAreEqual =
-      previousDependencies.current?.length === dependencies.length &&
-      dependencies.every((value, index) => value === previousDependencies.current[index]);
-
-    // If the dependencies have changed, release the previous object and create a new one, otherwise this has been called
-    // because of a fast refresh, and we don't want to release the object.
-    if (!newObject || !dependenciesAreEqual) {
-      objectRef.current?.release();
-      newObject = factory();
-      objectRef.current = newObject;
-      previousDependencies.current = dependencies;
-    } else {
-      isFastRefresh.current = true;
-    }
-    return newObject;
-  }, dependencies);
-
-  useEffect(() => {
-    isFastRefresh.current = false;
-
-    return () => {
-      // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
-      if (!isFastRefresh.current && objectRef.current) {
-        objectRef.current.release();
-      }
-    };
-  }, []);
-
-  return object;
 }

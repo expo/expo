@@ -1,7 +1,7 @@
 import { createPermissionHook } from 'expo-modules-core';
 
+import CameraManager from './ExpoCameraManager';
 import { PermissionResponse } from '../Camera.types';
-import CameraManager from '../ExpoCameraManager';
 
 export { default as CameraView } from './CameraView';
 

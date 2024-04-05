@@ -32,7 +32,7 @@ async function createManifestForBuildAsync(platform, possibleProjectRoot, destin
         platform,
         entryFile,
         minify: false,
-        dev: false,
+        dev: process.env.CONFIGURATION === 'Debug', // ensures debug assets packaged correctly for iOS and native debug
         sourcemapUseAbsolutePath: false,
     };
     const { server, bundleRequest } = (await (0, exportEmbedAsync_1.createMetroServerAndBundleRequestAsync)(projectRoot, options));

@@ -8,36 +8,39 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
-import com.reactnativecommunity.slider.ReactSliderPackage
 import com.horcrux.svg.SvgPackage
+import com.reactnativecommunity.picker.RNCPickerPackage
+import com.reactnativecommunity.slider.ReactSliderPackage
+import com.reactnativecommunity.webview.RNCWebViewModule
+import com.reactnativecommunity.webview.RNCWebViewPackage
 import com.reactnativepagerview.PagerViewPackage
+import com.reactnativestripesdk.StripeSdkPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
-import com.swmansion.rnscreens.RNScreensPackage
+import com.rnmaps.maps.MapsPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
+import com.swmansion.rnscreens.RNScreensPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.kotlin.ExpoBridgeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
-// WHEN_VERSIONING_REMOVE_FROM_HERE
 import host.exp.exponent.kernel.ExponentKernelModuleProvider
-// WHEN_VERSIONING_REMOVE_TO_HERE
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.utils.ScopedContext
 import org.json.JSONException
-import versioned.host.exp.exponent.modules.api.*
+import versioned.host.exp.exponent.modules.api.KeyboardModule
+import versioned.host.exp.exponent.modules.api.PedometerModule
+import versioned.host.exp.exponent.modules.api.ScreenOrientationModule
+import versioned.host.exp.exponent.modules.api.ShakeModule
+import versioned.host.exp.exponent.modules.api.URLHandlerModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
-import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage
-import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
-import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
-import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
@@ -124,6 +127,7 @@ class ExponentPackage : ReactPackage {
       try {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
+        nativeModules.add(ExpoBridgeModule(reactContext))
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))

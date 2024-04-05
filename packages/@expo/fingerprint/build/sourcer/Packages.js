@@ -31,7 +31,7 @@ async function getPackageSourceAsync(projectRoot, params) {
         return {
             type: 'contents',
             id: reason,
-            contents: JSON.stringify(require(packageJsonPath)),
+            contents: JSON.stringify(require(packageJsonPath)), // keep the json collapsed by serializing/deserializing
             reasons: [reason],
         };
     }

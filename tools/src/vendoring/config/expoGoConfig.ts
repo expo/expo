@@ -27,33 +27,6 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    '@stripe/stripe-react-native': {
-      source: 'https://github.com/stripe/stripe-react-native.git',
-      ios: {
-        async mutatePodspec(podspec: Podspec) {
-          if (!podspec.pod_target_xcconfig) {
-            podspec.pod_target_xcconfig = {};
-          }
-          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"${PODS_ROOT}/Stripe/Stripe3DS2" "${PODS_ROOT}/Headers/Public/Stripe"';
-        },
-      },
-      // android: {
-      //   excludeFiles: [
-      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonManager.kt',
-      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonView.kt',
-      //   ],
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'StripeSdkPackage.kt',
-      //         find: /, GooglePayButtonManager\(\)/,
-      //         replaceWith: '',
-      //       },
-      //     ],
-      //   },
-      // },
-    },
     'lottie-react-native': {
       source: 'lottie-react-native',
       sourceType: 'npm',
@@ -245,9 +218,6 @@ const config: VendoringTargetConfig = {
         ],
       },
     },
-    'react-native-maps': {
-      source: 'https://github.com/react-native-maps/react-native-maps',
-    },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
       ios: {
@@ -339,6 +309,9 @@ const config: VendoringTargetConfig = {
           ],
         },
       },
+      android: {
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     'react-native-safe-area-context': {
       source: 'https://github.com/th3rdwave/react-native-safe-area-context',
@@ -393,6 +366,10 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
+      ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
@@ -401,108 +378,6 @@ const config: VendoringTargetConfig = {
       android: {
         includeFiles: 'android/**',
         excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
-    '@shopify/react-native-skia': {
-      source: '@shopify/react-native-skia',
-      sourceType: 'npm',
-      ios: {
-        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
-          const vendoredRootDir = path.dirname(path.dirname(path.dirname(targetDirectory)));
-          assert(path.basename(vendoredRootDir) === 'vendored');
-          const vendoredCommonDir = path.join(vendoredRootDir, 'common');
-          const vendoredFrameworks = podspec.ios?.vendored_frameworks ?? [];
-          for (const framework of vendoredFrameworks) {
-            // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-            const sourceFrameworkPath = path.join(
-              EXPO_DIR,
-              'node_modules/@shopify/react-native-skia',
-              framework
-            );
-            const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            try {
-              await fs.unlink(sharedFrameworkPath);
-            } catch {}
-            await fs.symlink(
-              path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
-              sharedFrameworkPath
-            );
-
-            // create symlink from common lib dir to module dir, because podspec cannot specify files out of its dir.
-            const symlinkFrameworkPath = path.join(targetDirectory, framework);
-            await fs.ensureDir(path.dirname(symlinkFrameworkPath));
-            await fs.symlink(
-              path.relative(path.dirname(symlinkFrameworkPath), sharedFrameworkPath),
-              symlinkFrameworkPath
-            );
-          }
-
-          // Workaround React-bridging header search path for react-native 0.69 with `generate_multiple_pod_projects=true`
-          if (!podspec.pod_target_xcconfig) {
-            podspec.pod_target_xcconfig = {};
-          }
-          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
-        },
-      },
-      android: {
-        includeFiles: ['android/**', 'cpp/**'],
-        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
-          // create symlink from node_modules/@shopify/react-native-skia to common lib dir
-          const libs = [
-            'libskia.a',
-            'libskparagraph.a',
-            'libskshaper.a',
-            'libsvg.a',
-            'libskunicode.a',
-          ];
-          const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
-          for (const lib of libs) {
-            for (const arch of archs) {
-              const sourceLibPath = path.join(
-                EXPO_DIR,
-                'node_modules/@shopify/react-native-skia/libs/android',
-                arch,
-                lib
-              );
-              const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
-              await fs.ensureDir(path.dirname(commonLibPath));
-              try {
-                await fs.unlink(commonLibPath);
-              } catch {}
-              await fs.symlink(
-                path.relative(path.dirname(commonLibPath), sourceLibPath),
-                commonLibPath
-              );
-            }
-          }
-
-          // patch gradle and cmake files
-          const patchFile = path.join(
-            EXPOTOOLS_DIR,
-            'src/vendoring/config/react-native-skia.patch'
-          );
-          const patchContent = await fs.readFile(patchFile, 'utf8');
-          try {
-            await applyPatchAsync({
-              patchContent,
-              cwd: targetDirectory,
-              stripPrefixNum: 0,
-            });
-          } catch (e) {
-            logger.error(
-              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
-            );
-            throw e;
-          }
-        },
-      },
-    },
-    '@shopify/flash-list': {
-      source: 'https://github.com/Shopify/flash-list',
-      ios: {},
-      android: {
-        excludeFiles: ['**/src/test/**'],
       },
     },
     '@react-native-async-storage/async-storage': {

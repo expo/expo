@@ -48,12 +48,6 @@ afterEvaluate {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
-def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
-def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
-logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
-
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
   apply from: expoModulesCorePlugin
@@ -186,13 +180,8 @@ dependencies {
 
   api project(':packages:react-native:ReactAndroid')
 
-  if (!buildHermesSource) {
-    debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
-    releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
-  } else {
-    implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
-      exclude(group:'com.facebook.fbjni', module: 'fbjni')
-    }
+  implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
+    exclude(group:'com.facebook.fbjni', module: 'fbjni')
   }
 
   // Expo modules
@@ -231,6 +220,7 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics:18.3.6'
   api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
+  implementation 'com.google.android.material:material:1.3.0'
 
   api(expoLibs.fresco.animated.gif)
   api(expoLibs.fresco.animated.webp)
@@ -328,14 +318,6 @@ dependencies {
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
-  // stripe-react-native
-  implementation('com.stripe:stripe-android:20.34.+')
-  implementation('com.stripe:financial-connections:20.34.+')
-  compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-  implementation 'com.google.android.material:material:1.3.0'
-
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
 
@@ -362,3 +344,6 @@ project.afterEvaluate {
 }
 
 useVendoredModulesForExpoView('unversioned')
+
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)

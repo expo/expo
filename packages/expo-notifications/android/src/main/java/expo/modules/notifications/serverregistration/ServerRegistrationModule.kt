@@ -15,9 +15,9 @@ open class ServerRegistrationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("NotificationsServerRegistrationModule")
 
-    AsyncFunction("getInstallationIdAsync", this@ServerRegistrationModule::getInstallationId)
+    AsyncFunction<String>("getInstallationIdAsync", this@ServerRegistrationModule::getInstallationId)
 
-    AsyncFunction("getRegistrationInfoAsync") {
+    AsyncFunction<String?>("getRegistrationInfoAsync") {
       mRegistrationInfo.get()
     }
 
