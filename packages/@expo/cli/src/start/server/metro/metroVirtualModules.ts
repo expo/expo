@@ -7,12 +7,13 @@
 import { FileSystem } from 'metro-file-map';
 import Bundler from 'metro/src/Bundler';
 
-export type ExpoPatchedFileSystem = FileSystem & {
+type ExpoPatchedFileSystem = FileSystem & {
   expoVirtualModules?: Map<string, Buffer>;
 };
 
-export type ExpoPatchedBundler = Bundler & {
+type ExpoPatchedBundler = Bundler & {
   setVirtualModule: (id: string, contents: string) => void;
+  hasVirtualModule: (id: string) => boolean;
 };
 
 function ensureMetroBundlerPatchedWithSetVirtualModule(
@@ -41,10 +42,7 @@ function ensureStartsWithNullByte(id: string): string {
   return id.startsWith('\0') ? id : `\0${id}`;
 }
 
-export function getMetroBundlerWithVirtualModules(bundler: Bundler): Bundler & {
-  setVirtualModule: (id: string, contents: string) => void;
-  hasVirtualModule: (id: string) => boolean;
-} {
+export function getMetroBundlerWithVirtualModules(bundler: Bundler): ExpoPatchedBundler {
   // @ts-expect-error: private property
   if (!bundler.transformFile.__patched) {
     const originalTransformFile = bundler.transformFile.bind(bundler);
