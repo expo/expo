@@ -33,7 +33,7 @@
     ],
     "web": {
       "bundler": "metro",
-      "output": "single"
+      "output": "server"
     }
   }
 }
