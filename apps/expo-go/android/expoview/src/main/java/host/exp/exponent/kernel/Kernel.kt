@@ -66,6 +66,7 @@ import host.exp.expoview.Exponent.BundleListener
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
+import versioned.host.exp.exponent.ExpoReanimatedPackage
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
 import versioned.host.exp.exponent.ReactUnthemedRootView
@@ -236,6 +237,7 @@ class Kernel : KernelInterface() {
             .setJSBundleFile(localBundlePath)
             .setJavaScriptExecutorFactory(jsExecutorFactory)
             .addPackage(MainReactPackage())
+            .addPackage(ExpoReanimatedPackage())
             .addPackage(
               ExponentPackage.kernelExponentPackage(
                 context,

@@ -1,18 +1,9 @@
-import assert from 'assert';
 import fs from 'fs-extra';
-import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import {
-  EXPO_DIR,
-  EXPO_GO_ANDROID_DIR,
-  EXPO_GO_IOS_DIR,
-  EXPOTOOLS_DIR,
-  REACT_NATIVE_SUBMODULE_DIR,
-} from '../../Constants';
+import { EXPO_GO_ANDROID_DIR, EXPO_GO_IOS_DIR, EXPOTOOLS_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
@@ -59,132 +50,6 @@ const config: VendoringTargetConfig = {
           'android/settings.gradle',
           'android/spotless.gradle',
         ],
-      },
-    },
-    'react-native-reanimated': {
-      source: 'https://github.com/software-mansion/react-native-reanimated.git',
-      semverPrefix: '~',
-      ios: {
-        async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
-          const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
-          assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          let content = await fs.readFile(reaUtilsPath, 'utf-8');
-          content = content.replace(
-            'react_native_node_modules_dir = ',
-            `react_native_node_modules_dir = "${rnForkPath}" #`
-          );
-          await fs.writeFile(reaUtilsPath, content);
-          return podspecPath;
-        },
-        async mutatePodspec(podspec: Podspec) {
-          const reactCommonDir = path.relative(
-            EXPO_DIR,
-            path.join(REACT_NATIVE_SUBMODULE_DIR, 'ReactCommon')
-          );
-          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
-          podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
-            'HEADER_SEARCH_PATHS'
-          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
-        },
-        transforms: {
-          content: [
-            {
-              paths: 'REAUIManager.mm',
-              find: /^#import "RCT(.*).h"$/gm,
-              replaceWith: '#import <React/RCT$1.h>',
-            },
-            {
-              paths: 'REAPropsNode.m',
-              find: /^#import "React\/RCT(.*).h"$/gm,
-              replaceWith: '#import <React/RCT$1.h>',
-            },
-            {
-              // remove the `#elif __has_include(<hermes/hermes.h>)` code block
-              paths: 'NativeProxy.mm',
-              find: /#elif __has_include\(<hermes\/hermes.h>\)\n.*(#import|makeHermesRuntime).*\n/gm,
-              replaceWith: '',
-            },
-          ],
-        },
-      },
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-          'android/README.md',
-          'android/rnVersionPatch/**',
-        ],
-        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
-          const excludedBlobs = ['**/*.md'];
-
-          await fs.copy(
-            path.join(sourceDirectory, 'Common'),
-            path.join(targetDirectory, 'Common'),
-            {
-              filter: (src) => {
-                const isExcluded = excludedBlobs.some((blob) => minimatch(src, blob));
-                return !isExcluded;
-              },
-              overwrite: true,
-              errorOnExist: false,
-            }
-          );
-          const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
-          await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
-            // set reanimated version
-            {
-              find: 'def REANIMATED_VERSION = getReanimatedVersion()',
-              replaceWith: `def REANIMATED_VERSION = "${reanimatedVersion}"`,
-            },
-            {
-              find: 'def REANIMATED_MAJOR_VERSION = getReanimatedMajorVersion()',
-              replaceWith: `def REANIMATED_MAJOR_VERSION = ${reanimatedVersion.split('.')[0]}`,
-            },
-          ]);
-        },
-        transforms: {
-          content: [
-            {
-              // Always uses hermes as reanimated worklet runtime on Expo Go
-              paths: 'build.gradle',
-              find: /\b(def JS_RUNTIME = \{)/g,
-              replaceWith: '$1\n    return "hermes" // Expo Go always uses hermes\n',
-            },
-            {
-              // react-native root dir is in react-native-lab/react-native
-              paths: 'build.gradle',
-              find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
-            },
-            {
-              // no-op for extracting tasks
-              paths: 'build.gradle',
-              find: /\b(task (prepareHermes|unpackReactNativeAAR).*\{)$/gm,
-              replaceWith: `$1\n    return`,
-            },
-            {
-              // project `:ReactAndroid` to `:packages:react-native:ReactAndroid`
-              paths: 'build.gradle',
-              find: /(:ReactAndroid)/g,
-              replaceWith: ':packages:react-native:$1',
-            },
-            {
-              // compileOnly hermes-engine
-              paths: 'build.gradle',
-              find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
-              replaceWith:
-                'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
-            },
-            {
-              // expose `ReanimatedUIManagerFactory.create` publicly
-              paths: 'ReanimatedUIManagerFactory.java',
-              find: /((?<!public )static UIManagerModule create\()/g,
-              replaceWith: 'public $1',
-            },
-          ],
-        },
       },
     },
     'react-native-screens': {
