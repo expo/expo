@@ -74,7 +74,6 @@ public class ModuleRegistryAdapter implements ReactPackage {
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
-    nativeModules.add(new ExpoBridgeModule(new WeakReference<>(proxy)));
     return nativeModules;
   }
 
