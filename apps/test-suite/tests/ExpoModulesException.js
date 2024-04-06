@@ -12,6 +12,9 @@ export async function test(t) {
           ExpoModulesExceptionTest.codedException();
           t.expect(true).toBe(false);
         } catch (error) {
+          t.expect(error.message).toContain(
+            "FunctionCallException: Calling the 'codedException' function has failed"
+          );
           t.expect(error.code).toBe('E_TEST_CODE');
         }
       });
