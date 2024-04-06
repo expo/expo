@@ -1,5 +1,6 @@
 ---
-title: Testing
+title: Testing configuration for Expo Router
+sidebar_title: Testing
 description: Learn how to create integration tests for your app when using Expo Router.
 ---
 
@@ -9,7 +10,9 @@ Expo Router relies on your file system, which can present challenges when settin
 
 ## Configuration
 
-Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
+Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started) in your project.
+
+> **Note**: Since Expo router is a file-based router, do not put your test files inside the **app** directory. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing](/develop/unit-testing/#structure-your-tests).
 
 ### Jest Native Matchers (optional)
 
@@ -60,8 +63,8 @@ Providing an array of strings to `renderRouter` will create an inline mock files
 import { renderRouter, screen } from 'expo-router/testing-library';
 
 it('my-test', async () => {
-  renderRouter(["index", "directory/a", "(group)/b"], {
-      initialUrl: '/directory/a',
+  renderRouter(['index', 'directory/a', '(group)/b'], {
+    initialUrl: '/directory/a',
   });
 
   expect(screen).toHavePathname('/directory/a');
@@ -104,7 +107,6 @@ it('my-test', async () => {
 ```
 
 </APIBox>
-
 
 ## Jest matchers
 
