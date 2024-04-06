@@ -6,7 +6,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
 class AudioSource(
-  @Field val uri: String? = null
+  @Field val uri: String? = null,
+  @Field val headers: Map<String, String>?
 ) : Record
 
 class AudioMode(

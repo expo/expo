@@ -5,6 +5,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedRef
 import kotlinx.coroutines.CoroutineScope
@@ -19,13 +20,13 @@ import kotlinx.coroutines.withContext
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  mediaItem: MediaItem
+  source: MediaSource
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      addMediaItem(mediaItem)
+      addMediaSource(source)
       prepare()
     },
   appContext
@@ -48,20 +49,20 @@ class AudioPlayer(
   private fun addPlayerListeners() {
     player.addListener(object : Player.Listener {
       override fun onIsPlayingChanged(isPlaying: Boolean) {
-        sendEventOnJSThread(mapOf("isPlaying" to isPlaying))
+        playerScope.launch {
+          sendPlayerUpdate(mapOf("isPlaying" to isPlaying))
+        }
       }
 
       override fun onIsLoadingChanged(isLoading: Boolean) {
-        sendEventOnJSThread(mapOf("isLoaded" to isLoading))
-      }
-
-      override fun onPlaybackStateChanged(playbackState: Int) {
-        sendEventOnJSThread(mapOf("status" to playbackStateToString(playbackState)))
+        playerScope.launch {
+          sendPlayerUpdate(mapOf("isLoaded" to isLoading))
+        }
       }
     })
   }
 
-  private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) = withContext(Dispatchers.Main) {
+    private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) = withContext(Dispatchers.Main) {
     val isMuted = player.volume == 0f
     val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
     val isLoaded = player.playbackState == Player.STATE_READY
@@ -73,7 +74,7 @@ class AudioPlayer(
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "muted" to isMuted,
-      "duration" to if (isBuffering) 0 else player.duration,
+      "duration" to player.duration,
       "isPlaying" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,

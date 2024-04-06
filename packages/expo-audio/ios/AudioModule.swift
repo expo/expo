@@ -300,7 +300,7 @@ public class AudioModule: Module, RecordingResultHandler {
     sendEvent(recordingStatus, [
       "isFinished": true,
       "hasError": false,
-      "url": recorder.url
+      "uri": recorder.url
     ])
   }
 
@@ -309,7 +309,7 @@ public class AudioModule: Module, RecordingResultHandler {
       "isFinished": true,
       "hasError": true,
       "error": error?.localizedDescription,
-      "url": nil
+      "uri": nil
     ])
   }
 
@@ -401,16 +401,18 @@ public class AudioModule: Module, RecordingResultHandler {
     if let preferredInput {
       return preferredInput
     }
-
-    if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      if !availableInputs.isEmpty {
-        let defaultInput = availableInputs.first
-        try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
-        return defaultInput
-      }
+    
+    guard let availableInputs = AVAudioSession.sharedInstance().availableInputs else {
+      return nil
     }
 
-    return nil
+    guard !availableInputs.isEmpty else {
+      return nil
+    }
+    
+    let defaultInput = availableInputs.first
+    try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
+    return defaultInput
   }
 
   private func createRecorder(url: URL?, with options: RecordingOptions) -> AVAudioRecorder {

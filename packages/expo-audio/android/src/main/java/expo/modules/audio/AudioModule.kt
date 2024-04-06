@@ -3,17 +3,36 @@ package expo.modules.audio
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.media3.common.C.CONTENT_TYPE_DASH
+import androidx.media3.common.C.CONTENT_TYPE_HLS
+import androidx.media3.common.C.CONTENT_TYPE_OTHER
+import androidx.media3.common.C.CONTENT_TYPE_SS
 import androidx.media3.common.C.VOLUME_FLAG_ALLOW_RINGER_MODES
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.RawResourceDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -22,6 +41,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -29,6 +49,8 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
@@ -54,13 +76,20 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource ->
+        val builder = OkHttpClient().newBuilder()
+        val factory = OkHttpDataSource.Factory(builder.build()).apply {
+          source.headers?.let {
+            setDefaultRequestProperties(it)
+          }
+          DefaultDataSource.Factory(context, this)
+        }
+
+        val mediaSource = buildMediaSourceFactory(factory, Uri.parse(source.uri))
         runBlocking(appContext.mainQueue.coroutineContext) {
           AudioPlayer(
-            activity.applicationContext,
+            context,
             appContext,
-            MediaItem.Builder()
-              .setUri(source.uri ?: "")
-              .build()
+            mediaSource
           )
         }
       }
@@ -180,6 +209,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       }
 
       Property("currentTime") { ref ->
+        ref.uptime
       }
 
       Function("record") { ref: AudioRecorder ->
@@ -195,6 +225,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
           ref.isRecording = true
           ref.recorder.start()
         }
+        ref.uptime = SystemClock.uptimeMillis()
       }
 
       Function("pause") { ref: AudioRecorder ->
@@ -214,6 +245,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
       Function("getStatus") { ref: AudioRecorder ->
         checkRecordingPermission()
+        ref.getAudioRecorderStatus()
       }
 
       Function("getAvailableInputs") {
@@ -229,6 +261,33 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     } else {
       null
     }
+  }
+
+  private fun retrieveStreamType(uri: Uri): Int =
+    Util.inferContentType(uri)
+
+  private fun buildMediaSourceFactory(
+    factory: DataSource.Factory,
+    uri: Uri
+  ): MediaSource {
+    var newUri = uri
+    try {
+      if (uri.scheme == null) {
+        val resourceId: Int = context.resources?.getIdentifier(uri.toString(), "raw", context.packageName)
+          ?: 0
+        newUri = Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).path(resourceId.toString()).build()
+      }
+    } catch (e: Exception) {
+      Log.e("AudioModule", "Error reading raw resource from ExoPlayer", e)
+    }
+    val source =  when (val type = retrieveStreamType(newUri)) {
+      CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
+      CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
+      CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
+      CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
+      else -> throw IllegalStateException("Unsupported type: $type");
+    }
+    return source.createMediaSource(MediaItem.fromUri(uri))
   }
 
   private fun checkRecordingPermission() {
