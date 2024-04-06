@@ -112,7 +112,8 @@
       if (error == nil) {
         return expo::convertObjCObjectToJSIValue(runtime, result);
       } else {
-        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+        jsi::Value codedError = expo::makeCodedError(runtime, error.userInfo[@"code"], error.userInfo[@"message"]);
+        throw jsi::JSError(runtime, jsi::Value(runtime, codedError));
       }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];

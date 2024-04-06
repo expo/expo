@@ -79,4 +79,12 @@ internal class FunctionCallException: GenericException<String> {
   override var reason: String {
     "Calling the '\(param)' function has failed"
   }
+
+  override var code: String {
+    if let cause = cause as? Exception {
+      return cause.code
+    } else {
+      return super.code
+    }
+  }
 }
