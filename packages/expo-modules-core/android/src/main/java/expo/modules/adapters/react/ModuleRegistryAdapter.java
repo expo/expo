@@ -5,6 +5,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -73,7 +74,6 @@ public class ModuleRegistryAdapter implements ReactPackage {
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
-    nativeModules.add(new ExpoBridgeModule(reactContext));
     return nativeModules;
   }
 
@@ -97,6 +97,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
       nativeModulesList.addAll(reactPackage.createNativeModules(reactContext));
     }
 
+    nativeModulesList.add(new ExpoBridgeModule(new WeakReference<>(nativeModulesProxy)));
     return nativeModulesList;
   }
 
