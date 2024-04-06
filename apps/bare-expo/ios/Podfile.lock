@@ -1873,7 +1873,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.6.0):
+  - RNReanimated (3.8.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2618,13 +2618,13 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 7b38b71bcd7c4cfa1cb95f2dff9a4f1faed2dced
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: ce6dc347cb4edb664bfc250fc37cd753ae7432ec
-  RNReanimated: ba5db5a81395c0cac529dbb1719453dd5c4c6f24
+  RNReanimated: d15d28f8cd7039c6c19f23f81c52574be8d06942
   RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482

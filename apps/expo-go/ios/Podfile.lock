@@ -1643,33 +1643,25 @@ PODS:
     - React-Core
   - RNGestureHandler (2.14.0):
     - React-Core
-  - RNReanimated (3.6.0):
+  - RNReanimated (3.8.1):
     - DoubleConversion
-    - FBLazyVector
     - glog
     - hermes-engine
-    - RCT-Folly
+    - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
-    - React-callinvoker
+    - React-Codegen
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTAppDelegate
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.27.0):
@@ -1908,7 +1900,7 @@ DEPENDENCIES:
   - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
-  - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - RNSVG (from `./vendored/unversioned/react-native-svg`)
   - SocketRocket
@@ -2221,7 +2213,7 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "./vendored/unversioned/react-native-gesture-handler"
   RNReanimated:
-    :path: "./vendored/unversioned/react-native-reanimated"
+    :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "./vendored/unversioned/react-native-screens"
   RNSVG:
@@ -2317,7 +2309,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 74016895c43ca6a114a1ff45b5aafeef1131f35b
+  hermes-engine: 81feb4c9d990b598dd1026db11a411688c9b8249
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -2389,13 +2381,13 @@ SPEC CHECKSUMS:
   RNCPicker: 82ccad5b08259dc09310082118cbb6c136d7da67
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
-  RNReanimated: d5a8d8f30dd0eae33a861240ad909bdcbb4ba282
+  RNReanimated: d15d28f8cd7039c6c19f23f81c52574be8d06942
   RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
