@@ -1,0 +1,24 @@
+extends: substitution
+message: "Avoid vague text in links such as '%s' unless you can pair it with more descriptive text."
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#linking-to-other-docs'
+ignorecase: true
+scope: raw
+nonword: true
+level: warning
+
+swap:
+  # For the word 'here' in Markdown and HTML links
+  '\[here\]\(.*?\)': 'here'
+  '<a\s*href\s*=\s*".*?".*?>\s*here\s*</a>': 'here'
+
+  # For the word 'this' in Markdown and HTML links
+  '\[this\]\(.*?\)': 'this'
+  '<a\s*href\s*=\s*".*?".*?>\s*this\s*</a>': 'this'
+
+  # # For the word 'page' in Markdown and HTML links
+  # '\[page\]\(.*?\)': 'page'
+  # '<a\s*href\s*=\s*".*?".*?>\s*page\s*</a>': 'page'
+
+  # # For the phrase 'this page' in Markdown and HTML links
+  # '\[this page\]\(.*?\)': 'this page'
+  # '<a\s*href\s*=\s*".*?".*?>\s*this page\s*</a>': 'this page'
