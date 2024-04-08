@@ -85,7 +85,7 @@
   "react-dom": "18.2.0",
   "react-native": "0.74.0-rc.6",
   "react-native-web": "~0.19.10",
-  "react-native-gesture-handler": "~2.14.0",
+  "react-native-gesture-handler": "~2.16.0",
   "react-native-get-random-values": "~1.8.0",
   "react-native-maps": "1.13.0",
   "react-native-pager-view": "6.2.3",
