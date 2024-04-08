@@ -784,7 +784,7 @@ it('ignores API routes with platform extensions', () => {
       }
     );
   }).toThrowErrorMatchingInlineSnapshot(
-    `"API routes do not support platform extensions. Remove '.web' from './folder/two+api.web.tsx'"`
+    `"Api routes cannot have platform extensions. Please remove '.web' from './folder/two+api.web.tsx'"`
   );
 });
 
