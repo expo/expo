@@ -17,6 +17,7 @@
 
 ### 🐛 Bug fixes
 
+- Remove "shortcut" from `rel="icon"` as it's not part of the linkTypes spec. ([#28094](https://github.com/expo/expo/pull/28094) by [@hirbod](https://github.com/hirbod))
 - Add missing nested Node.js externals. ([#28092](https://github.com/expo/expo/pull/28092) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
