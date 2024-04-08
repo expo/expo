@@ -304,6 +304,256 @@ export interface Splash {
   image?: string;
   [k: string]: any;
 }
+
+type FileTimestampPrivacyReasons =
+  /**
+   * Declare this reason to display file timestamps to the person using the device.
+   *
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   */
+  | 'DDA9.1'
+  /**
+   * Declare this reason to access the timestamps, size, or other metadata of files inside
+   * the app container, app group container, or the app’s CloudKit container.
+   */
+  | 'C617.1'
+  /**
+   * Declare this reason to access the timestamps, size, or other metadata of files or directories
+   * that the user specifically granted access to, such as using a document picker view controller.
+   */
+  | '3B52.1'
+  /**
+   * Declare this reason if your third-party SDK is providing a wrapper function around file timestamp API(s) for the app to use,
+   * and you only access the file timestamp APIs when the app calls your wrapper function. This reason may only be declared by third-party SDKs.
+   * This reason may not be declared if your third-party SDK was created primarily to wrap required reason API(s).
+   *
+   * Information accessed for this reason, or any derived information, may not be used for your third-party SDK’s own purposes or sent off-device by your third-party SDK.
+   */
+  | '0A2A.1';
+
+type SystemBootTimePrivacyReasons =
+  /**
+   * Declare this reason to access the system boot time in order to measure the amount of time that
+   * has elapsed between events that occurred within the app or to perform calculations to enable timers.
+   *
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   * There is an exception for information about the amount of time that has elapsed between events that occurred within the app, which may be sent off-device.
+   */
+  | '35F9.1'
+  /**
+   * Declare this reason to access the system boot time to calculate absolute timestamps for events
+   * that occurred within your app, such as events related to the UIKit or AVFAudio frameworks.
+   *
+   * Absolute timestamps for events that occurred within your app may be sent off-device.
+   * System boot time accessed for this reason, or any other information derived from system boot time, may not be sent off-device.
+   */
+  | '8FFB.1'
+  /**
+   * Declare this reason to include system boot time information in an optional bug report that the person using the device chooses to submit.
+   * The system boot time information must be prominently displayed to the person as part of the report.
+   *
+   * Information accessed for this reason, or any derived information, may be sent off-device only after
+   * the user affirmatively chooses to submit the specific bug report including system boot time information,
+   * and only for the purpose of investigating or responding to the bug report.
+   */
+  | '3D61.1';
+
+type DiskSpacePrivacyReasons =
+  /**
+   * Declare this reason to display disk space information to the person using the device.
+   * Disk space may be displayed in units of information (such as bytes) or units of time combined with a media type (such as minutes of HD video).
+   *
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   * There is an exception that allows the app to send disk space information over the local network
+   * to another device operated by the same person only for the purpose of displaying disk space information on that device; this exception only applies if the user has provided explicit permission to send disk space information, and the information may not be sent over the Internet.
+   */
+  | '85F4.1'
+  /**
+   * Declare this reason to check whether there is sufficient disk space to write files,
+   * or to check whether the disk space is low so that the app can delete files when the disk space is low.
+   * The app must behave differently based on disk space in a way that is observable to users.
+   *
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   * There is an exception that allows the app to avoid downloading files from a server when disk space is insufficient.
+   */
+  | 'E174.1'
+  /**
+   * Declare this reason to include disk space information in an optional bug report that the person
+   * using the device chooses to submit. The disk space information must be prominently displayed to the person as part of the report.
+   *
+   * Information accessed for this reason, or any derived information, may be sent off-device only
+   * after the user affirmatively chooses to submit the specific bug report including disk space information,
+   * and only for the purpose of investigating or responding to the bug report.
+   */
+  | '7D9E.1'
+  /**
+   * Declare this reason if your app is a health research app, and you access this API category to detect
+   * and inform research participants about low disk space impacting the research data collection.
+   *
+   * Your app must comply with App Store Review Guideline §5.1.3. Your app must not offer any functionality
+   * other than providing information about and allowing people to participate in health research.
+   */
+  | 'B728.1';
+
+type ActiveKeyboardsPrivacyReasons =
+  /**
+   * Declare this reason if your app is a custom keyboard app, and you access this API category to determine the keyboards that are active on the device.
+   * Providing a systemwide custom keyboard to the user must be the primary functionality of the app.
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   */
+  | '3EC4.1'
+  /**
+   * Declare this reason to access active keyboard information to present the correct customized user interface to the person using the device.
+   * The app must have text fields for entering or editing text and must behave differently based on active keyboards in a way that is observable to users.
+   *
+   * Information accessed for this reason, or any derived information, may not be sent off-device.
+   */
+  | '54BD.1';
+
+type UserDefaultsPrivacyReasons =
+  /**
+   * Declare this reason to access user defaults to read and write information that is only accessible to the app itself.
+   *
+   * This reason does not permit reading information that was written by other apps or the system, or writing information that can be accessed by other apps.
+   */
+  | 'CA92.1'
+
+  /**
+   * Declare this reason to access user defaults to read and write information that is only accessible
+   * to the apps, app extensions, and App Clips that are members of the same App Group as the app itself.
+   *
+   * This reason does not permit reading information that was written by apps, app extensions, or
+   * App Clips outside the same App Group or by the system. Your app is not responsible
+   * if the system provides information from the global domain because a key is not present in your requested domain
+   * while your app is attempting to read information that apps, app extensions, or App Clips in your app’s App Group write.
+   *
+   * This reason also does not permit writing information that can be accessed by apps, app extensions, or App Clips outside the same App Group.
+   */
+  | '1C8F.1'
+  /**
+   * Declare this reason if your third-party SDK is providing a wrapper function around user defaults API(s) for the app to use,
+   * and you only access the user defaults APIs when the app calls your wrapper function.
+   * This reason may only be declared by third-party SDKs.
+   * This reason may not be declared if your third-party SDK was created primarily to wrap required reason API(s).
+   *
+   * Information accessed for this reason, or any derived information, may not be used for your third-party SDK’s own purposes or sent off-device by your third-party SDK.
+   */
+  | 'C56D.1'
+  /**
+   * Declare this reason to access user defaults to read the com.apple.configuration.managed key to retrieve the managed app configuration set by MDM,
+   * or to set the com.apple.feedback.managed key to store feedback information to be queried over MDM,
+   * as described in the Apple Mobile Device Management Protocol Reference documentation.
+   */
+  | 'AC6B.1';
+
+type NSPrivacyAccessedAPITypes =
+  | {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp';
+      NSPrivacyAccessedAPITypeReasons: FileTimestampPrivacyReasons[];
+    }
+  | {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime';
+      NSPrivacyAccessedAPITypeReasons: SystemBootTimePrivacyReasons[];
+    }
+  | {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace';
+      NSPrivacyAccessedAPITypeReasons: DiskSpacePrivacyReasons[];
+    }
+  | {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryActiveKeyboards';
+      NSPrivacyAccessedAPITypeReasons: ActiveKeyboardsPrivacyReasons[];
+    }
+  | {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults';
+      NSPrivacyAccessedAPITypeReasons: UserDefaultsPrivacyReasons[];
+    };
+
+type NSPrivacyCollectedDataType =
+  // Such as first or last name.
+  | 'NSPrivacyCollectedDataTypeName'
+  // Including but not limited to a hashed email address.
+  | 'NSPrivacyCollectedDataTypeEmailAddress'
+  // Including but not limited to a hashed phone number.
+  | 'NSPrivacyCollectedDataTypePhoneNumber'
+  // Such as home address, physical address, or mailing address.
+  | 'NSPrivacyCollectedDataTypePhysicalAddress'
+  // Any other information that can be used to contact the user outside the app.
+  | 'NSPrivacyCollectedDataTypeOtherUserContactInfo'
+  // Health and medical data, including but not limited to data from the Clinical Health Records API, HealthKit API, MovementDisorderAPIs, or health-related human subject research or any other user provided health or medical data.
+  | 'NSPrivacyCollectedDataTypeHealth'
+  // Fitness and exercise data, including but not limited to the Motion and Fitness API.
+  | 'NSPrivacyCollectedDataTypeFitness'
+  // Such as form of payment, payment card number, or bank account number. If your app uses a payment service, the payment information is entered outside your app, and you as the developer never have access to the payment information, it is not collected and does not need to be disclosed.
+  | 'NSPrivacyCollectedDataTypePaymentInfo'
+  // Such as credit score.
+  | 'NSPrivacyCollectedDataTypeCreditInfo'
+  // Such as salary, income, assets, debts, or any other financial information.
+  | 'NSPrivacyCollectedDataTypeOtherFinancialInfo'
+  // Information that describes the location of a user or device with the same or greater resolution as a latitude and longitude with three or more decimal places.
+  | 'NSPrivacyCollectedDataTypePreciseLocation'
+  // Information that describes the location of a user or device with lower resolution than a latitude and longitude with three or more decimal places, such as Approximate Location Services.
+  | 'NSPrivacyCollectedDataTypeCoarseLocation'
+  // Such as racial or ethnic data, sexual orientation, pregnancy or childbirth information, disability, religious or philosophical beliefs, trade union membership, political opinion, genetic information, or biometric data.
+  | 'NSPrivacyCollectedDataTypeSensitiveInfo'
+  // Such as a list of contacts in the user’s phone, address book, or social graph.
+  | 'NSPrivacyCollectedDataTypeContacts'
+  // Including subject line, sender, recipients, and contents of the email or message.
+  | 'NSPrivacyCollectedDataTypeEmailsOrTextMessages'
+  // The user’s photos or videos.
+  | 'NSPrivacyCollectedDataTypePhotosorVideos'
+  // The user’s voice or sound recordings.
+  | 'NSPrivacyCollectedDataTypeAudioData'
+  // Such as saved games, multiplayer matching or gameplay logic, or user-generated content in-game.
+  | 'NSPrivacyCollectedDataTypeGameplayContent'
+  // Data generated by the user during a customer support request.
+  | 'NSPrivacyCollectedDataTypeCustomerSupport'
+  // Any other user-generated content.
+  | 'NSPrivacyCollectedDataTypeOtherUserContent'
+  // Information about content the user has viewed that is not part of the app, such as websites.
+  | 'NSPrivacyCollectedDataTypeBrowsingHistory'
+  // Information about searches performed in the app.
+  | 'NSPrivacyCollectedDataTypeSearchHistory'
+  // Such as screen name, handle, account ID, assigned user ID, customer number, or other user- or account-level ID that can be used to identify a particular user or account.
+  | 'NSPrivacyCollectedDataTypeUserID'
+  // Such as the device’s advertising identifier, or other device-level ID.
+  | 'NSPrivacyCollectedDataTypeDeviceID'
+  // An account’s or individual’s purchases or purchase tendencies.
+  | 'NSPrivacyCollectedDataTypePurchaseHistory'
+  // Such as app launches, taps, clicks, scrolling information, music listening data, video views, saved place in a game, video, or song, or other information about how the user interacts with the app.
+  | 'NSPrivacyCollectedDataTypeProductInteraction'
+  // Such as information about the advertisements the user has seen.
+  | 'NSPrivacyCollectedDataTypeAdvertisingData'
+  // Any other data about user activity in the app.
+  | 'NSPrivacyCollectedDataTypeOtherUsageData'
+  // Such as crash logs.
+  | 'NSPrivacyCollectedDataTypeCrashData'
+  // Such as launch time, hang rate, or energy use.
+  | 'NSPrivacyCollectedDataTypePerformanceData'
+  // Any other data collected for the purposes of measuring technical diagnostics related to the app.
+  | 'NSPrivacyCollectedDataTypeOtherDiagnosticData'
+  // Such as mesh, planes, scene classification, and/or image detection of the user’s surroundings.
+  | 'NSPrivacyCollectedDataTypeEnvironmentScanning'
+  // The user’s hand structure and hand movements.
+  | 'NSPrivacyCollectedDataTypeHands'
+  // The user’s head movement.
+  | 'NSPrivacyCollectedDataTypeHead'
+  // Any other data types not mentioned.
+  | 'NSPrivacyCollectedDataTypeOtherDataTypes';
+
+type NSPrivacyCollectedDataTypePurpose =
+  // Such as displaying third-party ads in your app, or sharing data with entities who display third-party ads.
+  | 'NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising'
+  // Such as displaying first-party ads in your app, sending marketing communications directly to your users, or sharing data with entities who will display your ads.
+  | 'NSPrivacyCollectedDataTypePurposeDeveloperAdvertising'
+  // Using data to evaluate user behavior, including to understand the effectiveness of existing product features, plan new features, or measure audience size or characteristics.
+  | 'NSPrivacyCollectedDataTypePurposeAnalytics'
+  // Customizing what the user sees, such as a list of recommended products, posts, or suggestions.
+  | 'NSPrivacyCollectedDataTypePurposeProductPersonalization'
+  // Such as to authenticate the user, enable features, prevent fraud, implement security measures, ensure server up-time, minimize app crashes, improve scalability and performance, or perform customer support.
+  | 'NSPrivacyCollectedDataTypePurposeAppFunctionality'
+  // Any other purposes not listed.
+  | 'NSPrivacyCollectedDataTypePurposeOther';
+
 /**
  * Configuration that is specific to the iOS platform.
  */
@@ -408,17 +658,14 @@ export interface IOS {
    * Configuration to add to your app's native *.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
    */
   privacyManifests?: {
-    NSPrivacyAccessedAPITypes?: {
-      NSPrivacyAccessedAPIType: string;
-      NSPrivacyAccessedAPITypeReasons: string[];
-    }[];
+    NSPrivacyAccessedAPITypes: NSPrivacyAccessedAPITypes[];
     NSPrivacyTrackingDomains?: string[];
     NSPrivacyTracking?: boolean;
     NSPrivacyCollectedDataTypes?: {
-      NSPrivacyCollectedDataType: string;
+      NSPrivacyCollectedDataType: NSPrivacyCollectedDataType;
       NSPrivacyCollectedDataTypeLinked: boolean;
       NSPrivacyCollectedDataTypeTracking: boolean;
-      NSPrivacyCollectedDataTypePurposes: string[];
+      NSPrivacyCollectedDataTypePurposes: NSPrivacyCollectedDataTypePurpose[];
     }[];
   };
   /**
