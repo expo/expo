@@ -26,22 +26,6 @@ file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.proper
 //maven repository info
 group = 'host.exp.exponent'
 version = '45.0.0'
-
-afterEvaluate {
-  publishing {
-    publications {
-      // use `versionedRelease` configuration when publishing to maven
-      versionedRelease(MavenPublication) {
-        from components.release
-      }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
-      }
-    }
-  }
-}
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -97,12 +81,6 @@ android {
   buildTypes {
     release {
       consumerProguardFiles('proguard-rules.pro')
-    }
-  }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
     }
   }
 }
