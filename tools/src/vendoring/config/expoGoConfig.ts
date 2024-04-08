@@ -169,10 +169,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    'react-native-safe-area-context': {
-      source: 'https://github.com/th3rdwave/react-native-safe-area-context',
-      ios: {},
-    },
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
       // TODO: Uncomment the following once the new vendoring scripts support Android
