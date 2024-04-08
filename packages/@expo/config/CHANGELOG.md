@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Make `privacyManifests` config strongly typed. ([#28079](https://github.com/expo/expo/pull/28079) by [@sarjuhansaliya](https://github.com/sarjuhansaliya))
+
 ### 💡 Others
 
 ### 📚 3rd party library updates
