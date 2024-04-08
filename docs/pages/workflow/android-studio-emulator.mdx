@@ -33,13 +33,18 @@ Open the **Android Studio** app, click **More Actions** and select **SDK Manager
 
 Open Android Studio, go to **Settings** &gt; **Languages & Frameworks** &gt; **Android SDK**. From the **SDK Platforms** tab, select the latest Android version (API level).
 
-<ImageSpotlight alt="Android SDK Platforms" src="/static/images/android-studio/sdk-platforms.png" />
+<ImageSpotlight
+  alt="Android SDK Platforms"
+  src="/static/images/android-studio/sdk-platforms.png"
+  style={{ maxWidth: 640 }}
+/>
 
 Then, click on the **SDK Tools** tab and make sure you have at least one version of the **Android SDK Build-Tools** and **Android Emulator** installed.
 
 <ImageSpotlight
   alt="Android SDK build tools."
   src="/static/images/android-studio/build-tools.png"
+  style={{ maxWidth: 640 }}
 />
 </Step>
 
@@ -49,6 +54,7 @@ Copy or remember the path listed in the box that says **Android SDK Location**.
 <ImageSpotlight
   alt="Android SDK location."
   src="/static/images/android-studio/sdk-location.png"
+  style={{ maxWidth: 640 }}
 />
 </Step>
 
@@ -79,13 +85,9 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 Reload the path environment variables in your current shell:
 
-<Terminal cmd={[
-  '# for zsh',
-  '$ source $HOME/.zshrc',
-  '',
-  '# for bash',
-  '$ source $HOME/.bashrc',
-]} />
+<Terminal
+  cmd={['# for zsh', '$ source $HOME/.zshrc', '', '# for bash', '$ source $HOME/.bashrc']}
+/>
 
 </Step>
 
@@ -118,6 +120,7 @@ In the Android Studio Setup Wizard, under **Install Type**, select **Standard** 
 <ImageSpotlight
   alt="Android Studio Setup Wizard asks for the type of installation."
   src="/static/images/android-studio/windows-install-type.png"
+  style={{ maxWidth: 600 }}
 />
 
 </Step>
@@ -135,6 +138,7 @@ In the next window, accept licenses for all available components.
 <ImageSpotlight
   alt="Android Studio Setup Wizard asks to accept various licenses to install the tools."
   src="/static/images/android-studio/windows-licenses.png"
+  style={{ maxWidth: 600 }}
 />
 
 </Step>
@@ -146,6 +150,7 @@ After the tools installation is complete, configure the `ANDROID_HOME` environme
 <ImageSpotlight
   alt="Setting up ANDROID_HOME user variable."
   src="/static/images/android-studio/windows-android-home-variable.png"
+  style={{ maxWidth: 480 }}
 />
 
 <Collapsible summary="How to find installed SDK location">
@@ -161,6 +166,7 @@ To find the location of the SDK in Android Studio manually, go to **Settings** >
 <ImageSpotlight
   alt="Android SDK location in Android Studio Settings."
   src="/static/images/android-studio/windows-android-sdk-location.png"
+  style={{ maxWidth: 400 }}
 />
 
 </Collapsible>
@@ -184,6 +190,7 @@ To add platform-tools to the Path, go to **Windows Control Panel** > **User Acco
 <ImageSpotlight
   alt="Setting up platform-tools user variable."
   src="/static/images/android-studio/windows-platform-tools-path.png"
+  style={{ maxWidth: 480 }}
 />
 
 <Collapsible summary="How to find installed platform-tools location">
@@ -216,6 +223,7 @@ On the Android Studio main screen, click **More Actions**, then **Virtual Device
 <ImageSpotlight
   alt="Android Studio configure."
   src="/static/images/android-studio/virtual-device.png"
+  style={{ maxWidth: 640 }}
 />
 
 </Step>
@@ -227,6 +235,7 @@ Click the **Create device** button.
 <ImageSpotlight
   alt="Android Studio create virtual device."
   src="/static/images/android-studio/create-device.png"
+  style={{ maxWidth: 640 }}
 />
 
 </Step>
@@ -238,6 +247,7 @@ Under **Select Hardware**, choose the type of hardware you'd like to emulate. We
 <ImageSpotlight
   alt="Android Studio create virtual device hardware selection."
   src="/static/images/android-studio/select-hardware.png"
+  style={{ maxWidth: 640 }}
 />
 
 </Step>
@@ -249,6 +259,7 @@ Select an OS version to load on the emulator (probably one of the system images 
 <ImageSpotlight
   alt="Android Studio create virtual device os selection."
   src="/static/images/android-studio/select-os.png"
+  style={{ maxWidth: 640 }}
 />
 
 </Step>
