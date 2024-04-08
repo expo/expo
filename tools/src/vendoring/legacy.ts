@@ -537,21 +537,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'lottie-react-native': {
-    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        iosPrefix: 'LRN',
-        sourceIosPath: 'src/ios/LottieReactNative',
-        targetIosPath: 'Api/Components/Lottie',
-        sourceAndroidPath: 'src/android/src/main/java/com/airbnb/android/react/lottie',
-        targetAndroidPath: 'modules/api/components/lottie',
-        sourceAndroidPackage: 'com.airbnb.android.react.lottie',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
-      },
-    ],
-  },
   'react-native-svg': {
     repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     installableInManagedApps: true,
