@@ -1,7 +1,7 @@
-import { FileStub } from './context-stubs';
-export type MockContextConfig = string | string[] | Record<string, FileStub> | {
+import { MemoryContext } from './context-stubs';
+export type MockContextConfig = string | string[] | MemoryContext | {
     appDir: string;
-    overrides: Record<string, FileStub>;
+    overrides: MemoryContext;
 };
 export declare function getMockConfig(context: MockContextConfig, metaOnly?: boolean): {
     initialRouteName: string | undefined;

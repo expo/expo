@@ -2,6 +2,7 @@
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
 import Constants from 'expo-constants';
+import Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -96,15 +97,7 @@ function ContextNavigator({
     return contextType;
   }, []);
 
-  // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
-  // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
-  // So we need to ensure that the linking.getInitialURL is set to the initial location
-  const serverContextLocation = serverContext.location;
-  if (serverContextLocation && !linking.getInitialURL) {
-    linking.getInitialURL = () => {
-      return `${serverContextLocation.pathname}${serverContextLocation.search}`;
-    };
-  }
+  linking = getNativeLinking(context, linking, serverContext.location);
 
   const store = useInitializeExpoRouter(context, linking);
 
@@ -186,4 +179,64 @@ if (process.env.NODE_ENV !== 'production') {
   };
 } else {
   onUnhandledAction = function () {};
+}
+
+function getNativeLinking(
+  context: RequireContext,
+  linking: Partial<ExpoLinkingOptions>,
+  serverLocation: ServerContextType['location']
+): Partial<ExpoLinkingOptions> {
+  const serverUrl = serverLocation
+    ? `${serverLocation.pathname}${serverLocation.search}`
+    : undefined;
+
+  if (Platform.OS === 'web') {
+    // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
+    // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
+    // So we need to ensure that the linking.getInitialURL is set to the initial location
+    if (serverLocation && !linking.getInitialURL) {
+      linking.getInitialURL = () => serverUrl;
+    }
+
+    return linking;
+  }
+
+  // Get the +native file from the context
+  const nativeLinkingKey = context.keys().find((key) => key.match(/^\.\/\+native\.[tj]sx?$/));
+  const nativeLinking = nativeLinkingKey ? context(nativeLinkingKey) : undefined;
+
+  return {
+    ...linking,
+    getInitialURL() {
+      if (linking.getInitialURL) {
+        return linking.getInitialURL();
+      } else if (nativeLinking?.redirectSystemPath) {
+        if (serverUrl) {
+          // Ensure we initialize the router with the SSR location if present
+          return nativeLinking.redirectSystemPath({ url: serverUrl, initial: true });
+        } else {
+          return Linking.getInitialURL().then((url) => {
+            return nativeLinking.redirectSystemPath({ url, initial: true });
+          });
+        }
+      } else {
+        return serverUrl;
+      }
+    },
+    subscribe(listener) {
+      if (linking.subscribe) {
+        return linking.subscribe(listener);
+      }
+
+      const subscription = Linking.addEventListener('url', async ({ url }) => {
+        if (nativeLinking.redirectSystemPath) {
+          listener(await nativeLinking.redirectSystemPath({ url, initial: false }));
+        } else {
+          listener(url);
+        }
+      });
+
+      return () => subscription.remove();
+    },
+  };
 }

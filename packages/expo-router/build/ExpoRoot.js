@@ -29,6 +29,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
 const expo_constants_1 = __importDefault(require("expo-constants"));
+const expo_linking_1 = __importDefault(require("expo-linking"));
 const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
@@ -95,15 +96,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
         return contextType;
     }, []);
-    // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
-    // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
-    // So we need to ensure that the linking.getInitialURL is set to the initial location
-    const serverContextLocation = serverContext.location;
-    if (serverContextLocation && !linking.getInitialURL) {
-        linking.getInitialURL = () => {
-            return `${serverContextLocation.pathname}${serverContextLocation.search}`;
-        };
-    }
+    linking = getNativeLinking(context, linking, serverContext.location);
     const store = (0, router_store_1.useInitializeExpoRouter)(context, linking);
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
@@ -166,5 +159,58 @@ if (process.env.NODE_ENV !== 'production') {
 }
 else {
     onUnhandledAction = function () { };
+}
+function getNativeLinking(context, linking, serverLocation) {
+    const serverUrl = serverLocation
+        ? `${serverLocation.pathname}${serverLocation.search}`
+        : undefined;
+    if (react_native_1.Platform.OS === 'web') {
+        // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
+        // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
+        // So we need to ensure that the linking.getInitialURL is set to the initial location
+        if (serverLocation && !linking.getInitialURL) {
+            linking.getInitialURL = () => serverUrl;
+        }
+        return linking;
+    }
+    // Get the +native file from the context
+    const nativeLinkingKey = context.keys().find((key) => key.match(/^\.\/\+native\.[tj]sx?$/));
+    const nativeLinking = nativeLinkingKey ? context(nativeLinkingKey) : undefined;
+    return {
+        ...linking,
+        getInitialURL() {
+            if (linking.getInitialURL) {
+                return linking.getInitialURL();
+            }
+            else if (nativeLinking?.redirectSystemPath) {
+                if (serverUrl) {
+                    // Ensure we initialize the router with the SSR location if present
+                    return nativeLinking.redirectSystemPath({ url: serverUrl, initial: true });
+                }
+                else {
+                    return expo_linking_1.default.getInitialURL().then((url) => {
+                        return nativeLinking.redirectSystemPath({ url, initial: true });
+                    });
+                }
+            }
+            else {
+                return serverUrl;
+            }
+        },
+        subscribe(listener) {
+            if (linking.subscribe) {
+                return linking.subscribe(listener);
+            }
+            const subscription = expo_linking_1.default.addEventListener('url', async ({ url }) => {
+                if (nativeLinking.redirectSystemPath) {
+                    listener(await nativeLinking.redirectSystemPath({ url, initial: false }));
+                }
+                else {
+                    listener(url);
+                }
+            });
+            return () => subscription.remove();
+        },
+    };
 }
 //# sourceMappingURL=ExpoRoot.js.map
