@@ -493,20 +493,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/netinfo': {
-    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/NetInfo',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
-        targetAndroidPath: 'modules/api/netinfo',
-        sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
-      },
-    ],
-  },
   'react-native-webview': {
     repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
     installableInManagedApps: true,
