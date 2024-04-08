@@ -1376,7 +1376,7 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.3):
     - React-Core
-  - react-native-safe-area-context (4.8.2):
+  - react-native-safe-area-context (4.10.0-rc.1):
     - React-Core
   - react-native-segmented-control (2.4.1):
     - React-Core
@@ -1887,7 +1887,7 @@ DEPENDENCIES:
   - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
-  - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
+  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
@@ -2168,7 +2168,7 @@ EXTERNAL SOURCES:
   react-native-pager-view:
     :path: "./vendored/unversioned/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "./vendored/unversioned/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-skia:
@@ -2252,7 +2252,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXApplication: 885cfd16a950e18cf8be3051f08c8db00fdbf6ac
   EXAV: 69adaa7433e7123a7dc9df9841fd80e954916d2d
@@ -2368,7 +2368,7 @@ SPEC CHECKSUMS:
   react-native-maps: fa054512735831f232e822ee6bdb0afcdd88de4a
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
-  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
+  react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 9ede31b12c287a93564a1b24db151749ae931eb4
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
@@ -2419,9 +2419,9 @@ SPEC CHECKSUMS:
   StripePaymentsUI: 1f0cbac9145149fbbb87e27660af0d3be91aae98
   StripeUICore: d6803286f1e2b80c62c320b304503c87bf65de3c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
-  Yoga: 23e49e26d83fc88956084a85f4190563fa1b655e
+  Yoga: 752c49a827984ffb251f347dffa1fc70762b22d7
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.15.2
