@@ -52,7 +52,7 @@ export async function getVirtualFaviconAssetsAsync(
     }
     return html.replace(
       '</head>',
-      `<link rel="shortcut icon" href="${baseUrl}/favicon.ico" /></head>`
+      `<link rel="icon" href="${baseUrl}/favicon.ico" /></head>`
     );
   }
 
