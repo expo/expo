@@ -36,6 +36,7 @@
 - Fixed crash from reloading on iOS and bridgeless mode. ([#27928](https://github.com/expo/expo/pull/27928) by [@kudo](https://github.com/kudo))
 - Fixed SharedRef class names are obfuscated when R8 is enabled. ([#27965](https://github.com/expo/expo/pull/27965) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `recreateRootViewWithBundleURL` parameters. ([#27989](https://github.com/expo/expo/pull/27989) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed `ExpoBridgeModule.installModules()` is broken on Android and bridgeless mode. ([#28065](https://github.com/expo/expo/pull/28065) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

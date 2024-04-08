@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Relax forbidden React server API errors to better support shared components. ([#27878](https://github.com/expo/expo/pull/27878) by [@EvanBacon](https://github.com/EvanBacon))
 - Reset env in tests. ([#27950](https://github.com/expo/expo/pull/27950) by [@EvanBacon](https://github.com/EvanBacon))
 - Add Hermes language support tests. ([#27900](https://github.com/expo/expo/pull/27900) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused peer dependency on `@babel/preset-env`. ([#27705](https://github.com/expo/expo/pull/27705) by [@EvanBacon](https://github.com/EvanBacon))
