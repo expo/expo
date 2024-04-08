@@ -348,7 +348,7 @@ public class AudioModule: Module, RecordingResultHandler {
     }
 
     guard let prefferedInput else {
-      throw PreferredInputFoundException(input)
+      throw PreferredInputNotFoundException(input)
     }
 
     try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
@@ -495,7 +495,7 @@ public class AudioModule: Module, RecordingResultHandler {
     body.merge(dict) { _, new in
       new
     }
-    sendEvent(playbackStatus, body)
+    player.emit(event: playbackStatus, arguments: body)
   }
 
   private func validateAudioMode(mode: AudioMode) throws {

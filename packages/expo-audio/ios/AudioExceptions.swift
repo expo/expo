@@ -36,7 +36,7 @@ internal class NoInputFoundException: Exception {
   }
 }
 
-internal class PreferredInputFoundException: GenericException<String> {
+internal class PreferredInputNotFoundException: GenericException<String> {
   override var reason: String {
     "Preferred input '\(param)' not found!"
   }

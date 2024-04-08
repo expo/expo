@@ -1,6 +1,6 @@
 import { PermissionResponse, SharedObject } from 'expo-modules-core';
 import { NativeModule } from 'react-native';
-import { AudioMode, AudioStatus, PitchCorrectionQuality, RecorderStatus, RecordingInput } from './Audio.types';
+import { AudioMode, AudioStatus, PitchCorrectionQuality, RecordingStatus, RecordingInput } from './Audio.types';
 export interface AudioModule extends NativeModule {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
     setAudioModeAsync(category: AudioMode): Promise<void>;
@@ -79,7 +79,7 @@ export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 }
 type AudioRecorderEvents = {
-    onRecordingStatusUpdate: (status: RecorderStatus) => void;
+    onRecordingStatusUpdate: (status: RecordingStatus) => void;
 };
 export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
     /**
@@ -112,7 +112,7 @@ export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
     /**
      * Status of the current recording.
      */
-    getStatus(): RecorderStatus;
+    getStatus(): RecordingStatus;
     /**
      * Starts the recording at the given time.
      * @param seconds The time in seconds to start recording at.

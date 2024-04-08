@@ -24,9 +24,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -204,6 +202,10 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         )
       }
 
+      Property("uri") { ref ->
+        ref.uri
+      }
+
       Property("isRecording") { ref ->
         ref.isRecording
       }
@@ -234,13 +236,13 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
           ref.recorder.pause()
           ref.isRecording = false
         } else {
+          // TODO: Log a warning?
         }
       }
 
       Function("stop") { ref: AudioRecorder ->
         checkRecordingPermission()
-        ref.isRecording = false
-        ref.recorder.stop()
+        return@Function ref.stopRecording()
       }
 
       Function("getStatus") { ref: AudioRecorder ->
@@ -248,10 +250,99 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
         ref.getAudioRecorderStatus()
       }
 
+      AsyncFunction("getCurrentInput") { ref: AudioRecorder ->
+        getCurrentInput(ref)
+      }
+
       Function("getAvailableInputs") {
         return@Function getAvailableInputs()
       }
+
+      Function("setInput") { ref: AudioRecorder, input: String ->
+        setInput(input, ref)
+      }
     }
+  }
+
+  private fun setInput(uid: String, ref: AudioRecorder) {
+    val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid)
+
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+      throw SetAudioInputNotSupportedException()
+    }
+
+    if (deviceInfo != null && deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        audioManager.setCommunicationDevice(deviceInfo)
+      } else {
+        audioManager.startBluetoothSco()
+      }
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        audioManager.clearCommunicationDevice()
+      } else {
+        audioManager.stopBluetoothSco()
+      }
+    }
+
+    val success = ref.recorder.setPreferredDevice(deviceInfo)
+    if (!success) {
+      throw PreferredInputNotFoundException()
+    }
+  }
+
+  private fun getDeviceInfoFromUid(uid: String): AudioDeviceInfo? {
+    val id = uid.toInt()
+    val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+    for (device in audioDevices) {
+      val deviceId = device.id
+      if (deviceId == id) {
+        return device
+      }
+    }
+    return null
+  }
+
+  private fun getCurrentInput(ref: AudioRecorder): Bundle {
+    var deviceInfo: AudioDeviceInfo? = null
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      throw GetAudioInputNotSupportedException()
+    }
+
+    try {
+      // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+      // only returns a valid device when actively recording, and may throw otherwise.
+      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+      deviceInfo = ref.recorder.getRoutedDevice()
+    } catch (e: java.lang.Exception) {
+      // Noop if this throws, try alternate method of determining current input below.
+    }
+
+    // If no routed device is found try preferred device
+    if (deviceInfo == null) {
+      deviceInfo = ref.recorder.preferredDevice
+    }
+
+    if (deviceInfo == null) {
+      // If no preferred device is found, set it to the first built-in input we can find
+      val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+      for (i in audioDevices.indices) {
+        val availableDeviceInfo = audioDevices[i]
+        val type = availableDeviceInfo.type
+        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+          deviceInfo = availableDeviceInfo
+          ref.recorder.setPreferredDevice(deviceInfo)
+          break
+        }
+      }
+    }
+
+    if (deviceInfo == null) {
+      throw DeviceInfoNotFoundException()
+    }
+
+    return getMapFromDeviceInfo(deviceInfo)
   }
 
   private fun getAvailableInputs() = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
@@ -280,7 +371,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     } catch (e: Exception) {
       Log.e("AudioModule", "Error reading raw resource from ExoPlayer", e)
     }
-    val source =  when (val type = retrieveStreamType(newUri)) {
+    val source = when (val type = retrieveStreamType(newUri)) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)

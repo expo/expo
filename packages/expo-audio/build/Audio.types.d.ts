@@ -49,7 +49,7 @@ export type RecordingState = {
     hasError: boolean;
     error: string | null;
 };
-export type RecorderStatus = {
+export type RecordingStatus = {
     canRecord: boolean;
     isRecording: boolean;
     durationMillis: number;
@@ -61,7 +61,7 @@ export declare enum OutputFormat {
     AC3 = "ac-3",
     '60958AC3' = "cac3",
     APPLEIMA4 = "ima4",
-    MPEG4AAC = "aac ",
+    MPEG4AAC = "aac",
     MPEG4CELP = "celp",
     MPEG4HVXC = "hvxc",
     MPEG4TWINVQ = "twvq",

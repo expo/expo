@@ -6,6 +6,7 @@ import android.media.MediaRecorder.MEDIA_ERROR_SERVER_DIED
 import android.media.MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN
 import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import expo.modules.kotlin.AppContext
@@ -16,49 +17,21 @@ import java.util.UUID
 import kotlin.math.ln
 
 class AudioRecorder(
-  context: Context,
+  val context: Context,
   appContext: AppContext,
-  options: RecordingOptions
+  private val options: RecordingOptions
 ) : SharedObject(appContext), MediaRecorder.OnErrorListener, MediaRecorder.OnInfoListener {
   private var filePath: String? = null
   private var meteringEnabled = false
   private var durationAlreadyRecorded = 0L
 
+  var uri: String? = null
   var uptime = 0L
   var isRecording = false
 
-  val recorder = MediaRecorder().apply {
-    setAudioSource(MediaRecorder.AudioSource.DEFAULT)
-    setOutputFormat(options.outputFormat.toMediaOutputFormat())
-    setAudioEncoder(options.audioEncoder.toMediaEncoding())
+  private var _recorder: MediaRecorder? = null
 
-    val filename = "recording-${UUID.randomUUID()}${options.extension}"
-    meteringEnabled = options.isMeteringEnabled ?: false
-
-    try {
-      val directory = File("${context.cacheDir}${File.separator}Audio")
-      ensureDirExists(directory)
-      filePath = "${directory}${File.separator}$filename"
-    } catch (_: IOException) {
-    }
-
-    options.sampleRate?.let {
-      this.setAudioSamplingRate(it.toInt())
-    }
-    options.numberOfChannels?.let {
-      this.setAudioChannels(it.toInt())
-    }
-    options.bitRate?.let {
-      this.setAudioEncodingBitRate(it.toInt())
-    }
-    options.maxFileSize?.let {
-      this.setMaxFileSize(it.toLong())
-    }
-    setOnErrorListener(this@AudioRecorder)
-    setOnInfoListener(this@AudioRecorder)
-    setOutputFile(filePath)
-    prepare()
-  }
+  val recorder: MediaRecorder get() = _recorder ?: createRecorder(options)
 
   private fun getAudioRecorderLevels(): Int {
     if (!meteringEnabled) {
@@ -70,15 +43,57 @@ class AudioRecorder(
     } else (20 * ln(amplitude.toDouble() / 32767.0)).toInt()
   }
 
+  private fun createRecorder(options: RecordingOptions): MediaRecorder {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      MediaRecorder(context)
+    } else {
+      MediaRecorder()
+    }.apply {
+      setAudioSource(MediaRecorder.AudioSource.DEFAULT)
+      setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+      if (options.audioEncoder != null) {
+        setAudioEncoder(options.audioEncoder.toMediaEncoding())
+      } else {
+        setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+      }
+
+      options.sampleRate?.let {
+        this.setAudioSamplingRate(it.toInt())
+      }
+      options.numberOfChannels?.let {
+        this.setAudioChannels(it.toInt())
+      }
+      options.bitRate?.let {
+        this.setAudioEncodingBitRate(it.toInt())
+      }
+      options.maxFileSize?.let {
+        this.setMaxFileSize(it.toLong())
+      }
+      setOnErrorListener(this@AudioRecorder)
+      setOnInfoListener(this@AudioRecorder)
+      setOutputFile(filePath)
+      uri = filePath
+      prepare()
+    }
+  }
+
   override fun deallocate() {
+    _recorder = null
     recorder.release()
+  }
+
+  fun stopRecording(): Bundle {
+    isRecording = false
+    recorder.stop()
+    _recorder = null
+    return getAudioRecorderStatus()
   }
 
   fun getAudioRecorderStatus(): Bundle {
     val map = Bundle()
     map.putBoolean("canRecord", true)
     map.putBoolean("isRecording", isRecording)
-    map.putInt("durationMillis", getAudioRecorderDurationMillis().toInt())
+    map.putLong("durationMillis", getAudioRecorderDurationMillis())
     if (meteringEnabled) {
       map.putInt("metering", getAudioRecorderLevels())
     }

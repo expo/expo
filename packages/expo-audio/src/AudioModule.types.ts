@@ -5,7 +5,7 @@ import {
   AudioMode,
   AudioStatus,
   PitchCorrectionQuality,
-  RecorderStatus,
+  RecordingStatus,
   RecordingInput,
 } from './Audio.types';
 
@@ -106,7 +106,7 @@ export declare class AudioPlayer extends SharedObject<AudioPlayerEvents> {
 }
 
 type AudioRecorderEvents = {
-  onRecordingStatusUpdate: (status: RecorderStatus) => void;
+  onRecordingStatusUpdate: (status: RecordingStatus) => void;
 };
 export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
   /**
@@ -146,7 +146,7 @@ export declare class AudioRecorder extends SharedObject<AudioRecorderEvents> {
   /**
    * Status of the current recording.
    */
-  getStatus(): RecorderStatus;
+  getStatus(): RecordingStatus;
 
   /**
    * Starts the recording at the given time.

@@ -4,7 +4,7 @@ export var OutputFormat;
     OutputFormat["AC3"] = "ac-3";
     OutputFormat["60958AC3"] = "cac3";
     OutputFormat["APPLEIMA4"] = "ima4";
-    OutputFormat["MPEG4AAC"] = "aac ";
+    OutputFormat["MPEG4AAC"] = "aac";
     OutputFormat["MPEG4CELP"] = "celp";
     OutputFormat["MPEG4HVXC"] = "hvxc";
     OutputFormat["MPEG4TWINVQ"] = "twvq";

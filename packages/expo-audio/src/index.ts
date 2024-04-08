@@ -5,7 +5,7 @@ import {
   AudioMode,
   AudioSource,
   AudioStatus,
-  RecorderStatus,
+  RecordingStatus,
   RecordingOptions,
   RecordingState,
 } from './Audio.types';
@@ -34,9 +34,9 @@ export function useAudioPlayer(
 export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (state: RecordingState) => void
-): [AudioRecorder, RecorderStatus] {
+): [AudioRecorder, RecordingStatus] {
   const recorder = useMemo(() => new AudioModule.AudioRecorder(options), []);
-  const [state, setState] = useState<RecorderStatus>(recorder.getStatus());
+  const [state, setState] = useState<RecordingStatus>(recorder.getStatus());
 
   useEffect(() => {
     const subscription = recorder.addListener(

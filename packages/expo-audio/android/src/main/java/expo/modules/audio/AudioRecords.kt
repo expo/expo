@@ -24,13 +24,13 @@ enum class InterruptionMode(val value: String) : Enumerable {
 }
 
 class RecordingOptions(
-  @Field val audioEncoder: AndroidAudioEncoder = AndroidAudioEncoder.DEFAULT,
+  @Field val audioEncoder: AndroidAudioEncoder? = AndroidAudioEncoder.DEFAULT,
   @Field val bitRate: Double?,
   @Field val extension: String,
   @Field val maxFileSize: Int?,
   @Field val numberOfChannels: Double?,
   @Field val isMeteringEnabled: Boolean?,
-  @Field val outputFormat: AndroidOutputFormat = AndroidOutputFormat.DEFAULT,
+  @Field val outputFormat: String?,
   @Field val sampleRate: Double?
 ) : Record
 
