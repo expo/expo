@@ -1,5 +1,6 @@
 ---
-title: Install Expo modules
+title: Install Expo modules in an existing native project
+sidebar_title: Install Expo modules
 description: Learn how to prepare your existing native project to install and use Expo modules and the module API.
 ---
 
@@ -9,19 +10,23 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
-> **warning** These instructions may not work for all projects. Support for integrating Expo modules into existing projects is still experimental. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues).
+> **info** If your project is a **greenfield React Native app**, primarily built with React Native from the start, then [refer to the "Install Expo modules in an existing React Native project" guide](/bare/installing-expo-modules/) instead of this page.
 
 ## Prerequisites
 
-You should have a native project with React Native installed and configured to render a root view. If you don't have this yet, you can follow [the "Integration with Existing Apps" guide](https://reactnative.dev/docs/integration-with-existing-apps) on the React Native docs and then return here.
+You should have a brownfield native project with React Native installed and configured to render a root view. If you don't have this yet, you can follow [the "Integration with Existing Apps" guide](https://reactnative.dev/docs/integration-with-existing-apps) on the React Native docs and then return here.
 
-## Install the `expo` package
+## Installation
+
+> **warning** The following instructions may not work for all projects. Support for integrating Expo modules into existing projects is still experimental. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues).
+
+### Install the `expo` package
 
 First, add the `expo` package to your project. Ensure you are using a version of the `expo` package that is compatible with the React Native version in your project. [Learn more](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
 
 <Terminal cmd={['npm install expo']} />
 
-## Configure your Android app
+### Configure your Android app
 
 <Step label="1">
   Add the following to the `gradle.properties` file in the `android` directory:
@@ -131,7 +136,7 @@ Override `onConfigurationChanged` if you have not done so already.
 </Step>
 </Step>
 
-## Configure your iOS app
+### Configure your iOS app
 
 <Step label="1">
   Add the following to your `Podfile` in the `ios` directory:
