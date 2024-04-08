@@ -13,7 +13,20 @@ import { copyAsync } from '../../../utils/dir';
 // A list of the Node.js standard library modules that are currently
 // available,
 export const NODE_STDLIB_MODULES: string[] = [
+  // Add all nested imports...
+  'assert/strict',
+  'dns/promises',
+  'inspector/promises',
   'fs/promises',
+  'stream/web',
+  'stream/promises',
+  'path/posix',
+  'path/win32',
+  'readline/promises',
+  'stream/consumers',
+  'timers/promises',
+  'util/types',
+  // Collect all builtin modules...
   ...(
     builtinModules ||
     // @ts-expect-error
