@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import Bundler from 'metro/src/Bundler';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -28,7 +29,6 @@ import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutation
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
-
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -82,7 +82,8 @@ export async function loadMetroConfigAsync(
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
-  }: { exp?: ExpoConfig; isExporting: boolean }
+    getMetroBundler,
+  }: { exp?: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
@@ -140,6 +141,7 @@ export async function loadMetroConfigAsync(
     isExporting,
     // @ts-expect-error: `serverComponents` is not in the Expo Config type yet.
     isReactCanaryEnabled: exp.experiments?.serverComponents ?? false,
+    getMetroBundler,
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -174,7 +176,13 @@ export async function instantiateMetroAsync(
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
     options,
-    { exp, isExporting }
+    {
+      exp,
+      isExporting,
+      getMetroBundler() {
+        return metro.getBundler().getBundler();
+      },
+    }
   );
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
