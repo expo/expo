@@ -212,10 +212,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
     },
-    '@react-native-segmented-control/segmented-control': {
-      source: 'https://github.com/react-native-segmented-control/segmented-control',
-      ios: {},
-    },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
       ios: {},
