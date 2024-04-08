@@ -16,6 +16,7 @@ import resolveFrom from 'resolve-from';
 import { createFastResolver } from './createExpoMetroResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
@@ -30,7 +31,6 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
-import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -130,7 +130,7 @@ export function withExtendedResolver(
     Log.warn(`Experimental bundling features are enabled.`);
   }
   if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Server Components support is enabled.`);
+    Log.warn(`Experimental React canary support is enabled.`);
   }
 
   // Get the `transformer.assetRegistryPath`
@@ -425,16 +425,10 @@ export function withExtendedResolver(
 
           const canaryFile = shouldCreateVirtualCanary(normalName);
           if (canaryFile) {
-            const virtualId = `\0canary:${normalName}`;
-            const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
-            if (!bundler.hasVirtualModule(virtualId)) {
-              bundler.setVirtualModule(virtualId, fs.readFileSync(canaryFile, 'utf8'));
-            }
             debug(`Redirecting React Native module "${result.filePath}" to canary build`);
-
             return {
               ...result,
-              filePath: virtualId,
+              filePath: canaryFile,
             };
           }
         }
