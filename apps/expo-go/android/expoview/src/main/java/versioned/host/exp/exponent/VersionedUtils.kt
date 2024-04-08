@@ -25,7 +25,6 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
-import java.util.*
 
 object VersionedUtils {
   private fun toggleExpoDevMenu() {
@@ -201,6 +200,7 @@ object VersionedUtils {
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
       .addPackage(MainReactPackage())
+      .addPackage(ExpoReanimatedPackage())
       .addPackage(
         ExponentPackage(
           instanceManagerBuilderProperties.experienceProperties,

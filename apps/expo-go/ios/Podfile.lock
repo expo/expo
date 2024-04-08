@@ -404,10 +404,29 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - lottie-ios (4.3.4)
-  - lottie-react-native (6.4.1):
-    - lottie-ios (~> 4.3.3)
+  - lottie-ios (4.4.1)
+  - lottie-react-native (6.7.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - lottie-ios (~> 4.4.1)
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - MBProgressHUD (1.2.0)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
@@ -1357,9 +1376,9 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.3):
     - React-Core
-  - react-native-safe-area-context (4.8.2):
+  - react-native-safe-area-context (4.10.0-rc.1):
     - React-Core
-  - react-native-segmented-control (2.4.1):
+  - react-native-segmented-control (2.5.0):
     - React-Core
   - react-native-skia (1.0.4):
     - DoubleConversion
@@ -1643,33 +1662,25 @@ PODS:
     - React-Core
   - RNGestureHandler (2.14.0):
     - React-Core
-  - RNReanimated (3.6.0):
+  - RNReanimated (3.8.1):
     - DoubleConversion
-    - FBLazyVector
     - glog
     - hermes-engine
-    - RCT-Folly
+    - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
-    - React-callinvoker
+    - React-Codegen
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTAppDelegate
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.27.0):
@@ -1844,7 +1855,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
-  - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
+  - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1876,8 +1887,8 @@ DEPENDENCIES:
   - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
-  - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
-  - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
+  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
+  - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
@@ -1908,7 +1919,7 @@ DEPENDENCIES:
   - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
-  - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - RNSVG (from `./vendored/unversioned/react-native-svg`)
   - SocketRocket
@@ -2099,7 +2110,7 @@ EXTERNAL SOURCES:
   JKBigInteger:
     :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
-    :path: "./vendored/unversioned/lottie-react-native"
+    :path: "../../../node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -2157,9 +2168,9 @@ EXTERNAL SOURCES:
   react-native-pager-view:
     :path: "./vendored/unversioned/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "./vendored/unversioned/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
-    :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
+    :path: "../../../node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
     :path: "../../../node_modules/@shopify/react-native-skia"
   react-native-slider:
@@ -2221,7 +2232,7 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "./vendored/unversioned/react-native-gesture-handler"
   RNReanimated:
-    :path: "./vendored/unversioned/react-native-reanimated"
+    :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "./vendored/unversioned/react-native-screens"
   RNSVG:
@@ -2317,12 +2328,12 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 74016895c43ca6a114a1ff45b5aafeef1131f35b
+  hermes-engine: a2b4811e70db29c92d72680044e548474bfc3395
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  lottie-ios: 3d98679b41fa6fd6aff2352b3953dbd3df8a397e
-  lottie-react-native: a2ae9c27c273b060b2affff2957bc0ff7fdca353
+  lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
+  lottie-react-native: f851c0e235f171d99083c803f728f644be1dcf65
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
@@ -2357,8 +2368,8 @@ SPEC CHECKSUMS:
   react-native-maps: fa054512735831f232e822ee6bdb0afcdd88de4a
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
-  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
-  react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
+  react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
+  react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
   react-native-skia: 9ede31b12c287a93564a1b24db151749ae931eb4
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: 684364aaf96cbfff9a7128ade10766ebb7d25c6f
@@ -2389,13 +2400,13 @@ SPEC CHECKSUMS:
   RNCPicker: 82ccad5b08259dc09310082118cbb6c136d7da67
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
-  RNReanimated: d5a8d8f30dd0eae33a861240ad909bdcbb4ba282
+  RNReanimated: d15d28f8cd7039c6c19f23f81c52574be8d06942
   RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Looper
 import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
@@ -24,7 +25,6 @@ import com.swmansion.rnscreens.RNScreensPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.kotlin.ExpoBridgeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
@@ -43,7 +43,6 @@ import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateT
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
-import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
@@ -127,7 +126,6 @@ class ExponentPackage : ReactPackage {
       try {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
-        nativeModules.add(ExpoBridgeModule(reactContext))
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
@@ -178,12 +176,12 @@ class ExponentPackage : ReactPackage {
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),
-        SafeAreaContextPackage(),
         RNDateTimePickerPackage(),
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
         ReactSliderPackage(),
         PagerViewPackage(),
+        SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
         ReactNativeFlashListPackage()
