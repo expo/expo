@@ -23,7 +23,8 @@ export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
   });
 
   return withBuildSourceFile(config, {
-    filePath: 'PrivacyInfo.xcprivacy',
+    // Based on testing, the file must exist in project root, not nested in a directory.
+    filePath: '../PrivacyInfo.xcprivacy',
     contents,
     overwrite: true,
   });

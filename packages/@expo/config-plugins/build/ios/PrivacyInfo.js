@@ -36,7 +36,8 @@ function withPrivacyInfo(config) {
     NSPrivacyAccessedAPITypes
   });
   return (0, _XcodeProjectFile().withBuildSourceFile)(config, {
-    filePath: 'PrivacyInfo.xcprivacy',
+    // Based on testing, the file must exist in project root, not nested in a directory.
+    filePath: '../PrivacyInfo.xcprivacy',
     contents,
     overwrite: true
   });
