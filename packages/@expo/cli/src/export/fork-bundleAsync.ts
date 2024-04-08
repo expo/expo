@@ -136,6 +136,9 @@ async function bundleProductionMetroClientAsync(
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
+    getMetroBundler() {
+      return metroServer.getBundler().getBundler();
+    },
   });
 
   assertMetroConfig(config);

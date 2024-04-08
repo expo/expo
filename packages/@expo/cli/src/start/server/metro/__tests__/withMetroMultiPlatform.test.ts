@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
 
+import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
 import {
   getNodejsExtensions,
   shouldAliasAssetRegistryForWeb,
@@ -26,6 +27,12 @@ jest.mock('metro-resolver', () => {
     resolve,
   };
 });
+
+jest.mock('../externals', () => ({
+  ...jest.requireActual('../externals'),
+  shouldCreateVirtualCanary: jest.fn(() => false),
+  shouldCreateVirtualShim: jest.fn(() => false),
+}));
 
 function getDefaultRequestContext(): CustomResolutionContext {
   return {
@@ -582,19 +589,89 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it(`aliases react-native-web modules to virtual shims on web`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js': '',
+
+        'node_modules/@react-native/assets-registry/registry.js': '',
+
+        mock: '',
+      },
+      '/'
+    );
+
+    jest
+      .mocked(shouldCreateVirtualShim)
+      .mockClear()
+      .mockImplementationOnce((path: string) =>
+        path.includes('react-native-web/dist/cjs/exports') ? '/mock' : null
+      );
+    // Emulate throwing when the module doesn't exist...
+    jest
+      .mocked(getResolveFunc())
+      .mockClear()
+      .mockImplementationOnce(() => {
+        return {
+          type: 'sourceFile',
+          filePath: '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+        };
+      });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+      isReactCanaryEnabled: true,
+      getMetroBundler() {
+        const transformFile = jest.fn();
+        transformFile.__patched = true;
+        return {
+          hasVirtualModule: jest.fn((path) => false),
+          setVirtualModule: jest.fn(),
+          transformFile,
+        };
+      },
+    });
+
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      'web'
+    );
+
+    expect(result).toEqual({
+      filePath: '\0shim:react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      type: 'sourceFile',
+    });
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.anything(),
+      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      'web'
+    );
+  });
+
   it(`aliases React Native renderer modules to canaries on native`, async () => {
     vol.fromJSON(
       {
         'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
           '',
-        '.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
-          '',
+
         'node_modules/@react-native/assets-registry/registry.js': '',
+
+        mock: '',
       },
       '/'
     );
 
     ['ios', 'android'].forEach((platform) => {
+      jest
+        .mocked(shouldCreateVirtualCanary)
+        .mockClear()
+        .mockImplementationOnce((path: string) =>
+          path.includes('Libraries/Renderer/implementations') ? '/mock' : null
+        );
       // Emulate throwing when the module doesn't exist...
       jest
         .mocked(getResolveFunc())
@@ -611,6 +688,15 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: true,
+        getMetroBundler() {
+          const transformFile = jest.fn();
+          transformFile.__patched = true;
+          return {
+            hasVirtualModule: jest.fn((path) => false),
+            setVirtualModule: jest.fn(),
+            transformFile,
+          };
+        },
       });
 
       const result = modified.resolver.resolveRequest!(
@@ -620,8 +706,7 @@ describe(withExtendedResolver, () => {
       );
 
       expect(result).toEqual({
-        filePath:
-          '/.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        filePath: '/mock',
         type: 'sourceFile',
       });
 
