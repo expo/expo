@@ -217,7 +217,7 @@ GEM
     netrc (0.11.0)
     optparse (0.1.1)
     os (1.1.4)
-    plist (3.6.0)
+    plist (3.7.1)
     public_suffix (4.0.6)
     rake (13.0.6)
     representable (3.1.1)
@@ -276,6 +276,7 @@ PLATFORMS
 DEPENDENCIES
   cocoapods (~> 1.14.2)
   fastlane (~> 2.205.2)
+  plist (~> 3.7, >= 3.7.1)
   xcpretty (~> 0.3.0)
 
 BUNDLED WITH
