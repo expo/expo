@@ -71,7 +71,7 @@ To migrate to using Bun (use at your own risk):
 
 ## Trusted dependencies
 
-Unlike other package managers, Bun does not automatically execute lifecycle scripts from installed libraries, as this is considered a security risk. However, if a package you are installing has a `postinstall` script that you want to run, you have to explicitly state that by including that library in your [`trusted dependencies`](https://bun.sh/guides/install/trusted) array in your **package.json**.
+Unlike other package managers, Bun does not automatically execute lifecycle scripts from installed libraries, as this is considered a security risk. However, if a package you are installing has a `postinstall` script that you want to run, you have to explicitly state that by including that library in your [`trustedDependencies`](https://bun.sh/guides/install/trusted) array in your **package.json**.
 
 For example, if you install `packageA`, which has a dependency on `packageB` and `packageB` has a `postinstall` script, you must add `packageB` in your `trustedDependencies`.
 
