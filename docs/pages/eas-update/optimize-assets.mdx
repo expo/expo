@@ -55,6 +55,10 @@ For assets like GIFs or movies, or non-code and non-image assets, it's up to the
 
 > **Note**: GIFs are a very inefficient format. Modern video codecs can produce smaller file sizes by over an order of magnitude.
 
+## Publishing assets
+
+When you publish your project, it will upload your assets to the CDN so that they may be fetched when users run your app. However, for assets to be uploaded to the CDN they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
+
 ## Further considerations
 
 It's important to note that a user's app will only download new or updated assets. It will not re-download unchanged assets that already exist inside the app.
