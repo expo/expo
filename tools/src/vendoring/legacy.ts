@@ -685,16 +685,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-segmented-control/segmented-control': {
-    repoUrl: 'https://github.com/react-native-segmented-control/segmented-control',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SegmentedControl',
-      },
-    ],
-  },
   '@react-native-picker/picker': {
     repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
