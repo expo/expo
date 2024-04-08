@@ -8,6 +8,7 @@ import {
   shouldAliasAssetRegistryForWeb,
   withExtendedResolver,
 } from '../withMetroMultiPlatform';
+import { shouldCreateVirtualCanary } from '../externals';
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
 
@@ -26,6 +27,11 @@ jest.mock('metro-resolver', () => {
     resolve,
   };
 });
+
+jest.mock('../externals', () => ({
+  ...jest.requireActual('../externals'),
+  shouldCreateVirtualCanary: jest.fn(() => false),
+}));
 
 function getDefaultRequestContext(): CustomResolutionContext {
   return {
@@ -587,14 +593,21 @@ describe(withExtendedResolver, () => {
       {
         'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
           '',
-        '.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
-          '',
+
         'node_modules/@react-native/assets-registry/registry.js': '',
+
+        mock: '',
       },
       '/'
     );
 
     ['ios', 'android'].forEach((platform) => {
+      jest
+        .mocked(shouldCreateVirtualCanary)
+        .mockClear()
+        .mockImplementationOnce((path: string) =>
+          path.includes('Libraries/Renderer/implementations') ? '/mock' : null
+        );
       // Emulate throwing when the module doesn't exist...
       jest
         .mocked(getResolveFunc())
@@ -611,6 +624,15 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: true,
+        getMetroBundler() {
+          const transformFile = jest.fn();
+          transformFile.__patched = true;
+          return {
+            hasVirtualModule: jest.fn((path) => false),
+            setVirtualModule: jest.fn(),
+            transformFile,
+          };
+        },
       });
 
       const result = modified.resolver.resolveRequest!(
@@ -621,7 +643,7 @@ describe(withExtendedResolver, () => {
 
       expect(result).toEqual({
         filePath:
-          '/.expo/metro/canary/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+          '\0canary:react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
         type: 'sourceFile',
       });
 
