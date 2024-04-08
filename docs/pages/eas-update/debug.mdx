@@ -1,5 +1,5 @@
 ---
-title: Debug EAS Update
+title: EAS Update Debugging
 sidebar_title: Basic
 description: Learn how to debug EAS Update.
 ---
@@ -81,6 +81,12 @@ The displayed deployment has the correct channel, but it is not linked to a bran
 ### Missing deployment
 
 If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/eas-update/debug-advanced/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
+
+### Update is crashing and rolling back to a previous version
+
+If everything on the Deployments page looks correct, but your app is still showing the previous update or the code embedded with the build, it's possible that your app is downloading and applying the update, but the update is crashing prior to rendering your root component. EAS Update will automatically roll back to the previous version if an update crashes shortly after loading. If you do not see the update after successfully using the [`expo-updates`](/versions/latest/sdk/updates/) JS API to reload the app after an update is downloaded, this is likely the issue. [Learn more about how EAS Update detects crashes and rolls back to a previous working version](error-recovery/#explaining-the-error-recovery-flow).
+
+You can our [runtime issue troubleshooting guide](/debugging/runtime-issues/) to see the error that occurs when the update crashes. Publish a new update that fixes the crash to resolve the issue. A common reason that the embedded code may work but an update does not is due to a missing environment variable. [Learn more about how environment variables work in EAS Update](environment-variables/).
 
 ## Solutions
 
