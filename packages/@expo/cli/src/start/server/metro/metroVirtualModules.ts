@@ -5,16 +5,46 @@
  * LICENSE file in the root directory of this source tree.
  */
 import Bundler from 'metro/src/Bundler';
+import DependencyGraph from 'metro/src/node-haste/DependencyGraph';
 import { FileSystem } from 'metro-file-map';
 
-type ExpoPatchedFileSystem = FileSystem & {
+type ExpoPatchedFileSystem = Omit<FileSystem, 'getSha1'> & {
+  getSha1: FileSystem['getSha1'] & { __patched?: boolean };
   expoVirtualModules?: Map<string, Buffer>;
+};
+
+type ActualDependencyGraph = DependencyGraph & {
+  _fileSystem: ExpoPatchedFileSystem;
+};
+
+type ActualBundler = Bundler & {
+  _depGraph: ActualDependencyGraph;
 };
 
 type ExpoPatchedBundler = Bundler & {
   setVirtualModule: (id: string, contents: string) => void;
   hasVirtualModule: (id: string) => boolean;
 };
+
+function assertBundlerHasPrivateMembers(bundler: Bundler): asserts bundler is ActualBundler {
+  if (!('_depGraph' in bundler)) {
+    throw new Error(
+      'Expected bundler to have member: _depGraph. Upstream metro may have removed this property.'
+    );
+  }
+
+  assertDepGraphHasPrivateMembers(bundler._depGraph);
+}
+
+function assertDepGraphHasPrivateMembers(
+  depGraph: unknown
+): asserts depGraph is ActualDependencyGraph {
+  if (!depGraph || typeof depGraph !== 'object' || !('_fileSystem' in depGraph)) {
+    throw new Error(
+      'Expected bundler._depGraph to have member: _fileSystem. Upstream metro may have removed this property.'
+    );
+  }
+}
 
 function ensureMetroBundlerPatchedWithSetVirtualModule(
   bundler: Bundler & {
@@ -24,12 +54,12 @@ function ensureMetroBundlerPatchedWithSetVirtualModule(
 ): ExpoPatchedBundler {
   if (!bundler.setVirtualModule) {
     bundler.setVirtualModule = function (this: Bundler, id: string, contents: string) {
-      // @ts-expect-error: private property
+      assertBundlerHasPrivateMembers(this);
       const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
       fs.expoVirtualModules!.set(ensureStartsWithNullByte(id), Buffer.from(contents));
     };
     bundler.hasVirtualModule = function (this: Bundler, id: string) {
-      // @ts-expect-error: private property
+      assertBundlerHasPrivateMembers(this);
       const fs = ensureFileSystemPatched(this._depGraph._fileSystem);
       return fs.expoVirtualModules!.has(ensureStartsWithNullByte(id));
     };
@@ -39,11 +69,19 @@ function ensureMetroBundlerPatchedWithSetVirtualModule(
 }
 
 function ensureStartsWithNullByte(id: string): string {
-  return id.startsWith('\0') ? id : `\0${id}`;
+  // Because you'll likely need to return the path somewhere, we should just assert with a useful error message instead of
+  // attempting to mutate the value behind the scenes. This ensures correctness in the resolution.
+  if (!id.startsWith('\0')) {
+    throw new Error(`Virtual modules in Expo CLI must start with with null byte (\\0), got: ${id}`);
+  }
+  return id;
 }
 
-export function getMetroBundlerWithVirtualModules(bundler: Bundler): ExpoPatchedBundler {
-  // @ts-expect-error: private property
+export function getMetroBundlerWithVirtualModules(
+  bundler: Bundler & {
+    transformFile: Bundler['transformFile'] & { __patched?: boolean };
+  }
+): ExpoPatchedBundler {
   if (!bundler.transformFile.__patched) {
     const originalTransformFile = bundler.transformFile.bind(bundler);
 
@@ -58,9 +96,9 @@ export function getMetroBundlerWithVirtualModules(bundler: Bundler): ExpoPatched
         if (filePath.startsWith('\0')) {
           const graph = await this.getDependencyGraph();
 
-          // @ts-expect-error: private property
+          assertDepGraphHasPrivateMembers(graph);
+
           if (graph._fileSystem.expoVirtualModules) {
-            // @ts-expect-error: private property
             fileBuffer = graph._fileSystem.expoVirtualModules.get(filePath);
           }
 
@@ -72,7 +110,6 @@ export function getMetroBundlerWithVirtualModules(bundler: Bundler): ExpoPatched
       return originalTransformFile(filePath, transformOptions, fileBuffer);
     };
 
-    // @ts-expect-error: private property
     bundler.transformFile.__patched = true;
   }
 
@@ -80,7 +117,6 @@ export function getMetroBundlerWithVirtualModules(bundler: Bundler): ExpoPatched
 }
 
 function ensureFileSystemPatched(fs: ExpoPatchedFileSystem): ExpoPatchedFileSystem {
-  // @ts-expect-error: private property
   if (!fs.getSha1.__patched) {
     const original_getSha1 = fs.getSha1.bind(fs);
     fs.getSha1 = (filename: string) => {
@@ -91,7 +127,6 @@ function ensureFileSystemPatched(fs: ExpoPatchedFileSystem): ExpoPatchedFileSyst
 
       return original_getSha1(filename);
     };
-    // @ts-expect-error: private property
     fs.getSha1.__patched = true;
   }
 
