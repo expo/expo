@@ -113,7 +113,7 @@ async function registerForPushNotificationsAsync() {
       handleRegistrationError('Project ID not found');
     }
     try {
-    /* @info This provides the ExpoPushToken using the unique project ID. */
+    /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({
           projectId,
@@ -122,8 +122,8 @@ async function registerForPushNotificationsAsync() {
     /* @end */
       console.log(pushTokenString);
       return pushTokenString;
-    } catch (e: any) {
-      handleRegistrationError(e);
+    } catch (e: unknown) {
+      handleRegistrationError(`${e}`);
     }
   } else {
     handleRegistrationError('Must use physical device for push notifications');
@@ -169,7 +169,7 @@ export default function App() {
     <View
       style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}
     >
-      <Text>Your expo push token: {expoPushToken}</Text>
+      <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>
           Title: {notification && notification.request.content.title}{' '}
