@@ -1,31 +1,115 @@
 import { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
 
-import { withBuildSourceFile } from './XcodeProjectFile';
+import {
+  createBuildSourceFile,
+  readBuildSourceFile,
+  withBuildSourceFile,
+} from './XcodeProjectFile';
+import { withXcodeProject } from '..';
+import { getProjectName } from './utils/Xcodeproj';
+import path from 'path';
+
+type PrivacyInfo = {
+  NSPrivacyAccessedAPITypes: {
+    NSPrivacyAccessedAPIType: string;
+    NSPrivacyAccessedAPITypeReasons: string[];
+  }[];
+  NSPrivacyCollectedDataTypes: {
+    NSPrivacyCollectedDataType: string;
+    NSPrivacyCollectedDataTypeLinked: boolean;
+    NSPrivacyCollectedDataTypeTracking: boolean;
+    NSPrivacyCollectedDataTypePurposes: string[];
+  }[];
+  NSPrivacyTracking: boolean;
+  NSPrivacyTrackingDomains: string[];
+};
 
 export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
-  if (!config.ios?.privacyManifests) {
+  const privacyManifests = config.ios?.privacyManifests;
+  if (!privacyManifests) {
     return config;
   }
 
-  const {
+  return withXcodeProject(config, (projectConfig) => {
+    const projectName = getProjectName(projectConfig.modRequest.projectRoot);
+
+    const existingFileContent = readBuildSourceFile({
+      project: projectConfig.modResults,
+      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+      filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+    });
+    const parsedContent = plist.parse(existingFileContent);
+    const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
+    const contents = plist.build(mergedContent);
+
+    projectConfig.modResults = createBuildSourceFile({
+      project: projectConfig.modResults,
+      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+      fileContents: contents,
+      filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+      overwrite: true,
+    });
+
+    return projectConfig;
+  });
+}
+
+function mergePrivacyInfo(
+  existing: Partial<PrivacyInfo>,
+  privacyManifests: Partial<PrivacyInfo>
+): PrivacyInfo {
+  let {
     NSPrivacyAccessedAPITypes = [],
     NSPrivacyCollectedDataTypes = [],
     NSPrivacyTracking = false,
     NSPrivacyTrackingDomains = [],
-  } = config.ios?.privacyManifests;
+  } = structuredClone(existing);
+  // tracking is a boolean, so we can just overwrite it
+  NSPrivacyTracking = privacyManifests.NSPrivacyTracking ?? existing.NSPrivacyTracking ?? false;
+  // merge the api types – for each type ensure the key is in the array, and if it is add the reason if it's not there
+  NSPrivacyAccessedAPITypes.forEach((newType) => {
+    const existingType = NSPrivacyAccessedAPITypes.find(
+      (t) => t.NSPrivacyAccessedAPIType === newType.NSPrivacyAccessedAPIType
+    );
+    if (!existingType) {
+      NSPrivacyAccessedAPITypes.push(newType);
+    } else {
+      existingType.NSPrivacyAccessedAPITypeReasons = [
+        ...new Set(
+          existingType?.NSPrivacyAccessedAPITypeReasons?.concat(
+            ...newType.NSPrivacyAccessedAPITypeReasons
+          )
+        ),
+      ];
+    }
+  });
+  // merge the collected data types – for each type ensure the key is in the array, and if it is add the purposes if it's not there
+  NSPrivacyCollectedDataTypes.forEach((newType) => {
+    const existingType = NSPrivacyCollectedDataTypes.find(
+      (t) => t.NSPrivacyCollectedDataType === newType.NSPrivacyCollectedDataType
+    );
+    if (!existingType) {
+      NSPrivacyCollectedDataTypes.push(newType);
+    } else {
+      existingType.NSPrivacyCollectedDataTypePurposes = [
+        ...new Set(
+          existingType?.NSPrivacyCollectedDataTypePurposes?.concat(
+            ...newType.NSPrivacyCollectedDataTypePurposes
+          )
+        ),
+      ];
+    }
+  });
+  // merge the tracking domains
+  NSPrivacyTrackingDomains = [
+    ...new Set(NSPrivacyTrackingDomains.concat(privacyManifests.NSPrivacyTrackingDomains ?? [])),
+  ];
 
-  const contents = plist.build({
+  return {
+    NSPrivacyAccessedAPITypes,
     NSPrivacyCollectedDataTypes,
     NSPrivacyTracking,
     NSPrivacyTrackingDomains,
-    NSPrivacyAccessedAPITypes,
-  });
-
-  return withBuildSourceFile(config, {
-    // Based on testing, the file must exist in project root, not nested in a directory.
-    filePath: '../PrivacyInfo.xcprivacy',
-    contents,
-    overwrite: true,
-  });
+  };
 }
