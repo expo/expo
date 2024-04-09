@@ -18,18 +18,6 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'react-native-screens': {
-      source: 'https://github.com/software-mansion/react-native-screens.git',
-      semverPrefix: '~',
-      ios: {},
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-        ],
-      },
-    },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
     },
