@@ -75,7 +75,7 @@ function mergePrivacyInfo(existing, privacyManifests) {
   // tracking is a boolean, so we can just overwrite it
   NSPrivacyTracking = privacyManifests.NSPrivacyTracking ?? existing.NSPrivacyTracking ?? false;
   // merge the api types – for each type ensure the key is in the array, and if it is add the reason if it's not there
-  NSPrivacyAccessedAPITypes.forEach(newType => {
+  privacyManifests.NSPrivacyAccessedAPITypes?.forEach(newType => {
     const existingType = NSPrivacyAccessedAPITypes.find(t => t.NSPrivacyAccessedAPIType === newType.NSPrivacyAccessedAPIType);
     if (!existingType) {
       NSPrivacyAccessedAPITypes.push(newType);
@@ -84,7 +84,7 @@ function mergePrivacyInfo(existing, privacyManifests) {
     }
   });
   // merge the collected data types – for each type ensure the key is in the array, and if it is add the purposes if it's not there
-  NSPrivacyCollectedDataTypes.forEach(newType => {
+  privacyManifests.NSPrivacyCollectedDataTypes?.forEach(newType => {
     const existingType = NSPrivacyCollectedDataTypes.find(t => t.NSPrivacyCollectedDataType === newType.NSPrivacyCollectedDataType);
     if (!existingType) {
       NSPrivacyCollectedDataTypes.push(newType);
