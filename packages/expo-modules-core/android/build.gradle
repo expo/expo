@@ -1,46 +1,13 @@
-import java.nio.file.Paths
-
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
 version = '1.11.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-
-  // Remove this check, but keep the contents after SDK49 support is dropped
-  if (safeExtGet("expoProvidesDefaultConfig", false)) {
-    useExpoPublishing()
-  }
-}
-
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -84,62 +51,12 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-// Remove this if and it's contents, when support for SDK49 is dropped
-if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-  afterEvaluate {
-    publishing {
-      publications {
-        release(MavenPublication) {
-          from components.release
-        }
-      }
-      repositories {
-        maven {
-          url = mavenLocal().url
-        }
-      }
-    }
-  }
-}
-
 android {
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    publishing {
-      singleVariant("release") {
-        withSourcesJar()
-      }
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
-
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
   }
   if (rootProject.hasProperty("ndkVersion")) {
     ndkVersion rootProject.ext.ndkVersion
-  }
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
   }
 
   namespace "expo.modules"
@@ -227,8 +144,8 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
   implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"

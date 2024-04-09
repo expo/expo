@@ -22,6 +22,7 @@
 - Allow registerDevMenuItems in non-dev bundles. ([#26955](https://github.com/expo/expo/pull/26955) by [@wschurman](https://github.com/wschurman))
 - Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573), [#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

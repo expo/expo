@@ -1,71 +1,17 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-}
-
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
 
 android {
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
   namespace "expo.modules.devclient"
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
     versionName "3.3.2"
-
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
   }
 
   buildTypes {
@@ -89,30 +35,9 @@ android {
     buildConfig true
     viewBinding true
   }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
-  }
-}
-
-repositories {
-  // ref: https://www.baeldung.com/maven-local-repository
-  mavenLocal()
-  maven {
-    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-    url "$rootDir/../node_modules/react-native/android"
-  }
-  maven {
-    // Android JSC is installed from npm
-    url "$rootDir/../node_modules/jsc-android/dist"
-  }
-  google()
 }
 
 dependencies {
-  androidTestImplementation project(':expo-modules-core')
   androidTestImplementation project(":expo-dev-menu-interface")
   androidTestImplementation project(":expo-updates-interface")
   androidTestImplementation project(":expo-dev-menu")

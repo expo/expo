@@ -1,21 +1,15 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
 version = '0.24.3'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  // Remove this check, but keep the contents after SDK49 support is dropped
-  if (safeExtGet("expoProvidesDefaultConfig", false)) {
-    useExpoPublishing()
-    useCoreDependencies()
-  }
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -44,83 +38,9 @@ def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG",
 // (default true)
 def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROID_DELAY_LOAD_APP", true)
 
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
-
-// Remove this if and it's contents, when support for SDK49 is dropped
-if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-  afterEvaluate {
-    publishing {
-      publications {
-        release(MavenPublication) {
-          from components.release
-        }
-      }
-      repositories {
-        maven {
-          url = mavenLocal().url
-        }
-      }
-    }
-  }
-}
-
 android {
   buildFeatures {
     buildConfig true
-  }
-
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    publishing {
-      singleVariant("release") {
-        withSourcesJar()
-      }
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
   }
 
   namespace "expo.modules.updates"
@@ -157,12 +77,6 @@ android {
 }
 
 dependencies {
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    implementation project(':expo-modules-core')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  }
-
   implementation project(':expo-structured-headers')
   implementation project(':expo-updates-interface')
   implementation project(':expo-manifests')
@@ -190,17 +104,14 @@ dependencies {
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'io.mockk:mockk:1.12.3'
-  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
+  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
 
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation 'io.mockk:mockk-android:1.12.3'
   androidTestImplementation "androidx.room:room-testing:$room_version"
-  androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
+  androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
 
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-}
-repositories {
-  mavenCentral()
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
 }
