@@ -1,3 +1,5 @@
+import React
+
 /**
  The app context is an interface to a single Expo app.
  */

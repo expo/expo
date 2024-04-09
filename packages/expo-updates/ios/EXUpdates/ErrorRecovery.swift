@@ -11,6 +11,7 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
+import React
 
 // swiftlint:disable identifier_name
 @objc(EXUpdatesRemoteLoadStatus)
