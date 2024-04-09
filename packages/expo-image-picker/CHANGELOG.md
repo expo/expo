@@ -15,6 +15,7 @@
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Convert WEBP to PNG instead JPEG when selecting an item in the Media Library with editing enabled. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
 - Receiving a correct file extension for WEBP files instead `.jpeg` in the ImagePicker result. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 14.7.1 - 2023-12-19
 
