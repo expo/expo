@@ -6,6 +6,6 @@ declare const _default: ConfigPlugin<void | {
      * @default 'Allow this app to collect app-related data that can be used for tracking you or your
      * device.'
      */
-    userTrackingPermission?: string | undefined;
+    userTrackingPermission?: string | false | undefined;
 }>;
 export default _default;

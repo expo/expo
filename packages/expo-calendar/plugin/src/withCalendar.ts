@@ -1,9 +1,4 @@
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  createRunOncePlugin,
-  withInfoPlist,
-} from 'expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-calendar/package.json');
 
@@ -12,26 +7,20 @@ const REMINDERS_USAGE = 'Allow $(PRODUCT_NAME) to access your reminders';
 
 const withCalendar: ConfigPlugin<
   {
-    calendarPermission?: string;
-    remindersPermission?: string;
+    calendarPermission?: string | false;
+    remindersPermission?: string | false;
   } | void
 > = (config, { calendarPermission, remindersPermission } = {}) => {
-  withInfoPlist(config, (config) => {
-    config.modResults.NSCalendarsUsageDescription =
-      calendarPermission || config.modResults.NSCalendarsUsageDescription || CALENDARS_USAGE;
-    config.modResults.NSRemindersUsageDescription =
-      remindersPermission || config.modResults.NSRemindersUsageDescription || REMINDERS_USAGE;
-
-    config.modResults.NSCalendarsFullAccessUsageDescription =
-      calendarPermission ||
-      config.modResults.NSCalendarsFullAccessUsageDescription ||
-      CALENDARS_USAGE;
-    config.modResults.NSRemindersFullAccessUsageDescription =
-      remindersPermission ||
-      config.modResults.NSRemindersFullAccessUsageDescription ||
-      REMINDERS_USAGE;
-
-    return config;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSCalendarsUsageDescription: CALENDARS_USAGE,
+    NSRemindersUsageDescription: REMINDERS_USAGE,
+    NSCalendarsFullAccessUsageDescription: CALENDARS_USAGE,
+    NSRemindersFullAccessUsageDescription: REMINDERS_USAGE,
+  })(config, {
+    NSCalendarsUsageDescription: calendarPermission,
+    NSRemindersUsageDescription: remindersPermission,
+    NSCalendarsFullAccessUsageDescription: calendarPermission,
+    NSRemindersFullAccessUsageDescription: remindersPermission,
   });
 
   return AndroidConfig.Permissions.withPermissions(config, [

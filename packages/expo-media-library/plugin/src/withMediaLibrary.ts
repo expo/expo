@@ -1,16 +1,12 @@
 import {
   ConfigPlugin,
-  withPlugins,
   withAndroidManifest,
   AndroidConfig,
   createRunOncePlugin,
-  withInfoPlist,
+  IOSConfig,
 } from 'expo/config-plugins';
 
 const pkg = require('expo-media-library/package.json');
-
-const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
-const WRITE_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to save photos';
 
 export function modifyAndroidManifest(
   manifest: AndroidConfig.Manifest.AndroidManifest
@@ -32,32 +28,29 @@ const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
 
 const withMediaLibrary: ConfigPlugin<
   {
-    photosPermission?: string;
-    savePhotosPermission?: string;
+    photosPermission?: string | false;
+    savePhotosPermission?: string | false;
     isAccessMediaLocationEnabled?: boolean;
   } | void
 > = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
-  withInfoPlist(config, (config) => {
-    config.modResults.NSPhotoLibraryUsageDescription =
-      photosPermission || config.modResults.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
-    config.modResults.NSPhotoLibraryAddUsageDescription =
-      savePhotosPermission ||
-      config.modResults.NSPhotoLibraryAddUsageDescription ||
-      WRITE_PHOTOS_USAGE;
-    return config;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
+    NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',
+  })(config, {
+    NSPhotoLibraryUsageDescription: photosPermission,
+    NSPhotoLibraryAddUsageDescription: savePhotosPermission,
   });
 
-  return withPlugins(config, [
+  AndroidConfig.Permissions.withPermissions(
+    config,
     [
-      AndroidConfig.Permissions.withPermissions,
-      [
-        'android.permission.READ_EXTERNAL_STORAGE',
-        'android.permission.WRITE_EXTERNAL_STORAGE',
-        isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
-      ].filter(Boolean),
-    ],
-    withMediaLibraryExternalStorage,
-  ]);
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+    ].filter(Boolean) as string[]
+  );
+
+  return withMediaLibraryExternalStorage(config);
 };
 
 export default createRunOncePlugin(withMediaLibrary, pkg.name, pkg.version);
