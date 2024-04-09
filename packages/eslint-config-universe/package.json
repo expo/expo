@@ -18,7 +18,7 @@
     "react-native"
   ],
   "files": [
-    "README.md",
+    "!__tests__",
     "default.js",
     "native.js",
     "node.js",
