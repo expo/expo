@@ -18,43 +18,6 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'react-native-gesture-handler': {
-      source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
-      semverPrefix: '~',
-      ios: {},
-      android: {
-        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
-          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
-          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
-          buildGradle = buildGradle.replace(
-            'def shouldUseCommonInterfaceFromReanimated() {',
-            'def shouldUseCommonInterfaceFromReanimated() {\n    return true\n'
-          );
-          buildGradle = buildGradle.replace(
-            /react-native-reanimated/g,
-            'vendored_unversioned_react-native-reanimated'
-          );
-          await fs.writeFile(buildGradlePath, buildGradle);
-        },
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-        ],
-      },
-    },
-    'react-native-screens': {
-      source: 'https://github.com/software-mansion/react-native-screens.git',
-      semverPrefix: '~',
-      ios: {},
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-        ],
-      },
-    },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
     },
@@ -211,10 +174,6 @@ const config: VendoringTargetConfig = {
       android: {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
-    },
-    '@react-native-segmented-control/segmented-control': {
-      source: 'https://github.com/react-native-segmented-control/segmented-control',
-      ios: {},
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
