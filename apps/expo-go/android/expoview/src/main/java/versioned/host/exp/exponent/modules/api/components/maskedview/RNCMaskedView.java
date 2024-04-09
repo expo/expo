@@ -59,6 +59,8 @@ public class RNCMaskedView extends ReactViewGroup {
         }
       }
     }
+
+    invalidate();
   }
 
   @Override
