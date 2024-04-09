@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash caused by accessing UIApplication apis off the main thread. ([#20272](https://github.com/expo/expo/pull/20272) by [@cltnschlosser](https://github.com/cltnschlosser))
+
 ### 💡 Others
 
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
