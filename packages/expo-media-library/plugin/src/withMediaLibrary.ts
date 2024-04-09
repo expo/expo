@@ -4,6 +4,7 @@ import {
   withAndroidManifest,
   AndroidConfig,
   createRunOncePlugin,
+  withInfoPlist,
 } from 'expo/config-plugins';
 
 const pkg = require('expo-media-library/package.json');
@@ -36,14 +37,15 @@ const withMediaLibrary: ConfigPlugin<
     isAccessMediaLocationEnabled?: boolean;
   } | void
 > = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  config.ios.infoPlist.NSPhotoLibraryUsageDescription =
-    photosPermission || config.ios.infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
-  config.ios.infoPlist.NSPhotoLibraryAddUsageDescription =
-    savePhotosPermission ||
-    config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
-    WRITE_PHOTOS_USAGE;
+  withInfoPlist(config, (config) => {
+    config.modResults.NSPhotoLibraryUsageDescription =
+      photosPermission || config.modResults.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
+    config.modResults.NSPhotoLibraryAddUsageDescription =
+      savePhotosPermission ||
+      config.modResults.NSPhotoLibraryAddUsageDescription ||
+      WRITE_PHOTOS_USAGE;
+    return config;
+  });
 
   return withPlugins(config, [
     [

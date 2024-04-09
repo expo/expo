@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Prevent config plugin from writing permissions until prebuild.
+
 ## 3.3.0 — 2023-11-14
 
 ### 🛠 Breaking changes

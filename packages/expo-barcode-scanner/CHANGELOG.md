@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Prevent config plugin from writing permissions until prebuild.
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.9.3 - 2024-02-16
