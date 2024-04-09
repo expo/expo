@@ -1656,6 +1656,8 @@ PODS:
     - React-utils (= 0.74.0-rc.7)
   - RNCAsyncStorage (1.18.2):
     - React-Core
+  - RNCMaskedView (0.3.1):
+    - React-Core
   - RNCPicker (2.7.2):
     - React-Core
   - RNFlashList (1.6.4):
@@ -1935,6 +1937,7 @@ DEPENDENCIES:
   - React-utils (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `./vendored/unversioned/@react-native-async-storage/async-storage`)"
+  - "RNCMaskedView (from `../../../node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
@@ -2244,6 +2247,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "./vendored/unversioned/@react-native-async-storage/async-storage"
+  RNCMaskedView:
+    :path: "../../../node_modules/@react-native-masked-view/masked-view"
   RNCPicker:
     :path: "./vendored/unversioned/@react-native-picker/picker"
   RNFlashList:
@@ -2416,6 +2421,7 @@ SPEC CHECKSUMS:
   React-utils: bdc9a6686acc6743d18f3669286557a1691520ec
   ReactCommon: f2711a51ca03845c6ae972a2946b5dc6d6519fbb
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
+  RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNCPicker: 82ccad5b08259dc09310082118cbb6c136d7da67
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 4d271a5d9178403bd8dae0d853e2be21cf53743c

@@ -671,20 +671,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
     moduleModifier: DateTimePickerModifier,
   },
-  '@react-native-masked-view/masked-view': {
-    repoUrl: 'https://github.com/react-native-masked-view/masked-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/MaskedView',
-        sourceAndroidPath: 'android/src/main/java/org/reactnative/maskedview',
-        targetAndroidPath: 'modules/api/components/maskedview',
-        sourceAndroidPackage: 'org.reactnative.maskedview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      },
-    ],
-  },
   '@react-native-picker/picker': {
     repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
