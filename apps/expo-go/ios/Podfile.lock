@@ -1702,7 +1702,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.27.0):
+  - RNScreens (3.31.0-rc.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1939,7 +1939,7 @@ DEPENDENCIES:
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
-  - RNScreens (from `./vendored/unversioned/react-native-screens`)
+  - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `./vendored/unversioned/react-native-svg`)
   - SocketRocket
   - "stripe-react-native (from `../../../node_modules/@stripe/stripe-react-native`)"
@@ -2253,7 +2253,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
-    :path: "./vendored/unversioned/react-native-screens"
+    :path: "../../../node_modules/react-native-screens"
   RNSVG:
     :path: "./vendored/unversioned/react-native-svg"
   stripe-react-native:
@@ -2420,7 +2420,7 @@ SPEC CHECKSUMS:
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 4d271a5d9178403bd8dae0d853e2be21cf53743c
   RNReanimated: d15d28f8cd7039c6c19f23f81c52574be8d06942
-  RNScreens: f37061aab58a12f92a4ecb0ee99dfc6dc9500ebf
+  RNScreens: 52f2565581af64b1b410d49784cf8342ed94ca28
   RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
