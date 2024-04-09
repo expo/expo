@@ -24,19 +24,6 @@ const config: VendoringTargetConfig = {
     'react-native-view-shot': {
       source: 'https://github.com/gre/react-native-view-shot.git',
     },
-    'react-native-svg': {
-      source: 'https://github.com/react-native-svg/react-native-svg',
-      ios: {},
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-          'android/src/fabric/**',
-          'android/src/main/jni/**',
-        ],
-      },
-    },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-netinfo/react-native-netinfo',
       ios: {
