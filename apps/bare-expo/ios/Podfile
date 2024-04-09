@@ -18,7 +18,8 @@ inhibit_all_warnings!
 prepare_react_native_project!
 
 abstract_target 'BareExpoMain' do
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+  # Temporarily disabled for testing bridgeless mode
+  # pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   use_expo_modules!(
     includeTests: true,
@@ -63,7 +64,6 @@ abstract_target 'BareExpoMain' do
     use_react_native!(
       :path => config[:reactNativePath],
       :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :new_arch_enabled => false,
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
     )
@@ -73,7 +73,6 @@ abstract_target 'BareExpoMain' do
     use_react_native!(
       :path => config[:reactNativePath],
       :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :new_arch_enabled => false,
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
     )

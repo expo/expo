@@ -2376,7 +2376,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 78909e01c02136071e1e884efea014c945c154ba
+  hermes-engine: 1b3b7ac76c699dc7773d2c50545fb8b8ce5cff81
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
