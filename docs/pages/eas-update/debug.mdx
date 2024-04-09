@@ -84,9 +84,17 @@ If our deployment is not displayed, it means our build is not configured properl
 
 ### Update is crashing and rolling back to a previous version
 
-If everything on the Deployments page looks correct, but your app is still showing the previous update or the code embedded with the build, it's possible that your app is downloading and applying the update, but the update is crashing prior to rendering your root component. EAS Update will automatically roll back to the previous version if an update crashes shortly after loading. If you do not see the update after successfully using the [`expo-updates`](/versions/latest/sdk/updates/) JS API to reload the app after an update is downloaded, this is likely the issue. [Learn more about how EAS Update detects crashes and rolls back to a previous working version](error-recovery/#explaining-the-error-recovery-flow).
+If everything looks correct on the deployments page, but your app still shows the previous update or the code embedded with the build, it can be caused by the new update crash. This can happen when this new update crashes before the root component renders after the app downloads and applies the new update. 
 
-You can our [runtime issue troubleshooting guide](/debugging/runtime-issues/) to see the error that occurs when the update crashes. Publish a new update that fixes the crash to resolve the issue. A common reason that the embedded code may work but an update does not is due to a missing environment variable. [Learn more about how environment variables work in EAS Update](environment-variables/).
+Another example of a crash scenario is when the app uses the [`expo-updates`](/versions/latest/sdk/updates/) API but doesn't apply the new update. Again, the crash is most likely the culprit.
+
+EAS Update is designed to automatically roll back to the previous update after it detects an update crash. See [how EAS Update detects crashes and rolls back to a previous working version](/eas-update/error-recovery/#explaining-the-error-recovery-flow) for more information.
+
+To diagnose the error causing the update crash:
+- See the [Troubleshooting guide on runtime issues](/debugging/runtime-issues/) to apply a strategy to identify the error.
+- After identifying the error, publish a new update that fixes the crash to resolve the issue.
+
+Another common reason a new update does not work but embedded code does is due to a missing environment variable. See [how environment variables work with EAS Update](/eas-update/environment-variables/) for more information.
 
 ## Solutions
 
