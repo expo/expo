@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Support custom debug build configuration for debugOnly pods (expo-dev-client for example) ([#28085](https://github.com/expo/expo/pull/28085) by [@Titozzz](https://github.com/Titozzz))
+
 ### 💡 Others
 
 ## 1.10.3 - 2024-02-06
