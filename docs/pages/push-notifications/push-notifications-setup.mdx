@@ -40,7 +40,7 @@ Run the following command to install the `expo-notifications`, `expo-device` and
 
 The code below shows a working example of how to register for, send, and receive push notifications in a React Native app. Copy and paste it into your project:
 
-```jsx App.tsx
+```tsx App.tsx
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
@@ -57,7 +57,7 @@ Notifications.setNotificationHandler({
 });
 /* @end */
 
-/* @info Sends a notification to Expo. Expo's push notification tool at https://expo.dev/notifications may also be used. */
+/* @info Sends a notification to Expo. Can also use Expo's push notification tool at https://expo.dev/notifications. */
 async function sendPushNotification(expoPushToken: string) {
   const message = {
     to: expoPushToken,
@@ -139,7 +139,7 @@ export default function App() {
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    /* @info Gets the push token and shows it in the UI, or shows the error if one occurs */
+    /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ''))
       .catch((error: any) => setExpoPushToken(`${error}`));

@@ -44,13 +44,6 @@ Check out the example Snack below to see Notifications in action, make sure to u
 <SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
 
 ```tsx
-/**
- * Example code using expo-notifications package
- *
- * If this is added to a new Expo app, required packages should be installed:
- *
- * npx expo install expo-device expo-notifications
- */
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
@@ -177,7 +170,7 @@ async function registerForPushNotificationsAsync() {
     }
     // Learn more about projectId:
     // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    // Here we use EAS projectId
+    // EAS projectId is used here.
     try {
       const projectId =
         Constants?.expoConfig?.extra?.eas?.projectId ??
