@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Prevent config plugin from writing permissions until prebuild, remove duplicate permissions.
+- Prevent config plugin from writing permissions until prebuild, remove duplicate permissions. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - On iOS, migrate to Expo Modules API. ([#24282](https://github.com/expo/expo/pull/24282) by [@alanjhughes](https://github.com/alanjhughes))
 

@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Prevent config plugin from writing permissions until prebuild.
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.3.0 — 2023-11-14
 
