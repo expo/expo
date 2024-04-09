@@ -15,9 +15,9 @@ export const expoLint: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      'Utility to run ESLint. Prompts to install and configure if not yet set up.',
+      'Configure ESLint and lint your project.',
       'npx expo lint',
-      '-h, --help                 Usage info'
+      '-h, --help    Usage info'
     );
   }
 

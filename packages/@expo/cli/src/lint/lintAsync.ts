@@ -1,28 +1,23 @@
-import * as PackageManager from '@expo/package-manager';
+import { resolvePackageManager } from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
-import { Log } from '../log';
-import { isInteractive } from '../utils/interactive';
 
 export const lintAsync = async (projectRoot: string) => {
-  const prerequisite = new ESLintProjectPrerequisite(projectRoot);
+  await new ESLintProjectPrerequisite(projectRoot).assertAsync();
 
-  const hasESLintConfigured = await prerequisite.assertImplementation();
+  const manager = resolvePackageManager(projectRoot) || 'npm';
 
-  if (!hasESLintConfigured) {
-    const configured = await prerequisite.bootstrapAsync();
-
-    if (!configured && !isInteractive()) {
-      Log.log('No ESLint setup found. Skipping linting.');
-    }
+  try {
+    await spawnAsync(manager === 'npm' ? 'npx' : manager, ['eslint', '.'], {
+      stdio: 'inherit',
+      cwd: projectRoot,
+      env: {
+        ...process.env,
+        ESLINT_USE_FLAT_CONFIG: 'false',
+      },
+    });
+  } catch (error: any) {
+    process.exit(error.status);
   }
-
-  const packageManager = PackageManager.resolvePackageManager(projectRoot) || 'npm';
-
-  // TODO(Kadi): check if there's a lint command first?
-  await spawnAsync(packageManager, ['run', 'lint'], {
-    stdio: 'inherit',
-    cwd: projectRoot,
-  });
 };
