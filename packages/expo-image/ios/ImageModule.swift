@@ -118,9 +118,9 @@ public final class ImageModule: Module {
 
       var imagesLoaded = 0
       var failed = false
-      
-      if (headersMap != nil) {
-        context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headersMap!)
+
+      if headersMap != nil {
+        context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headersMap)
       }
 
       urls.forEach { url in
