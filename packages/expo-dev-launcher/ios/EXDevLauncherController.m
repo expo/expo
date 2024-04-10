@@ -17,7 +17,7 @@
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
+#import <EXDevLauncher/EXDevLauncherAppDelegate.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -57,7 +57,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
-@property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
+@property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
@@ -87,7 +87,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
-    self.bridgeDelegate = [[EXDevLauncherBridgeDelegate alloc] initWithBundleURLGetter:^NSURL * {
+    self.appDelegate = [[EXDevLauncherAppDelegate alloc] initWithBundleURLGetter:^NSURL * {
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf != nil) {
         return [strongSelf getSourceURL];
@@ -329,11 +329,10 @@
 
   [self _removeInitModuleObserver];
 
-  RCTAssert([UIApplication.sharedApplication.delegate isKindOfClass:[RCTAppDelegate class]],
-               @"The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.");
-  RCTAppDelegate *rctAppDelegate = (RCTAppDelegate *)UIApplication.sharedApplication.delegate;
-  UIView *rootView = [rctAppDelegate recreateRootViewWithBundleURL:[self getSourceURL] moduleName:nil initialProps:nil launchOptions:_launchOptions];
-  _launcherBridge = _bridgeDelegate.bridge;
+  _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
+  UIView *rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
+                                                     initialProperties:nil
+                                                     launchOptions:_launchOptions];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
@@ -400,7 +399,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (![_launcherBridge isValid]) {
+  if (![_appDelegate.rootViewFactory.bridge isValid]) {
     [self navigateToLauncher];
   }
 
