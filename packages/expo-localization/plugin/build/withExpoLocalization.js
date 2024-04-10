@@ -2,14 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Manifest_1 = require("@expo/config-plugins/build/android/Manifest");
 const config_plugins_1 = require("expo/config-plugins");
-function withExpoLocalizationIos(config) {
-    if (config.extra?.supportsRTL == null)
+function withExpoLocalizationIos(config, data) {
+    const mergedConfig = { ...config.extra, ...data };
+    if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null)
         return config;
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)
         config.ios.infoPlist = {};
-    config.ios.infoPlist.ExpoLocalization_supportsRTL = config.extra?.supportsRTL || false;
+    if (mergedConfig?.supportsRTL != null) {
+        config.ios.infoPlist.ExpoLocalization_supportsRTL = mergedConfig?.supportsRTL;
+    }
+    if (mergedConfig?.forcesRTL != null) {
+        config.ios.infoPlist.ExpoLocalization_forcesRTL = mergedConfig?.forcesRTL;
+    }
     return config;
 }
 function withExpoLocalizationAndroid(config, data) {
@@ -26,12 +32,23 @@ function withExpoLocalizationAndroid(config, data) {
         });
     }
     return (0, config_plugins_1.withStringsXml)(config, (config) => {
-        config.modResults = config_plugins_1.AndroidConfig.Strings.setStringItem([
-            {
-                $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-                _: String(data.supportsRTL ?? config.extra?.supportsRTL),
-            },
-        ], config.modResults);
+        const mergedConfig = { ...config.extra, ...data };
+        if (mergedConfig?.supportsRTL != null) {
+            config.modResults = config_plugins_1.AndroidConfig.Strings.setStringItem([
+                {
+                    $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
+                    _: String(mergedConfig?.supportsRTL),
+                },
+            ], config.modResults);
+        }
+        if (mergedConfig?.supportsRTL != null) {
+            config.modResults = config_plugins_1.AndroidConfig.Strings.setStringItem([
+                {
+                    $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' },
+                    _: String(mergedConfig?.forcesRTL),
+                },
+            ], config.modResults);
+        }
         return config;
     });
 }
