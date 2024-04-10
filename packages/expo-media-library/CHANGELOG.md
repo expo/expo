@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Migrate to expo modules. ([#25587](https://github.com/expo/expo/pull/25587) by [@alanjhughes](https://github.com/alanjhughes))

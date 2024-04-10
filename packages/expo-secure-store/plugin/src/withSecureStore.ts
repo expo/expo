@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig, createRunOncePlugin } from '@expo/config-plugins';
 
 const pkg = require('expo-secure-store/package.json');
 
@@ -6,14 +6,13 @@ const FACEID_USAGE = 'Allow $(PRODUCT_NAME) to access your Face ID biometric dat
 
 const withSecureStore: ConfigPlugin<
   {
-    faceIDPermission?: string;
+    faceIDPermission?: string | false;
   } | void
 > = (config, { faceIDPermission } = {}) => {
-  return withInfoPlist(config, (config) => {
-    config.modResults.NSFaceIDUsageDescription =
-      faceIDPermission || config.modResults.NSFaceIDUsageDescription || FACEID_USAGE;
-
-    return config;
+  return IOSConfig.Permissions.createPermissionsPlugin({
+    NSFaceIDUsageDescription: FACEID_USAGE,
+  })(config, {
+    NSFaceIDUsageDescription: faceIDPermission,
   });
 };
 
