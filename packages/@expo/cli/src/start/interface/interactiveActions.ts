@@ -157,7 +157,7 @@ export class DevServerManagerActions {
       const pluginMenuItems = (
         await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
       ).map((plugin) => ({
-        title: chalk`Open devtools plugin - {bold ${plugin.packageName}}`,
+        title: chalk`Open {bold ${plugin.packageName}}`,
         value: `devtoolsPlugin:${plugin.packageName}`,
         action: async () => {
           const url = new URL(
