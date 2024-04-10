@@ -7,7 +7,7 @@ import tar from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
-import { createEntryResolver, createFileTransform } from '../createFileTransform';
+import { createEntryResolver } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
 
@@ -132,7 +132,6 @@ export async function extractNpmTarballAsync(
       {
         cwd,
         filter,
-        transform: createFileTransform(name),
         onentry: createEntryResolver(name),
         strip: strip ?? 1,
       },
