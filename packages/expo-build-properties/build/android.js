@@ -67,6 +67,18 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'expo.useLegacyPackaging',
         propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
     },
+    {
+        propName: 'android.extraMavenRepos',
+        propValueGetter: (config) => {
+            const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+                if (typeof item === 'string') {
+                    return { url: item };
+                }
+                return item;
+            });
+            return JSON.stringify(extraMavenRepos);
+        },
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

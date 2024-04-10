@@ -72,6 +72,18 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'expo.useLegacyPackaging',
       propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
     },
+    {
+      propName: 'android.extraMavenRepos',
+      propValueGetter: (config) => {
+        const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+          if (typeof item === 'string') {
+            return { url: item };
+          }
+          return item;
+        });
+        return JSON.stringify(extraMavenRepos);
+      },
+    },
   ],
   'withAndroidBuildProperties'
 );

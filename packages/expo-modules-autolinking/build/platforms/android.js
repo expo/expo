@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertPackageNameToProjectName = exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
+exports.searchGradlePropertyFirst = exports.convertPackageNameToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const ANDROID_PROPERTIES_FILE = 'gradle.properties';
+const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -57,6 +59,20 @@ async function resolveModuleAsync(packageName, revision) {
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
+async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
+    const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
+    try {
+        const contents = await fs_extra_1.default.readFile(propsFile, 'utf8');
+        const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
+        if (extraMavenReposString) {
+            const extraMavenRepos = JSON.parse(extraMavenReposString);
+            return extraMavenRepos;
+        }
+    }
+    catch { }
+    return null;
+}
+exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates the string to put into the generated package list.
  */
@@ -151,4 +167,28 @@ function convertPackageNameToProjectName(packageName, buildGradleFile) {
     return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }
 exports.convertPackageNameToProjectName = convertPackageNameToProjectName;
+/**
+ * Given the contents of a `gradle.properties` file,
+ * searches for a property with the given name.
+ *
+ * This function will return the first property found with the given name.
+ * The implementation follows config-plugins and
+ * tries to align the behavior with the `withGradleProperties` plugin.
+ */
+function searchGradlePropertyFirst(contents, propertyName) {
+    const lines = contents.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line && !line.startsWith('#')) {
+            const eok = line.indexOf('=');
+            const key = line.slice(0, eok);
+            if (key === propertyName) {
+                const value = line.slice(eok + 1, line.length);
+                return value;
+            }
+        }
+    }
+    return null;
+}
+exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 //# sourceMappingURL=android.js.map

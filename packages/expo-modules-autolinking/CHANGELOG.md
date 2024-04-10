@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- Support custom debug build configuration for debugOnly pods (expo-dev-client for example) ([#28085](https://github.com/expo/expo/pull/28085) by [@Titozzz](https://github.com/Titozzz))
+
 ### 💡 Others
+
+- Read `extraPods` from **Podfile.properties.json** and `extraMavenRepos` from **gradle.properties**. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
 
 ## 1.10.3 - 2024-02-06
 

@@ -68,10 +68,11 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.SQLiteDa
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
   }
-  await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
-    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
-  );
+  const asset = await Asset.fromModule(require(pathToDatabaseFile)).downloadAsync();
+  await FileSystem.copyAsync({
+    from: asset.localUri,
+    to: FileSystem.documentDirectory + 'SQLite/myDatabaseName.db',
+  });
   return SQLite.openDatabase('myDatabaseName.db');
 }
 ```
