@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - On `iOS`, support loading assets in the native project. This already worked on android. ([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
+- Support prefetching images with HTTP headers. ([#28133](https://github.com/expo/expo/pull/28133) by [@toy0605](https://github.com/toy0605))
 
 ### 🐛 Bug fixes
 
