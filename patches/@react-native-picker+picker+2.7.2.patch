@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-picker/picker/android/build.gradle b/node_modules/@react-native-picker/picker/android/build.gradle
+index f3733cd..155b3a8 100644
+--- a/node_modules/@react-native-picker/picker/android/build.gradle
++++ b/node_modules/@react-native-picker/picker/android/build.gradle
+@@ -35,7 +35,7 @@ def resolveReactNativeDirectory() {
+         return reactNativeFromProjectNodeModules
+     }
+ 
+-    def reactNativeFromNodeModulesWithPicker = file("${projectDir}/../../react-native")
++    def reactNativeFromNodeModulesWithPicker = file("${projectDir}/../../../react-native")
+     if (reactNativeFromNodeModulesWithPicker.exists()) {
+         return reactNativeFromNodeModulesWithPicker
+     }
