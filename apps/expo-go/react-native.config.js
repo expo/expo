@@ -1,7 +1,4 @@
-const DISABLED_AUTOLINKING_PKGS = [
-  '@react-native-async-storage/async-storage',
-  '@react-native-community/netinfo',
-];
+const DISABLED_AUTOLINKING_PKGS = ['@react-native-async-storage/async-storage'];
 
 module.exports = {
   dependencies: {

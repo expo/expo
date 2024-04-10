@@ -1562,7 +1562,7 @@ PODS:
   - React-Mapbuffer (0.74.0-rc.7):
     - glog
     - React-debug
-  - react-native-netinfo (11.1.0):
+  - react-native-netinfo (11.3.1):
     - React-Core
   - react-native-pager-view (6.2.3):
     - DoubleConversion
@@ -2601,7 +2601,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 39abf32718d8ea6e634f01c7604be086185b78bd
   React-logger: a790d16be67220e42ba1de47fd5f3bf694961307
   React-Mapbuffer: 30f85b69520bd0d33e0da391b756cc213a554352
-  react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
+  react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: 880c1bb546f47322d03b56ff2810aa5e990e582c
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
@@ -2643,7 +2643,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
