@@ -39,17 +39,24 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    developmentClientController.appBridge = RCTBridge.current()
-
     guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
       fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
     }
+
+    // Reset rctAppDelegate so we can relaunch the app
+    if rctAppDelegate.bridgelessEnabled() {
+      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    } else {
+      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "bridge")
+    }
+
     let rootView = rctAppDelegate.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
       launchOptions: self.launchOptions
     )
+    developmentClientController.appBridge = rctAppDelegate.bridge
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 
