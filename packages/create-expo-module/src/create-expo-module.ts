@@ -340,9 +340,9 @@ async function askForSubstitutionDataAsync(
   slug: string,
   isLocal = false
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const promptQueries = await (isLocal
-    ? getLocalSubstitutionDataPrompts
-    : getSubstitutionDataPrompts)(slug);
+  const promptQueries = await (
+    isLocal ? getLocalSubstitutionDataPrompts : getSubstitutionDataPrompts
+  )(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
