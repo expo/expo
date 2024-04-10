@@ -156,15 +156,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
     },
-    '@react-native-community/slider': {
-      source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'package',
-      ios: {},
-      android: {
-        includeFiles: 'android/**',
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
       ios: {
