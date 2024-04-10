@@ -9,58 +9,64 @@ import type { XcodeProject } from 'xcode';
 
 jest.mock('fs');
 
-jest.mock('../utils/Xcodeproj',() => ({
-    getProjectName: () => "testproject",
-    addBuildSourceFileToGroup: jest.fn(),
+jest.mock('../utils/Xcodeproj', () => ({
+  getProjectName: () => 'testproject',
+  addBuildSourceFileToGroup: jest.fn(),
 }));
 
+const projectRoot = '/testproject';
+
+const project = {
+  name: 'test',
+  slug: 'test',
+};
+
+const mockConfig: ExportedConfigWithProps<XcodeProject> = {
+  //fill in relevant data here
+  modResults: {
+    hasFile: () => false,
+  },
+  modRequest: {
+    projectRoot,
+    platformProjectRoot: path.join(projectRoot, 'ios'),
+    modName: 'test',
+    platform: 'ios',
+    introspect: false,
+  },
+  modRawConfig: project,
+  ...project,
+};
+
+const privacyManifests: PrivacyInfo = {
+  NSPrivacyAccessedAPITypes: [
+    {
+      NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryTestCategory',
+      NSPrivacyAccessedAPITypeReasons: ['TEST.TEST'],
+    },
+  ],
+  NSPrivacyCollectedDataTypes: [],
+  NSPrivacyTracking: true,
+  NSPrivacyTrackingDomains: ['test.com'],
+};
+
+const filePath = 'ios/testproject/PrivacyInfo.xcprivacy';
 
 const originalFs = jest.requireActual('fs');
 
 describe('withPrivacyInfo', () => {
-  const projectRoot = '/testproject';
-
   afterEach(() => vol.reset());
   it('adds PrivacyInfo.xcprivacy file to the project and merges with existing file', async () => {
-    const filePath  = 'ios/testproject/PrivacyInfo.xcprivacy';
     // mock the data in the PrivacyInfo.xcprivacy file using vol
-    vol.fromJSON({
-      'ios/testproject/PrivacyInfo.xcprivacy': originalFs.readFileSync(
-        path.join(__dirname, 'fixtures/PrivacyInfo.xcprivacy'),
-        'utf-8'
-      ),
-    }, projectRoot);
-
-    const mockConfig: ExportedConfigWithProps<XcodeProject> = {
-      //fill in relevant data here
-      modResults: {
-        hasFile: () => false,
+    vol.fromJSON(
+      {
+        'ios/testproject/PrivacyInfo.xcprivacy': originalFs.readFileSync(
+          path.join(__dirname, 'fixtures/PrivacyInfo.xcprivacy'),
+          'utf-8'
+        ),
       },
-        modRequest: {
-            projectRoot,
-            platformProjectRoot: path.join(projectRoot, 'ios'),
-            modName: 'test',
-            platform: 'ios',
-            introspect: false
-        },
-        modRawConfig: {
-            name: 'test',
-            slug: 'test',
-        },
-        name: 'test',
-        slug: 'test',
-    };
-    const privacyManifests: PrivacyInfo = {
-        NSPrivacyAccessedAPITypes: [
-            {
-                NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryTestCategory',
-                NSPrivacyAccessedAPITypeReasons: ['TEST.TEST'],
-            },
-        ],
-        NSPrivacyCollectedDataTypes: [],
-        NSPrivacyTracking: true,
-        NSPrivacyTrackingDomains: ["test.com"]
-    };
+      projectRoot
+    );
+
     setPrivacyInfo(mockConfig, privacyManifests);
     expect(vol.readFileSync(path.join(projectRoot, filePath), 'utf-8')).toMatchSnapshot();
   });
