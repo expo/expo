@@ -177,26 +177,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   await transformGestureHandlerImports();
 };
 
-const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
-  const addResourceImportAsync = async () => {
-    const files = [
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
-    ];
-    await Promise.all(
-      files
-        .map((file) => path.resolve(file))
-        .map(async (file) => {
-          let content = await fs.readFile(file, 'utf8');
-          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
-          await fs.writeFile(file, content, 'utf8');
-        })
-    );
-  };
-
-  await addResourceImportAsync();
-});
-
 const DateTimePickerModifier: ModuleModifier = once(
   async function (moduleConfig, clonedProjectPath) {
     const CHANGES = [
@@ -670,21 +650,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       )}s used for grabbing style of dialogs are being resolved properly.`,
     ],
     moduleModifier: DateTimePickerModifier,
-  },
-  '@react-native-picker/picker': {
-    repoUrl: 'https://github.com/react-native-picker/picker',
-    installableInManagedApps: true,
-    moduleModifier: PickerModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/Picker',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
-        targetAndroidPath: 'modules/api/components/picker',
-        sourceAndroidPackage: 'com.reactnativecommunity.picker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
   },
 };
 
