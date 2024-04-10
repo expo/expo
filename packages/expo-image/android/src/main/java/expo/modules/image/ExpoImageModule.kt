@@ -7,11 +7,14 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.Headers
+import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.yoga.YogaConstants
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
@@ -29,16 +32,24 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, promise: Promise ->
+    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: ReadableMap?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       var imagesLoaded = 0
       var failed = false
 
+      val headers = headersMap?.toHashMap()?.let {
+        LazyHeaders.Builder().apply {
+          it.forEach { (key, value) ->
+            addHeader(key, value.toString())
+          }
+        }.build()
+      } ?: Headers.DEFAULT
+
       urls.forEach {
         Glide
           .with(context)
-          .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
+          .load(GlideUrl(it, headers)) //  Use `load` instead of `download` to store the asset in the memory cache
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
           .downsample(NoopDownsampleStrategy)

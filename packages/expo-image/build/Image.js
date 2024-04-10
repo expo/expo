@@ -17,13 +17,14 @@ export class Image extends React.PureComponent {
      * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
      * @param urls - A URL string or an array of URLs of images to prefetch.
      * @param cachePolicy - The cache policy for prefetched images.
+     * @param headers - A map of headers to use when prefetching the images.
      * @return A promise resolving to `true` as soon as all images have been
      * successfully prefetched. If an image fails to be prefetched, the promise
      * will immediately resolve to `false` regardless of whether other images have
      * finished prefetching.
      */
-    static async prefetch(urls, cachePolicy = 'memory-disk') {
-        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy);
+    static async prefetch(urls, cachePolicy = 'memory-disk', headers) {
+        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
     }
     /**
      * Asynchronously clears all images stored in memory.
