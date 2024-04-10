@@ -14,11 +14,11 @@
 
 Thanks for the help! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
 
-We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of the Expo client. The Expo client itself (in the `ios/` and `android/` directories) are difficult to setup and require API tokens.
+We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of the Expo client. The Expo client itself (in the `android/` and `ios/` directories) is difficult to set up and requires API tokens.
 
 The `bare-expo` project includes most of the Expo SDK and runs the JavaScript code from `apps/test-suite` to allow you to easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request.
 
-Manual smoke tests are included in `apps/native-component-list`, this is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or there is something that is very difficult to test in an automated way but would be easy to verify through manual interaction.
+Manual smoke tests are included in `apps/native-component-list`, this is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or if there is something very difficult to test in an automated way but would be easy to verify through manual interaction.
 
 > 💡 How does `bare-expo` relate to `test-suite`?
 >
@@ -28,10 +28,10 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 > 💽 The development environment for this repository does not support Windows; WSL is required to contribute from Windows.
 
-1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
+1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, discarding most of the branches and history to clone it faster.
 2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
 3. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
-4. Install [Node 16 LTS](https://nodejs.org/).
+4. Install [Node LTS](https://nodejs.org/).
 
 ### Set up documentation
 
@@ -47,11 +47,14 @@ If you plan to contribute to Android, run `npm run setup:native`. This command d
 - Downloads the Node packages (`yarn install`)
 
 We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal window to install it:
+
 ```sh
 brew tap homebrew/cask-versions
 brew install --cask zulu17
 ```
-After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use Zsh):
+
+After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use ZSH):
+
 ```sh
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 ```
@@ -111,7 +114,7 @@ All modules should adhere to the style guides which can be found here:
 
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (this will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
-- All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
+- All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozens of packages locally on every `git pull` or `git checkout` operation.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
 ## ⏱ Testing Your Changes
@@ -141,11 +144,11 @@ Thanks again for helping to make sure that Expo is stable for everyone!
 
 ## 📚 Updating Documentation
 
-Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/README.md`](/docs/README.md).
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs** directory. For more information look at the [**docs/README.md**](/docs/README.md).
 
 **TL;DR:**
 
-1. Navigate to the **docs/** directory and run `yarn`.
+1. Navigate to the **docs** directory and run `yarn`.
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
 4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
@@ -154,7 +157,7 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 
 > If this is your first time committing to a large public repo, you could look through this neat tutorial: ["How to Write a Git Commit Message"](https://chris.beams.io/posts/git-commit/)
 
-Commit messages are most useful when formatted like so: `[platform][api] Title`. For example if you fix a bug in the package `expo-video` for iOS, you could write: `[ios][video] Fixed black screen bug that appears on older devices`.
+Commit messages are most useful when formatted like so: `[platform][api] Title`. For example, if you fix a bug in the package `expo-video` for iOS, you could write: `[ios][video] Fixed black screen bug that appears on older devices`.
 
 ## 🔎 Before Submitting
 
@@ -165,13 +168,13 @@ To help keep CI green, please make sure of the following:
   - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
   - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.
   - Run `yarn test` to ensure all existing tests pass for that package, along with any new tests you would've written.
-  - All `console.log`s or commented out code blocks are removed! :]
-- If you edited the `docs/`:
+  - All `console.log`s or commented out code blocks are removed!
+- If you edited the **docs** directory:
   - Any change to the current SDK version should also be in the unversioned copy as well. Example:
     - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
     - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
-  - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, and the format is correct!
+  - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ### Extra Credit
 
-- Our CI tests will finish early if you didn't make changes to certain directories. If you want to **get results faster** then you should make changes to `docs/` in one PR, and changes to anything else in another!
+- Our CI tests will finish early if you don't make changes to certain directories. If you want to **get results faster** then you should make changes to **docs** directory in one PR, and changes to anything else in another!

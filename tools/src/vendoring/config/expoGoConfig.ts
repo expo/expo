@@ -24,12 +24,6 @@ const config: VendoringTargetConfig = {
     'react-native-view-shot': {
       source: 'https://github.com/gre/react-native-view-shot.git',
     },
-    '@react-native-community/netinfo': {
-      source: 'https://github.com/react-native-netinfo/react-native-netinfo',
-      ios: {
-        excludeFiles: 'example/**/*',
-      },
-    },
     'react-native-webview': {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
       ios: {
@@ -119,57 +113,11 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    '@react-native-community/datetimepicker': {
-      source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-      // TODO: Uncomment the following once the new vendoring scripts support Android
-      // android: {
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"ClockTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"SpinnerTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"CalendarDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"SpinnerDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
-      //       },
-      //     ],
-      //   },
-      // },
-    },
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
       android: {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
-      },
-    },
-    '@react-native-picker/picker': {
-      source: 'https://github.com/react-native-picker/picker',
-      ios: {},
-      android: {
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
-    '@react-native-community/slider': {
-      source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'package',
-      ios: {},
-      android: {
-        includeFiles: 'android/**',
-        excludeFiles: ['android/gradle{/**,**}'],
       },
     },
     '@react-native-async-storage/async-storage': {

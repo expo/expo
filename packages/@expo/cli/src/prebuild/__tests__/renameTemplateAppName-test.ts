@@ -4,60 +4,14 @@ import path from 'path';
 
 import {
   getTemplateFilesToRenameAsync,
-  resolvePackageModuleId,
   renameTemplateAppNameAsync,
-} from '../Template';
+} from '../renameTemplateAppName';
 
 jest.mock('fs');
 jest.mock('fast-glob');
 const ActualFs = jest.requireActual('fs') as typeof fs;
 const ActualFastGlob = jest.requireActual('fast-glob') as typeof FastGlob;
 const cwd = path.resolve(__dirname, 'fixtures/contrived-template');
-
-describe(resolvePackageModuleId, () => {
-  it(`resolves 'file:' path`, () => {
-    const result = resolvePackageModuleId('file:./path/to/template.tgz');
-    expect(result).toEqual({
-      type: 'file',
-      uri: expect.stringMatching('./path/to/template.tgz'),
-    });
-    expect(result.type === 'file' && path.isAbsolute(result.uri)).toBe(true);
-  });
-  it(`resolves darwin local path`, () => {
-    expect(resolvePackageModuleId('./path/to/template.tgz')).toEqual({
-      type: 'file',
-      uri: expect.stringMatching('./path/to/template.tgz'),
-    });
-  });
-  it(`resolves windows local path`, () => {
-    expect(resolvePackageModuleId('.\\path\\to\\template.tgz')).toEqual({
-      type: 'file',
-      uri: expect.stringMatching(/template\.tgz$/),
-    });
-  });
-  it(`resolves module ID`, () => {
-    expect(resolvePackageModuleId('@expo/basic@34.0.0')).toEqual({
-      type: 'npm',
-      uri: '@expo/basic@34.0.0',
-    });
-    expect(resolvePackageModuleId('basic')).toEqual({
-      type: 'npm',
-      uri: 'basic',
-    });
-  });
-  it('resolves github repository url', () => {
-    expect(
-      resolvePackageModuleId(
-        'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum'
-      )
-    ).toMatchObject({
-      type: 'repository',
-      uri: expect.objectContaining({
-        pathname: '/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
-      }),
-    });
-  });
-});
 
 describe('getTemplateFilesToRenameAsync', () => {
   beforeEach(() => {

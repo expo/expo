@@ -1562,7 +1562,7 @@ PODS:
   - React-Mapbuffer (0.74.0-rc.7):
     - glog
     - React-debug
-  - react-native-netinfo (11.1.0):
+  - react-native-netinfo (11.3.1):
     - React-Core
   - react-native-pager-view (6.2.3):
     - DoubleConversion
@@ -1589,8 +1589,27 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.5.0):
     - React-Core
-  - react-native-slider (4.4.2):
+  - react-native-slider (4.5.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-view-shot (3.8.0):
     - React-Core
   - react-native-webview (13.8.4):
@@ -1846,9 +1865,9 @@ PODS:
     - React-Core
   - RNCMaskedView (0.3.1):
     - React-Core
-  - RNCPicker (2.7.2):
+  - RNCPicker (2.7.5):
     - React-Core
-  - RNDateTimePicker (7.6.3):
+  - RNDateTimePicker (7.6.4):
     - React-Core
   - RNFlashList (1.6.4):
     - React-Core
@@ -2582,11 +2601,11 @@ SPEC CHECKSUMS:
   React-jsitracing: 39abf32718d8ea6e634f01c7604be086185b78bd
   React-logger: a790d16be67220e42ba1de47fd5f3bf694961307
   React-Mapbuffer: 30f85b69520bd0d33e0da391b756cc213a554352
-  react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
+  react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: 880c1bb546f47322d03b56ff2810aa5e990e582c
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
-  react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
+  react-native-slider: 1adfc12baea3cd05e359f59598512a0e1d97d779
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: 684364aaf96cbfff9a7128ade10766ebb7d25c6f
   React-nativeconfig: c9e21ec2c4fdd9965ed627c896f8b62ce75a482a
@@ -2614,8 +2633,8 @@ SPEC CHECKSUMS:
   ReactCommon: f2711a51ca03845c6ae972a2946b5dc6d6519fbb
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
-  RNCPicker: 82ccad5b08259dc09310082118cbb6c136d7da67
-  RNDateTimePicker: 7b38b71bcd7c4cfa1cb95f2dff9a4f1faed2dced
+  RNCPicker: 3e2c37a8328f368ce14da050cdc8231deb5fc9f9
+  RNDateTimePicker: 08f00a2c341bf96e4b30da15799fbdd4c5fa48a3
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 4d271a5d9178403bd8dae0d853e2be21cf53743c
   RNReanimated: 51b46231a6a323c1823d35676c55fa2347c5f52b

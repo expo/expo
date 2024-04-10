@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
-import once from 'lodash/once';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';
@@ -176,65 +175,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   await prepareIOSNativeFiles();
   await transformGestureHandlerImports();
 };
-
-const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
-  const addResourceImportAsync = async () => {
-    const files = [
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
-    ];
-    await Promise.all(
-      files
-        .map((file) => path.resolve(file))
-        .map(async (file) => {
-          let content = await fs.readFile(file, 'utf8');
-          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
-          await fs.writeFile(file, content, 'utf8');
-        })
-    );
-  };
-
-  await addResourceImportAsync();
-});
-
-const DateTimePickerModifier: ModuleModifier = once(
-  async function (moduleConfig, clonedProjectPath) {
-    const CHANGES = [
-      {
-        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDatePickerDialogFragment.java',
-        find: /R.style.SpinnerDatePickerDialog/,
-        replaceWith: 'host.exp.expoview.R.style.SpinnerDatePickerDialog',
-      },
-      {
-        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNDateTimePickerPackage.java',
-        find: /boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED/,
-        replaceWith:
-          'boolean isTurboModule = host.exp.expoview.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED',
-      },
-      {
-        path: '/android/src/main/java/com/reactcommunity/rndatetimepicker/RNTimePickerDialogFragment.java',
-        find: /R.style.SpinnerTimePickerDialog/,
-        replaceWith: '\t\t\t\thost.exp.expoview.R.style.SpinnerTimePickerDialog',
-      },
-      {
-        path: '/ios/RNDateTimePickerShadowView.m',
-        find: /YGNodeRef/,
-        replaceWith: 'YGNodeConstRef',
-      },
-    ];
-
-    await Promise.all(
-      CHANGES.map((change) => ({
-        ...change,
-        path: path.resolve(`${clonedProjectPath}${change.path}`),
-      })).map(async (file) => {
-        let content = await fs.readFile(file.path, 'utf8');
-        content = content.replace(file.find, file.replaceWith);
-        await fs.writeFile(file.path, content, 'utf8');
-      })
-    );
-  }
-);
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -553,20 +493,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/netinfo': {
-    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/NetInfo',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
-        targetAndroidPath: 'modules/api/netinfo',
-        sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
-      },
-    ],
-  },
   'react-native-webview': {
     repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
     installableInManagedApps: true,
@@ -639,50 +565,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.facebook.react.viewmanagers',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
         cleanupTargetPath: false,
-      },
-    ],
-  },
-  '@react-native-community/datetimepicker': {
-    repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/DateTimePicker',
-        sourceAndroidPath: 'android/src/main/java/com/reactcommunity/rndatetimepicker',
-        targetAndroidPath: 'modules/api/components/datetimepicker',
-        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
-      },
-      {
-        sourceAndroidPath: 'android/src/paper/java/com/reactcommunity/rndatetimepicker',
-        targetAndroidPath: 'modules/api/components/datetimepicker',
-        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
-        cleanupTargetPath: false,
-      },
-    ],
-    warnings: [
-      `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
-        'ReactAndroid'
-      )}. Please ensure that ${chalk.magenta(
-        'resourceName'
-      )}s used for grabbing style of dialogs are being resolved properly.`,
-    ],
-    moduleModifier: DateTimePickerModifier,
-  },
-  '@react-native-picker/picker': {
-    repoUrl: 'https://github.com/react-native-picker/picker',
-    installableInManagedApps: true,
-    moduleModifier: PickerModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/Picker',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
-        targetAndroidPath: 'modules/api/components/picker',
-        sourceAndroidPackage: 'com.reactnativecommunity.picker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
       },
     ],
   },
