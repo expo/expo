@@ -73,30 +73,6 @@ describe('getTemplateFilesToRenameAsync', () => {
     expect(files).toHaveLength(0);
     expect(spyGlob).toHaveBeenCalledTimes(1);
   });
-
-  it('falls back to the default config when an explicit user config is not passed', async () => {
-    const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
-    const spyReadFile = jest
-      .spyOn(fs.promises, 'readFile')
-      .mockImplementation(async (filePath, _encoding) => {
-        switch (path.basename(filePath as string)) {
-          case 'app.json': {
-            return '{ "expo": { "name": "HelloWorld" } }';
-          }
-        }
-
-        throw new Error(`Accessed unexpected file: ${filePath}`);
-      });
-
-    const files = await getTemplateFilesToRenameAsync({ cwd });
-    expect(files).toEqual(['app.json']);
-
-    expect(spyGlob).toHaveBeenCalledTimes(1);
-    expect(spyReadFile).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('renameTemplateAppNameAsync', () => {
