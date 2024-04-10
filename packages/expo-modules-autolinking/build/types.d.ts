@@ -219,7 +219,7 @@ export interface AndroidMavenRepository {
      */
     authentication?: 'basic' | 'digest' | 'header';
 }
-interface IosPod {
+interface ApplePod {
     name: string;
     version?: string;
     configurations?: string[];
@@ -233,8 +233,5 @@ interface IosPod {
     tag?: string;
     commit?: string;
 }
-export interface ExtraDependencies {
-    androidMavenRepos: AndroidMavenRepository[];
-    iosPods?: IosPod[];
-}
+export type ExtraDependencies = AndroidMavenRepository[] | ApplePod[];
 export {};

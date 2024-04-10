@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Read `extraPods` from **Podfile.properties.json** and `extraMavenRepos` from **gradle.properties**. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
+
 ## 1.10.3 - 2024-02-06
 
 ### 🐛 Bug fixes

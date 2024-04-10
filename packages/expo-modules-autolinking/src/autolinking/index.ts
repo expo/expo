@@ -1,9 +1,15 @@
 import { findModulesAsync } from './findModules';
 import { mergeLinkingOptionsAsync, resolveSearchPathsAsync } from './mergeLinkingOptions';
-import { resolveModulesAsync } from './resolveModules';
+import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { ModuleDescriptor, SearchOptions } from '../types';
 
-export { findModulesAsync, mergeLinkingOptionsAsync, resolveModulesAsync, resolveSearchPathsAsync };
+export {
+  findModulesAsync,
+  mergeLinkingOptionsAsync,
+  resolveExtraBuildDependenciesAsync,
+  resolveModulesAsync,
+  resolveSearchPathsAsync,
+};
 export { generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';
 export * from '../types';

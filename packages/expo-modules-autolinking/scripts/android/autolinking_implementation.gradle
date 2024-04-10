@@ -65,7 +65,7 @@ class MavenRepo {
   MavenRepo(Object data) {
     this.url = data.url
     this.credentials = data.credentials
-    this.authentication = data.authentication 
+    this.authentication = data.authentication
   }
 }
 
@@ -114,7 +114,7 @@ class ExpoAutolinkingManager {
 
   MavenRepo[] getExtraMavenRepos(ProviderFactory providers, shouldUseCachedValue=false) {
     Object json = resolve(providers, shouldUseCachedValue)
-    return json.extraDependencies.androidMavenRepos.collect { new MavenRepo(it) }
+    return json.extraDependencies.collect { new MavenRepo(it) }
   }
 
   static String getGeneratedFilePath(Project project) {
@@ -245,26 +245,30 @@ if (rootProject instanceof ProjectDescriptor) {
           for (mavenRepo in extraMavenRepos) {
             maven {
               url "${mavenRepo.url}"
-              credentials {
-                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
-                  username mavenRepo.credentials.username
-                  password mavenRepo.credentials.password
-                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
-                  name mavenRepo.credentials.name
-                  value mavenRepo.credentials.value
-                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
-                  accessKey mavenRepo.credentials.accessKey
-                  secretKey mavenRepo.credentials.secretKey
-                  sessionToken mavenRepo.credentials.sessionToken
+              if (mavenRepo.credentials != null) {
+                credentials {
+                  if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                    username mavenRepo.credentials.username
+                    password mavenRepo.credentials.password
+                  } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                    name mavenRepo.credentials.name
+                    value mavenRepo.credentials.value
+                  } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                    accessKey mavenRepo.credentials.accessKey
+                    secretKey mavenRepo.credentials.secretKey
+                    sessionToken mavenRepo.credentials.sessionToken
+                  }
                 }
               }
-              authentication {
-                if (mavenRepo.authentication == "basic") {
-                  basic(BasicAuthentication)
-                } else if (mavenRepo.authentication == "digest") {
-                  digest(DigestAuthentication)
-                } else if (mavenRepo.authentication == "header") {
-                  header(HttpHeaderAuthentication)
+              if (mavenRepo.authentication != null) {
+                authentication {
+                  if (mavenRepo.authentication == "basic") {
+                    basic(BasicAuthentication)
+                  } else if (mavenRepo.authentication == "digest") {
+                    digest(DigestAuthentication)
+                  } else if (mavenRepo.authentication == "header") {
+                    header(HttpHeaderAuthentication)
+                  }
                 }
               }
             }
