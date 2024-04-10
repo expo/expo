@@ -155,7 +155,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      * code.
      */
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
-    render(): React.JSX.Element;
+    render(): JSX.Element;
     /**
      * @hidden
      */
