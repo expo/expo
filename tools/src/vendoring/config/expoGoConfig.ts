@@ -119,36 +119,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    '@react-native-community/datetimepicker': {
-      source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-      // TODO: Uncomment the following once the new vendoring scripts support Android
-      // android: {
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"ClockTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"SpinnerTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"CalendarDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"SpinnerDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
-      //       },
-      //     ],
-      //   },
-      // },
-    },
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
