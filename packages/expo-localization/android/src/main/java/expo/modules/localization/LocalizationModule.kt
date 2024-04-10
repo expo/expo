@@ -22,7 +22,7 @@ import java.util.*
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
-
+private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
 private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
@@ -70,14 +70,28 @@ class LocalizationModule : Module() {
     // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
     // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
     val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
-    if (supportsRTL != "true" && supportsRTL != "false") return
-    context
-      .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-      .edit()
-      .also {
-        it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
-        it.apply()
+    val forcesRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_forcesRTL)
+
+    if (forcesRTL == "true") {
+      context
+          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+          .edit()
+          .also {
+            it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, "true")
+            it.putBoolean(KEY_FOR_PREFS_FORCERTL, "true")
+            it.apply()
+          }
+    } else {
+      if (supportsRTL == "true" || supportsRTL == "false") {
+        context
+          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+          .edit()
+          .also {
+            it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
+            it.apply()
+          }
       }
+    }
   }
 
   // TODO: Bacon: add set language

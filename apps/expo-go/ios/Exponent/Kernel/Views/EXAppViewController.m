@@ -257,12 +257,19 @@ NS_ASSUME_NONNULL_BEGIN
   return manifest.supportsRTL;
 }
 
+- (bool)_readForcesRTLFromManifest:(EXManifestsManifest *)manifest
+{
+  return manifest.forcesRTL;
+}
+
 - (void)appStateDidBecomeActive
 {
   if (_isHomeApp) {
-    [EXTextDirectionController setSupportsRTL:false];
+      [EXTextDirectionController setRTLPreferences:false :false];
   } else if(_appRecord.appLoader.manifest != nil) {
-    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+      BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+      BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+      [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
