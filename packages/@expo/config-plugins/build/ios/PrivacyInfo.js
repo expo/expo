@@ -3,6 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.mergePrivacyInfo = mergePrivacyInfo;
+exports.setPrivacyInfo = setPrivacyInfo;
 exports.withPrivacyInfo = withPrivacyInfo;
 function _plist() {
   const data = _interopRequireDefault(require("@expo/plist"));
@@ -46,24 +48,27 @@ function withPrivacyInfo(config) {
     return config;
   }
   return (0, _().withXcodeProject)(config, projectConfig => {
-    const projectName = (0, _Xcodeproj().getProjectName)(projectConfig.modRequest.projectRoot);
-    const existingFileContent = (0, _XcodeProjectFile().readBuildSourceFile)({
-      project: projectConfig.modResults,
-      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-      filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy')
-    });
-    const parsedContent = _plist().default.parse(existingFileContent);
-    const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
-    const contents = _plist().default.build(mergedContent);
-    projectConfig.modResults = (0, _XcodeProjectFile().createBuildSourceFile)({
-      project: projectConfig.modResults,
-      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-      fileContents: contents,
-      filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
-      overwrite: true
-    });
-    return projectConfig;
+    return setPrivacyInfo(projectConfig, privacyManifests);
   });
+}
+function setPrivacyInfo(projectConfig, privacyManifests) {
+  const projectName = (0, _Xcodeproj().getProjectName)(projectConfig.modRequest.projectRoot);
+  const existingFileContent = (0, _XcodeProjectFile().readBuildSourceFile)({
+    project: projectConfig.modResults,
+    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+    filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy')
+  });
+  const parsedContent = _plist().default.parse(existingFileContent);
+  const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
+  const contents = _plist().default.build(mergedContent);
+  projectConfig.modResults = (0, _XcodeProjectFile().createBuildSourceFile)({
+    project: projectConfig.modResults,
+    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+    fileContents: contents,
+    filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
+    overwrite: true
+  });
+  return projectConfig;
 }
 function mergePrivacyInfo(existing, privacyManifests) {
   let {

@@ -6,11 +6,12 @@ import {
   readBuildSourceFile,
   withBuildSourceFile,
 } from './XcodeProjectFile';
-import { withXcodeProject } from '..';
+import { ExportedConfigWithProps, withXcodeProject } from '..';
 import { getProjectName } from './utils/Xcodeproj';
 import path from 'path';
+import type { XcodeProject } from 'xcode';
 
-type PrivacyInfo = {
+export type PrivacyInfo = {
   NSPrivacyAccessedAPITypes: {
     NSPrivacyAccessedAPIType: string;
     NSPrivacyAccessedAPITypeReasons: string[];
@@ -31,8 +32,13 @@ export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
     return config;
   }
 
-  return withXcodeProject(config, (projectConfig) => {
-    const projectName = getProjectName(projectConfig.modRequest.projectRoot);
+  return withXcodeProject(config, (projectConfig: ExportedConfigWithProps<XcodeProject>) => {
+    return setPrivacyInfo(projectConfig, privacyManifests);
+  });
+}
+
+export function setPrivacyInfo(projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>) {
+const projectName = getProjectName(projectConfig.modRequest.projectRoot);
 
     const existingFileContent = readBuildSourceFile({
       project: projectConfig.modResults,
@@ -52,10 +58,9 @@ export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
     });
 
     return projectConfig;
-  });
 }
 
-function mergePrivacyInfo(
+export function mergePrivacyInfo(
   existing: Partial<PrivacyInfo>,
   privacyManifests: Partial<PrivacyInfo>
 ): PrivacyInfo {
