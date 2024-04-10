@@ -440,13 +440,14 @@ To exclude packages from version checking, set the `expo.install` config object 
 
 ### Install package managers
 
-`npx expo install` has support for `yarn`, `npm`, and `pnpm`.
+`npx expo install` has support for `bun`, `npm`, `pnpm`, and `yarn`.
 
 You can force the package manager using a named argument:
 
+- `--bun`: Use `bun` to install dependencies. Default when **bun.lockb** exists.
 - `--npm`: Use `npm` to install dependencies. Default when **package-lock.json** exists.
-- `--yarn`: Use `yarn` to install dependencies. Default when **yarn.lock** exists.
 - `--pnpm`: Use `pnpm` to install dependencies. Default when **pnpm-lock.yaml** exists.
+- `--yarn`: Use `yarn` to install dependencies. Default when **yarn.lock** exists.
 
 ## Authentication
 
