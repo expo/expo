@@ -1403,8 +1403,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider (4.4.2):
+  - react-native-slider (4.5.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-webview (13.8.4):
     - DoubleConversion
     - glog
@@ -1911,7 +1930,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
-  - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
+  - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-nativeconfig (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2196,7 +2215,7 @@ EXTERNAL SOURCES:
   react-native-skia:
     :path: "../../../node_modules/@shopify/react-native-skia"
   react-native-slider:
-    :path: "./vendored/unversioned/@react-native-community/slider"
+    :path: "../../../node_modules/@react-native-community/slider"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-nativeconfig:
@@ -2395,7 +2414,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
   react-native-skia: 9ede31b12c287a93564a1b24db151749ae931eb4
-  react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
+  react-native-slider: 1adfc12baea3cd05e359f59598512a0e1d97d779
   react-native-webview: 684364aaf96cbfff9a7128ade10766ebb7d25c6f
   React-nativeconfig: c9e21ec2c4fdd9965ed627c896f8b62ce75a482a
   React-NativeModulesApple: f92d16846e045bc4cec6843994e64e497f49173d
