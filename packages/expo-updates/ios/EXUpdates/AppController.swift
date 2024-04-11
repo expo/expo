@@ -6,6 +6,7 @@
 
 import Foundation
 import ExpoModulesCore
+import EXUpdatesInterface
 
 public struct UpdatesModuleConstants {
   let launchedUpdate: Update?
@@ -63,6 +64,12 @@ public protocol AppControllerInterface {
    This should be provided in the `sourceURLForBridge:` method of RCTBridgeDelegate.
    */
   @objc func launchAssetUrl() -> URL?
+
+  /**
+   Indicates that the controller is in active state.
+   Currently it's only active for `EnabledAppController`.
+   */
+  @objc var isActiveController: Bool { get }
 
   @objc var isStarted: Bool { get }
 
@@ -153,6 +160,19 @@ public class AppController: NSObject {
       return
     }
 
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
+      #if USE_DEV_CLIENT
+      // Passing a reference to DevLauncherController over to the registry,
+      // which expo-dev-client can access.
+      let devLauncherController = initializeAsDevLauncherWithoutStarting()
+      _sharedInstance = devLauncherController
+      UpdatesControllerRegistry.sharedInstance.controller = devLauncherController
+      #else
+      _sharedInstance = DisabledAppController(error: nil)
+      #endif
+      return
+    }
+
     let logger = UpdatesLogger()
 
     // swiftlint:disable closure_body_length
@@ -229,7 +249,7 @@ public class AppController: NSObject {
     }
   }
 
-  public static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
+  private static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
     assert(_sharedInstance == nil, "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting")
 
     var config: UpdatesConfig?

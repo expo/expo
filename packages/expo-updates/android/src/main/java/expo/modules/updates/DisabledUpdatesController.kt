@@ -74,6 +74,8 @@ class DisabledUpdatesController(
 
   override fun onReactInstanceException(exception: java.lang.Exception) {}
 
+  override val isActiveController = false
+
   @Synchronized
   override fun start() {
     if (isStarted) {

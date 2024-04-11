@@ -43,11 +43,11 @@ class UpdatesDevLauncherController(
   private val context: Context,
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
-  private val updatesDirectoryException: Exception?,
-  private val callbacks: UpdatesInterfaceCallbacks
+  private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
   override var shouldEmitJsEvents = false
+  override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
   private var launcher: Launcher? = null
 
@@ -83,8 +83,10 @@ class UpdatesDevLauncherController(
 
   override fun onReactInstanceException(exception: java.lang.Exception) {}
 
+  override val isActiveController = false
+
   override fun start() {
-    throw Exception("IUpdatesController.start should not be called in dev client")
+    // no-op for UpdatesDevLauncherController
   }
 
   val launchedUpdate: UpdateEntity?
@@ -296,7 +298,7 @@ class UpdatesDevLauncherController(
   override fun relaunchReactApplicationForModule(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callbacks.onRequestRelaunch()
+    this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
     callback.onSuccess(Unit)
   }
 

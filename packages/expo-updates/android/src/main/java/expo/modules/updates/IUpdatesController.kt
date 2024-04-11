@@ -49,6 +49,12 @@ interface IUpdatesController {
   fun onReactInstanceException(exception: java.lang.Exception)
 
   /**
+   * Indicates that the controller is in active state.
+   * Currently it's only active for [EnabledUpdatesController].
+   */
+  val isActiveController: Boolean
+
+  /**
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
    * check for a new update from the server. This method should be called as early as possible in
    * the application's lifecycle.

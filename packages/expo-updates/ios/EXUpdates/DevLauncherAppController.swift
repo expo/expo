@@ -56,6 +56,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   private var launcher: AppLauncher?
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
+  public let isActiveController = false
   public private(set) var isStarted: Bool = false
 
   private var _selectionPolicy: SelectionPolicy?
