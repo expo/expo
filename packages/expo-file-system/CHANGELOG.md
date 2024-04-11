@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] remove `CookieHandler` as it's no longer in the module registry and not necessary.
+
 ### 💡 Others
 
 - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
