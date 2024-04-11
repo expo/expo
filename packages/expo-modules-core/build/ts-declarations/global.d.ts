@@ -25,10 +25,10 @@ declare global {
      * ```swift
      * import ExpoModulesCore
      *
-     * public class ExpoAppIconModule: Module {
+     * public class NativeAppIconModule: Module {
      *     public func definition() -> ModuleDefinition {
      *         // Sets the name of the module in the global `expo.modules` object
-     *         Name("ExpoAppIcon")
+     *         Name("NativeAppIcon")
      *
      *        // Constants
      *         Constants([
@@ -67,10 +67,10 @@ declare global {
      * ```kotlin
      * package expo.modules.haptics
      *
-     * class ExpoAppIconModule : Module() {
+     * class NativeAppIconModule : Module() {
      *
      *   override fun definition() = ModuleDefinition {
-     *     Name("ExpoAppIcon")
+     *     Name("NativeAppIcon")
      *
      *     Constants("isSupported" to true)
      *
