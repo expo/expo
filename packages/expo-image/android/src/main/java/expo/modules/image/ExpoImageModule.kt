@@ -14,7 +14,6 @@ import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.yoga.YogaConstants
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
