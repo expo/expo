@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix filepath and make the plugin merge new and existing privacy info. ([#28082](https://github.com/expo/expo/pull/28082) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 7.8.4 — 2024-01-18
