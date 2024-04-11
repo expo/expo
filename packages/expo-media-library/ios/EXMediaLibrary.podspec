@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
 
+  s.resource_bundles = {'ExpoMediaLibrary_privacy' => ['PrivacyInfo.xcprivacy']}
+
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
     # when running with `pod ipc spec`, this method is not defined and we have to require manually.
