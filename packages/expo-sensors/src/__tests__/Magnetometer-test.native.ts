@@ -29,7 +29,7 @@ function declareMagnetometerSpecs(Magnetometer, eventNames) {
         Magnetometer.addListener(mockListener);
 
         const mockEvent = { x: 0.2, y: 0.1, z: 0.3 };
-        Magnetometer._nativeEmitter.emit(eventNames.magnetometerDidUpdate, mockEvent);
+        Magnetometer._nativeModule.emit(eventNames.magnetometerDidUpdate, mockEvent);
         expect(mockListener).toHaveBeenCalledWith(mockEvent);
       });
     }

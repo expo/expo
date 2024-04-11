@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, EventEmitter, Subscription, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, Subscription, PermissionExpiration } from 'expo-modules-core';
 /**
  * @hidden
  */
@@ -10,9 +10,7 @@ type NativeSensorModule = any;
  */
 export default class DeviceSensor<Measurement> {
     _nativeModule: NativeSensorModule;
-    _nativeEmitter: EventEmitter;
     _nativeEventName: string;
-    _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
     addListener(listener: Listener<Measurement>): Subscription;
     /**

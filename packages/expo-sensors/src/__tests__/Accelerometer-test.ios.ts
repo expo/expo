@@ -9,6 +9,6 @@ it(`notifies listeners`, () => {
   Accelerometer.addListener(mockListener);
 
   const mockEvent = { x: 0.2, y: 0.1, z: 0.3 };
-  Accelerometer._nativeEmitter.emit('accelerometerDidUpdate', mockEvent);
+  Accelerometer._nativeModule.emit('accelerometerDidUpdate', mockEvent);
   expect(mockListener).toHaveBeenCalledWith(mockEvent);
 });

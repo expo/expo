@@ -9,6 +9,6 @@ it(`notifies listeners`, () => {
   DeviceMotion.addListener(mockListener);
 
   const mockEvent = { x: 0.2, y: 0.1, z: 0.3 };
-  DeviceMotion._nativeEmitter.emit('deviceMotionDidUpdate', mockEvent);
+  DeviceMotion._nativeModule.emit('deviceMotionDidUpdate', mockEvent);
   expect(mockListener).toHaveBeenCalledWith(mockEvent);
 });
