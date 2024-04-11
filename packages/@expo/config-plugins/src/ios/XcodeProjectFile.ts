@@ -73,3 +73,22 @@ export function createBuildSourceFile({
   }
   return project;
 }
+
+/**
+ * Read a source file from the Xcode project
+ *
+ * @param nativeProjectRoot absolute path to the native app root `user/app/ios`
+ * @param filePath path relative to the `nativeProjectRoot` for the file to read `user/app/ios/myapp/foobar.swift`
+ */
+export function readBuildSourceFile({
+  project,
+  nativeProjectRoot,
+  filePath,
+}: {
+  project: XcodeProject;
+  nativeProjectRoot: string;
+  filePath: string;
+}): string {
+  const absoluteFilePath = path.join(nativeProjectRoot, filePath);
+  return fs.readFileSync(absoluteFilePath, { encoding: 'utf8' });
+}
