@@ -33,7 +33,7 @@ export declare function createBuildSourceFile({ project, nativeProjectRoot, file
  * Read a source file from the Xcode project
  *
  * @param nativeProjectRoot absolute path to the native app root `user/app/ios`
- * @param filePath path relative to the `nativeProjectRoot` for the file to create `user/app/ios/myapp/foobar.swift`
+ * @param filePath path relative to the `nativeProjectRoot` for the file to read `user/app/ios/myapp/foobar.swift`
  */
 export declare function readBuildSourceFile({ project, nativeProjectRoot, filePath, }: {
     project: XcodeProject;

@@ -37,27 +37,30 @@ export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
   });
 }
 
-export function setPrivacyInfo(projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>) {
-const projectName = getProjectName(projectConfig.modRequest.projectRoot);
+export function setPrivacyInfo(
+  projectConfig: ExportedConfigWithProps<XcodeProject>,
+  privacyManifests: Partial<PrivacyInfo>
+) {
+  const projectName = getProjectName(projectConfig.modRequest.projectRoot);
 
-    const existingFileContent = readBuildSourceFile({
-      project: projectConfig.modResults,
-      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-      filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-    });
-    const parsedContent = plist.parse(existingFileContent);
-    const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
-    const contents = plist.build(mergedContent);
+  const existingFileContent = readBuildSourceFile({
+    project: projectConfig.modResults,
+    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+    filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+  });
+  const parsedContent = plist.parse(existingFileContent);
+  const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
+  const contents = plist.build(mergedContent);
 
-    projectConfig.modResults = createBuildSourceFile({
-      project: projectConfig.modResults,
-      nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-      fileContents: contents,
-      filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-      overwrite: true,
-    });
+  projectConfig.modResults = createBuildSourceFile({
+    project: projectConfig.modResults,
+    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
+    fileContents: contents,
+    filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+    overwrite: true,
+  });
 
-    return projectConfig;
+  return projectConfig;
 }
 
 export function mergePrivacyInfo(
