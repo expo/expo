@@ -6,7 +6,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesControllerRegistry
 import java.lang.ref.WeakReference
 
 /**
@@ -30,6 +30,17 @@ class UpdatesController {
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance != null) {
+        return
+      }
+      val useDeveloperSupport = (context as? ReactApplication)?.reactNativeHost?.useDeveloperSupport ?: false
+      if (useDeveloperSupport && !BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
+        if (BuildConfig.USE_DEV_CLIENT) {
+          val devLauncherController = initializeAsDevLauncherWithoutStarting(context)
+          singletonInstance = devLauncherController
+          UpdatesControllerRegistry.controller = WeakReference(devLauncherController)
+        } else {
+          singletonInstance = DisabledUpdatesController(context, null)
+        }
         return
       }
 
@@ -74,7 +85,7 @@ class UpdatesController {
       }
     }
 
-    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context, callbacks: UpdatesInterfaceCallbacks): UpdatesDevLauncherController {
+    private fun initializeAsDevLauncherWithoutStarting(context: Context): UpdatesDevLauncherController {
       check(singletonInstance == null) { "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting" }
 
       var updatesDirectoryException: Exception? = null
@@ -97,8 +108,7 @@ class UpdatesController {
         context,
         initialUpdatesConfiguration,
         updatesDirectory,
-        updatesDirectoryException,
-        callbacks
+        updatesDirectoryException
       )
       singletonInstance = instance
       return instance
@@ -109,7 +119,6 @@ class UpdatesController {
      * application's lifecycle. Can pass additional configuration to this method to set or override
      * configuration values at runtime rather than just AndroidManifest.xml.
      * @param context the base context of the application, ideally a [ReactApplication]
-     * @param configuration map of configuration pairs to override those from AndroidManifest.xml
      */
     @JvmStatic fun initialize(context: Context) {
       if (singletonInstance == null) {

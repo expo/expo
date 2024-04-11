@@ -30,6 +30,7 @@
 - Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+- Remove unused `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

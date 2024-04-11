@@ -45,12 +45,6 @@ android {
         if (rnVersion >= versionToNumber(0, 74, 0)) {
           srcDirs += "src/react-native-74/debug"
         }
-
-        if (projectIncludesExpoUpdates()) {
-          srcDirs += 'src/with-updates'
-        } else {
-          srcDirs += 'src/without-updates'
-        }
       }
     }
     releaseWithDevLauncher {
@@ -83,10 +77,6 @@ dependencies {
   implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
   implementation project(":expo-dev-menu")
-
-  if (projectIncludesExpoUpdates()) {
-    implementation project(":expo-updates")
-  }
 
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.soloader:soloader:0.11.0'
@@ -143,17 +133,4 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 
 def getRNVersion() {
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
-}
-
-def getExpoPackageVersion() {
-  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
-}
-
-def projectIncludesExpoUpdates() {
-  try {
-    def version = getNodeModulesPackageVersion("expo-updates", "expoUpdatesVersion")
-    return version != null
-  } catch (Exception e) {
-    return false
-  }
 }

@@ -127,6 +127,8 @@ class EnabledUpdatesController(
     startupProcedure.onReactInstanceException(exception)
   }
 
+  override val isActiveController = true
+
   @Synchronized
   override fun start() {
     if (isStarted) {
