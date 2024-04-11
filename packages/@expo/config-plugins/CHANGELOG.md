@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix filepath and make the plugin merge new and existing privacy info. ([#28082](https://github.com/expo/expo/pull/28082) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 - Remove classic updates SDK version and release channel. ([#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065) by [@wschurman](https://github.com/wschurman))
