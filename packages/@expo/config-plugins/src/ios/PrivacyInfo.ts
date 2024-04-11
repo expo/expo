@@ -1,15 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
-
-import {
-  createBuildSourceFile,
-  readBuildSourceFile,
-  withBuildSourceFile,
-} from './XcodeProjectFile';
-import { ExportedConfigWithProps, withXcodeProject } from '..';
-import { getProjectName } from './utils/Xcodeproj';
 import path from 'path';
 import type { XcodeProject } from 'xcode';
+
+import { createBuildSourceFile, readBuildSourceFile } from './XcodeProjectFile';
+import { getProjectName } from './utils/Xcodeproj';
+import { ExportedConfigWithProps, withXcodeProject } from '..';
 
 export type PrivacyInfo = {
   NSPrivacyAccessedAPITypes: {

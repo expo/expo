@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
-import { ExportedConfigWithProps } from '..';
 import type { XcodeProject } from 'xcode';
+import { ExportedConfigWithProps } from '..';
 export type PrivacyInfo = {
     NSPrivacyAccessedAPITypes: {
         NSPrivacyAccessedAPIType: string;

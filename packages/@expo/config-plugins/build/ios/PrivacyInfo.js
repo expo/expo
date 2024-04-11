@@ -13,16 +13,16 @@ function _plist() {
   };
   return data;
 }
-function _XcodeProjectFile() {
-  const data = require("./XcodeProjectFile");
-  _XcodeProjectFile = function () {
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
 }
-function _() {
-  const data = require("..");
-  _ = function () {
+function _XcodeProjectFile() {
+  const data = require("./XcodeProjectFile");
+  _XcodeProjectFile = function () {
     return data;
   };
   return data;
@@ -34,9 +34,9 @@ function _Xcodeproj() {
   };
   return data;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
+function _() {
+  const data = require("..");
+  _ = function () {
     return data;
   };
   return data;

@@ -1,11 +1,7 @@
-import { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 import path from 'path';
-import plist from '@expo/plist';
 
-import { setPrivacyInfo, mergePrivacyInfo, PrivacyInfo } from '../PrivacyInfo';
-import type { ExportedConfigWithProps } from '../..';
-import type { XcodeProject } from 'xcode';
+import { setPrivacyInfo, PrivacyInfo } from '../PrivacyInfo';
 
 jest.mock('fs');
 
@@ -21,7 +17,7 @@ const project = {
   slug: 'test',
 };
 
-const mockConfig: ExportedConfigWithProps<XcodeProject> = {
+const mockConfig = {
   //fill in relevant data here
   modResults: {
     hasFile: () => false,
@@ -30,7 +26,7 @@ const mockConfig: ExportedConfigWithProps<XcodeProject> = {
     projectRoot,
     platformProjectRoot: path.join(projectRoot, 'ios'),
     modName: 'test',
-    platform: 'ios',
+    platform: 'ios' as const,
     introspect: false,
   },
   modRawConfig: project,
