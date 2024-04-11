@@ -68,4 +68,6 @@ public interface AVManagerInterface {
   void requestAudioPermission(PermissionsResponseListener permissionsResponseListener);
 
   ModuleRegistry getModuleRegistry();
+
+  ForwardingCookieHandler getCookieHandler();
 }

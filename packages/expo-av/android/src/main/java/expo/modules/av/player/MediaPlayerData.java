@@ -9,10 +9,10 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.Surface;
 
+import expo.modules.av.ForwardingCookieHandler;
 import expo.modules.core.ModuleRegistry;
 
 import java.io.IOException;
-import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,25 +26,26 @@ import expo.modules.av.AudioFocusNotAcquiredException;
 
 
 class MediaPlayerData extends PlayerData implements
-    MediaPlayer.OnBufferingUpdateListener,
-    MediaPlayer.OnCompletionListener,
-    MediaPlayer.OnErrorListener,
-    MediaPlayer.OnInfoListener,
-    MediaPlayer.OnSeekCompleteListener,
-    MediaPlayer.OnVideoSizeChangedListener {
+  MediaPlayer.OnBufferingUpdateListener,
+  MediaPlayer.OnCompletionListener,
+  MediaPlayer.OnErrorListener,
+  MediaPlayer.OnInfoListener,
+  MediaPlayer.OnSeekCompleteListener,
+  MediaPlayer.OnVideoSizeChangedListener {
 
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
-
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
+  private ForwardingCookieHandler cookieHandler;
 
   MediaPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mModuleRegistry = avModule.getModuleRegistry();
+    cookieHandler = avModule.getCookieHandler();
   }
 
   @Override
@@ -154,7 +155,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   protected double getCurrentPositionSeconds() {
-    return (double)mMediaPlayer.getCurrentPosition() / 1000.0;
+    return (double) mMediaPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override
@@ -212,7 +213,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AudioFocusNotAcquiredException, IllegalStateException {
+    throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mMediaPlayer == null) {
       throw new IllegalStateException("mMediaPlayer is null!");
     }
@@ -409,26 +410,23 @@ class MediaPlayerData extends PlayerData implements
   // Utilities
 
   private List<HttpCookie> getHttpCookiesList() {
-    if (mModuleRegistry != null) {
-      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-      if (cookieHandler != null) {
-        try {
-          Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
-          List<String> cookies = headersMap.get("Cookie");
-          if (cookies != null) {
-            List<HttpCookie> httpCookies = new ArrayList<>();
-            for (String cookieValue : cookies) {
-              httpCookies.addAll(HttpCookie.parse(cookieValue));
-            }
-            return httpCookies;
-          } else {
-            return Collections.emptyList();
-          }
-        } catch (IOException e) {
-          // do nothing, we'll return an empty list
+
+    try {
+      Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
+      List<String> cookies = headersMap.get("Cookie");
+      if (cookies != null) {
+        List<HttpCookie> httpCookies = new ArrayList<>();
+        for (String cookieValue : cookies) {
+          httpCookies.addAll(HttpCookie.parse(cookieValue));
         }
+        return httpCookies;
+      } else {
+        return Collections.emptyList();
       }
+    } catch (IOException e) {
+      // do nothing, we'll return an empty list
     }
+
     return Collections.emptyList();
   }
 }
