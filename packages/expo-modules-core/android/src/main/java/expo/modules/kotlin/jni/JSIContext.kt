@@ -120,11 +120,6 @@ class JSIContext : Destructible {
    */
   external fun drainJSEventLoop()
 
-  /**
-   * Informs C++ that runtime was deallocated.
-   */
-  external fun wasDeallocated()
-
   external fun setNativeStateForSharedObject(id: Int, js: JavaScriptObject)
 
   /**
