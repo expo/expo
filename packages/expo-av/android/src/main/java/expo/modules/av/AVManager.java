@@ -269,6 +269,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
     abandonAudioFocus();
+
+    mHybridData.resetNative();
+    getUIManager().unregisterLifecycleEventListener(this);
   }
 
   // Global audio state control API
