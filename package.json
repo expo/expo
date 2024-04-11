@@ -30,5 +30,8 @@
     "node-gyp": "^10.0.1",
     "prettier": "^3.1.1",
     "yarn-deduplicate": "^6.0.2"
+  },
+  "volta": {
+    "node": "20.12.2"
   }
 }
