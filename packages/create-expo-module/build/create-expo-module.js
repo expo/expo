@@ -269,9 +269,7 @@ async function askForPackageSlugAsync(customTargetPath, isLocal = false) {
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
 async function askForSubstitutionDataAsync(slug, isLocal = false) {
-    const promptQueries = await (isLocal
-        ? prompts_2.getLocalSubstitutionDataPrompts
-        : prompts_2.getSubstitutionDataPrompts)(slug);
+    const promptQueries = await (isLocal ? prompts_2.getLocalSubstitutionDataPrompts : prompts_2.getSubstitutionDataPrompts)(slug);
     // Stop the process when the user cancels/exits the prompt.
     const onCancel = () => {
         process.exit(0);

@@ -7,10 +7,11 @@ import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { GithubIcon, BookOpen02Icon } from '@expo/styleguide-icons';
 
 [Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. In this guide, you'll learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native.
 
-You'll also use the `jest-expo` package which is a Jest preset and mocks the native part of the Expo SDK and handles most of the configuration.
+You'll also use the `jest-expo` package, which is a Jest preset and mocks the native part of the Expo SDK and handles most of the configuration.
 
 ## Installation
 
@@ -201,10 +202,18 @@ You can also use different flows to run your tests. Below are a few example scri
 
 For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest documentation.
 
-## Next step
+## More
 
 <BoxLink
   title="React Native Testing library"
-  description="You can also use React Native Testing Library which provides testing utilities that encourage good testing practices and works with Jest."
+  description="You can also use React Native Testing Library that provides testing utilities that encourage good testing practices and works with Jest."
   href="https://github.com/callstack/react-native-testing-library"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="Testing configuration for Expo Router"
+  description="Learn how to create integration tests for your app when using Expo Router."
+  href="/router/reference/testing/"
+  Icon={BookOpen02Icon}
 />

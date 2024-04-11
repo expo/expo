@@ -77,6 +77,11 @@ it(
     const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
     expect(appJson.expo.name).toBe('defaults-to-basic');
     expect(appJson.expo.slug).toBe('defaults-to-basic');
+
+    // Ensure the package.json is written properly
+    const packageJsonPath = path.join(projectRoot, projectName, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+    expect(packageJson.name).toBe('defaults-to-basic');
   },
   extendedTimeout
 );
@@ -222,6 +227,17 @@ describe('yes', () => {
     expect(fileExists(projectName, 'App.js')).toBeTruthy();
     expect(fileExists(projectName, '.gitignore')).toBeTruthy();
     expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+
+    // Ensure the app.json is written properly
+    const appJsonPath = path.join(projectRoot, projectName, 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
+    expect(appJson.expo.name).toBe('yes-custom-template');
+    expect(appJson.expo.slug).toBe('yes-custom-template');
+
+    // Ensure the package.json is written properly
+    const packageJsonPath = path.join(projectRoot, projectName, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+    expect(packageJson.name).toBe('yes-custom-template');
   });
 });
 
@@ -244,6 +260,17 @@ xdescribe('templates', () => {
     expect(fileExists(projectName, 'App.js')).toBeTruthy();
     expect(fileExists(projectName, '.gitignore')).toBeTruthy();
     expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+
+    // Ensure the app.json is written properly
+    const appJsonPath = path.join(projectRoot, 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
+    expect(appJson.expo.name).toBe('can-overwrite');
+    expect(appJson.expo.slug).toBe('can-overwrite');
+
+    // Ensure the package.json is written properly
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+    expect(packageJson.name).toBe('can-overwrite');
   });
 
   it('throws when an invalid template is used', async () => {

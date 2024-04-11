@@ -18,20 +18,14 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
     if (isIosBackgroundLocationEnabled) {
         config = withBackgroundLocation(config);
     }
-    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
-        config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
-            locationAlwaysAndWhenInUsePermission ||
-                config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||
-                LOCATION_USAGE;
-        config.modResults.NSLocationAlwaysUsageDescription =
-            locationAlwaysPermission ||
-                config.modResults.NSLocationAlwaysUsageDescription ||
-                LOCATION_USAGE;
-        config.modResults.NSLocationWhenInUseUsageDescription =
-            locationWhenInUsePermission ||
-                config.modResults.NSLocationWhenInUseUsageDescription ||
-                LOCATION_USAGE;
-        return config;
+    config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
+        NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
+        NSLocationAlwaysUsageDescription: LOCATION_USAGE,
+        NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+    })(config, {
+        NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
+        NSLocationAlwaysUsageDescription: locationAlwaysPermission,
+        NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
     });
     // If the user has not specified a value for isAndroidForegroundServiceEnabled,
     // we default to the value of isAndroidBackgroundLocationEnabled because we want

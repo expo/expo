@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add source map outputs when exporting API route bundles. ([#27913](https://github.com/expo/expo/pull/27913) by [@kitten](https://github.com/kitten))
 - Add experimental support for using a canary build of the React Native renderer. ([#27303](https://github.com/expo/expo/pull/27303) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add warnings when URI schemes cannot be resolved for dev client launches. ([#27241](https://github.com/expo/expo/pull/27241) by [@EvanBacon](https://github.com/EvanBacon))
@@ -16,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix resolver race condition with new internal virtual modules patch in Metro. ([#28061](https://github.com/expo/expo/pull/28061) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing nested Node.js externals. ([#28092](https://github.com/expo/expo/pull/28092) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix using array syntax `(a,b)` with server output. ([#27462](https://github.com/expo/expo/pull/27462) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `console.log` statements from colliding with Metro logs. ([#27217](https://github.com/expo/expo/pull/27217) by [@EvanBacon](https://github.com/EvanBacon))
@@ -27,6 +30,8 @@
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
 - Included groups in Expo Router typed routes generation ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
 - Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
+- Use correct script src path when exporting web development builds. ([#27946](https://github.com/expo/expo/pull/27946) by [@byCedric](https://github.com/byCedric))
+- Rename templates post-extraction avoiding corrupting binary files. ([#27212](https://github.com/expo/expo/pull/27212) by [@shirakaba](https://github.com/shirakaba))
 
 ### 💡 Others
 

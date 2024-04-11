@@ -30,7 +30,7 @@ class KeepAwakeModule : Module() {
       }
     }
 
-    AsyncFunction("isActivated") {
+    AsyncFunction<Boolean>("isActivated") {
       return@AsyncFunction keepAwakeManager.isActivated
     }
   }

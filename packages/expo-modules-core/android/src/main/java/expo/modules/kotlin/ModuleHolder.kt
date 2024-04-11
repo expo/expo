@@ -30,6 +30,9 @@ class ModuleHolder<T : Module>(val module: T) {
       JavaScriptModuleObject(jniDeallocator, name).apply {
         initUsingObjectDefinition(appContext, definition.objectDefinition)
 
+        // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
+        registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
+
         val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
         if (viewFunctions?.isNotEmpty() == true) {
           trace("Attaching view prototype") {

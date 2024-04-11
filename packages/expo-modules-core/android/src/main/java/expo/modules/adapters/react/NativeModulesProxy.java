@@ -2,13 +2,11 @@ package expo.modules.adapters.react;
 
 import android.util.SparseArray;
 
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableType;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -96,11 +94,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     kotlinModuleRegistry.installJSIInterop();
 
     Map<String, Object> constants = new HashMap<>(3);
-    constants.put(MODULES_CONSTANTS_KEY, mKotlinInteropModuleRegistry.exportedModulesConstants());
-    constants.put(EXPORTED_METHODS_KEY, mKotlinInteropModuleRegistry.exportMethods((name, info) -> {
-      assignExportedMethodsKeys(name, (List<Map<String, Object>>) info);
-      return null;
-    }));
+    constants.put(MODULES_CONSTANTS_KEY, new HashMap<>());
+    constants.put(EXPORTED_METHODS_KEY, new HashMap<>());
     constants.put(VIEW_MANAGERS_METADATA_KEY, mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     CoreLoggerKt.getLogger().info("✅ Constants were exported");

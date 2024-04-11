@@ -11,8 +11,9 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { Speedometer04Icon } from '@expo/styleguide-icons';
 
-`expo-sensors` provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
+`expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -61,34 +62,41 @@ For more information, please see the documentation for the sensor you are intere
   title="Accelerometer"
   href="accelerometer"
   description="Measures device acceleration on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Barometer"
   href="barometer"
   description="Measures pressure on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="DeviceMotion"
   href="devicemotion"
   description="Measures device motion on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Gyroscope"
   href="gyroscope"
   description="Measures device rotation on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Magnetometer"
   href="magnetometer"
   description="Measures magnetic fields on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="LightSensor"
   href="light-sensor"
   description="Measures ambient light on Android platform."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Pedometer"
   href="pedometer"
   description="Measures steps count on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />

@@ -9,9 +9,6 @@ buildscript {
     google()
     maven { url "https://jitpack.io" }
   }
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
-  }
 }
 
 plugins {
@@ -19,7 +16,6 @@ plugins {
    alias libs.plugins.kotlin.android
    alias libs.plugins.download
 }
-apply plugin: 'maven-publish'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
@@ -30,30 +26,13 @@ file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.proper
 //maven repository info
 group = 'host.exp.exponent'
 version = '45.0.0'
-
-afterEvaluate {
-  publishing {
-    publications {
-      // use `versionedRelease` configuration when publishing to maven
-      versionedRelease(MavenPublication) {
-        from components.release
-      }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
-      }
-    }
-  }
-}
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-}
-
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 repositories {
   mavenCentral()
@@ -67,20 +46,6 @@ android {
     buildConfig = true
   }
 
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
-
   // Used to override the NDK path/version on internal CI or by allowing
   // users to customize the NDK path/version from their root project (e.g. for M1 support)
   if (rootProject.hasProperty("ndkPath")) {
@@ -88,18 +53,6 @@ android {
   }
   if (rootProject.hasProperty("ndkVersion")) {
     ndkVersion rootProject.ext.ndkVersion
-  }
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
   }
 
   buildFeatures {
@@ -128,12 +81,6 @@ android {
   buildTypes {
     release {
       consumerProguardFiles('proguard-rules.pro')
-    }
-  }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
     }
   }
 }
@@ -220,6 +167,7 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics:18.3.6'
   api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
+  implementation 'com.google.android.material:material:1.3.0'
 
   api(expoLibs.fresco.animated.gif)
   api(expoLibs.fresco.animated.webp)
@@ -317,14 +265,6 @@ dependencies {
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
-  // stripe-react-native
-  implementation('com.stripe:stripe-android:20.34.+')
-  implementation('com.stripe:financial-connections:20.34.+')
-  compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-  implementation 'com.google.android.material:material:1.3.0'
-
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
 
@@ -351,3 +291,6 @@ project.afterEvaluate {
 }
 
 useVendoredModulesForExpoView('unversioned')
+
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
 ## 3.7.2 - 2024-01-18
 
 _This version does not introduce any user-facing changes._
