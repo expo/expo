@@ -8,3 +8,5 @@
 export async function isAvailableAsync(): Promise<any> {}
 
 export async function setUpdateInterval(): Promise<any> {}
+
+export const Gravity = 9.80665;
