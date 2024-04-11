@@ -217,6 +217,8 @@ try {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
     const uuid = jest.requireActual('expo-modules-core/build/uuid/uuid.web');
 
+    const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
+
     // support old hard-coded mocks TODO: remove this
     const { NativeModulesProxy } = ExpoModulesCore;
 
@@ -242,47 +244,23 @@ try {
     }
     return {
       ...ExpoModulesCore,
-      // Mock EventEmitter since it's commonly constructed in modules and causing warnings.
-      EventEmitter: jest.fn().mockImplementation(() => {
-        const fbemitter = require('fbemitter');
-        const emitter = new fbemitter.EventEmitter();
-        return {
-          addListener: jest.fn().mockImplementation((...args) => {
-            const subscription = emitter.addListener(...args);
-            subscription.__remove = subscription.remove;
-            return subscription;
-          }),
-          removeAllListeners: jest.fn().mockImplementation((...args) => {
-            emitter.removeAllListeners(...args);
-          }),
-          removeSubscription: jest.fn().mockImplementation((subscription) => {
-            // expo-sensor will override the `subscription.remove()` method,
-            // to prevent it from recursive call. we need to call the original remove method.
-            if (typeof subscription.__remove === 'function') {
-              subscription.__remove();
-            }
-          }),
-          emit: jest.fn().mockImplementation((...args) => {
-            emitter.emit(...args);
-          }),
-        };
-      }),
-      requireNativeModule: (name) => {
+
+      // Use web implementations for the common classes written natively
+      EventEmitter,
+      NativeModule,
+      SharedObject,
+
+      requireNativeModule(name) {
         // Support auto-mocking of expo-modules that:
         // 1. have a mock in the `mocks` directory
         // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-        const nativeModuleMock = attemptLookup(name);
-        if (!nativeModuleMock) {
-          return ExpoModulesCore.requireNativeModule(name);
+        const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
+        const nativeModule = new NativeModule();
+
+        for (const [key, value] of Object.entries(nativeModuleMock)) {
+          nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
         }
-        return Object.fromEntries(
-          Object.entries(nativeModuleMock).map(([k, v]) => {
-            if (typeof v === 'function') {
-              return [k, jest.fn(v)];
-            }
-            return [k, v];
-          })
-        );
+        return nativeModule;
       },
     };
   });
