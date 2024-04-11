@@ -12,11 +12,11 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-status-bar`** gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
+`expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
 
 > **Web support**
 >
-> There is no API available on the web for controlling the operating system status bar, so `expo-status-bar` will noop, so it will do nothing, it will also **not** error.
+> There is no API available on the web for controlling the operating system status bar, so `expo-status-bar` will no-op, so it will do nothing and will **not** error.
 
 ## Installation
 
@@ -26,15 +26,14 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline dependencies={["expo-status-bar"]}>
 
-```js collapseHeight=310
-import React from 'react';
+```jsx collapseHeight=310
 import { StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text style={{ color: '#fff' }}>Notice that the status bar has light text!</Text>
+      <Text style={styles.text}>Notice that the status bar has light text!</Text>
       <StatusBar style="light" />
     </View>
   );
@@ -46,6 +45,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
   },
 });
 ```
