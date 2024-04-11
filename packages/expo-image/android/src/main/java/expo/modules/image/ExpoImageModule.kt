@@ -32,13 +32,13 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: ReadableMap?, promise: Promise ->
+    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: Map<String, String>?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       var imagesLoaded = 0
       var failed = false
 
-      val headers = headersMap?.toHashMap()?.let {
+      val headers = headersMap?.let {
         LazyHeaders.Builder().apply {
           it.forEach { (key, value) ->
             addHeader(key, value.toString())
