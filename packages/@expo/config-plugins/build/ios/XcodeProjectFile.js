@@ -110,6 +110,9 @@ function readBuildSourceFile({
   filePath
 }) {
   const absoluteFilePath = _path().default.join(nativeProjectRoot, filePath);
+  if (!_fs().default.existsSync(absoluteFilePath)) {
+    return null;
+  }
   return _fs().default.readFileSync(absoluteFilePath, {
     encoding: 'utf8'
   });

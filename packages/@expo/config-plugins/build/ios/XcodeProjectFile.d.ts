@@ -39,4 +39,4 @@ export declare function readBuildSourceFile({ project, nativeProjectRoot, filePa
     project: XcodeProject;
     nativeProjectRoot: string;
     filePath: string;
-}): string;
+}): string | null;
