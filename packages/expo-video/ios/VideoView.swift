@@ -61,6 +61,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.updatesNowPlayingInfoCenter = false
 
     addSubview(playerViewController.view)
+    playerViewController.beginAppearanceTransition(true, animated: true)
   }
 
   deinit {
