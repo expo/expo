@@ -15,8 +15,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
     android:layout_above="@+id/view_error_log"
-    android:gravity="center"
     android:orientation="vertical">
 
     <TextView
@@ -27,7 +27,6 @@
       android:layout_marginLeft="20dp"
       android:layout_marginTop="30dp"
       android:layout_marginRight="20dp"
-      android:gravity="center"
       android:text="@string/error_header"
       android:textColor="@color/white"
       android:textSize="24sp"/>
@@ -40,7 +39,6 @@
       android:layout_marginTop="20dp"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
-      android:gravity="center"
       android:text="@string/error_default_client"
       android:textColor="@color/white"
       android:textSize="16sp"/>

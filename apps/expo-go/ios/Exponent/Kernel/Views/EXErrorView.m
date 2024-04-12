@@ -20,6 +20,9 @@
 @property (nonatomic, strong) IBOutlet UILabel *lblUrl;
 @property (nonatomic, strong) IBOutlet UITextView *txtErrorDetail;
 @property (nonatomic, strong) IBOutlet UIScrollView *vContainer;
+@property (nonatomic, strong) IBOutlet UILabel *lblFixHeader;
+@property (nonatomic, strong) IBOutlet UITextView *txtFixDetail;
+
 
 - (void)_onTapRetry;
 
@@ -38,7 +41,10 @@
 
     [_txtErrorDetail setTextContainerInset:UIEdgeInsetsZero];
     _txtErrorDetail.textContainer.lineFragmentPadding = 0;
-    
+
+    [_txtFixDetail setTextContainerInset:UIEdgeInsetsZero];
+    _txtFixDetail.textContainer.lineFragmentPadding = 0;
+
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
       btnToStyle.layer.cornerRadius = 4.0;
       btnToStyle.layer.masksToBounds = YES;
@@ -77,7 +83,10 @@
   _error = error;
   NSString *errorHeader = [EXManifestResource formatHeader:error];
   NSString *errorDetail = [error localizedDescription];
-  
+  NSString *errorFixInstructions = [error userInfo][EXFixInstructionsKey];
+  NSNumber *showTryAgainButtonNumber = [error userInfo][EXShowTryAgainButtonKey];
+  Boolean showTryAgainButton = [showTryAgainButtonNumber boolValue];
+
   if (errorHeader != nil) {
     _lblError.text = errorHeader;
   }
@@ -104,12 +113,27 @@
       break;
     }
   }
-  NSAttributedString *attributedErrorString = [EXManifestResource parseUrls:errorDetail];
 
   UIFont *font = _txtErrorDetail.font;
+  NSAttributedString *attributedErrorString =[[NSAttributedString alloc] initWithString:errorDetail];
+  attributedErrorString = [EXManifestResource parseUrlsAndBoldInAttributedString:attributedErrorString withFont:font];
+
   _txtErrorDetail.attributedText = attributedErrorString;
-  _txtErrorDetail.font = font;
   _txtErrorDetail.textColor = [UIColor colorNamed:@"textDefault"];
+
+  if (errorFixInstructions != nil) {
+    NSAttributedString *attributedFixInstructions = [[NSAttributedString alloc] initWithString:errorFixInstructions];
+    attributedFixInstructions = [EXManifestResource parseUrlsAndBoldInAttributedString:attributedFixInstructions withFont:font];
+    _txtFixDetail.attributedText = attributedFixInstructions;
+    _txtFixDetail.textColor = [UIColor colorNamed:@"textDefault"];
+  } else {
+    [_lblFixHeader removeFromSuperview];
+    [_txtFixDetail removeFromSuperview];
+  }
+
+  if (!showTryAgainButton) {
+    [_btnRetry removeFromSuperview];
+  }
 
   [self _resetUIState];
 }

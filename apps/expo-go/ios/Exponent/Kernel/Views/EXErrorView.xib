@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -17,8 +17,10 @@
                 <outlet property="btnStack" destination="Mh8-u0-LCN" id="0eD-IY-253"/>
                 <outlet property="btnStackContainer" destination="3xg-me-cwE" id="Gyu-3k-RG8"/>
                 <outlet property="lblError" destination="iXc-4d-VpK" id="1Sa-Te-jkb"/>
+                <outlet property="lblFixHeader" destination="net-Bc-aEY" id="adP-Lk-1lH"/>
                 <outlet property="lblUrl" destination="uZA-n9-0bf" id="jvM-WQ-o0R"/>
                 <outlet property="txtErrorDetail" destination="b2p-se-FvF" id="end-RV-Org"/>
+                <outlet property="txtFixDetail" destination="UCx-uh-Nic" id="ZOA-Dk-eFW"/>
                 <outlet property="vContainer" destination="zz8-rt-yG1" id="V5Q-DG-oIp"/>
             </connections>
         </placeholder>
@@ -38,6 +40,22 @@
                         </label>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Error Detail" translatesAutoresizingMaskIntoConstraints="NO" id="b2p-se-FvF">
                             <rect key="frame" x="16" y="69" width="382" height="35.5"/>
+                            <color key="textColor" name="textDefault"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                            <variation key="heightClass=regular-widthClass=compact">
+                                <color key="textColor" name="textDefault"/>
+                            </variation>
+                        </textView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How To Fix This Error" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="net-Bc-aEY">
+                            <rect key="frame" x="16" y="120.5" width="382" height="19.5"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                            <color key="textColor" name="textDefault"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Fix Detail" translatesAutoresizingMaskIntoConstraints="NO" id="UCx-uh-Nic" userLabel="Fix Detail View">
+                            <rect key="frame" x="16" y="156" width="382" height="35.5"/>
                             <color key="textColor" name="textDefault"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -96,7 +114,7 @@
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="https::/expo.dev" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uZA-n9-0bf" userLabel="URL">
-                            <rect key="frame" x="16" y="120.5" width="382" height="17"/>
+                            <rect key="frame" x="16" y="207.5" width="382" height="17"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" red="0.34509803919999998" green="0.37254901959999998" blue="0.41176470590000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
@@ -104,7 +122,11 @@
                     </subviews>
                     <color key="backgroundColor" name="backgroundDefault"/>
                     <constraints>
+                        <constraint firstItem="uZA-n9-0bf" firstAttribute="top" secondItem="b2p-se-FvF" secondAttribute="bottom" priority="100" constant="16" id="36Q-h8-DbH"/>
+                        <constraint firstAttribute="trailing" secondItem="UCx-uh-Nic" secondAttribute="trailing" constant="16" id="5RF-z4-fHZ"/>
+                        <constraint firstAttribute="trailing" secondItem="net-Bc-aEY" secondAttribute="trailing" constant="16" id="CML-2E-6dH"/>
                         <constraint firstItem="uZA-n9-0bf" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="Cui-bY-DKE"/>
+                        <constraint firstItem="net-Bc-aEY" firstAttribute="leading" secondItem="zz8-rt-yG1" secondAttribute="leading" constant="16" id="DeD-NU-gUb"/>
                         <constraint firstAttribute="bottom" secondItem="3xg-me-cwE" secondAttribute="bottom" id="EgY-Lw-8hH"/>
                         <constraint firstItem="fm7-WM-hm7" firstAttribute="trailing" secondItem="uZA-n9-0bf" secondAttribute="trailing" constant="16" id="FZ2-yM-eP7"/>
                         <constraint firstItem="3xg-me-cwE" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" id="Ipc-jE-LO6"/>
@@ -112,11 +134,14 @@
                         <constraint firstItem="iXc-4d-VpK" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="TT1-8U-uOh"/>
                         <constraint firstItem="fm7-WM-hm7" firstAttribute="trailing" secondItem="iXc-4d-VpK" secondAttribute="trailing" constant="16" id="UGR-Hv-DvO"/>
                         <constraint firstAttribute="trailing" secondItem="b2p-se-FvF" secondAttribute="trailing" constant="16" id="WFh-gD-g1e"/>
+                        <constraint firstItem="uZA-n9-0bf" firstAttribute="top" secondItem="UCx-uh-Nic" secondAttribute="bottom" priority="101" constant="16" id="WuI-4y-SCu"/>
                         <constraint firstItem="iXc-4d-VpK" firstAttribute="top" secondItem="fm7-WM-hm7" secondAttribute="top" constant="24" id="a35-DY-9eM"/>
                         <constraint firstItem="b2p-se-FvF" firstAttribute="top" secondItem="iXc-4d-VpK" secondAttribute="bottom" constant="16" id="aEJ-db-2Z1"/>
                         <constraint firstAttribute="trailing" secondItem="iXc-4d-VpK" secondAttribute="trailing" constant="16" id="cNY-0g-EDJ"/>
-                        <constraint firstItem="uZA-n9-0bf" firstAttribute="top" secondItem="b2p-se-FvF" secondAttribute="bottom" constant="16" id="lwE-aa-vgb"/>
+                        <constraint firstItem="UCx-uh-Nic" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="ejR-Ow-lIT"/>
                         <constraint firstItem="fm7-WM-hm7" firstAttribute="trailing" secondItem="3xg-me-cwE" secondAttribute="trailing" id="mbs-0b-6Ha"/>
+                        <constraint firstItem="net-Bc-aEY" firstAttribute="top" secondItem="b2p-se-FvF" secondAttribute="bottom" constant="16" id="mjt-W8-arK"/>
+                        <constraint firstItem="UCx-uh-Nic" firstAttribute="top" secondItem="net-Bc-aEY" secondAttribute="bottom" constant="16" id="oZ2-Q3-ec3"/>
                         <constraint firstItem="b2p-se-FvF" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="uNY-Uo-9gb"/>
                     </constraints>
                     <viewLayoutGuide key="contentLayoutGuide" id="ipk-Hz-A80"/>
@@ -131,7 +156,7 @@
                 <constraint firstItem="zz8-rt-yG1" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="-2" id="RtF-FP-x5O"/>
                 <constraint firstItem="zz8-rt-yG1" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="44" id="Xdc-k0-Hk4"/>
             </constraints>
-            <point key="canvasLocation" x="131.8840579710145" y="118.52678571428571"/>
+            <point key="canvasLocation" x="163.768115942029" y="118.52678571428571"/>
         </view>
     </objects>
     <resources>
@@ -139,19 +164,19 @@
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="buttonSecondaryBackground">
-            <color red="0.94117647058823528" green="0.94509803921568625" blue="0.94901960784313721" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94099998474121094" green="0.94499999284744263" blue="0.94900000095367432" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="buttonSecondaryText">
-            <color red="0.10588235294117647" green="0.12156862745098039" blue="0.13725490196078433" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.10599999874830246" green="0.12200000137090683" blue="0.13699999451637268" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="buttonTertiaryBackground">
-            <color red="0.10588235294117647" green="0.12156862745098039" blue="0.13725490196078433" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.10599999874830246" green="0.12200000137090683" blue="0.13699999451637268" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="buttonTertiaryText">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="textDefault">
-            <color red="0.14117647058823529" green="0.16078431372549018" blue="0.18431372549019609" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.14100000262260437" green="0.16099999845027924" blue="0.18400000035762787" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

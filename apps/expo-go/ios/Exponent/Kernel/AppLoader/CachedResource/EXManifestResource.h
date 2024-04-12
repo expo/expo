@@ -1,10 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCachedResource.h"
+#import <UIKit/UIFont.h>
 
 @class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString * const EXFixInstructionsKey;
+extern NSString * const EXShowTryAgainButtonKey;
 
 @interface EXManifestResource : EXCachedResource
 
@@ -29,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest;
 - (NSError *)formatError:(NSError *)error;
 + (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error;
-+ (NSAttributedString * _Nonnull)parseUrls:(NSString * _Nonnull)inputString;
++ (NSAttributedString *)parseUrlsInAttributedString:(NSAttributedString *)inputString;
++ (NSAttributedString *)parseBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;
++ (NSAttributedString *)parseUrlsAndBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;
 
 @end
 
