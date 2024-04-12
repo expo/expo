@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Add more tests for obscure syntax used in Expo apps. ([#27709](https://github.com/expo/expo/pull/27709) by [@EvanBacon](https://github.com/EvanBacon))
 - Relax forbidden React server API errors to better support shared components. ([#27878](https://github.com/expo/expo/pull/27878) by [@EvanBacon](https://github.com/EvanBacon))
 - Reset env in tests. ([#27950](https://github.com/expo/expo/pull/27950) by [@EvanBacon](https://github.com/EvanBacon))
 - Add Hermes language support tests. ([#27900](https://github.com/expo/expo/pull/27900) by [@EvanBacon](https://github.com/EvanBacon))
