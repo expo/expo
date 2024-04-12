@@ -178,6 +178,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       if self.mode == .video {
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
+          self.updateSessionAudioIsMuted()
         }
       } else {
         self.cleanupMovieFileCapture()
@@ -211,6 +212,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       self.addErrorNotification()
       self.changePreviewOrientation()
       self.updateSessionAudioIsMuted()
+      self.session.commitConfiguration()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
@@ -585,7 +587,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         }
       }
 
-      if !self.isMuted {
+      if !self.isMuted && self.mode == .video {
         if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
           do {
             let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
