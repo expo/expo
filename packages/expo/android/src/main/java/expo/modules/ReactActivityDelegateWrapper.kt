@@ -225,7 +225,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
