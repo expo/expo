@@ -58,7 +58,7 @@ function setPrivacyInfo(projectConfig, privacyManifests) {
     nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
     filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy')
   });
-  const parsedContent = _plist().default.parse(existingFileContent);
+  const parsedContent = existingFileContent ? _plist().default.parse(existingFileContent) : {};
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = _plist().default.build(mergedContent);
   projectConfig.modResults = (0, _XcodeProjectFile().createBuildSourceFile)({

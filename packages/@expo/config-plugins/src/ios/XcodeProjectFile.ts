@@ -88,7 +88,10 @@ export function readBuildSourceFile({
   project: XcodeProject;
   nativeProjectRoot: string;
   filePath: string;
-}): string {
+}): string | null {
   const absoluteFilePath = path.join(nativeProjectRoot, filePath);
+  if (!fs.existsSync(absoluteFilePath)) {
+    return null;
+  }
   return fs.readFileSync(absoluteFilePath, { encoding: 'utf8' });
 }

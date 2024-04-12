@@ -44,7 +44,7 @@ export function setPrivacyInfo(
     nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
     filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
   });
-  const parsedContent = plist.parse(existingFileContent);
+  const parsedContent = existingFileContent ? plist.parse(existingFileContent) : {};
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = plist.build(mergedContent);
 
