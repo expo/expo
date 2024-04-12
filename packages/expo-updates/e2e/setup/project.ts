@@ -718,6 +718,7 @@ export async function initAsync(
       '-dontwarn javax.lang.model.element.Modifier',
       '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
       '-dontwarn org.checkerframework.dataflow.qual.Pure',
+      '-keep class com.google.common.util.concurrent.ListenableFuture { *; }',
       '',
     ].join('\n'),
     'utf-8'
