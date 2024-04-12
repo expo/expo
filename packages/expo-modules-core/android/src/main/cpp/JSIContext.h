@@ -122,7 +122,8 @@ public:
     jni::local_ref<JavaScriptObject::javaobject> js
   );
 
-  void deleteSharedObject(
+  static void deleteSharedObject(
+    jni::global_ref<JSIContext::javaobject> javaObject,
     int objectId
   );
 
