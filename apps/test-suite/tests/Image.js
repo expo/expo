@@ -198,8 +198,10 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
       t.it('prefetches an image with headers and resolves promise to true', async () => {
         await Image.clearDiskCache();
-        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri, undefined, {
-          Referer: 'https://expo.dev',
+        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri, {
+          headers: {
+            Referer: 'https://expo.dev',
+          },
         });
         t.expect(result).toBe(true);
 
