@@ -53,7 +53,6 @@ private:
 
   friend HybridBase;
 
-
   JavaCallback(std::shared_ptr<CallbackContext> callback);
 
   void invoke();

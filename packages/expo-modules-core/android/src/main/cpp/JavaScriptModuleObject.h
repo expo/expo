@@ -138,9 +138,6 @@ public:
   );
 
 private:
-  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
-
-private:
   friend HybridBase;
 
   friend void decorateObjectWithFunctions(
@@ -168,12 +165,11 @@ private:
    * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
    */
   std::weak_ptr<jsi::Object> jsiObject;
-  jni::global_ref<JavaScriptModuleObject::javaobject> javaPart_;
 
   /**
    * Metadata map that stores information about all available methods on this module.
    */
-  std::unordered_map<std::string, MethodMetadata> methodsMetadata;
+  std::unordered_map<std::string, std::shared_ptr<MethodMetadata>> methodsMetadata;
 
   /**
    * A constants map.
@@ -184,11 +180,11 @@ private:
    * A registry of properties
    * The first MethodMetadata points to the getter and the second one to the setter.
    */
-  std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
+  std::map<std::string, std::pair<std::shared_ptr<MethodMetadata>, std::shared_ptr<MethodMetadata>>> properties;
 
   std::map<
     std::string,
-    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata, jni::global_ref<jclass>>
+    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, std::shared_ptr<MethodMetadata>, jni::global_ref<jclass>>
   > classes;
 
   jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;

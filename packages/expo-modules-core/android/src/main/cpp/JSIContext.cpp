@@ -48,7 +48,6 @@ void JSIContext::registerNatives() {
                    makeNativeMethod("global", JSIContext::global),
                    makeNativeMethod("createObject", JSIContext::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIContext::drainJSEventLoop),
-                   makeNativeMethod("wasDeallocated", JSIContext::jniWasDeallocated),
                    makeNativeMethod("setNativeStateForSharedObject",
                                     JSIContext::jniSetNativeStateForSharedObject),
                  });
@@ -167,6 +166,10 @@ void JSIContext::prepareRuntime() {
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIContext::callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>(
       std::string)>(
@@ -178,16 +181,23 @@ JSIContext::callGetJavaScriptModuleObjectMethod(const std::string &moduleName) c
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIContext::callGetCoreModuleObject() const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>()>(
       "getCoreModuleObject"
     );
-
   return method(javaPart_);
 }
 
 jni::local_ref<jni::JArrayClass<jni::JString>>
 JSIContext::callGetJavaScriptModulesNames() const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<jni::local_ref<jni::JArrayClass<jni::JString>>()>(
       "getJavaScriptModulesName"
@@ -196,6 +206,10 @@ JSIContext::callGetJavaScriptModulesNames() const {
 }
 
 bool JSIContext::callHasModule(const std::string &moduleName) const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<jboolean(std::string)>(
       "hasModule"
@@ -242,6 +256,10 @@ void JSIContext::registerSharedObject(
   jni::local_ref<jobject> native,
   jni::local_ref<JavaScriptObject::javaobject> js
 ) {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<void(jni::local_ref<jobject>, jni::local_ref<JavaScriptObject::javaobject>)>(
       "registerSharedObject"
@@ -250,6 +268,10 @@ void JSIContext::registerSharedObject(
 }
 
 void JSIContext::deleteSharedObject(int objectId) {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<void(int)>(
       "deleteSharedObject"
@@ -261,6 +283,10 @@ void JSIContext::registerClass(
   jni::local_ref<jclass> native,
   jni::local_ref<JavaScriptObject::javaobject> jsClass
 ) {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<void(jni::local_ref<jclass>, jni::local_ref<JavaScriptObject::javaobject>)>(
       "registerClass"
@@ -271,6 +297,10 @@ void JSIContext::registerClass(
 jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
   jni::local_ref<jclass> native
 ) {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("JSIContext was prepared to be deallocated.");
+  }
+
   const static auto method = expo::JSIContext::javaClassLocal()
     ->getMethod<jni::local_ref<JavaScriptObject::javaobject>(jni::local_ref<jclass>)>(
       "getJavascriptClass"
@@ -278,8 +308,11 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
   return method(javaPart_, std::move(native));
 }
 
-void JSIContext::jniWasDeallocated() {
-  wasDeallocated = true;
+void JSIContext::prepareForDeallocation() {
+  jsRegistry.reset();
+  runtimeHolder.reset();
+  jniDeallocator.reset();
+  javaPart_.reset();
 }
 
 void JSIContext::jniSetNativeStateForSharedObject(
