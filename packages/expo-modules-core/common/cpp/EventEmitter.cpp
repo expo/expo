@@ -43,12 +43,35 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
     return;
   }
   ListenersList &listenersList = listenersMap[eventName];
+  size_t listSize = listenersList.size();
 
-  for (const jsi::Value &listener : listenersList) {
-    listener
+  if (listSize == 0) {
+    // Nothing to call.
+    return;
+  }
+  if (listSize == 1) {
+    // The most common scenario – just call the only listener.
+    listenersList
+      .front()
       .asObject(runtime)
       .asFunction(runtime)
       .callWithThis(runtime, thisObject, args, count);
+    return;
+  }
+  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  std::vector<jsi::Function> listenersVector;
+  listenersVector.reserve(listSize);
+
+  // Copy listeners to vector already as jsi::Function so we don't additionally copy jsi::Value
+  for (const jsi::Value &listener : listenersList) {
+    listenersVector.push_back(listener.asObject(runtime).asFunction(runtime));
+  }
+
+  // Call listeners from the vector. The list can be modified by the listeners but it will not affect this loop,
+  // i.e. newly added listeners will not be called and removed listeners will be called one last time.
+  // This is compliant with the EventEmitter in Node.js
+  for (const jsi::Function &listener : listenersVector) {
+    listener.callWithThis(runtime, thisObject, args, count);
   }
 }
 
