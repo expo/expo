@@ -135,14 +135,14 @@ public:
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 
-  bool wasDeallocated = false;
-
   void registerClass(jni::local_ref<jclass> native,
                      jni::local_ref<JavaScriptObject::javaobject> jsClass);
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
   ~JSIContext();
+
+  void prepareForDeallocation();
 
 private:
   friend HybridBase;
@@ -158,8 +158,6 @@ private:
   inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   inline bool callHasModule(const std::string &moduleName) const;
-
-  void jniWasDeallocated();
 
   void prepareJSIContext(
     jlong jsRuntimePointer,
