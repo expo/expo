@@ -23,7 +23,6 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       let permissionsManager = self.appContext?.permissions
       EXPermissionsMethodsDelegate.register(
         [
-          CameraPermissionRequester(),
           CameraOnlyPermissionRequester(),
           CameraMicrophonePermissionRequester()
         ],
