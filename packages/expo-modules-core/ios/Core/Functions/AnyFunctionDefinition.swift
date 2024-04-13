@@ -81,10 +81,9 @@ internal class FunctionCallException: GenericException<String> {
   }
 
   override var code: String {
-    if let cause = cause as? Exception {
-      return cause.code
-    } else {
+    guard let cause = cause as? Exception else {
       return super.code
     }
+    return cause.code
   }
 }

@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios"],
-  "ios": {
-    "modules": ["ExpoModulesExceptionTestModule"]
-  },
-  "android": {
-    "modules": ["ExpoModulesExceptionTest.ExpoModulesExceptionTestModule"]
-  }
-}

@@ -443,8 +443,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesExceptionTest (0.1.0):
-    - ExpoModulesCore
   - ExpoModulesTestCore (0.17.0):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
@@ -1986,7 +1984,6 @@ DEPENDENCIES:
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
-  - ExpoModulesExceptionTest (from `../../../packages/expo-modules-exception-test/ios`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
@@ -2245,9 +2242,6 @@ EXTERNAL SOURCES:
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
-  ExpoModulesExceptionTest:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-modules-exception-test/ios"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoNetwork:
@@ -2509,7 +2503,6 @@ SPEC CHECKSUMS:
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
   ExpoMediaLibrary: 512b00e9f87f1de8ed0dba60cbe2eb7dc251248e
   ExpoModulesCore: 39172e342cd3015c0b2ece5e71986d96211b21af
-  ExpoModulesExceptionTest: 24f4666c00caefd55316114c5cd6e73a7179edae
   ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
   ExpoNetwork: ce6ddfce15230a6585c2aea973033abf783ca84e
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
