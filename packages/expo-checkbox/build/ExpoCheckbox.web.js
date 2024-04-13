@@ -10,7 +10,7 @@
  */
 import React from 'react';
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
-const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
+const ExpoCheckbox = React.forwardRef(({ color, borderColor, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
     const handleChange = (event) => {
         const value = event.nativeEvent.target.checked;
         event.nativeEvent.value = value;
@@ -20,8 +20,12 @@ const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChang
     const fakeControl = (<View style={[
             styles.fakeControl,
             value && styles.fakeControlChecked,
-            // custom color
-            !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+            !!color && {
+                backgroundColor: value ? color : undefined,
+            },
+            !!borderColor && {
+                borderColor: value ? borderColor : undefined,
+            },
             disabled && styles.fakeControlDisabled,
             value && disabled && styles.fakeControlCheckedAndDisabled,
         ]}/>);

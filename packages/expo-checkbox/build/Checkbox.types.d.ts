@@ -26,6 +26,10 @@ export type CheckboxProps = ViewProps & {
      */
     color?: ColorValue;
     /**
+     * The border color of the checkbox.
+     */
+    borderColor?: ColorValue;
+    /**
      * Callback that is invoked when the user presses the checkbox.
      * @param event A native event containing the checkbox change.
      */
