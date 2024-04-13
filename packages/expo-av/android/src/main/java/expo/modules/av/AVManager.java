@@ -118,6 +118,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
+  private ForwardingCookieHandler cookieHandler = new ForwardingCookieHandler();
 
   public AVManager(final Context reactContext) {
     mContext = reactContext;
@@ -161,6 +162,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public ModuleRegistry getModuleRegistry() {
     return mModuleRegistry;
+  }
+
+  @Override
+  public ForwardingCookieHandler getCookieHandler() {
+    return cookieHandler;
   }
 
   private UIManager getUIManager() {
@@ -263,6 +269,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
     abandonAudioFocus();
+
+    mHybridData.resetNative();
+    getUIManager().unregisterLifecycleEventListener(this);
   }
 
   // Global audio state control API

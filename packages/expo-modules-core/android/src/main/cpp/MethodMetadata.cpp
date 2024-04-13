@@ -155,18 +155,24 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
 jsi::Function MethodMetadata::toSyncFunction(
   jsi::Runtime &runtime
 ) {
+  auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
     getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
     argTypes.size(),
-    [this](
+    [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
       try {
-        return this->callSync(
+        auto thisPtr = weakThis.lock();
+        if (thisPtr == nullptr) {
+          return jsi::Value::undefined();
+        }
+
+        return thisPtr->callSync(
           rt,
           thisValue,
           args,
@@ -222,26 +228,23 @@ jsi::Value MethodMetadata::callSync(
 jsi::Function MethodMetadata::toAsyncFunction(
   jsi::Runtime &runtime
 ) {
+  auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
     getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
     argTypes.size(),
-    [this](
+    [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      JSIContext *jsiContext = getJSIContext(rt);
-      /**
-       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
-       * The output of this method doesn't matter.
-       * We added that check to prevent the app from crashing when users reload their apps.
-       */
-      if (jsiContext->wasDeallocated) {
+      auto thisPtr = weakThis.lock();
+      if (thisPtr == nullptr) {
         return jsi::Value::undefined();
       }
 
+      JSIContext *jsiContext = getJSIContext(rt);
       JNIEnv *env = jni::Environment::current();
 
       /**
@@ -256,14 +259,14 @@ jsi::Function MethodMetadata::toAsyncFunction(
       );
 
       try {
-        auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
+        auto convertedArgs = thisPtr->convertJSIArgsToJNI(env, rt, thisValue, args, count);
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 
         // Creates a JSI promise
         jsi::Value promise = Promise.callAsConstructor(
           rt,
-          createPromiseBody(rt, globalConvertedArgs)
+          thisPtr->createPromiseBody(rt, globalConvertedArgs)
         );
         return promise;
       } catch (jni::JniException &jniException) {

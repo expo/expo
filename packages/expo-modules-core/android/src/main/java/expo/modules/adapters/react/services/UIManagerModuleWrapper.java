@@ -15,6 +15,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +29,10 @@ import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.UIManager;
 
 public class UIManagerModuleWrapper implements
-    ActivityProvider,
-    InternalModule,
-    JavaScriptContextProvider,
-    UIManager {
+  ActivityProvider,
+  InternalModule,
+  JavaScriptContextProvider,
+  UIManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
   private Map<ActivityEventListener, com.facebook.react.bridge.ActivityEventListener> mActivityEventListenersMap = new WeakHashMap<>();
@@ -47,9 +48,9 @@ public class UIManagerModuleWrapper implements
   @Override
   public List<Class> getExportedInterfaces() {
     return Arrays.<Class>asList(
-        ActivityProvider.class,
-        JavaScriptContextProvider.class,
-        UIManager.class
+      ActivityProvider.class,
+      JavaScriptContextProvider.class,
+      UIManager.class
     );
   }
 
@@ -67,7 +68,7 @@ public class UIManagerModuleWrapper implements
               block.resolve(tClass.cast(view));
             } else {
               block.reject(new IllegalStateException(
-                  "Expected view to be of " + tClass + "; found " + view.getClass() + " instead"));
+                "Expected view to be of " + tClass + "; found " + view.getClass() + " instead"));
             }
           } catch (Exception e) {
             block.reject(e);
@@ -167,6 +168,20 @@ public class UIManagerModuleWrapper implements
       }
     });
     mReactContext.addLifecycleEventListener(mLifecycleListenersMap.get(listener));
+  }
+
+  @Override
+  public void onDestroy() {
+    // We need to create a copy to avoid ConcurrentModificationException
+    ArrayList<com.facebook.react.bridge.LifecycleEventListener> tmpList = new ArrayList<>(mLifecycleListenersMap.values());
+    for (com.facebook.react.bridge.LifecycleEventListener listener : tmpList) {
+      listener.onHostDestroy();
+    }
+
+    for (com.facebook.react.bridge.LifecycleEventListener listener : mLifecycleListenersMap.values()) {
+      mReactContext.removeLifecycleEventListener(listener);
+    }
+    mLifecycleListenersMap.clear();
   }
 
   @Override

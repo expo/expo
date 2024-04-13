@@ -1,8 +1,8 @@
-import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-tracking-transparency/package.json');
 
-export const DEFAULT_NSUserTrackingUsageDescription =
+const DEFAULT_NSUserTrackingUsageDescription =
   'Allow this app to collect app-related data that can be used for tracking you or your device.';
 
 const withTrackingTransparency: ConfigPlugin<
@@ -13,30 +13,18 @@ const withTrackingTransparency: ConfigPlugin<
      * @default 'Allow this app to collect app-related data that can be used for tracking you or your
      * device.'
      */
-    userTrackingPermission?: string;
+    userTrackingPermission?: string | false;
   } | void
 > = (config, props) => {
-  config = withUserTrackingPermission(config, props);
-  return config;
-};
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
+  })(config, {
+    NSUserTrackingUsageDescription: props?.userTrackingPermission,
+  });
 
-export const withUserTrackingPermission: ConfigPlugin<
-  {
-    userTrackingPermission?: string;
-  } | void
-> = (config, { userTrackingPermission } = {}) => {
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  config.ios.infoPlist.NSUserTrackingUsageDescription =
-    userTrackingPermission ||
-    config.ios.infoPlist.NSUserTrackingUsageDescription ||
-    DEFAULT_NSUserTrackingUsageDescription;
-
-  config = AndroidConfig.Permissions.withPermissions(config, [
+  return AndroidConfig.Permissions.withPermissions(config, [
     'com.google.android.gms.permission.AD_ID',
   ]);
-
-  return config;
 };
 
 export default createRunOncePlugin(withTrackingTransparency, pkg.name, pkg.version);

@@ -33,6 +33,8 @@ export const DEFAULT_IGNORE_PATHS = [
   // iOS
   '**/ios/Pods/**/*',
   '**/ios/build/**/*',
+  '**/ios/.xcode.env.local',
+  '**/ios/**/project.xcworkspace',
   '**/ios/*.xcworkspace/xcuserdata/**/*',
 
   // System files that differ from machine to machine

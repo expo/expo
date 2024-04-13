@@ -1,9 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <application>
-    <meta-data
-      android:name="expo.modules.updates.AUTO_SETUP"
-      android:value="false" />
-
     <activity
       android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
       android:exported="true"

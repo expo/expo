@@ -43,7 +43,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
       notificationManager.removeListener(this@NotificationsEmitter)
     }
 
-    AsyncFunction("getLastNotificationResponseAsync") {
+    AsyncFunction<Bundle?>("getLastNotificationResponseAsync") {
       lastNotificationResponse?.let(NotificationSerializer::toBundle)
     }
   }

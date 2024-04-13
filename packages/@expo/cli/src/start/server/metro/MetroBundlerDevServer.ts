@@ -105,9 +105,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async exportExpoRouterApiRoutesAsync({
+    includeSourceMaps,
     outputDir,
     prerenderManifest,
   }: {
+    includeSourceMaps?: boolean;
     outputDir: string;
     // This does not contain the API routes info.
     prerenderManifest: ExpoRouterServerManifestV1;
@@ -131,8 +133,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
       );
       if (contents) {
+        let src = contents.src;
+        if (includeSourceMaps && contents.map) {
+          // TODO(kitten): Merge the source map transformer in the future
+          // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
+          // Alternatively, check whether `sourcesRoot` helps here
+          const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
+          src = src.replace(
+            /\/\/# sourceMappingURL=.*/g,
+            `//# sourceMappingURL=${artifactBasename}`
+          );
+          files.set(artifactFilename + '.map', {
+            contents: JSON.stringify({
+              version: contents.map.version,
+              sources: contents.map.sources.map((source: string) => {
+                source =
+                  typeof source === 'string' && source.startsWith(this.projectRoot)
+                    ? path.relative(this.projectRoot, source)
+                    : source;
+                return source.split(path.sep).join('/');
+              }),
+              sourcesContent: new Array(contents.map.sources.length).fill(null),
+              names: contents.map.names,
+              mappings: contents.map.mappings,
+            }),
+            targetDomain: 'server',
+          });
+        }
         files.set(artifactFilename, {
-          contents: contents.src,
+          contents: src,
           targetDomain: 'server',
         });
       }
@@ -677,7 +706,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private pendingRouteOperations = new Map<
     string,
-    Promise<{ src: string; filename: string } | null>
+    Promise<{ src: string; filename: string; map?: any } | null>
   >();
 
   // API Routes
@@ -685,7 +714,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string
-  ): Promise<{ src: string; filename: string } | null | undefined> {
+  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }

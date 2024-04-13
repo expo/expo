@@ -4,11 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Removed configurable `enableAutoSetup` support. ([#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740), [#27118](https://github.com/expo/expo/pull/27118) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740), [#27118](https://github.com/expo/expo/pull/27118) by [@kudo](https://github.com/kudo), [#28111](https://github.com/expo/expo/pull/28111) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed to not return DevLauncherDevSupportManagerFactory in host handler when `enableAutoSetup` is false. ([#27068](https://github.com/expo/expo/pull/27068) by [@jayshah123](https://github.com/jayshah123))
 - Fixed missing `runtimeVersion` error when loading app with `expo-updates` and `expo-dev-client`. ([#27180](https://github.com/expo/expo/pull/27180) by [@kudo](https://github.com/kudo))
 - Remove legacy flag from command line hint. ([#27225](https://github.com/expo/expo/pull/27225) by [@simek](https://github.com/simek))
@@ -21,9 +23,14 @@
 - Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Removed [Flipper workaround](https://github.com/expo/expo/pull/18105) on Android. ([#27508](https://github.com/expo/expo/pull/27508) by [@kudo](https://github.com/kudo))
 - Remove debug settings for EAS Updates extension. ([#27603](https://github.com/expo/expo/pull/27603) by [@wschurman](https://github.com/wschurman))
-- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573), [#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
 - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
 - Deprecate `experimentalLaunchMode` config plugin option and introduce new `launchMode` option. ([#27845](https://github.com/expo/expo/pull/27845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+- Remove unused `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
