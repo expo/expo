@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
@@ -79,7 +80,9 @@ class UpdatesDevLauncherController(
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {}
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {}
 
   override fun onReactInstanceException(exception: java.lang.Exception) {}
 

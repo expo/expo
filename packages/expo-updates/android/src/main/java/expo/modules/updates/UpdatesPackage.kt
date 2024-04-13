@@ -7,6 +7,7 @@ import androidx.annotation.WorkerThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
@@ -38,8 +39,12 @@ class UpdatesPackage : Package {
         UpdatesController.initialize(context)
       }
 
+      override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+        UpdatesController.instance.onDidCreateDevSupportManager(devSupportManager)
+      }
+
       override fun onDidCreateReactInstance(useDeveloperSupport: Boolean, reactContext: ReactContext) {
-        UpdatesController.instance.onDidCreateReactInstanceManager(reactContext)
+        UpdatesController.instance.onDidCreateReactInstance(reactContext)
       }
 
       override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
