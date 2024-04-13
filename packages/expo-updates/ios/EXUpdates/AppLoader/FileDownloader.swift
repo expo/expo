@@ -260,7 +260,7 @@ public final class FileDownloader {
       let failedUpdateIDs = try database.recentUpdateIdsWithFailedLaunch()
       if !failedUpdateIDs.isEmpty {
         let structuredHeaderList = try StringList(value: failedUpdateIDs.map({ item in
-          try StringItem(value: item.uuidString)
+          try StringItem(value: item.uuidString.lowercased())
         }))
         extraHeaders["Expo-Recent-Failed-Update-IDs"] = structuredHeaderList.serialize()
       }
