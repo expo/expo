@@ -212,6 +212,35 @@ final class EventEmitterSpec: ExpoSpec {
         ])
         expect(try emittersAreEqual.asBool()) == true
       }
+
+      it("calls all listeners even if removed by a listener") {
+        // The third listener should be called even though it was already removed by the second listener.
+        let result = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "result = 0",
+          "listener = () => emitter.removeAllListeners('test')",
+          "emitter.addListener('test', () => result |= 1)",
+          "emitter.addListener('test', listener)",
+          "emitter.addListener('test', () => result |= 2)",
+          "emitter.emit('test')",
+          "result"
+        ])
+        expect(try result.asInt()) == 3
+      }
+
+      it("calls only existing listeners even if a listener adds more") {
+        // The listener added in the second listener shouldn't be called.
+        let result = try runtime.eval([
+          "emitter = new expo.EventEmitter()",
+          "result = 0",
+          "emitter.addListener('test', () => result |= 1)",
+          "emitter.addListener('test', () => emitter.addListener('test', () => result |= 2))",
+          "emitter.addListener('test', () => result |= 4)",
+          "emitter.emit('test')",
+          "result"
+        ])
+        expect(try result.asInt()) == 5
+      }
     }
   }
 }
