@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.DefaultJSExceptionHandler
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
@@ -37,7 +35,7 @@ class ErrorRecovery(
   internal lateinit var handler: Handler
   internal val logger = UpdatesLogger(context)
 
-  private var weakReactContext: WeakReference<ReactContext>? = null
+  private var weakDevSupportManager: WeakReference<DevSupportManager>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null
   private var shouldHandleReactInstanceException = false
 
@@ -48,9 +46,9 @@ class ErrorRecovery(
     }
   }
 
-  fun startMonitoring(reactContext: ReactContext) {
+  fun startMonitoring(devSupportManager: DevSupportManager) {
     registerContentAppearedListener()
-    registerErrorHandler(reactContext)
+    registerErrorHandler(devSupportManager)
   }
 
   /**
@@ -101,31 +99,19 @@ class ErrorRecovery(
     ReactMarker.removeListener(contentAppearedListener)
   }
 
-  private fun getDevSupportManager(reactContext: ReactContext): DevSupportManager {
-    val reactApplication = reactContext.applicationContext as ReactApplication
+  private fun registerErrorHandler(devSupportManager: DevSupportManager) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      val reactHost = reactApplication.reactHost
-      check(reactHost != null)
-      return reactHost.devSupportManager ?: throw IllegalStateException("Unable to get DevSupportManager from ReactHost")
-    }
-
-    return reactApplication.reactNativeHost.reactInstanceManager.devSupportManager
-  }
-
-  private fun registerErrorHandler(reactContext: ReactContext) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      registerErrorHandlerImplBridgeless(reactContext)
+      registerErrorHandlerImplBridgeless(devSupportManager)
     } else {
-      registerErrorHandlerImplBridge(reactContext)
+      registerErrorHandlerImplBridge(devSupportManager)
     }
   }
 
-  private fun registerErrorHandlerImplBridgeless(reactContext: ReactContext) {
+  private fun registerErrorHandlerImplBridgeless(devSupportManager: DevSupportManager) {
     shouldHandleReactInstanceException = true
   }
 
-  private fun registerErrorHandlerImplBridge(reactContext: ReactContext) {
-    val devSupportManager = getDevSupportManager(reactContext)
+  private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
     if (devSupportManager !is DisabledDevSupportManager) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
@@ -143,7 +129,7 @@ class ErrorRecovery(
       field[devSupportManager] = defaultJSExceptionHandler
       return@let previousValue as DefaultJSExceptionHandler
     }
-    weakReactContext = WeakReference(reactContext)
+    weakDevSupportManager = WeakReference(devSupportManager)
   }
 
   private fun unregisterErrorHandler() {
@@ -159,8 +145,7 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandlerImplBridge() {
-    weakReactContext?.get()?.let { reactContext ->
-      val devSupportManager = getDevSupportManager(reactContext)
+    weakDevSupportManager?.get()?.let { devSupportManager ->
       if (devSupportManager !is DisabledDevSupportManager) {
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
@@ -174,7 +159,7 @@ class ErrorRecovery(
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }
-      weakReactContext = null
+      weakDevSupportManager = null
     }
     // quitSafely will wait for processing messages to finish but cancel all messages scheduled for
     // a future time, so delay for a few more seconds in case there are any scheduled messages

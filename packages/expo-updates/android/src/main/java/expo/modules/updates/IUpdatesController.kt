@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.os.Bundle
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
@@ -44,7 +45,9 @@ interface IUpdatesController {
    */
   var appContext: WeakReference<AppContext>?
 
-  fun onDidCreateReactInstanceManager(reactContext: ReactContext)
+  fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager)
+
+  fun onDidCreateReactInstance(reactContext: ReactContext)
 
   fun onReactInstanceException(exception: java.lang.Exception)
 

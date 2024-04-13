@@ -3,7 +3,7 @@ package expo.modules.updates.procedures
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
@@ -220,11 +220,11 @@ class StartupProcedure(
     callback.onFinished()
   }
 
-  fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+  fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
     if (emergencyLaunchException != null) {
       return
     }
-    errorRecovery.startMonitoring(reactContext)
+    errorRecovery.startMonitoring(devSupportManager)
   }
 
   fun onReactInstanceException(exception: Exception) {

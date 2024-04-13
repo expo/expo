@@ -89,6 +89,10 @@ object ExpoReactHostFactory {
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
 
+      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+        handler.onWillCreateReactInstance(useDeveloperSupport)
+      }
+
       val reactHostImpl =
         ReactHostImpl(
           context,
@@ -101,6 +105,10 @@ object ExpoReactHostFactory {
           .apply {
             jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
           }
+
+      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+        handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
+      }
 
       reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {

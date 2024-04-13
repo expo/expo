@@ -26,6 +26,7 @@
 - [Android] Added `ReactNativeHostHandler.onReactInstanceException()` for expo-updates to handle exceptions on bridgeless mode. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - [Android] Do not use the workaround in the `ReactActivityDelegateWrapper` `onActivityResult` method when using the new architecture. ([#28165](https://github.com/expo/expo/pull/28165) by [@alanjhughes](https://github.com/alanjhughes))
+- Introduced `onDidCreateDevSupportManager` handler to support error recovery from expo-updates. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
 
 ## 50.0.14 - 2024-03-20
 

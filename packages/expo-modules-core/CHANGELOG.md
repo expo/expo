@@ -58,6 +58,7 @@
 - Removed the legacy interfaces for font processors as they are no longer used by `expo-font` and nothing else depends on them. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+- Introduced `onDidCreateDevSupportManager` handler to support error recovery from expo-updates. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
 
 ## 1.11.11 - 2024-03-11
 

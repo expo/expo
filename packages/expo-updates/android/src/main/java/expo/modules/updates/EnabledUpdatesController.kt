@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
@@ -118,8 +119,11 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
-    startupProcedure.onDidCreateReactInstanceManager(reactContext)
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    startupProcedure.onDidCreateDevSupportManager(devSupportManager)
+  }
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
     weakActivity = WeakReference(reactContext.currentActivity)
   }
 
