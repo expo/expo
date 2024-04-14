@@ -112,7 +112,20 @@
       if (error == nil) {
         return expo::convertObjCObjectToJSIValue(runtime, result);
       } else {
-        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+        // `expo::makeCodedError` doesn't work during unit tests, so we construct Error and add a code,
+        // instead of using the CodedError subclass.
+        jsi::String jsCode = expo::convertNSStringToJSIString(runtime, error.userInfo[@"code"]);
+        jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, error.userInfo[@"message"]);
+        jsi::Value error = runtime
+          .global()
+          .getProperty(runtime, "Error")
+          .asObject(runtime)
+          .asFunction(runtime)
+          .callAsConstructor(runtime, {
+            jsi::Value(runtime, jsMessage)
+          });
+        error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
+        throw jsi::JSError(runtime, jsi::Value(runtime, error));
       }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
