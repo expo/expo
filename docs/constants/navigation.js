@@ -538,8 +538,8 @@ const versionsReference = VERSIONS.reduce(
         'More',
         [
           makePage('more/expo-cli.mdx'),
-          makePage('more/glossary-of-terms.mdx'),
           makePage('more/qr-codes.mdx'),
+          makePage('more/glossary-of-terms.mdx'),
         ],
         {
           expanded: true,
