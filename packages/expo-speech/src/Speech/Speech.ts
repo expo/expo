@@ -1,9 +1,7 @@
-import { UnavailabilityError, EventEmitter } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import ExponentSpeech from './ExponentSpeech';
 import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
-
-const SpeechEventEmitter = new EventEmitter(ExponentSpeech);
 
 export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
 
@@ -135,15 +133,15 @@ export async function resume(): Promise<void> {
 }
 
 function setSpeakingListener(eventName, callback) {
-  const listenerCount = SpeechEventEmitter._listenerCount;
+  const listenerCount = ExponentSpeech.listenerCount(eventName);
   if (listenerCount > 0) {
-    SpeechEventEmitter.removeAllListeners(eventName);
+    ExponentSpeech.removeAllListeners(eventName);
   }
-  SpeechEventEmitter.addListener(eventName, callback);
+  ExponentSpeech.addListener(eventName, callback);
 }
 
 function removeSpeakingListener(eventName) {
-  SpeechEventEmitter.removeAllListeners(eventName);
+  ExponentSpeech.removeAllListeners(eventName);
 }
 
 // @needsAudit
