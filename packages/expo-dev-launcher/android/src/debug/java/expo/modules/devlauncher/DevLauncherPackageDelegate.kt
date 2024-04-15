@@ -35,7 +35,7 @@ object DevLauncherPackageDelegate {
       object : ApplicationLifecycleListener {
         override fun onCreate(application: Application?) {
           check(application is ReactApplication)
-          DevLauncherController.initialize(application, application.reactNativeHost)
+          DevLauncherController.initialize(application)
           UpdatesControllerRegistry.controller?.get()?.let {
             DevLauncherController.instance.updatesInterface = it
             it.updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)

@@ -45,6 +45,7 @@ dependencies {
   androidTestImplementation project(":expo-manifests")
 
   androidTestImplementation 'com.facebook.react:react-android'
+  androidTestImplementation 'com.facebook.react:hermes-android'
 
   androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0')
   androidTestImplementation('androidx.test:core:1.4.0')
