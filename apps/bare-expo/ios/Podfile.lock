@@ -1589,7 +1589,7 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.5.0):
     - React-Core
-  - react-native-slider (4.5.1):
+  - react-native-slider (4.5.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2605,7 +2605,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 880c1bb546f47322d03b56ff2810aa5e990e582c
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
-  react-native-slider: 1adfc12baea3cd05e359f59598512a0e1d97d779
+  react-native-slider: ce295d2bf830a7990af05b0bd70ab28c133e230c
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: 684364aaf96cbfff9a7128ade10766ebb7d25c6f
   React-nativeconfig: 829ee8dde46d5b24911d61581f29682a851c97b9
