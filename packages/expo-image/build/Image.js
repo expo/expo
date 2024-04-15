@@ -11,19 +11,19 @@ export class Image extends React.PureComponent {
         super(props);
         this.nativeViewRef = createSnapshotFriendlyRef();
     }
-    /**
-     * Preloads images at the given URLs that can be later used in the image view.
-     * Preloaded images are cached to the memory and disk by default, so make sure
-     * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
-     * @param urls - A URL string or an array of URLs of images to prefetch.
-     * @param cachePolicy - The cache policy for prefetched images.
-     * @return A promise resolving to `true` as soon as all images have been
-     * successfully prefetched. If an image fails to be prefetched, the promise
-     * will immediately resolve to `false` regardless of whether other images have
-     * finished prefetching.
-     */
-    static async prefetch(urls, cachePolicy = 'memory-disk') {
-        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy);
+    static async prefetch(urls, options) {
+        let cachePolicy = 'memory-disk';
+        let headers;
+        switch (typeof options) {
+            case 'string':
+                cachePolicy = options;
+                break;
+            case 'object':
+                cachePolicy = options.cachePolicy ?? cachePolicy;
+                headers = options.headers;
+                break;
+        }
+        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
     }
     /**
      * Asynchronously clears all images stored in memory.

@@ -10,7 +10,7 @@ import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 
 export const ExpoImageModule = {
-  async prefetch(urls: string | string[], _): Promise<boolean> {
+  async prefetch(urls: string | string[], _, __): Promise<boolean> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
 
     return new Promise<boolean>((resolve) => {

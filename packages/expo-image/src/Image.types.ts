@@ -493,3 +493,16 @@ export type ImageProgressEventData = {
 export type ImageErrorEventData = {
   error: string;
 };
+
+export type ImagePrefetchOptions = {
+  /**
+   * The cache policy for prefetched images.
+   * @default 'memory-disk'
+   */
+  cachePolicy?: 'disk' | 'memory-disk' | 'memory';
+
+  /**
+   * A map of headers to use when prefetching the images.
+   */
+  headers?: Record<string, string>;
+};
