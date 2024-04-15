@@ -20,6 +20,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     self.manager = manager
 
     super.init()
+    super.initRootViewFactory()
     self.rootViewFactory.bridge = bridge
   }
 
