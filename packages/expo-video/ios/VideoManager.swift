@@ -50,17 +50,36 @@ class VideoManager {
 
   // MARK: - Audio Session Management
 
-  private func switchToActiveAudioSession() throws {
+  internal func setAppropriateAudioSessionOrWarn() {
     let audioSession = AVAudioSession.sharedInstance()
-    try audioSession.setCategory(.playback, mode: .moviePlayback)
-    try audioSession.setActive(true)
-  }
+    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = []
 
-  internal func switchToActiveAudioSessionOrWarn(warning: String) {
+    let isAnyPlayerPlaying = videoPlayers.allObjects.reduce(false) { result, object in
+      result || object.isPlaying
+    }
+    let areAllPlayersMuted = videoPlayers.allObjects.reduce(true) { result, object in
+      result && object.isMuted
+    }
+
+    // When all players are muted, or none are playing, we don't want to interrupt other audio sources on the device
+    if !isAnyPlayerPlaying || areAllPlayersMuted {
+      audioSessionCategoryOptions.insert(.mixWithOthers)
+    }
+
+    // We should always keep the category as movie playback
     do {
-      try switchToActiveAudioSession()
+      try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
     } catch {
-      log.warn("\(warning). \(error.localizedDescription)")
+      log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
+    }
+
+    // Make sure audio session is active if any video is playing
+    if isAnyPlayerPlaying {
+      do {
+        try audioSession.setActive(true)
+      } catch {
+        log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
+      }
     }
   }
 }
