@@ -1,3 +1,5 @@
+import Constants from 'expo-constants';
+
 import { DynamicConvention, RouteNode } from './Route';
 import {
   matchArrayGroupName,
@@ -28,6 +30,7 @@ type DirectoryNode = {
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
+const hasPlatformRoutes = Constants.expoConfig?.extra?.router?.platformRoutes ?? true;
 
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -350,11 +353,15 @@ function getFileMeta(key: string, options: Options) {
     );
   }
   let specificity = 0;
+
   const platformExtension = filenameWithoutExtensions.split('.')[1];
   const hasPlatformExtension = validPlatforms.has(platformExtension);
 
   if (hasPlatformExtension) {
-    if (!options.platform) {
+    if (!hasPlatformRoutes) {
+      // If the user has disabled platform routes, then we should ignore this file
+      specificity = -1;
+    } else if (!options.platform) {
       // If we don't have a platform, then we should ignore this file
       // This used by typed routes, sitemap, etc
       specificity = -1;

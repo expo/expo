@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const matchers_1 = require("./matchers");
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
+const hasPlatformRoutes = expo_constants_1.default.expoConfig?.extra?.router?.platformRoutes ?? true;
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -276,7 +281,11 @@ function getFileMeta(key, options) {
     const platformExtension = filenameWithoutExtensions.split('.')[1];
     const hasPlatformExtension = validPlatforms.has(platformExtension);
     if (hasPlatformExtension) {
-        if (!options.platform) {
+        if (!hasPlatformRoutes) {
+            // If the user has disabled platform routes, then we should ignore this file
+            specificity = -1;
+        }
+        else if (!options.platform) {
             // If we don't have a platform, then we should ignore this file
             // This used by typed routes, sitemap, etc
             specificity = -1;
