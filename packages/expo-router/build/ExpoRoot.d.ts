@@ -7,5 +7,12 @@ export type ExpoRootProps = {
     wrapper?: ComponentType<PropsWithChildren>;
     linking?: Partial<ExpoLinkingOptions>;
 };
+export type NativeIntent = {
+    redirectSystemPath?: (event: {
+        path: string | null;
+        initial: boolean;
+    }) => Promise<string | null | undefined> | string | null | undefined;
+    subscribe?: (listener: (path: string) => void) => Promise<() => void | void> | (() => void) | void;
+};
 export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): JSX.Element;
 //# sourceMappingURL=ExpoRoot.d.ts.map

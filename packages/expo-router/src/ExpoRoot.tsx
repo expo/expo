@@ -22,6 +22,16 @@ export type ExpoRootProps = {
   linking?: Partial<ExpoLinkingOptions>;
 };
 
+export type NativeIntent = {
+  redirectSystemPath?: (event: {
+    path: string | null;
+    initial: boolean;
+  }) => Promise<string | null | undefined> | string | null | undefined;
+  subscribe?: (
+    listener: (path: string) => void
+  ) => Promise<() => void | void> | (() => void) | void;
+};
+
 const isTestEnv = process.env.NODE_ENV === 'test';
 
 const INITIAL_METRICS =
@@ -205,7 +215,9 @@ function getNativeLinking(
   const nativeLinkingKey = context
     .keys()
     .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
-  const nativeLinking = nativeLinkingKey ? context(nativeLinkingKey) : undefined;
+  const nativeLinking: NativeIntent | undefined = nativeLinkingKey
+    ? context(nativeLinkingKey)
+    : undefined;
 
   return {
     ...linking,
@@ -216,11 +228,11 @@ function getNativeLinking(
       } else if (nativeLinking?.redirectSystemPath) {
         if (serverUrl) {
           // Ensure we initialize the router with the SSR location if present
-          return nativeLinking.redirectSystemPath({ url: serverUrl, initial: true });
+          return nativeLinking.redirectSystemPath({ path: serverUrl, initial: true });
         } else {
           // Otherwise use the initial URL from the system
           return Linking.getInitialURL().then((url) => {
-            return nativeLinking.redirectSystemPath({ url, initial: true });
+            return nativeLinking?.redirectSystemPath?.({ path: url, initial: true });
           });
         }
       } else {
@@ -234,14 +246,17 @@ function getNativeLinking(
       }
 
       const subscription = Linking.addEventListener('url', async ({ url }) => {
-        if (nativeLinking.redirectSystemPath) {
-          listener(await nativeLinking.redirectSystemPath({ url, initial: false }));
+        if (nativeLinking?.redirectSystemPath) {
+          const newPath = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+          if (typeof newPath === 'string') {
+            listener(newPath);
+          }
         } else {
           listener(url);
         }
       });
 
-      const nativeSubscription = nativeLinking.subscribe?.(listener);
+      const nativeSubscription = nativeLinking?.subscribe?.(listener);
 
       return () => {
         if (typeof nativeSubscription === 'function') {
