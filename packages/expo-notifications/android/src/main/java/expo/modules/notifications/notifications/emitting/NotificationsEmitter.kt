@@ -30,9 +30,6 @@ open class NotificationsEmitter : Module(), NotificationListener {
     )
 
     OnCreate {
-      eventEmitter = appContext.legacyModule<EventEmitter>()
-        ?: throw ModuleNotFoundException(EventEmitter::class)
-
       // Register the module as a listener in NotificationManager singleton module.
       // Deregistration happens in onDestroy callback.
       notificationManager = requireNotNull(appContext.legacyModuleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
@@ -55,7 +52,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @param notification Notification received
    */
   override fun onNotificationReceived(notification: Notification) {
-    eventEmitter?.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification))
+    sendEvent(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification))
   }
 
   /**
@@ -67,11 +64,8 @@ open class NotificationsEmitter : Module(), NotificationListener {
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
     lastNotificationResponse = response
-    eventEmitter?.let {
-      it.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response))
-      return true
-    }
-    return false
+    sendEvent(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response))
+    return true
   }
 
   /**
@@ -79,6 +73,6 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * Emits a [MESSAGES_DELETED_EVENT_NAME] event.
    */
   override fun onNotificationsDropped() {
-    eventEmitter?.emit(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY)
+    sendEvent(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY)
   }
 }
