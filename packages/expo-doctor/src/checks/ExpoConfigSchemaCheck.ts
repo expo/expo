@@ -12,7 +12,12 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
-    const schema = await getSchemaAsync(exp.sdkVersion!);
+    let schema = await getSchemaAsync(exp.sdkVersion!);
+
+    // if the schema is not available for the current SDK version, fallback to the unversioned schema (for example when using a canary SDK version)
+    if (!schema) {
+      schema = await getSchemaAsync('UNVERSIONED');
+    }
 
     const configPaths = getConfigFilePaths(projectRoot);
 
