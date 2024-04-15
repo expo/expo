@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '15.9.1'
+version = '15.9.2'
 
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -95,7 +95,7 @@ android {
   namespace "expo.modules.medialibrary"
   defaultConfig {
     versionCode 37
-    versionName "15.9.1"
+    versionName "15.9.2"
   }
 }
 

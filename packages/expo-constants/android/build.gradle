@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '15.4.5'
+version = '15.4.6'
 
 apply from: "../scripts/get-app-config-android.gradle"
 
@@ -96,7 +96,7 @@ android {
   namespace "expo.modules.constants"
   defaultConfig {
     versionCode 33
-    versionName "15.4.5"
+    versionName "15.4.6"
   }
 }
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Include new privacy info plugin in default plugins. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.8.0 — 2024-04-15
+
+### 🎉 New features
+
+- Include new privacy info plugin in default plugins. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
 
 ## 6.7.4 — 2024-01-23
 

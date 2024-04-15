@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.2 — 2024-04-15
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.1 — 2023-12-19
 
 ### 💡 Others

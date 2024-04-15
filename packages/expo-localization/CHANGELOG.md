@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.8.4 — 2024-04-15
+
+### 💡 Others
+
 - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
 
 ## 14.8.3 — 2024-01-18

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.5.5 — 2024-04-15
+
+_This version does not introduce any user-facing changes._
+
 ## 8.5.4 — 2024-01-18
 
 ### 🐛 Bug fixes
