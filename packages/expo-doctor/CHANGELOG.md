@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Skip Cocoapods version check when not on macOS ([#27751](https://github.com/expo/expo/pull/27751) by [@keith-kurak](https://github.com/keith-kurak))
+- Fix error when fetching schema for unpublished SDK versions
 
 ### 💡 Others
 
