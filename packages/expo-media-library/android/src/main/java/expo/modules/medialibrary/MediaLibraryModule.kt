@@ -144,18 +144,6 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
-          withModuleScope(promise) {
-            DeleteAssets(context, assetsId.toTypedArray(), promise)
-              .execute()
-          }
-        }
-        runActionWithPermissions(assetsId, action)
-      }
-    }
-
     AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
