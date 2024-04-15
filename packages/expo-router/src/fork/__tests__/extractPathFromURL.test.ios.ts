@@ -1,4 +1,6 @@
-import { extractExpoPathFromURL } from '../extractPathFromURL';
+import * as Linking from 'expo-linking';
+
+import { adjustPathname, extractExpoPathFromURL } from '../extractPathFromURL';
 
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
@@ -32,6 +34,7 @@ describe(extractExpoPathFromURL, () => {
         'exp://u.expo.dev/update/123abc',
         'exp://u.expo.dev/update/123abc/--/test/path?query=param',
         'exp://u.expo.dev/update/123abc/efg',
+        'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb',
         'exp://exp.host/@test/test',
         'exp://exp.host/@test/test/--/test/path?query=param',
         'exp://exp.host/@test/test/--/test/path',
@@ -81,5 +84,31 @@ describe(extractExpoPathFromURL, () => {
     // This should look mostly broken, but it's the best we can do
     // when someone uses this format outside of Expo Go.
     expect(res).toEqual('127.0.0.1:19000/--/test');
+  });
+});
+
+describe(adjustPathname, () => {
+  it('can adjust exp.host urls', () => {
+    const res = Linking.parse('exp://exp.host/@test/test');
+    expect(adjustPathname({ hostname: res.hostname, pathname: res.path || '' })).toBe('');
+  });
+
+  it('can adjust expo.dev urls', () => {
+    const res = Linking.parse('exp://u.expo.dev/update/123abc');
+    expect(adjustPathname({ hostname: res.hostname, pathname: res.path || '' })).toBe('');
+  });
+
+  it('can adjust expo.dev preview urls', () => {
+    const res = Linking.parse(
+      'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bbe'
+    );
+    expect(adjustPathname({ hostname: res.hostname, pathname: res.path || '' })).toBe('');
+  });
+
+  it('can adjust expo.dev preview urls', () => {
+    const res = Linking.parse(
+      'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bbe/test'
+    );
+    expect(adjustPathname({ hostname: res.hostname, pathname: res.path || '' })).toBe('test');
   });
 });

@@ -30,6 +30,8 @@ exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/p
 
 exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"exp.host/@test/test/--/test/path?query=param"`;
 
+exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb" 1`] = `"u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb"`;
+
 exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/update/123abc" 1`] = `"u.expo.dev/update/123abc"`;
 
 exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/update/123abc/--/test/path?query=param" 1`] = `"u.expo.dev/update/123abc/--/test/path?query=param"`;
@@ -85,6 +87,8 @@ exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test/--/tes
 exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test/--/test/path/--/foobar" 1`] = `"test/path/--/foobar"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"test/path?query=param"`;
+
+exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb" 1`] = `"d54f9fba-95ed-4804-91ed-359626042bb"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/update/123abc" 1`] = `""`;
 

@@ -97,10 +97,19 @@ function extractExpoPathFromURL(url = '') {
     return extractExactPathFromURL(url).replace(/^\//, '');
 }
 exports.extractExpoPathFromURL = extractExpoPathFromURL;
+// Preview QR codes from expo.dev take on the form of http://u.expo.dev/<uuid>/group/<uuid>
+const expoPreviewLinkRegExp = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\/group\/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}/i);
 function adjustPathname(url) {
     if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
-        // drop the first two segments from pathname:
-        return url.pathname.split('/').slice(2).join('/');
+        if (expoPreviewLinkRegExp.test(url.pathname)) {
+            // drop the /<uuid>/group/<uuid> segments from pathname:
+            return url.pathname.split('/').slice(3).join('/');
+        }
+        else {
+            // drop the /<uuid>/group/<uuid> segments from pathname:
+            // drop the first two segments from pathname:
+            return url.pathname.split('/').slice(2).join('/');
+        }
     }
     return url.pathname;
 }
