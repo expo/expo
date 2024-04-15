@@ -16,6 +16,7 @@
 
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Fixed unit test errors. ([#28208](https://github.com/expo/expo/pull/28208) by [@kudo](https://github.com/kudo))
 
 ## 16.5.5 - 2024-02-29
 
