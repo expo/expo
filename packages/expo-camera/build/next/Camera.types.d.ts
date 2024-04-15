@@ -275,6 +275,11 @@ export type CameraProps = ViewProps & {
      */
     videoQuality?: VideoQuality;
     /**
+     * A boolean that determines whether the camera shutter animation should be enabled.
+     * @default true
+     */
+    animateShutter?: boolean;
+    /**
      * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
      * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
      */
@@ -366,6 +371,7 @@ export type CameraNativeProps = {
     facing?: string;
     flashMode?: string;
     enableTorch?: boolean;
+    animateShutter?: boolean;
     mute?: boolean;
     zoom?: number;
     barcodeScannerSettings?: BarcodeSettings;

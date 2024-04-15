@@ -85,6 +85,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
+  var animateShutter = true
+
   var zoom: CGFloat = 0 {
     didSet {
       updateZoom()
@@ -228,13 +230,14 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.addErrorNotification()
       self.changePreviewOrientation()
-      self.updateSessionAudioIsMuted()
       self.session.commitConfiguration()
 
       // Delay starting the scanner
       self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
         self.barcodeScanner.maybeStartBarcodeScanning()
-        self.session.startRunning()
+        if !self.session.isRunning {
+          self.session.startRunning()
+        }
         self.onCameraReady()
       }
     }
@@ -326,60 +329,46 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+      var photoSettings = AVCapturePhotoSettings()
 
-      var requestedFlashMode = AVCaptureDevice.FlashMode.off
-
-      switch self.flashMode {
-      case .off:
-        requestedFlashMode = .off
-      case .auto:
-        requestedFlashMode = .auto
-      case .on:
-        requestedFlashMode = .on
+      if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
+        photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
       }
 
+      var requestedFlashMode = self.flashMode.toDeviceFlashMode()
       if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
         photoSettings.flashMode = requestedFlashMode
+      }
+
+      if #available(iOS 16.0, *) {
+        photoSettings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
+      }
+
+      if !photoSettings.availablePreviewPhotoPixelFormatTypes.isEmpty,
+      let previewFormat = photoSettings.__availablePreviewPhotoPixelFormatTypes.first {
+        photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewFormat]
       }
 
       if photoOutput.isHighResolutionCaptureEnabled {
         photoSettings.isHighResolutionPhotoEnabled = true
       }
+
+      photoSettings.photoQualityPrioritization = .balanced
+
       photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
   }
 
-  public func photoOutput(
-    _ output: AVCapturePhotoOutput,
-    didFinishProcessingRawPhoto rawSampleBuffer: CMSampleBuffer?,
-    previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
-    resolvedSettings: AVCaptureResolvedPhotoSettings,
-    bracketSettings: AVCaptureBracketedStillImageSettings?,
-    error: Error?
-  ) {
-    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else {
+  public func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+    guard animateShutter else {
       return
     }
-    photoCapturedPromise = nil
-    photoCaptureOptions = nil
-
-    guard let rawSampleBuffer, error != nil else {
-      promise.reject(CameraImageCaptureException())
-      return
+    DispatchQueue.main.async {
+      self.previewLayer.videoPreviewLayer.opacity = 0
+      UIView.animate(withDuration: 0.25) {
+        self.previewLayer.videoPreviewLayer.opacity = 1
+      }
     }
-
-    guard let imageData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(
-      forJPEGSampleBuffer: rawSampleBuffer,
-      previewPhotoSampleBuffer: previewPhotoSampleBuffer),
-      let sourceImage = CGImageSourceCreateWithData(imageData as CFData, nil),
-      let metadata = CGImageSourceCopyPropertiesAtIndex(sourceImage, 0, nil) as? [String: Any]
-    else {
-      promise.reject(CameraMetadataDecodingException())
-      return
-    }
-
-    self.handleCapturedImageData(imageData: imageData, metadata: metadata, options: options, promise: promise)
   }
 
   public func photoOutput(
@@ -468,31 +457,28 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         updatedExif.addEntries(from: additionalExif)
         var gpsDict = [String: Any]()
 
-        let gpsLatitude = additionalExif["GPSLatitude"] as? Double
-        if let latitude = gpsLatitude {
+        if let latitude = additionalExif["GPSLatitude"] as? Double {
           gpsDict[kCGImagePropertyGPSLatitude as String] = abs(latitude)
           gpsDict[kCGImagePropertyGPSLatitudeRef as String] = latitude >= 0 ? "N" : "S"
         }
 
-        let gpsLongitude = additionalExif["GPSLongitude"] as? Double
-        if let longitude = gpsLongitude {
+        if let longitude = additionalExif["GPSLongitude"] as? Double {
           gpsDict[kCGImagePropertyGPSLongitude as String] = abs(longitude)
           gpsDict[kCGImagePropertyGPSLongitudeRef as String] = longitude >= 0 ? "E" : "W"
         }
 
-        let gpsAltitude = additionalExif["GPSAltitude"] as? Double
-        if let altitude = gpsAltitude {
+        if let altitude = additionalExif["GPSAltitude"] as? Double {
           gpsDict[kCGImagePropertyGPSAltitude as String] = abs(altitude)
           gpsDict[kCGImagePropertyGPSAltitudeRef as String] = altitude >= 0 ? 0 : 1
         }
 
-        let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
-        } else {
-          if let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
-            metadataGpsDict.addEntries(from: gpsDict)
+        } else if var existingGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
+          existingGpsDict.merge(gpsDict) { _, new in
+            new
           }
+          updatedMetadata[kCGImagePropertyGPSDictionary as String] = existingGpsDict
         }
       }
 
@@ -655,9 +641,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
-    super.removeFromSuperview()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    super.removeFromSuperview()
   }
 
   public func fileOutput(

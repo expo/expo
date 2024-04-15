@@ -99,6 +99,10 @@ class CameraViewNextModule : Module() {
         view.setTorchEnabled(enabled ?: false)
       }
 
+      Prop("animateShutter") { view, animate: Boolean? ->
+        view.animateShutter = animate ?: true
+      }
+
       Prop("zoom") { view, zoom: Float? ->
         zoom?.let {
           view.camera?.cameraControl?.setLinearZoom(it)
