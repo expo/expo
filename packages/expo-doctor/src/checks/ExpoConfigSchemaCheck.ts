@@ -13,10 +13,12 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
     const issues: string[] = [];
 
     let schema = await getSchemaAsync(exp.sdkVersion!);
+    let isUsingUnversionedSchema = false;
 
     // if the schema is not available for the current SDK version, fallback to the unversioned schema (for example when using a canary SDK version)
     if (!schema) {
       schema = await getSchemaAsync('UNVERSIONED');
+      isUsingUnversionedSchema = true;
     }
 
     const configPaths = getConfigFilePaths(projectRoot);
@@ -36,6 +38,12 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
       }
       if (assetsErrorMessage) {
         issues.push(assetsErrorMessage!);
+      }
+
+      if (isUsingUnversionedSchema && issues.length > 0) {
+        issues.push(
+          `We could not find a schema for SDK version ${exp.sdkVersion}, used UNVERSIONED schema instead. This is expected when using a canary SDK version.`
+        );
       }
     }
 
