@@ -1,0 +1,62 @@
+---
+title: Configuring iOS Privacy Manifests
+description: Learn about configuring iOS privacy manifests for your mobile app.
+---
+
+If you're using one of React Native or Expo libraries that use one of the "restricted reason" APIs, you'll need to configure an iOS privacy manifest to declare why you're including native code calling those APIs.
+
+More details and a list of "required reason" APIs can be found in the [Apple Developer Documentation](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
+
+> Note:
+> The information and steps included in this document are still in development and may change, either due to new tools built for this purpose or changes in Apple's requirements.
+
+## What is a Privacy Manifest?
+
+A privacy manifest is a file named `PrivacyInfo.xcprivacy` that is included in your iOS native project. This file is used to declare why you're including native code that calls certain APIs that Apple considers sensitive.
+
+Those APIs currently include accessing UserDefaults, file timestamp APIs, system boot time APIs, disk space APIs and active keyboard APIs, but Apple considers it an open list that can be expanded in the future.
+
+## Including an iOS Privacy Manifest in Expo Managed Apps
+
+If you're using an Expo managed app, you can include an iOS privacy manifest by adding a `privacyManifests` field to your `app.json` file, under the `"expo.ios" keys. This requires Expo SDK 50 or later.
+
+Here's an example of how you can include a privacy manifest in your `app.json` file:
+
+```json
+{
+  "expo": {
+    "name": "My App",
+    "slug": "my-app",
+    // other fields...
+    "ios": {
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+You can identify the `NSPrivacyAccessedAPITypes` and `NSPrivacyAccessedAPITypeReasons` values by looking at the [Apple Developer Documentation](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api).
+
+> Warning:
+> Make sure you have updated your Expo SDK packages to latest versions for your SDK version using `npx expo install --fix`.
+
+### Including required reasons for Expo SDK packages and other 3rd party libraries
+
+As of now, Apple does not correcly parse all the `PrivacyInfo` files included by static cocoapods dependencies (like Expo SDK packages and other ecosystem packages). This means that you may need to include the required reasons for the APIs used by those dependencies in your app's `PrivacyInfo.xcprivacy` file or the configuration in your `app.json`.
+
+All Expo SDK packages that use "required reason" APIs file have a `PrivacyInfo` file included in the package directory. [Here's an example privacy info file]](https://github.com/expo/expo/blob/main/packages/expo-application/ios/PrivacyInfo.xcprivacy) included with the `expo-application` package.
+
+You can usually identify the required reasons for the APIs used by other 3rd party libraries by checking if the package you intend to use has a `PrivacyInfo.xcprivacy` file in the `node_modules/package_name/ios` directory. If it does, you can check the `NSPrivacyAccessedAPITypes` and `NSPrivacyAccessedAPITypeReasons` values in that file and copy those values to your configuration.
+
+As an alternative, Apple notifies developers after they submit a build with missing privacy manifest files or specific reasons, so you can wait until you receive a notification email from Apple and then include the required reasons listed in the email in your app's `PrivacyInfo.xcprivacy` file or the configuration in your `app.json` file.
+
+## Including an iOS Privacy Manifest in Bare Expo Apps
+
+You can include an iOS privacy manifest in a bare Expo app by creating a `PrivacyInfo.xcprivacy` file using Xcode and adding it to your iOS app target.
