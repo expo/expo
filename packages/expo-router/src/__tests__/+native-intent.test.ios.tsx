@@ -49,7 +49,9 @@ it('can setup a subscription', async () => {
   let resolve: (path: string) => Promise<void> | void = () => {};
   const promise = new Promise<string>((res) => (resolve = res));
 
-  renderRouter({
+  const cleanup = jest.fn();
+
+  const { unmount } = renderRouter({
     index: () => <View testID="index" />,
     page: () => <View testID="page" />,
     '+native-intent': {
@@ -57,6 +59,8 @@ it('can setup a subscription', async () => {
         promise.then((url) => {
           act(() => listener(url));
         });
+
+        return cleanup;
       },
     },
   });
@@ -66,4 +70,9 @@ it('can setup a subscription', async () => {
   await resolve('/page');
 
   expect(screen.getByTestId('page')).toBeVisible();
+
+  // Unmount the router to the cleanup function is invoked
+  unmount();
+
+  expect(cleanup).toHaveBeenCalled();
 });

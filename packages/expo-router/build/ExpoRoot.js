@@ -187,21 +187,20 @@ function getNativeLinking(context, linking, serverLocation) {
                 // If the user has provided a getInitialURL function, use that
                 return linking.getInitialURL();
             }
-            else if (nativeLinking?.redirectSystemPath) {
+            if (typeof nativeLinking?.redirectSystemPath === 'function') {
                 if (serverUrl) {
                     // Ensure we initialize the router with the SSR location if present
                     return nativeLinking.redirectSystemPath({ path: serverUrl, initial: true });
                 }
                 else {
                     // Otherwise use the initial URL from the system
+                    // This is an inline promise so the Router still acts in a synchronous manner for SSR rendering
                     return expo_linking_1.default.getInitialURL().then((url) => {
                         return nativeLinking?.redirectSystemPath?.({ path: url, initial: true });
                     });
                 }
             }
-            else {
-                return serverUrl;
-            }
+            return serverUrl;
         },
         subscribe(listener) {
             if (linking.subscribe) {
