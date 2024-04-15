@@ -736,7 +736,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge;
+  manager.currentBridge = [RCTBridge currentBridge];
 
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;
