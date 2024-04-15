@@ -200,11 +200,7 @@ EX_REGISTER_MODULE();
 
 - (void *)javaScriptRuntimePointer
 {
-  if ([_bridge respondsToSelector:@selector(runtime)]) {
-    return _bridge.runtime;
-  } else {
-    return nil;
-  }
+  return _bridge.runtime;
 }
 
 # pragma mark - App state observing
