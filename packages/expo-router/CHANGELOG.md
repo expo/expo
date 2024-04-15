@@ -33,7 +33,7 @@
 - Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative navigation on hoisted routes ([#27778](https://github.com/expo/expo/pull/27778) by [@marklawlor](https://github.com/marklawlor))
 - Fix setting an initial location to a hoisted index router in a group ([#27935](https://github.com/expo/expo/pull/27935) by [@marklawlor](https://github.com/marklawlor))
-- Update expo.dev preview URL parsing
+- Update expo.dev preview URL parsing ([#28218](https://github.com/expo/expo/pull/28218) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
