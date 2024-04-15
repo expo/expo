@@ -4,7 +4,6 @@ import android.os.Bundle
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
