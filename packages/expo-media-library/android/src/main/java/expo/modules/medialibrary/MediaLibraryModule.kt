@@ -110,7 +110,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("addAssetsToAlbumAsync") { assetsId: List<String>, albumId: String, copyToAlbum: Boolean, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
               .execute()
@@ -122,7 +122,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("removeAssetsFromAlbumAsync") { assetsId: List<String>, albumId: String, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId, promise)
               .execute()
@@ -134,7 +134,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             DeleteAssets(context, assetsId.toTypedArray(), promise)
               .execute()
@@ -171,7 +171,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             CreateAlbum(context, albumName, assetId, copyAsset, promise)
               .execute()
@@ -183,7 +183,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("deleteAlbumsAsync") { albumIds: List<String>, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             DeleteAlbums(context, albumIds, promise)
               .execute()
@@ -237,7 +237,7 @@ class MediaLibraryModule : Module() {
         return@AsyncFunction
       }
 
-      val action = actionIfUserGrantedPermission {
+      val action = actionIfUserGrantedPermission(promise) {
         moduleCoroutineScope.launch {
           MigrateAlbum(context, assets, albumDir.name, promise)
             .execute()
@@ -451,10 +451,11 @@ class MediaLibraryModule : Module() {
   }
 
   private fun actionIfUserGrantedPermission(
+    promise: Promise,
     block: () -> Unit
   ) = Action { permissionsWereGranted ->
     if (!permissionsWereGranted) {
-      throw PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
+      promise.reject(PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE))
     }
     block()
   }
