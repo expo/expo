@@ -534,9 +534,17 @@ const versionsReference = VERSIONS.reduce(
         makePage('technical-specs/expo-updates-1.mdx'),
         makePage('technical-specs/expo-sfv-0.mdx'),
       ]),
-      makeSection('More', [makePage('more/expo-cli.mdx'), makePage('more/glossary-of-terms.mdx')], {
-        expanded: true,
-      }),
+      makeSection(
+        'More',
+        [
+          makePage('more/expo-cli.mdx'),
+          makePage('more/qr-codes.mdx'),
+          makePage('more/glossary-of-terms.mdx'),
+        ],
+        {
+          expanded: true,
+        }
+      ),
       makeSection(
         'React Native',
         [
