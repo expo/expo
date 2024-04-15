@@ -42,7 +42,7 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
 
       if (isUsingUnversionedSchema && issues.length > 0) {
         issues.push(
-          `We could not find a schema for SDK version ${exp.sdkVersion}, used UNVERSIONED schema instead. This is expected when using a canary SDK version.`
+          `Warning: we could not find a schema for SDK version ${exp.sdkVersion}, used UNVERSIONED schema instead. This is expected when using a canary SDK version.`
         );
       }
     }
