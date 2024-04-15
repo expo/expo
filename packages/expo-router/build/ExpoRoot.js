@@ -173,13 +173,16 @@ function getNativeLinking(context, linking, serverLocation) {
         }
         return linking;
     }
-    // Get the +native file from the context
-    const nativeLinkingKey = context.keys().find((key) => key.match(/^\.\/\+native\.[tj]sx?$/));
+    // Get the +native-intent file from the context
+    const nativeLinkingKey = context
+        .keys()
+        .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
     const nativeLinking = nativeLinkingKey ? context(nativeLinkingKey) : undefined;
     return {
         ...linking,
         getInitialURL() {
             if (linking.getInitialURL) {
+                // If the user has provided a getInitialURL function, use that
                 return linking.getInitialURL();
             }
             else if (nativeLinking?.redirectSystemPath) {
@@ -188,6 +191,7 @@ function getNativeLinking(context, linking, serverLocation) {
                     return nativeLinking.redirectSystemPath({ url: serverUrl, initial: true });
                 }
                 else {
+                    // Otherwise use the initial URL from the system
                     return expo_linking_1.default.getInitialURL().then((url) => {
                         return nativeLinking.redirectSystemPath({ url, initial: true });
                     });
@@ -199,6 +203,7 @@ function getNativeLinking(context, linking, serverLocation) {
         },
         subscribe(listener) {
             if (linking.subscribe) {
+                // If the user has provided a subscribe function, use that
                 return linking.subscribe(listener);
             }
             const subscription = expo_linking_1.default.addEventListener('url', async ({ url }) => {
@@ -209,7 +214,13 @@ function getNativeLinking(context, linking, serverLocation) {
                     listener(url);
                 }
             });
-            return () => subscription.remove();
+            const nativeSubscription = nativeLinking.subscribe?.(listener);
+            return () => {
+                if (typeof nativeSubscription === 'function') {
+                    nativeSubscription();
+                }
+                subscription.remove();
+            };
         },
     };
 }

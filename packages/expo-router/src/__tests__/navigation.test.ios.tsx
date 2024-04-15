@@ -54,7 +54,7 @@ describe('imperative only', () => {
         const { name } = useGlobalSearchParams();
         return <Text>{name}</Text>;
       },
-      '+native': {
+      '+native-intent': {
         redirectSystemPath() {
           return new Promise(() => {}); // This never resolves
         },

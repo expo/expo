@@ -8,7 +8,7 @@ it('can use redirectSystemPath initial', () => {
   renderRouter({
     index: () => <View testID="index" />,
     page: () => <View testID="page" />,
-    '+native': {
+    '+native-intent': {
       redirectSystemPath({ path, initial }) {
         if (initial) {
           return '/page';
@@ -28,7 +28,7 @@ it('can use async redirectSystemPath', async () => {
   renderRouter({
     index: () => <View testID="index" />,
     page: () => <View testID="page" />,
-    '+native': {
+    '+native-intent': {
       redirectSystemPath({ path, initial }) {
         if (initial) {
           return promise;
@@ -41,6 +41,29 @@ it('can use async redirectSystemPath', async () => {
   expect(screen.toJSON()).toBeNull();
 
   await act(() => resolve('/page'));
+
+  expect(screen.getByTestId('page')).toBeVisible();
+});
+
+it('can setup a subscription', async () => {
+  let resolve: (path: string) => Promise<void> | void = () => {};
+  const promise = new Promise<string>((res) => (resolve = res));
+
+  renderRouter({
+    index: () => <View testID="index" />,
+    page: () => <View testID="page" />,
+    '+native-intent': {
+      subscribe: (listener) => {
+        promise.then((url) => {
+          act(() => listener(url));
+        });
+      },
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  await resolve('/page');
 
   expect(screen.getByTestId('page')).toBeVisible();
 });

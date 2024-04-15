@@ -3,11 +3,14 @@ import path from 'path';
 import requireContext from './require-context-ponyfill';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
-export type NativeStub = {
-  redirectSystemPath(event: {
-    path: string;
+export type NativeIntentStub = {
+  redirectSystemPath?: (event: {
+    path: string | null;
     initial: boolean;
-  }): Promise<string | null | undefined> | string | null | undefined;
+  }) => Promise<string | null | undefined> | string | null | undefined;
+  subscribe?: (
+    listener: (path: string) => void
+  ) => Promise<() => void | void> | (() => void) | void;
 };
 export type FileStub =
   | (Record<string, unknown> & {
@@ -16,8 +19,8 @@ export type FileStub =
     })
   | ReactComponent;
 
-export type MemoryContext = Record<string, FileStub | NativeStub> & {
-  '+native'?: NativeStub;
+export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
+  '+native-intent'?: NativeIntentStub;
 };
 
 export { requireContext };

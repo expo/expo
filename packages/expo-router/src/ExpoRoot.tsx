@@ -201,20 +201,24 @@ function getNativeLinking(
     return linking;
   }
 
-  // Get the +native file from the context
-  const nativeLinkingKey = context.keys().find((key) => key.match(/^\.\/\+native\.[tj]sx?$/));
+  // Get the +native-intent file from the context
+  const nativeLinkingKey = context
+    .keys()
+    .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
   const nativeLinking = nativeLinkingKey ? context(nativeLinkingKey) : undefined;
 
   return {
     ...linking,
     getInitialURL() {
       if (linking.getInitialURL) {
+        // If the user has provided a getInitialURL function, use that
         return linking.getInitialURL();
       } else if (nativeLinking?.redirectSystemPath) {
         if (serverUrl) {
           // Ensure we initialize the router with the SSR location if present
           return nativeLinking.redirectSystemPath({ url: serverUrl, initial: true });
         } else {
+          // Otherwise use the initial URL from the system
           return Linking.getInitialURL().then((url) => {
             return nativeLinking.redirectSystemPath({ url, initial: true });
           });
@@ -225,6 +229,7 @@ function getNativeLinking(
     },
     subscribe(listener) {
       if (linking.subscribe) {
+        // If the user has provided a subscribe function, use that
         return linking.subscribe(listener);
       }
 
@@ -236,7 +241,14 @@ function getNativeLinking(
         }
       });
 
-      return () => subscription.remove();
+      const nativeSubscription = nativeLinking.subscribe?.(listener);
+
+      return () => {
+        if (typeof nativeSubscription === 'function') {
+          nativeSubscription();
+        }
+        subscription.remove();
+      };
     },
   };
 }
