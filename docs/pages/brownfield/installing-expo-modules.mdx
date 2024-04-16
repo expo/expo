@@ -135,7 +135,7 @@ index a71b5e7..d6d406e 100644
 
 <Step label="4.3">
 
-If you have your own class extending `Application`, you can add the following to it:
+If you have your own class extending `Application`, you can add the following. It includes calls to `ApplicationLifecycleDispatcher` for handling events at the application startup and during device configuration changes.
 
 <DiffBlock raw={`diff --git a/android/app/src/main/java/com/<my-app-package>/MainApplication.kt b/android/app/src/main/java/com/<my-app-package>/MainApplication.kt
 new file mode 100644
