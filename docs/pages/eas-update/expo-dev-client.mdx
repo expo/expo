@@ -70,7 +70,7 @@ You can also preview an update using the Expo dashboard by following the steps b
 As an alternative to the methods described in the previous sections, you can construct a specific URL to open your EAS Update in the development build. The URL will look like the following:
 
 ```bash
-[project-slug]://expo-development-client/?url=[https://u.expo.dev/project-id]/group/[group-id]
+[slug]://expo-development-client/?url=[https://u.expo.dev/project-id]/group/[group-id]
 
 # Example
 my-app://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2/group/47839bf2-9e01-467b-9378-4a978604ab11
@@ -80,7 +80,7 @@ Let's break this URL to understand what each part does:
 
 | Part of URL                                               | Description                                                                                                                |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `project-slug`                                            | The project's [slug](/versions/latest/config/app/#slug) found in the app config.                                           |
+| `slug`                                                    | The project's [slug](/versions/latest/config/app/#slug) found in the app config.                                           |
 | `://expo-development-client/`                             | Necessary for the deep link to work with the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library.                |
 | `?url=`                                                   | Defines a `url` query parameter.                                                                                           |
 | `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2` | This is the updates URL, which is inside the project's app config under [`updates.url`](/versions/latest/config/app/#url). |
@@ -88,7 +88,7 @@ Let's break this URL to understand what each part does:
 
 Once you've constructed the URL, copy and paste it directly into the development build's launcher screen under **Enter URL Manually**.
 
-Alternatively, you can create a QR code for the URL and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
+Alternatively, you can [create a QR code for the URL](/more/qr-codes/) and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
 
 ## Example
 
