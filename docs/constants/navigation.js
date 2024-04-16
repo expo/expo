@@ -516,6 +516,7 @@ const archive = [
     makePage('archive/notification-channels.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
+    makePage('archive/using-expo-client.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];
