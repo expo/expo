@@ -1,10 +1,10 @@
 import { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
+import fs from 'fs';
 import path from 'path';
 import type { XcodeProject } from 'xcode';
 
-import { createBuildSourceFile, readBuildSourceFile } from './XcodeProjectFile';
-import { getProjectName } from './utils/Xcodeproj';
+import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { ExportedConfigWithProps, withXcodeProject } from '..';
 
 export type PrivacyInfo = {
@@ -37,26 +37,45 @@ export function setPrivacyInfo(
   projectConfig: ExportedConfigWithProps<XcodeProject>,
   privacyManifests: Partial<PrivacyInfo>
 ) {
-  const projectName = getProjectName(projectConfig.modRequest.projectRoot);
+  const { projectRoot, platformProjectRoot } = projectConfig.modRequest;
 
-  const existingFileContent = readBuildSourceFile({
-    project: projectConfig.modResults,
-    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-    filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-  });
+  const projectName = getProjectName(projectRoot);
+
+  const privacyFilePath = path.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
+
+  const existingFileContent = getFileContents(privacyFilePath);
+
   const parsedContent = existingFileContent ? plist.parse(existingFileContent) : {};
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = plist.build(mergedContent);
 
-  projectConfig.modResults = createBuildSourceFile({
-    project: projectConfig.modResults,
-    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-    fileContents: contents,
-    filePath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-    overwrite: true,
-  });
+  ensureFileExists(privacyFilePath, contents);
+
+  if (!projectConfig.modResults.hasFile(privacyFilePath)) {
+    projectConfig.modResults = addResourceFileToGroup({
+      filepath: privacyFilePath,
+      groupName: projectName,
+      project: projectConfig.modResults,
+      isBuildFile: true,
+      verbose: true,
+    });
+  }
 
   return projectConfig;
+}
+
+function getFileContents(filePath: string): string | null {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  return fs.readFileSync(filePath, { encoding: 'utf8' });
+}
+
+function ensureFileExists(filePath: string, contents: string) {
+  if (!fs.existsSync(path.dirname(filePath))) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  }
+  fs.writeFileSync(filePath, contents);
 }
 
 export function mergePrivacyInfo(

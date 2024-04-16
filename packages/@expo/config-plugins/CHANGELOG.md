@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix xcprivacy being added to build sources instead of resources. ([#28223](https://github.com/expo/expo/pull/28223) by [@aleqsio](https://github.com/aleqsio))
 - Fix filepath and make the plugin merge new and existing privacy info. ([#28082](https://github.com/expo/expo/pull/28082) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
