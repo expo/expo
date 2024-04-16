@@ -91,9 +91,9 @@ Learn how to configure the native projects in the [installation instructions in 
 
 <SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
-```js
-import React, { useState, useEffect } from 'react';
-import { Button, Image, View, Platform } from 'react-native';
+```jsx
+import { useState } from 'react';
+import { Button, Image, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function ImagePickerExample() {
@@ -116,12 +116,24 @@ export default function ImagePickerExample() {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
-      {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+      {image && <Image source={{ uri: image }} style={styles.image} />}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 200,
+    height: 200,
+  },
+});
 ```
 
 </SnackInline>
@@ -145,7 +157,6 @@ When you run this example and pick an image, you will see the image that you pic
     }
   ],
   "canceled": false,
-  "cancelled": false
 }
 ```
 

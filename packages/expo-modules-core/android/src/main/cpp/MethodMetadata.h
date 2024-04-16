@@ -25,7 +25,7 @@ class JSIContext;
 /**
  * A class that holds information about the exported function.
  */
-class MethodMetadata {
+class MethodMetadata : public std::enable_shared_from_this<MethodMetadata> {
 public:
   /**
    * Function name

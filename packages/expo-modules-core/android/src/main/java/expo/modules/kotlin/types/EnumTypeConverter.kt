@@ -27,8 +27,8 @@ class EnumTypeConverter(
   }
 
   init {
-    if (Enumerable::class.java.isAssignableFrom(enumClass.java)) {
-      logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
+    if (!Enumerable::class.java.isAssignableFrom(enumClass.java)) {
+      logger.error("Enum '$enumClass' should inherit from ${Enumerable::class}.")
     }
   }
 

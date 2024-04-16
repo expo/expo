@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix serializer creating async imports to the main entrypoint, which could cause an infinite loop of loading the entrypoint bundle. ([#28016](https://github.com/expo/expo/pull/28016) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Add unstable environment variable to disable bundle splitting. ([#27932](https://github.com/expo/expo/pull/27932) by [@EvanBacon](https://github.com/EvanBacon))

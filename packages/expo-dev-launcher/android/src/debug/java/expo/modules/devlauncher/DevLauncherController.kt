@@ -3,7 +3,6 @@ package expo.modules.devlauncher
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity

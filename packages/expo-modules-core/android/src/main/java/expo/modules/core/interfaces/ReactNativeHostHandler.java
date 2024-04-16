@@ -1,9 +1,11 @@
 package expo.modules.core.interfaces;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 public interface ReactNativeHostHandler {
   /**
@@ -50,7 +52,7 @@ public interface ReactNativeHostHandler {
    *
    * @return custom DevSupportManagerFactory, or null if not to override
    *
-   * NOTE: This callback is not support in bridgeless mode
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default Object getDevSupportManagerFactory() { return null; }
@@ -58,7 +60,7 @@ public interface ReactNativeHostHandler {
   /**
    * Given chance for modules to override the javascript executor factory.
    *
-   * NOTE: This callback is not support in bridgeless mode
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default JavaScriptExecutorFactory getJavaScriptExecutorFactory() { return null; }
@@ -71,9 +73,21 @@ public interface ReactNativeHostHandler {
   default void onWillCreateReactInstance(boolean useDeveloperSupport) {}
 
   /**
+   * Callback when the {@link DevSupportManager} is available
+   */
+  default void onDidCreateDevSupportManager(@NonNull DevSupportManager devSupportManager) {}
+
+  /**
    * Callback after react instance creation
    */
   default void onDidCreateReactInstance(boolean useDeveloperSupport, ReactContext reactContext) {}
+
+  /**
+   * Callback when receiving unhandled React Native exceptions
+   *
+   * NOTE: This callback is only available on bridgeless mode
+   */
+  default void onReactInstanceException(boolean useDeveloperSupport, @NonNull Exception exception) {}
 
   //endregion
 }

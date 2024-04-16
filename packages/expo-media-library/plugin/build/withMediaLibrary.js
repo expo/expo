@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyAndroidManifest = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-media-library/package.json');
-const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
-const WRITE_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to save photos';
 function modifyAndroidManifest(manifest) {
     // Starting with Android 10, the concept of scoped storage is introduced.
     // Currently, to make expo-media-library working with that change, you have to add
@@ -21,26 +19,18 @@ const withMediaLibraryExternalStorage = (config) => {
     });
 };
 const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
-    if (!config.ios)
-        config.ios = {};
-    if (!config.ios.infoPlist)
-        config.ios.infoPlist = {};
-    config.ios.infoPlist.NSPhotoLibraryUsageDescription =
-        photosPermission || config.ios.infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
-    config.ios.infoPlist.NSPhotoLibraryAddUsageDescription =
-        savePhotosPermission ||
-            config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
-            WRITE_PHOTOS_USAGE;
-    return (0, config_plugins_1.withPlugins)(config, [
-        [
-            config_plugins_1.AndroidConfig.Permissions.withPermissions,
-            [
-                'android.permission.READ_EXTERNAL_STORAGE',
-                'android.permission.WRITE_EXTERNAL_STORAGE',
-                isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
-            ].filter(Boolean),
-        ],
-        withMediaLibraryExternalStorage,
-    ]);
+    config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
+        NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
+        NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',
+    })(config, {
+        NSPhotoLibraryUsageDescription: photosPermission,
+        NSPhotoLibraryAddUsageDescription: savePhotosPermission,
+    });
+    config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
+        'android.permission.READ_EXTERNAL_STORAGE',
+        'android.permission.WRITE_EXTERNAL_STORAGE',
+        isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+    ].filter(Boolean));
+    return withMediaLibraryExternalStorage(config);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withMediaLibrary, pkg.name, pkg.version);

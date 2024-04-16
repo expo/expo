@@ -110,6 +110,9 @@ export async function createMetroServerAndBundleRequestAsync(
     {
       exp,
       isExporting: true,
+      getMetroBundler() {
+        return server.getBundler().getBundler();
+      },
     }
   );
 

@@ -286,8 +286,14 @@ export class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
-          const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
-          computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          // NOTE(kitten): We shouldn't have any async imports on non-async chunks
+          // However, due to how chunks merge, some async imports may now be pointing
+          // at entrypoint (or vendor) chunks. We omit the path so that the async import
+          // helper doesn't reload and reevaluate the entrypoint.
+          if (chunkContainingModule.isAsync) {
+            const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+            computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          }
         }
       });
     });

@@ -1,7 +1,7 @@
 ---
-title: Debug EAS Update
+title: Basic EAS Update Debugging
 sidebar_title: Basic
-description: Learn how to debug EAS Update.
+description: Learn how to use basic debugging techniques to fix an update issue.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -81,6 +81,18 @@ The displayed deployment has the correct channel, but it is not linked to a bran
 ### Missing deployment
 
 If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/eas-update/debug-advanced/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
+
+### Automatic roll back when an update crashes
+
+If everything looks correct on the Deployments page, but your app still shows the previous update or the code embedded with the build, your new update's code may be crashing. This can happen when this new update crashes before the root component renders after the app downloads and applies the new update.
+
+EAS Update is designed to automatically roll back to the previous update if it detects that a new update crashed shortly after launch. See [how EAS Update detects crashes and rolls back to a previous working version](/eas-update/error-recovery/#explaining-the-error-recovery-flow) for more information.
+
+To diagnose the error causing the update crash:
+- See the [Troubleshooting guide on runtime issues](/debugging/runtime-issues/) to apply a strategy to identify the error.
+- After identifying the error, publish a new update that fixes the crash to resolve the issue.
+
+A common reason a new update does not work but embedded code does is due to a missing environment variable. See [how environment variables work with EAS Update](/eas-update/environment-variables/) for more information.
 
 ## Solutions
 

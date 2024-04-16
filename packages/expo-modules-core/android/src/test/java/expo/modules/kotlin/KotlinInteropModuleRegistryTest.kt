@@ -83,27 +83,6 @@ class KotlinInteropModuleRegistryTest {
   }
 
   @Test
-  fun `should export constants`() {
-    Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
-      .containsAtLeast(
-        "test-1",
-        mapOf("c1" to 123, "c2" to "123"),
-        "test-2",
-        emptyMap<String, Any>()
-      )
-  }
-
-  @Test
-  fun `should export view manages`() {
-    val rnManagers = interopModuleRegistry.exportViewManagers()
-    val expoManagersNames = interopModuleRegistry.viewManagersMetadata().keys
-
-    Truth.assertThat(rnManagers).hasSize(1)
-    Truth.assertThat(rnManagers.first().name).isEqualTo("ViewManagerAdapter_test-2")
-    Truth.assertThat(expoManagersNames).containsExactly("test-2")
-  }
-
-  @Test
   fun `call method should reject if something goes wrong`() {
     val mockedPromise = PromiseMock()
     val mockedPromise2 = PromiseMock()

@@ -90,6 +90,7 @@ class DevLauncherDevSupportManager(
   }
 
   override fun showNewJavaError(message: String?, e: Throwable) {
+    Log.e("DevLauncher", "$message", e)
     if (!DevLauncherController.wasInitialized()) {
       Log.e("DevLauncher", "DevLauncher wasn't initialized. Couldn't intercept native error handling.")
       super.showNewJavaError(message, e)

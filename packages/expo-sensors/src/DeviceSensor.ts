@@ -1,7 +1,6 @@
 import {
   PermissionResponse,
   PermissionStatus,
-  EventEmitter,
   Subscription,
   Platform,
   PermissionExpiration,
@@ -20,44 +19,36 @@ type NativeSensorModule = any;
  */
 export default class DeviceSensor<Measurement> {
   _nativeModule: NativeSensorModule;
-  _nativeEmitter: EventEmitter;
   _nativeEventName: string;
-  _listenerCount: number;
 
   constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string) {
     this._nativeModule = nativeSensorModule;
-    this._nativeEmitter = new EventEmitter(nativeSensorModule);
     this._nativeEventName = nativeEventName;
-    this._listenerCount = 0;
   }
 
   addListener(listener: Listener<Measurement>): Subscription {
-    const subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
-    subscription.remove = () => this.removeSubscription(subscription);
-    this._listenerCount++;
-    return subscription;
+    return this._nativeModule.addListener(this._nativeEventName, listener);
   }
 
   /**
    * Returns boolean which signifies if sensor has any listeners registered.
    */
   hasListeners(): boolean {
-    return this._listenerCount > 0;
+    return this._nativeModule.listenerCount(this._nativeEventName) > 0;
   }
 
   /**
    * Returns the registered listeners count.
    */
   getListenerCount(): number {
-    return this._listenerCount;
+    return this._nativeModule.listenerCount(this._nativeEventName);
   }
 
   /**
    * Removes all registered listeners.
    */
   removeAllListeners(): void {
-    this._listenerCount = 0;
-    this._nativeEmitter.removeAllListeners(this._nativeEventName);
+    this._nativeModule.removeAllListeners(this._nativeEventName);
   }
 
   /**
@@ -65,8 +56,7 @@ export default class DeviceSensor<Measurement> {
    * @param subscription A subscription to remove.
    */
   removeSubscription(subscription: Subscription): void {
-    this._listenerCount--;
-    this._nativeEmitter.removeSubscription(subscription);
+    subscription.remove();
   }
 
   /**

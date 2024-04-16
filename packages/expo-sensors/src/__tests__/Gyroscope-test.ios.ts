@@ -9,6 +9,6 @@ it(`notifies listeners`, () => {
   Gyroscope.addListener(mockListener);
 
   const mockEvent = { x: 0.2, y: 0.1, z: 0.3 };
-  Gyroscope._nativeEmitter.emit('gyroscopeDidUpdate', mockEvent);
+  Gyroscope._nativeModule.emit('gyroscopeDidUpdate', mockEvent);
   expect(mockListener).toHaveBeenCalledWith(mockEvent);
 });

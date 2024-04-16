@@ -1,13 +1,13 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
@@ -43,11 +43,8 @@ class EnabledUpdatesController(
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   override var appContext: WeakReference<AppContext>? = null
 
-  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference(context.reactNativeHost)
-  } else {
-    null
-  }
+  /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context)
   private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -122,9 +119,19 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
-    startupProcedure.onDidCreateReactInstanceManager(reactContext)
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    startupProcedure.onDidCreateDevSupportManager(devSupportManager)
   }
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: Exception) {
+    startupProcedure.onReactInstanceException(exception)
+  }
+
+  override val isActiveController = true
 
   @Synchronized
   override fun start() {
@@ -144,12 +151,12 @@ class EnabledUpdatesController(
   private fun relaunchReactApplication(shouldRunReaper: Boolean, callback: LauncherCallback) {
     val procedure = RelaunchProcedure(
       context,
+      weakActivity,
       updatesConfiguration,
       databaseHolder,
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      reactNativeHost,
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,

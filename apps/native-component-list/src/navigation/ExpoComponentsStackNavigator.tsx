@@ -51,21 +51,21 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
+    },
+    name: 'Camera (legacy)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNext'));
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcode'));
     },
-    name: 'Camera (next)',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNextBarcode'));
-    },
-    name: 'Camera (next barcode)',
+    name: 'Camera (barcode)',
   },
   {
     getComponent() {

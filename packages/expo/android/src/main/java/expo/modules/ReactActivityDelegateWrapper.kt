@@ -42,7 +42,7 @@ class ReactActivityDelegateWrapper(
     invokeDelegateMethod("getReactNativeHost")
   }
   private val _reactHost: ReactHost? by lazy {
-    invokeDelegateMethod("getReactHost")
+    delegate.reactHost
   }
 
   /**
@@ -89,7 +89,6 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
-      dispatchWillCreateReactInstanceIfNeeded()
       reactDelegate.loadApp(appKey)
       rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
@@ -106,7 +105,6 @@ class ReactActivityDelegateWrapper(
       shouldEmitPendingResume = true
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
-        dispatchWillCreateReactInstanceIfNeeded()
         invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
@@ -117,7 +115,6 @@ class ReactActivityDelegateWrapper(
       return
     }
 
-    dispatchWillCreateReactInstanceIfNeeded()
     invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onContentChanged(activity)
@@ -225,7 +222,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
@@ -330,15 +327,6 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
-  }
-
-  private fun dispatchWillCreateReactInstanceIfNeeded() {
-    if (_reactHost != null) {
-      val useDeveloperSupport = _reactNativeHost.useDeveloperSupport
-      (_reactNativeHost as? ReactNativeHostWrapper)?.reactNativeHostHandlers?.forEach {
-        it.onWillCreateReactInstance(useDeveloperSupport)
-      }
-    }
   }
 
   //endregion
