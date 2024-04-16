@@ -62,36 +62,33 @@ In the **Extensions** tab, you can view the list of all published updates for a 
 You can also preview an update using the Expo dashboard by following the steps below:
 
 - Click the published updated link in the CLI after running the command to publish an update. This will open the update's details on the **Updates** page in the Expo dashboard.
-- Under **Platform-specific updates**, select the platform on which you want to preview the update and click **Preview**. This will open the **Preview** modal.
-- In the **Preview** modal, add your project's [`slug`](/versions/latest/config/app/#slug) under **App slug**.
-- To preview the update, you can either scan the QR code with your device's camera or copy the URL and paste it into the development build's launcher screen under **Enter URL Manually**.
+- Click **Preview**. This will open the **Preview** dialog.
+- To preview the update, you can either scan the QR code with your device's camera or select a platform to [launch the update under **Open with Orbit**](/review/with-orbit/).
 
 ## Construct an update URL
 
 As an alternative to the methods described in the previous sections, you can construct a specific URL to open your EAS Update in the development build. The URL will look like the following:
 
 ```bash
-exp+[project-slug]://expo-development-client/?url=[https://u.expo.dev/project-id]?channel-name=[channel]
+[slug]://expo-development-client/?url=[https://u.expo.dev/project-id]/group/[group-id]
 
 # Example
-exp+my-app://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2?channel-name=development
+my-app://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2/group/47839bf2-9e01-467b-9378-4a978604ab11
 ```
 
 Let's break this URL to understand what each part does:
 
-| Part of URL                                               | Description                                                                            |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `exp+`                                                    | The beginning of the URL.                                                              |
-| `form-duo`                                                | This is the project [slug](/versions/latest/config/app/#slug) found in the app config. |
-| `://expo-development-client/`                             | Necessary for the deep link to work with the `expo-dev-client` library.                |
-| `?url=`                                                   | Defines a `url` query parameter.                                                       |
-| `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2` | This is the updates URL, which is inside the project's app config under `updates.url`. |
-| `?channel-name=`                                          | Defines a channel query parameter.                                                     |
-| `development`                                             | The name of the channel to request.                                                    |
+| Part of URL                                               | Description                                                                                                                |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `slug`                                                    | The project's [slug](/versions/latest/config/app/#slug) found in the app config.                                           |
+| `://expo-development-client/`                             | Necessary for the deep link to work with the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library.                |
+| `?url=`                                                   | Defines a `url` query parameter.                                                                                           |
+| `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2` | This is the updates URL, which is inside the project's app config under [`updates.url`](/versions/latest/config/app/#url). |
+| `/group/47839bf2-9e01-467b-9378-4a978604ab11`             | The group ID of the update.                                                                                                |
 
 Once you've constructed the URL, copy and paste it directly into the development build's launcher screen under **Enter URL Manually**.
 
-Alternatively, you can create a QR code for the URL and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
+Alternatively, you can [create a QR code for the URL](/more/qr-codes/) and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
 
 ## Example
 
