@@ -11,8 +11,6 @@ enum CameraTypeNext: String, Enumerable {
       return .front
     case .back:
       return .back
-    default:
-      return .back
     }
   }
 }
@@ -21,6 +19,17 @@ enum CameraFlashModeNext: String, Enumerable {
   case off
   case on
   case auto
+
+  func toDeviceFlashMode() -> AVCaptureDevice.FlashMode {
+    switch self {
+    case .off:
+      return .off
+    case .on:
+      return .on
+    case .auto:
+      return .auto
+    }
+  }
 }
 
 enum CameraModeNext: String, Enumerable {

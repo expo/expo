@@ -4,9 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
+import android.graphics.drawable.ColorDrawable
 import android.hardware.camera2.CameraCharacteristics
+import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -71,6 +74,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.roundToInt
 
+const val ANIMATION_FAST_MILLIS = 50L
+const val ANIMATION_SLOW_MILLIS = 100L
+
 @SuppressLint("ViewConstructor")
 class ExpoCameraView(
   context: Context,
@@ -120,6 +126,7 @@ class ExpoCameraView(
     }
 
   var mute: Boolean = false
+  var animateShutter: Boolean = true
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
@@ -164,6 +171,20 @@ class ExpoCameraView(
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
+        override fun onCaptureStarted() {
+          MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
+          if (!animateShutter) {
+            return
+          }
+          rootView.postDelayed({
+            rootView.foreground = ColorDrawable(Color.WHITE)
+            rootView.postDelayed(
+              { rootView.foreground = null },
+              ANIMATION_FAST_MILLIS
+            )
+          }, ANIMATION_SLOW_MILLIS)
+        }
+
         override fun onCaptureSuccess(image: ImageProxy) {
           val data = image.planes.toByteArray()
 
@@ -210,7 +231,11 @@ class ExpoCameraView(
         return
       }
       activeRecording = it.prepareRecording(context, fileOutputOptions)
-        .withAudioEnabled()
+        .apply {
+          if (!mute) {
+            withAudioEnabled()
+          }
+        }
         .start(ContextCompat.getMainExecutor(context)) { event ->
           when (event) {
             is VideoRecordEvent.Finalize -> {
@@ -230,8 +255,6 @@ class ExpoCameraView(
               )
             }
           }
-        }.also { recording ->
-          recording.mute(mute)
         }
     }
       ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)

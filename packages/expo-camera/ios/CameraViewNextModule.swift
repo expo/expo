@@ -93,6 +93,10 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("animateShutter") { (view, animate: Bool?) in
+        view.animateShutter = animate ?? true
+      }
+
       Prop("videoQuality") { (view, quality: VideoQuality?) in
         if let quality, view.videoQuality != quality {
           view.videoQuality = quality
