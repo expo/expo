@@ -25,6 +25,7 @@
 - Prevent run commands from hanging when the process completes. ([#26960](https://github.com/expo/expo/pull/26960) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep typed routes in-sync with current Expo Router version ([#26578](https://github.com/expo/expo/pull/26578) by [@marklawlor](https://github.com/marklawlor))
 - Fix development codesigning certificate validity checks. ([#27361](https://github.com/expo/expo/pull/27361) by [@wschurman](https://github.com/wschurman))
+- Fix non-standard `error.code` check for Deno support. ([#27822](https://github.com/expo/expo/pull/27822) by [@littledivy](https://github.com/littledivy))
 
 ### 💡 Others
 
