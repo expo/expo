@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createBuildSourceFile = createBuildSourceFile;
-exports.readBuildSourceFile = readBuildSourceFile;
 exports.withBuildSourceFile = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
@@ -96,25 +95,5 @@ function createBuildSourceFile({
     });
   }
   return project;
-}
-
-/**
- * Read a source file from the Xcode project
- *
- * @param nativeProjectRoot absolute path to the native app root `user/app/ios`
- * @param filePath path relative to the `nativeProjectRoot` for the file to read `user/app/ios/myapp/foobar.swift`
- */
-function readBuildSourceFile({
-  project,
-  nativeProjectRoot,
-  filePath
-}) {
-  const absoluteFilePath = _path().default.join(nativeProjectRoot, filePath);
-  if (!_fs().default.existsSync(absoluteFilePath)) {
-    return null;
-  }
-  return _fs().default.readFileSync(absoluteFilePath, {
-    encoding: 'utf8'
-  });
 }
 //# sourceMappingURL=XcodeProjectFile.js.map
