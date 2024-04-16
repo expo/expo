@@ -598,7 +598,7 @@
 
     [self setDevMenuAppBridge];
 
-    [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
+//    [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
@@ -736,7 +736,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = [RCTBridge currentBridge];
+  manager.currentBridge = self.appBridge;
 
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;
