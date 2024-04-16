@@ -13,5 +13,3 @@ data class FacesDetectedEvent(
   @Field val faces: List<Bundle>,
   @Field val target: Int
 ) : Record
-
-
