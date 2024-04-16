@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix non-standard `error.code` check for Deno support. ([#27822](https://github.com/expo/expo/pull/27822) by [@littledivy](https://github.com/littledivy))
+
 ### 💡 Others
 
 ## 0.17.10 — 2024-04-16
