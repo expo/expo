@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.8.1 — 2024-04-16
+
+_This version does not introduce any user-facing changes._
+
 ## 6.8.0 — 2024-04-15
 
 ### 🎉 New features
