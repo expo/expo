@@ -173,13 +173,15 @@ class ExpoCameraView(
       object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureStarted() {
           MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
-          if (!animateShutter){
+          if (!animateShutter) {
             return
           }
           rootView.postDelayed({
             rootView.foreground = ColorDrawable(Color.WHITE)
             rootView.postDelayed(
-              { rootView.foreground = null }, ANIMATION_FAST_MILLIS)
+              { rootView.foreground = null },
+              ANIMATION_FAST_MILLIS
+            )
           }, ANIMATION_SLOW_MILLIS)
         }
 
