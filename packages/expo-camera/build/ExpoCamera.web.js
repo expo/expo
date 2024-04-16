@@ -2,13 +2,13 @@ import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
-import { CameraType, } from './Camera.types';
 import CameraManager from './ExpoCameraManager.web';
-import { capture } from './WebCameraUtils';
-import { PictureSizes } from './WebConstants';
-import { useWebCameraStream } from './useWebCameraStream';
-import { useWebQRScanner } from './useWebQRScanner';
-const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }, ref) => {
+import { CameraType, } from './legacy/Camera.types';
+import { capture } from './web/WebCameraUtils';
+import { PictureSizes } from './web/WebConstants';
+import { useWebCameraStream } from './web/useWebCameraStream';
+import { useWebQRScanner } from './web/useWebQRScanner';
+const ExponentCamera = React.forwardRef(({ type, poster, ...props }, ref) => {
     const video = React.useRef(null);
     const native = useWebCameraStream(video, type, props, {
         onCameraReady() {
@@ -78,16 +78,15 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
             StyleSheet.absoluteFill,
             styles.video,
             {
-                pointerEvents: props.pointerEvents,
                 // Flip the camera
                 transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
             },
         ];
-    }, [props.pointerEvents, native.type]);
-    return (<View style={[styles.videoWrapper, props.style]}>
+    }, [native.type]);
+    return (<View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
         <Video autoPlay playsInline muted={isMuted} poster={poster} 
     // webkitPlaysinline
-    ref={video} style={style}/>
+    pointerEvents={props.pointerEvents} ref={video} style={style}/>
         {props.children}
       </View>);
 });
@@ -97,7 +96,6 @@ const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
         alignItems: 'stretch',
-        pointerEvents: 'box-none',
     },
     video: {
         width: '100%',

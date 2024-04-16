@@ -1,4 +1,4 @@
-import { Camera, CameraType } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera/legacy';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
 import React from 'react';

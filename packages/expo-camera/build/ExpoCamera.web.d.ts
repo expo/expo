@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './Camera.types';
+import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './legacy/Camera.types';
 export interface ExponentCameraRef {
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
@@ -8,6 +8,6 @@ export interface ExponentCameraRef {
 }
 declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps & {
     children?: React.ReactNode;
-}, "type" | "flashMode" | "autoFocus" | "whiteBalance" | "children" | "pointerEvents" | "style" | "zoom" | "ratio" | "focusDepth" | "onCameraReady" | "useCamera2Api" | "pictureSize" | "onMountError" | "barCodeScannerSettings" | "onBarCodeScanned" | "faceDetectorSettings" | "onFacesDetected" | "poster" | "responsiveOrientationWhenOrientationLocked" | "onResponsiveOrientationChanged" | "onFaceDetectionError" | "onPictureSaved" | "barCodeScannerEnabled" | "faceDetectorEnabled"> & React.RefAttributes<ExponentCameraRef>>;
+}, "type" | "flashMode" | "children" | "pointerEvents" | "style" | "zoom" | "pictureSize" | "onCameraReady" | "onMountError" | "poster" | "responsiveOrientationWhenOrientationLocked" | "onResponsiveOrientationChanged" | "onPictureSaved" | "autoFocus" | "whiteBalance" | "onBarCodeScanned" | "onFacesDetected" | "onFaceDetectionError" | "focusDepth" | "barCodeScannerSettings" | "faceDetectorSettings" | "barCodeScannerEnabled" | "faceDetectorEnabled" | "ratio" | "useCamera2Api"> & React.RefAttributes<ExponentCameraRef>>;
 export default ExponentCamera;
 //# sourceMappingURL=ExpoCamera.web.d.ts.map
