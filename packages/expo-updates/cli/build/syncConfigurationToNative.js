@@ -31,6 +31,7 @@ exports.syncConfigurationToNative = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const syncConfigurationToNativeAsync_1 = require("./syncConfigurationToNativeAsync");
 const args_1 = require("./utils/args");
+const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
 const syncConfigurationToNative = async (argv) => {
     const args = (0, args_1.assertArgs)({
@@ -56,7 +57,7 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
     }
     const platform = (0, args_1.requireArg)(args, '--platform');
     if (!['ios', 'android'].includes(platform)) {
-        throw new Error(`Invalid platform argument: ${platform}`);
+        throw new errors_1.CommandError(`Invalid platform argument: ${platform}`);
     }
     await (0, syncConfigurationToNativeAsync_1.syncConfigurationToNativeAsync)({
         projectRoot: (0, args_1.getProjectRoot)(args),

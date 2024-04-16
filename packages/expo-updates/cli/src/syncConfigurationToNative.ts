@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from './cli';
 import { syncConfigurationToNativeAsync } from './syncConfigurationToNativeAsync';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
+import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
 
 export const syncConfigurationToNative: Command = async (argv) => {
@@ -38,7 +39,7 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
 
   const platform = requireArg(args, '--platform');
   if (!['ios', 'android'].includes(platform)) {
-    throw new Error(`Invalid platform argument: ${platform}`);
+    throw new CommandError(`Invalid platform argument: ${platform}`);
   }
 
   await syncConfigurationToNativeAsync({

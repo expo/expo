@@ -54,6 +54,7 @@
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
 - Always initialize UpdatesController to prevent accidentally accessing the singleton instance. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+- Improve error printing in CLI. ([#28188](https://github.com/expo/expo/pull/28188) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.12 - 2024-03-13
 

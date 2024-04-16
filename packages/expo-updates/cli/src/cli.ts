@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
 
+import { logCmdError } from './utils/errors';
 import * as Log from './utils/log';
 
 // Setup before requiring `debug`.
@@ -88,4 +89,6 @@ if (!(command in commands)) {
   process.exit(1);
 }
 
-commands[command]().then((exec) => exec(commandArgs));
+commands[command]()
+  .then((exec) => exec(commandArgs))
+  .catch(logCmdError);
