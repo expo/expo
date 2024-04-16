@@ -13,6 +13,7 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
+import { env } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -132,6 +133,10 @@ export async function startAsync(
     // Display the server location in CI...
     const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();
     if (url) {
+      if (env.__EXPO_E2E_TEST) {
+        // Print the URL to stdout for tests
+        console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url })}`);
+      }
       Log.log(chalk`Waiting on {underline ${url}}`);
     }
   }

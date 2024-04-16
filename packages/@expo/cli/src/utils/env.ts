@@ -184,6 +184,11 @@ class Env {
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
   }
+
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
 }
 
 export const env = new Env();
