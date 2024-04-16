@@ -3,17 +3,17 @@ import * as React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
+import CameraManager from './ExpoCameraManager.web';
 import {
   CameraCapturedPicture,
   CameraNativeProps,
   CameraPictureOptions,
   CameraType,
-} from './Camera.types';
-import CameraManager from './ExpoCameraManager.web';
-import { capture } from './WebCameraUtils';
-import { PictureSizes } from './WebConstants';
-import { useWebCameraStream } from './useWebCameraStream';
-import { useWebQRScanner } from './useWebQRScanner';
+} from './legacy/Camera.types';
+import { capture } from './web/WebCameraUtils';
+import { PictureSizes } from './web/WebConstants';
+import { useWebCameraStream } from './web/useWebCameraStream';
+import { useWebQRScanner } from './web/useWebQRScanner';
 
 export interface ExponentCameraRef {
   getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
@@ -24,7 +24,7 @@ export interface ExponentCameraRef {
 
 const ExponentCamera = React.forwardRef(
   (
-    { type, pictureSize, poster, ...props }: CameraNativeProps & { children?: React.ReactNode },
+    { type, poster, ...props }: CameraNativeProps & { children?: React.ReactNode },
     ref: React.Ref<ExponentCameraRef>
   ) => {
     const video = React.useRef<HTMLVideoElement | null>(null);
@@ -113,21 +113,21 @@ const ExponentCamera = React.forwardRef(
         StyleSheet.absoluteFill,
         styles.video,
         {
-          pointerEvents: props.pointerEvents,
           // Flip the camera
           transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         },
       ];
-    }, [props.pointerEvents, native.type]);
+    }, [native.type]);
 
     return (
-      <View style={[styles.videoWrapper, props.style]}>
+      <View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
         <Video
           autoPlay
           playsInline
           muted={isMuted}
           poster={poster}
           // webkitPlaysinline
+          pointerEvents={props.pointerEvents}
           ref={video}
           style={style}
         />
@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
   videoWrapper: {
     flex: 1,
     alignItems: 'stretch',
-    pointerEvents: 'box-none',
   },
   video: {
     width: '100%',

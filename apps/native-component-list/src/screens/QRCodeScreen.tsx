@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { Camera, CameraType, FlashMode } from 'expo-camera/legacy';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import {

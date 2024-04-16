@@ -1,4 +1,4 @@
-import { Camera as OriginalCamera } from 'expo-camera';
+import { Camera as OriginalCamera } from 'expo-camera/legacy';
 import React, { useCallback, useState, useEffect } from 'react';
 import { View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
