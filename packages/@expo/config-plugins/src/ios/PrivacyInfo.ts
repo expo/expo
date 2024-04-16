@@ -37,8 +37,8 @@ export function setPrivacyInfo(
   projectConfig: ExportedConfigWithProps<XcodeProject>,
   privacyManifests: Partial<PrivacyInfo>
 ) {
-  const {projectRoot, platformProjectRoot} = projectConfig.modRequest;
-  
+  const { projectRoot, platformProjectRoot } = projectConfig.modRequest;
+
   const projectName = getProjectName(projectRoot);
 
   const privacyFilePath = path.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
