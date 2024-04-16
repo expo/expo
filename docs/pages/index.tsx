@@ -116,7 +116,7 @@ const Home = () => {
           <Row>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.orange3,
                 borderColor: palette.orange7,
@@ -138,7 +138,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.green3,
                 borderColor: palette.green7,
@@ -159,7 +159,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.yellow3,
                 borderColor: palette.yellow8,
@@ -180,7 +180,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.purple3,
                 borderColor: palette.purple7,
