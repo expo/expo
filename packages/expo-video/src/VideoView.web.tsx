@@ -9,19 +9,18 @@ import {
   VideoPlayerEvents,
 } from './VideoView.types';
 
-/**
- * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
- * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
- */
-const audioContext = window && new window.AudioContext();
-const zeroGainNode = audioContext && audioContext.createGain();
-if (audioContext && zeroGainNode) {
-  zeroGainNode.gain.value = 0;
-  zeroGainNode.connect(audioContext.destination);
-} else {
-  console.warn(
-    "Couldn't create AudioContext, this might affect the audio playback when using multiple video views with the same player."
-  );
+function createAudioContext(): AudioContext | null {
+  return typeof window !== 'undefined' ? new window.AudioContext() : null;
+}
+
+function createZeroGainNode(audioContext: AudioContext | null): GainNode | null {
+  const zeroGainNode = audioContext && audioContext.createGain();
+
+  if (audioContext && zeroGainNode) {
+    zeroGainNode.gain.value = 0;
+    zeroGainNode.connect(audioContext.destination);
+  }
+  return zeroGainNode;
 }
 
 class VideoPlayerWeb
@@ -119,17 +118,39 @@ class VideoPlayerWeb
 
   mountVideoView(video: HTMLVideoElement) {
     this._mountedVideos.add(video);
-    this._synchronizeWithFirstVideo(video);
     this._addListeners(video);
+    this._synchronizeWithFirstVideo(video);
   }
 
   unmountVideoView(video: HTMLVideoElement) {
-    const mountedVideos = [...this._mountedVideos];
-    const mediaElementSources = [...this._audioNodes];
-    const videoIndex = mountedVideos.findIndex((value) => value === video);
-    const videoPlayingAudio = mountedVideos[0];
     this._mountedVideos.delete(video);
-    this._audioNodes.delete(mediaElementSources[videoIndex]);
+  }
+
+  mountAudioNode(
+    audioContext: AudioContext,
+    zeroGainNode: GainNode,
+    audioSourceNode: MediaElementAudioSourceNode
+  ): void {
+    if (!audioContext || !zeroGainNode) return;
+
+    this._audioNodes.add(audioSourceNode);
+    // First mounted video should be connected to the audio context. All other videos have to be muted.
+    if (this._audioNodes.size === 1) {
+      audioSourceNode.connect(audioContext.destination);
+    } else {
+      audioSourceNode.connect(zeroGainNode);
+    }
+  }
+
+  unmountAudioNode(
+    video: HTMLVideoElement,
+    audioContext: AudioContext,
+    audioSourceNode: MediaElementAudioSourceNode
+  ) {
+    const mountedVideos = [...this._mountedVideos];
+    const videoPlayingAudio = mountedVideos[0];
+    this._audioNodes.delete(audioSourceNode);
+    audioSourceNode.disconnect();
 
     // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
     if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
@@ -185,6 +206,12 @@ class VideoPlayerWeb
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
     const firstVideo = [...this._mountedVideos][0];
     if (!firstVideo) return;
+
+    if (firstVideo.paused) {
+      video.pause();
+    } else {
+      video.play();
+    }
     video.currentTime = firstVideo.currentTime;
     video.volume = firstVideo.volume;
     video.muted = firstVideo.muted;
@@ -192,19 +219,6 @@ class VideoPlayerWeb
   }
 
   _addListeners(video: HTMLVideoElement): void {
-    video.onloadedmetadata = () => {
-      if (!audioContext || !zeroGainNode) return;
-      const source = audioContext.createMediaElementSource(video);
-      this._audioNodes.add(source);
-
-      // First mounted video should be connected to the audio context. All other videos have to be muted.
-      if (this._audioNodes.size === 1) {
-        source.connect(audioContext.destination);
-      } else {
-        source.connect(zeroGainNode);
-      }
-    };
-
     video.onplay = () => {
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
@@ -221,7 +235,7 @@ class VideoPlayerWeb
 
     video.onvolumechange = () => {
       this.volume = video.volume;
-      this._muted = video.muted;
+      this.muted = video.muted;
     };
 
     video.onseeking = () => {
@@ -252,6 +266,10 @@ class VideoPlayerWeb
 
     video.onloadeddata = () => {
       this._status = 'readyToPlay';
+
+      if (this.playing && video.paused) {
+        video.play();
+      }
     };
 
     video.onwaiting = () => {
@@ -288,6 +306,17 @@ function getSourceUri(source: VideoSource): string | null {
 
 export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
   const videoRef = useRef<null | HTMLVideoElement>(null);
+  const mediaNodeRef = useRef<null | MediaElementAudioSourceNode>(null);
+
+  /**
+   * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
+   * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
+   * We have to keep the context that called createMediaElementSource(videoRef), as the method can't be called
+   * for the second time with another context and there is no way to unbind the video and audio context afterward.
+   */
+  const audioContextRef = useRef<null | AudioContext>(null);
+  const zeroGainNodeRef = useRef<null | GainNode>(null);
+
   useImperativeHandle(ref, () => ({
     enterFullscreen: () => {
       if (!props.allowsFullscreen) {
@@ -301,21 +330,28 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
   }));
 
   useEffect(() => {
+    const audioContext = audioContextRef.current;
+    const zeroGainNode = zeroGainNodeRef.current;
+    const mediaNode = mediaNodeRef.current;
+
+    if (videoRef.current) {
+      props.player?.mountVideoView(videoRef.current);
+    }
+
+    if (audioContext && zeroGainNode && mediaNode) {
+      props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
+    } else {
+      console.warn(
+        "Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player."
+      );
+    }
+
     return () => {
       if (videoRef.current) {
         props.player?.unmountVideoView(videoRef.current);
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!props.player || !videoRef.current) {
-      return;
-    }
-    props.player.mountVideoView(videoRef.current);
-    return () => {
-      if (videoRef.current) {
-        props.player?.unmountVideoView(videoRef.current);
+      if (videoRef.current && audioContext && mediaNode) {
+        props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
       }
     };
   }, [props.player]);
@@ -332,8 +368,14 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
       ref={(newRef) => {
         // This is called with a null value before `player.unmountVideoView` is called,
         // we can't assign null to videoRef if we want to unmount it from the player.
-        if (newRef) {
+        if (newRef && !newRef.isEqualNode(videoRef.current)) {
           videoRef.current = newRef;
+          const audioContext = createAudioContext();
+          audioContextRef.current = audioContext;
+          zeroGainNodeRef.current = createZeroGainNode(audioContextRef.current);
+          mediaNodeRef.current = audioContext
+            ? audioContext.createMediaElementSource(newRef)
+            : null;
         }
       }}
       src={getSourceUri(props.player?.src) ?? ''}

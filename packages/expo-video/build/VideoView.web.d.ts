@@ -28,6 +28,8 @@ declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEve
     get status(): VideoPlayerStatus;
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
+    mountAudioNode(audioContext: AudioContext, zeroGainNode: GainNode, audioSourceNode: MediaElementAudioSourceNode): void;
+    unmountAudioNode(video: HTMLVideoElement, audioContext: AudioContext, audioSourceNode: MediaElementAudioSourceNode): void;
     play(): void;
     pause(): void;
     replace(source: VideoSource): void;
