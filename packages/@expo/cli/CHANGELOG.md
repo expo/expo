@@ -32,6 +32,7 @@
 - Filter ADB trace logs when resolving Android devices. ([#27473](https://github.com/expo/expo/pull/27473) by [@byCedric](https://github.com/byCedric))
 - Use correct script src path when exporting web development builds. ([#27946](https://github.com/expo/expo/pull/27946) by [@byCedric](https://github.com/byCedric))
 - Rename templates post-extraction avoiding corrupting binary files. ([#27212](https://github.com/expo/expo/pull/27212) by [@shirakaba](https://github.com/shirakaba))
+- Fix non-standard `error.code` check for Deno support. ([#27822](https://github.com/expo/expo/pull/27822) by [@littledivy](https://github.com/littledivy))
 
 ### 💡 Others
 
