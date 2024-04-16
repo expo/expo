@@ -31,8 +31,8 @@ For a project that has **android** and **ios** directories, EAS Build will not r
 If you troubleshoot your app by [compiling it locally](/guides/local-app-development/#local-app-compilation) (running `npx expo prebuild`, or `npx expo run:android` or `npx expo run:ios`), you can still use Prebuild with EAS Build to generate fresh native directories during the build process. In this scenario, add the **android** and **ios** directories to **.gitignore** or **.easignore** files:
 
 ```diff .gitignore
-+ android
-+ ios
++ android/
++ ios/
 ```
 
 ### Usage with Expo CLI run commands
