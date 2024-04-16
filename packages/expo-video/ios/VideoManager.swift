@@ -54,23 +54,29 @@ class VideoManager {
     let audioSession = AVAudioSession.sharedInstance()
     var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = []
 
-    let isAnyPlayerPlaying = videoPlayers.allObjects.reduce(false) { result, object in
-      result || object.isPlaying
+    let isAnyPlayerPlaying = videoPlayers.allObjects.contains { player in
+      player.isPlaying
     }
-    let areAllPlayersMuted = videoPlayers.allObjects.reduce(true) { result, object in
-      result && object.isMuted
+    let areAllPlayersMuted = videoPlayers.allObjects.allSatisfy { player in
+      player.isMuted
     }
+    let needsPiPSupport = videoViews.allObjects.contains { view in
+      view.allowPictureInPicture
+    }
+    let shouldAllowMixing = !isAnyPlayerPlaying || areAllPlayersMuted
+    let isOutputtingAudio = !areAllPlayersMuted && isAnyPlayerPlaying
+    let shouldUpdateToAllowMixing = !audioSession.categoryOptions.contains(.mixWithOthers) && shouldAllowMixing
 
-    // When all players are muted, or none are playing, we don't want to interrupt other audio sources on the device
-    if !isAnyPlayerPlaying || areAllPlayersMuted {
+    if shouldAllowMixing {
       audioSessionCategoryOptions.insert(.mixWithOthers)
     }
 
-    // We should always keep the category as movie playback
-    do {
-      try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
-    } catch {
-      log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
+    if isOutputtingAudio || needsPiPSupport || shouldUpdateToAllowMixing {
+      do {
+        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
+      } catch {
+        log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
+      }
     }
 
     // Make sure audio session is active if any video is playing
