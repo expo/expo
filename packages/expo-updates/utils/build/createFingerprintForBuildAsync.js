@@ -31,7 +31,7 @@ async function createFingerprintForBuildAsync(platform, possibleProjectRoot, des
         // normal runtime versions don't need fingerprinting
         return;
     }
-    if (runtimeVersion.policy !== 'fingerprintExperimental') {
+    if (runtimeVersion.policy !== 'fingerprint') {
         // not a policy that needs fingerprinting
         return;
     }

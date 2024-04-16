@@ -53,7 +53,7 @@ describe(resolveRuntimeVersionAsync, () => {
 
   it('returns a fingerprint when fingerprint policy', async () => {
     jest.mocked(getConfig).mockReturnValue({
-      exp: { name: 'test', slug: 'test', runtimeVersion: { policy: 'fingerprintExperimental' } },
+      exp: { name: 'test', slug: 'test', runtimeVersion: { policy: 'fingerprint' } },
     } as any);
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     jest.mocked(createFingerprintAsync).mockResolvedValue({ hash: 'hello', sources: [] });
