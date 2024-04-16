@@ -1,4 +1,5 @@
 import glob from 'fast-glob';
+import fs from 'fs-extra';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -7,9 +8,11 @@ import {
   formatArrayOfReactDelegateHandler,
   getSwiftModuleNames,
   resolveModuleAsync,
+  resolveExtraBuildDependenciesAsync,
 } from '../apple';
 
 jest.mock('fast-glob');
+jest.mock('fs-extra');
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -167,5 +170,42 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
     });
+  });
+});
+
+describe(resolveExtraBuildDependenciesAsync, () => {
+  let mockFsReadFile;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockFsReadFile = fs.readFile as jest.MockedFunction<typeof fs.readFile>;
+  });
+
+  it('should resolve extra build dependencies from Podfile.properties.json', async () => {
+    mockFsReadFile.mockResolvedValueOnce(`{
+"apple.extraPods": "[{\\"name\\":\\"test\\"}]"
+}`);
+    const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
+    expect(extraBuildDeps).toEqual([{ name: 'test' }]);
+  });
+
+  it('should return null for invalid JSON', async () => {
+    mockFsReadFile.mockResolvedValueOnce(`{
+  "apple.extraPods": [{ name }]
+}`);
+    const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
+    expect(extraBuildDeps).toBe(null);
+  });
+
+  it('should return null if no speicifed any properties', async () => {
+    mockFsReadFile.mockResolvedValueOnce(``);
+    const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
+    expect(extraBuildDeps).toBe(null);
+  });
+
+  it('should return null if Podfile.properties.json not found', async () => {
+    mockFsReadFile.mockRejectedValueOnce(new Error('File not found'));
+    const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
+    expect(extraBuildDeps).toBe(null);
   });
 });

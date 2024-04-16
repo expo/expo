@@ -104,7 +104,7 @@ Here, we'll define a global style for the class name `.container`:
 
 We can then use the class name in our component by importing the stylesheet and using `.container`:
 
-```jsx App.js
+```jsx App.js|collapseHeight=470
 import './styles.css';
 import { View } from 'react-native';
 
@@ -157,7 +157,7 @@ Flipping the extension, for example, `App.ios.module.css` will not work and resu
 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
-```jsx App.js
+```jsx App.js|collapseHeight=470
 import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
@@ -394,7 +394,7 @@ module.exports.transform = async ({ src, filename, options }) => {
 
 Expo CLI extends the default Metro resolver to add features like Web, Server, and tsconfig aliases support. You can similarly customize the default resolution behavior of Metro by chaining the `config.resolver.resolveRequest` function.
 
-```tsx metro.config.js
+```tsx metro.config.js|collapseHeight=470
 const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */

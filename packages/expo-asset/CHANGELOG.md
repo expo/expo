@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added config plugin to allow assets to be linked at build time. ([#27052](https://github.com/expo/expo/pull/27052) by [@alanjhughes](https://github.com/alanjhughes))
+- Add Apple TV support to the new iOS native module. ([#27823](https://github.com/expo/expo/pull/27823) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -21,6 +22,7 @@
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 - Remove assetUrlOverride and assetMapOverride. ([#26314](https://github.com/expo/expo/pull/26314) by [@wschurman](https://github.com/wschurman))
 - Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 9.0.2 - 2024-01-05
 

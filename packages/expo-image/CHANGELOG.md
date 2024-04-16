@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - On `iOS`, support loading assets in the native project. This already worked on android. ([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
+- Support prefetching images with HTTP headers. ([#28133](https://github.com/expo/expo/pull/28133) by [@toy0605](https://github.com/toy0605))
 
 ### 🐛 Bug fixes
 
@@ -17,7 +18,9 @@
 
 ### 💡 Others
 
+- [iOS] Bump SDWebImage to `5.19.1` to include the 3rd-party privacy manifest. ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes), []() by [@tsapeta](https://github.com/tsapeta))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 1.11.0 — 2024-02-05
 

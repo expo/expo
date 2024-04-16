@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`allows destructuring in the catch block 1`] = `
+"Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxRuntime = require("react/jsx-runtime");function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  var foo = function () {
+    try {
+      console.log('hey');
+    } catch (_ref) {var message = _ref.message;
+      // NOTE(EvanBacon): React compiler throws:
+      // (BuildHIR::lowerAssignment) Could not find binding for declaration.
+      console.error(message);
+    }
+  };
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", { children: "Hello" });
+}"
+`;
+
+exports[`supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
+"Object.defineProperty(exports, "__esModule", { value: true });exports.useSideEffectMayThrow = useSideEffectMayThrow;var _react = require("react");
+
+function SIDE_EFFECT_MAY_THROW() {}
+
+// NOTE(EvanBacon): React compiler throws:
+// Cannot read properties of undefined (reading 'preds')
+function useSideEffectMayThrow() {
+  return (0, _react.useMemo)(function () {
+    try {
+      SIDE_EFFECT_MAY_THROW();
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+}"
+`;

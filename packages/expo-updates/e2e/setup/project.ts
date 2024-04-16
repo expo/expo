@@ -48,7 +48,17 @@ function getExpoDependencyChunks({
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
     ...(includeTV
-      ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization', 'expo-crypto', 'expo-network']]
+      ? [
+          [
+            'expo-av',
+            'expo-blur',
+            'expo-image',
+            'expo-linear-gradient',
+            'expo-localization',
+            'expo-crypto',
+            'expo-network',
+          ],
+        ]
       : []),
   ];
 }
@@ -337,8 +347,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.73.4-0',
-        '@react-native-tvos/config-tv': '^0.0.6',
+        'react-native': 'npm:react-native-tvos@~0.74.0-0rc2',
+        '@react-native-tvos/config-tv': '^0.0.8',
       },
       expo: {
         install: {
@@ -718,6 +728,7 @@ export async function initAsync(
       '-dontwarn javax.lang.model.element.Modifier',
       '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
       '-dontwarn org.checkerframework.dataflow.qual.Pure',
+      '-keep class com.google.common.util.concurrent.ListenableFuture { *; }',
       '',
     ].join('\n'),
     'utf-8'
@@ -815,6 +826,29 @@ export async function setupUpdatesDisabledE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesErrorRecoveryE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

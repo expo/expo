@@ -59,7 +59,7 @@ Library authors can extend the app config by using [Expo Config plugins](/config
 For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of) (**app.config.ts**). These configs have the following properties:
 
 - Comments, variables, and single quotes.
-- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js.
+- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `ts-node`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
@@ -153,7 +153,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 });
 ```
 
-If you want to import other TypeScript files or customize the language features, we recommend using [`ts-node`](/guides/typescript/#appconfigjs).
+To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`ts-node`](/guides/typescript/#appconfigjs). `ts-node` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
 
 ### Configuration resolution rules
 

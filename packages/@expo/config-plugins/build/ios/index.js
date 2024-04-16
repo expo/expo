@@ -17,7 +17,7 @@ Object.defineProperty(exports, "InfoPlist", {
     return _IosConfig().InfoPlist;
   }
 });
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
 function Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
   Bitcode = function () {
@@ -192,6 +192,19 @@ Object.defineProperty(exports, "Permissions", {
   enumerable: true,
   get: function () {
     return Permissions();
+  }
+});
+function PrivacyInfo() {
+  const data = _interopRequireWildcard(require("./PrivacyInfo"));
+  PrivacyInfo = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "PrivacyInfo", {
+  enumerable: true,
+  get: function () {
+    return PrivacyInfo();
   }
 });
 function ProvisioningProfile() {

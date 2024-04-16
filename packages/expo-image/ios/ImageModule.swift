@@ -108,12 +108,20 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, promise: Promise) in
+    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, headersMap: [String: String]?, promise: Promise) in
       var context = SDWebImageContext()
-      context[.storeCacheType] = cachePolicy.toSdCacheType().rawValue
+      let sdCacheType = cachePolicy.toSdCacheType().rawValue
+      context[.queryCacheType] = SDImageCacheType.none.rawValue
+      context[.storeCacheType] = SDImageCacheType.none.rawValue
+      context[.originalQueryCacheType] = sdCacheType
+      context[.originalStoreCacheType] = sdCacheType
 
       var imagesLoaded = 0
       var failed = false
+
+      if headersMap != nil {
+        context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headersMap)
+      }
 
       urls.forEach { url in
         SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in

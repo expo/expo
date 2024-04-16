@@ -1,14 +1,13 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
@@ -44,11 +43,8 @@ class EnabledUpdatesController(
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   override var appContext: WeakReference<AppContext>? = null
 
-  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference(context.reactNativeHost)
-  } else {
-    null
-  }
+  /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context)
   private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -95,24 +91,6 @@ class EnabledUpdatesController(
         onStartupProcedureFinished()
       }
 
-      override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {
-        when (event) {
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.Error -> sendLegacyUpdateEventToJS(
-            UPDATE_ERROR_EVENT,
-            Arguments.createMap().apply {
-              putString("message", event.exception.message)
-            }
-          )
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable -> sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.UpdateAvailable -> sendLegacyUpdateEventToJS(
-            UPDATE_AVAILABLE_EVENT,
-            Arguments.createMap().apply {
-              putString("manifestString", event.manifest.toString())
-            }
-          )
-        }
-      }
-
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
         relaunchReactApplication(shouldRunReaper, callback)
       }
@@ -141,9 +119,19 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
-    startupProcedure.onDidCreateReactInstanceManager(reactContext)
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    startupProcedure.onDidCreateDevSupportManager(devSupportManager)
   }
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: Exception) {
+    startupProcedure.onReactInstanceException(exception)
+  }
+
+  override val isActiveController = true
 
   @Synchronized
   override fun start() {
@@ -163,12 +151,12 @@ class EnabledUpdatesController(
   private fun relaunchReactApplication(shouldRunReaper: Boolean, callback: LauncherCallback) {
     val procedure = RelaunchProcedure(
       context,
+      weakActivity,
       updatesConfiguration,
       databaseHolder,
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      reactNativeHost,
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
@@ -179,10 +167,6 @@ class EnabledUpdatesController(
 
   override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
     sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
-  }
-
-  private fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {
-    sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {

@@ -20,7 +20,17 @@ public class ExpoReactDelegate: NSObject {
     return self.handlers.lazy
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
-      ?? ExpoReactRootViewFactory.createDefaultReactRootView(nil, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions)
+      ?? {
+        guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
+          fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+        }
+        return rctAppDelegate.recreateRootView(
+          withBundleURL: nil,
+          moduleName: moduleName,
+          initialProps: initialProperties,
+          launchOptions: launchOptions
+        )
+      }()
   }
 
   @objc

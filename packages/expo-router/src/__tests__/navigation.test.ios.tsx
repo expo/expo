@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Text } from 'react-native';
+import React, { Text, View } from 'react-native';
 
 import {
   useRouter,
@@ -9,6 +9,7 @@ import {
   Redirect,
   Slot,
   usePathname,
+  Link,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -819,6 +820,23 @@ it('can push relative links from index routes', async () => {
   act(() => router.push('./bar'));
   expect(screen.getByTestId('three')).toBeOnTheScreen();
   expect(screen).toHavePathname('/test/bar');
+});
+
+it('can push relative links from hoisted routes', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      'parent/index': () => <Link testID="link" href="./child" />,
+      'parent/child': () => <View testID="child" />,
+    },
+    {
+      initialUrl: '/parent',
+    }
+  );
+
+  expect(screen.getByTestId('link')).toBeOnTheScreen();
+  fireEvent(screen.getByTestId('link'), 'press');
+  expect(screen.getByTestId('child')).toBeOnTheScreen();
 });
 
 it('can navigation to a relative route without losing path params', async () => {

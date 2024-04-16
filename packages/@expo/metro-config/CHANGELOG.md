@@ -4,12 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Fully remove "exotic" transformer (`@expo/metro-config/transformer`) in favor of the default Expo transformer. ([#27855](https://github.com/expo/expo/pull/27855) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+- Fix serializer creating async imports to the main entrypoint, which could cause an infinite loop of loading the entrypoint bundle. ([#28016](https://github.com/expo/expo/pull/28016) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

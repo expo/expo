@@ -108,7 +108,7 @@ internal fun ModuleDefinitionBuilder.UseSensorProxy(
     sensorProxyGetter().setUpdateInterval(updateInterval)
   }
 
-  AsyncFunction("isAvailableAsync") {
+  AsyncFunction<Boolean>("isAvailableAsync") {
     val sensorManager = module.appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
     sensorManager?.getDefaultSensor(sensorType) != null
   }

@@ -221,12 +221,12 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
     .split('/')
     // Strip out group names to ensure they don't affect the priority.
     .filter((part) => matchGroupName(part) == null);
-  if (a.screen === 'index') {
+  if (a.screen === 'index' || a.screen.match(/\/index$/)) {
     aParts.push('index');
   }
 
   const bParts = b.pattern.split('/').filter((part) => matchGroupName(part) == null);
-  if (b.screen === 'index') {
+  if (b.screen === 'index' || b.screen.match(/\/index$/)) {
     bParts.push('index');
   }
 

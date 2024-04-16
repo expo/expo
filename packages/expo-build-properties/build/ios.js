@@ -16,6 +16,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },
+    {
+        propName: 'apple.extraPods',
+        propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;

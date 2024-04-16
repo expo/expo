@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
+exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
 const matchers_1 = require("./matchers");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -78,7 +78,7 @@ function getDirectoryTree(contextModule, options) {
                 }
             },
             contextKey: filePath,
-            route: '',
+            route: '', // This is overwritten during hoisting based upon the _layout
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
@@ -311,6 +311,7 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
+exports.extrapolateGroups = extrapolateGroups;
 function generateDynamic(path) {
     const dynamic = path
         .split('/')
@@ -395,7 +396,7 @@ function getLayoutNode(node, options) {
     return {
         ...node,
         route: node.route.replace(/\/?_layout$/, ''),
-        children: [],
+        children: [], // Each layout should have its own children
         initialRouteName,
     };
 }

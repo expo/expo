@@ -6,7 +6,7 @@ import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    async prefetch(urls, _) {
+    async prefetch(urls, _, __) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
         return new Promise((resolve) => {
             let imagesLoaded = 0;

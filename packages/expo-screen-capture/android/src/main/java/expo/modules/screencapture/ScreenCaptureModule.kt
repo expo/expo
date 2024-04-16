@@ -20,6 +20,7 @@ class ScreenCaptureModule : Module() {
   private val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
+  private var screenshotEventEmitter: ScreenshotEventEmitter? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
@@ -33,7 +34,7 @@ class ScreenCaptureModule : Module() {
         }
         currentActivity.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
       } else {
-        ScreenshotEventEmitter(context) {
+        screenshotEventEmitter = ScreenshotEventEmitter(context) {
           sendEvent(eventName)
         }
       }
@@ -55,15 +56,24 @@ class ScreenCaptureModule : Module() {
       }
     }
 
-    AsyncFunction("preventScreenCapture") {
+    AsyncFunction<Unit>("preventScreenCapture") {
       currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("allowScreenCapture") {
+    AsyncFunction<Unit>("allowScreenCapture") {
       currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
+    OnActivityEntersForeground {
+      screenshotEventEmitter?.onHostResume()
+    }
+
+    OnActivityEntersBackground {
+      screenshotEventEmitter?.onHostPause()
+    }
+
     OnDestroy {
+      screenshotEventEmitter?.onHostDestroy()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback?.let {
           currentActivity.unregisterScreenCaptureCallback(it)

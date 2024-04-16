@@ -13,10 +13,13 @@
 
 ### 💡 Others
 
+- Document basic assumptions about the templating system. ([#27071](https://github.com/expo/expo/pull/27071) by [@byCedric](https://github.com/byCedric))
+
 ## 2.1.4 - 2024-02-06
 
 ### 🐛 Bug fixes
 
+- Rename templates post-extraction (rather than whilst extracting) via an internal "rename config", to avoid corrupting binary files ([#27212](https://github.com/expo/expo/pull/27212) by [@shirakaba](https://github.com/shirakaba))
 - Mark compressed `.gz` files as binary to avoid corruption when unpacking with `create-expo --template` ([#26741](https://github.com/expo/expo/pull/26741) by [@shirakaba](https://github.com/shirakaba))
 
 ## 2.1.3 — 2023-12-12
