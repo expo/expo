@@ -67,6 +67,7 @@ public final class CameraViewLegacyModule: Module {
       ]
     ])
 
+    // swiftlint:disable:next closure_body_length
     View(CameraViewLegacy.self) {
       Events(cameraEvents)
 
