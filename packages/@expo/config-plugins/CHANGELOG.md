@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix xcprivacy being added to build sources instead of resources. ([#28223](https://github.com/expo/expo/pull/28223) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 7.9.0 — 2024-04-15
