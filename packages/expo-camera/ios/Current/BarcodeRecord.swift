@@ -18,14 +18,14 @@ enum BarcodeType: String, Enumerable {
   case ean8
   case qr
   case pdf417
-  case upce
+  case upc_e
   case datamatrix
   case code39
   case code93
   case itf14
   case codabar
   case code128
-  case upca
+  case upc_a
 
   func toMetadataObjectType() -> AVMetadataObject.ObjectType {
     if #available(iOS 15.4, *) {
@@ -46,9 +46,9 @@ enum BarcodeType: String, Enumerable {
       return .pdf417
     case .itf14:
       return .itf14
-    case .upca:
-      return .upce
-    case .upce:
+    case .upc_a:
+      return .ean13
+    case .upc_e:
       return .upce
     case .code39:
       return .code39
@@ -70,14 +70,14 @@ enum VNBarcodeType: String, Enumerable {
   case ean8
   case qr
   case pdf417
-  case upce
+  case upc_e
   case datamatrix
   case code39
   case code93
   case itf14
   case codabar
   case code128
-  case upca
+  case upc_a
 
   @available(iOS 16.0, *)
   func toSymbology() -> VNBarcodeSymbology {
@@ -96,9 +96,9 @@ enum VNBarcodeType: String, Enumerable {
       return .pdf417
     case .itf14:
       return .itf14
-    case .upca:
-      return .upce
-    case .upce:
+    case .upc_a:
+      return .ean13
+    case .upc_e:
       return .upce
     case .code39:
       return .code39
