@@ -52,8 +52,11 @@ function withPrivacyInfo(config) {
   });
 }
 function setPrivacyInfo(projectConfig, privacyManifests) {
-  const platformProjectRoot = projectConfig.modRequest.platformProjectRoot;
-  const projectName = (0, _Xcodeproj().getProjectName)(platformProjectRoot);
+  const {
+    projectRoot,
+    platformProjectRoot
+  } = projectConfig.modRequest;
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
   const privacyFilePath = _path().default.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
   const existingFileContent = getFileContents(privacyFilePath);
   const parsedContent = existingFileContent ? _plist().default.parse(existingFileContent) : {};
