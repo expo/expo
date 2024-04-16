@@ -1,7 +1,7 @@
 ---
 title: How to launch an update using Expo Orbit
 sidebar_title: Open updates with Orbit
-description: Learn how to open updates with Expo Orbit as part of a review workflow
+description: Learn how to open updates with Expo Orbit as part of a review workflow.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -27,9 +27,9 @@ If you don't have any development builds available, either because they have all
 ## Preview an update with Expo Orbit
 
 <Video
-  url="https://www.youtube.com/watch?v=l-Lx7BglNUE"
-  spaceAfter={20}
-  caption="Expo Orbit launching an update directly from Expo dashboard to an Android Emulator."
+  controls
+  file="review/updates-with-orbit.mp4"
+  caption="Expo Orbit launching an update directly from Expo dashboard to an iOS Simulator."
 />
 
 Previewing with Expo Orbit requires you to have an update published. If you haven't published an update, see [Publish an update](/eas-update/publish/) before following the steps in the next section.
@@ -40,9 +40,10 @@ Previewing with Expo Orbit requires you to have an update published. If you have
 
 After the update is published, follow these steps to open it on an Android Emulator or iOS Simulator:
 
-- Navigate your project's **Updates** tab
-- Select the update you want to preview
-- Under the **Platform-specific updates** section, click the three-dotted menu next to the target platform and select **Open in Orbit**
-- Orbit will install and launch the update on the selected Android Emulator or iOS Simulator
+- Navigate your project's **Updates** tab.
+- Select the update you want to preview.
+- Click **Preview**. This will open the **Preview** dialog.
+- Under **Open with Orbit**, select a platform to launch the update.
+- Orbit will install and launch the update on the selected Android Emulator or iOS Simulator.
 
 You can now seamlessly launch and review updates using Expo Orbit.
