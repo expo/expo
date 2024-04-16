@@ -116,7 +116,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         processModuleFilter: options.processModuleFilter,
         assetPlugins: config.transformer?.assetPlugins ?? [],
         platform: (0, baseJSBundle_1.getPlatformOption)(graph, options) ?? 'web',
-        projectRoot: options.projectRoot,
+        projectRoot: options.projectRoot, // this._getServerRootDir(),
         publicPath,
     }));
     return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
