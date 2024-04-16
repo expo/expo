@@ -33,7 +33,7 @@
 - Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative navigation on hoisted routes ([#27778](https://github.com/expo/expo/pull/27778) by [@marklawlor](https://github.com/marklawlor))
 - Fix setting an initial location to a hoisted index router in a group ([#27935](https://github.com/expo/expo/pull/27935) by [@marklawlor](https://github.com/marklawlor))
-- Temporary fall back to useEffect when running in Bridgeless mode
+- Temporary fall back to useEffect when running in Bridgeless mode ([#28243](https://github.com/expo/expo/pull/28243) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
