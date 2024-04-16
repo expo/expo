@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 14.1.3 — 2024-04-16
+
+### 🐛 Bug fixes
+
 - Allow user to remove `NSMicrophoneUsageDescription` and ignore the `mute` prop if they don't intend to use video. ([#28156](https://github.com/expo/expo/pull/28156) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.1.2 — 2024-04-08
