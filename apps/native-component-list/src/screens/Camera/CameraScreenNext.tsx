@@ -48,7 +48,9 @@ interface State {
   barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
+  micPermissionsGranted: boolean;
   permission?: PermissionStatus;
+  micPermission?: PermissionStatus;
   pictureSize?: string;
   pictureSizes: string[];
   pictureSizeId: number;
@@ -72,6 +74,7 @@ export default class CameraScreen extends React.Component<object, State> {
     barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
+    micPermissionsGranted: false,
     showGallery: false,
     showMoreOptions: false,
     pictureSizes: [],
@@ -86,6 +89,10 @@ export default class CameraScreen extends React.Component<object, State> {
     }
     Camera.requestCameraPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
+    });
+
+    Camera.requestMicrophonePermissionsAsync().then(({ status }) => {
+      this.setState({ micPermission: status, micPermissionsGranted: status === 'granted' });
     });
   }
 
@@ -340,6 +347,7 @@ export default class CameraScreen extends React.Component<object, State> {
         responsiveOrientationWhenOrientationLocked
         enableTorch={this.state.torchEnabled}
         facing={this.state.facing}
+        animateShutter
         pictureSize={this.state.pictureSize}
         flash={this.state.flash}
         mode={this.state.mode}
