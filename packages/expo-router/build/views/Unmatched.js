@@ -12,7 +12,12 @@ const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");
-const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
+const isBridgelessEnabled = 'RN$Bridgeless' in globalThis && globalThis.RN$Bridgeless === true;
+const useLayoutEffect = typeof window !== 'undefined'
+    ? isBridgelessEnabled
+        ? react_1.default.useEffect
+        : react_1.default.useLayoutEffect
+    : function () { };
 function NoSSR({ children }) {
     const [render, setRender] = react_1.default.useState(false);
     react_1.default.useEffect(() => {

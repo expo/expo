@@ -15,7 +15,13 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
   options?: TOptions;
 };
 
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
+const isBridgelessEnabled = 'RN$Bridgeless' in globalThis && globalThis.RN$Bridgeless === true;
+const useLayoutEffect =
+  typeof window !== 'undefined'
+    ? isBridgelessEnabled
+      ? React.useEffect
+      : React.useLayoutEffect
+    : function () {};
 
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {

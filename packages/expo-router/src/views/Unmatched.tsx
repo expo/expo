@@ -9,7 +9,13 @@ import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
 import { useNavigation } from '../useNavigation';
 
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
+const isBridgelessEnabled = 'RN$Bridgeless' in globalThis && globalThis.RN$Bridgeless === true;
+const useLayoutEffect =
+  typeof window !== 'undefined'
+    ? isBridgelessEnabled
+      ? React.useEffect
+      : React.useLayoutEffect
+    : function () {};
 
 function NoSSR({ children }: PropsWithChildren) {
   const [render, setRender] = React.useState(false);

@@ -6,7 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Screen = void 0;
 const react_1 = __importDefault(require("react"));
 const useNavigation_1 = require("../useNavigation");
-const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
+const isBridgelessEnabled = 'RN$Bridgeless' in globalThis && globalThis.RN$Bridgeless === true;
+const useLayoutEffect = typeof window !== 'undefined'
+    ? isBridgelessEnabled
+        ? react_1.default.useEffect
+        : react_1.default.useLayoutEffect
+    : function () { };
 /** Component for setting the current screen's options dynamically. */
 function Screen({ name, options }) {
     const navigation = (0, useNavigation_1.useNavigation)(name);
