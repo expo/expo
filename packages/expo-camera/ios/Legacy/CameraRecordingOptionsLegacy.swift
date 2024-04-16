@@ -8,4 +8,3 @@ struct CameraRecordingOptionsLegacy: Record {
   @Field var mirror: Bool = false
   @Field var codec: VideoCodecLegacy?
 }
-
