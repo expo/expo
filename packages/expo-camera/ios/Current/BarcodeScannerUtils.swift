@@ -32,7 +32,7 @@ class BarcodeScannerUtils {
   static func avMetadataCodeObjectToDictionary(_ barcodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = barcodeScannerResult.type
-    
+
     // iOS converts upc_a to ean13 an appends a leading 0
     if barcodeScannerResult.type == AVMetadataObject.ObjectType.ean13 {
       let value = barcodeScannerResult.stringValue ?? ""
@@ -70,7 +70,7 @@ class BarcodeScannerUtils {
     var result = [String: Any]()
     result["type"] = item.observation.symbology.rawValue
     result["data"] = item.payloadStringValue
-    
+
     // iOS converts upc_a to ean13 an appends a leading 0
     if item.observation.symbology == VNBarcodeSymbology.ean13 {
       let value = item.payloadStringValue ?? ""
