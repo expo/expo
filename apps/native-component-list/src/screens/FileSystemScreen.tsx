@@ -47,13 +47,20 @@ export default class FileSystemScreen extends React.Component<object, State> {
   };
 
   _startDownloading = async () => {
-    const url = 'https://getsamplefiles.com/download/zip/sample-5.zip';
+    // getsamplefiles.com doesn't include Content-Length header in the response, so we can't
+    // calculate the progress of the download.
+    const url = 'https://getsamplefiles.com/download/png/sample-4.png';
     const fileUri = FileSystem.documentDirectory + 'sample-5.zip';
     const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
       downloadProgress
     ) => {
-      const progress =
-        downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+      let progress;
+      if (downloadProgress.totalBytesExpectedToWrite === -1) {
+        progress = 0;
+        console.warn('totalBytesExpectedToWrite is -1, cannot calculate progress');
+      } else {
+        progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+      }
       this.setState({
         downloadProgress: progress,
       });
@@ -130,16 +137,21 @@ export default class FileSystemScreen extends React.Component<object, State> {
   _fetchDownload = async () => {
     try {
       const downloadJson = await AsyncStorage.getItem('pausedDownload');
+
       if (downloadJson !== null) {
         const downloadFromStore = JSON.parse(downloadJson);
         const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
           downloadProgress
         ) => {
-          const progress =
-            downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-          this.setState({
-            downloadProgress: progress,
-          });
+          let progress;
+          if (downloadProgress.totalBytesExpectedToWrite === -1) {
+            progress = 0;
+            console.warn('totalBytesExpectedToWrite is -1, cannot calculate progress');
+          } else {
+            progress =
+              downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+          }
+          this.setState({ downloadProgress: progress });
         };
         this.download = new FileSystem.DownloadResumable(
           downloadFromStore.url,
