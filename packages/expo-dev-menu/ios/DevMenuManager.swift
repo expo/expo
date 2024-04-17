@@ -239,6 +239,12 @@ open class DevMenuManager: NSObject {
     guard let bridge = currentBridge else {
       return nil
     }
+
+    if type(of: bridge) == RCTBridgeProxy.self {
+      // RCTBridgeProxy does not support modulesConformingToProtocol, fallback to using ExpoDevMenuExtensions only
+      return [bridge.module(forName: "ExpoDevMenuExtensions")] as? [DevMenuExtensionProtocol]
+    }
+
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
 
     let uniqueExtensionNames = Set(

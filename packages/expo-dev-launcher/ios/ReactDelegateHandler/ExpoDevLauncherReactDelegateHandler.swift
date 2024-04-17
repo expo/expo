@@ -56,7 +56,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       initialProps: self.rootViewInitialProperties,
       launchOptions: self.launchOptions
     )
-    developmentClientController.appBridge = rctAppDelegate.bridge
+    developmentClientController.appBridge = RCTBridge.current()
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 

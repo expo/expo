@@ -2,6 +2,7 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTComponentViewFactory.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
 // for importing the header from framework, the dash will be transformed to underscore
 #import <React_RCTAppDelegate/RCTAppSetupUtils.h>
@@ -13,7 +14,6 @@
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
-#import <React/RCTComponentViewFactory.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
@@ -24,95 +24,26 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
-@interface DevClientAppDelegate () <
-    RCTTurboModuleManagerDelegate,
-    RCTCxxBridgeDelegate,
-    RCTComponentViewFactoryComponentProvider,
-    RCTContextContainerHandling> {
-  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
-  facebook::react::ContextContainer::Shared _contextContainer;
-  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
-}
-@end
-
 #endif
 
-@interface RCTAppDelegate ()
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTTurboModuleManagerDelegate>
 
 - (RCTRootViewFactory *)createRCTRootViewFactory;
 
 @end
 
-@implementation DevClientAppDelegate {
+@implementation DevClientAppDelegate
 
-#if RCT_NEW_ARCH_ENABLED
-  RCTHost *_reactHost;
-#endif // RCT_NEW_ARCH_ENABLED
-}
 
-#if RCT_NEW_ARCH_ENABLED
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+- (void)initRootViewFactory {
+  RCTSetNewArchEnabled([self newArchEnabled]);
+  RCTEnableTurboModule(self.turboModuleEnabled);
+
+  self.rootViewFactory = [self createRCTRootViewFactory];
+
+  if (self.newArchEnabled || self.fabricEnabled) {
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  return self;
-}
-#endif
-
-@synthesize rootViewFactory = _rootViewFactory;
-
-- (RCTRootViewFactory *)rootViewFactory
-{
-  if (_rootViewFactory == nil) {
-    _rootViewFactory = [self createRCTRootViewFactory];
-  }
-  return _rootViewFactory;
-}
-
-- (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
-  self.rootViewFactory.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
-
-#ifdef RCT_NEW_ARCH_ENABLED
-  // bridgeless mode is not yet supported in expo-dev-client
-  assert(!self.bridgelessEnabled);
-
-  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                               contextContainer:_contextContainer];
-  self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
-
-  [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-#endif
-
-  return self.bridge;
-}
-
-#pragma mark - RCTCxxBridgeDelegate
-
-#if RCT_NEW_ARCH_ENABLED
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
-{
-  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
-  std::shared_ptr<facebook::react::CallInvoker> callInvoker =
-      std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                                   delegate:self
-                                                                                  jsInvoker:callInvoker];
-  _contextContainer->erase("RuntimeScheduler");
-  _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
-}
-#endif // RCT_NEW_ARCH_ENABLED
-
-#pragma mark - Remove these method when we drop SDK 49
-
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                           initProps:(NSDictionary *)initProps
-{
-  return [super createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -135,6 +66,18 @@
 - (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
 {
   return NO;
+}
+
+
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)newArchEnabled
+{
+#if RCT_NEW_ARCH_ENABLED
+  return YES;
+#else
+  return NO;
+#endif
 }
 
 @end

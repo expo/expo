@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DevClientAppDelegate : RCTAppDelegate
 
-- (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary *_Nullable)launchOptions;
+- (void)initRootViewFactory;
 
 #pragma mark - Remove these method when we drop SDK 49
 
