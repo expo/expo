@@ -15,6 +15,7 @@
 - Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix #available check to account for tvOS. ([#27272](https://github.com/expo/expo/pull/27272) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed jest may cause `RangeError: Invalid string length` error when generating a snapshot. ([#27354](https://github.com/expo/expo/pull/27354) by [@lukmccall](https://github.com/lukmccall))
+- Fixed placeholders weren't correctly scaled down on the Android. ([#28255](https://github.com/expo/expo/pull/28255) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
