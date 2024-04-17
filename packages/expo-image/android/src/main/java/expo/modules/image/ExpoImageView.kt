@@ -72,7 +72,9 @@ class ExpoImageView(
     }
 
     if (isPlaceholder) {
-      applyTransformationMatrix(drawable, placeholderContentFit,
+      applyTransformationMatrix(
+        drawable,
+        placeholderContentFit,
         sourceHeight = currentTarget?.placeholderHeight,
         sourceWidth = currentTarget?.placeholderWidth
       )
@@ -86,7 +88,7 @@ class ExpoImageView(
     contentFit: ContentFit,
     contentPosition: ContentPosition = ContentPosition.center,
     sourceWidth: Int? = currentTarget?.sourceWidth,
-    sourceHeight: Int? = currentTarget?.sourceHeight,
+    sourceHeight: Int? = currentTarget?.sourceHeight
   ) {
     val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
     val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())

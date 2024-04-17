@@ -59,7 +59,7 @@ class PlaceholderDownsampleStrategy(
   }
 
   override fun getSampleSizeRounding(sourceWidth: Int, sourceHeight: Int, requestedWidth: Int, requestedHeight: Int): SampleSizeRounding {
-    return  SampleSizeRounding.QUALITY;
+    return SampleSizeRounding.QUALITY
   }
 }
 
