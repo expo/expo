@@ -425,7 +425,6 @@ const general = [
         makePage('accounts/account-types.mdx'),
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
-        makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
       makeSection('Billing', [
