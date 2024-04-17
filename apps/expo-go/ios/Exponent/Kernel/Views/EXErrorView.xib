@@ -48,14 +48,14 @@
                                 <color key="textColor" name="textDefault"/>
                             </variation>
                         </textView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How To Fix This Error" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="net-Bc-aEY">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How to fix this error" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="net-Bc-aEY">
                             <rect key="frame" x="16" y="120.5" width="382" height="19.5"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                             <color key="textColor" name="textDefault"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Fix Detail" translatesAutoresizingMaskIntoConstraints="NO" id="UCx-uh-Nic" userLabel="Fix Detail View">
-                            <rect key="frame" x="16" y="156" width="382" height="35.5"/>
+                            <rect key="frame" x="16" y="142" width="382" height="35.5"/>
                             <color key="textColor" name="textDefault"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -114,7 +114,7 @@
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="https::/expo.dev" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uZA-n9-0bf" userLabel="URL">
-                            <rect key="frame" x="16" y="207.5" width="382" height="17"/>
+                            <rect key="frame" x="16" y="193.5" width="382" height="17"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" red="0.34509803919999998" green="0.37254901959999998" blue="0.41176470590000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
@@ -141,7 +141,7 @@
                         <constraint firstItem="UCx-uh-Nic" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="ejR-Ow-lIT"/>
                         <constraint firstItem="fm7-WM-hm7" firstAttribute="trailing" secondItem="3xg-me-cwE" secondAttribute="trailing" id="mbs-0b-6Ha"/>
                         <constraint firstItem="net-Bc-aEY" firstAttribute="top" secondItem="b2p-se-FvF" secondAttribute="bottom" constant="16" id="mjt-W8-arK"/>
-                        <constraint firstItem="UCx-uh-Nic" firstAttribute="top" secondItem="net-Bc-aEY" secondAttribute="bottom" constant="16" id="oZ2-Q3-ec3"/>
+                        <constraint firstItem="UCx-uh-Nic" firstAttribute="top" secondItem="net-Bc-aEY" secondAttribute="bottom" constant="2" id="oZ2-Q3-ec3"/>
                         <constraint firstItem="b2p-se-FvF" firstAttribute="leading" secondItem="fm7-WM-hm7" secondAttribute="leading" constant="16" id="uNY-Uo-9gb"/>
                     </constraints>
                     <viewLayoutGuide key="contentLayoutGuide" id="ipk-Hz-A80"/>

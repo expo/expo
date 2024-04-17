@@ -86,12 +86,12 @@ class ManifestException : ExponentException {
               "https://expo.dev/go?sdkVersion=$sdkVersionRequired&platform=android&device=${!isRunningOnEmulator()}"
 
             formattedMessage =
-              "• The currently installed version of Expo Go is for <b>$maybePluralSDKsString ${
+              "• The installed version of Expo Go is for <b>$maybePluralSDKsString ${
                 supportedSdksString(
                   "and"
                 )
               }</b>.<br>" +
-              "• The project you attempted to open uses <b>SDK $sdkVersionRequired</b>."
+              "• The project you opened uses <b>SDK $sdkVersionRequired</b>."
             fixInstructions =
               "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with your project.<br><br>" +
               "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>" +
@@ -163,7 +163,7 @@ class ManifestException : ExponentException {
 
   override fun toString(): String {
     if (fixInstructions != null) {
-      return "$errorMessage<br><br><h5><b>How to fix this error</b></h5><br>$fixInstructions"
+      return "$errorMessage<br><br><h5><b>How to fix this error</b></h5>$fixInstructions"
     }
     return errorMessage
   }

@@ -330,8 +330,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
 
     showTryAgainButton = false;
     formattedMessage = [NSString stringWithFormat:
-                          @"• The currently installed version of Expo Go is for **%@ %@**.\n"
-                        @"• The project you attempted to open uses **SDK %d**.",
+                          @"• The installed version of Expo Go is for **%@ %@**.\n"
+                        @"• The project you opened uses **SDK %d**.",
                         maybePluralSdkString,
                         [self supportedSdkVersionsConjunctionString:@"and"],
                         requiredVersionNum
