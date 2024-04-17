@@ -122,6 +122,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
+      rootDir: 'packages/default-storage',
       ios: {
         excludeFiles: 'example/**/*',
         async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {

@@ -243,7 +243,7 @@ static void RCTStorageDirectoryMigrate(NSString *oldDirectoryPath,
                                        NSString *newDirectoryPath,
                                        BOOL shouldCleanupOldDirectory)
 {
-  assert(false);
+   assert(false);
 }
 
 /**
@@ -451,11 +451,6 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
 - (NSDictionary *)_ensureSetup
 {
     RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
-
-#if TARGET_OS_TV
-    RCTLogWarn(
-        @"Persistent storage is not supported on tvOS, your data may be removed at any point.");
-#endif
 
     NSError *error = nil;
     // NOTE(nikki93): `withIntermediateDirectories:YES` makes this idempotent
@@ -747,7 +742,8 @@ RCT_EXPORT_METHOD(multiMerge:(NSArray<NSArray<NSString *> *> *)kvPairs
             if (value) {
                 NSError *jsonError;
                 NSMutableDictionary *mergedVal = RCTJSONParseMutable(value, &jsonError);
-                if (RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError))) {
+                NSDictionary *mergingValue = RCTJSONParse(entry[1], &jsonError);
+                if (!mergingValue.count || RCTMergeRecursive(mergedVal, mergingValue)) {
                     entry = @[entry[0], RCTNullIfNil(RCTJSONStringify(mergedVal, NULL))];
                 }
                 if (jsonError) {
@@ -853,5 +849,13 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
         callback(@[(id)kCFNull, _manifest.allKeys]);
     }
 }
+
+#if RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeAsyncStorageModuleSpecJSI>(params);
+}
+#endif
 
 @end
