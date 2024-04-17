@@ -28,6 +28,11 @@
                                                  launchOptions:launchOptions];
 }
 
+- (NSURL *)bundleURL
+{
+  return [_expoReactDelegate bundleURL];
+}
+
 - (UIViewController *)createRootViewController
 {
   return [_expoReactDelegate createRootViewController];
