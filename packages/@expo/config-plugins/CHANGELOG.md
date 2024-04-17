@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 8.0.0-beta.0 — 2024-04-17
+
+### 🎉 New features
+
 - Add privacy info config plugin. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes

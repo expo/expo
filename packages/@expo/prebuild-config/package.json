@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "6.7.1",
+  "version": "7.0.0-beta.0",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
@@ -37,8 +37,8 @@
     "expo-module-scripts": "^3.3.0"
   },
   "dependencies": {
-    "@expo/config": "~8.5.0",
-    "@expo/config-plugins": "~7.8.0",
+    "@expo/config": "~9.0.0-beta.0",
+    "@expo/config-plugins": "~8.0.0-beta.0",
     "@expo/config-types": "^51.0.0-unreleased",
     "@expo/image-utils": "^0.4.0",
     "@expo/json-file": "^8.3.0",
