@@ -1370,7 +1370,7 @@ PODS:
   - React-Mapbuffer (0.74.0-rc.9):
     - glog
     - React-debug
-  - react-native-maps (1.13.0):
+  - react-native-maps (1.14.0):
     - React-Core
   - react-native-netinfo (11.3.1):
     - React-Core
@@ -2413,7 +2413,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 2eef7c2f20724132d067629087693d66af3cf565
   React-logger: c4f94ac23ce01e558b50ad7dfb9d6f09025701dd
   React-Mapbuffer: fbe9c6b6c762e35bba9e8259d6e5e5a22ede7986
-  react-native-maps: fa054512735831f232e822ee6bdb0afcdd88de4a
+  react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
