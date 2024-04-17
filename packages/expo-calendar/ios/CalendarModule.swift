@@ -50,12 +50,12 @@ public class CalendarModule: Module {
 
     AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in
       switch details.entityType {
-        case .event:
-          try checkCalendarPermissions()
-        case .reminder:
-          try checkRemindersPermissions()
-        case .none:
-          break
+      case .event:
+        try checkCalendarPermissions()
+      case .reminder:
+        try checkRemindersPermissions()
+      case .none:
+        break
       }
 
       let calendar = try getCalendar(from: details)
