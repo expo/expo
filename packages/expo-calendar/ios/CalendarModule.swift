@@ -49,7 +49,15 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in
-      try checkCalendarPermissions()
+      switch details.entityType {
+      case .event:
+        try checkCalendarPermissions()
+      case .reminder:
+        try checkRemindersPermissions()
+      case .none:
+        break
+      }
+
       let calendar = try getCalendar(from: details)
       try eventStore.saveCalendar(calendar, commit: true)
       return calendar.calendarIdentifier
@@ -128,7 +136,7 @@ public class CalendarModule: Module {
       if let startDate = event.startDate {
         calendarEvent.startDate = parse(date: startDate)
       }
-      if let endDate = event.startDate {
+      if let endDate = event.endDate {
         calendarEvent.endDate = parse(date: endDate)
       }
 
@@ -438,6 +446,7 @@ public class CalendarModule: Module {
     }
 
     calendar.title = record.title
+    calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
 
     return calendar
   }
@@ -462,6 +471,7 @@ public class CalendarModule: Module {
 
     let calendarEvent = EKEvent(eventStore: eventStore)
     calendarEvent.calendar = calendar
+    calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes
 
