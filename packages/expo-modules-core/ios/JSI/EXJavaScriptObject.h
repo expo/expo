@@ -49,6 +49,11 @@ NS_SWIFT_NAME(JavaScriptObject)
 - (std::shared_ptr<jsi::Object>)getShared;
 #endif // __cplusplus
 
+/**
+ Turns the backing shared_ptr as a weak pointer that managed its ownership by runtime.
+ */
+- (void)asWeakBacking;
+
 #pragma mark - Accessing object properties
 
 /**

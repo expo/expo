@@ -416,6 +416,10 @@ public final class AppContext: NSObject {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+
+    // After the `coreObject` is finalizing its setup and binds to `global.expo`,
+    // we can turn the object as a weak pointer and let runtime to manage its ownership.
+    coreObject.asWeakBacking()
   }
 
   /**

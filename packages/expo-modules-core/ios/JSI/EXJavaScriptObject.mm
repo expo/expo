@@ -43,6 +43,14 @@
   return _jsObjectPtr;
 }
 
+- (void)asWeakBacking
+{
+  // Reassigns the `_jsObjectPtr` as a no-op deleter shared_ptr,
+  // by using the aliasing constructor from shared_ptr.
+  // Ref: constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
+  _jsObjectPtr = std::shared_ptr<jsi::Object>(std::shared_ptr<jsi::Object>(), _jsObjectPtr.get());
+}
+
 #pragma mark - Accessing object properties
 
 - (BOOL)hasProperty:(nonnull NSString *)name

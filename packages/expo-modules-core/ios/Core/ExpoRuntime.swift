@@ -19,6 +19,10 @@ public final class ExpoRuntime: JavaScriptRuntime {
     self.coreObject = coreObject
     global().defineProperty(coreObjectPropertyName, value: coreObject, options: .enumerable)
   }
+
+  deinit {
+    coreObject = nil
+  }
 }
 
 private final class CoreObjectInitializedException: Exception {
