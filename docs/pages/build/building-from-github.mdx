@@ -38,7 +38,7 @@ Use the `latest` image if your project's configuration does not rely on a specif
 
 To trigger EAS builds from a GitHub repo, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub.
 
-If you haven't successfully run `eas build -p [all|ios|android]` yet, see  [Create your first build](/build/setup/) for more information. Once you have, continue with the steps in this guide.
+If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information. Once you have, continue with the steps in this guide.
 
 The following must also be true:
 
@@ -59,7 +59,7 @@ page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
 
 Install the Expo GitHub App on your GitHub account.
 
-> **Note:** You must have [Owner or Admin access](/accounts/working-together/#manage-access) of the Expo account to install the app.
+> **Note:** You must have [Owner or Admin access](/accounts/account-types/#manage-access) of the Expo account to install the app.
 
 <ImageSpotlight
   alt="The GitHub app installation UI"
@@ -140,15 +140,13 @@ of the build in the PR's checks. A link to the build will be available in the ch
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
 
-
 ### Build automatically when code is pushed to repository
 
 You can take your build automation further by automatically building your Expo project when you push code to GitHub.
 
 #### Set up build triggers
 
-You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.  
-
+You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.
 
 Open your Expo project in the dashboard. To create a build trigger, scroll down to the **Build
 triggers** section of the project GitHub settings page and click **New Build Trigger**.

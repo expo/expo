@@ -143,6 +143,7 @@ redirects[guides/setup-native-firebase]=guides/using-firebase
 redirects[guides/using-clojurescript]=guides/overview
 redirects[distribution/hosting-your-app]=distribution/publishing-websites
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[accounts/working-together]=accounts/account-types
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
