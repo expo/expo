@@ -3,6 +3,7 @@
 #import <EXSplashScreen/EXSplashScreenModule.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <React/RCTRootView.h>
+#import <React/RCTSurfaceHostingView.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
@@ -152,12 +153,12 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
 
   for (UIWindow *window in allWindows) {
     UIViewController *controller = window.rootViewController;
-    if ([controller.view isKindOfClass:[RCTRootView class]]) {
+    if ([self isReactRootView:controller.view]) {
       return controller;
     }
     UIViewController *presentedController = controller.presentedViewController;
     while (presentedController && ![presentedController isBeingDismissed]) {
-      if ([presentedController.view isKindOfClass:[RCTRootView class]]) {
+      if ([self isReactRootView:presentedController.view]) {
         return presentedController;
       }
       controller = presentedController;
@@ -167,6 +168,11 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
 
   // no RCTRootView was found
   return nil;
+}
+
+- (BOOL)isReactRootView:(UIView*)view
+{
+  return [view isKindOfClass:RCTRootView.class] || [view isKindOfClass:RCTSurfaceHostingView.class];
 }
 
 @end
