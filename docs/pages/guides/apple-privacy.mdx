@@ -1,5 +1,5 @@
 ---
-title: Privacy Manifests
+title: Privacy manifests
 description: Learn about configuring iOS privacy manifests for your mobile app.
 ---
 
@@ -11,7 +11,7 @@ More details and a list of "required reason" APIs can be found in the [Apple Dev
 
 > **info** The information and steps included in this guide are still in development and may change due to new tools built for this purpose or new requirements from Apple.
 
-## What is a Privacy Manifest?
+## What is a Privacy manifest?
 
 A privacy manifest is a file named **PrivacyInfo.xcprivacy** that is included in your iOS native project. This file is used to declare why the app includes native code that calls into certain APIs that Apple considers sensitive.
 
@@ -20,8 +20,6 @@ These APIs currently include accessing UserDefaults, file timestamp, system boot
 ## Configuration in app.json/app.config.js
 
 You can include an iOS privacy manifest by using the `privacyManifests` field under `expo.ios` in your app config.
-
-### Example app.json with `privacyManifests` config
 
 ```json app.json
 {
@@ -64,6 +62,6 @@ You can usually identify the required reasons for the APIs used by other third-p
 
 As an alternative, Apple notifies developers after they submit a build with missing privacy manifest files or specific reasons. You can wait until you receive a notification email from Apple and then include the required reasons listed in the email in your app's **PrivacyInfo.xcprivacy** file (if you don't use [CNG](/workflow/continuous-native-generation/)) or the configuration in your **app.json** file.
 
-## Testing the Privacy Manifest
+## Testing the Privacy manifest
 
 You can test the privacy manifest by building your app and submitting it, either through App Store review process or to TestFlight's external review. Apple will email you within a few minutes of submitting if your app is missing any required reasons for the APIs used.
