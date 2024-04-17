@@ -1,9 +1,10 @@
 import { ViewProps } from 'react-native';
-export interface SymbolViewProps extends ViewProps {
+import type { SFSymbol } from 'sf-symbols-typescript';
+export type SymbolViewProps = {
     /**
      * The name of the symbol. Can be found in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
      */
-    name: string;
+    name: SFSymbol;
     /**
      * Fallback to render on Android where SF symbols are not available.
      */
@@ -41,7 +42,7 @@ export interface SymbolViewProps extends ViewProps {
      * The animation configuration to apply to the symbol.
      */
     animationSpec?: AnimationSpec;
-}
+} & ViewProps;
 export interface NativeSymbolViewProps extends ViewProps {
     name: string;
     type: SymbolType;
