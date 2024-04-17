@@ -24,6 +24,32 @@ class NavigationBarModule : Module() {
 
     Events(VISIBILITY_EVENT_NAME)
 
+    OnStartObserving {
+      val decorView = activity.window.decorView
+      decorView.post {
+        @Suppress("DEPRECATION")
+        decorView.setOnSystemUiVisibilityChangeListener { visibility: Int ->
+          val isNavigationBarVisible = (visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
+          val stringVisibility = if (isNavigationBarVisible) "visible" else "hidden"
+          sendEvent(
+            VISIBILITY_EVENT_NAME,
+            Bundle().apply {
+              putString("visibility", stringVisibility)
+              putInt("rawVisibility", visibility)
+            }
+          )
+        }
+      }
+    }
+
+    OnStopObserving {
+      val decorView = activity.window.decorView
+      decorView.post {
+        @Suppress("DEPRECATION")
+        decorView.setOnSystemUiVisibilityChangeListener(null)
+      }
+    }
+
     AsyncFunction("setBackgroundColorAsync") { color: Int, promise: Promise ->
       NavigationBar.setBackgroundColor(activity, color, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
@@ -99,30 +125,6 @@ class NavigationBarModule : Module() {
 
         return@AsyncFunction behavior
       }
-    }.runOnQueue(Queues.MAIN)
-
-    // We are not using `OnStartObserving` and `OnStopObserving` here because when switching threads
-    // they will resolve the promise quicker and the JS won't wait for observer removal
-    AsyncFunction<Unit>("startObserving") {
-      val decorView = activity.window.decorView
-      @Suppress("DEPRECATION")
-      decorView.setOnSystemUiVisibilityChangeListener { visibility: Int ->
-        val isNavigationBarVisible = (visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
-        val stringVisibility = if (isNavigationBarVisible) "visible" else "hidden"
-        sendEvent(
-          VISIBILITY_EVENT_NAME,
-          Bundle().apply {
-            putString("visibility", stringVisibility)
-            putInt("rawVisibility", visibility)
-          }
-        )
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction<Unit>("stopObserving") {
-      val decorView = activity.window.decorView
-      @Suppress("DEPRECATION")
-      decorView.setOnSystemUiVisibilityChangeListener(null)
     }.runOnQueue(Queues.MAIN)
   }
 
