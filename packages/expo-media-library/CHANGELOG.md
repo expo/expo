@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Add support for allowing access permissions to only selected photos. ([#27749](https://github.com/expo/expo/pull/27749) by [@behenate](https://github.com/behenate))
 - [Android] Add support for granular permissions. ([#27729](https://github.com/expo/expo/pull/27729) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
