@@ -50,7 +50,6 @@ class NavigationBarModule : Module() {
       }
     }
 
-
     AsyncFunction("setBackgroundColorAsync") { color: Int, promise: Promise ->
       NavigationBar.setBackgroundColor(activity, color, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
     }.runOnQueue(Queues.MAIN)
