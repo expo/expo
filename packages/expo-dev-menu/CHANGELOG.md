@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add Add bridgeless support for React-Native 0.74. ([#28174](https://github.com/expo/expo/pull/28174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740), [#27118](https://github.com/expo/expo/pull/27118) by [@kudo](https://github.com/kudo))
