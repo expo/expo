@@ -5,6 +5,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_AUDIO
 import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -47,6 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 class MediaLibraryModule : Module() {
   private val context: Context
@@ -76,7 +78,7 @@ class MediaLibraryModule : Module() {
       val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
-        promise,
+        MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
         *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
@@ -85,7 +87,7 @@ class MediaLibraryModule : Module() {
       val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
-        promise,
+        MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
         *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
@@ -392,7 +394,11 @@ class MediaLibraryModule : Module() {
 
   private fun hasReadPermissions(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      val permissions = arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      val permissions = mutableListOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        permissions.add(READ_MEDIA_VISUAL_USER_SELECTED)
+      }
+
       // Android will only return albums that the user allowed access to.
       permissions.map { permission ->
         appContext.permissions
