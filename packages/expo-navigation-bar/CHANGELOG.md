@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix event listeners on Android. ([#28260](https://github.com/expo/expo/pull/28260) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 - Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
