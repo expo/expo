@@ -13,7 +13,7 @@
 /**
  Property name of the core object in the global scope of the Expo JS runtime.
  */
-extern NSString *const EXGlobalCoreObjectPropertyName;
+extern NSString * _Nonnull const EXGlobalCoreObjectPropertyName;
 
 @interface EXJavaScriptRuntimeManager : NSObject
 
