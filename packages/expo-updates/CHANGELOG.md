@@ -33,6 +33,7 @@
 - Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
 - Fixed bridgeless error recovery support for launch errors on Android. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
 - Fixed error recovery on Android. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+- Fixed `Updates.reloadAsync()` not working on iOS. ([#28256](https://github.com/expo/expo/pull/28256) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

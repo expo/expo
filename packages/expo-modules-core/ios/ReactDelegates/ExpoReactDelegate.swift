@@ -34,6 +34,13 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
+  public func bundleURL() -> URL? {
+    return self.handlers.lazy
+      .compactMap { $0.bundleURL(reactDelegate: self) }
+      .first(where: { _ in true })
+  }
+
+  @objc
   public func createRootViewController() -> UIViewController {
     return self.handlers.lazy
       .compactMap { $0.createRootViewController(reactDelegate: self) }
