@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent unnecessary permissions check when moving app to background (Would crash with certain configs). ([#28045](https://github.com/expo/expo/pull/28045) by [@cltnschlosser](https://github.com/cltnschlosser))
+- Fix barometer updates not starting on iOS 17.4.
 
 ### 💡 Others
 
