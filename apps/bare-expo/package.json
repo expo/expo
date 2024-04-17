@@ -26,8 +26,7 @@
         "expo-ads-admob",
         "expo-module-template",
         "expo-module-template-local",
-        "expo-face-detector",
-        "expo-updates"
+        "expo-face-detector"
       ],
       "ios": {
         "flags": {

@@ -356,7 +356,7 @@ PODS:
     - FBLazyVector (= 0.74.0-rc.9)
     - RCTRequired (= 0.74.0-rc.9)
     - React-Core (= 0.74.0-rc.9)
-  - ReachabilitySwift (5.0.0)
+  - ReachabilitySwift (5.2.2)
   - React (0.74.0-rc.9):
     - React-Core (= 0.74.0-rc.9)
     - React-Core/DevSupport (= 0.74.0-rc.9)
@@ -2419,7 +2419,7 @@ SPEC CHECKSUMS:
   RCTDeprecation: 4007d9a7cdb37d57857630d3c9dd34911d34fc17
   RCTRequired: ca017732b65a2510769ee89fa061096242a33c1b
   RCTTypeSafety: 636489c919b9732582629e3eb0ca59f9667c7653
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  ReachabilitySwift: 2128f3a8c9107e1ad33574c6e58e8285d460b149
   React: d6c16a004aa7db56be58f7762fb52c1c70865833
   React-callinvoker: 6193345c3ac9ff8f475ad29d56171454a8d98a09
   React-Codegen: d971affa690e13a1822966d2ea03a5c663caa66e
@@ -2481,7 +2481,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: eb09ecbb5a65a1deb5c5f7960fdb788daae0dd43
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: 5df85360d65cabaef544be5424ac64672e648482
