@@ -1,9 +1,9 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite/legacy';
 
-export const name = 'SQLite';
+export const name = 'SQLiteLegacy';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
 const VERSION = '3.42.0';
