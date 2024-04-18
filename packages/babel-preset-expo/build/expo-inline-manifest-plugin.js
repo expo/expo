@@ -23,7 +23,7 @@ const RESTRICTED_MANIFEST_FIELDS = [
     'android',
     // Hide internal / build values
     'plugins',
-    'hooks',
+    'hooks', // hooks no longer exists in the typescript type but should still be removed
     '_internal',
     // Remove metro-specific values
     'assetBundlePatterns',

@@ -223,7 +223,9 @@ function getConfig(projectRoot, options = {}) {
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
-      if (configWithDefaultValues.exp.hooks) {
+
+      // hooks no longer exists in the typescript type but should still be removed
+      if ('hooks' in configWithDefaultValues.exp) {
         delete configWithDefaultValues.exp.hooks;
       }
       if (configWithDefaultValues.exp.ios?.config) {
