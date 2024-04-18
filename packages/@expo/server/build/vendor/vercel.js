@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.respond = exports.convertRequest = exports.convertHeaders = exports.createRequestHandler = void 0;
+exports.createRequestHandler = createRequestHandler;
+exports.convertHeaders = convertHeaders;
+exports.convertRequest = convertRequest;
+exports.respond = respond;
 // NOTE: VercelRequest/VercelResponse wrap http primitives in Node
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
@@ -16,7 +19,6 @@ function createRequestHandler({ build }) {
         return respond(res, await handleRequest(convertRequest(req, res)));
     };
 }
-exports.createRequestHandler = createRequestHandler;
 function convertHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
@@ -33,7 +35,6 @@ function convertHeaders(requestHeaders) {
     }
     return headers;
 }
-exports.convertHeaders = convertHeaders;
 function convertRequest(req, res) {
     const host = req.headers['x-forwarded-host'] || req.headers['host'];
     // doesn't seem to be available on their req object!
@@ -56,7 +57,6 @@ function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
-exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
@@ -67,5 +67,4 @@ async function respond(res, expoRes) {
         res.end();
     }
 }
-exports.respond = respond;
 //# sourceMappingURL=vercel.js.map

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+exports.transformCssModuleWeb = transformCssModuleWeb;
+exports.convertLightningCssToReactNativeWebStyleSheet = convertLightningCssToReactNativeWebStyleSheet;
+exports.matchCssModule = matchCssModule;
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
 async function transformCssModuleWeb(props) {
@@ -36,7 +38,6 @@ async function transformCssModuleWeb(props) {
         map: cssResults.map,
     };
 }
-exports.transformCssModuleWeb = transformCssModuleWeb;
 function convertLightningCssToReactNativeWebStyleSheet(input) {
     const styles = {};
     const reactNativeWeb = {};
@@ -60,9 +61,7 @@ function convertLightningCssToReactNativeWebStyleSheet(input) {
     });
     return { styles, reactNativeWeb, variables };
 }
-exports.convertLightningCssToReactNativeWebStyleSheet = convertLightningCssToReactNativeWebStyleSheet;
 function matchCssModule(filePath) {
     return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
 }
-exports.matchCssModule = matchCssModule;
 //# sourceMappingURL=css-modules.js.map

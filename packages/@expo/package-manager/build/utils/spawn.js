@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.spawnSudoAsync = exports.createPendingSpawnAsync = void 0;
+exports.createPendingSpawnAsync = createPendingSpawnAsync;
+exports.spawnSudoAsync = spawnSudoAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const sudo_prompt_1 = __importDefault(require("sudo-prompt"));
 function createPendingSpawnAsync(actionAsync, spawnAsync) {
@@ -28,7 +29,6 @@ function createPendingSpawnAsync(actionAsync, spawnAsync) {
     pendingPromise.child = child;
     return pendingPromise;
 }
-exports.createPendingSpawnAsync = createPendingSpawnAsync;
 /**
  * Spawn a command with sudo privileges.
  * On windows, this uses the `sudo-prompt` package.
@@ -53,5 +53,4 @@ async function spawnSudoAsync(command, spawnOptions) {
         await (0, spawn_async_1.default)('sudo', command, spawnOptions);
     }
 }
-exports.spawnSudoAsync = spawnSudoAsync;
 //# sourceMappingURL=spawn.js.map

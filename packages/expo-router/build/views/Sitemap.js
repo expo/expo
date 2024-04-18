@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sitemap = exports.getNavOptions = void 0;
+exports.getNavOptions = getNavOptions;
+exports.Sitemap = Sitemap;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -36,7 +37,6 @@ function getNavOptions() {
         },
     };
 }
-exports.getNavOptions = getNavOptions;
 function Sitemap() {
     const { top, bottom } = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
     const { width } = (0, react_native_1.useWindowDimensions)();
@@ -60,7 +60,6 @@ function Sitemap() {
       </react_native_1.View>
     </react_native_1.View>);
 }
-exports.Sitemap = Sitemap;
 function FileSystemView() {
     const routes = (0, router_store_1.useExpoRouter)().getSortedRoutes();
     return (<>

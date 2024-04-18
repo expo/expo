@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.installGlobals = exports.ExpoResponse = exports.ExpoRequest = void 0;
+exports.ExpoResponse = exports.ExpoRequest = void 0;
+exports.installGlobals = installGlobals;
 /* eslint-disable no-var */
 const node_1 = require("@remix-run/node");
 /** @deprecated */
@@ -41,5 +42,4 @@ function installGlobals() {
         };
     }
 }
-exports.installGlobals = installGlobals;
 //# sourceMappingURL=environment.js.map

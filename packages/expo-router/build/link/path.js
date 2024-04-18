@@ -20,7 +20,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolve = void 0;
+exports.resolve = resolve;
 // https://github.com/browserify/path-browserify/blob/master/index.js
 function assertPath(path) {
     if (typeof path !== 'string') {
@@ -143,5 +143,4 @@ function resolve(...segments) {
         return '.';
     }
 }
-exports.resolve = resolve;
 //# sourceMappingURL=path.js.map

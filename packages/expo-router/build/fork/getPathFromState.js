@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.default = getPathFromState;
+exports.getPathDataFromState = getPathDataFromState;
+exports.deepEqual = deepEqual;
+exports.appendBaseUrl = appendBaseUrl;
 const core_1 = require("@react-navigation/core");
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
@@ -74,7 +77,6 @@ function encodeURIComponentPreservingBrackets(str) {
 function getPathFromState(state, _options) {
     return getPathDataFromState(state, _options).path;
 }
-exports.default = getPathFromState;
 function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
@@ -89,7 +91,6 @@ function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     // Create a normalized configs object which will be easier to use
     createNormalizedConfigs(options.screens), { preserveGroups, preserveDynamicRoutes });
 }
-exports.getPathDataFromState = getPathDataFromState;
 function processParamsWithUserSettings(configItem, params) {
     const stringify = configItem?.stringify;
     return Object.fromEntries(Object.entries(params).map(([key, value]) => [
@@ -133,7 +134,6 @@ function deepEqual(a, b) {
     }
     return false;
 }
-exports.deepEqual = deepEqual;
 function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, }) {
     // NOTE(EvanBacon): Fill in current route using state that was passed as params.
     if (!route.state && isInvalidParams(route.params)) {
@@ -462,5 +462,4 @@ function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

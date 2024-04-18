@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createManifestForBuildAsync = void 0;
+exports.createManifestForBuildAsync = createManifestForBuildAsync;
 const exportEmbedAsync_1 = require("@expo/cli/build/src/export/embed/exportEmbedAsync");
 const metroAssetLocalPath_1 = require("@expo/cli/build/src/export/metroAssetLocalPath");
 const paths_1 = require("@expo/config/paths");
@@ -83,7 +83,6 @@ async function createManifestForBuildAsync(platform, possibleProjectRoot, destin
     });
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 }
-exports.createManifestForBuildAsync = createManifestForBuildAsync;
 /**
  * Resolve the relative entry file using Expo's resolution method.
  */

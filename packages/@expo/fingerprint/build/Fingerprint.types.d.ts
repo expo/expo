@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export type FingerprintSource = HashSource & {
     /**
      * Hash value of the `source`.

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isIgnoredPath = void 0;
+exports.isIgnoredPath = isIgnoredPath;
 const minimatch_1 = __importDefault(require("minimatch"));
 /**
  * Indicate the given `filePath` should be excluded by `ignorePaths`
@@ -22,5 +22,4 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
     }
     return result;
 }
-exports.isIgnoredPath = isIgnoredPath;
 //# sourceMappingURL=Path.js.map

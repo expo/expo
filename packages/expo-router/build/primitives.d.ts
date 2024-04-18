@@ -1,4 +1,3 @@
-/// <reference types="react" />
 export declare const Screen: <RouteName extends string>(_: import("@react-navigation/core").RouteConfig<import("@react-navigation/core").ParamListBase, RouteName, Readonly<{
     key: string;
     index: number;

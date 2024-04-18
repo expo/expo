@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExpoConfigLoaderPath = void 0;
+exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 const promises_1 = __importDefault(require("fs/promises"));
 const module_1 = __importDefault(require("module"));
 const path_1 = __importDefault(require("path"));
@@ -76,5 +76,4 @@ async function loadIgnoredPathsAsync(ignoredFile) {
 function getExpoConfigLoaderPath() {
     return path_1.default.join(__dirname, 'ExpoConfigLoader.js');
 }
-exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 //# sourceMappingURL=ExpoConfigLoader.js.map

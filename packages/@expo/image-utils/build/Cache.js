@@ -3,7 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clearUnusedCachesAsync = exports.cacheImageAsync = exports.getImageFromCacheAsync = exports.ensureCacheDirectory = exports.createCacheKeyWithDirectoryAsync = exports.createCacheKey = void 0;
+exports.createCacheKey = createCacheKey;
+exports.createCacheKeyWithDirectoryAsync = createCacheKeyWithDirectoryAsync;
+exports.ensureCacheDirectory = ensureCacheDirectory;
+exports.getImageFromCacheAsync = getImageFromCacheAsync;
+exports.cacheImageAsync = cacheImageAsync;
+exports.clearUnusedCachesAsync = clearUnusedCachesAsync;
 const crypto_1 = __importDefault(require("crypto"));
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
@@ -19,7 +24,6 @@ function createCacheKey(fileSource, properties) {
     const hash = calculateHash(fileSource);
     return [hash].concat(properties).filter(Boolean).join('-');
 }
-exports.createCacheKey = createCacheKey;
 async function createCacheKeyWithDirectoryAsync(projectRoot, type, icon) {
     const cacheKey = `${type}-${createCacheKey(icon.src, [icon.resizeMode, icon.backgroundColor])}`;
     if (!(cacheKey in cacheKeys)) {
@@ -27,13 +31,11 @@ async function createCacheKeyWithDirectoryAsync(projectRoot, type, icon) {
     }
     return cacheKey;
 }
-exports.createCacheKeyWithDirectoryAsync = createCacheKeyWithDirectoryAsync;
 async function ensureCacheDirectory(projectRoot, type, cacheKey) {
     const cacheFolder = (0, path_1.join)(projectRoot, CACHE_LOCATION, type, cacheKey);
     await (0, fs_extra_1.ensureDir)(cacheFolder);
     return cacheFolder;
 }
-exports.ensureCacheDirectory = ensureCacheDirectory;
 async function getImageFromCacheAsync(fileName, cacheKey) {
     try {
         return await (0, fs_extra_1.readFile)((0, path_1.resolve)(cacheKeys[cacheKey], fileName));
@@ -42,7 +44,6 @@ async function getImageFromCacheAsync(fileName, cacheKey) {
         return null;
     }
 }
-exports.getImageFromCacheAsync = getImageFromCacheAsync;
 async function cacheImageAsync(fileName, buffer, cacheKey) {
     try {
         await (0, fs_extra_1.writeFile)((0, path_1.resolve)(cacheKeys[cacheKey], fileName), buffer);
@@ -51,7 +52,6 @@ async function cacheImageAsync(fileName, buffer, cacheKey) {
         console.warn(`Error caching image: "${fileName}". ${error.message}`);
     }
 }
-exports.cacheImageAsync = cacheImageAsync;
 async function clearUnusedCachesAsync(projectRoot, type) {
     // Clean up any old caches
     const cacheFolder = (0, path_1.join)(projectRoot, CACHE_LOCATION, type);
@@ -74,5 +74,4 @@ async function clearUnusedCachesAsync(projectRoot, type) {
     }
     await Promise.all(deleteCachePromises);
 }
-exports.clearUnusedCachesAsync = clearUnusedCachesAsync;
 //# sourceMappingURL=Cache.js.map

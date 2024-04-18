@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReactNavigationConfig = exports.getReactNavigationScreensConfig = void 0;
+exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
+exports.getReactNavigationConfig = getReactNavigationConfig;
 const matchers_1 = require("./matchers");
 // `[page]` -> `:page`
 // `page` -> `page`
@@ -66,12 +67,10 @@ function convertRouteNodeToScreen(node, metaOnly) {
 function getReactNavigationScreensConfig(nodes, metaOnly) {
     return Object.fromEntries(nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)]));
 }
-exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
 function getReactNavigationConfig(routes, metaOnly) {
     return {
         initialRouteName: routes.initialRouteName,
         screens: getReactNavigationScreensConfig(routes.children, metaOnly),
     };
 }
-exports.getReactNavigationConfig = getReactNavigationConfig;
 //# sourceMappingURL=getReactNavigationConfig.js.map

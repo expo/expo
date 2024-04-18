@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNormalizedStatePath = exports.getRouteInfoFromState = void 0;
+exports.getRouteInfoFromState = getRouteInfoFromState;
+exports.getNormalizedStatePath = getNormalizedStatePath;
 const getStateFromPath_1 = require("./fork/getStateFromPath");
 function getRouteInfoFromState(getPathFromState, state, baseUrl) {
     const { path } = getPathFromState(state, false);
@@ -13,7 +14,6 @@ function getRouteInfoFromState(getPathFromState, state, baseUrl) {
         ...getNormalizedStatePath(qualified, baseUrl),
     };
 }
-exports.getRouteInfoFromState = getRouteInfoFromState;
 function isIndexPath(state) {
     const route = state.routes[state.index ?? state.routes.length - 1];
     if (route.state) {
@@ -64,5 +64,4 @@ function getNormalizedStatePath({ path: statePath, params, }, baseUrl) {
         }, {}),
     };
 }
-exports.getNormalizedStatePath = getNormalizedStatePath;
 //# sourceMappingURL=LocationProvider.js.map

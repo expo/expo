@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = void 0;
+exports.useFocusEffect = useFocusEffect;
 // A fork of `useFocusEffect` that waits for the navigation state to load before
 // running the effect. This is especially useful for native redirects.
 const React = __importStar(require("react"));
@@ -121,5 +121,4 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
         };
     }, [effect, navigation]);
 }
-exports.useFocusEffect = useFocusEffect;
 //# sourceMappingURL=useFocusEffect.js.map

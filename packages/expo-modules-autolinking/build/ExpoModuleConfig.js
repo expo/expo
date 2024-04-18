@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = void 0;
+exports.ExpoModuleConfig = void 0;
+exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
@@ -108,5 +109,4 @@ function requireAndResolveExpoModuleConfig(path) {
     // TODO: Support for `*.js` files, not only static `*.json`.
     return new ExpoModuleConfig(require(path));
 }
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
 //# sourceMappingURL=ExpoModuleConfig.js.map

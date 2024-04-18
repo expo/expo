@@ -23,7 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
+exports.store = exports.RouterStore = void 0;
+exports.useExpoRouter = useExpoRouter;
+exports.useStoreRootState = useStoreRootState;
+exports.useStoreRouteInfo = useStoreRouteInfo;
+exports.useInitializeExpoRouter = useInitializeExpoRouter;
 const native_1 = require("@react-navigation/native");
 const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = require("react");
@@ -195,7 +199,6 @@ exports.store = new RouterStore();
 function useExpoRouter() {
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToStore, exports.store.snapshot, exports.store.snapshot);
 }
-exports.useExpoRouter = useExpoRouter;
 function syncStoreRootState() {
     if (exports.store.navigationRef.isReady()) {
         const currentState = exports.store.navigationRef.getRootState();
@@ -208,17 +211,14 @@ function useStoreRootState() {
     syncStoreRootState();
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.rootStateSnapshot, exports.store.rootStateSnapshot);
 }
-exports.useStoreRootState = useStoreRootState;
 function useStoreRouteInfo() {
     syncStoreRootState();
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.routeInfoSnapshot, exports.store.routeInfoSnapshot);
 }
-exports.useStoreRouteInfo = useStoreRouteInfo;
 function useInitializeExpoRouter(context, initialLocation) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
     (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, initialLocation), [context, initialLocation]);
     useExpoRouter();
     return exports.store;
 }
-exports.useInitializeExpoRouter = useInitializeExpoRouter;
 //# sourceMappingURL=router-store.js.map

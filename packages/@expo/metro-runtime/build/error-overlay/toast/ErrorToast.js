@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorToast = void 0;
+exports.ErrorToast = ErrorToast;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -65,7 +65,6 @@ function ErrorToast(props) {
             react_1.default.createElement(ErrorToastMessage_1.ErrorToastMessage, { message: log.message }),
             react_1.default.createElement(Dismiss, { onPress: props.onPressDismiss }))))));
 }
-exports.ErrorToast = ErrorToast;
 function Count({ count, level }) {
     return (react_1.default.createElement(react_native_1.View, { style: [countStyles.inside, countStyles[level]] },
         react_1.default.createElement(react_native_1.Text, { style: countStyles.text }, count <= 1 ? '!' : count)));

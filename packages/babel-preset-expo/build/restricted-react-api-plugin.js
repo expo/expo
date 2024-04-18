@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.environmentRestrictedReactAPIsPlugin = void 0;
+exports.environmentRestrictedReactAPIsPlugin = environmentRestrictedReactAPIsPlugin;
 const INVALID_SERVER_REACT_DOM_APIS = [
     'findDOMNode',
     'flushSync',
@@ -113,4 +113,3 @@ function environmentRestrictedReactAPIsPlugin(api) {
         },
     };
 }
-exports.environmentRestrictedReactAPIsPlugin = environmentRestrictedReactAPIsPlugin;

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildUrlForBundle = void 0;
+exports.buildUrlForBundle = buildUrlForBundle;
 /**
  * Given a path and some optional additional query parameters, create the dev server bundle URL.
  * @param bundlePath like `/foobar`
@@ -21,5 +21,4 @@ function buildUrlForBundle(bundlePath) {
     // Otherwise Metro will crash from attempting to load a bundle that doesn't exist.
     return '/' + bundlePath.replace(/^\/+/, '');
 }
-exports.buildUrlForBundle = buildUrlForBundle;
 //# sourceMappingURL=buildUrlForBundle.js.map

@@ -16,7 +16,7 @@ declare const _default: {
     readonly region: string | null;
     getLocales(): Locale[];
     getCalendars(): Calendar[];
-    getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>>;
+    getLocalizationAsync(): Promise<Omit<Localization, "getCalendars" | "getLocales">>;
 };
 export default _default;
 //# sourceMappingURL=ExpoLocalization.d.ts.map

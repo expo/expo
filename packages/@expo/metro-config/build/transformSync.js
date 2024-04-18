@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformSync = void 0;
+exports.transformSync = transformSync;
 /**
  * Copyright (c) 650 Industries (Expo). All rights reserved.
  *
@@ -45,7 +45,6 @@ function transformSync(src, babelConfig, { hermesParser }) {
     const parser = useBabelCore ? parseWithBabel : parseWithHermes;
     return parser(src, babelConfig);
 }
-exports.transformSync = transformSync;
 function parseWithHermes(src, babelConfig) {
     const sourceAst = require('hermes-parser').parse(src, {
         babel: true,

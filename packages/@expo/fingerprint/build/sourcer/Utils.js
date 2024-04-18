@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringifyJsonSorted = exports.getFileBasedHashSourceAsync = void 0;
+exports.getFileBasedHashSourceAsync = getFileBasedHashSourceAsync;
+exports.stringifyJsonSorted = stringifyJsonSorted;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 async function getFileBasedHashSourceAsync(projectRoot, filePath, reason) {
@@ -21,14 +22,12 @@ async function getFileBasedHashSourceAsync(projectRoot, filePath, reason) {
     }
     return result;
 }
-exports.getFileBasedHashSourceAsync = getFileBasedHashSourceAsync;
 /**
  * A version of `JSON.stringify` that keeps the keys sorted
  */
 function stringifyJsonSorted(target, space) {
     return JSON.stringify(target, (_, value) => sortJson(value), space);
 }
-exports.stringifyJsonSorted = stringifyJsonSorted;
 function sortJson(json) {
     if (Array.isArray(json)) {
         return json.sort((a, b) => {

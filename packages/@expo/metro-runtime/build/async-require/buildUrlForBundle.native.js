@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildUrlForBundle = void 0;
+exports.buildUrlForBundle = buildUrlForBundle;
 function buildUrlForBundle(bundlePath) {
     if (bundlePath.match(/^https?:\/\//)) {
         return bundlePath;
@@ -24,7 +24,6 @@ function buildUrlForBundle(bundlePath) {
         return joinComponents(serverUrl, bundlePath);
     }
 }
-exports.buildUrlForBundle = buildUrlForBundle;
 function joinComponents(prefix, suffix) {
     return prefix.replace(/\/+$/, '') + '/' + suffix.replace(/^\/+/, '');
 }

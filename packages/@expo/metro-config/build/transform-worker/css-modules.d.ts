@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export declare function transformCssModuleWeb(props: {
     filename: string;
     src: string;

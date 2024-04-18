@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffFingerprints = exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
+exports.createFingerprintAsync = createFingerprintAsync;
+exports.createProjectHashAsync = createProjectHashAsync;
+exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
+exports.diffFingerprints = diffFingerprints;
 const Dedup_1 = require("./Dedup");
 const Options_1 = require("./Options");
 const Sort_1 = require("./Sort");
@@ -16,7 +19,6 @@ async function createFingerprintAsync(projectRoot, options) {
     const fingerprint = await (0, Hash_1.createFingerprintFromSourcesAsync)(normalizedSources, projectRoot, opts);
     return fingerprint;
 }
-exports.createFingerprintAsync = createFingerprintAsync;
 /**
  * Create a native hash value from project
  */
@@ -24,7 +26,6 @@ async function createProjectHashAsync(projectRoot, options) {
     const fingerprint = await createFingerprintAsync(projectRoot, options);
     return fingerprint.hash;
 }
-exports.createProjectHashAsync = createProjectHashAsync;
 /**
  * Differentiate given `fingerprint` with the current project fingerprint state
  */
@@ -35,7 +36,6 @@ async function diffFingerprintChangesAsync(fingerprint, projectRoot, options) {
     }
     return diffFingerprints(fingerprint, newFingerprint);
 }
-exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
 /**
  * Differentiate two fingerprints
  */
@@ -44,5 +44,4 @@ function diffFingerprints(fingerprint1, fingerprint2) {
         return !fingerprint1.sources.find((item) => item.type === newItem.type && item.hash === newItem.hash);
     });
 }
-exports.diffFingerprints = diffFingerprints;
 //# sourceMappingURL=Fingerprint.js.map

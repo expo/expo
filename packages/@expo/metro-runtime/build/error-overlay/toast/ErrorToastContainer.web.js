@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorToastContainer = void 0;
+exports.ErrorToastContainer = ErrorToastContainer;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -45,7 +45,6 @@ function ErrorToastContainer() {
     }
     return react_1.default.createElement(ErrorToastStack, { logs: logs });
 }
-exports.ErrorToastContainer = ErrorToastContainer;
 function ErrorToastStack({ logs }) {
     const onDismissWarns = (0, react_1.useCallback)(() => {
         LogBoxData.clearWarnings();

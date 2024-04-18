@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useSelectedLog = exports.useLogs = exports.LogContext = void 0;
+exports.LogContext = void 0;
+exports.useLogs = useLogs;
+exports.useSelectedLog = useSelectedLog;
 const react_1 = __importDefault(require("react"));
 const LogBoxLog_1 = require("./LogBoxLog");
 // Context provider for Array<LogBoxLog>
@@ -26,10 +28,8 @@ function useLogs() {
     }
     return logs;
 }
-exports.useLogs = useLogs;
 function useSelectedLog() {
     const { selectedLogIndex, logs } = useLogs();
     return logs[selectedLogIndex];
 }
-exports.useSelectedLog = useSelectedLog;
 //# sourceMappingURL=LogContext.js.map

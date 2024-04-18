@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThenEvalAsync = void 0;
+exports.fetchThenEvalAsync = fetchThenEvalAsync;
 const currentSrc = typeof document !== 'undefined' && document.currentScript
     ? ('src' in document.currentScript && document.currentScript.src) || null
     : null;
@@ -67,7 +67,6 @@ function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
         }
     });
 }
-exports.fetchThenEvalAsync = fetchThenEvalAsync;
 class AsyncRequireError extends Error {
     name = 'AsyncRequireError';
     type;

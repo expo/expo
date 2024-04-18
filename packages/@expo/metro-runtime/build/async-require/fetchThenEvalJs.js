@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThenEvalAsync = void 0;
+exports.fetchThenEvalAsync = fetchThenEvalAsync;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -53,7 +53,6 @@ function fetchThenEvalAsync(url) {
         }
     });
 }
-exports.fetchThenEvalAsync = fetchThenEvalAsync;
 function jsonParseOptional(json) {
     try {
         return JSON.parse(json);

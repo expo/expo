@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateAsync = void 0;
+exports.generateAsync = generateAsync;
 // Inspired by https://github.com/kevva/to-ico but reuses existing packages to keep bundle size small.
 const parse_png_1 = __importDefault(require("parse-png"));
 const constants = {
@@ -94,5 +94,4 @@ async function generateAsync(buffers) {
     const pngs = await Promise.all(buffers.map((x) => (0, parse_png_1.default)(x)));
     return generateFromPNGs(pngs);
 }
-exports.generateAsync = generateAsync;
 //# sourceMappingURL=Ico.js.map

@@ -3,28 +3,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
+exports.useRootNavigationState = useRootNavigationState;
+exports.useRouteInfo = useRouteInfo;
+exports.useRootNavigation = useRootNavigation;
+exports.useNavigationContainerRef = useNavigationContainerRef;
+exports.useRouter = useRouter;
+exports.useUnstableGlobalHref = useUnstableGlobalHref;
+exports.useSegments = useSegments;
+exports.usePathname = usePathname;
+exports.useGlobalSearchParams = useGlobalSearchParams;
+exports.useLocalSearchParams = useLocalSearchParams;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const router_store_1 = require("./global-state/router-store");
 function useRootNavigationState() {
     return (0, router_store_1.useStoreRootState)();
 }
-exports.useRootNavigationState = useRootNavigationState;
 function useRouteInfo() {
     return (0, router_store_1.useStoreRouteInfo)();
 }
-exports.useRouteInfo = useRouteInfo;
 /** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 function useRootNavigation() {
     return router_store_1.store.navigationRef.current;
 }
-exports.useRootNavigation = useRootNavigation;
 /** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
 function useNavigationContainerRef() {
     return router_store_1.store.navigationRef;
 }
-exports.useNavigationContainerRef = useNavigationContainerRef;
 function useRouter() {
     return react_1.default.useMemo(() => ({
         push: router_store_1.store.push,
@@ -39,7 +44,6 @@ function useRouter() {
         // TODO(EvanBacon): add `reload`
     }), []);
 }
-exports.useRouter = useRouter;
 /**
  * @private
  * @returns the current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link, i.e. `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`
@@ -47,7 +51,6 @@ exports.useRouter = useRouter;
 function useUnstableGlobalHref() {
     return (0, router_store_1.useStoreRouteInfo)().unstable_globalHref;
 }
-exports.useUnstableGlobalHref = useUnstableGlobalHref;
 /**
  * Get a list of selected file segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. e.g. /[id]?id=normal -> ["[id]"]
  *
@@ -70,12 +73,10 @@ exports.useUnstableGlobalHref = useUnstableGlobalHref;
 function useSegments() {
     return (0, router_store_1.useStoreRouteInfo)().segments;
 }
-exports.useSegments = useSegments;
 /** @returns global selected pathname without query parameters. */
 function usePathname() {
     return (0, router_store_1.useStoreRouteInfo)().pathname;
 }
-exports.usePathname = usePathname;
 /**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
  * Useful for analytics or other background operations that don't draw to the screen.
@@ -88,7 +89,6 @@ exports.usePathname = usePathname;
 function useGlobalSearchParams() {
     return (0, router_store_1.useStoreRouteInfo)().params;
 }
-exports.useGlobalSearchParams = useGlobalSearchParams;
 /**
  * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
@@ -121,5 +121,4 @@ function useLocalSearchParams() {
         }
     }));
 }
-exports.useLocalSearchParams = useLocalSearchParams;
 //# sourceMappingURL=hooks.js.map

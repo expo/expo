@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adjustPathname = exports.extractExpoPathFromURL = void 0;
+exports.extractExpoPathFromURL = extractExpoPathFromURL;
+exports.adjustPathname = adjustPathname;
 const Linking = __importStar(require("expo-linking"));
 // This is only run on native.
 function extractExactPathFromURL(url) {
@@ -96,7 +97,6 @@ function extractExpoPathFromURL(url = '') {
     // TODO: We should get rid of this, dropping specificities is not good
     return extractExactPathFromURL(url).replace(/^\//, '');
 }
-exports.extractExpoPathFromURL = extractExpoPathFromURL;
 function adjustPathname(url) {
     if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
         // drop the first two segments from pathname:
@@ -104,5 +104,4 @@ function adjustPathname(url) {
     }
     return url.pathname;
 }
-exports.adjustPathname = adjustPathname;
 //# sourceMappingURL=extractPathFromURL.js.map

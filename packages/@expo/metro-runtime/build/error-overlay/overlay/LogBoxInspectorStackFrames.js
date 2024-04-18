@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorStackFrames = exports.getCollapseMessage = void 0;
+exports.getCollapseMessage = getCollapseMessage;
+exports.LogBoxInspectorStackFrames = LogBoxInspectorStackFrames;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -68,7 +69,6 @@ function getCollapseMessage(stackFrames, collapsed) {
             : `Collapse ${collapsedCount} ${framePlural}`;
     }
 }
-exports.getCollapseMessage = getCollapseMessage;
 function LogBoxInspectorStackFrames({ onRetry, type }) {
     const log = (0, LogContext_1.useSelectedLog)();
     const [collapsed, setCollapsed] = (0, react_1.useState)(() => {
@@ -92,7 +92,6 @@ function LogBoxInspectorStackFrames({ onRetry, type }) {
         react_1.default.createElement(StackFrameList, { list: getStackList(), status: log.symbolicated[type].status }),
         react_1.default.createElement(StackFrameFooter, { onPress: () => setCollapsed(!collapsed), message: getCollapseMessage(log.getAvailableStack(type), !!collapsed) })));
 }
-exports.LogBoxInspectorStackFrames = LogBoxInspectorStackFrames;
 function StackFrameList({ list, status, }) {
     return list.map((frame, index) => {
         const { file, lineNumber } = frame;

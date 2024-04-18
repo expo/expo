@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findModulesAsync = void 0;
+exports.findModulesAsync = findModulesAsync;
 const chalk_1 = __importDefault(require("chalk"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
@@ -81,7 +81,6 @@ async function findModulesAsync(providedOptions) {
         alwaysIncludedPackagesNames: nativeModuleNames,
     });
 }
-exports.findModulesAsync = findModulesAsync;
 /**
  * Returns the priority of the config at given path. Higher number means higher priority.
  */

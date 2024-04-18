@@ -3,7 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
+exports.getEasBuildSourcesAsync = getEasBuildSourcesAsync;
+exports.getExpoAutolinkingAndroidSourcesAsync = getExpoAutolinkingAndroidSourcesAsync;
+exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
+exports.getExpoAutolinkingIosSourcesAsync = getExpoAutolinkingIosSourcesAsync;
+exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
@@ -82,7 +87,6 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     results.push(...configPluginModules);
     return results;
 }
-exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
 function normalizeExpoConfig(config) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
@@ -121,7 +125,6 @@ async function getEasBuildSourcesAsync(projectRoot, options) {
     }))).filter(Boolean);
     return results;
 }
-exports.getEasBuildSourcesAsync = getEasBuildSourcesAsync;
 async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
     if (!options.platforms.includes('android')) {
         return [];
@@ -159,7 +162,6 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
         return [];
     }
 }
-exports.getExpoAutolinkingAndroidSourcesAsync = getExpoAutolinkingAndroidSourcesAsync;
 /**
  * Gets the patch sources for the `patch-project`.
  */
@@ -171,7 +173,6 @@ async function getExpoCNGPatchSourcesAsync(projectRoot, options) {
     }
     return [];
 }
-exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
 async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
     if (!options.platforms.includes('ios')) {
         return [];
@@ -202,7 +203,6 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
         return [];
     }
 }
-exports.getExpoAutolinkingIosSourcesAsync = getExpoAutolinkingIosSourcesAsync;
 /**
  * Sort the expo-modules-autolinking android config to make it stable from hashing.
  */
@@ -213,7 +213,6 @@ function sortExpoAutolinkingAndroidConfig(config) {
     }
     return config;
 }
-exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 /**
  * Get the platform parameter for expo-modules-autolinking.
  *

@@ -3,9 +3,9 @@ import * as React from 'react';
 type NavigatorTypes = ReturnType<typeof useNavigationBuilder>;
 export declare const NavigatorContext: React.Context<{
     contextKey: string;
-    state: NavigatorTypes['state'];
-    navigation: NavigatorTypes['navigation'];
-    descriptors: NavigatorTypes['descriptors'];
+    state: NavigatorTypes["state"];
+    navigation: NavigatorTypes["navigation"];
+    descriptors: NavigatorTypes["descriptors"];
     router: RouterFactory<any, any, any>;
 } | null>;
 export type NavigatorProps = {

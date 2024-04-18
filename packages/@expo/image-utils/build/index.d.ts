@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as Cache from './Cache';
 import { compositeImagesAsync, generateFaviconAsync, generateImageAsync, getPngInfo } from './Image';
 import { ImageFormat, ImageOptions, ResizeMode } from './Image.types';

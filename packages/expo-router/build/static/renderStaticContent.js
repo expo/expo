@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = void 0;
+exports.getBuildTimeServerManifestAsync = exports.getManifest = void 0;
+exports.getStaticContent = getStaticContent;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -59,7 +60,6 @@ async function getManifest(options = {}) {
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
 }
-exports.getManifest = getManifest;
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
  * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
@@ -76,7 +76,6 @@ async function getBuildTimeServerManifestAsync(options = {}) {
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     return (0, getServerManifest_1.getServerManifest)(routeTree);
 }
-exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -125,7 +124,6 @@ async function getStaticContent(location) {
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
-exports.getStaticContent = getStaticContent;
 function mixHeadComponentsWithStaticResults(helmet, html) {
     // Head components
     for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {

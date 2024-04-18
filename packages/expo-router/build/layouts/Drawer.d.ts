@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { DrawerNavigationOptions, DrawerNavigationEventMap } from '@react-navigation/drawer';
 import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
 export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native").DefaultRouterOptions<string> & {

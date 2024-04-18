@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assertStaticParams = exports.loadStaticParamsAsync = void 0;
+exports.loadStaticParamsAsync = loadStaticParamsAsync;
+exports.assertStaticParams = assertStaticParams;
 async function loadStaticParamsAsync(route) {
     const expandedChildren = await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })));
     route.children = expandedChildren.flat();
     return route;
 }
-exports.loadStaticParamsAsync = loadStaticParamsAsync;
 async function loadStaticParamsRecursive(route, props) {
     if (!route?.dynamic && !route?.children?.length) {
         return [route];
@@ -152,5 +152,4 @@ function assertStaticParams(route, params) {
         }
     }
 }
-exports.assertStaticParams = assertStaticParams;
 //# sourceMappingURL=loadStaticParamsAsync.js.map

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireUncachedFile = exports.tryRequireThenImport = void 0;
+exports.tryRequireThenImport = tryRequireThenImport;
+exports.requireUncachedFile = requireUncachedFile;
 async function tryRequireThenImport(moduleId) {
     try {
         return require(moduleId);
@@ -20,7 +21,6 @@ async function tryRequireThenImport(moduleId) {
         throw requireError;
     }
 }
-exports.tryRequireThenImport = tryRequireThenImport;
 function requireUncachedFile(moduleId) {
     try {
         // delete require.cache[require.resolve(moduleId)];
@@ -36,5 +36,4 @@ function requireUncachedFile(moduleId) {
         throw error;
     }
 }
-exports.requireUncachedFile = requireUncachedFile;
 //# sourceMappingURL=require.js.map

@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoDevice.web.d.ts","sourceRoot":"","sources":["../src/ExpoDevice.web.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;;;;;;;;;;;;;;;0BA2Ed,QAAQ,UAAU,CAAC;iCAGZ,QAAQ,OAAO,CAAC;;AA/CrD,wBAkDE"}
+{"version":3,"file":"ExpoDevice.web.d.ts","sourceRoot":"","sources":["../src/ExpoDevice.web.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;;;;;;;;;;;;;;;0BA2Ed,OAAO,CAAC,UAAU,CAAC;iCAGZ,OAAO,CAAC,OAAO,CAAC;;AA/CrD,wBAkDE"}

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = useLinkToPathProps;
 const react_native_1 = require("react-native");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
@@ -45,5 +46,4 @@ function useLinkToPathProps(props) {
         onPress,
     };
 }
-exports.default = useLinkToPathProps;
 //# sourceMappingURL=useLinkToPathProps.js.map

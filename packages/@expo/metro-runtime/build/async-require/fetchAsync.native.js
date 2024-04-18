@@ -10,7 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchAsync = void 0;
+exports.fetchAsync = fetchAsync;
 // @ts-expect-error
 const RCTNetworking_1 = __importDefault(require("react-native/Libraries/Network/RCTNetworking"));
 function fetchAsync(url) {
@@ -55,5 +55,4 @@ function fetchAsync(url) {
         responseListener?.remove();
     });
 }
-exports.fetchAsync = fetchAsync;
 //# sourceMappingURL=fetchAsync.native.js.map

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStackFormattedLocation = exports.formatProjectFilePath = void 0;
+exports.formatProjectFilePath = formatProjectFilePath;
+exports.getStackFormattedLocation = getStackFormattedLocation;
 function formatProjectFilePath(projectRoot, file) {
     if (file == null) {
         return '<unknown>';
     }
     return pathRelativeToPath(file.replace(/\\/g, '/'), projectRoot.replace(/\\/g, '/')).replace(/\?.*$/, '');
 }
-exports.formatProjectFilePath = formatProjectFilePath;
 function pathRelativeToPath(path, relativeTo, sep = '/') {
     const relativeToParts = relativeTo.split(sep);
     const pathParts = path.split(sep);
@@ -28,5 +28,4 @@ function getStackFormattedLocation(projectRoot, frame) {
             : '');
     return location;
 }
-exports.getStackFormattedLocation = getStackFormattedLocation;
 //# sourceMappingURL=formatProjectFilePath.js.map

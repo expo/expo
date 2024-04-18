@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native").DefaultRouterOptions<string> & {

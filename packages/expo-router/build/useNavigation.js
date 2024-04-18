@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveParentId = exports.useNavigation = void 0;
+exports.useNavigation = useNavigation;
+exports.resolveParentId = resolveParentId;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
@@ -37,7 +38,6 @@ function useNavigation(parent) {
     }
     return navigation;
 }
-exports.useNavigation = useNavigation;
 function resolveParentId(contextKey, parentId) {
     if (!parentId) {
         return null;
@@ -47,7 +47,6 @@ function resolveParentId(contextKey, parentId) {
     }
     return (0, matchers_1.getNameFromFilePath)(parentId);
 }
-exports.resolveParentId = resolveParentId;
 // Resolve a path like `../` relative to a path like `/foo/bar`
 function relativePaths(from, to) {
     const fromParts = from.split('/').filter(Boolean);

@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.attemptModification = void 0;
+exports.attemptModification = attemptModification;
 const config_1 = require("@expo/config");
 const chalk_1 = __importDefault(require("chalk"));
 const Log = __importStar(require("./log"));
@@ -42,7 +42,6 @@ async function attemptModification(projectRoot, edits, exactEdits) {
         warnAboutConfigAndThrow(modification.type, modification.message, exactEdits);
     }
 }
-exports.attemptModification = attemptModification;
 function logNoConfig() {
     Log.log(chalk_1.default.yellow(`No Expo config was found. Please create an Expo config (${chalk_1.default.bold `app.json`} or ${chalk_1.default.bold `app.config.js`}) in your project root.`));
 }

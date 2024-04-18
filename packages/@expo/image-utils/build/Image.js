@@ -26,7 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = exports.getMimeType = void 0;
+exports.getMimeType = getMimeType;
+exports.generateImageAsync = generateImageAsync;
+exports.generateFaviconAsync = generateFaviconAsync;
+exports.compositeImagesAsync = compositeImagesAsync;
+exports.getPngInfo = getPngInfo;
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const parse_png_1 = __importDefault(require("parse-png"));
@@ -149,7 +153,6 @@ function getMimeType(srcPath) {
     const ext = path_1.default.extname(srcPath).replace(/^\./, '');
     return types[ext] ?? null;
 }
-exports.getMimeType = getMimeType;
 async function ensureImageOptionsAsync(imageOptions) {
     const icon = {
         ...imageOptions,
@@ -184,12 +187,10 @@ async function generateImageAsync(options, imageOptions) {
     }
     return { name, source };
 }
-exports.generateImageAsync = generateImageAsync;
 async function generateFaviconAsync(pngImageBuffer, sizes = [16, 32, 48]) {
     const buffers = await resizeImagesAsync(pngImageBuffer, sizes);
     return await Ico.generateAsync(buffers);
 }
-exports.generateFaviconAsync = generateFaviconAsync;
 /**
  * Layers the provided foreground image over the provided background image.
  *
@@ -208,9 +209,7 @@ async function compositeImagesAsync({ foreground, background, x = 0, y = 0, }) {
         .composite([{ input: foreground, left: x, top: y }])
         .toBuffer();
 }
-exports.compositeImagesAsync = compositeImagesAsync;
 async function getPngInfo(src) {
     return await (0, parse_png_1.default)(fs_1.default.readFileSync(src));
 }
-exports.getPngInfo = getPngInfo;
 //# sourceMappingURL=Image.js.map

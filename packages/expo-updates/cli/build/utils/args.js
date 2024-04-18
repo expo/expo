@@ -26,7 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireArg = exports.assertArgs = exports.getProjectRoot = void 0;
+exports.getProjectRoot = getProjectRoot;
+exports.assertArgs = assertArgs;
+exports.requireArg = requireArg;
 // Common utilities for interacting with `args` library.
 // These functions should be used by every command.
 const arg_1 = __importDefault(require("arg"));
@@ -45,7 +47,6 @@ function getProjectRoot(args) {
     }
     return projectRoot;
 }
-exports.getProjectRoot = getProjectRoot;
 /**
  * Parse args and assert unknown options.
  *
@@ -66,7 +67,6 @@ function assertArgs(schema, argv) {
         throw error;
     }
 }
-exports.assertArgs = assertArgs;
 function requireArg(args, name) {
     const value = args[name];
     if (value === undefined || value === null) {
@@ -74,4 +74,3 @@ function requireArg(args, name) {
     }
     return value;
 }
-exports.requireArg = requireArg;

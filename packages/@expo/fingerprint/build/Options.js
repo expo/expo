@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeOptionsAsync = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.normalizeOptionsAsync = normalizeOptionsAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -78,7 +79,6 @@ async function normalizeOptionsAsync(projectRoot, options) {
         ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
     };
 }
-exports.normalizeOptionsAsync = normalizeOptionsAsync;
 async function collectIgnorePathsAsync(projectRoot, options) {
     const ignorePaths = [
         ...exports.DEFAULT_IGNORE_PATHS,

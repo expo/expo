@@ -14,7 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.findModulesAsync = void 0;
+exports.verifySearchResults = exports.generatePackageListAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.findModulesAsync = void 0;
+exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
 const findModules_1 = require("./findModules");
 Object.defineProperty(exports, "findModulesAsync", { enumerable: true, get: function () { return findModules_1.findModulesAsync; } });
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
@@ -37,5 +38,4 @@ async function queryAutolinkingModulesFromProjectAsync(projectRoot, options) {
     const searchResults = await (0, findModules_1.findModulesAsync)(linkOptions);
     return await (0, resolveModules_1.resolveModulesAsync)(searchResults, linkOptions);
 }
-exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
 //# sourceMappingURL=index.js.map

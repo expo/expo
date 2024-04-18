@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorToastMessage = void 0;
+exports.ErrorToastMessage = ErrorToastMessage;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const LogBoxMessage_1 = require("../UI/LogBoxMessage");
@@ -34,7 +34,6 @@ const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 function ErrorToastMessage({ message }) {
     return (react_1.default.createElement(react_native_1.Text, { numberOfLines: 1, style: styles.text }, message && react_1.default.createElement(LogBoxMessage_1.LogBoxMessage, { plaintext: true, message: message, style: styles.substitutionText })));
 }
-exports.ErrorToastMessage = ErrorToastMessage;
 const styles = react_native_1.StyleSheet.create({
     text: {
         userSelect: 'none',

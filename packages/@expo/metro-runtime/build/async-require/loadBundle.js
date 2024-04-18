@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadBundleAsync = void 0;
+exports.loadBundleAsync = loadBundleAsync;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -40,5 +40,4 @@ async function loadBundleAsync(bundlePath) {
         });
     }
 }
-exports.loadBundleAsync = loadBundleAsync;
 //# sourceMappingURL=loadBundle.js.map

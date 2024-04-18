@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerCommand = void 0;
+exports.registerCommand = registerCommand;
 const tempy = __importStar(require("tempy"));
 const ConfigReader_1 = __importDefault(require("./ConfigReader"));
 const Platform_1 = require("./Platform");
@@ -70,5 +70,4 @@ function registerCommand(commander, commandName, fn) {
         }
     });
 }
-exports.registerCommand = registerCommand;
 //# sourceMappingURL=registerCommand.js.map

@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.environmentVariableSerializerPlugin = exports.serverPreludeSerializerPlugin = exports.getTransformEnvironment = void 0;
+exports.getTransformEnvironment = getTransformEnvironment;
+exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
+exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
@@ -11,7 +13,6 @@ function getTransformEnvironment(url) {
     const match = url.match(/[&?]transform\.environment=([^&]+)/);
     return match ? match[1] : null;
 }
-exports.getTransformEnvironment = getTransformEnvironment;
 function getAllExpoPublicEnvVars() {
     // Create an object containing all environment variables that start with EXPO_PUBLIC_
     const env = {};
@@ -49,7 +50,6 @@ function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
     }
     return [entryPoint, preModules, graph, options];
 }
-exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
 function environmentVariableSerializerPlugin(entryPoint, preModules, graph, options) {
     // Skip replacement in Node.js environments.
     if (isServerEnvironment(graph, options)) {
@@ -84,7 +84,6 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
         options,
     ];
 }
-exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 function getEnvPrelude(contents) {
     const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
     const name = '__env__';

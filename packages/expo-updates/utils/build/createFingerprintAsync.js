@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFingerprintAsync = void 0;
+exports.createFingerprintAsync = createFingerprintAsync;
 const Fingerprint = __importStar(require("@expo/fingerprint"));
 async function createFingerprintAsync(projectRoot, platform, workflow, options) {
     if (workflow === 'generic') {
@@ -42,4 +42,3 @@ async function createFingerprintAsync(projectRoot, platform, workflow, options) 
         });
     }
 }
-exports.createFingerprintAsync = createFingerprintAsync;

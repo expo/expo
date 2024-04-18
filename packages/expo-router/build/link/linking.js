@@ -26,7 +26,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
+exports.getPathFromState = exports.getStateFromPath = void 0;
+exports.getInitialURL = getInitialURL;
+exports.getRootURL = getRootURL;
+exports.addEventListener = addEventListener;
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
@@ -80,7 +83,6 @@ function getInitialURL() {
         setTimeout(() => resolve(getRootURL()), 150)),
     ]);
 }
-exports.getInitialURL = getInitialURL;
 let _rootURL;
 function getRootURL() {
     if (_rootURL === undefined) {
@@ -88,7 +90,6 @@ function getRootURL() {
     }
     return _rootURL;
 }
-exports.getRootURL = getRootURL;
 function addEventListener(listener) {
     let callback;
     if (isExpoGo) {
@@ -115,5 +116,4 @@ function addEventListener(listener) {
         subscription?.remove?.();
     };
 }
-exports.addEventListener = addEventListener;
 //# sourceMappingURL=linking.js.map

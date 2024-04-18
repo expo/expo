@@ -23,6 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = useLinking;
 // Forked from react-navigation with a custom `extractPathFromURL` that automatically
 // allows any prefix and parses Expo Go URLs.
 // For simplicity the following are disabled: enabled, prefixes, independent
@@ -176,5 +177,4 @@ filter, config, getInitialURL = () => Promise.race([
         getInitialState,
     };
 }
-exports.default = useLinking;
 //# sourceMappingURL=useLinking.native.js.map

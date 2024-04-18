@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRootComponent = void 0;
+exports.renderRootComponent = renderRootComponent;
 const expo_1 = require("expo");
 const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = __importDefault(require("react"));
@@ -105,5 +105,4 @@ function renderRootComponent(Component) {
         // TODO: Render a production-only error screen.
     }
 }
-exports.renderRootComponent = renderRootComponent;
 //# sourceMappingURL=renderRootComponent.js.map

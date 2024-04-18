@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWatchFolders = exports.resolveAllWorkspacePackageJsonPaths = exports.globAllPackageJsonPaths = void 0;
+exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
+exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPaths;
+exports.getWatchFolders = getWatchFolders;
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
@@ -45,7 +47,6 @@ function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
         .filter(Boolean)
         .map((p) => path_1.default.join(p));
 }
-exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
 function getWorkspacePackagesArray({ workspaces }) {
     if (Array.isArray(workspaces)) {
         return workspaces;
@@ -71,7 +72,6 @@ function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot) {
         return [];
     }
 }
-exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPaths;
 /**
  * @param projectRoot file path to app's project root
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
@@ -91,7 +91,6 @@ function getWatchFolders(projectRoot) {
         ...packages.map((pkg) => path_1.default.dirname(pkg)),
     ]);
 }
-exports.getWatchFolders = getWatchFolders;
 function uniqueItems(items) {
     return [...new Set(items)];
 }

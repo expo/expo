@@ -30,6 +30,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.series = void 0;
+exports.default = useLinking;
 const core_1 = require("@react-navigation/core");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
@@ -327,5 +328,4 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
         getInitialState,
     };
 }
-exports.default = useLinking;
 //# sourceMappingURL=useLinking.js.map

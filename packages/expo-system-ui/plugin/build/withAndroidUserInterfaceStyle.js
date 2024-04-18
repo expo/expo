@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setStrings = exports.resolveProps = exports.withAndroidUserInterfaceStyle = void 0;
+exports.withAndroidUserInterfaceStyle = void 0;
+exports.resolveProps = resolveProps;
+exports.setStrings = setStrings;
 const assert_1 = __importDefault(require("assert"));
 const config_plugins_1 = require("expo/config-plugins");
 // strings.xml keys, this should not change.
@@ -20,7 +22,6 @@ function resolveProps(config) {
     (0, assert_1.default)(!userInterfaceStyle || ['automatic', 'light', 'dark'].includes(userInterfaceStyle), `expo-system-ui: Invalid userInterfaceStyle: "${userInterfaceStyle}"`);
     return { userInterfaceStyle };
 }
-exports.resolveProps = resolveProps;
 function setStrings(strings, { userInterfaceStyle }) {
     const pairs = [[USER_INTERFACE_STYLE_KEY, userInterfaceStyle]];
     const stringItems = [];
@@ -39,4 +40,3 @@ function setStrings(strings, { userInterfaceStyle }) {
     }
     return config_plugins_1.AndroidConfig.Strings.setStringItem(stringItems, strings);
 }
-exports.setStrings = setStrings;

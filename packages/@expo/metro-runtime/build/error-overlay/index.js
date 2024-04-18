@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withErrorOverlay = void 0;
+exports.withErrorOverlay = withErrorOverlay;
 const react_1 = __importDefault(require("react"));
 if (!global.setImmediate) {
     global.setImmediate = function (fn) {
@@ -24,5 +24,4 @@ function withErrorOverlay(Comp) {
             react_1.default.createElement(Comp, { ...props })));
     };
 }
-exports.withErrorOverlay = withErrorOverlay;
 //# sourceMappingURL=index.js.map

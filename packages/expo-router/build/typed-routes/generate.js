@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTypedRoutesDeclarationFile = void 0;
+exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 const node_fs_1 = __importDefault(require("node:fs"));
 const path_1 = __importDefault(require("path"));
 const getRoutes_1 = require("../getRoutes");
@@ -31,7 +31,6 @@ function getTypedRoutesDeclarationFile(ctx) {
         .replace('type DynamicRoutes<T extends string> = string;', `type DynamicRoutes<T extends string> = ${setToUnionType(dynamicRoutes)};`)
         .replace('type DynamicRouteTemplate = never;', `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`));
 }
-exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 /**
  * Walks a RouteNode tree and adds the routes to the provided sets
  */

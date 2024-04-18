@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortSources = void 0;
+exports.sortSources = sortSources;
 function sortSources(sources) {
     const typeOrder = {
         file: 0,
@@ -23,5 +23,4 @@ function sortSources(sources) {
         return typeResult;
     });
 }
-exports.sortSources = sortSources;
 //# sourceMappingURL=Sort.js.map

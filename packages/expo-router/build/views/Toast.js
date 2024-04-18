@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Toast = exports.ToastWrapper = exports.CODE_FONT = void 0;
+exports.CODE_FONT = void 0;
+exports.ToastWrapper = ToastWrapper;
+exports.Toast = Toast;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -32,7 +34,6 @@ function ToastWrapper({ children }) {
       {children}
     </Wrapper>);
 }
-exports.ToastWrapper = ToastWrapper;
 function Toast({ children, filename, warning, }) {
     const filenamePretty = react_1.default.useMemo(() => {
         if (!filename)
@@ -61,7 +62,6 @@ function Toast({ children, filename, warning, }) {
       </react_native_1.Animated.View>
     </react_native_1.View>);
 }
-exports.Toast = Toast;
 const styles = react_native_1.StyleSheet.create({
     container: {
         backgroundColor: 'transparent',

@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = void 0;
+exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
@@ -220,7 +221,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
-exports.getDefaultConfig = getDefaultConfig;
 // re-export for legacy cases.
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
 function getPkgVersion(projectRoot, pkgName) {

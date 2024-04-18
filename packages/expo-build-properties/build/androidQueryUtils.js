@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderQueryIntents = exports.renderQueryPackages = exports.renderQueryProviders = void 0;
+exports.renderQueryProviders = renderQueryProviders;
+exports.renderQueryPackages = renderQueryPackages;
+exports.renderQueryIntents = renderQueryIntents;
 function renderQueryProviders(data) {
     const dataStr = Array.isArray(data) ? data.join(';') : data;
     return dataStr ? { $: { 'android:authorities': dataStr } } : undefined;
 }
-exports.renderQueryProviders = renderQueryProviders;
 function renderQueryPackages(data) {
     return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
         $: {
@@ -13,7 +14,6 @@ function renderQueryPackages(data) {
         },
     }));
 }
-exports.renderQueryPackages = renderQueryPackages;
 function renderQueryIntents(queryIntents) {
     return (queryIntents?.map((intent) => {
         const { data, category, action } = intent;
@@ -36,4 +36,3 @@ function renderQueryIntents(queryIntents) {
         };
     }) ?? []);
 }
-exports.renderQueryIntents = renderQueryIntents;

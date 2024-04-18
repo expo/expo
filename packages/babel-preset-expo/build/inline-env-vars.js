@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoInlineEnvVars = void 0;
+exports.expoInlineEnvVars = expoInlineEnvVars;
 const debug = require('debug')('expo:babel:env-vars');
 function expoInlineEnvVars(api) {
     const { types: t } = api;
@@ -26,4 +26,3 @@ function expoInlineEnvVars(api) {
         },
     };
 }
-exports.expoInlineEnvVars = expoInlineEnvVars;

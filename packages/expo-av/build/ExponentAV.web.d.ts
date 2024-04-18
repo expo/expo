@@ -20,7 +20,7 @@ declare const _default: {
     getAudioRecordingStatus(): Promise<RecordingStatus>;
     prepareAudioRecorder(options: any): Promise<{
         uri: string | null;
-        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
+        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, "canRecord">>;
     }>;
     startAudioRecording(): Promise<RecordingStatus>;
     pauseAudioRecording(): Promise<RecordingStatus>;

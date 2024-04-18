@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStringifySafeWithLimits = void 0;
+exports.createStringifySafeWithLimits = createStringifySafeWithLimits;
 /**
  * Tries to stringify with JSON.stringify and toString, but catches exceptions
  * (e.g. from circular objects) and always returns a string and never throws.
@@ -103,7 +103,6 @@ function createStringifySafeWithLimits(limits) {
         return '["' + typeof arg + '" failed to stringify]';
     };
 }
-exports.createStringifySafeWithLimits = createStringifySafeWithLimits;
 const stringifySafe = createStringifySafeWithLimits({
     maxDepth: 10,
     maxStringLimit: 100,

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorBoundary = void 0;
+exports.ErrorBoundary = ErrorBoundary;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -108,7 +108,6 @@ function ErrorBoundary({ error, retry }) {
       </Wrapper>
     </react_native_1.View>);
 }
-exports.ErrorBoundary = ErrorBoundary;
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,

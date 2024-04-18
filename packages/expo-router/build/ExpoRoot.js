@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRoot = void 0;
+exports.ExpoRoot = ExpoRoot;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
@@ -65,7 +65,6 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
-exports.ExpoRoot = ExpoRoot;
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;

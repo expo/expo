@@ -4,7 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchFileAsync = exports.patchReactImportsAsync = void 0;
+exports.patchReactImportsAsync = patchReactImportsAsync;
+exports.patchFileAsync = patchFileAsync;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -17,7 +18,6 @@ async function patchReactImportsAsync(dirs, options) {
     const headerSet = await generateReactHeaderSetAsync(path_1.default.join(options.podsRoot, 'Headers', 'Public', 'React-Core', 'React'));
     await Promise.all(dirs.map((dir) => patchDirAsync(headerSet, dir, options.dryRun)));
 }
-exports.patchReactImportsAsync = patchReactImportsAsync;
 /**
  * Generate `React-Core` public header names as a set, will transform necessary headers based on this set.
  */
@@ -75,7 +75,6 @@ async function patchFileAsync(headerSet, file, dryRun) {
         }
     }
 }
-exports.patchFileAsync = patchFileAsync;
 /**
  * Patch imports from a directory
  * @param headerSet prebuilt React-Core header set

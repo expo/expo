@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoRouterBabelPlugin = void 0;
+exports.expoRouterBabelPlugin = expoRouterBabelPlugin;
 const core_1 = require("@babel/core");
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -78,4 +78,3 @@ function expoRouterBabelPlugin(api) {
         },
     };
 }
-exports.expoRouterBabelPlugin = expoRouterBabelPlugin;

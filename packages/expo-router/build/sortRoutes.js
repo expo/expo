@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutesWithInitial = exports.sortRoutes = void 0;
+exports.sortRoutes = sortRoutes;
+exports.sortRoutesWithInitial = sortRoutesWithInitial;
 const matchers_1 = require("./matchers");
 function sortDynamicConvention(a, b) {
     if (a.deep && !b.deep) {
@@ -54,7 +55,6 @@ function sortRoutes(a, b) {
     }
     return a.route.length - b.route.length;
 }
-exports.sortRoutes = sortRoutes;
 function sortRoutesWithInitial(initialRouteName) {
     return (a, b) => {
         if (initialRouteName) {
@@ -68,5 +68,4 @@ function sortRoutesWithInitial(initialRouteName) {
         return sortRoutes(a, b);
     };
 }
-exports.sortRoutesWithInitial = sortRoutesWithInitial;
 //# sourceMappingURL=sortRoutes.js.map

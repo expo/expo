@@ -6,7 +6,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.purgeContents = exports.appendContents = void 0;
+exports.appendContents = appendContents;
+exports.purgeContents = purgeContents;
 const assert_1 = __importDefault(require("assert"));
 /**
  * Append new contents to src with generated section comments
@@ -28,7 +29,6 @@ function appendContents(src, contents, sectionOptions) {
         return `${src}\n${sectionedContents}`;
     }
 }
-exports.appendContents = appendContents;
 /**
  * Purge a generated section
  */
@@ -38,7 +38,6 @@ function purgeContents(src, sectionOptions) {
     const regex = new RegExp(`\\n${escapeRegExp(start)}\\n[\\s\\S]*\\n${escapeRegExp(end)}`, 'gm');
     return src.replace(regex, '');
 }
-exports.purgeContents = purgeContents;
 /**
  * Create comments for generated section
  */

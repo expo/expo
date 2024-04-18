@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findSharpInstanceAsync = exports.sharpAsync = exports.isAvailableAsync = exports.resizeBufferAsync = void 0;
+exports.resizeBufferAsync = resizeBufferAsync;
+exports.isAvailableAsync = isAvailableAsync;
+exports.sharpAsync = sharpAsync;
+exports.findSharpInstanceAsync = findSharpInstanceAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -25,7 +28,6 @@ async function resizeBufferAsync(buffer, sizes) {
     }));
     return resizedBuffers;
 }
-exports.resizeBufferAsync = resizeBufferAsync;
 /**
  * Returns `true` if a global sharp instance can be found.
  * This functionality can be overridden with `process.env.EXPO_IMAGE_UTILS_NO_SHARP=1`.
@@ -41,7 +43,6 @@ async function isAvailableAsync() {
         return false;
     }
 }
-exports.isAvailableAsync = isAvailableAsync;
 async function sharpAsync(options, commands = []) {
     const bin = await findSharpBinAsync();
     try {
@@ -64,7 +65,6 @@ async function sharpAsync(options, commands = []) {
         }
     }
 }
-exports.sharpAsync = sharpAsync;
 function getOptions(options) {
     const args = [];
     for (const [key, value] of Object.entries(options)) {
@@ -188,7 +188,6 @@ async function findSharpInstanceAsync() {
     }
     return _sharpInstance;
 }
-exports.findSharpInstanceAsync = findSharpInstanceAsync;
 function notFoundError(requiredCliVersion) {
     return new Error(`This command requires version ${requiredCliVersion} of \`sharp-cli\`. \n` +
         `You can install it using \`npm install -g sharp-cli@${requiredCliVersion}\`. \n` +

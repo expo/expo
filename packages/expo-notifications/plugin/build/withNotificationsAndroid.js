@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withNotificationsAndroid = exports.setNotificationSounds = exports.setNotificationIconAsync = exports.setNotificationIconColor = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
+exports.withNotificationsAndroid = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
+exports.getNotificationIcon = getNotificationIcon;
+exports.getNotificationColor = getNotificationColor;
+exports.setNotificationIconColor = setNotificationIconColor;
+exports.setNotificationIconAsync = setNotificationIconAsync;
+exports.setNotificationSounds = setNotificationSounds;
 const image_utils_1 = require("@expo/image-utils");
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
@@ -67,18 +72,15 @@ exports.withNotificationSounds = withNotificationSounds;
 function getNotificationIcon(config) {
     return config.notification?.icon || null;
 }
-exports.getNotificationIcon = getNotificationIcon;
 function getNotificationColor(config) {
     return config.notification?.color || null;
 }
-exports.getNotificationColor = getNotificationColor;
 function setNotificationIconColor(color, colors) {
     return Colors.assignColorValue(colors, {
         name: exports.NOTIFICATION_ICON_COLOR,
         value: color,
     });
 }
-exports.setNotificationIconColor = setNotificationIconColor;
 /**
  * Applies notification icon configuration for expo-notifications
  */
@@ -90,7 +92,6 @@ async function setNotificationIconAsync(projectRoot, icon) {
         removeNotificationIconImageFiles(projectRoot);
     }
 }
-exports.setNotificationIconAsync = setNotificationIconAsync;
 function setNotificationConfig(props, manifest) {
     const mainApplication = getMainApplicationOrThrow(manifest);
     if (props.icon) {
@@ -152,7 +153,6 @@ function setNotificationSounds(projectRoot, sounds) {
         writeNotificationSoundFile(soundFileRelativePath, projectRoot);
     }
 }
-exports.setNotificationSounds = setNotificationSounds;
 /**
  * Copies the input file to the `<project-root>/android/app/src/main/res/raw` directory if
  * there isn't already an existing file under that name.

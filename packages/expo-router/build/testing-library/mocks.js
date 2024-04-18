@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setInitialUrl = void 0;
+exports.setInitialUrl = setInitialUrl;
 /*
  * Optionally enable @testing-library/jest-native/extend-expect. We use this internally for the `toBeOnTheScreen` matcher()
  */
@@ -27,7 +27,6 @@ let mockInitialUrl = '';
 function setInitialUrl(value) {
     mockInitialUrl = value;
 }
-exports.setInitialUrl = setInitialUrl;
 jest.mock('expo-linking', () => {
     const module = {
         ...jest.requireActual('expo-linking'),

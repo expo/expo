@@ -10,7 +10,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.symbolicate = exports.deleteStack = void 0;
+exports.deleteStack = deleteStack;
+exports.symbolicate = symbolicate;
 const symbolicateStackTrace_1 = __importDefault(require("../modules/symbolicateStackTrace"));
 const cache = new Map();
 /**
@@ -43,7 +44,6 @@ const sanitize = ({ stack: maybeStack, codeFrame, }) => {
 function deleteStack(stack) {
     cache.delete(stack);
 }
-exports.deleteStack = deleteStack;
 function symbolicate(stack) {
     let promise = cache.get(stack);
     if (promise == null) {
@@ -52,5 +52,4 @@ function symbolicate(stack) {
     }
     return promise;
 }
-exports.symbolicate = symbolicate;
 //# sourceMappingURL=LogBoxSymbolication.js.map

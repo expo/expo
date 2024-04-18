@@ -38,7 +38,7 @@ declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEve
 }
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare const VideoView: React.ForwardRefExoticComponent<{
-    player?: VideoPlayerWeb | undefined;
+    player?: VideoPlayerWeb;
 } & VideoViewProps & React.RefAttributes<unknown>>;
 export default VideoView;
 //# sourceMappingURL=VideoView.web.d.ts.map

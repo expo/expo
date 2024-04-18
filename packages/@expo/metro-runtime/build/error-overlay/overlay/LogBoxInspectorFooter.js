@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorFooter = void 0;
+exports.LogBoxInspectorFooter = LogBoxInspectorFooter;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -49,7 +49,6 @@ function LogBoxInspectorFooter(props) {
         react_1.default.createElement(FooterButton, { text: "Dismiss", onPress: props.onDismiss }),
         react_1.default.createElement(FooterButton, { text: "Minimize", onPress: props.onMinimize })));
 }
-exports.LogBoxInspectorFooter = LogBoxInspectorFooter;
 function FooterButton({ text, onPress }) {
     return (react_1.default.createElement(react_native_1.Pressable, { onPress: onPress, style: { flex: 1 } }, ({ 
     /** @ts-expect-error: react-native types are broken. */

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultCustomizeFrame = exports.INTERNAL_CALLSITES_REGEX = void 0;
+exports.INTERNAL_CALLSITES_REGEX = void 0;
+exports.getDefaultCustomizeFrame = getDefaultCustomizeFrame;
 const url_1 = require("url");
 // Import only the types here, the values will be imported from the project, at runtime.
 exports.INTERNAL_CALLSITES_REGEX = new RegExp([
@@ -93,5 +94,4 @@ function getDefaultCustomizeFrame() {
         return { ...(frame || {}), collapse };
     };
 }
-exports.getDefaultCustomizeFrame = getDefaultCustomizeFrame;
 //# sourceMappingURL=customizeFrame.js.map

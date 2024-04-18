@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRequestHandler = exports.getRoutesManifest = void 0;
+exports.getRoutesManifest = getRoutesManifest;
+exports.createRequestHandler = createRequestHandler;
 require("@expo/server/install");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -38,7 +39,6 @@ function getProcessedManifest(path) {
 function getRoutesManifest(distFolder) {
     return getProcessedManifest(path_1.default.join(distFolder, '_expo/routes.json'));
 }
-exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // serve a static file
@@ -200,5 +200,4 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         return response;
     };
 }
-exports.createRequestHandler = createRequestHandler;
 //# sourceMappingURL=index.js.map

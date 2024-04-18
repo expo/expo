@@ -34,7 +34,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withSubscription = exports.observe = exports.isDisabled = exports.setDisabled = exports.addIgnorePatterns = exports.getIgnorePatterns = exports.dismiss = exports.clearErrors = exports.clearWarnings = exports.setSelectedLog = exports.clear = exports.symbolicateLogLazy = exports.retrySymbolicateLogNow = exports.symbolicateLogNow = exports.addException = exports.addLog = exports.isMessageIgnored = exports.isLogBoxErrorMessage = exports.reportUnexpectedLogBoxError = exports.reportLogBoxError = void 0;
+exports.reportLogBoxError = reportLogBoxError;
+exports.reportUnexpectedLogBoxError = reportUnexpectedLogBoxError;
+exports.isLogBoxErrorMessage = isLogBoxErrorMessage;
+exports.isMessageIgnored = isMessageIgnored;
+exports.addLog = addLog;
+exports.addException = addException;
+exports.symbolicateLogNow = symbolicateLogNow;
+exports.retrySymbolicateLogNow = retrySymbolicateLogNow;
+exports.symbolicateLogLazy = symbolicateLogLazy;
+exports.clear = clear;
+exports.setSelectedLog = setSelectedLog;
+exports.clearWarnings = clearWarnings;
+exports.clearErrors = clearErrors;
+exports.dismiss = dismiss;
+exports.getIgnorePatterns = getIgnorePatterns;
+exports.addIgnorePatterns = addIgnorePatterns;
+exports.setDisabled = setDisabled;
+exports.isDisabled = isDisabled;
+exports.observe = observe;
+exports.withSubscription = withSubscription;
 const React = __importStar(require("react"));
 const LogBoxLog_1 = require("./LogBoxLog");
 const LogContext_1 = require("./LogContext");
@@ -62,16 +81,13 @@ function reportLogBoxError(error, componentStack) {
     }
     ExceptionsManager.handleException(error);
 }
-exports.reportLogBoxError = reportLogBoxError;
 function reportUnexpectedLogBoxError(error, componentStack) {
     error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
     return reportLogBoxError(error, componentStack);
 }
-exports.reportUnexpectedLogBoxError = reportUnexpectedLogBoxError;
 function isLogBoxErrorMessage(message) {
     return typeof message === 'string' && message.includes(LOGBOX_ERROR_MESSAGE);
 }
-exports.isLogBoxErrorMessage = isLogBoxErrorMessage;
 function isMessageIgnored(message) {
     for (const pattern of ignorePatterns) {
         if ((pattern instanceof RegExp && pattern.test(message)) ||
@@ -81,7 +97,6 @@ function isMessageIgnored(message) {
     }
     return false;
 }
-exports.isMessageIgnored = isMessageIgnored;
 function setImmediateShim(callback) {
     if (!global.setImmediate) {
         return setTimeout(callback, 0);
@@ -175,7 +190,6 @@ function addLog(log) {
         }
     });
 }
-exports.addLog = addLog;
 function addException(error) {
     // Parsing logs are expensive so we schedule this
     // otherwise spammy logs would pause rendering.
@@ -188,30 +202,25 @@ function addException(error) {
         }
     });
 }
-exports.addException = addException;
 function symbolicateLogNow(type, log) {
     log.symbolicate(type, () => {
         handleUpdate();
     });
 }
-exports.symbolicateLogNow = symbolicateLogNow;
 function retrySymbolicateLogNow(type, log) {
     log.retrySymbolicate(type, () => {
         handleUpdate();
     });
 }
-exports.retrySymbolicateLogNow = retrySymbolicateLogNow;
 function symbolicateLogLazy(type, log) {
     log.symbolicate(type);
 }
-exports.symbolicateLogLazy = symbolicateLogLazy;
 function clear() {
     if (logs.size > 0) {
         logs = new Set();
         setSelectedLog(-1);
     }
 }
-exports.clear = clear;
 function setSelectedLog(proposedNewIndex) {
     const oldIndex = _selectedIndex;
     let newIndex = proposedNewIndex;
@@ -238,7 +247,6 @@ function setSelectedLog(proposedNewIndex) {
         }, 0);
     }
 }
-exports.setSelectedLog = setSelectedLog;
 function clearWarnings() {
     const newLogs = Array.from(logs).filter((log) => log.level !== 'warn');
     if (newLogs.length !== logs.size) {
@@ -247,7 +255,6 @@ function clearWarnings() {
         handleUpdate();
     }
 }
-exports.clearWarnings = clearWarnings;
 function clearErrors() {
     const newLogs = Array.from(logs).filter((log) => log.level !== 'error' && log.level !== 'fatal');
     if (newLogs.length !== logs.size) {
@@ -255,18 +262,15 @@ function clearErrors() {
         setSelectedLog(-1);
     }
 }
-exports.clearErrors = clearErrors;
 function dismiss(log) {
     if (logs.has(log)) {
         logs.delete(log);
         handleUpdate();
     }
 }
-exports.dismiss = dismiss;
 function getIgnorePatterns() {
     return Array.from(ignorePatterns);
 }
-exports.getIgnorePatterns = getIgnorePatterns;
 function addIgnorePatterns(patterns) {
     const existingSize = ignorePatterns.size;
     // The same pattern may be added multiple times, but adding a new pattern
@@ -293,7 +297,6 @@ function addIgnorePatterns(patterns) {
     logs = new Set(Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)));
     handleUpdate();
 }
-exports.addIgnorePatterns = addIgnorePatterns;
 function setDisabled(value) {
     if (value === _isDisabled) {
         return;
@@ -301,11 +304,9 @@ function setDisabled(value) {
     _isDisabled = value;
     handleUpdate();
 }
-exports.setDisabled = setDisabled;
 function isDisabled() {
     return _isDisabled;
 }
-exports.isDisabled = isDisabled;
 function observe(observer) {
     const subscription = { observer };
     observers.add(subscription);
@@ -316,7 +317,6 @@ function observe(observer) {
         },
     };
 }
-exports.observe = observe;
 function withSubscription(WrappedComponent) {
     class LogBoxStateSubscription extends React.Component {
         static getDerivedStateFromError() {
@@ -384,5 +384,4 @@ function withSubscription(WrappedComponent) {
     // @ts-expect-error
     return LogBoxStateSubscription;
 }
-exports.withSubscription = withSubscription;
 //# sourceMappingURL=LogBoxData.js.map

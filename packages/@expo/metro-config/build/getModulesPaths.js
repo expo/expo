@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getServerRoot = exports.getModulesPaths = exports.getWorkspaceRoot = void 0;
+exports.getWorkspaceRoot = getWorkspaceRoot;
+exports.getModulesPaths = getModulesPaths;
+exports.getServerRoot = getServerRoot;
 const find_yarn_workspace_root_1 = __importDefault(require("find-yarn-workspace-root"));
 const path_1 = __importDefault(require("path"));
 const env_1 = require("./env");
@@ -19,7 +21,6 @@ function getWorkspaceRoot(projectRoot) {
         throw error;
     }
 }
-exports.getWorkspaceRoot = getWorkspaceRoot;
 function getModulesPaths(projectRoot) {
     const paths = [];
     // Only add the project root if it's not the current working directory
@@ -31,11 +32,9 @@ function getModulesPaths(projectRoot) {
     }
     return paths;
 }
-exports.getModulesPaths = getModulesPaths;
 function getServerRoot(projectRoot) {
     return env_1.env.EXPO_USE_METRO_WORKSPACE_ROOT
         ? getWorkspaceRoot(projectRoot) ?? projectRoot
         : projectRoot;
 }
-exports.getServerRoot = getServerRoot;
 //# sourceMappingURL=getModulesPaths.js.map

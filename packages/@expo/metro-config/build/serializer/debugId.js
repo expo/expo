@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringToUUID = void 0;
+exports.stringToUUID = stringToUUID;
 const node_crypto_1 = __importDefault(require("node:crypto"));
 /**
  * Copyright © 2023 650 Industries.
@@ -34,5 +34,4 @@ function stringToUUID(str) {
         '-' +
         md5Hash.substring(20)).toLowerCase();
 }
-exports.stringToUUID = stringToUUID;
 //# sourceMappingURL=debugId.js.map

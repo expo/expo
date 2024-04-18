@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripBaseUrl = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
+exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
+exports.default = getStateFromPath;
+exports.getMatchableRouteConfigs = getMatchableRouteConfigs;
+exports.stripBaseUrl = stripBaseUrl;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
@@ -29,7 +32,6 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
         url: parsed,
     };
 }
-exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -55,7 +57,6 @@ function getStateFromPath(path, options) {
     const { initialRoutes, configs } = getMatchableRouteConfigs(options);
     return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
-exports.default = getStateFromPath;
 function getMatchableRouteConfigs(options) {
     if (options) {
         (0, validatePathConfig_1.default)(options);
@@ -90,7 +91,6 @@ function getMatchableRouteConfigs(options) {
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
 }
-exports.getMatchableRouteConfigs = getMatchableRouteConfigs;
 function assertConfigDuplicates(configs) {
     // Check for duplicate patterns in the config
     configs.reduce((acc, config) => {
@@ -580,5 +580,4 @@ function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     }
     return path;
 }
-exports.stripBaseUrl = stripBaseUrl;
 //# sourceMappingURL=getStateFromPath.js.map

@@ -23,7 +23,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorOverlayBodyContents = exports.ErrorOverlayBody = exports.LogBoxInspector = exports.LogBoxInspectorContainer = void 0;
+exports.LogBoxInspectorContainer = LogBoxInspectorContainer;
+exports.LogBoxInspector = LogBoxInspector;
+exports.ErrorOverlayBody = ErrorOverlayBody;
+exports.ErrorOverlayBodyContents = ErrorOverlayBodyContents;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -57,7 +60,6 @@ function LogBoxInspectorContainer() {
     }
     return react_1.default.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs });
 }
-exports.LogBoxInspectorContainer = LogBoxInspectorContainer;
 function LogBoxInspector({ log, selectedLogIndex, logs, }) {
     const onDismiss = (0, react_1.useCallback)(() => {
         // Here we handle the cases when the log is dismissed and it
@@ -110,12 +112,10 @@ function LogBoxInspector({ log, selectedLogIndex, logs, }) {
         react_1.default.createElement(ErrorOverlayBody, { onRetry: _handleRetry }),
         react_1.default.createElement(LogBoxInspectorFooter_1.LogBoxInspectorFooter, { onDismiss: onDismiss, onMinimize: onMinimize })));
 }
-exports.LogBoxInspector = LogBoxInspector;
 function ErrorOverlayBody({ onRetry }) {
     const log = (0, LogContext_1.useSelectedLog)();
     return react_1.default.createElement(ErrorOverlayBodyContents, { log: log, onRetry: onRetry });
 }
-exports.ErrorOverlayBody = ErrorOverlayBody;
 function ErrorOverlayBodyContents({ log, onRetry, }) {
     const [collapsed, setCollapsed] = (0, react_1.useState)(true);
     (0, react_1.useEffect)(() => {
@@ -137,7 +137,6 @@ function ErrorOverlayBodyContents({ log, onRetry, }) {
                 // eslint-disable-next-line react/jsx-no-bind
                 onRetry: onRetry.bind(onRetry, 'component') })))));
 }
-exports.ErrorOverlayBodyContents = ErrorOverlayBodyContents;
 const styles = react_native_1.StyleSheet.create({
     scrollBody: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),

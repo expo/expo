@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.useSortedScreens = useSortedScreens;
+exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
+exports.createGetIdForRoute = createGetIdForRoute;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -61,7 +63,6 @@ function useSortedScreens(order) {
         : [];
     return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
 }
-exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
     if (ErrorBoundary) {
         return {
@@ -134,7 +135,6 @@ function getQualifiedRouteComponent(value) {
     qualifiedStore.set(value, QualifiedRoute);
     return QualifiedRoute;
 }
-exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route) {
     const include = new Map();
@@ -165,7 +165,6 @@ function createGetIdForRoute(route) {
         return segments.join('/') ?? route.contextKey;
     };
 }
-exports.createGetIdForRoute = createGetIdForRoute;
 function routeToScreen(route, { options, ...props } = {}) {
     return (<primitives_1.Screen 
     // Users can override the screen getId function.

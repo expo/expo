@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildAsyncRequire = void 0;
+exports.buildAsyncRequire = buildAsyncRequire;
 const loadBundle_1 = require("./loadBundle");
 /** Create an `loadBundleAsync` function in the expected shape for Metro bundler. */
 function buildAsyncRequire() {
@@ -23,5 +23,4 @@ function buildAsyncRequire() {
         return promise;
     };
 }
-exports.buildAsyncRequire = buildAsyncRequire;
 //# sourceMappingURL=buildAsyncRequire.js.map

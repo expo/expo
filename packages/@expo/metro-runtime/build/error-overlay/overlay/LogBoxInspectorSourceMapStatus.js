@@ -31,7 +31,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorSourceMapStatus = void 0;
+exports.LogBoxInspectorSourceMapStatus = LogBoxInspectorSourceMapStatus;
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const LogBoxButton_1 = require("../UI/LogBoxButton");
@@ -103,7 +103,6 @@ function LogBoxInspectorSourceMapStatus(props) {
             ] }),
         react_1.default.createElement(react_native_1.Text, { style: [styles.text, { color }] }, "Source Map")));
 }
-exports.LogBoxInspectorSourceMapStatus = LogBoxInspectorSourceMapStatus;
 const styles = react_native_1.StyleSheet.create({
     root: {
         alignItems: 'center',

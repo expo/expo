@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = exports.Redirect = void 0;
+exports.Link = void 0;
+exports.Redirect = Redirect;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 const react_slot_1 = require("@radix-ui/react-slot");
@@ -49,7 +50,6 @@ function Redirect({ href }) {
     });
     return null;
 }
-exports.Redirect = Redirect;
 /**
  * Component to render link to another route using a path.
  * Uses an anchor tag on the web.

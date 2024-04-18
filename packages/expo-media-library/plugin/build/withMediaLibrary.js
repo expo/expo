@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.modifyAndroidManifest = void 0;
+exports.modifyAndroidManifest = modifyAndroidManifest;
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-media-library/package.json');
 function modifyAndroidManifest(manifest) {
@@ -11,7 +11,6 @@ function modifyAndroidManifest(manifest) {
     app.$['android:requestLegacyExternalStorage'] = 'true';
     return manifest;
 }
-exports.modifyAndroidManifest = modifyAndroidManifest;
 const withMediaLibraryExternalStorage = (config) => {
     return (0, config_plugins_1.withAndroidManifest)(config, async (config) => {
         config.modResults = modifyAndroidManifest(config.modResults);

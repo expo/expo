@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as http from 'http';
 import { createRequestHandler as createExpoHandler } from '..';
 type NextFunction = (err?: any) => void;

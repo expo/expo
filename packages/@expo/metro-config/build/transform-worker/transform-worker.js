@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transform = void 0;
+exports.transform = transform;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -169,7 +169,6 @@ async function transform(config, projectRoot, filename, data, options) {
         output,
     };
 }
-exports.transform = transform;
 /**
  * A custom Metro transformer that adds support for processing Expo-specific bundler features.
  * - Global CSS files on web.

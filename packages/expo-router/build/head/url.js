@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStaticUrlFromExpoRouter = void 0;
+exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
@@ -66,5 +66,4 @@ function getStaticUrlFromExpoRouter(pathname) {
     // Append the URL we'd find in context
     return getUrlFromConstants() + pathname;
 }
-exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 //# sourceMappingURL=url.js.map

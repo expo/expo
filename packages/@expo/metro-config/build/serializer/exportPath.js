@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExportPathForDependencyWithOptions = void 0;
+exports.getExportPathForDependencyWithOptions = getExportPathForDependencyWithOptions;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -23,5 +23,4 @@ function getExportPathForDependencyWithOptions(dependencyPath, { platform, src, 
     });
     return `_expo/static/js/${platform}/${name}.js`;
 }
-exports.getExportPathForDependencyWithOptions = getExportPathForDependencyWithOptions;
 //# sourceMappingURL=exportPath.js.map

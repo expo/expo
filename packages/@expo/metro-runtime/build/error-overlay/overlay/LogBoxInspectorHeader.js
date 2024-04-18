@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorHeader = void 0;
+exports.LogBoxInspectorHeader = LogBoxInspectorHeader;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -58,7 +58,6 @@ function LogBoxInspectorHeader(props) {
                 react_1.default.createElement(react_native_1.Text, { style: styles.titleText }, titleText)),
             react_1.default.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-right.png'), onPress: () => props.onSelectIndex(nextIndex) }))));
 }
-exports.LogBoxInspectorHeader = LogBoxInspectorHeader;
 const backgroundForLevel = (level) => ({
     warn: {
         default: 'transparent',

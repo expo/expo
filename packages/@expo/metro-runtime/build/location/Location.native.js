@@ -2,7 +2,8 @@
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.install = exports.setLocationHref = void 0;
+exports.setLocationHref = setLocationHref;
+exports.install = install;
 class DOMException extends Error {
     constructor(message, name) {
         super(message);
@@ -174,7 +175,6 @@ let location = undefined;
 function setLocationHref(href) {
     location = new Location(href);
 }
-exports.setLocationHref = setLocationHref;
 function install() {
     Object.defineProperty(global, 'Location', {
         value: Location,
@@ -191,5 +191,4 @@ function install() {
         enumerable: true,
     });
 }
-exports.install = install;
 //# sourceMappingURL=Location.native.js.map

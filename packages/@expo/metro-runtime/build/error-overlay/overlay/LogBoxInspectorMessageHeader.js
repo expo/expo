@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorMessageHeader = void 0;
+exports.LogBoxInspectorMessageHeader = LogBoxInspectorMessageHeader;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -53,7 +53,6 @@ function LogBoxInspectorMessageHeader(props) {
             react_1.default.createElement(LogBoxMessage_1.LogBoxMessage, { maxLength: props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity, message: props.message, style: styles.messageText }),
             react_1.default.createElement(ShowMoreButton, { ...props }))));
 }
-exports.LogBoxInspectorMessageHeader = LogBoxInspectorMessageHeader;
 const styles = react_native_1.StyleSheet.create({
     body: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),

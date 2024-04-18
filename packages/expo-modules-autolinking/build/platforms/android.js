@@ -3,7 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchGradlePropertyFirst = exports.convertPackageNameToProjectName = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
+exports.generatePackageListAsync = generatePackageListAsync;
+exports.resolveModuleAsync = resolveModuleAsync;
+exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+exports.convertPackageNameToProjectName = convertPackageNameToProjectName;
+exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -16,7 +20,6 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
     const generatedFileContent = await generatePackageListFileContentAsync(modules, namespace);
     await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
 }
-exports.generatePackageListAsync = generatePackageListAsync;
 async function findGradleFilesAsync(revision) {
     const configGradlePaths = revision.config?.androidGradlePaths();
     if (configGradlePaths && configGradlePaths.length) {
@@ -58,7 +61,6 @@ async function resolveModuleAsync(packageName, revision) {
         modules: revision.config?.androidModules() ?? [],
     };
 }
-exports.resolveModuleAsync = resolveModuleAsync;
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     const propsFile = path_1.default.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
     try {
@@ -72,7 +74,6 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     catch { }
     return null;
 }
-exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates the string to put into the generated package list.
  */
@@ -166,7 +167,6 @@ function convertPackageNameToProjectName(packageName, buildGradleFile) {
     const baseDir = path_1.default.dirname(buildGradleFile).replace(/\//g, '-');
     return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }
-exports.convertPackageNameToProjectName = convertPackageNameToProjectName;
 /**
  * Given the contents of a `gradle.properties` file,
  * searches for a property with the given name.
@@ -190,5 +190,4 @@ function searchGradlePropertyFirst(contents, propertyName) {
     }
     return null;
 }
-exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 //# sourceMappingURL=android.js.map

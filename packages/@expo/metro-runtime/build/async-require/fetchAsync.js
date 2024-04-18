@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchAsync = void 0;
+exports.fetchAsync = fetchAsync;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -21,5 +21,4 @@ async function fetchAsync(url) {
         headers: response.headers,
     };
 }
-exports.fetchAsync = fetchAsync;
 //# sourceMappingURL=fetchAsync.js.map

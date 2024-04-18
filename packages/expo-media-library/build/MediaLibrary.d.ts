@@ -298,8 +298,8 @@ export declare function getPermissionsAsync(writeOnly?: boolean, granularPermiss
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
-    granularPermissions?: GranularPermission[] | undefined;
+    writeOnly?: boolean;
+    granularPermissions?: GranularPermission[];
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.

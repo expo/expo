@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setNotificationSounds = exports.withNotificationSounds = exports.withNotificationsIOS = void 0;
+exports.withNotificationSounds = exports.withNotificationsIOS = void 0;
+exports.setNotificationSounds = setNotificationSounds;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -55,4 +56,3 @@ function setNotificationSounds(projectRoot, { sounds, project, projectName, }) {
     }
     return project;
 }
-exports.setNotificationSounds = setNotificationSounds;

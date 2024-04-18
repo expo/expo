@@ -23,16 +23,13 @@ async function osascriptExecAsync(script, opts) {
     const result = await (0, exec_async_1.default)('osascript', osascriptArgs(script), Object.assign({ stdio: 'inherit' }, opts));
     return result?.toString() || '';
 }
-exports.execAsync = osascriptExecAsync;
 async function osascriptSpawnAsync(script, opts) {
     return await (0, spawn_async_1.default)('osascript', osascriptArgs(script), opts);
 }
-exports.spawnAsync = osascriptSpawnAsync;
 async function isAppRunningAsync(appName) {
     const zeroMeansNo = (await osascriptExecAsync('tell app "System Events" to count processes whose name is ' + JSON.stringify(appName))).trim();
     return zeroMeansNo !== '0';
 }
-exports.isAppRunningAsync = isAppRunningAsync;
 async function safeIdOfAppAsync(appName) {
     try {
         return (await osascriptExecAsync('id of app ' + JSON.stringify(appName))).trim();
@@ -41,7 +38,6 @@ async function safeIdOfAppAsync(appName) {
         return null;
     }
 }
-exports.safeIdOfAppAsync = safeIdOfAppAsync;
 async function openFinderToFolderAsync(dir, activate = true) {
     await osascriptSpawnAsync([
         'tell application "Finder"',
@@ -50,13 +46,11 @@ async function openFinderToFolderAsync(dir, activate = true) {
         'end tell',
     ]);
 }
-exports.openFinderToFolderAsync = openFinderToFolderAsync;
 async function openInAppAsync(appName, pth) {
     const cmd = 'tell app ' + JSON.stringify(appName) + ' to open ' + JSON.stringify(path_1.default.resolve(pth));
     // console.log("cmd=", cmd);
     return await osascriptSpawnAsync(cmd);
 }
-exports.openInAppAsync = openInAppAsync;
 async function chooseAppAsync(listOfAppNames) {
     const runningAwaitables = [];
     const appIdAwaitables = [];
@@ -79,7 +73,6 @@ async function chooseAppAsync(listOfAppNames) {
     }
     return null;
 }
-exports.chooseAppAsync = chooseAppAsync;
 async function chooseEditorAppAsync(preferredEditor) {
     if (preferredEditor) {
         // Make sure this editor exists
@@ -110,7 +103,6 @@ async function chooseEditorAppAsync(preferredEditor) {
     ];
     return await chooseAppAsync(editorsToTry);
 }
-exports.chooseEditorAppAsync = chooseEditorAppAsync;
 async function chooseTerminalAppAsync() {
     return await chooseAppAsync([
         'iTerm 3',
@@ -123,7 +115,6 @@ async function chooseTerminalAppAsync() {
         'Terminal',
     ]);
 }
-exports.chooseTerminalAppAsync = chooseTerminalAppAsync;
 async function openInEditorAsync(pth, preferredEditor) {
     const appName = await chooseEditorAppAsync(preferredEditor);
     if (!appName) {
@@ -132,7 +123,6 @@ async function openInEditorAsync(pth, preferredEditor) {
     console.log('Will open in ' + appName + ' -- ' + pth);
     return await openInAppAsync(appName, pth);
 }
-exports.openInEditorAsync = openInEditorAsync;
 async function openItermToSpecificFolderAsync(dir) {
     return await osascriptSpawnAsync([
         'tell application "iTerm"',
@@ -149,7 +139,6 @@ async function openItermToSpecificFolderAsync(dir) {
     ]);
     // exec("osascript -e 'tell application \"iTerm\"' -e 'make new terminal' -e 'tell the first terminal' -e 'activate current session' -e 'launch session \"Default Session\"' -e 'tell the last session' -e 'write text \"cd #{value}\"' -e 'write text \"clear\"' -e 'end tell' -e 'end tell' -e 'end tell' > /dev/null 2>&1")
 }
-exports.openItermToSpecificFolderAsync = openItermToSpecificFolderAsync;
 async function openTerminalToSpecificFolderAsync(dir, inTab = false) {
     if (inTab) {
         return await osascriptSpawnAsync([
@@ -170,7 +159,6 @@ async function openTerminalToSpecificFolderAsync(dir, inTab = false) {
         ]);
     }
 }
-exports.openTerminalToSpecificFolderAsync = openTerminalToSpecificFolderAsync;
 async function openFolderInTerminalAppAsync(dir, inTab = false) {
     const program = await chooseTerminalAppAsync();
     switch (program) {
@@ -181,5 +169,4 @@ async function openFolderInTerminalAppAsync(dir, inTab = false) {
             return await openTerminalToSpecificFolderAsync(dir, inTab);
     }
 }
-exports.openFolderInTerminalAppAsync = openFolderInTerminalAppAsync;
 //# sourceMappingURL=index.js.map

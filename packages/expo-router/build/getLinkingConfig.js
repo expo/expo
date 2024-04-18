@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateCache = exports.getLinkingConfig = exports.getNavigationConfig = void 0;
+exports.stateCache = void 0;
+exports.getNavigationConfig = getNavigationConfig;
+exports.getLinkingConfig = getLinkingConfig;
 const native_1 = require("@react-navigation/native");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
 const linking_1 = require("./link/linking");
 function getNavigationConfig(routes, metaOnly = true) {
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
 }
-exports.getNavigationConfig = getNavigationConfig;
 function getLinkingConfig(routes, metaOnly = true) {
     return {
         prefixes: [],
@@ -33,7 +34,6 @@ function getLinkingConfig(routes, metaOnly = true) {
         getActionFromState: native_1.getActionFromState,
     };
 }
-exports.getLinkingConfig = getLinkingConfig;
 exports.stateCache = new Map();
 /** We can reduce work by memoizing the state by the pathname. This only works because the options (linking config) theoretically never change.  */
 function getStateFromPathMemoized(path, options) {

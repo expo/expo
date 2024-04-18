@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withLayoutContext = exports.useFilterScreenChildren = void 0;
+exports.useFilterScreenChildren = useFilterScreenChildren;
+exports.withLayoutContext = withLayoutContext;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("../Route");
 const useScreens_1 = require("../useScreens");
@@ -46,7 +47,6 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
         };
     }, [children]);
 }
-exports.useFilterScreenChildren = useFilterScreenChildren;
 /** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
 function withLayoutContext(Nav, processor) {
     const Navigator = react_1.default.forwardRef(({ children: userDefinedChildren, ...props }, ref) => {
@@ -69,5 +69,4 @@ function withLayoutContext(Nav, processor) {
     // @ts-expect-error
     return Navigator;
 }
-exports.withLayoutContext = withLayoutContext;
 //# sourceMappingURL=withLayoutContext.js.map

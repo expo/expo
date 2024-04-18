@@ -3,7 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
+exports.getSwiftModuleNames = getSwiftModuleNames;
+exports.resolveModuleAsync = resolveModuleAsync;
+exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+exports.generatePackageListAsync = generatePackageListAsync;
+exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -28,7 +32,6 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
     // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
     return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
-exports.getSwiftModuleNames = getSwiftModuleNames;
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
@@ -53,7 +56,6 @@ async function resolveModuleAsync(packageName, revision, options) {
         debugOnly: revision.config?.appleDebugOnly() ?? false,
     };
 }
-exports.resolveModuleAsync = resolveModuleAsync;
 async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     const propsFile = path_1.default.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
     try {
@@ -68,7 +70,6 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
     catch { }
     return null;
 }
-exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
@@ -77,7 +78,6 @@ async function generatePackageListAsync(modules, targetPath) {
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className);
     await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
 }
-exports.generatePackageListAsync = generatePackageListAsync;
 /**
  * Generates the string to put into the generated package list.
  */
@@ -176,7 +176,6 @@ function formatArrayOfReactDelegateHandler(modules) {
     return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
 ${indent.repeat(2)}]`;
 }
-exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBlock = null) {
     if (releaseBlock) {
         return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(indentationLevel)}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;

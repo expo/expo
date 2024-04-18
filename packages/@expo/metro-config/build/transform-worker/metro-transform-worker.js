@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCacheKey = exports.transform = void 0;
+exports.transform = transform;
+exports.getCacheKey = getCacheKey;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -428,7 +429,6 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     return transformJSWithBabel(file, context);
 }
-exports.transform = transform;
 function getCacheKey(config) {
     const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
     const filesKey = (0, metro_cache_key_1.default)([
@@ -447,5 +447,4 @@ function getCacheKey(config) {
         babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
     ].join('$');
 }
-exports.getCacheKey = getCacheKey;
 //# sourceMappingURL=metro-transform-worker.js.map

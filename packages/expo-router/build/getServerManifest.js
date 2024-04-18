@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseParameter = exports.getServerManifest = void 0;
+exports.getServerManifest = getServerManifest;
+exports.parseParameter = parseParameter;
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
 function isNotFoundRoute(route) {
@@ -49,7 +50,6 @@ function getServerManifest(route) {
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
     };
 }
-exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
     return paths.map((normalizedRoutePath) => {
         const matcher = getNamedRouteRegex(normalizedRoutePath[0], (0, matchers_1.getContextKey)(normalizedRoutePath[1].route), normalizedRoutePath[1].contextKey);
@@ -188,5 +188,4 @@ function parseParameter(param) {
     }
     return { name, repeat, optional };
 }
-exports.parseParameter = parseParameter;
 //# sourceMappingURL=getServerManifest.js.map

@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
+exports.getRoutes = getRoutes;
+exports.getExactRoutes = getExactRoutes;
+exports.getIgnoreList = getIgnoreList;
+exports.extrapolateGroups = extrapolateGroups;
+exports.generateDynamic = generateDynamic;
 const matchers_1 = require("./matchers");
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -26,14 +30,12 @@ function getRoutes(contextModule, options = {}) {
     }
     return rootNode;
 }
-exports.getRoutes = getRoutes;
 function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
-exports.getExactRoutes = getExactRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
@@ -285,7 +287,6 @@ function getIgnoreList(options) {
     }
     return ignore;
 }
-exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
@@ -311,7 +312,6 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-exports.extrapolateGroups = extrapolateGroups;
 function generateDynamic(path) {
     const dynamic = path
         .split('/')
@@ -332,7 +332,6 @@ function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
-exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory) {
     if (!directory.files.has('_sitemap')) {
         directory.files.set('_sitemap', [

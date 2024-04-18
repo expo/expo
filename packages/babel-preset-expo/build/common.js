@@ -3,7 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.hasModule = hasModule;
+exports.getBundler = getBundler;
+exports.getPlatform = getPlatform;
+exports.getPossibleProjectRoot = getPossibleProjectRoot;
+exports.getIsReactServer = getIsReactServer;
+exports.getIsDev = getIsDev;
+exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
+exports.getIsProd = getIsProd;
+exports.getIsNodeModule = getIsNodeModule;
+exports.getBaseUrl = getBaseUrl;
+exports.getIsServer = getIsServer;
+exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
+exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
+exports.getAsyncRoutes = getAsyncRoutes;
 const path_1 = __importDefault(require("path"));
 function hasModule(name) {
     try {
@@ -16,7 +29,6 @@ function hasModule(name) {
         throw error;
     }
 }
-exports.hasModule = hasModule;
 /** Determine which bundler is being used. */
 function getBundler(caller) {
     if (!caller)
@@ -33,7 +45,6 @@ function getBundler(caller) {
     // Assume anything else is Metro.
     return 'metro';
 }
-exports.getBundler = getBundler;
 function getPlatform(caller) {
     if (!caller)
         return null;
@@ -46,7 +57,6 @@ function getPlatform(caller) {
     // unknown
     return caller.platform;
 }
-exports.getPlatform = getPlatform;
 function getPossibleProjectRoot(caller) {
     if (!caller)
         return null;
@@ -55,44 +65,36 @@ function getPossibleProjectRoot(caller) {
     // unknown
     return process.env.EXPO_PROJECT_ROOT;
 }
-exports.getPossibleProjectRoot = getPossibleProjectRoot;
 /** If bundling for a react-server target. */
 function getIsReactServer(caller) {
     return caller?.isReactServer ?? false;
 }
-exports.getIsReactServer = getIsReactServer;
 function getIsDev(caller) {
     if (caller?.isDev != null)
         return caller.isDev;
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
-exports.getIsDev = getIsDev;
 function getIsFastRefreshEnabled(caller) {
     if (!caller)
         return false;
     return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
-exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
 function getIsProd(caller) {
     if (caller?.isDev != null)
         return caller.isDev === false;
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
-exports.getIsProd = getIsProd;
 function getIsNodeModule(caller) {
     return caller?.isNodeModule ?? false;
 }
-exports.getIsNodeModule = getIsNodeModule;
 function getBaseUrl(caller) {
     return caller?.baseUrl ?? '';
 }
-exports.getBaseUrl = getBaseUrl;
 function getIsServer(caller) {
     return caller?.isServer ?? false;
 }
-exports.getIsServer = getIsServer;
 function getExpoRouterAbsoluteAppRoot(caller) {
     const rootModuleId = caller?.routerRoot ?? './app';
     if (path_1.default.isAbsolute(rootModuleId)) {
@@ -101,7 +103,6 @@ function getExpoRouterAbsoluteAppRoot(caller) {
     const projectRoot = getPossibleProjectRoot(caller) || '/';
     return path_1.default.join(projectRoot, rootModuleId);
 }
-exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 function getInlineEnvVarsEnabled(caller) {
     const isWebpack = getBundler(caller) === 'webpack';
     const isDev = getIsDev(caller);
@@ -112,7 +113,6 @@ function getInlineEnvVarsEnabled(caller) {
     // Servers have env vars left as-is to read from the environment.
     return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
-exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 function getAsyncRoutes(caller) {
     const isServer = getIsServer(caller);
     if (isServer) {
@@ -125,4 +125,3 @@ function getAsyncRoutes(caller) {
     }
     return caller?.asyncRoutes ?? false;
 }
-exports.getAsyncRoutes = getAsyncRoutes;

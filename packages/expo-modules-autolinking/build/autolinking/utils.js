@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingImplementationForPlatform = void 0;
+exports.getLinkingImplementationForPlatform = getLinkingImplementationForPlatform;
 function getLinkingImplementationForPlatform(platform) {
     switch (platform) {
         case 'ios':
@@ -14,5 +14,4 @@ function getLinkingImplementationForPlatform(platform) {
             return require('../platforms/devtools');
     }
 }
-exports.getLinkingImplementationForPlatform = getLinkingImplementationForPlatform;
 //# sourceMappingURL=utils.js.map

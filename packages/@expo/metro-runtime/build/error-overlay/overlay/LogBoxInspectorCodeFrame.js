@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorCodeFrame = void 0;
+exports.LogBoxInspectorCodeFrame = LogBoxInspectorCodeFrame;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -72,7 +72,6 @@ function LogBoxInspectorCodeFrame({ codeFrame }) {
                     getFileName(),
                     getLocation())))));
 }
-exports.LogBoxInspectorCodeFrame = LogBoxInspectorCodeFrame;
 const styles = react_native_1.StyleSheet.create({
     box: {
         backgroundColor: LogBoxStyle.getBackgroundColor(),

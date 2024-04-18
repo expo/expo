@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SuspenseFallback = void 0;
+exports.SuspenseFallback = SuspenseFallback;
 const react_1 = __importDefault(require("react"));
 const Toast_1 = require("./Toast");
 function SuspenseFallback({ route }) {
@@ -15,5 +15,4 @@ function SuspenseFallback({ route }) {
     // TODO: Support user's customizing the fallback.
     return null;
 }
-exports.SuspenseFallback = SuspenseFallback;
 //# sourceMappingURL=SuspenseFallback.js.map

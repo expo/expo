@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findUpProjectRoot = void 0;
+exports.findUpProjectRoot = findUpProjectRoot;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function findUpProjectRoot(cwd) {
@@ -17,4 +17,3 @@ function findUpProjectRoot(cwd) {
         return findUpProjectRoot(path_1.default.dirname(cwd));
     }
 }
-exports.findUpProjectRoot = findUpProjectRoot;

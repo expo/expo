@@ -23,7 +23,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
+exports.navigate = navigate;
+exports.push = push;
+exports.dismiss = dismiss;
+exports.replace = replace;
+exports.dismissAll = dismissAll;
+exports.goBack = goBack;
+exports.canGoBack = canGoBack;
+exports.canDismiss = canDismiss;
+exports.setParams = setParams;
+exports.linkTo = linkTo;
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
@@ -39,28 +48,22 @@ function assertIsReady(store) {
 function navigate(url) {
     return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
 }
-exports.navigate = navigate;
 function push(url) {
     return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
 }
-exports.push = push;
 function dismiss(count) {
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
-exports.dismiss = dismiss;
 function replace(url) {
     return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
 }
-exports.replace = replace;
 function dismissAll() {
     this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
-exports.dismissAll = dismissAll;
 function goBack() {
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-exports.goBack = goBack;
 function canGoBack() {
     // Return a default value here if the navigation hasn't mounted yet.
     // This can happen if the user calls `canGoBack` from the Root Layout route
@@ -72,7 +75,6 @@ function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-exports.canGoBack = canGoBack;
 function canDismiss() {
     let state = this.rootState;
     // Keep traversing down the state tree until we find a stack navigator that we can pop
@@ -86,12 +88,10 @@ function canDismiss() {
     }
     return false;
 }
-exports.canDismiss = canDismiss;
 function setParams(params = {}) {
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-exports.setParams = setParams;
 function linkTo(href, event) {
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
@@ -145,7 +145,6 @@ function linkTo(href, event) {
     }
     return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
-exports.linkTo = linkTo;
 function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the

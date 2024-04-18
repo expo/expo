@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoInlineManifestPlugin = void 0;
+exports.expoInlineManifestPlugin = expoInlineManifestPlugin;
 const config_1 = require("expo/config");
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:inline-manifest');
@@ -146,4 +146,3 @@ function expoInlineManifestPlugin(api) {
         },
     };
 }
-exports.expoInlineManifestPlugin = expoInlineManifestPlugin;

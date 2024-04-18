@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
+exports.createRequestHandler = createRequestHandler;
+exports.convertRequest = convertRequest;
+exports.convertHeaders = convertHeaders;
+exports.respond = respond;
 const node_1 = require("@remix-run/node");
 const __1 = require("..");
 /**
@@ -24,7 +27,6 @@ function createRequestHandler({ build }, setup) {
         }
     };
 }
-exports.createRequestHandler = createRequestHandler;
 // Convert an http request to an expo request
 function convertRequest(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -45,7 +47,6 @@ function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
-exports.convertRequest = convertRequest;
 function convertHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
@@ -62,7 +63,6 @@ function convertHeaders(requestHeaders) {
     }
     return headers;
 }
-exports.convertHeaders = convertHeaders;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.statusCode = expoRes.status;
@@ -76,5 +76,4 @@ async function respond(res, expoRes) {
         res.end();
     }
 }
-exports.respond = respond;
 //# sourceMappingURL=http.js.map

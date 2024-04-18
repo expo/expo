@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPatchPackageSourcesAsync = void 0;
+exports.getPatchPackageSourcesAsync = getPatchPackageSourcesAsync;
 const chalk_1 = __importDefault(require("chalk"));
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:PatchPackage');
@@ -15,5 +15,4 @@ async function getPatchPackageSourcesAsync(projectRoot, options) {
     }
     return [];
 }
-exports.getPatchPackageSourcesAsync = getPatchPackageSourcesAsync;
 //# sourceMappingURL=PatchPackage.js.map

@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxInspectorStackFrame = void 0;
+exports.LogBoxInspectorStackFrame = LogBoxInspectorStackFrame;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -51,7 +51,6 @@ function LogBoxInspectorStackFrame(props) {
             react_1.default.createElement(react_native_1.Text, { style: [styles.name, frame.collapse === true && styles.dim] }, frame.methodName),
             react_1.default.createElement(react_native_1.Text, { ellipsizeMode: "middle", numberOfLines: 1, style: [styles.location, frame.collapse === true && styles.dim] }, location))));
 }
-exports.LogBoxInspectorStackFrame = LogBoxInspectorStackFrame;
 const styles = react_native_1.StyleSheet.create({
     frameContainer: {
         flexDirection: 'row',

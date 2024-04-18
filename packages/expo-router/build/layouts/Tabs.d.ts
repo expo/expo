@@ -112,7 +112,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         tabBarLabel?: string | ((props: {
             focused: boolean;
             color: string;
-            position: import("@react-navigation/bottom-tabs/lib/typescript/src/types").LabelPosition;
+            position: LabelPosition;
             children: string;
         }) => React.ReactNode) | undefined;
         tabBarShowLabel?: boolean | undefined;
@@ -129,7 +129,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         tabBarBadgeStyle?: import("react-native").StyleProp<import("react-native").TextStyle>;
         tabBarAccessibilityLabel?: string | undefined;
         tabBarTestID?: string | undefined;
-        tabBarButton?: ((props: import("@react-navigation/bottom-tabs").BottomTabBarButtonProps) => React.ReactNode) | undefined;
+        tabBarButton?: ((props: BottomTabBarButtonProps) => React.ReactNode) | undefined;
         tabBarActiveTintColor?: string | undefined;
         tabBarInactiveTintColor?: string | undefined;
         tabBarActiveBackgroundColor?: string | undefined;
@@ -143,12 +143,12 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         tabBarStyle?: false | import("react-native").Animated.Value | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").Animated.AnimatedInterpolation<string | number> | import("react-native").Animated.WithAnimatedObject<import("react-native").ViewStyle> | import("react-native").Animated.WithAnimatedArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle> | import("react-native").RecursiveArray<import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>> | readonly (import("react-native").ViewStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").ViewStyle>)[]> | null | undefined;
         tabBarBackground?: (() => React.ReactNode) | undefined;
         lazy?: boolean | undefined;
-        header?: ((props: import("@react-navigation/bottom-tabs").BottomTabHeaderProps) => React.ReactNode) | undefined;
+        header?: ((props: BottomTabHeaderProps) => React.ReactNode) | undefined;
         headerShown?: boolean | undefined;
         unmountOnBlur?: boolean | undefined;
         freezeOnBlur?: boolean | undefined;
     } & {
-        href?: ExpoRouter.Href | null | undefined;
+        href?: ExpoRouter.Href | null;
     }, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
 };
 export default Tabs;

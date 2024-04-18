@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxButton = void 0;
+exports.LogBoxButton = LogBoxButton;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -56,5 +56,4 @@ function LogBoxButton(props) {
         ] }, props.children));
     return props.onPress == null ? (content) : (react_1.default.createElement(react_native_1.Pressable, { hitSlop: props.hitSlop, onPress: props.onPress, onPressIn: () => setPressed(true), onPressOut: () => setPressed(false) }, content));
 }
-exports.LogBoxButton = LogBoxButton;
 //# sourceMappingURL=LogBoxButton.js.map

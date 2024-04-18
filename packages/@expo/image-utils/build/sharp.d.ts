@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 export declare function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]>;
 /**

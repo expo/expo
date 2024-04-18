@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCameraImport = void 0;
+exports.addCameraImport = addCameraImport;
 const config_plugins_1 = require("@expo/config-plugins");
 const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
 const pkg = require('expo-camera/package.json');
@@ -32,7 +32,6 @@ function addCameraImport(src) {
         comment: '//',
     });
 }
-exports.addCameraImport = addCameraImport;
 // Fork of config-plugins mergeContents, but appends the contents to the end of the file.
 function appendContents({ src, newSrc, tag, comment, }) {
     const header = (0, generateCode_1.createGeneratedHeaderComment)(newSrc, tag, comment);

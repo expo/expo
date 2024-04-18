@@ -26,7 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resize = exports.getJimpImageAsync = exports.createSquareAsync = exports.circleAsync = exports.isFolderAsync = exports.jimpAsync = exports.convertFormat = exports.resizeBufferAsync = void 0;
+exports.resizeBufferAsync = resizeBufferAsync;
+exports.convertFormat = convertFormat;
+exports.jimpAsync = jimpAsync;
+exports.isFolderAsync = isFolderAsync;
+exports.circleAsync = circleAsync;
+exports.createSquareAsync = createSquareAsync;
+exports.getJimpImageAsync = getJimpImageAsync;
+exports.resize = resize;
 const fs_extra_1 = __importDefault(require("fs-extra"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
@@ -40,7 +47,6 @@ async function resizeBufferAsync(buffer, sizes) {
         return jimpImage.resize(size, size).getBufferAsync(mime);
     }));
 }
-exports.resizeBufferAsync = resizeBufferAsync;
 function convertFormat(format) {
     if (typeof format === 'undefined')
         return format;
@@ -55,7 +61,6 @@ function convertFormat(format) {
     }
     return undefined;
 }
-exports.convertFormat = convertFormat;
 async function jimpAsync(options, commands = []) {
     if (commands.length) {
         const command = commands.shift();
@@ -87,7 +92,6 @@ async function jimpAsync(options, commands = []) {
     }
     return imgBuffer;
 }
-exports.jimpAsync = jimpAsync;
 async function isFolderAsync(path) {
     try {
         return (await fs_extra_1.default.stat(path)).isDirectory();
@@ -96,7 +100,6 @@ async function isFolderAsync(path) {
         return false;
     }
 }
-exports.isFolderAsync = isFolderAsync;
 function circleAsync(jimp) {
     const radius = Math.min(jimp.bitmap.width, jimp.bitmap.height) / 2;
     const center = {
@@ -116,7 +119,6 @@ function circleAsync(jimp) {
         });
     });
 }
-exports.circleAsync = circleAsync;
 /**
  * Create a square image of a given size and color. Defaults to a white PNG.
  */
@@ -125,14 +127,12 @@ async function createSquareAsync({ size, color = '#FFFFFF', mime = jimp_compact_
     // Convert Jimp image to a Buffer
     return await image.getBufferAsync(mime);
 }
-exports.createSquareAsync = createSquareAsync;
 async function getJimpImageAsync(input) {
     // @ts-ignore: Jimp types are broken
     if (typeof input === 'string' || input instanceof Buffer)
         return await jimp_compact_1.default.read(input);
     return input;
 }
-exports.getJimpImageAsync = getJimpImageAsync;
 async function resize({ input, quality = 100 }, { background, position, fit, width, height }) {
     let initialImage = await getJimpImageAsync(input);
     if (width && !height) {
@@ -165,7 +165,6 @@ async function resize({ input, quality = 100 }, { background, position, fit, wid
     }
     return await initialImage.quality(jimpQuality);
 }
-exports.resize = resize;
 async function flatten({ input, quality = 100 }, { background }) {
     const initialImage = await getJimpImageAsync(input);
     const jimpQuality = typeof quality !== 'number' ? 100 : quality;

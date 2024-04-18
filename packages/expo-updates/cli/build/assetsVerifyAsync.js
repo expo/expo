@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExportedMetadataHashSet = exports.getExportedMetadataAsync = exports.getFullAssetDumpHashSet = exports.getFullAssetDumpAsync = exports.getBuildManifestHashSet = exports.getBuildManifestAsync = exports.getMissingAssetsAsync = void 0;
+exports.getMissingAssetsAsync = getMissingAssetsAsync;
+exports.getBuildManifestAsync = getBuildManifestAsync;
+exports.getBuildManifestHashSet = getBuildManifestHashSet;
+exports.getFullAssetDumpAsync = getFullAssetDumpAsync;
+exports.getFullAssetDumpHashSet = getFullAssetDumpHashSet;
+exports.getExportedMetadataAsync = getExportedMetadataAsync;
+exports.getExportedMetadataHashSet = getExportedMetadataHashSet;
 const fs_1 = require("fs");
 const errors_1 = require("./utils/errors");
 const debug = require('debug')('expo-updates:assets:verify');
@@ -39,7 +45,6 @@ async function getMissingAssetsAsync(buildManifestPath, exportMetadataPath, asse
     });
     return missingAssets;
 }
-exports.getMissingAssetsAsync = getMissingAssetsAsync;
 /**
  * Reads and returns the embedded manifest (app.manifest) for a build.
  *
@@ -53,7 +58,6 @@ async function getBuildManifestAsync(buildManifestPath) {
     const buildManifest = JSON.parse(buildManifestString);
     return buildManifest;
 }
-exports.getBuildManifestAsync = getBuildManifestAsync;
 /**
  * Extracts the set of asset hashes from a build manifest.
  *
@@ -63,7 +67,6 @@ exports.getBuildManifestAsync = getBuildManifestAsync;
 function getBuildManifestHashSet(buildManifest) {
     return new Set((buildManifest.assets ?? []).map((asset) => asset.packagerHash));
 }
-exports.getBuildManifestHashSet = getBuildManifestHashSet;
 /**
  * Reads and extracts the asset dump for an exported bundle.
  *
@@ -75,7 +78,6 @@ async function getFullAssetDumpAsync(assetMapPath) {
     const assetMap = new Map(Object.entries(JSON.parse(assetMapString)));
     return assetMap;
 }
-exports.getFullAssetDumpAsync = getFullAssetDumpAsync;
 /**
  * Extracts the set of asset hashes from an asset dump.
  *
@@ -94,7 +96,6 @@ function getFullAssetDumpHashSet(assetDump) {
         fullAssetHashMap,
     };
 }
-exports.getFullAssetDumpHashSet = getFullAssetDumpHashSet;
 /**
  * Reads and extracts the metadata.json from an exported bundle.
  *
@@ -106,7 +107,6 @@ async function getExportedMetadataAsync(exportedMetadataPath) {
     const metadata = JSON.parse(metadataString);
     return metadata;
 }
-exports.getExportedMetadataAsync = getExportedMetadataAsync;
 /**
  * Extracts the set of asset hashes from an exported bundle's metadata for a given platform.
  *
@@ -123,4 +123,3 @@ function getExportedMetadataHashSet(metadata, platform) {
     // Asset paths in the export metadata are of the form 'assets/<hash string>'
     return new Set(assets.map((asset) => asset.path.substring(7, asset.path.length)));
 }
-exports.getExportedMetadataHashSet = getExportedMetadataHashSet;

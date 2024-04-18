@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transform = void 0;
+exports.transform = transform;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -30,5 +30,4 @@ async function transform({ filename, options }, assetRegistryPath, assetDataPlug
         ast: (0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
     };
 }
-exports.transform = transform;
 //# sourceMappingURL=asset-transformer.js.map

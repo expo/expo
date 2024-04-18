@@ -25,7 +25,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultNavigator = exports.QualifiedSlot = exports.Slot = exports.useSlot = exports.useNavigatorContext = exports.Navigator = exports.NavigatorContext = void 0;
+exports.NavigatorContext = void 0;
+exports.Navigator = Navigator;
+exports.useNavigatorContext = useNavigatorContext;
+exports.useSlot = useSlot;
+exports.Slot = Slot;
+exports.QualifiedSlot = QualifiedSlot;
+exports.DefaultNavigator = DefaultNavigator;
 const native_1 = require("@react-navigation/native");
 const React = __importStar(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -55,7 +61,6 @@ function Navigator({ initialRouteName, screenOptions, children, router }) {
       {otherSlot}
     </QualifiedNavigator>);
 }
-exports.Navigator = Navigator;
 function QualifiedNavigator({ initialRouteName, screenOptions, children, screens, contextKey, router = native_1.StackRouter, }) {
     const { state, navigation, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
@@ -81,7 +86,6 @@ function useNavigatorContext() {
     }
     return context;
 }
-exports.useNavigatorContext = useNavigatorContext;
 function useSlot() {
     const context = useNavigatorContext();
     const { state, descriptors } = context;
@@ -93,7 +97,6 @@ function useSlot() {
     }
     return descriptors[current.key]?.render() ?? null;
 }
-exports.useSlot = useSlot;
 /** Renders the currently selected content. */
 function Slot(props) {
     const contextKey = (0, Route_1.useContextKey)();
@@ -107,11 +110,9 @@ function Slot(props) {
     }
     return <QualifiedSlot />;
 }
-exports.Slot = Slot;
 function QualifiedSlot() {
     return useSlot();
 }
-exports.QualifiedSlot = QualifiedSlot;
 function DefaultNavigator() {
     return (<react_native_safe_area_context_1.SafeAreaView style={{ flex: 1 }}>
       <Navigator>
@@ -119,7 +120,6 @@ function DefaultNavigator() {
       </Navigator>
     </react_native_safe_area_context_1.SafeAreaView>);
 }
-exports.DefaultNavigator = DefaultNavigator;
 Navigator.Slot = Slot;
 Navigator.useContext = useNavigatorContext;
 /** Used to configure route settings. */

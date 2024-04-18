@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxMessage = void 0;
+exports.LogBoxMessage = LogBoxMessage;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -49,5 +49,4 @@ function LogBoxMessage(props) {
     }
     return react_1.default.createElement(react_1.default.Fragment, null, elements);
 }
-exports.LogBoxMessage = LogBoxMessage;
 //# sourceMappingURL=LogBoxMessage.js.map

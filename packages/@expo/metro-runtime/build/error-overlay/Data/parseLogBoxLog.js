@@ -10,7 +10,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseLogBoxLog = exports.parseLogBoxException = exports.parseComponentStack = exports.parseInterpolation = void 0;
+exports.parseInterpolation = parseInterpolation;
+exports.parseComponentStack = parseComponentStack;
+exports.parseLogBoxException = parseLogBoxException;
+exports.parseLogBoxLog = parseLogBoxLog;
 const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
 const stringifySafe_1 = __importDefault(require("../modules/stringifySafe"));
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
@@ -78,7 +81,6 @@ function parseInterpolation(args) {
         },
     };
 }
-exports.parseInterpolation = parseInterpolation;
 function isComponentStack(consoleArgument) {
     const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
     const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
@@ -120,7 +122,6 @@ function parseComponentStack(message) {
     })
         .filter(Boolean);
 }
-exports.parseComponentStack = parseComponentStack;
 function parseLogBoxException(error) {
     const message = error.originalMessage != null ? error.originalMessage : 'Unknown';
     const metroInternalError = message.match(METRO_ERROR_FORMAT);
@@ -234,7 +235,6 @@ function parseLogBoxException(error) {
         ...parseLogBoxLog([message]),
     };
 }
-exports.parseLogBoxException = parseLogBoxException;
 function parseLogBoxLog(args) {
     const message = args[0];
     let argsWithoutComponentStack = [];
@@ -273,5 +273,4 @@ function parseLogBoxLog(args) {
         componentStack,
     };
 }
-exports.parseLogBoxLog = parseLogBoxLog;
 //# sourceMappingURL=parseLogBoxLog.js.map

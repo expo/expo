@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSortedModules = exports.Chunk = exports.graphToSerialAssetsAsync = void 0;
+exports.Chunk = void 0;
+exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
+exports.getSortedModules = getSortedModules;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -121,7 +123,6 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     }));
     return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
 }
-exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
     name;
     entries;
@@ -456,5 +457,4 @@ function getSortedModules(modules, { createModuleId, }) {
     // Sort by IDs
     return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
 }
-exports.getSortedModules = getSortedModules;
 //# sourceMappingURL=serializeChunks.js.map

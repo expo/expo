@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.regenerateDeclarations = exports.getWatchHandler = void 0;
+exports.regenerateDeclarations = void 0;
+exports.getWatchHandler = getWatchHandler;
 const _ctx_shared_1 = require("expo-router/_ctx-shared");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -37,7 +38,6 @@ function getWatchHandler(outputDir) {
         }
     };
 }
-exports.getWatchHandler = getWatchHandler;
 /**
  * A throttled function that regenerates the typed routes declaration file
  */

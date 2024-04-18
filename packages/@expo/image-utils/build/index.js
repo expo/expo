@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.createSquareAsync = exports.jimpAsync = exports.imageAsync = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.createSquareAsync = exports.jimpAsync = void 0;
+exports.imageAsync = imageAsync;
 const Cache = __importStar(require("./Cache"));
 exports.Cache = Cache;
 const Image_1 = require("./Image");
@@ -44,5 +45,4 @@ async function imageAsync(options, commands = []) {
     }
     return (0, jimp_1.jimpAsync)({ ...options, format: (0, jimp_1.convertFormat)(options.format), originalInput: options.input }, commands);
 }
-exports.imageAsync = imageAsync;
 //# sourceMappingURL=index.js.map
