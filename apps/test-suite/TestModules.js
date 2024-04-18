@@ -74,7 +74,7 @@ export function getTestModules() {
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/SQLiteNext'));
+    modules.push(require('./tests/SQLite'));
   }
 
   if (Platform.OS === 'android') {

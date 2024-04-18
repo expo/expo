@@ -3,7 +3,7 @@ import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite/next';
 import path from 'path';
 
-export const name = 'SQLiteNext';
+export const name = 'SQLite';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
 const VERSION = '3.42.0';
