@@ -31,6 +31,14 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
+    OnCreate {
+      appContext.reactContext?.registerComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
+    OnDestroy {
+      appContext.reactContext?.unregisterComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
     AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: Map<String, String>?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
