@@ -1374,8 +1374,27 @@ PODS:
     - React-Core
   - react-native-netinfo (11.3.1):
     - React-Core
-  - react-native-pager-view (6.2.3):
+  - react-native-pager-view (6.3.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-safe-area-context (4.10.0-rc.1):
     - React-Core
   - react-native-segmented-control (2.5.0):
@@ -1928,7 +1947,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
-  - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
+  - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
@@ -2210,7 +2229,7 @@ EXTERNAL SOURCES:
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
-    :path: "./vendored/unversioned/react-native-pager-view"
+    :path: "../../../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
@@ -2415,7 +2434,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: fbe9c6b6c762e35bba9e8259d6e5e5a22ede7986
   react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
-  react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
+  react-native-pager-view: c1e29e1a6105a02807392ba822ad322447a72f55
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
   react-native-skia: 4db83b2d44c0869de99b7bd00cf55b1235215224
