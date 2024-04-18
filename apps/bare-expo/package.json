@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.0.14",
+    "@types/react": "~18.2.79",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~10.0.0",
     "expo-module-scripts": "^3.0.0",

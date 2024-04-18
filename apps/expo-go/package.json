@@ -92,7 +92,7 @@
     "@types/dedent": "^0.7.0",
     "@types/jest": "^29.2.1",
     "@types/lodash": "^4.14.161",
-    "@types/react": "~18.0.14",
+    "@types/react": "~18.2.79",
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^3.0.0",

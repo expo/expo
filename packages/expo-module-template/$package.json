@@ -30,7 +30,7 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "^18.0.25",
+    "@types/react": "^18.2.79",
     "expo-module-scripts": "^3.4.0",
     "expo-modules-core": "^1.11.2"
   },
