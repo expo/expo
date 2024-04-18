@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Tried to fix unused recording permission and getting rejected by store review. ([#28236](https://github.com/expo/expo/pull/28236) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 13.10.6 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Tried to fix unused recording permission and getting rejected by store review. ([#28236](https://github.com/expo/expo/pull/28236) by [@kudo](https://github.com/kudo))
 
 ## 13.10.5 — 2024-02-06
 
