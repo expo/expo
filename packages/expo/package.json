@@ -23,6 +23,8 @@
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
+    "asset.js",
+    "asset.d.ts",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
