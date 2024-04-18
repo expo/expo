@@ -113,13 +113,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    'react-native-pager-view': {
-      source: 'https://github.com/callstack/react-native-viewpager',
-      ios: {},
-      android: {
-        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
-      },
-    },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
       rootDir: 'packages/default-storage',
