@@ -60,10 +60,8 @@ class ExpoImageModule : Module() {
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
           .downsample(NoopDownsampleStrategy)
-          .apply {
-            if (cachePolicy == CachePolicy.MEMORY) {
-              diskCacheStrategy(DiskCacheStrategy.NONE)
-            }
+          .customize(`when` = cachePolicy == CachePolicy.MEMORY) {
+            diskCacheStrategy(DiskCacheStrategy.NONE)
           }
           .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
