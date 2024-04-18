@@ -10,8 +10,6 @@ platforms: ['android', 'ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
@@ -288,49 +286,23 @@ await db.execAsync('PRAGMA foreign_keys = ON');
 
 ### Import an existing database
 
-To open a new SQLite database using an existing **.db** file you already have, follow the steps below:
+To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqliteprovider) with [`assetSource`](#assetsource).
 
-<Step label="1">
-Install `expo-file-system` and `expo-asset` libraries:
+```tsx useSQLiteContext() with existing database
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
+import { View, Text, StyleSheet } from 'react-native';
 
-<Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
-
-</Step>
-
-<Step label="2">
-Create a **metro.config.js** file at the root of your project with the following contents to include [extra asset extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts):
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const defaultConfig = getDefaultConfig(__dirname);
-
-defaultConfig.resolver.assetExts.push('db');
-
-module.exports = defaultConfig;
-```
-
-</Step>
-
-<Step label="3">
-
-Use the following function (or similar) to open your database:
-
-```ts
-async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.Database> {
-  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
-    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
-  }
-  const asset = await Asset.fromModule(require(pathToDatabaseFile)).downloadAsync();
-  await FileSystem.copyAsync({
-    from: asset.localUri,
-    to: FileSystem.documentDirectory + 'SQLite/myDatabaseName.db',
-  });
-  return await SQLite.openDatabaseAsync('myDatabaseName.db');
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <SQLiteProvider databaseName="test.db" assetSource={{ assetId: require('./assets/test.db') }}>
+        <Header />
+        <Content />
+      </SQLiteProvider>
+    </View>
+  );
 }
 ```
-
-</Step>
 
 ### Passing binary data
 
