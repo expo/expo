@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.1.0 — 2024-04-18
+
+### 💡 Others
+
 - Update test snapshots. ([#26527](https://github.com/expo/expo/pull/26527) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.0.0 — 2023-08-11

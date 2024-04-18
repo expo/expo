@@ -6,10 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.2.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add support for GitHub URLs in `--template` option. ([#26554](https://github.com/expo/expo/pull/26554) by [@byCedric](https://github.com/byCedric))
 - Add auto-configuration for pnpm and yarn berry. ([#27699](https://github.com/expo/expo/pull/27699) by [@byCedric](https://github.com/byCedric))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

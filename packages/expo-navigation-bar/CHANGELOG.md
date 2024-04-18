@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - Fix event listeners on Android. ([#28260](https://github.com/expo/expo/pull/28260) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others

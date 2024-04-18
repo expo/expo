@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.25.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
 - Remove deprecated APIs: useUpdateEvents(), addListener(), and UpdateEvent type. ([#27882](https://github.com/expo/expo/pull/27882) by [@douglowder](https://github.com/douglowder))
 - Remove the support for configurable `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml** and `EXUpdatesAutoSetup` in **Expo.plist**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))

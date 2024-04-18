@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add support for package cli and utils subpackages (like plugins). ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes

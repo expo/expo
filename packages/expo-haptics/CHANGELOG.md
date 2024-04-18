@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Introduce `rigid` and `soft` impact types ([#28169](https://github.com/expo/expo/pull/28169) by [@rodperottoni](https://github.com/rodperottoni))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Introduce `rigid` and `soft` impact types ([#28169](https://github.com/expo/expo/pull/28169) by [@rodperottoni](https://github.com/rodperottoni))
 
 ### 💡 Others
 
