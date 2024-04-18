@@ -10,6 +10,10 @@
       "default": "./build/index.js",
       "types": "./build/index.d.ts"
     },
+    "./legacy": {
+      "default": "./build/legacy/index.js",
+      "types": "./build/legacy/index.d.ts"
+    },
     "./next": {
       "default": "./build/next/index.js",
       "types": "./build/next/index.d.ts"

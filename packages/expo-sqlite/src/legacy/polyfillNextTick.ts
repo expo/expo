@@ -3,6 +3,8 @@
  * a native implementation with the correct timing semantics.
  */
 
+declare const process: Record<string, any>;
+
 if (!process.nextTick) {
   process.nextTick = (callback, ...args) => {
     setTimeout(() => callback(...args), 0);
