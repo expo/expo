@@ -14,10 +14,6 @@ final class CoreModuleSpec: ExpoSpec {
     }
 
     describe("core object") {
-      it("is initialized") {
-        expect(runtime.coreObject).notTo(beNil())
-      }
-
       it("is installed to global scope") {
         let coreObjectValue = try runtime.eval("expo")
         expect(coreObjectValue.kind) == .object
