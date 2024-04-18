@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
-import * as SQLite from 'expo-sqlite/next';
+import * as SQLite from 'expo-sqlite';
 import path from 'path';
 
 export const name = 'SQLite';
