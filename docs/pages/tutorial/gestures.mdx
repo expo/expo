@@ -144,7 +144,7 @@ const imageStyle = useAnimatedStyle(() => {
     width: withSpring(scaleImage.value),
     height: withSpring(scaleImage.value),
   };
-});
+}, [scaleImage]);
 ```
 
 Next, wrap the `<Animated.Image>` component that displays the sticker on the screen with the `<GestureDetector>` component and modify the `style` prop on the `Animated.Image` to pass the `imageStyle`.
@@ -269,7 +269,7 @@ const containerStyle = useAnimatedStyle(() => {
       },
     ],
   };
-});
+}, [translateX, translateY);
 ```
 
 Then add the `containerStyle` from the above snippet on the `<Animated.View>` component to apply the transform styles.
