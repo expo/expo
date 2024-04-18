@@ -40,7 +40,7 @@ class ExpoImageModule : Module() {
       val headers = headersMap?.let {
         LazyHeaders.Builder().apply {
           it.forEach { (key, value) ->
-            addHeader(key, value.toString())
+            addHeader(key, value)
           }
         }.build()
       } ?: Headers.DEFAULT
@@ -111,18 +111,12 @@ class ExpoImageModule : Module() {
       val glideUrl = GlideUrl(cacheKey)
       val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
 
-      try {
+      return@AsyncFunction try {
         val file = target.get()
-        val path = file.absolutePath
-
-        if (path != null) {
-          return@AsyncFunction path
-        }
+        file.absolutePath
       } catch (e: Exception) {
-        return@AsyncFunction null
+        null
       }
-
-      return@AsyncFunction null
     }
 
     View(ExpoImageViewWrapper::class) {
