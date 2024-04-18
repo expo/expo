@@ -1,2 +1,3 @@
-export * from './SQLite';
-export * from './SQLite.types';
+export * from './SQLiteDatabase';
+export * from './SQLiteStatement';
+export * from './hooks';

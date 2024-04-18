@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Moved the previous default export as `expo-sqlite/legacy` and promoted `expo-sqlite/next` as the default. `expo-sqlite/next` import is still as-is for backward compatibility. ([#28278](https://github.com/expo/expo/pull/28278) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
