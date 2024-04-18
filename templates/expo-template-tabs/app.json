@@ -27,7 +27,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/FontAwesome.ttf", "./assets/fonts/SpaceMono-Regular.ttf"]
+        }
+      ],
     ],
     "experiments": {
       "typedRoutes": true
