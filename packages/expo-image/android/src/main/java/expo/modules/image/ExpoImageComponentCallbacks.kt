@@ -11,7 +11,7 @@ object ExpoImageComponentCallbacks : ComponentCallbacks2 {
   override fun onConfigurationChanged(newConfig: Configuration) = Unit
 
   override fun onLowMemory() {
-      BlurhashDecoder.clearCache()
+    BlurhashDecoder.clearCache()
   }
 
   override fun onTrimMemory(level: Int) {
