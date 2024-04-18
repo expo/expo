@@ -5,114 +5,82 @@ import path from 'path';
 import { Log } from '../log';
 import { PrerequisiteCommandError, ProjectPrerequisite } from '../start/doctor/Prerequisite';
 import { ensureDependenciesAsync } from '../start/doctor/dependencies/ensureDependenciesAsync';
-import { ResolvedPackage } from '../start/doctor/dependencies/getMissingPackages';
 import { findFileInParents } from '../utils/findUp';
 import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:lint') as typeof console.log;
 
-const WITH_PRETTIER = `module.exports = {
-  root: true,
-  extends: ["expo", "prettier"],
-  plugins: ["prettier"],
-  rules: {
-    "prettier/prettier": ["warn"],
-  },
-};
-
-`;
-
-// const ESLINT_ONLY = `module.exports = {
-//   root: true,
-//   extends: ["expo"]
-// };
-// `;
-
-const ESLINT_ONLY = `// <insert link to docs>
+const ESLINT_TEMPLATE_BASE = `// https://docs.expo.dev/guides/using-eslint/
 module.exports = {
   extends: 'expo',
 };
 `;
 
+// TODO(cedric): if we want to add prettier, also configure proper prettier rules
+// const ESLINT_TEMPLATE_PRETTIER = `// https://docs.expo.dev/guides/using-eslint/
+// module.exports = {
+//   extends: ['expo', 'prettier'],
+//   plugins: ['prettier'],
+//   rules: {
+//     'prettier/prettier': ['warn'],
+//   },
+// };
+// `;
+
 /** Ensure the project has the required ESlint config. */
 export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
   async assertImplementation(): Promise<boolean> {
-    let shouldConfigure = false;
-
     const hasEslintConfig = await eslintIsConfigured(this.projectRoot);
-    if (!hasEslintConfig) {
-      shouldConfigure = await confirmAsync({
-        message: 'Do you want to install and configure ESLint in this project?',
-      });
+    const hasLintScript = await lintScriptIsConfigured(this.projectRoot);
 
-      if (!shouldConfigure) {
-        throw new PrerequisiteCommandError('ESLINT_SETUP_ABORTED', 'ESLint is not configured.');
-      }
-
-      // TODO(cedric): maybe ask user to install prettier
-      // TODO(cedric): maybe install in root project workspace
-      await fs.writeFile(path.join(this.projectRoot, '.eslintrc.js'), ESLINT_ONLY, 'utf8');
-    }
-
-    await this._ensureDependenciesInstalledAsync({ skipPrompt: shouldConfigure });
-
-    return true;
+    return hasEslintConfig && hasLintScript;
   }
 
   async bootstrapAsync(): Promise<boolean> {
-    const shouldSetupLint = await confirmAsync({
-      message: 'No ESLint config found. Install and configure ESLint in this project?',
-    });
+    debug('Setting up ESLint');
 
-    if (!shouldSetupLint) {
-      return false;
-    }
-
-    const shouldIncludePrettier = await confirmAsync({
-      message: 'Include Prettier?',
-    });
-
-    const packages: ResolvedPackage[] = [
-      { file: 'eslint/package.json', pkg: 'eslint', dev: true },
-      {
-        file: 'eslint-config-expo/package.json',
-        pkg: 'eslint-config-expo',
-        version: '7.0.0',
-        dev: true,
-      },
-    ];
-
-    if (shouldIncludePrettier) {
-      packages.push({ file: 'prettier/package.json', pkg: 'prettier', dev: true });
-      packages.push({
-        file: 'eslint-config-prettier/package.json',
-        pkg: 'eslint-config-prettier',
-        dev: true,
+    const hasEslintConfig = await eslintIsConfigured(this.projectRoot);
+    if (!hasEslintConfig) {
+      const shouldSetupLint = await confirmAsync({
+        message: 'No ESLint config found. Install and configure ESLint in this project?',
       });
-      packages.push({
-        file: 'eslint-plugin-prettier/package.json',
-        pkg: 'eslint-plugin-prettier',
-        dev: true,
-      });
+
+      if (!shouldSetupLint) {
+        throw new PrerequisiteCommandError('ESLint is not configured for this project.');
+      }
+
+      // TODO(cedric): if we want to add prettier, also configure proper prettier rules
+      // const shouldIncludePrettier = await confirmAsync({
+      //   message: 'Include Prettier?',
+      // });
+
+      // if (shouldIncludePrettier) {
+      //   packages.push({ file: 'prettier/package.json', pkg: 'prettier', dev: true });
+      //   packages.push({
+      //     file: 'eslint-config-prettier/package.json',
+      //     pkg: 'eslint-config-prettier',
+      //     dev: true,
+      //   });
+      //   packages.push({
+      //     file: 'eslint-plugin-prettier/package.json',
+      //     pkg: 'eslint-plugin-prettier',
+      //     dev: true,
+      //   });
+      // }
+
+      await this._ensureDependenciesInstalledAsync({ skipPrompt: true, isProjectMutable: true });
+
+      // TODO(cedric): if we want to add prettier, also configure proper prettier rules
+      // if (shouldIncludePrettier) {
+      //   await fs.writeFile(path.join(this.projectRoot, '.prettierrc'), '{}', 'utf8');
+      // }
+
+      await fs.writeFile(path.join(this.projectRoot, '.eslintrc.js'), ESLINT_TEMPLATE_BASE, 'utf8');
     }
 
-    await this._ensureDependenciesInstalledAsync({ requiredPackages: packages });
-
-    await fs.writeFile(
-      path.join(this.projectRoot, '.eslintrc.js'),
-      shouldIncludePrettier ? WITH_PRETTIER : ESLINT_ONLY,
-      'utf8'
-    );
-
-    if (shouldIncludePrettier) {
-      await fs.writeFile(path.join(this.projectRoot, '.prettierrc'), '{}', 'utf8');
-    }
-
-    const scripts = JsonFile.read(path.join(this.projectRoot, 'package.json')).scripts;
-
-    if ((scripts as JSONObject)?.lint) {
-      Log.log('Skipped adding the lint script as one exists already');
-    } else {
+    const hasLintScript = await lintScriptIsConfigured(this.projectRoot);
+    if (!hasLintScript) {
+      const scripts = JsonFile.read(path.join(this.projectRoot, 'package.json')).scripts;
       await JsonFile.setAsync(
         path.join(this.projectRoot, 'package.json'),
         'scripts',
@@ -122,7 +90,8 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
     }
 
     Log.log();
-    Log.log('Your ESlint config has been set up 🎉');
+    Log.log('ESlint has been configured 🎉');
+    Log.log();
 
     return true;
   }
@@ -141,7 +110,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
         installMessage: 'ESLint is required to lint your project.',
         warningMessage: 'ESLint not installed, unable to set up linting for your project.',
         requiredPackages: [
-          { version: '^8.10.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
+          { version: '^8.57.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
           {
             version: '^7.0.0',
             pkg: 'eslint-config-expo',
@@ -151,6 +120,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
         ],
       });
     } catch (error) {
+      this.resetAssertion();
       throw error;
     }
   }
@@ -159,7 +129,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
 async function eslintIsConfigured(projectRoot: string) {
   debug('Ensuring ESlint is configured in', projectRoot);
 
-  // TODO(cedric): maybe add find up logic to `package.json` too?
+  // TODO(cedric): drop `package.json` check once we swap to flat config
   const packageFile = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
   if (
     typeof packageFile.eslintConfig === 'object' &&
@@ -170,13 +140,14 @@ async function eslintIsConfigured(projectRoot: string) {
   }
 
   const eslintConfigFiles = [
+    // TODO(cedric): drop these files once we swap to flat config
     // See: https://eslint.org/docs/latest/use/configure/configuration-files-deprecated
     '.eslintrc.js',
     '.eslintrc.cjs',
     '.eslintrc.yaml',
     '.eslintrc.yml',
     '.eslintrc.json',
-    // NOTE(cedric): our config plugins are incompatible with ESLint v9's flat config
+    // TODO(cedric): use these files once we swap to flat config
     // See: https://eslint.org/docs/latest/use/configure/configuration-files
     // 'eslint.config.js',
     // 'eslint.config.mjs',
@@ -212,4 +183,9 @@ async function eslintConfigIsEmpty(filePath: string) {
     content.startsWith('exportdefault{}') || // .eslint.config.mjs
     content.startsWith('exportdefault[]') // .eslint.config.mjs
   );
+}
+
+async function lintScriptIsConfigured(projectRoot: string) {
+  const packageFile = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
+  return typeof (packageFile.scripts as JSONObject | undefined)?.lint === 'string';
 }

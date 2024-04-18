@@ -1,22 +1,16 @@
-import { resolvePackageManager } from '@expo/package-manager';
-import spawnAsync from '@expo/spawn-async';
+import { createForProject } from '@expo/package-manager';
 
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
 
 export const lintAsync = async (projectRoot: string) => {
-  await new ESLintProjectPrerequisite(projectRoot).assertAsync();
+  const prerequisite = new ESLintProjectPrerequisite(projectRoot);
+  if (!(await prerequisite.assertAsync())) {
+    await prerequisite.bootstrapAsync();
+  }
 
-  const manager = resolvePackageManager(projectRoot) || 'npm';
-
+  const manager = createForProject(projectRoot);
   try {
-    await spawnAsync(manager === 'npm' ? 'npx' : manager, ['eslint', '.'], {
-      stdio: 'inherit',
-      cwd: projectRoot,
-      env: {
-        ...process.env,
-        ESLINT_USE_FLAT_CONFIG: 'false',
-      },
-    });
+    await manager.runAsync(['run', 'lint']);
   } catch (error: any) {
     process.exit(error.status);
   }
