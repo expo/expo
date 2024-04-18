@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.7.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add silent option. ([#27325](https://github.com/expo/expo/pull/27325) by [@wschurman](https://github.com/wschurman))
 - Add debug option to enable verbose debug output. ([#27457](https://github.com/expo/expo/pull/27457) by [@wschurman](https://github.com/wschurman))
 - Added sourcer for `patch-project` patches support. ([#27653](https://github.com/expo/expo/pull/27653) by [@kudo](https://github.com/kudo))

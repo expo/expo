@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.0.0 — 2024-04-18
+
+### 💡 Others
+
 - Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ## 9.0.0-beta.0 — 2024-04-17

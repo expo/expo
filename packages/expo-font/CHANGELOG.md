@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] The native module has been simplified and rewritten to Swift. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- [iOS] The native module has been simplified and rewritten to Swift. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

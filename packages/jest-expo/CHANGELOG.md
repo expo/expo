@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 51.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

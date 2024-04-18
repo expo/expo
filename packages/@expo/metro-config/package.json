@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
     "@expo/config": "~9.0.0-beta.0",
-    "@expo/env": "~0.2.0",
+    "@expo/env": "~0.3.0",
     "@expo/json-file": "~8.3.0",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",

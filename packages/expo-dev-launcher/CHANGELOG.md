@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Removed configurable `enableAutoSetup` support. ([#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - Fix crash caused by accessing UIApplication apis off the main thread. ([#20272](https://github.com/expo/expo/pull/20272) by [@cltnschlosser](https://github.com/cltnschlosser))
 
 ### 💡 Others

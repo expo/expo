@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.0.0 — 2024-04-18
+
+### 💡 Others
+
 - Update fingerprintExperimental -> fingerprint runtime version policy. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ## 8.0.0-beta.0 — 2024-04-17

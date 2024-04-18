@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.12.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Removed Flipper support. ([#26581](https://github.com/expo/expo/pull/26581) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
 - Expand `android.extraMavenRepos` to allow authentication-required Maven repositories. ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
 - Added `extraPods` and `extraMavenRepos` supports within `withBuildProperties()` that library authors could reuse in third-party libraries. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ### 📚 3rd party library updates
 

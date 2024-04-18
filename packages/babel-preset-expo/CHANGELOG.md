@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Remove all unused babel plugins on web and SSR. ([#27907](https://github.com/expo/expo/pull/27907) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
