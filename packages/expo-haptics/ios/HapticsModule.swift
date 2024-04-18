@@ -47,6 +47,8 @@ public class HapticsModule: Module {
     case light
     case medium
     case heavy
+    case soft
+    case rigid
 
     func toFeedbackStyle() -> UIImpactFeedbackGenerator.FeedbackStyle {
       switch self {
@@ -56,6 +58,10 @@ public class HapticsModule: Module {
         return .medium
       case .heavy:
         return .heavy
+      case .soft:
+        return .soft
+      case .rigid:
+        return .rigid
       }
     }
   }

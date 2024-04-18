@@ -49,6 +49,14 @@ const sections: SectionListData<SectionData>[] = [
         accessor: 'Haptics.ImpactFeedbackStyle.Heavy',
         value: Haptics.ImpactFeedbackStyle.Heavy,
       },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Soft',
+        value: Haptics.ImpactFeedbackStyle.Soft,
+      },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Rigid',
+        value: Haptics.ImpactFeedbackStyle.Rigid,
+      },
     ],
   },
   {
