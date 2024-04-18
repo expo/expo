@@ -112,9 +112,13 @@ export async function downloadPackageTarballAsync(
  * Creates a tarball from a package.
  */
 export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
-  const [result] = await spawnJSONCommandAsync<PackResult[]>('npm', ['pack', '--json'], {
-    cwd: packageDir,
-  });
+  const [result] = await spawnJSONCommandAsync<PackResult[]>(
+    'npm',
+    ['pack', '--json', '--foreground-scripts=false'],
+    {
+      cwd: packageDir,
+    }
+  );
   return result;
 }
 

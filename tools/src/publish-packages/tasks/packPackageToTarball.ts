@@ -31,7 +31,7 @@ export const packPackageToTarball = new Task<TaskArgs>(
           return;
         } catch (error) {
           step.fail();
-          logger.error(error.stderr);
+          logger.error(error);
           return Task.STOP;
         }
       },
