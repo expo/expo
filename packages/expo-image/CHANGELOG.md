@@ -22,6 +22,7 @@
 - [iOS] Bump SDWebImage to `5.19.1` to include the 3rd-party privacy manifest. ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes), []() by [@tsapeta](https://github.com/tsapeta))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- [iOS] Bump SDWebImageWebPCoder to `0.14.6`. ([#28273](https://github.com/expo/expo/pull/28273) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.11.0 — 2024-02-05
 
