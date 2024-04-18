@@ -22,11 +22,11 @@ export default function ExpoModulesScreen() {
         {`Object.keys(global.expo.modules) => [\n  ${moduleNames.join(',\n  ')}\n]`}
       </MonoText>
 
-      {moduleNames.map((moduleName) => {
+      {Object.entries(modules).map(([moduleName, nativeModule]) => {
         return (
           <View key={moduleName}>
             <HeadingText>Module: {moduleName}</HeadingText>
-            <MonoText>{JSON.stringify(modules[moduleName], customJsonReplacer, 2)}</MonoText>
+            <MonoText>{JSON.stringify(nativeModule, customJsonReplacer, 2)}</MonoText>
           </View>
         );
       })}

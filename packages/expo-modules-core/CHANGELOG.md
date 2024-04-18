@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- Expose global type `ExpoNativeModules` which can be used to extend the global `expo.modules` object. ([#28164](https://github.com/expo/expo/pull/28164) by [@EvanBacon](https://github.com/EvanBacon))
 - [Web] Add `createWebModule` function to wrap web functionality with the NativeModule class. ([#27739](https://github.com/expo/expo/pull/27739) by [@aleqsio](https://github.com/aleqsio))
 - [Web] Add web implementations of event emitter and stubs of shared objects and native modules. ([#27595](https://github.com/expo/expo/pull/27595) by [@aleqsio](https://github.com/aleqsio))
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
