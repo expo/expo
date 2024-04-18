@@ -1564,7 +1564,7 @@ PODS:
     - React-debug
   - react-native-netinfo (11.3.1):
     - React-Core
-  - react-native-pager-view (6.2.3):
+  - react-native-pager-view (6.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2602,7 +2602,7 @@ SPEC CHECKSUMS:
   React-logger: c4f94ac23ce01e558b50ad7dfb9d6f09025701dd
   React-Mapbuffer: fbe9c6b6c762e35bba9e8259d6e5e5a22ede7986
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
-  react-native-pager-view: 880c1bb546f47322d03b56ff2810aa5e990e582c
+  react-native-pager-view: c1e29e1a6105a02807392ba822ad322447a72f55
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
   react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
   react-native-slider: ce295d2bf830a7990af05b0bd70ab28c133e230c
