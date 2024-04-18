@@ -23,11 +23,15 @@ android {
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
   }
-}
 
-if (safeExtGet("excludeAppGlideModule", false)) {
-  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
-    exclude("**/ExpoImageAppGlideModule.kt")
+  sourceSets {
+    main {
+      java {
+        if (safeExtGet("excludeAppGlideModule", false)) {
+          exclude("**/ExpoImageAppGlideModule.kt")
+        }
+      }
+    }
   }
 }
 
