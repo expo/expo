@@ -96,6 +96,18 @@ export default function App() {
             () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) /* @end */
           }
         />
+        <Button
+          title="Rigid"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid) /* @end */
+          }
+        />
+        <Button
+          title="Soft"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft) /* @end */
+          }
+        />
       </View>
     </View>
   );
