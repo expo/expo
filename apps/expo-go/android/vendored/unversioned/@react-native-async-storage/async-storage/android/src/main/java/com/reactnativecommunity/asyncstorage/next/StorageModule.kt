@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.module.annotations.ReactModule
+import com.reactnativecommunity.asyncstorage.NativeAsyncStorageModuleSpec
 import com.reactnativecommunity.asyncstorage.SerialExecutor
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +17,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
 
-class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), CoroutineScope {
-    override fun getName() = "RNC_AsyncSQLiteDBStorage"
+@ReactModule(name = StorageModule.NAME)
+class StorageModule(reactContext: ReactApplicationContext) : NativeAsyncStorageModuleSpec(reactContext), CoroutineScope {
+    override fun getName() = NAME
 
     // this executor is not used by the module, but it must exists here due to
     // Detox relying on this implementation detail to run
@@ -30,6 +32,8 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     private val storage = StorageSupplier.getInstance(reactContext)
 
     companion object {
+        const val NAME = "RNCAsyncStorage"
+
         @JvmStatic
         fun getStorageInstance(ctx: Context): AsyncStorageAccess {
             return StorageSupplier.getInstance(ctx)
@@ -37,7 +41,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun multiGet(keys: ReadableArray, cb: Callback) {
+    override fun multiGet(keys: ReadableArray, cb: Callback) {
         launch(createExceptionHandler(cb)) {
             val entries = storage.getValues(keys.toKeyList())
             cb(null, entries.toKeyValueArgument())
@@ -45,7 +49,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun multiSet(keyValueArray: ReadableArray, cb: Callback) {
+    override fun multiSet(keyValueArray: ReadableArray, cb: Callback) {
         launch(createExceptionHandler(cb)) {
             val entries = keyValueArray.toEntryList()
             storage.setValues(entries)
@@ -54,7 +58,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun multiRemove(keys: ReadableArray, cb: Callback) {
+    override fun multiRemove(keys: ReadableArray, cb: Callback) {
         launch(createExceptionHandler(cb)) {
             storage.removeValues(keys.toKeyList())
             cb(null)
@@ -62,7 +66,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun multiMerge(keyValueArray: ReadableArray, cb: Callback) {
+    override fun multiMerge(keyValueArray: ReadableArray, cb: Callback) {
         launch(createExceptionHandler(cb)) {
             val entries = keyValueArray.toEntryList()
             storage.mergeValues(entries)
@@ -71,7 +75,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun getAllKeys(cb: Callback) {
+    override fun getAllKeys(cb: Callback) {
         launch(createExceptionHandler(cb)) {
             val keys = storage.getKeys()
             val result = Arguments.createArray()
@@ -81,7 +85,7 @@ class StorageModule(reactContext: ReactContext) : ReactContextBaseJavaModule(), 
     }
 
     @ReactMethod
-    fun clear(cb: Callback) {
+    override fun clear(cb: Callback) {
         launch(createExceptionHandler(cb)) {
             storage.clear()
             cb(null)

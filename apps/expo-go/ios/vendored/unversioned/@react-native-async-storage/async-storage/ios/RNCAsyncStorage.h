@@ -10,6 +10,10 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <rnasyncstorage/rnasyncstorage.h>
+#endif
+
 #import "RNCAsyncStorageDelegate.h"
 
 /**
@@ -23,7 +27,14 @@
  *
  * Keys and values must always be strings or an error is returned.
  */
-@interface RNCAsyncStorage : NSObject <RCTBridgeModule, RCTInvalidating>
+@interface RNCAsyncStorage : NSObject <
+#ifdef RCT_NEW_ARCH_ENABLED
+                                 NativeAsyncStorageModuleSpec
+#else
+                                 RCTBridgeModule
+#endif
+                                 ,
+                                 RCTInvalidating>
 
 @property (nonatomic, weak, nullable) id<RNCAsyncStorageDelegate> delegate;
 
