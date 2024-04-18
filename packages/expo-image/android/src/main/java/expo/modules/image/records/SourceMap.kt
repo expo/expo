@@ -42,15 +42,18 @@ data class SourceMap(
 
   fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
 
+  private fun parseUri(context: Context) {
+    if (parsedUri == null) {
+      parsedUri = computeUri(context)
+    }
+  }
+
   internal fun createGlideModel(context: Context): GlideModel? {
     if (uri.isNullOrBlank()) {
       return null
     }
 
-    if (parsedUri == null) {
-      parsedUri = computeUri(context)
-    }
-
+    parseUri(context)
     if (isContentUrl() || isDataUrl()) {
       return GlideRawModel(uri)
     }
@@ -94,12 +97,9 @@ data class SourceMap(
   }
 
   internal fun createOptions(context: Context): RequestOptions {
+    parseUri(context)
     return RequestOptions()
       .apply {
-        if (parsedUri == null) {
-          parsedUri = computeUri(context)
-        }
-
         // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
         if (width != 0 && height != 0) {

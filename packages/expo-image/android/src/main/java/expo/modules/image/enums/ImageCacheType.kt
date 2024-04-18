@@ -9,6 +9,6 @@ enum class ImageCacheType(private vararg val dataSources: DataSource) {
 
   companion object {
     fun fromNativeValue(value: DataSource): ImageCacheType =
-      values().firstOrNull { it.dataSources.contains(value) } ?: NONE
+      entries.firstOrNull { it.dataSources.contains(value) } ?: NONE
   }
 }

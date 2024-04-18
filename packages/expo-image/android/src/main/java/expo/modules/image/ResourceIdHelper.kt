@@ -33,7 +33,7 @@ object ResourceIdHelper {
 
   fun getResourceUri(context: Context, name: String): Uri? {
     val drawableUri = ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, name)
-    if (drawableUri != null && drawableUri != Uri.EMPTY) {
+    if (drawableUri != Uri.EMPTY) {
       return drawableUri
     }
 
