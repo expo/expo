@@ -52,8 +52,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    versionCode 221
-    versionName '2.30.5'
+    versionCode 226
+    versionName '2.31.0'
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
