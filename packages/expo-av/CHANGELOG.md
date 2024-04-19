@@ -16,6 +16,7 @@
 
 - [Android] Fix recording audio on Android after converting to Expo Modules ([#26657](https://github.com/expo/expo/pull/26657) by [@jpudysz](https://github.com/jpudysz))
 - [Android] Fix memory leak connect with `AVManager`. ([#28159](https://github.com/expo/expo/pull/28159) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix `HashMap cannot be cast to ReadableNativeMap` error on Android. ([#28317](https://github.com/expo/expo/pull/28317) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
