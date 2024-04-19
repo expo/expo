@@ -209,56 +209,61 @@ void installClass(jsi::Runtime &runtime) {
   jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // `this` might be an object that is representing a host object, in which case it's not possible to get the native state.
     // For native modules we need to unwrap it to get the object used under the hood by `LazyObject` host object.
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    addListener(runtime, thisObject, eventName, listener);
-    return createEventSubscription(runtime, eventName, thisObject, listener);
+    addListener(runtime, emitter, eventName, listener);
+    return createEventSubscription(runtime, eventName, emitter, listener);
   };
 
   jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeListener(runtime, thisObject, eventName, listener);
+    removeListener(runtime, emitter, eventName, listener);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType removeAllListenersHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeAllListeners(runtime, thisObject, eventName);
+    removeAllListeners(runtime, emitter, eventName);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType emit = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
     // Make a new pointer that skips the first argument which is the event name.
     const jsi::Value *eventArgs = count > 1 ? &args[1] : nullptr;
 
-    emitEvent(runtime, thisObject, eventName, eventArgs, count - 1);
+    emitEvent(runtime, emitter, eventName, eventArgs, count - 1);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType listenerCountHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    return jsi::Value((int)getListenerCount(runtime, thisObject, eventName));
+    return jsi::Value((int)getListenerCount(runtime, emitter, eventName));
   };
 
   // Added for compatibility with the old EventEmitter API.
