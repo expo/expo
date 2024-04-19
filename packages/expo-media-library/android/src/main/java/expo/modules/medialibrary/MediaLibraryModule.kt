@@ -462,8 +462,9 @@ class MediaLibraryModule : Module() {
   ) = Action { permissionsWereGranted ->
     if (!permissionsWereGranted) {
       promise.reject(PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE))
+    } else {
+      block()
     }
-    block()
   }
 
   private inner class MediaStoreContentObserver(handler: Handler, private val mMediaType: Int) :
