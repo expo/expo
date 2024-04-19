@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.Choreographer
 import android.view.Surface
 import android.view.WindowManager
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
@@ -23,6 +22,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.getServiceInterface
+import java.lang.ref.WeakReference
 
 class DeviceMotionModule : Module(), SensorEventListener2 {
   private var lastUpdate = 0L
@@ -38,8 +38,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private lateinit var uiManager: UIManager
 
   private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
-  private val dispatchEventRunnable = DispatchEventRunnable()
-  private lateinit var eventEmitter: EventEmitter
+  private val dispatchEventRunnable = DispatchEventRunnable(WeakReference(this))
 
   override fun definition() = ModuleDefinition {
     Name("ExponentDeviceMotion")
@@ -50,7 +49,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
     OnCreate {
       uiManager = appContext.legacyModule()!!
-      eventEmitter = appContext.legacyModule()!!
     }
 
     AsyncFunction("setUpdateInterval") { updateInterval: Float ->
@@ -72,7 +70,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     }
 
     // We can't use `OnStopObserving`, because we need access to the promise.
-    AsyncFunction("stopObserving") { promise: Promise ->
+    AsyncFunction("stopObserving") { eventName: String?, promise: Promise ->
       uiManager.runOnUiQueueThread {
         serviceSubscriptions.forEach { it.stop() }
         currentFrameCallback.stop()
@@ -161,9 +159,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     }
   }
 
-  private inner class DispatchEventRunnable : Runnable {
+  private inner class DispatchEventRunnable(private val weakReference: WeakReference<DeviceMotionModule>) : Runnable {
     override fun run() {
-      eventEmitter.emit("deviceMotionDidUpdate", eventsToMap())
+      weakReference.get()?.sendEvent("deviceMotionDidUpdate", eventsToMap())
     }
   }
 
