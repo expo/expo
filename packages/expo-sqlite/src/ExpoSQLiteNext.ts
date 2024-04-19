@@ -21,6 +21,14 @@ export default {
     throw new Error('Unimplemented');
   },
 
+  importAssetDatabaseAsync(
+    databaseName: string,
+    assetDatabasePath: string,
+    forceOverwrite: boolean
+  ): Promise<void> {
+    throw new Error('Unimplemented');
+  },
+
   //#region EventEmitter implementations
 
   addListener() {

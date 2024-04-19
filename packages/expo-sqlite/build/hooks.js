@@ -1,4 +1,6 @@
+import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import ExpoSQLite from './ExpoSQLiteNext';
 import { openDatabaseAsync } from './SQLiteDatabase';
 /**
  * Create a context for the SQLite database
@@ -48,23 +50,24 @@ export function useSQLiteContext() {
     return context;
 }
 let databaseInstance = null;
-function SQLiteProviderSuspense({ databaseName, options, children, onInit, }) {
+function SQLiteProviderSuspense({ databaseName, options, assetSource, children, onInit, }) {
     const databasePromise = getDatabaseAsync({
         databaseName,
         options,
+        assetSource,
         onInit,
     });
     const database = use(databasePromise);
     return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
 }
-function SQLiteProviderNonSuspense({ databaseName, options, children, onInit, onError, }) {
+function SQLiteProviderNonSuspense({ databaseName, options, assetSource, children, onInit, onError, }) {
     const databaseRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     useEffect(() => {
         async function setup() {
             try {
-                const db = await openDatabaseWithInitAsync({ databaseName, options, onInit });
+                const db = await openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
                 databaseRef.current = db;
                 setLoading(false);
             }
@@ -100,7 +103,7 @@ function SQLiteProviderNonSuspense({ databaseName, options, children, onInit, on
     }
     return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
-function getDatabaseAsync({ databaseName, options, onInit, }) {
+function getDatabaseAsync({ databaseName, options, assetSource, onInit, }) {
     if (databaseInstance?.promise != null &&
         databaseInstance?.databaseName === databaseName &&
         databaseInstance?.options === options &&
@@ -114,11 +117,11 @@ function getDatabaseAsync({ databaseName, options, onInit, }) {
             db.closeAsync();
         })
             .then(() => {
-            return openDatabaseWithInitAsync({ databaseName, options, onInit });
+            return openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
         });
     }
     else {
-        promise = openDatabaseWithInitAsync({ databaseName, options, onInit });
+        promise = openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
     }
     databaseInstance = {
         databaseName,
@@ -128,12 +131,22 @@ function getDatabaseAsync({ databaseName, options, onInit, }) {
     };
     return promise;
 }
-async function openDatabaseWithInitAsync({ databaseName, options, onInit, }) {
+async function openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit, }) {
+    if (assetSource != null) {
+        await importDatabaseFromAssetAsync(databaseName, assetSource);
+    }
     const database = await openDatabaseAsync(databaseName, options);
     if (onInit != null) {
         await onInit(database);
     }
     return database;
+}
+async function importDatabaseFromAssetAsync(databaseName, assetSource) {
+    const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
+    if (!asset.localUri) {
+        throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);
+    }
+    await ExpoSQLite.importAssetDatabaseAsync(databaseName, asset.localUri, assetSource.forceOverwrite ?? false);
 }
 // Referenced from https://github.com/reactjs/react.dev/blob/6570e6cd79a16ac3b1a2902632eddab7e6abb9ad/src/content/reference/react/Suspense.md
 /**

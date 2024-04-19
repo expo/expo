@@ -11,6 +11,9 @@ export default {
     deleteDatabaseSync(databaseName) {
         throw new Error('Unimplemented');
     },
+    importAssetDatabaseAsync(databaseName, assetDatabasePath, forceOverwrite) {
+        throw new Error('Unimplemented');
+    },
     //#region EventEmitter implementations
     addListener() {
         throw new Error('Unimplemented');

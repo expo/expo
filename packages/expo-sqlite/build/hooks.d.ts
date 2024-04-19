@@ -1,6 +1,17 @@
 import React from 'react';
 import type { SQLiteOpenOptions } from './NativeDatabase';
 import { type SQLiteDatabase } from './SQLiteDatabase';
+export interface SQLiteProviderAssetSource {
+    /**
+     * The asset ID returned from the `require()` call.
+     */
+    assetId: number;
+    /**
+     * Force overwrite the local database file even if it already exists.
+     * @default false
+     */
+    forceOverwrite?: boolean;
+}
 export interface SQLiteProviderProps {
     /**
      * The name of the database file to open.
@@ -10,6 +21,14 @@ export interface SQLiteProviderProps {
      * Open options.
      */
     options?: SQLiteOpenOptions;
+    /**
+     * Import a bundled database file from the specified asset module.
+     * @example
+     * ```ts
+     * assetSource={{ assetId: require('./assets/db.db') }}
+     * ```
+     */
+    assetSource?: SQLiteProviderAssetSource;
     /**
      * The children to render.
      */

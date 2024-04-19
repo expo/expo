@@ -46,6 +46,22 @@ public final class SQLiteModuleNext: Module {
       try deleteDatabase(databaseName: databaseName)
     }
 
+    AsyncFunction("importAssetDatabaseAsync") { (databaseName: String, assetDatabasePath: String, forceOverwrite: Bool) in
+      guard let path = pathForDatabaseName(name: databaseName) else {
+        throw Exceptions.FileSystemModuleNotFound()
+      }
+      let fileManager = FileManager.default
+      if fileManager.fileExists(atPath: path.absoluteString) && !forceOverwrite {
+        return
+      }
+      guard let assetPath = URL(string: assetDatabasePath)?.path,
+        fileManager.fileExists(atPath: assetPath) else {
+        throw DatabaseNotFoundException(assetDatabasePath)
+      }
+      try? fileManager.removeItem(atPath: path.absoluteString)
+      try fileManager.copyItem(atPath: assetPath, toPath: path.absoluteString)
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
       Constructor { (databaseName: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
