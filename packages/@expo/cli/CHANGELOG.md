@@ -24,6 +24,7 @@
 - Add better API Route error messages. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bundling production react modules in development. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 - Added building only for connected CPU architectures on Android when using the new architecture. ([#26800](https://github.com/expo/expo/pull/26800) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `expo lint` command to configure and run ESLint. ([#28104](https://github.com/expo/expo/pull/28104) by [@kadikraman](https://github.com/kadikraman), [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
