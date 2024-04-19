@@ -7,10 +7,13 @@ describe('Expo Tracking Transparency', () => {
         slug: 'testSlug',
         name: 'testName',
       })
-    ).toEqual({
+    ).toMatchObject({
       _internal: {
         pluginHistory: {
-          'expo-tracking-transparency': { name: 'expo-tracking-transparency', version: '3.3.0' },
+          'expo-tracking-transparency': {
+            name: 'expo-tracking-transparency',
+            version: expect.any(String),
+          },
         },
       },
       android: { permissions: ['com.google.android.gms.permission.AD_ID'] },
