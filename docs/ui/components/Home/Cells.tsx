@@ -86,22 +86,24 @@ export const TalkGridCell = ({
     <A
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
-      css={[cellStyle, cellAPIStyle, cellHoverStyle]}
+      css={[cellStyle, cellTalkStyle, cellHoverStyle]}
       className={className}
       isStyled>
-      <div
-        style={{
-          backgroundImage: `url(${
-            thumbnail
-              ? `/static/thumbnails/${thumbnail}`
-              : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-          })`,
-        }}
-        className="border-b border-b-default bg-cover bg-center h-[138px]"
-      />
-      <div css={cellTitleWrapperStyle} className="!py-3 gap-1">
-        <LABEL className="block leading-normal">{title}</LABEL>
-        <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
+      <div>
+        <div
+          style={{
+            backgroundImage: `url(${
+              thumbnail
+                ? `/static/thumbnails/${thumbnail}`
+                : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+            })`,
+          }}
+          className="border-b border-b-default bg-cover bg-center h-[138px]"
+        />
+        <div css={cellTitleWrapperStyle} className="!py-3 gap-1">
+          <LABEL className="block leading-normal">{title}</LABEL>
+          <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
+        </div>
       </div>
       <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
         <CALLOUT theme="secondary" className="flex gap-2 items-center">
@@ -218,6 +220,15 @@ const cellAPIStyle = css({
   padding: 0,
   overflow: 'hidden',
   textDecoration: 'none',
+});
+
+const cellTalkStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: 266,
+  backgroundColor: theme.background.default,
+  justifyContent: 'space-between',
+  padding: 0,
 });
 
 const cellIconWrapperStyle = css({
