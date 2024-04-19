@@ -7,24 +7,43 @@ description: Learn how to install and configure expo-updates in bare React Nativ
 import { Terminal } from '~/ui/components/Snippet';
 import { DiffBlock } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-The `expo-updates` library fetches and manages updates to app JavaScript and assets received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates and provides a variety of tools for managing them. It can also be configured to work with a [custom server](/eas-update/custom-updates-server/). This guide explains how set it up for use with EAS Update.
+The `expo-updates` library fetches and manages updates to an app's JavaScript and assets that are received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates and provides a variety of tools for managing them. It can also be configured to work with a [custom server](/eas-update/custom-updates-server/). This guide explains how to set it up for use with EAS Update.
 
 <Collapsible summary="Do you need to create a new project?">
 
-If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/config-plugins/introduction/), which will handle the installation steps for you.
+If you are creating a new project, we recommend using the following command:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npx create-expo-app --template bare-minimum']} />
+
+</Tab>
+
+<Tab label="yarn">
+
+<Terminal cmd={['$ yarn create expo-app --template bare-minimum']} />
+
+</Tab>
+
+</Tabs>
+
+Running this command will create a new project from the `bare-minimum` template that will handle configuring the `expo-updates` [config plugin](/config-plugins/introduction/) and the installation steps described in the following sections of this guide.
 
 </Collapsible>
 
 <Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
 
-You may be reading the wrong guide then! To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), refer to the [EAS Update "Get started" guide](/eas-update/getting-started/).
+You may be reading the wrong guide then. To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), see [EAS Update "Get started"](/eas-update/getting-started/).
 
 </Collapsible>
 
 ## Prerequisites
 
-**The `expo` package must be installed and configured**: if you created your project with `npx react-native init` and do not have any other Expo packages installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
+**The `expo` package must be installed and configured.** If you created your project with `npx react-native init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
 
 ## Installation
 
@@ -32,18 +51,21 @@ To get started, install `expo-updates`:
 
 <Terminal cmd={['$ npx expo install expo-updates']} />
 
-Then, install pods:
+Then, install pods for iOS:
 
 <Terminal cmd={['$ npx pod-install']} />
 
-Once installation is complete, apply the changes from the following diffs to configure `expo-updates` in your project.
+## Configuring expo-updates library
 
-### Configuration in JavaScript and JSON
+Apply the changes from the diffs from the following sections to configure `expo-updates` in your project.
 
-Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.)
-The changes below add the updates URL to the Expo configuration.
+### JavaScript and JSON
 
-> The example `updates` URL and `projectId` shown below are for use with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure`.
+Modify the `expo` section of **app.json**. (If you created your project using `npx react-native init`, you will need to add this section.)
+
+The changes below add the [`updates` URL](/versions/latest/config/app/#url) to the Expo configuration.
+
+> The example `updates` URL and `projectId` shown below are used with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure`.
 
 ```diff app.json
  {
@@ -93,65 +115,7 @@ If you want to set up a [custom server](/eas-update/custom-updates-server) inste
  }
 ```
 
-### Configuration for iOS
-
-Add the file **Podfile.properties.json** to the **ios** directory:
-
-```json ios/Podfile.properties.json
-{
-  "expo.jsEngine": "hermes"
-}
-```
-
-Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) in Expo files:
-
-```diff ios/Podfile
---- a/ios/Podfile
-+++ b/ios/Podfile
-@@ -2,6 +2,9 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
- require_relative '../node_modules/react-native/scripts/react_native_pods'
- require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-
-+require 'json'
-+podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
-+
- platform :ios, '13.0'
- prepare_react_native_project!
-
-@@ -41,7 +44,7 @@ target 'MyApp' do
-     # Hermes is now enabled by default. Disable by setting this flag to false.
-     # Upcoming versions of React Native may rely on get_default_flags(), but
-     # we make it explicit here to aid in the React Native upgrade process.
--    :hermes_enabled => flags[:hermes_enabled],
-+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-     :fabric_enabled => flags[:fabric_enabled],
-     # Enables Flipper.
-     #
-
-```
-
-Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
-
-```xml Expo.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>EXUpdatesCheckOnLaunch</key>
-    <string>ALWAYS</string>
-    <key>EXUpdatesEnabled</key>
-    <true/>
-    <key>EXUpdatesLaunchWaitMs</key>
-    <integer>0</integer>
-    <key>EXUpdatesRuntimeVersion</key>
-    <string>1.0.0</string>
-    <key>EXUpdatesURL</key>
-    <string>http://localhost:3000/api/manifest</string>
-  </dict>
-</plist>
-```
-
-### Configuration for Android
+### Android
 
 Modify **android/app/build.gradle** to check for the JS engine configuration (JSC or Hermes) in Expo files:
 
@@ -209,9 +173,67 @@ Add the Expo runtime version string key to **android/app/src/main/res/values/str
 
 <DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
+### iOS
+
+Add the file **Podfile.properties.json** to the **ios** directory:
+
+```json ios/Podfile.properties.json
+{
+  "expo.jsEngine": "hermes"
+}
+```
+
+Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) in Expo files:
+
+```diff ios/Podfile
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -2,6 +2,9 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
+ require_relative '../node_modules/react-native/scripts/react_native_pods'
+ require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
++require 'json'
++podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
++
+ platform :ios, '13.0'
+ prepare_react_native_project!
+
+@@ -41,7 +44,7 @@ target 'MyApp' do
+     # Hermes is now enabled by default. Disable by setting this flag to false.
+     # Upcoming versions of React Native may rely on get_default_flags(), but
+     # we make it explicit here to aid in the React Native upgrade process.
+-    :hermes_enabled => flags[:hermes_enabled],
++    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+     :fabric_enabled => flags[:fabric_enabled],
+     # Enables Flipper.
+     #
+
+```
+
+Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
+
+```xml Expo.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>EXUpdatesCheckOnLaunch</key>
+    <string>ALWAYS</string>
+    <key>EXUpdatesEnabled</key>
+    <true/>
+    <key>EXUpdatesLaunchWaitMs</key>
+    <integer>0</integer>
+    <key>EXUpdatesRuntimeVersion</key>
+    <string>1.0.0</string>
+    <key>EXUpdatesURL</key>
+    <string>http://localhost:3000/api/manifest</string>
+  </dict>
+</plist>
+```
+
 ## Next steps
 
-- To start trying out EAS Update with EAS Build, see the EAS Update [Getting Started](/eas-update/getting-started/).
-- See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
-- See [EAS Update with a local build](/eas-update/build-locally/).
-- It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
+- To start using EAS Update with EAS Build, see the EAS Update [Get started](/eas-update/getting-started/).
+- See [`expo-updates` API reference](/versions/latest/sdk/updates/) for more information on how to use the library.
+- See how to use [EAS Update with a local build directly](/eas-update/build-locally/).
+- It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/). See [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
