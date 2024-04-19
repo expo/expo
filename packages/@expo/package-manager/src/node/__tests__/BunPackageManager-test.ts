@@ -49,6 +49,15 @@ describe('BunPackageManager', () => {
     });
   });
 
+  describe('runBinAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const bun = new BunPackageManager({ cwd: projectRoot, log });
+      await bun.runBinAsync(['eslint', '.']);
+      expect(log).toHaveBeenCalledWith('> bun eslint .');
+    });
+  });
+
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();

@@ -10,7 +10,7 @@ export const lintAsync = async (projectRoot: string) => {
 
   const manager = createForProject(projectRoot);
   try {
-    await manager.runAsync(['run', 'eslint', '.']);
+    await manager.runBinAsync(['eslint', '.']);
   } catch (error: any) {
     process.exit(error.status);
   }

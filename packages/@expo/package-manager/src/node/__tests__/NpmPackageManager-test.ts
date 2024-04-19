@@ -49,6 +49,15 @@ describe('NpmPackageManager', () => {
     });
   });
 
+  describe('runBinAsync', () => {
+    it('delegates to npx', async () => {
+      const log = jest.fn();
+      const npm = new NpmPackageManager({ cwd: projectRoot, log });
+      await npm.runBinAsync(['eslint', '.']);
+      expect(log).toHaveBeenCalledWith('> npx eslint .');
+    });
+  });
+
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();

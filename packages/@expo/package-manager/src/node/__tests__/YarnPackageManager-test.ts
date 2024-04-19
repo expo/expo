@@ -49,6 +49,15 @@ describe('YarnPackageManager', () => {
     });
   });
 
+  describe('runBinAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const yarn = new YarnPackageManager({ cwd: projectRoot, log });
+      await yarn.runBinAsync(['eslint', '.']);
+      expect(log).toHaveBeenCalledWith('> yarn eslint .');
+    });
+  });
+
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();

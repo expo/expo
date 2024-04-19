@@ -63,6 +63,15 @@ describe('PnpmPackageManager', () => {
     });
   });
 
+  describe('runBinAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
+      await pnpm.runBinAsync(['eslint', '.']);
+      expect(log).toHaveBeenCalledWith('> pnpm eslint .');
+    });
+  });
+
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
