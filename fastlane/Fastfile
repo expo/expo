@@ -309,37 +309,34 @@ platform :android do
     # UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
-  lane :start do |flavor: "unversioned"|
+  lane :start do
     gradle(
-      project_dir: "android",
+      project_dir: "apps/expo-go/android",
       task: "install",
       build_type: "Debug",
-      flavor: flavor,
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
 
-  lane :build do |build_type: "Debug", flavor: "versioned", sign: true, aab: false|
+  lane :build do |build_type: "Debug", sign: true, aab: false|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(
-      project_dir: "android",
+      project_dir: "apps/expo-go/android",
       task: aab ? "app:bundle": "app:assemble",
-      flavor: flavor,
       build_type: build_type,
     )
   end
 
-  lane :upload_crashlytics_symbols do |flavor: "versioned"|
+  lane :upload_crashlytics_symbols do
     gradle(
       project_dir: "android",
       task: "app:uploadCrashlyticsSymbolFile",
-      flavor: flavor,
       build_type: "Release",
     )
   end
 
   lane :prod_release do
-    build_gradle = File.read("../android/app/build.gradle")
+    build_gradle = File.read("../apps/expo-go/android/app/build.gradle")
 
     verify_changelog_exists(version_code: build_gradle.match(/versionCode (\d+)/)[1])
     verify_upload_to_staging(version_name: build_gradle.match(/versionName '([\d\.]+)'/)[1])
@@ -347,7 +344,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      aab: "./android/app/build/outputs/bundle/versionedRelease/app-versioned-release.aab",
+      aab: "./apps/expo-go/android/app/build/outputs/bundle/release/app-release.aab",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true
