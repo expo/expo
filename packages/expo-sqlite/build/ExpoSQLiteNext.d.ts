@@ -4,6 +4,7 @@ declare const _default: {
     NativeStatement(): void;
     deleteDatabaseAsync(databaseName: string): Promise<void>;
     deleteDatabaseSync(databaseName: string): void;
+    importAssetDatabaseAsync(databaseName: string, assetDatabasePath: string, forceOverwrite: boolean): Promise<void>;
     addListener(): never;
     removeListeners(): never;
 };
