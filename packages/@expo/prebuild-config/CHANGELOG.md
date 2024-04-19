@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.0.0 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
 ## 7.0.0-beta.0 — 2024-04-17
 
 ### 🛠 Breaking changes

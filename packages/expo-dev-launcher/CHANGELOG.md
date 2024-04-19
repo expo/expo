@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
 
 ## 4.0.0 — 2024-04-18
 
