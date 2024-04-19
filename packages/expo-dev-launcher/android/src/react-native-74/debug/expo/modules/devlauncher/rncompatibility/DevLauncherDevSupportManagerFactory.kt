@@ -14,7 +14,7 @@ import com.facebook.react.packagerconnection.RequestHandler
 class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
   override fun create(
     applicationContext: Context,
-    reactInstanceManagerHelper: ReactInstanceDevHelper,
+    reactInstanceDevHelper: ReactInstanceDevHelper,
     packagerPathForJSBundleName: String?,
     enableOnCreate: Boolean,
     redBoxHandler: RedBoxHandler?,
@@ -27,9 +27,9 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     return if (!enableOnCreate) {
       DisabledDevSupportManager()
     } else {
-      DevLauncherDevSupportManager(
+      DevLauncherBridgeDevSupportManager(
         applicationContext,
-        reactInstanceManagerHelper,
+        reactInstanceDevHelper,
         packagerPathForJSBundleName,
         enableOnCreate,
         redBoxHandler,

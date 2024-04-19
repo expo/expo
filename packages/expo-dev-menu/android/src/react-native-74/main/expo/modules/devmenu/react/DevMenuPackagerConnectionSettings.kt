@@ -5,7 +5,7 @@ import com.facebook.react.packagerconnection.PackagerConnectionSettings
 
 /**
  * Class representing react's internal [PackagerConnectionSettings] class, which we want to replace to change bundler's url.
- * It is only use when [expo.modules.devmenu.DevMenuHost.getUseDeveloperSupport] returns true.
+ * It is only use when [expo.modules.devmenu.DevMenuReactNativeHost.getUseDeveloperSupport] returns true.
  */
 class DevMenuPackagerConnectionSettings(
   private val serverIp: String,

@@ -17,7 +17,7 @@ import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
 import expo.modules.kotlin.ModulesProvider
 
-class DevLauncherClientHost(
+class DevLauncherReactNativeHost(
   application: Application,
   private val launcherIp: String?
 ) : DefaultReactNativeHost(application) {
@@ -34,7 +34,7 @@ class DevLauncherClientHost(
     val devMenuPackage = findDevMenuPackage()
     val devMenuRelatedPackages: List<ReactPackage> =
       if (devMenuPackage != null) {
-        findPackagesWithDevMenuExtension(this) + devMenuPackage
+        findPackagesWithDevMenuExtension(application) + devMenuPackage
       } else {
         emptyList()
       }

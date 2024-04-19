@@ -10,6 +10,6 @@ class DevMenuDefaultExtensionSettings(
       return false
     }
 
-    return manager.getReactInstanceManager()?.devSupportManager != null
+    return manager.getReactHost()?.devSupportManager != null
   }
 }

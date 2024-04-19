@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import kotlinx.coroutines.CoroutineScope
@@ -48,9 +47,9 @@ interface DevMenuManagerInterface {
   fun setDelegate(newDelegate: DevMenuDelegateInterface)
 
   /**
-   * Initializes the dev menu manager to work with react native host.
+   * Initializes the dev menu manager to work with react host.
    */
-  fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost)
+  fun initializeWithReactHost(reactHost: ReactHostWrapper)
 
   /**
    * Finds and dispatches action with provided [actionId].
@@ -77,7 +76,7 @@ interface DevMenuManagerInterface {
   /**
    * @return the dev menu application host.
    */
-  fun getMenuHost(): ReactNativeHost
+  fun getMenuHost(): ReactHostWrapper
 
   /**
    * Synchronizes [ReactInstanceManager] from delegate with one saved in [DevMenuManger].

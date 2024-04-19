@@ -85,7 +85,7 @@ class DevLauncherErrorActivity :
       controller
         .loadApp(
           appUrl,
-          controller.appHost.reactInstanceManager.currentReactContext?.currentActivity as? ReactActivity?
+          controller.appHost.currentReactContext?.currentActivity as? ReactActivity?
         )
     }
   }

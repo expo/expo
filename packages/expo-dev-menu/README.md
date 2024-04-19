@@ -36,11 +36,11 @@ To update the JavaScript code inside the `app` folder, you need to run the `dev-
 
 1. Navigate to the `dev-menu` package: `cd packages/expo-dev-menu`
 2. Start the Metro bundler: `yarn start`
-3. To use your local bundler on Android, open [DevMenuHost.java](/packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/DevMenuHost.kt) and set `getUseDeveloperSupport` to `true`.
+3. To use your local bundler on Android, open [DevMenuManager.kt](/packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/DevMenuManager.kt) and set `useDeveloperSupport` to `true`.
 
 ```diff
-- override fun getUseDeveloperSupport() = false
-+ override fun getUseDeveloperSupport() = true
+- val useDeveloperSupport = false
++ val useDeveloperSupport = true
 ```
 
 4. Play with your changes on a simulator or device through `bare-expo`

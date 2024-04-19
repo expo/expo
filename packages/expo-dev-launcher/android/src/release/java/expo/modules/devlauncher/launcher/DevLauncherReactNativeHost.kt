@@ -5,7 +5,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import expo.modules.devlauncher.DEV_LAUNCHER_IS_NOT_AVAILABLE
 
-class DevLauncherClientHost(application: Application) : ReactNativeHost(application) {
+class DevLauncherReactNativeHost(application: Application, launcherIp: String?) : ReactNativeHost(application) {
   override fun getPackages(): MutableList<ReactPackage> {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }

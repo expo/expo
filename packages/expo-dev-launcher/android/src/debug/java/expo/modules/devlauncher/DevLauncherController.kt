@@ -7,24 +7,40 @@ import android.net.Uri
 import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
-import expo.modules.devlauncher.helpers.*
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
+import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
+import expo.modules.devlauncher.helpers.DevLauncherUrl
+import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
+import expo.modules.devlauncher.helpers.hasUrlQueryParam
+import expo.modules.devlauncher.helpers.isDevLauncherUrl
+import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.koin.devLauncherKoin
 import expo.modules.devlauncher.koin.optInject
-import expo.modules.devlauncher.launcher.*
+import expo.modules.devlauncher.launcher.DevLauncherActivity
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
+import expo.modules.devlauncher.launcher.DevLauncherLifecycle
+import expo.modules.devlauncher.launcher.DevLauncherNetworkInterceptor
+import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
+import expo.modules.devlauncher.launcher.DevLauncherReactHost
+import expo.modules.devlauncher.launcher.DevLauncherReactNativeHost
+import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
-import expo.modules.devmenu.DevMenuManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +52,7 @@ import org.koin.core.component.inject
 import org.koin.dsl.module
 
 // Use this to load from a development server for the development client launcher UI
-//  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
+// private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
 private val DEV_LAUNCHER_HOST: String? = null
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
@@ -48,7 +64,7 @@ class DevLauncherController private constructor() :
   private val context: Context by lazy {
     DevLauncherKoinContext.app.koin.get()
   }
-  override val appHost: ReactNativeHost by inject()
+  override val appHost: ReactHostWrapper by inject()
   private val httpClient: OkHttpClient by inject()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
@@ -66,7 +82,12 @@ class DevLauncherController private constructor() :
     )
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-  override val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
+  override val devClientHost by lazy {
+    ReactHostWrapper(
+      reactNativeHost = DevLauncherReactNativeHost(context as Application, DEV_LAUNCHER_HOST),
+      reactHost = DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST)
+    )
+  }
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: Manifest? = null
@@ -98,7 +119,7 @@ class DevLauncherController private constructor() :
     coroutineScope.launch {
       loadApp(
         latestLoadedApp,
-        appHost.reactInstanceManager.currentReactContext?.currentActivity as? ReactActivity?
+        appHost.currentReactContext?.currentActivity as? ReactActivity?
       )
     }
   }
@@ -258,8 +279,8 @@ class DevLauncherController private constructor() :
     return false
   }
 
-  private fun ensureHostWasCleared(host: ReactNativeHost, activityToBeInvalidated: ReactActivity? = null) {
-    if (host.hasInstance()) {
+  private fun ensureHostWasCleared(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity? = null) {
+    if (host.hasInstance) {
       runBlockingOnMainThread {
         clearHost(host, activityToBeInvalidated)
       }
@@ -277,8 +298,8 @@ class DevLauncherController private constructor() :
   }
 
   @UiThread
-  private fun clearHost(host: ReactNativeHost, activityToBeInvalidated: ReactActivity?) {
-    host.clear()
+  private fun clearHost(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity?) {
+    host.destroy()
     activityToBeInvalidated?.let {
       invalidateActivity(it)
     }
@@ -364,7 +385,7 @@ class DevLauncherController private constructor() :
       }
 
     @JvmStatic
-    fun initialize(context: Context, appHost: ReactNativeHost) {
+    internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
@@ -373,7 +394,7 @@ class DevLauncherController private constructor() :
         listOf(
           module {
             single { context }
-            single { appHost }
+            single { reactHost }
           }
         ),
         allowOverride = true
@@ -394,8 +415,14 @@ class DevLauncherController private constructor() :
     }
 
     @JvmStatic
-    fun initialize(context: Context, appHost: ReactNativeHost, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(context, appHost)
+    fun initialize(context: Context, reactHost: ReactHostWrapper, launcherClass: Class<*>? = null) {
+      initialize(context, reactHost)
+      sLauncherClass = launcherClass
+    }
+
+    @JvmStatic
+    fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
+      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, reactApplication.reactHost))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
