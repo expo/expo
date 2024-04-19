@@ -49,7 +49,7 @@
 ### 📚 3rd party library updates
 
 - update `semver` from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
-- update `cacache` from 15.3.0 to 18.0.2.
+- update `cacache` from 15.3.0 to 18.0.2. ([#28322](https://github.com/expo/expo/pull/28322) by [@Simek](https://github.com/Simek))
 
 ## 0.17.8 - 2024-03-13
 
