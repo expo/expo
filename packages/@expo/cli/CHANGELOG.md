@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `TypeError: osascript(...) is not a function` when pressing "j" to open JS debugger. ([#28315](https://github.com/expo/expo/pull/28315) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.18.1 — 2024-04-19
+
+### 🐛 Bug fixes
+
+- Fixed `TypeError: osascript(...) is not a function` when pressing "j" to open JS debugger. ([#28315](https://github.com/expo/expo/pull/28315) by [@kudo](https://github.com/kudo))
 
 ## 0.18.0 — 2024-04-18
 

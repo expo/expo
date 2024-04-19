@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `SQLiteProvider.assetSource` to import an existing database from assets. ([#28291](https://github.com/expo/expo/pull/28291) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added `SQLiteProvider.assetSource` to import an existing database from assets. ([#28291](https://github.com/expo/expo/pull/28291) by [@kudo](https://github.com/kudo))
 
 ## 14.0.0 — 2024-04-18
 
