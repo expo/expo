@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated for dev-client bridgeless mode support. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
 ## 51.0.0-beta.0 — 2024-04-18
 
 ### 🛠 Breaking changes
