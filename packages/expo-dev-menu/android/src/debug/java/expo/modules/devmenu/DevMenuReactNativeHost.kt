@@ -1,7 +1,6 @@
 package expo.modules.devmenu
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactPackage
@@ -24,7 +23,8 @@ import java.io.InputStreamReader
 /**
  * Class that represents react host used by dev menu.
  */
-class DevMenuHost(application: Application) : DefaultReactNativeHost(application) {
+class DevMenuReactNativeHost(application: Application, private val useDeveloperSupport: Boolean) :
+  DefaultReactNativeHost(application) {
 
   override fun getPackages(): List<ReactPackage> {
     val packages = mutableListOf(
@@ -54,13 +54,11 @@ class DevMenuHost(application: Application) : DefaultReactNativeHost(application
     return packages
   }
 
-  override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
+  override fun getUseDeveloperSupport() = useDeveloperSupport
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
   override fun getJSMainModuleName() = "index"
-
-  fun getContext(): Context = super.getApplication()
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
     return createNonDebuggableJavaScriptExecutorFactory(application)
@@ -70,8 +68,8 @@ class DevMenuHost(application: Application) : DefaultReactNativeHost(application
     val reactInstanceManager = super.createReactInstanceManager()
 
     if (useDeveloperSupport) {
-      // To use a different packager url, we need to replace internal RN objects.
       try {
+        // To use a different packager url, we need to replace internal RN objects.
         val serverIp = BufferedReader(
           InputStreamReader(super.getApplication().assets.open("dev-menu-packager-host"))
         ).use {
