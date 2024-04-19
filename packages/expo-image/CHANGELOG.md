@@ -19,6 +19,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an issue where data URIs caused crashes on iOS16+. ([#28320](https://github.com/expo/expo/pull/28320) by [@aleqsio](https://github.com/aleqsio))
 - Refactor web implementations of `useSourceSelection` to avoid unnecessary rerenders. ([#27569](https://github.com/expo/expo/pull/27569) by [@aleqsio](https://github.com/aleqsio))
 - Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix #available check to account for tvOS. ([#27272](https://github.com/expo/expo/pull/27272) by [@alanjhughes](https://github.com/alanjhughes))

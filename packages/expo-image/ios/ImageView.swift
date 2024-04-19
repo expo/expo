@@ -256,19 +256,8 @@ public final class ImageView: ExpoView {
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
     let path: String? = {
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        // .path() on iOS 16 will remove the leading slash
-#if os(tvOS)
-        // but it doesn't on tvOS 16 🙃
-        if let path = source.uri?.path() {
-          return String(path.dropFirst())
-        }
-        return nil
-#else
-        return source.uri?.path()
-#endif
-      }
-
+      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
+      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
       // manually drop the leading slash below iOS 16
       if let path = source.uri?.path {
         return String(path.dropFirst())
