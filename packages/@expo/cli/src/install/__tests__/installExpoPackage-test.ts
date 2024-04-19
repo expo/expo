@@ -73,4 +73,16 @@ describe(installExpoPackageAsync, () => {
     );
     expect(spawnAsync).not.toBeCalled();
   });
+
+  it(`Installs dev dependencies`, async () => {
+    const packageManager = PackageManager.createForProject('/path/to/project');
+    await installExpoPackageAsync('/path/to/project', {
+      packageManager,
+      packageManagerArguments: [],
+      expoPackageToInstall: 'expo@latest',
+      followUpCommandArgs: [],
+    });
+    expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
+    expect(spawnAsync).not.toBeCalled();
+  });
 });

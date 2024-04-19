@@ -21,3 +21,16 @@ function findUpProjectRoot(cwd: string): string | null {
   }
   return findUpProjectRoot(path.dirname(cwd));
 }
+
+/**
+ * Find a file in the (closest) parent directories.
+ * This will recursively look for the file, until the root directory is reached.
+ */
+export function findFileInParents(cwd: string, fileName: string): string | null {
+  if (['.', path.sep].includes(cwd)) return null;
+
+  const found = resolveFrom.silent(cwd, `./${fileName}`);
+  if (found) return found;
+
+  return findFileInParents(path.dirname(cwd), fileName);
+}

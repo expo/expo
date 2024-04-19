@@ -92,6 +92,7 @@ export async function installPackagesAsync(
     packageManagerArguments,
     fix,
     check,
+    dev,
   }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
@@ -187,7 +188,11 @@ export async function installPackagesAsync(
     });
   }
 
-  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  if (dev) {
+    await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
+  } else {
+    await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  }
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }

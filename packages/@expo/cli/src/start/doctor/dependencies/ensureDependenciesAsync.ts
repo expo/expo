@@ -63,13 +63,30 @@ export async function ensureDependenciesAsync(
 
     if (confirm) {
       // Format with version if available.
-      const packages = missing.map(({ pkg, version }) =>
-        version ? [pkg, version].join('@') : pkg
+      const [packages, devPackages] = missing.reduce(
+        ([deps, devDeps], p) => {
+          const pkg = p.version ? [p.pkg, p.version].join('@') : p.pkg;
+          if (p.dev) {
+            return [deps, devDeps.concat(pkg)];
+          }
+          return [deps.concat(pkg), devDeps];
+        },
+        [[], []] as [string[], string[]]
       );
-      // Install packages with versions
-      await installPackagesAsync(projectRoot, {
-        packages,
-      });
+
+      if (packages.length) {
+        await installPackagesAsync(projectRoot, {
+          packages,
+        });
+      }
+
+      if (devPackages.length) {
+        await installPackagesAsync(projectRoot, {
+          packages: devPackages,
+          dev: true,
+        });
+      }
+
       // Try again but skip prompting twice, simply fail if the packages didn't install correctly.
       return await ensureDependenciesAsync(projectRoot, {
         skipPrompt: true,
@@ -114,12 +131,15 @@ export function createInstallCommand({
 }
 
 /** Install packages in the project. */
-async function installPackagesAsync(projectRoot: string, { packages }: { packages: string[] }) {
+async function installPackagesAsync(
+  projectRoot: string,
+  { packages, dev }: { packages: string[]; dev?: boolean }
+) {
   const packagesStr = chalk.bold(packages.join(', '));
   Log.log();
   const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
   try {
-    await installAsync(packages, { projectRoot });
+    await installAsync(packages, { projectRoot, dev });
   } catch (e: any) {
     installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
     throw e;
