@@ -16,6 +16,13 @@ import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.expoview.Exponent
 import javax.inject.Inject
 
+data class ErrorProcessingResult(
+  val isFatal: Boolean,
+  val errorMessage: ExponentErrorMessage,
+  val errorHeader: String?,
+  val canRetry: Boolean
+)
+
 abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
   abstract class ExperienceEvent internal constructor(val experienceKey: ExperienceKey)
 
@@ -137,7 +144,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
         return@runOnUiThread
       }
       kernel.exponentSharedPreferences.setLong(ExponentSharedPreferences.ExponentSharedPreferencesKey.LAST_FATAL_ERROR_DATE_KEY, System.currentTimeMillis())
-      val (isFatal, errorMessage, errorHeader) = sendErrorsToErrorActivity()
+      val (isFatal, errorMessage, errorHeader, canRetry) = sendErrorsToErrorActivity()
       if (!shouldShowErrorScreen(errorMessage)) {
         return@runOnUiThread
       }
@@ -164,6 +171,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
           ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY,
           errorMessage.developerErrorMessage()
         )
+        putExtra(ErrorActivity.CAN_RETRY_KEY, canRetry)
       }
       startActivity(intent)
       EventBus.getDefault().post(ExperienceDoneLoadingEvent(this))
@@ -196,10 +204,11 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       // Otherwise onResume will consumeErrorQueue
     }
 
-    private fun sendErrorsToErrorActivity(): Triple<Boolean, ExponentErrorMessage, String?> {
+    private fun sendErrorsToErrorActivity(): ErrorProcessingResult {
       var isFatal = false
       var errorMessage = developerErrorMessage("")
       var errorHeader: String? = null
+      var canRetry = true
       synchronized(errorQueue) {
         while (!errorQueue.isEmpty()) {
           val error = errorQueue.remove()
@@ -211,9 +220,10 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
           if (error.isFatal) {
             isFatal = true
           }
+          canRetry = canRetry && error.canRetry
         }
       }
-      return Triple(isFatal, errorMessage, errorHeader)
+      return ErrorProcessingResult(isFatal, errorMessage, errorHeader, canRetry)
     }
   }
 }
