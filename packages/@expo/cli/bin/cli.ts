@@ -96,6 +96,8 @@ if (!isSubcommand && args['--help']) {
     'export:web': exportWeb_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
     run: _run,
+    // NOTE(cedric): Still pending the migration to ESLint's flat config
+    lint: _lint,
     // All other commands
     ...others
   } = commands;
