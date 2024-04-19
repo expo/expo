@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { DEMI } from '~/ui/components/Text';
 
-To migrate from `npx react-native init` to Expo CLI, you'll need to install the `expo` package which includes the Expo Modules API and Expo CLI. This guide covers the installation step, the benefits of using Expo CLI, and how to compile and run your project after migrating to Expo CLI.
+To migrate from `npx react-native init` to Expo CLI, you'll need to install the `expo` package, which includes the Expo Modules API and Expo CLI. This guide covers the installation step, the benefits of using Expo CLI, and how to compile and run your project after migrating to Expo CLI.
 
 ## Install the `expo` package
 
@@ -51,7 +51,9 @@ Windows and macOS. If building for these platforms, you can utilize Expo CLI for
 
 After installing the `expo` package, you can use the following commands which are alternatives to `npx react-native run-android` and `npx react-native run-ios`:
 
-<Terminal cmd={['# for Android', '$ npx expo run:android', '', '# for iOS', '$ npx expo run:ios']} />
+<Terminal
+  cmd={['# for Android', '$ npx expo run:android', '', '# for iOS', '$ npx expo run:ios']}
+/>
 
 When building your project, you can choose a device or simulator by using the `--device` flag. This also applies to any iOS device that is connected to your computer.
 

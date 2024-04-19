@@ -350,6 +350,9 @@ redirects[versions/latest/sdk/overview]=versions/latest
 # Deprecated webpack
 redirects[guides/customizing-webpack]=archive/customizing-webpack
 
+# Stop encouraging usage of Expo Go when using native modules
+redirects[bare/using-expo-client]=archive/using-expo-client
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

@@ -451,5 +451,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // Stop encouraging usage of Expo Go when using native modules
-  '/bare/using-expo-client': '/archive/using-expo-client',
+  '/bare/using-expo-client/': '/archive/using-expo-client/',
 };
