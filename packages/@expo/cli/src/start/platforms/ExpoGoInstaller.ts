@@ -84,10 +84,9 @@ export class ExpoGoInstaller<IDevice> {
         initial: true,
         message: `Expo Go ${expectedExpoGoVersion} is recommended for SDK ${this.sdkVersion} (${
           deviceManager.name
-        }
-          is using ${installedExpoGoVersion}). ${learnMore(
-            'https://docs.expo.dev/get-started/expo-go/#sdk-versions'
-          )}. Install the recommended Expo Go version?`,
+        } is using ${installedExpoGoVersion}). ${learnMore(
+          'https://docs.expo.dev/get-started/expo-go/#sdk-versions'
+        )}. Install the recommended Expo Go version?`,
       });
 
       if (confirm) {
