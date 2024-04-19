@@ -9,10 +9,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const currentDir = process.cwd();
-const oldDirPath = path.join(currentDir, 'app');
-const newDirPath = path.join(currentDir, 'app-example');
-const newAppDirPath = path.join(currentDir, 'app');
+const root = process.cwd();
+const oldDirPath = path.join(root, 'app');
+const newDirPath = path.join(root, 'app-example');
+const newAppDirPath = path.join(root, 'app');
 
 const indexContent = `import { Text, View } from "react-native";
 
