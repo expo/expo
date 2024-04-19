@@ -67,6 +67,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo EAS and 100 Snakes ',
+    event: 'Rocket Ship #038',
+    description: "Jon Samp",
+    videoId: "JKU9JC4nX1k",
+    link: "https://podcast.galaxies.dev/episodes/038-expo-eas-and-100-snakes-with-jon-samp"
+  },
+  {
     title: 'Expo Router & Universal React Native Apps',
     event: 'Rocket Ship #028',
     description: "Evan Bacon",
