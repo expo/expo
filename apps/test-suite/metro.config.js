@@ -6,10 +6,6 @@ const path = require('path');
 const monorepoRoot = path.join(__dirname, '../..');
 const config = getDefaultConfig(__dirname);
 
-config.resolver.assetExts.push(
-  'db' // See: ../test-suite/assets/asset-db.db
-);
-
 config.resolver.blockList = [
   // Exclude react-native-lab from haste map.
   // Because react-native versions may be different between node_modules/react-native and react-native-lab,

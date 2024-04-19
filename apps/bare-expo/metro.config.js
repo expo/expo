@@ -6,7 +6,6 @@ const monorepoRoot = path.join(__dirname, '../..');
 const config = getDefaultConfig(__dirname);
 
 config.resolver.assetExts.push(
-  'db', // See: ../test-suite/assets/asset-db.db
   'kml' // See: ../native-component-list/assets/expo-maps/sample_kml.kml
 );
 
