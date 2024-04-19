@@ -19,7 +19,7 @@ export function HelloWave() {
         useNativeDriver: true,
       }),
     ]), { iterations: 4 }).start();
-  }, []);
+  }, [rotateAnimation]);
 
   const spin = rotateAnimation.interpolate({
     inputRange: [0, 1],
