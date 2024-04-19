@@ -1397,7 +1397,7 @@ PODS:
     - Yoga
   - react-native-safe-area-context (4.10.0-rc.1):
     - React-Core
-  - react-native-segmented-control (2.5.0):
+  - react-native-segmented-control (2.5.2):
     - React-Core
   - react-native-skia (1.2.1):
     - DoubleConversion
@@ -2436,7 +2436,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: c1e29e1a6105a02807392ba822ad322447a72f55
   react-native-safe-area-context: 71e343069c879133ea9c194097261830f6d23478
-  react-native-segmented-control: 712749e75728a736a2b8a7d7dbc8c2a3344b73e8
+  react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
   react-native-skia: 4db83b2d44c0869de99b7bd00cf55b1235215224
   react-native-slider: ce295d2bf830a7990af05b0bd70ab28c133e230c
   react-native-webview: 05bae3a03a1e4f59568dfc05286c0ebf8954106c
