@@ -258,9 +258,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>
-        Inter Black
-      </Text>
+      <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>Inter Black</Text>
     </View>
   );
 }
@@ -278,21 +276,29 @@ const styles = StyleSheet.create({
 
 ## Wait for fonts to load
 
-If you [embed your fonts in your native project](#embed-the-font-in-your-native-project), they will be available immediately without any additional code outside the config plugin. However, if you load your fonts at runtime, they will not be available immediately. So, it is generally a good practice not to render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
+If you [embed your fonts in your native project](#embed-font-in-a-native-project), they will be available immediately without any additional code outside the config plugin. However, if you load your fonts at runtime, they will not be available immediately. So, it is generally a good practice not to render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
 
 ### Load fonts on the web
 
-Sometimes, particularly on the web people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called FOUT and FOIT and you can read a lot more about them on the web.
+Sometimes, particularly on the web people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called [Flash of Unstyled Text (FOUT), Flash of Invisible Text (FOIT), and Flash of Faux Text (FOFT)](https://css-tricks.com/fout-foit-foft/).
 
 In general, these strategies are not recommended for native apps. If you include your fonts in your project, the fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
 
+### Handle `@expo/vector-icons` initial load
+
+The default behavior of `@expo/vector-icons` icons is a FOIT on the first load. On subsequent loads, the font will be automatically cached. You can preload fonts during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefontsmap). For example:
+
+```jsx App.js
+useFonts([require('./assets/fonts/ComicSans.ttf', FontAwesome.font)]);
+```
+
 ## Additional information
 
-You probably don't need to know anything beyond this point to use custom fonts effectively in your app. If you are curious or your use case has not been addressed by the above information, please continue reading.
+You probably don't need to know anything beyond this point to use custom fonts effectively in your app. If you are curious or your use case has not been addressed by the above information, continue reading.
 
 ### Loading a remote font directly from the web
 
-In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
+In general, it's best and safest to load fonts from your local assets. If you submit your app to app stores, the fonts will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
 
 However, if you to load a remote font file directly from the web rather than from your project's assets, you can do it by replacing the `require('./assets/fonts/MyFont.otf')` with the URL of your font. See the below example:
 
@@ -319,7 +325,7 @@ export default function App() {
     </View>
   );
 }
-/* @hide const styles = StyleSheet.create({ ... }); */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -327,7 +333,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -383,7 +388,6 @@ export default class App extends React.Component {
   }
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -391,7 +395,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
