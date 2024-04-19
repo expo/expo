@@ -680,8 +680,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
 
-    final ReadableNativeMap androidMap = (ReadableNativeMap) options.get(RECORDING_OPTIONS_KEY);
-    final ReadableArguments androidOptions = new MapArguments(androidMap.toHashMap());
+    final ReadableArguments androidOptions = options.getArguments(RECORDING_OPTIONS_KEY);
 
     final String filename = "recording-" + UUID.randomUUID().toString()
       + androidOptions.getString(RECORDING_OPTION_EXTENSION_KEY);
