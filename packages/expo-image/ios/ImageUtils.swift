@@ -144,8 +144,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
   if resizedImages.isEmpty {
     print("Error: All frames failed to load and/or were skipped.")
 
-    // return the usual image
-    return image
+    return resize(image: image, toSize: size, scale: scale)
   }
 
   if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
