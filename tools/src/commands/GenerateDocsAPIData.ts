@@ -88,6 +88,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-sqlite': ['index.ts'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
+  'expo-symbols': [['SymbolView.tsx', 'SymbolModule.types.ts']],
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
