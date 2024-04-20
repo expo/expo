@@ -127,30 +127,27 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
 
   let frameCount = await image.animatedImageFrameCount
 
-  var resizedImages: [UIImage] = []
+  do {
+    let resizedFrames = try await concurrentMap(0..<frameCount) { index -> UIImage? in
+      guard let frame = await image.animatedImageFrame(at: index) else {
+        print("Warning: Frame at index \(index) could not be loaded and will be skipped.")
+        return nil
+      }
+      return resize(image: frame, toSize: size, scale: scale)
+   }.compactMap { $0 }
 
-  for index in 0..<frameCount {
-    // Performs a check for each frame being valid before resizing it
-    if let frame = await image.animatedImageFrame(at: index) {
-      let resizedImage = resize(image: frame, toSize: size, scale: scale)
-      resizedImages.append(resizedImage)
-    } else {
-      print("Warning: Frame at index \(index) could not be loaded and will be skipped.")
-      continue  // Skip null frames, but could also implement some error recovery logic here
-    }
-  }
+   // Check if all frames were skipped or failed to load
+   if resizedFrames.isEmpty {
+       print("Error: All frames failed to load and/or were skipped.")
+       return resize(image: image, toSize: size, scale: scale)
+   }
 
-  // In case all frames are nil or missing, we return nil indicating failure to resize any frames
-  if resizedImages.isEmpty {
-    print("Error: All frames failed to load and/or were skipped.")
-
-    return resize(image: image, toSize: size, scale: scale)
-  }
-
-  // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-  // so it should never happen in our case, but let's handle it gracefully.
-  if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
-    return animatedImage
+   // Create the new animated image with the resized frames
+   if let newAnimatedImage = UIImage.animatedImage(with: resizedFrames, duration: image.duration) {
+       return newAnimatedImage
+   }
+  } catch {
+    print("Error during concurrent image resizing: \(error)")
   }
 
   return resize(image: image, toSize: size, scale: scale)
