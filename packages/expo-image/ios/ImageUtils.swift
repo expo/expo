@@ -116,19 +116,42 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  Resizes the animated image to fit in the given size and scale.
  */
 func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
-  // For animated images, the `images` member is non-nil and represents an array of animation frames.
-  if let images = image.images {
-    // Resize each animation frame separately.
-    let resizedImages = await concurrentMap(images) { image in
-      return resize(image: image, toSize: size, scale: scale)
-    }
+  if !image.sd_isAnimated {
+    return resize(image: image, toSize: size, scale: scale)
+  }
 
-    // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-    // so it should never happen in our case, but let's handle it gracefully.
-    if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
-      return animatedImage
+  // Cast to SDAnimatedImage to access its properties
+  guard let image = image as? SDAnimatedImage else {
+    return resize(image: image, toSize: size, scale: scale)
+  }
+
+  let frameCount = await image.animatedImageFrameCount
+
+  var resizedImages: [UIImage] = []
+
+  for index in 0..<frameCount {
+    // Performs a check for each frame being valid before resizing it
+    if let frame = await image.animatedImageFrame(at: index) {
+      let resizedImage = resize(image: frame, toSize: size, scale: scale)
+        resizedImages.append(resizedImage)
+    } else {
+      print("Warning: Frame at index \(index) could not be loaded and will be skipped.")
+      continue  // Skip null frames, but could also implement some error recovery logic here
     }
   }
+
+  // In case all frames are nil or missing, we return nil indicating failure to resize any frames
+  if resizedImages.isEmpty {
+    print("Error: All frames failed to load and/or were skipped.")
+
+    // return the usual image
+    return image
+  }
+
+  if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
+    return animatedImage
+  }
+
   return resize(image: image, toSize: size, scale: scale)
 }
 
