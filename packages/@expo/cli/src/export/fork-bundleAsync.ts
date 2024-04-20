@@ -16,7 +16,6 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
-import { attachAtlasMetroConfigAsync } from '../start/server/metro/debugging/attachAtlasMetroConfig';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
