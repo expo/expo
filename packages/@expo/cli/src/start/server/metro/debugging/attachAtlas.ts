@@ -39,6 +39,7 @@ export async function attachAtlasAsync({
     }
 
     atlas.withExpoAtlas(metroConfig);
+    debug('Attached Atlas to Metro config for exporting');
     return;
   }
 
@@ -47,7 +48,7 @@ export async function attachAtlasAsync({
     throw new Error(
       'Expected middleware to be provided for Atlas when running in development mode'
     );
-  } else if (isExporting && middleware) {
+  } else if (!isExporting && middleware) {
     const atlas = importAtlasForDev(projectRoot);
     if (!atlas) {
       return debug('Atlas is not installed in the project, skipping initialization');
@@ -55,7 +56,7 @@ export async function attachAtlasAsync({
 
     const instance = atlas.createExpoAtlasMiddleware(metroConfig);
     middleware.use('/_expo/atlas', instance.middleware);
-    debug('Attached Atlas middleware on: /_expo/atlas');
+    debug('Attached Atlas middleware for development on: /_expo/atlas');
     return instance;
   }
 }
