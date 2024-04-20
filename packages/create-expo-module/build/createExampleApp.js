@@ -126,7 +126,7 @@ async function modifyPackageJson(appPath) {
  */
 async function prebuildExampleApp(exampleAppPath) {
     await (0, utils_1.newStep)('Prebuilding the example app', async (step) => {
-        await (0, spawn_async_1.default)('npx', ['expo', 'prebuild', '--no-install'], {
+        await (0, spawn_async_1.default)('npx', ['expo', 'prebuild'], {
             cwd: exampleAppPath,
             stdio: ['ignore', 'ignore', 'pipe'],
         });

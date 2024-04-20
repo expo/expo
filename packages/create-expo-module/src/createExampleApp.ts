@@ -156,7 +156,7 @@ async function modifyPackageJson(appPath: string): Promise<void> {
  */
 async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
   await newStep('Prebuilding the example app', async (step) => {
-    await spawnAsync('npx', ['expo', 'prebuild', '--no-install'], {
+    await spawnAsync('npx', ['expo', 'prebuild'], {
       cwd: exampleAppPath,
       stdio: ['ignore', 'ignore', 'pipe'],
     });
