@@ -26,7 +26,7 @@ const debug = require('debug')('expo:router:renderStaticContent');
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
-async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
+export async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
   const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
 
   if (!routeTree) {
@@ -46,7 +46,7 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
-async function getBuildTimeServerManifestAsync(
+export async function getBuildTimeServerManifestAsync(
   options: Parameters<typeof getRoutes>[1] = {}
 ): Promise<ExpoRouterServerManifestV1> {
   const routeTree = getRoutes(ctx, options);
@@ -146,6 +146,3 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
 
   return html;
 }
-
-// Re-export for use in server
-export { getManifest, getBuildTimeServerManifestAsync };
