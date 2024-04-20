@@ -133,7 +133,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
     // Performs a check for each frame being valid before resizing it
     if let frame = await image.animatedImageFrame(at: index) {
       let resizedImage = resize(image: frame, toSize: size, scale: scale)
-        resizedImages.append(resizedImage)
+      resizedImages.append(resizedImage)
     } else {
       print("Warning: Frame at index \(index) could not be loaded and will be skipped.")
       continue  // Skip null frames, but could also implement some error recovery logic here
