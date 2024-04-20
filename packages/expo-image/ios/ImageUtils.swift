@@ -143,6 +143,8 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
     }
 
     // Create the new animated image with the resized frames
+    // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
+    // so it should never happen in our case, but let's make sure to handle it gracefully.
     if let newAnimatedImage = UIImage.animatedImage(with: resizedFrames, duration: image.duration) {
       return newAnimatedImage
     }
