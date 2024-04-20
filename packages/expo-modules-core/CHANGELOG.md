@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `AppContext.onHostResume()` sometimes getting null `currentActivity` on Android. ([#28338](https://github.com/expo/expo/pull/28338) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.12.0 — 2024-04-18
