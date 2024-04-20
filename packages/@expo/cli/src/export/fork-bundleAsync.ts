@@ -16,6 +16,7 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
+import { attachAtlasMetroConfigAsync } from '../start/server/metro/debugging/attachAtlasMetroConfig';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -143,9 +144,12 @@ async function bundleProductionMetroClientAsync(
 
   assertMetroConfig(config);
 
-  const metroServer = await Metro.runMetro(config, {
-    watch: false,
-  });
+  const metroServer = await Metro.runMetro(
+    await attachAtlasMetroConfigAsync({ projectRoot, exp: expoConfig, metroConfig: config }),
+    {
+      watch: false,
+    }
+  );
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
