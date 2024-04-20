@@ -9922,10 +9922,10 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.0.19.tgz#c411a04e5ff77ec2cc7783bcfd14a3fea0dec3a9"
-  integrity sha512-Bz2UE1Tl1ZboRQ2VatEzC2IYnCsTMB/nEcxyWy2X9p5IeVGODL9eaPr49FMilF+CI0oHGvzj9uK9X1CYoBvt0g==
+expo-atlas@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.1.0.tgz#874dc004d090fa7d5db3b65188d065890a491bfe"
+  integrity sha512-Wiw7ztR4X/w0Lxt4cTE8+7JhJHPdXQVCTPQZnwcn/BQs0kGr/0/zbFOx/fl0Fbr+YSjoPRxLb9YZrxfxMl1Uow==
   dependencies:
     "@expo/server" "^0.3.1"
     arg "^5.0.2"
