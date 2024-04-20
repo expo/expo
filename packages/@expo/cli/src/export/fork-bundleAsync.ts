@@ -144,12 +144,9 @@ async function bundleProductionMetroClientAsync(
 
   assertMetroConfig(config);
 
-  const metroServer = await Metro.runMetro(
-    await attachAtlasMetroConfigAsync({ projectRoot, exp: expoConfig, metroConfig: config }),
-    {
-      watch: false,
-    }
-  );
+  const metroServer = await Metro.runMetro(config, {
+    watch: false,
+  });
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;

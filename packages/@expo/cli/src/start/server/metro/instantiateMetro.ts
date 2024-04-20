@@ -13,7 +13,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { attachAtlasMiddlewareAsync } from './debugging/attachAtlasMiddleware';
+import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
@@ -221,8 +221,8 @@ export async function instantiateMetroAsync(
   prependMiddleware(middleware, debugMiddleware);
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
-  // Attach Expo Atlas to the dev server, when enabled
-  const atlas = await attachAtlasMiddlewareAsync({ exp, projectRoot, middleware, metroConfig });
+  // Attach Expo Atlas if enabled
+  const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
@@ -233,7 +233,7 @@ export async function instantiateMetroAsync(
     watch: !isExporting && isWatchEnabled(),
   });
 
-  // If Atlas is enabled, register Metro to listen to changes like the HMRServer
+  // If Atlas is enabled, and can register to Metro, attach it to liste for changes
   atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
