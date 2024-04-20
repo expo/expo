@@ -69,6 +69,19 @@ describe('checkBrowserRequestAsync', () => {
       android: 'metro',
     });
 
+    jest.mocked(getConfig).mockReturnValueOnce(
+      // @ts-expect-error
+      {
+        pkg: {},
+        exp: {
+          sdkVersion: '45.0.0',
+          name: 'my-app',
+          slug: 'my-app',
+          platforms: ['ios', 'android', 'web'],
+        },
+      }
+    );
+
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: createConstructUrl(),
       mode: 'development',
@@ -87,7 +100,12 @@ describe('checkBrowserRequestAsync', () => {
     ).toBe(true);
 
     expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith('/', {
-      exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
+      exp: {
+        name: 'my-app',
+        sdkVersion: '45.0.0',
+        slug: 'my-app',
+        platforms: ['ios', 'android', 'web'],
+      },
       scripts: [
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server

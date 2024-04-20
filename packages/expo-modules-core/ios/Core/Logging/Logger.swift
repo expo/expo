@@ -2,30 +2,9 @@
 
 import Dispatch
 
-public let log = Logger(category: Logger.EXPO_LOG_CATEGORY)
+public let log = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
-/**
- An OptionSet defining the logging options that are currently supported.
- Future options may include writing to a DB or other destinations
- */
-public struct LoggerOptions: OptionSet {
-  public let rawValue: Int
-
-  public init(rawValue: Int) {
-    self.rawValue = rawValue
-  }
-
-  /**
-   Including this option will result in logs being written using os.log() or print(),
-   depending on the iOS version.
-   */
-  public static let logToOS = LoggerOptions(rawValue: 1 << 0)
-  /**
-   Including this option will result in logs being written to a flat file, as
-   strings separated by carriage returns.
-   */
-  public static let logToFile = LoggerOptions(rawValue: 1 << 1)
-}
+public typealias LoggerTimerFormatterBlock = (_ duration: Double) -> String
 
 /**
  Native iOS logging class for Expo, with options to direct logs
@@ -41,31 +20,10 @@ public class Logger {
   private var minLevel: LogType = .info
   #endif
 
-  private let category: String
+  private let logHandlers: [LogHandler]
 
-  private var handlers: [LogHandler] = []
-
-  public init(category: String = "main", options: LoggerOptions = [.logToOS]) {
-    self.category = category
-
-    if options.contains(.logToFile) {
-      addHandler(withType: PersistentFileLogHandler.self)
-    }
-    if options.contains(.logToOS) {
-      if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
-        addHandler(withType: OSLogHandler.self)
-      } else {
-        addHandler(withType: PrintLogHandler.self)
-      }
-    }
-  }
-
-  internal func addHandler<LogHandlerType: LogHandler>(_ handler: LogHandlerType) {
-    handlers.append(handler)
-  }
-
-  internal func addHandler<LogHandlerType: LogHandler>(withType: LogHandlerType.Type) {
-    addHandler(LogHandlerType(category: category))
+  public required init(logHandlers: [LogHandler]) {
+    self.logHandlers = logHandlers
   }
 
   // MARK: - Public logging functions
@@ -146,52 +104,16 @@ public class Logger {
   // MARK: - Timers
 
   /**
-   Stores the timers created by `timeStart` function.
+   Starts a timer that can be used to compute the duration of an operation. Upon calling
+   `stop` on the returned object, a timer entry will be logged.
    */
-  private var timers: [String: DispatchTime] = [:]
-
-  /**
-   Starts the timer to measure how much time the following operations take.
-   */
-  public func timeStart(_ id: String) {
-    guard LogType.timer.rawValue >= minLevel.rawValue else {
-      return
+  public func startTimer(_ formatterBlock: @escaping LoggerTimerFormatterBlock) -> LoggerTimer {
+    let startTime = DispatchTime.now()
+    return LoggerTimer {
+      let endTime = DispatchTime.now()
+      let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
+      self.log(type: .timer, formatterBlock(diff))
     }
-    log(type: .timer, "Starting timer '\(id)'")
-    timers[id] = DispatchTime.now()
-  }
-
-  /**
-   Stops the timer and logs how much time elapsed since it started.
-   */
-  public func timeEnd(_ id: String) {
-    guard LogType.timer.rawValue >= minLevel.rawValue else {
-      return
-    }
-    guard let startTime = timers[id] else {
-      log(type: .timer, "Timer '\(id)' has not been started!")
-      return
-    }
-    let endTime = DispatchTime.now()
-    let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
-    log(type: .timer, "Timer '\(id)' has finished in: \(diff) ms")
-    timers.removeValue(forKey: id)
-  }
-
-  /**
-   Measures how much time it takes to run given closure. Returns the same value as the closure returned.
-   */
-  public func time<ReturnType>(_ id: String, _ closure: () -> ReturnType) -> ReturnType {
-    timeStart(id)
-    let result = closure()
-    timeEnd(id)
-    return result
-  }
-
-  // MARK: - Changing the category
-
-  public func category(_ category: String) -> Logger {
-    return Logger(category: category)
   }
 
   // MARK: - Private logging functions
@@ -206,7 +128,7 @@ public class Logger {
       .split(whereSeparator: \.isNewline)
       .map { "\(type.prefix) \($0)" }
 
-    handlers.forEach { handler in
+    logHandlers.forEach { handler in
       messages.forEach { message in
         handler.log(type: type, message)
       }

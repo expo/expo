@@ -4,6 +4,15 @@ import SDWebImage
 import ExpoModulesCore
 
 /**
+ An exception to throw when it its not possible to generate a blurhash for a given URL.
+ */
+public final class BlurhashGenerationException: Exception {
+  override public var reason: String {
+    "Unable to generate blurhash, make sure the image exists at the given URL"
+  }
+}
+
+/**
  Checks if the image is animated and returns an SDAnimatedImage if it does. Otherwise returns the UIImage.
  */
 func createAnimatedIfNeeded(image: UIImage?, data: Data?) -> UIImage? {

@@ -18,6 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
@@ -34,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXDevLauncherController : NSObject <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
-@property (nonatomic, strong) RCTBridge *launcherBridge;
+@property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id updatesInterface;

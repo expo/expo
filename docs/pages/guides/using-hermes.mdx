@@ -17,25 +17,6 @@ The Hermes engine is the default JavaScript engine used by Expo and it is fully 
 | Android  | SDK 42  | SDK 42                                                          |
 | iOS      | SDK 47  | SDK 43                                                          |
 
-<Collapsible summary="Using SDK 47 or lower?">
-
-For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [app config](/workflow/configuration):
-
-{/* prettier-ignore */}
-```js
-{
-  "expo": {
-    /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
-    "jsEngine": "hermes"
-   /* @end */
-  }
-}
-```
-
-Development builds will need to be recompiled with `eas build`.
-
-</Collapsible>
-
 ### Switch JavaScript engine on a specific platform
 
 You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.

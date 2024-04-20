@@ -1,9 +1,6 @@
 import ExponentAV from './ExponentAV';
 import { requestFullscreen, exitFullscreen } from './FullscreenUtils.web';
 export default {
-    get name() {
-        return 'ExpoVideoManager';
-    },
     get ScaleNone() {
         return 'none';
     },

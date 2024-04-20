@@ -2,17 +2,21 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {
+import type {
+  ExtraDependencies,
   ModuleDescriptorIos,
   ModuleIosPodspecInfo,
   PackageRevision,
   SearchOptions,
 } from '../types';
 
+const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
+const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
+
 const indent = '  ';
 
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
-  const configPodspecPaths = revision.config?.iosPodspecPaths();
+  const configPodspecPaths = revision.config?.applePodspecPaths();
   if (configPodspecPaths && configPodspecPaths.length) {
     return configPodspecPaths;
   }
@@ -54,18 +58,34 @@ export async function resolveModuleAsync(
     podspecDir: path.dirname(path.join(revision.path, podspecFile)),
   }));
 
-  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
+  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
 
   return {
     packageName,
     pods,
     swiftModuleNames,
     flags: options.flags,
-    modules: revision.config?.iosModules() ?? [],
-    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
-    reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
-    debugOnly: revision.config?.iosDebugOnly() ?? false,
+    modules: revision.config?.appleModules() ?? [],
+    appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
+    reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
+    debugOnly: revision.config?.appleDebugOnly() ?? false,
   };
+}
+
+export async function resolveExtraBuildDependenciesAsync(
+  projectNativeRoot: string
+): Promise<ExtraDependencies | null> {
+  const propsFile = path.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
+  try {
+    const contents = await fs.readFile(propsFile, 'utf8');
+    const podfileJson = JSON.parse(contents);
+    if (podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]) {
+      // expo-build-properties would serialize the extraPods as JSON string, we should parse it again.
+      const extraPods = JSON.parse(podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]);
+      return extraPods;
+    }
+  } catch {}
+  return null;
 }
 
 /**

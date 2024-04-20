@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "7.8.1",
+  "version": "8.0.0",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "scripts": {
@@ -33,19 +33,17 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^50.0.0-alpha.1",
-    "@expo/fingerprint": "^0.6.0",
+    "@expo/config-types": "^51.0.0-unreleased",
     "@expo/json-file": "~8.3.0",
     "@expo/plist": "^0.1.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
-    "@react-native/normalize-color": "^2.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.1",
     "find-up": "~5.0.0",
     "getenv": "^1.0.0",
     "glob": "7.1.6",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.3",
+    "semver": "^7.5.4",
     "slash": "^3.0.0",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",

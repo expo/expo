@@ -92,6 +92,7 @@ it(`can create a micro Metro graph fixture`, () => {
         "transformOptions": {
           "customTransformOptions": {
             "baseUrl": undefined,
+            "bytecode": undefined,
             "engine": undefined,
           },
           "dev": true,

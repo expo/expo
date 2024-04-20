@@ -4,7 +4,7 @@ exports[`CSS Modules web transforms for dev, minified 1`] = `
 {
   "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}},{});
 (() => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return
   }
   const head = document.head || document.getElementsByTagName('head')[0];
@@ -46,7 +46,7 @@ exports[`CSS Modules web transforms for dev, not minified 1`] = `
 {
   "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}},{});
 (() => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return
   }
   const head = document.head || document.getElementsByTagName('head')[0];
@@ -97,7 +97,7 @@ exports[`CSS Modules web transforms for prod, not minified 1`] = `"module.export
 exports[`transforms a global CSS file in dev for web 1`] = `
 {
   "input": "(() => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return
   }
   const head = document.head || document.getElementsByTagName('head')[0];

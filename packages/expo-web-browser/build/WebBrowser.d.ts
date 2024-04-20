@@ -82,7 +82,7 @@ export declare function dismissBrowser(): void;
  * Using `Linking.addEventListener` is not needed and can have side effects.
  *
  * # On web:
- * > This API can only be used in a secure environment (`https`). You can use expo `start:web --https`
+ * > This API can only be used in a secure environment (localhost/https).
  * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#errwebbrowsercrypto) will be thrown.
  * This will use the browser's [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) API.
  * - _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.

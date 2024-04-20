@@ -55,6 +55,7 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | number | boolean | null;
   operator?: string;
+  package?: string;
   objectType?: {
     name: string;
     type: string;
@@ -190,6 +191,7 @@ export type TypeGeneralData = {
   type: TypeDefinitionData;
   typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
+  variant?: string;
 };
 
 export type TypeDeclarationContentData = {

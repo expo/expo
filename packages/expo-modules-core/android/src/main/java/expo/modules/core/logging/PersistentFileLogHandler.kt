@@ -9,9 +9,7 @@ import android.content.Context
 internal class PersistentFileLogHandler(
   category: String,
   context: Context
-) : LogHandler(
-  category
-) {
+) : LogHandler() {
 
   private val persistentFileLog = PersistentFileLog(category, context)
 

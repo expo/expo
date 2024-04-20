@@ -10,9 +10,9 @@ export default function VideoScreen() {
       <HeadingText>HTTP player</HeadingText>
       <VideoPlayer
         sources={[
-          { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' },
-          { uri: 'http://techslides.com/demos/sample-videos/small.mp4' },
-          { uri: 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8' },
+          { uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' },
+          { uri: 'https://techslides.com/demos/sample-videos/small.mp4' },
+          { uri: 'https://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8' },
         ]}
       />
       <HeadingText>Local asset player</HeadingText>

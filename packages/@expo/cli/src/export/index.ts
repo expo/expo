@@ -18,6 +18,7 @@ export const expoExport: Command = async (argv) => {
       '--output-dir': String,
       '--platform': [String],
       '--no-minify': Boolean,
+      '--no-bytecode': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -48,6 +49,7 @@ export const expoExport: Command = async (argv) => {
         chalk`--output-dir <dir>         The directory to export the static files to. {dim Default: dist}`,
         `--dev                      Configure static files for developing locally using a non-https server`,
         `--no-minify                Prevent minifying source`,
+        `--no-bytecode              Prevent generating Hermes bytecode`,
         `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
         `--dump-assetmap            Emit an asset map for further processing`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,

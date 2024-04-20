@@ -10,7 +10,27 @@
 
 ### 💡 Others
 
+## 12.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- [iOS] The native module has been simplified and rewritten to Swift. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 11.10.3 - 2024-02-16
+
+### 🐛 Bug fixes
+
+- Only include supported font files when using the plugin. ([#27002](https://github.com/expo/expo/pull/27002) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.10.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 11.10.1 - 2024-01-10
 

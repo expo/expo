@@ -1,11 +1,14 @@
 package expo.modules.kotlin.sharedobjects
 
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptWeakObject
+import java.lang.ref.WeakReference
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
+
   fun toNativeObject(appContext: AppContext): SharedObject? {
     return appContext.sharedObjectRegistry.toNativeObject(this)
   }
@@ -20,7 +23,9 @@ typealias SharedObjectPair = Pair<SharedObject, JavaScriptWeakObject>
 
 const val sharedObjectIdPropertyName = "__expo_shared_object_id__"
 
-class SharedObjectRegistry {
+class SharedObjectRegistry(appContext: AppContext) {
+  private val appContextHolder = WeakReference(appContext)
+
   private var currentId: SharedObjectId = SharedObjectId(1)
 
   internal var pairs = mutableMapOf<SharedObjectId, SharedObjectPair>()
@@ -34,24 +39,34 @@ class SharedObjectRegistry {
   internal fun add(native: SharedObject, js: JavaScriptObject): SharedObjectId {
     val id = pullNextId()
     native.sharedObjectId = id
+
+    // This property should be deprecated, but it's still used when passing as a view prop.
+    // It's already defined in the JS base SharedObject class prototype,
+    // but with the current implementation it's possible to use a raw object for registration.
     js.defineProperty(sharedObjectIdPropertyName, id.value)
 
-    js.defineDeallocator {
-      delete(id)
-    }
+    val appContext = appContextHolder.get() ?: throw Exceptions.AppContextLost()
+
+    appContext
+      .jsiInterop
+      .setNativeStateForSharedObject(id.value, js)
 
     val jsWeakObject = js.createWeak()
     synchronized(this) {
       pairs[id] = native to jsWeakObject
     }
+
+    if (native.appContextHolder.get() == null) {
+      native.appContextHolder = WeakReference(appContext)
+    }
+
     return id
   }
 
   internal fun delete(id: SharedObjectId) {
-    val removedObject: SharedObjectPair? = synchronized(this) {
-      return@synchronized pairs.remove(id)
-    }
-    removedObject?.let { (native, js) ->
+    synchronized(this) {
+      pairs.remove(id)
+    }?.let { (native, _) ->
       native.sharedObjectId = SharedObjectId(0)
       native.deallocate()
     }

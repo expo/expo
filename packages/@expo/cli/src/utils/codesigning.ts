@@ -348,10 +348,13 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   );
 
   // TODO(wschurman): maybe move to @expo/code-signing-certificates
-  const leafCertificate = certificateChain[0];
-  const now = new Date();
-  if (leafCertificate.validity.notBefore > now || leafCertificate.validity.notAfter < now) {
-    return null;
+
+  // ensure all intermediate certificates are valid
+  for (const certificate of certificateChain) {
+    const now = new Date();
+    if (certificate.validity.notBefore > now || certificate.validity.notAfter < now) {
+      return null;
+    }
   }
 
   // TODO(wschurman): maybe do more validation, like validation of projectID and scopeKey within eas certificate extension

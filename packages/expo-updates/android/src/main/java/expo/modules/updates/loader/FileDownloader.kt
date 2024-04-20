@@ -15,10 +15,12 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import kotlin.math.min
+import kotlin.math.max
 import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
+import expo.modules.structuredheaders.OuterList
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
@@ -28,19 +30,30 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
+import java.util.concurrent.TimeUnit
 
 /**
  * Utility class that holds all the logic for downloading data and files, such as update manifests
  * and assets, using an instance of [OkHttpClient].
  */
-open class FileDownloader(context: Context, private val client: OkHttpClient) {
-  constructor(context: Context) : this(
-    context,
-    OkHttpClient.Builder()
-      .cache(getCache(context))
-      .addInterceptor(BrotliInterceptor)
-      .build()
-  )
+class FileDownloader(context: Context, private val configuration: UpdatesConfiguration) {
+  // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
+  // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
+  // the HTTP timeout should be at least 20 seconds.
+  private var client: OkHttpClient = OkHttpClient.Builder()
+    .cache(getCache(context))
+    .connectTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
+    .readTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
+    .addInterceptor(BrotliInterceptor)
+    .build()
+
+  /**
+   * Constructor for tests
+   */
+  constructor(context: Context, configuration: UpdatesConfiguration, client: OkHttpClient) : this(context, configuration) {
+    this.client = client
+  }
+
   private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
@@ -94,7 +107,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     )
   }
 
-  internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+  internal fun parseRemoteUpdateResponse(response: Response, callback: RemoteUpdateDownloadCallback) {
     val responseHeaders = response.headers
     val responseHeaderData = ResponseHeaderData(
       protocolVersionRaw = responseHeaders["expo-protocol-version"],
@@ -140,7 +153,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, configuration, callback)
+      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, callback)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
@@ -154,7 +167,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         manifestResponseInfo,
         null,
         null,
-        configuration,
         object : ParseManifestCallback {
           override fun onFailure(message: String, e: Exception) {
             callback.onFailure(message, e)
@@ -189,7 +201,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     return headers.toHeaders()
   }
 
-  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
@@ -303,7 +315,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       parseDirective(
         directiveResponseInfo,
         certificateChainString,
-        configuration,
         object : ParseDirectiveCallback {
           override fun onFailure(message: String, e: Exception) {
             if (!didError) {
@@ -325,7 +336,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         manifestResponseInfo,
         extensions,
         certificateChainString,
-        configuration,
         object : ParseManifestCallback {
           override fun onFailure(message: String, e: Exception) {
             if (!didError) {
@@ -355,7 +365,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   private fun parseDirective(
     directiveResponsePartInfo: ResponsePartInfo,
     certificateChainFromManifestResponse: String?,
-    configuration: UpdatesConfiguration,
     callback: ParseDirectiveCallback
   ) {
     try {
@@ -414,7 +423,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     manifestResponseInfo: ResponsePartInfo,
     extensions: JSONObject?,
     certificateChainFromManifestResponse: String?,
-    configuration: UpdatesConfiguration,
     callback: ParseManifestCallback
   ) {
     try {
@@ -440,14 +448,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   }
 
   fun downloadRemoteUpdate(
-    configuration: UpdatesConfiguration,
     extraHeaders: JSONObject?,
     context: Context,
     callback: RemoteUpdateDownloadCallback
   ) {
     try {
       downloadData(
-        createRequestForRemoteUpdate(configuration, extraHeaders, context),
+        createRequestForRemoteUpdate(extraHeaders, configuration, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
             val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
@@ -470,7 +477,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               return
             }
 
-            parseRemoteUpdateResponse(response, configuration, callback)
+            parseRemoteUpdateResponse(response, callback)
           }
         }
       )
@@ -487,7 +494,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
-    configuration: UpdatesConfiguration,
     context: Context,
     callback: AssetDownloadCallback
   ) {
@@ -659,8 +665,8 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     }
 
     internal fun createRequestForRemoteUpdate(
-      configuration: UpdatesConfiguration,
       extraHeaders: JSONObject?,
+      configuration: UpdatesConfiguration,
       context: Context
     ): Request {
       return Request.Builder()
@@ -731,6 +737,15 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       }
       embeddedUpdate?.let {
         extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+
+      database.updateDao().loadRecentUpdateIdsWithFailedLaunch().let {
+        if (it.isNotEmpty()) {
+          extraHeaders.put(
+            "Expo-Recent-Failed-Update-IDs",
+            OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) }).serialize()
+          )
+        }
       }
 
       return extraHeaders

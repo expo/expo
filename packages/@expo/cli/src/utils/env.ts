@@ -45,6 +45,11 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /** Disable detaching telemetry to separate process */
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
+  }
+
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
     return string('EXPO_UNIVERSE_DIR', '');
@@ -173,6 +178,11 @@ class Env {
   /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
   get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
     return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
+  }
+
+  /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
+  get EXPO_ADB_USER(): string {
+    return string('EXPO_ADB_USER', '0');
   }
 }
 

@@ -11,7 +11,7 @@
 
 namespace react = facebook::react;
 
-namespace {
+namespace expo {
 
 // This value should be synced with the value in **FollyDynamicExtensionConverter.kt**
 constexpr char DYNAMIC_EXTENSION_PREFIX[] = "__expo_dynamic_extension__#";
@@ -47,12 +47,7 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
   return std::nullopt;
 }
 
-} // namespace
-
-namespace expo {
-
 jsi::Value convert(
-  JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
   jni::local_ref<jobject> value
@@ -113,7 +108,6 @@ jsi::Value convert(
   if (env->IsInstanceOf(unpackedValue, JavaScriptModuleObject::javaClassStatic().get())) {
     auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(value)
       ->cthis();
-    anonymousObject->jsiInteropModuleRegistry = moduleRegistry;
     auto jsiObject = anonymousObject->getJSIObject(rt);
 
     jni::global_ref<jobject> globalRef = jni::make_global(value);
@@ -134,12 +128,13 @@ jsi::Value convert(
       "expo/modules/kotlin/sharedobjects/SharedObject").clazz
   )) {
     auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
+    JSIContext *jsiContext = getJSIContext(rt);
     auto jsObjectRef = JavaScriptObject::newInstance(
-      moduleRegistry,
-      moduleRegistry->runtimeHolder,
+      jsiContext,
+      jsiContext->runtimeHolder,
       jsObject
     );
-    moduleRegistry->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
+    jsiContext->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
     return jsi::Value(rt, *jsObject);
   }
   if (env->IsInstanceOf(

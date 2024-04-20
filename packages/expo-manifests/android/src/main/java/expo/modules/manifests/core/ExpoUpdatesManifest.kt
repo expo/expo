@@ -5,8 +5,6 @@ import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class ExpoUpdatesManifest(json: JSONObject) : Manifest(json) {
   /**
@@ -33,23 +31,8 @@ class ExpoUpdatesManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   override fun getBundleURL(): String = getLaunchAsset().require("url")
 
-  @Deprecated(message = "exposdk:... runtime version is deprecated")
-  private fun getSDKVersionFromRuntimeVersion(): String? {
-    val runtimeVersion = getRuntimeVersion()
-    if (runtimeVersion == "exposdk:UNVERSIONED") {
-      return "UNVERSIONED"
-    }
-
-    val expoSDKRuntimeVersionRegex: Pattern = Pattern.compile("^exposdk:(\\d+\\.\\d+\\.\\d+)$")
-    val expoSDKRuntimeVersionMatch: Matcher = expoSDKRuntimeVersionRegex.matcher(runtimeVersion)
-    if (expoSDKRuntimeVersionMatch.find()) {
-      return expoSDKRuntimeVersionMatch.group(1)!!
-    }
-    return null
-  }
-
   override fun getExpoGoSDKVersion(): String? {
-    return getExpoClientConfigRootObject()?.getString("sdkVersion") ?: getSDKVersionFromRuntimeVersion()
+    return getExpoClientConfigRootObject()?.getString("sdkVersion")
   }
 
   @Throws(JSONException::class)

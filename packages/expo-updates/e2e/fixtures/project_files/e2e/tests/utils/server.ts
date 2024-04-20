@@ -47,6 +47,10 @@ function stop() {
   requestedStaticFiles = [];
 }
 
+function getRequestedStaticFilesLength() {
+  return requestedStaticFiles.length;
+}
+
 function consumeRequestedStaticFiles() {
   const returnArray = requestedStaticFiles;
   requestedStaticFiles = [];
@@ -268,6 +272,7 @@ const Server = {
   serveManifest,
   serveSignedManifest,
   serveSignedDirective,
+  getRequestedStaticFilesLength,
   consumeRequestedStaticFiles,
 };
 

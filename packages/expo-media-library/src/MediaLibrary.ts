@@ -19,11 +19,17 @@ export type PermissionResponse = EXPermissionResponse & {
   /**
    * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
    * - `'all'` if the user granted your app access to the whole photo library
-   * - `'limited'` if the user granted your app access only to selected photos (only available on iOS 14.0+)
+   * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
    * - `'none'` if user denied or hasn't yet granted the permission
    */
   accessPrivileges?: 'all' | 'limited' | 'none';
 };
+
+/**
+ * Determines the type of media that the app will ask the OS to get access to.
+ * @platform android API 33+
+ */
+export type GranularPermission = 'audio' | 'photo' | 'video';
 
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey =
@@ -408,13 +414,19 @@ export async function isAvailableAsync(): Promise<boolean> {
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(
-  writeOnly: boolean = false
+  writeOnly: boolean = false,
+  granularPermissions: GranularPermission[] = ['audio', 'photo', 'video']
 ): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
+  }
+  if (Platform.OS === 'android') {
+    return await MediaLibrary.requestPermissionsAsync(writeOnly, granularPermissions);
   }
   return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
@@ -423,11 +435,19 @@ export async function requestPermissionsAsync(
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function getPermissionsAsync(writeOnly: boolean = false): Promise<PermissionResponse> {
+export async function getPermissionsAsync(
+  writeOnly: boolean = false,
+  granularPermissions: GranularPermission[] = ['audio', 'photo', 'video']
+): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+  }
+  if (Platform.OS === 'android') {
+    return await MediaLibrary.getPermissionsAsync(writeOnly, granularPermissions);
   }
   return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
@@ -442,10 +462,14 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
  * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
-export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
+export const usePermissions = createPermissionHook<
+  PermissionResponse,
+  { writeOnly?: boolean; granularPermissions?: GranularPermission[] }
+>({
   // TODO(cedric): permission requesters should have an options param or a different requester
-  getMethod: (options) => getPermissionsAsync(options?.writeOnly),
-  requestMethod: (options) => requestPermissionsAsync(options?.writeOnly),
+  getMethod: (options) => getPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+  requestMethod: (options) =>
+    requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
 });
 
 // @needsAudit

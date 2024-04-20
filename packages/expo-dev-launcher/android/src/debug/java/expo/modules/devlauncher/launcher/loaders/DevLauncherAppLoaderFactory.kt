@@ -2,9 +2,10 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.net.Uri
-import com.facebook.react.ReactNativeHost
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
+import expo.modules.devlauncher.helpers.getRuntimeVersion
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.koin.optInject
@@ -13,7 +14,6 @@ import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import org.koin.core.component.inject
-import java.lang.IllegalStateException
 
 interface DevLauncherAppLoaderFactoryInterface {
   suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader
@@ -23,7 +23,7 @@ interface DevLauncherAppLoaderFactoryInterface {
 
 class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoaderFactoryInterface {
   private val context: Context by inject()
-  private val appHost: ReactNativeHost by inject()
+  private val appHost: ReactHostWrapper by inject()
   private val updatesInterface: UpdatesInterface? by optInject()
   private val controller: DevLauncherControllerInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
@@ -45,7 +45,8 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
         }
         DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
       } else {
-        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, installationIDHelper.getOrCreateInstallationID(context))
+        val runtimeVersion = getRuntimeVersion(context)
+        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
         val update = updatesInterface!!.loadUpdate(configuration, context) {
           manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
           return@loadUpdate !manifest!!.isUsingDeveloperTool()

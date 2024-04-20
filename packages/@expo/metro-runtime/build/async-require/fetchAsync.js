@@ -17,6 +17,7 @@ async function fetchAsync(url) {
     });
     return {
         body: await response.text(),
+        status: response.status,
         headers: response.headers,
     };
 }

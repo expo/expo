@@ -97,24 +97,12 @@ describe(`manifest`, () => {
     mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
   });
 
   it(`exists if defined as a string in ExponentConstants`, () => {
     mockExponentConstants({ manifest: JSON.stringify(fakeEmbeddedAppConfig) });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
   });
 
   it(`exists if defined as an object by expo-updates`, () => {
@@ -138,23 +126,6 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: undefined, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
-
-    // Skip warnings on web
-    if (Platform.OS === 'web') {
-      expect(console.warn).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-        )
-      );
-    } else {
-      expect(console.warn).toHaveBeenCalledTimes(2);
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-        )
-      );
-    }
   });
 
   it(`is null if undefined in ExponentConstants, and expo-updates does not exist with bare execution environment`, () => {
@@ -162,23 +133,6 @@ describe(`manifest`, () => {
     mockNativeModulesProxy({ ExpoUpdates: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
-
-    // Skip warnings on web
-    if (Platform.OS === 'web') {
-      expect(console.warn).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-        )
-      );
-    } else {
-      expect(console.warn).toHaveBeenCalledTimes(2);
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-        )
-      );
-    }
   });
 
   it(`is overridden by expo-updates if both are defined`, () => {
@@ -194,12 +148,6 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: {} });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeEmbeddedAppConfig);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
   });
 
   it(`has manifest2 when manifest is a new manifest`, () => {
@@ -208,12 +156,6 @@ describe(`manifest`, () => {
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
     expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
-      )
-    );
   });
 
   describe('expoConfig', () => {

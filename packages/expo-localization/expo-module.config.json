@@ -1,10 +1,9 @@
 {
-  "name": "expo-localization",
-  "platforms": ["ios", "android", "tvos"],
-  "ios": {
-    "modulesClassNames": ["LocalizationModule"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["LocalizationModule"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.localization.LocalizationModule"]
+    "modules": ["expo.modules.localization.LocalizationModule"]
   }
 }

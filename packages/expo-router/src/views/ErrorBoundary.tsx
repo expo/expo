@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
-let StackTrace: React.FC<{ logData: LogBoxLog | null }>;
+let StackTrace: React.ComponentType<{ logData: LogBoxLog | null }>;
 
 if (process.env.NODE_ENV === 'development') {
   const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');

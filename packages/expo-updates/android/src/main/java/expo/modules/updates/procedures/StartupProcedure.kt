@@ -3,7 +3,7 @@ package expo.modules.updates.procedures
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
@@ -24,7 +24,6 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
-import org.json.JSONObject
 import java.io.File
 
 class StartupProcedure(
@@ -37,22 +36,10 @@ class StartupProcedure(
   private val logger: UpdatesLogger,
   private val callback: StartupProcedureCallback
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-startup"
+
   interface StartupProcedureCallback {
     fun onFinished()
-
-    sealed class LegacyJSEvent(private val type: Type) {
-      private enum class Type {
-        ERROR,
-        UPDATE_AVAILABLE,
-        NO_UPDATE_AVAILABLE
-      }
-
-      class NoUpdateAvailable : LegacyJSEvent(Type.NO_UPDATE_AVAILABLE)
-      class UpdateAvailable(val manifest: JSONObject) : LegacyJSEvent(Type.UPDATE_AVAILABLE)
-      class Error(val exception: Exception) : LegacyJSEvent(Type.ERROR)
-    }
-    fun onLegacyJSEvent(event: LegacyJSEvent)
-
     fun onRequestRelaunch(shouldRunReaper: Boolean, callback: Launcher.LauncherCallback)
   }
 
@@ -75,7 +62,7 @@ class StartupProcedure(
   val launchedUpdate: UpdateEntity?
     get() = launcher?.launchedUpdate
 
-  var isEmergencyLaunch = false
+  var emergencyLaunchException: Exception? = null
     private set
   private val errorRecovery = ErrorRecovery(context)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
@@ -100,7 +87,7 @@ class StartupProcedure(
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
         launcher = NoDatabaseLauncher(context, e)
-        isEmergencyLaunch = true
+        emergencyLaunchException = e
         notifyController()
       }
 
@@ -170,7 +157,6 @@ class StartupProcedure(
             }
             logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.Error(exception))
 
             // Since errors can happen through a number of paths, we do these checks
             // to make sure the state machine is valid
@@ -200,7 +186,6 @@ class StartupProcedure(
             }
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
             logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.UpdateAvailable(update.manifest))
             procedureContext.processStateEvent(
               UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
             )
@@ -208,7 +193,6 @@ class StartupProcedure(
           LoaderTask.RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
             logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable())
             // TODO: handle rollbacks properly, but this works for now
             if (procedureContext.getCurrentState() == UpdatesStateValue.Downloading) {
               procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
@@ -236,11 +220,15 @@ class StartupProcedure(
     callback.onFinished()
   }
 
-  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    if (isEmergencyLaunch) {
+  fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    if (emergencyLaunchException != null) {
       return
     }
-    errorRecovery.startMonitoring(reactInstanceManager)
+    errorRecovery.startMonitoring(devSupportManager)
+  }
+
+  fun onReactInstanceException(exception: Exception) {
+    errorRecovery.onReactInstanceException(exception)
   }
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -301,7 +289,7 @@ class StartupProcedure(
       }
 
       override fun markFailedLaunchForLaunchedUpdate() {
-        if (isEmergencyLaunch) {
+        if (emergencyLaunchException != null) {
           return
         }
         databaseHandler.post {
@@ -312,7 +300,7 @@ class StartupProcedure(
       }
 
       override fun markSuccessfulLaunchForLaunchedUpdate() {
-        if (isEmergencyLaunch) {
+        if (emergencyLaunchException != null) {
           return
         }
         databaseHandler.post {

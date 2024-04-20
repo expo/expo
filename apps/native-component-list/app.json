@@ -30,6 +30,9 @@
     "updates": {
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
     },
+    "web": {
+      "bundler": "metro"
+    },
     "facebookScheme": "fb1696089354000816",
     "facebookAppId": "1696089354000816",
     "facebookDisplayName": "Expo APIs",
@@ -74,14 +77,6 @@
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"
         },
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
-      }
-    },
-    "web": {
-      "build": {
-        "babel": {
-          "root": "./",
-          "include": ["test-suite", "native-component-list", "bare-expo"]
-        }
       }
     },
     "assetBundlePatterns": [

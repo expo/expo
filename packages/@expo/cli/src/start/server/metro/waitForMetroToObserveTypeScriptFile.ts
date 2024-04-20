@@ -4,6 +4,14 @@ import type { ServerLike } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
 
+export type FileChangeEvent = {
+  filePath: string;
+  metadata?: {
+    type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
+  } | null;
+  type: string;
+};
+
 /**
  * Use the native file watcher / Metro ruleset to detect if a
  * TypeScript file is added to the project during development.
@@ -20,17 +28,7 @@ export function waitForMetroToObserveTypeScriptFile(
 
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 
-  const listener = ({
-    eventsQueue,
-  }: {
-    eventsQueue: {
-      filePath: string;
-      metadata?: {
-        type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
-      } | null;
-      type: string;
-    }[];
-  }) => {
+  const listener = ({ eventsQueue }: { eventsQueue: FileChangeEvent[] }) => {
     for (const event of eventsQueue) {
       if (
         event.type === 'add' &&
@@ -121,22 +119,12 @@ export function observeAnyFileChanges(
     metro: import('metro').Server;
     server: ServerLike;
   },
-  callback: () => void | Promise<void>
+  callback: (events: FileChangeEvent[]) => void | Promise<void>
 ): () => void {
   const watcher = runner.metro.getBundler().getBundler().getWatcher();
 
-  const listener = ({
-    eventsQueue,
-  }: {
-    eventsQueue: {
-      filePath: string;
-      metadata?: {
-        type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
-      } | null;
-      type: string;
-    }[];
-  }) => {
-    callback();
+  const listener = ({ eventsQueue }: { eventsQueue: FileChangeEvent[] }) => {
+    callback(eventsQueue);
   };
 
   watcher.addListener('change', listener);

@@ -30,7 +30,6 @@ export type ExpoSerializerOptions = SerializerOptions & {
     baseUrl?: string;
     skipWrapping?: boolean;
     output?: string;
-    includeBytecode?: boolean;
     includeSourceMaps?: boolean;
   };
   // Chunk-based stable identifier for the bundle that is used for identifying the bundle.

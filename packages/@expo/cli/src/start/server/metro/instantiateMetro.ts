@@ -4,8 +4,10 @@ import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import Bundler from 'metro/src/Bundler';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
+import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
 
@@ -18,17 +20,15 @@ import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
-import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { logEventAsync } from '../../../utils/telemetry';
+import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
-import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
-import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
-
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -50,18 +50,43 @@ function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string):
   }
 }
 
+// Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
+class LogRespectingTerminal extends Terminal {
+  constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
+    super(stream);
+
+    const sendLog = (...args: any[]) => {
+      // @ts-expect-error
+      this._logLines.push(
+        // format args like console.log
+        util.format(...args)
+      );
+      // @ts-expect-error
+      this._scheduleUpdate();
+
+      // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
+      this.flush();
+    };
+
+    console.log = sendLog;
+    console.info = sendLog;
+  }
+}
+
+// Share one instance of Terminal for all instances of Metro.
+const terminal = new LogRespectingTerminal(process.stdout);
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
-  }: { exp?: ExpoConfig; isExporting: boolean }
+    getMetroBundler,
+  }: { exp?: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
-
-  const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const hasConfig = await resolveConfig(options.config, projectRoot);
@@ -104,15 +129,18 @@ export async function loadMetroConfigAsync(
     }
   }
 
-  const platformBundlers = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
+    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    getMetroBundler,
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -147,7 +175,13 @@ export async function instantiateMetroAsync(
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
     options,
-    { exp, isExporting }
+    {
+      exp,
+      isExporting,
+      getMetroBundler() {
+        return metro.getBundler().getBundler();
+      },
+    }
   );
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
@@ -159,15 +193,12 @@ export async function instantiateMetroAsync(
       watchFolders: metroConfig.watchFolders,
     });
 
-  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
-  // We replace with the enhanced version.
+  // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
   replaceMiddlewareWith(
     middleware as ConnectServer,
     securityHeadersMiddleware,
-    remoteDevtoolsSecurityHeadersMiddleware
+    createCorsMiddleware(exp)
   );
-
-  middleware.use(remoteDevtoolsCorsMiddleware);
 
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 

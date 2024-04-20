@@ -211,9 +211,7 @@ class RecordTypeConverterTest {
 
         other as InnerRecord
 
-        if (name != other.name) return false
-
-        return true
+        return name == other.name
       }
     }
 

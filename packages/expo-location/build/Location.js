@@ -6,7 +6,7 @@ import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './Loc
 // @needsAudit
 /**
  * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
- * @param apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
+ * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
  * enabled, otherwise your geocoding requests will be denied.
  */
 function setGoogleApiKey(_apiKey) { }

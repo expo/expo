@@ -6,7 +6,7 @@ import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    async prefetch(urls, _) {
+    async prefetch(urls, _, __) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
         return new Promise((resolve) => {
             let imagesLoaded = 0;
@@ -62,17 +62,18 @@ function isFlipTransition(transition) {
         transition?.effect === 'flip-from-left' ||
         transition?.effect === 'flip-from-right');
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
-    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
+    const containerRef = React.useRef(null);
+    const selectedSource = useSourceSelection(source, responsivePolicy, containerRef, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
     const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
     const initialNode = placeholder?.[0]?.uri
         ? [
             initialNodeAnimationKey,
-            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper {...props} source={placeholder?.[0]} style={{
+            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={placeholder?.[0]} style={{
                     objectFit: imagePlaceholderContentFit,
                     ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
@@ -86,7 +87,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
     const currentNode = [
         currentNodeAnimationKey,
-        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper {...props} source={selectedSource || placeholder?.[0]} events={{
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={selectedSource || placeholder?.[0]} events={{
                 onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],

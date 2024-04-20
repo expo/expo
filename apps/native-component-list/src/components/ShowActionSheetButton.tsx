@@ -1,45 +1,33 @@
 import { ActionSheetOptions } from '@expo/react-native-action-sheet';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import React from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Text, TextStyle, View } from 'react-native';
 
 const icon = (name: string) => <MaterialCommunityIcons key={name} name={name as any} size={24} />;
 
-interface Props {
+// A custom button that shows examples of different share sheet configurations
+export default function ShowActionSheetButton({
+  title,
+  withTitle = false,
+  withMessage = false,
+  withIcons = false,
+  withSeparators = false,
+  withCustomStyles = false,
+  onSelection = null,
+  showActionSheetWithOptions,
+}: {
   title: string;
   showActionSheetWithOptions: (
     options: ActionSheetOptions,
     onSelection: (index: number) => void
   ) => void;
-  onSelection: (index: number) => void;
+  onSelection: ((index: number) => void) | null;
   withTitle?: boolean;
   withMessage?: boolean;
   withIcons?: boolean;
   withSeparators?: boolean;
   withCustomStyles?: boolean;
-}
-
-// A custom button that shows examples of different share sheet configurations
-export default class ShowActionSheetButton extends React.PureComponent<Props> {
-  static defaultProps = {
-    withTitle: false,
-    withMessage: false,
-    withIcons: false,
-    withSeparators: false,
-    withCustomStyles: false,
-    onSelection: null,
-  };
-
-  _showActionSheet = () => {
-    const {
-      withTitle,
-      withMessage,
-      withIcons,
-      withSeparators,
-      withCustomStyles,
-      onSelection,
-      showActionSheetWithOptions,
-    } = this.props;
+}) {
+  const showActionSheet = () => {
     // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
     const options = ['Delete', 'Save', 'Share', 'Cancel'];
     const icons = withIcons
@@ -82,28 +70,25 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
       },
       (buttonIndex) => {
         // Do something here depending on the button index selected
-        onSelection(buttonIndex);
+        onSelection?.(buttonIndex);
       }
     );
   };
 
-  render() {
-    const { title } = this.props;
-    return (
-      <View style={{ margin: 6 }}>
-        <MaterialCommunityIcons.Button
-          name="code-tags"
-          backgroundColor="#3e3e3e"
-          onPress={this._showActionSheet}>
-          <Text
-            style={{
-              fontSize: 15,
-              color: '#fff',
-            }}>
-            {title}
-          </Text>
-        </MaterialCommunityIcons.Button>
-      </View>
-    );
-  }
+  return (
+    <View style={{ margin: 6 }}>
+      <MaterialCommunityIcons.Button
+        name="code-tags"
+        backgroundColor="#3e3e3e"
+        onPress={showActionSheet}>
+        <Text
+          style={{
+            fontSize: 15,
+            color: '#fff',
+          }}>
+          {title}
+        </Text>
+      </MaterialCommunityIcons.Button>
+    </View>
+  );
 }

@@ -32,6 +32,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     port: props.port,
     appName: props.appName,
     buildCache: props.buildCache,
+    architectures: props.architectures,
   });
 
   // Ensure the port hasn't become busy during the build.
@@ -58,6 +59,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   if (props.shouldStartBundler) {
     logProjectLogsLocation();
+  } else {
+    await manager.stopAsync();
   }
 }
 

@@ -11,18 +11,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchAsync = void 0;
-const react_native_1 = require("react-native");
 // @ts-expect-error
 const RCTNetworking_1 = __importDefault(require("react-native/Libraries/Network/RCTNetworking"));
 function fetchAsync(url) {
     let id = null;
+    let statusCode = null;
     let responseText = null;
     let headers = {};
     let dataListener = null;
     let completeListener = null;
     let responseListener = null;
     return new Promise((resolve, reject) => {
-        const addListener = RCTNetworking_1.default.addListener;
+        const addListener = RCTNetworking_1.default.addListener.bind(RCTNetworking_1.default);
         dataListener = addListener('didReceiveNetworkData', ([requestId, response]) => {
             if (requestId === id) {
                 responseText = response;
@@ -30,6 +30,7 @@ function fetchAsync(url) {
         });
         responseListener = addListener('didReceiveNetworkResponse', ([requestId, status, responseHeaders]) => {
             if (requestId === id) {
+                statusCode = status;
                 headers = responseHeaders;
             }
         });
@@ -39,12 +40,12 @@ function fetchAsync(url) {
                     reject(error);
                 }
                 else {
-                    resolve({ body: responseText, headers });
+                    resolve({ body: responseText, status: statusCode, headers });
                 }
             }
         });
         RCTNetworking_1.default.sendRequest('GET', 'asyncRequest', url, {
-            'expo-platform': react_native_1.Platform.OS,
+            'expo-platform': process.env.EXPO_OS,
         }, '', 'text', false, 0, (requestId) => {
             id = requestId;
         }, true);

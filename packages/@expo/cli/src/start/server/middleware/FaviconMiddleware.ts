@@ -26,7 +26,7 @@ export class FaviconMiddleware extends ExpoMiddleware {
 
     let faviconImageData: Buffer | null;
     try {
-      const data = await getFaviconFromExpoConfigAsync(this.projectRoot);
+      const data = await getFaviconFromExpoConfigAsync(this.projectRoot, { force: true });
       if (!data) {
         debug('No favicon defined in the Expo Config, skipping generation.');
         return next();

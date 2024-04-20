@@ -59,9 +59,13 @@ class ExpoModule {
 // Object representing a maven repository.
 class MavenRepo {
   String url
+  Object credentials
+  String authentication
 
   MavenRepo(Object data) {
-    this.url = data
+    this.url = data.url
+    this.credentials = data.credentials
+    this.authentication = data.authentication
   }
 }
 
@@ -79,7 +83,7 @@ class ExpoAutolinkingManager {
     this.options = options
   }
 
-  Object resolve(shouldUseCachedValue=false) {
+  Object resolve(ProviderFactory providers, shouldUseCachedValue=false) {
     if (cachedResolvingResults) {
       return cachedResolvingResults
     }
@@ -89,7 +93,10 @@ class ExpoAutolinkingManager {
     String[] args = convertOptionsToCommandArgs('resolve', this.options)
     args += ['--json']
 
-    String output = exec(args, projectDir)
+    String output = providers.exec {
+      workingDir(projectDir)
+      commandLine(args)
+    }.standardOutput.asText.get().trim()
     Object json = new JsonSlurper().parseText(output)
 
     cachedResolvingResults = json
@@ -100,14 +107,14 @@ class ExpoAutolinkingManager {
     return options?.useAAR == true
   }
 
-  ExpoModule[] getModules(shouldUseCachedValue=false) {
-    Object json = resolve(shouldUseCachedValue)
+  ExpoModule[] getModules(ProviderFactory providers, shouldUseCachedValue=false) {
+    Object json = resolve(providers, shouldUseCachedValue)
     return json.modules.collect { new ExpoModule(it) }
   }
 
-  MavenRepo[] getExtraMavenRepos(shouldUseCachedValue=false) {
-    Object json = resolve(shouldUseCachedValue)
-    return json.extraDependencies.androidMavenRepos.collect { new MavenRepo(it) }
+  MavenRepo[] getExtraMavenRepos(ProviderFactory providers, shouldUseCachedValue=false) {
+    Object json = resolve(providers, shouldUseCachedValue)
+    return json.extraDependencies.collect { new MavenRepo(it) }
   }
 
   static String getGeneratedFilePath(Project project) {
@@ -138,14 +145,10 @@ class ExpoAutolinkingManager {
       args += '--empty'
     }
 
-    exec(args, project.rootDir)
-  }
-
-  static String exec(String[] commandArgs, File dir) {
-    Process proc = commandArgs.execute(null, dir)
-    StringBuffer outputStream = new StringBuffer()
-    proc.waitForProcessOutput(outputStream, System.err)
-    return outputStream.toString()
+    project.providers.exec {
+      workingDir(project.rootDir)
+      commandLine(args)
+    }.result.get().assertNormalExitValue()
   }
 
   static private String[] convertOptionsToCommandArgs(String command, Map options) {
@@ -207,8 +210,8 @@ if (rootProject instanceof ProjectDescriptor) {
   // i.e. adding the dependencies and generating the package list.
   ext.useExpoModules = { Map options = [:] ->
     ExpoAutolinkingManager manager = new ExpoAutolinkingManager(rootProject.projectDir, options)
-    ExpoModule[] modules = manager.getModules()
-    MavenRepo[] extraMavenRepos = manager.getExtraMavenRepos()
+    ExpoModule[] modules = manager.getModules(providers)
+    MavenRepo[] extraMavenRepos = manager.getExtraMavenRepos(providers)
 
     for (module in modules) {
       for (moduleProject in module.projects) {
@@ -240,7 +243,35 @@ if (rootProject instanceof ProjectDescriptor) {
       rootProject.allprojects { eachProject ->
         eachProject.repositories {
           for (mavenRepo in extraMavenRepos) {
-            maven { url = mavenRepo.url }
+            maven {
+              url "${mavenRepo.url}"
+              if (mavenRepo.credentials != null) {
+                credentials {
+                  if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                    username mavenRepo.credentials.username
+                    password mavenRepo.credentials.password
+                  } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                    name mavenRepo.credentials.name
+                    value mavenRepo.credentials.value
+                  } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                    accessKey mavenRepo.credentials.accessKey
+                    secretKey mavenRepo.credentials.secretKey
+                    sessionToken mavenRepo.credentials.sessionToken
+                  }
+                }
+              }
+              if (mavenRepo.authentication != null) {
+                authentication {
+                  if (mavenRepo.authentication == "basic") {
+                    basic(BasicAuthentication)
+                  } else if (mavenRepo.authentication == "digest") {
+                    digest(DigestAuthentication)
+                  } else if (mavenRepo.authentication == "header") {
+                    header(HttpHeaderAuthentication)
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -275,7 +306,7 @@ if (rootProject instanceof ProjectDescriptor) {
 
   def addDependencies = { DependencyHandler handler, Project project ->
     def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
-    def modules = manager.getModules(true)
+    def modules = manager.getModules(project.providers, true)
 
     if (!modules.length) {
       return
@@ -351,7 +382,7 @@ if (rootProject instanceof ProjectDescriptor) {
       return null
     }
 
-    def modules = gradle.ext.expoAutolinkingManager.resolve(true).modules
+    def modules = gradle.ext.expoAutolinkingManager.resolve(project.providers, true).modules
     return modules.toString()
   }
 
@@ -360,7 +391,7 @@ if (rootProject instanceof ProjectDescriptor) {
       return
     }
 
-    def modules = gradle.ext.expoAutolinkingManager.getModules(true)
+    def modules = gradle.ext.expoAutolinkingManager.getModules(project.providers, true)
     for (module in modules) {
       for (moduleProject in module.projects) {
         def dependency = project.findProject(":${moduleProject.name}")

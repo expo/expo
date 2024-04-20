@@ -36,7 +36,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
 
     // If the given value is a shared object id, search the registry for its native representation
     if let sharedObjectId = value as? SharedObjectId,
-       let nativeSharedObject = SharedObjectRegistry.get(sharedObjectId)?.native {
+      let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native {
       return nativeSharedObject
     }
     throw NativeSharedObjectNotFoundException()
@@ -46,13 +46,13 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     if jsValue.kind == .number {
       let sharedObjectId = jsValue.getInt() as SharedObjectId
 
-      guard let nativeSharedObject = SharedObjectRegistry.get(sharedObjectId)?.native else {
+      guard let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native else {
         throw NativeSharedObjectNotFoundException()
       }
       return nativeSharedObject
     }
     if let jsObject = try? jsValue.asObject(),
-       let nativeSharedObject = SharedObjectRegistry.toNativeObject(jsObject) {
+      let nativeSharedObject = appContext.sharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }
     throw NativeSharedObjectNotFoundException()

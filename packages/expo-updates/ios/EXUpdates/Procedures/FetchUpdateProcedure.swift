@@ -37,6 +37,10 @@ final class FetchUpdateProcedure: StateMachineProcedure {
     self.errorBlock = errorBlock
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-fetch-update"
+  }
+
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventDownload())
 

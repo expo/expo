@@ -8,6 +8,12 @@ final class FileNotExistsException: GenericException<String> {
   }
 }
 
+final class FileAlreadyExistsException: GenericException<String> {
+  override var reason: String {
+    "File '\(param)' already exists"
+  }
+}
+
 final class DirectoryNotExistsException: GenericException<String> {
   override var reason: String {
     "Directory '\(param)' does not exist"
@@ -65,5 +71,29 @@ final class DownloadTaskNotFoundException: GenericException<String> {
 final class CannotDetermineDiskCapacity: Exception {
   override var reason: String {
     "Unable to determine free disk storage capacity"
+  }
+}
+
+final class FailedToCreateBodyException: Exception {
+  override var reason: String {
+    "Unable to create multipart body"
+  }
+}
+
+final class FailedToAccessDirectoryException: Exception {
+  override var reason: String {
+    "Failed to access `Caches` directory"
+  }
+}
+
+final class FailedToCopyAssetException: GenericException<String> {
+  override var reason: String {
+    "Failed to copy photo library asset: \(param)"
+  }
+}
+
+final class FailedToFindAssetException: GenericException<String> {
+  override var reason: String {
+    "Failed to find photo library asset: \(param)"
   }
 }

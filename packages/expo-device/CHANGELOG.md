@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 6.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.9.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 5.9.2 - 2024-01-10
 
 _This version does not introduce any user-facing changes._

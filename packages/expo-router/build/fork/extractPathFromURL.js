@@ -24,7 +24,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adjustPathname = exports.extractExpoPathFromURL = void 0;
-const expo_constants_1 = __importStar(require("expo-constants"));
 const Linking = __importStar(require("expo-linking"));
 // This is only run on native.
 function extractExactPathFromURL(url) {
@@ -35,8 +34,9 @@ function extractExactPathFromURL(url) {
         const { origin, href } = new URL(url);
         return href.replace(origin, '');
     }
+    const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
     // Handle special URLs used in Expo Go: `/--/pathname` -> `pathname`
-    if (expo_constants_1.default.executionEnvironment === expo_constants_1.ExecutionEnvironment.StoreClient &&
+    if (isExpoGo &&
         // while not exhaustive, `exp` and `exps` are the only two schemes which
         // are passed through to other apps in Expo Go.
         url.match(/^exp(s)?:\/\//)) {

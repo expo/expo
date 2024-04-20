@@ -1,4 +1,4 @@
-import { PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter, PermissionStatus } from 'expo-modules-core';
 import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)
@@ -56,7 +56,7 @@ function getStatusFromMedia(media) {
     const status = {
         isLoaded: true,
         uri: media.src,
-        progressUpdateIntervalMillis: 100,
+        progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
         durationMillis: media.duration * 1000,
         positionMillis: media.currentTime * 1000,
         // playableDurationMillis: media.buffered * 1000,
@@ -64,7 +64,7 @@ function getStatusFromMedia(media) {
         // seekMillisToleranceAfter?: number
         shouldPlay: media.autoplay,
         isPlaying,
-        isBuffering: false,
+        isBuffering: false, //media.waiting,
         rate: media.playbackRate,
         // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
         shouldCorrectPitch: false,
@@ -126,9 +126,6 @@ function getAudioRecorderDurationMillis() {
     return duration;
 }
 export default {
-    get name() {
-        return 'ExponentAV';
-    },
     async getStatusForVideo(element) {
         return getStatusFromMedia(element);
     },
@@ -154,13 +151,13 @@ export default {
         const source = typeof nativeSource === 'string' ? nativeSource : nativeSource.uri;
         const media = new Audio(source);
         media.ontimeupdate = () => {
-            SyntheticPlatformEmitter.emit('didUpdatePlaybackStatus', {
+            DeviceEventEmitter.emit('didUpdatePlaybackStatus', {
                 key: media,
                 status: getStatusFromMedia(media),
             });
         };
         media.onerror = () => {
-            SyntheticPlatformEmitter.emit('ExponentAV.onError', {
+            DeviceEventEmitter.emit('ExponentAV.onError', {
                 key: media,
                 error: media.error.message,
             });

@@ -121,15 +121,15 @@ class ClassDefinitionSpec: ExpoSpec {
       }
       it("creates shared object") {
         let jsObject = try runtime.eval("new expo.modules.TestModule.Counter(0)").getObject()
-        let nativeObject = SharedObjectRegistry.toNativeObject(jsObject)
+        let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
         expect(nativeObject).notTo(beNil())
       }
       it("registers shared object") {
-        let oldSize = SharedObjectRegistry.size
+        let oldSize = appContext.sharedObjectRegistry.size
         try runtime.eval("object = new expo.modules.TestModule.Counter(0)")
 
-        expect(SharedObjectRegistry.size) == oldSize + 1
+        expect(appContext.sharedObjectRegistry.size) == oldSize + 1
       }
       it("calls function with owner") {
         try runtime.eval([

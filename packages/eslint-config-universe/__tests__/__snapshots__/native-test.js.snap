@@ -87,7 +87,14 @@ function _fn() {}
 function* gen() {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 1,
 }
 `;
@@ -159,7 +166,14 @@ export class Example {
 function _fn(...args: any): void {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 2,
 }
 `;
@@ -212,7 +226,14 @@ function unused2() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 3,
 }
 `;
@@ -278,7 +299,14 @@ function tsUnused2() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 4,
 }
 `;
@@ -295,7 +323,14 @@ exports[`lints with the React Native config: fixtures/all-04.ts 1`] = `
 };
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -310,7 +345,14 @@ exports[`lints with the React Native config: fixtures/all-05.ts 1`] = `
   "output": "export const blah = 3!;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -330,7 +372,14 @@ export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -353,7 +402,14 @@ const e = require('e');
 export default a + b + c + d + e;
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -366,7 +422,14 @@ exports[`lints with the React Native config: fixtures/web-native-00.js 1`] = `
   "fixableWarningCount": 0,
   "messages": [],
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -379,7 +442,14 @@ exports[`lints with the React Native config: fixtures/web-native-01.js 1`] = `
   "fixableWarningCount": 0,
   "messages": [],
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -392,7 +462,14 @@ exports[`lints with the React Native config: fixtures/web-native-02.js 1`] = `
   "fixableWarningCount": 0,
   "messages": [],
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -412,7 +489,14 @@ export default function Example() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -474,7 +558,14 @@ function notAHook() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "no-object-constructor",
+      ],
+      "ruleId": "no-new-object",
+    },
+  ],
   "warningCount": 1,
 }
 `;

@@ -29,6 +29,5 @@ const withUnversionedUpdates = config => {
   config = _configPlugins().IOSConfig.Updates.withUpdates(config);
   return config;
 };
-var _default = withExpoUpdates;
-exports.default = _default;
+var _default = exports.default = withExpoUpdates;
 //# sourceMappingURL=expo-updates.js.map

@@ -1,12 +1,11 @@
 ---
 title: Redirects
 description: Learn how redirect URLs in Expo Router.
-hideTOC: true
 ---
 
 You can redirect a request to a different URL based on some in-app criteria. Expo Router supports a number of different redirection patterns.
 
-## Redirect
+## Using `Redirect` component
 
 You can immediately redirect from a particular screen by using the `Redirect` component:
 
@@ -34,6 +33,8 @@ export default function Page() {
   );
 }
 ```
+
+## Using `useRouter` hook
 
 You can also redirect imperatively with the `useRouter` hook:
 

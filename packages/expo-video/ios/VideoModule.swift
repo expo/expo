@@ -6,6 +6,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    Function("isPictureInPictureSupported") {
+      return AVPictureInPictureController.isPictureInPictureSupported()
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
@@ -13,7 +17,7 @@ public final class VideoModule: Module {
       )
 
       Prop("player") { (view, player: VideoPlayer?) in
-        view.player = player?.pointer
+        view.player = player
       }
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
@@ -73,27 +77,77 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: String?) -> VideoPlayer in
-        if let source, let url = URL(string: source) {
-          let item = AVPlayerItem(url: url)
-          return VideoPlayer(AVPlayer(playerItem: item))
-        }
-        return VideoPlayer(AVPlayer())
+      Constructor { (source: VideoSource) -> VideoPlayer in
+        let player = AVPlayer()
+        let videoPlayer = VideoPlayer(player)
+
+        try videoPlayer.replaceCurrentItem(with: source)
+        player.pause()
+        return videoPlayer
       }
 
-      Property("isPlaying") { (player: VideoPlayer) in
-        return player.pointer.timeControlStatus == .playing
+      Property("playing") { player -> Bool in
+        return player.isPlaying
       }
 
-      Property("isMuted") { (player: VideoPlayer) -> Bool in
-        return player.pointer.isMuted
+      Property("muted") { player -> Bool in
+        return player.isMuted
       }
-      .set { (player, isMuted: Bool) in
-        player.pointer.isMuted = isMuted
+      .set { (player, muted: Bool) in
+        player.isMuted = muted
       }
 
-      Property("currentTime") { (player: VideoPlayer) -> Double in
+      Property("currentTime") { player -> Double in
         return player.pointer.currentTime().seconds
+      }
+
+      Property("staysActiveInBackground") { player -> Bool in
+        return player.staysActiveInBackground
+      }
+      .set { (player, staysActive: Bool) in
+        player.staysActiveInBackground = staysActive
+      }
+
+      Property("loop") { player -> Bool in
+        return player.loop
+      }
+      .set { (player, loop: Bool) in
+        player.loop = loop
+      }
+
+      Property("currentTime") { player -> Double in
+        return player.pointer.currentTime().seconds
+      }
+      .set { (player, time: Double) in
+        // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
+        let clampedTime = max(0, time)
+        let timeToSeek = CMTimeMakeWithSeconds(clampedTime, preferredTimescale: .max)
+        player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+      }
+
+      Property("playbackRate") { player -> Float in
+        return player.playbackRate
+      }
+      .set { (player, playbackRate: Float) in
+        player.playbackRate = playbackRate
+      }
+
+      Property("preservesPitch") { player -> Bool in
+        return player.preservesPitch
+      }
+      .set { (player, preservesPitch: Bool) in
+        player.preservesPitch = preservesPitch
+      }
+
+      Property("status") { player -> PlayerStatus in
+        return player.status
+      }
+
+      Property("volume") { player -> Float in
+        return player.volume
+      }
+      .set { (player, volume: Float) in
+        player.volume = volume
       }
 
       Function("play") { player in
@@ -104,15 +158,16 @@ public final class VideoModule: Module {
         player.pointer.pause()
       }
 
-      Function("replace") { (player, source: String) in
-        guard let url = URL(string: source) else {
-          player.pointer.replaceCurrentItem(with: nil)
-          return
-        }
-        let newPlayerItem = AVPlayerItem(url: url)
+      Function("replace") { (player, source: Either<String, VideoSource>) in
+        var videoSource: VideoSource?
 
-        player.pointer.replaceCurrentItem(with: newPlayerItem)
-        player.pointer.play()
+        if source.is(String.self), let url: String = source.get() {
+          videoSource = VideoSource(uri: Field(wrappedValue: URL(string: url)))
+        } else if source.is(VideoSource.self) {
+          videoSource = source.get()
+        }
+
+        try player.replaceCurrentItem(with: videoSource)
       }
 
       Function("seekBy") { (player, seconds: Double) in
@@ -124,6 +179,14 @@ public final class VideoModule: Module {
       Function("replay") { player in
         player.pointer.seek(to: CMTime.zero)
       }
+    }
+
+    OnAppEntersBackground {
+      VideoManager.shared.onAppBackgrounded()
+    }
+
+    OnAppEntersForeground {
+      VideoManager.shared.onAppForegrounded()
     }
   }
 }

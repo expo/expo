@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport") // this needs to stay for versioning to work
-
 package expo.modules.updates
 
 import android.content.Context
@@ -16,9 +14,8 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import java.lang.ref.WeakReference
 import java.util.Date
-
-// these unused imports must stay because of versioning
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -35,15 +32,21 @@ class UpdatesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      UPDATES_STATE_CHANGE_EVENT_NAME
+    )
+
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-      mutableMapOf<String, Any>().apply {
+      mutableMapOf<String, Any?>().apply {
         val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
-        this["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
+        // keep these keys in sync with ExpoGoUpdatesModule
+        this["isEmergencyLaunch"] = constantsForModule.emergencyLaunchException != null
+        this["emergencyLaunchReason"] = constantsForModule.emergencyLaunchException?.message
         this["isEmbeddedLaunch"] = isEmbeddedLaunch
         this["isEnabled"] = constantsForModule.isEnabled
         this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
@@ -68,6 +71,18 @@ class UpdatesModule : Module() {
           this["localAssets"] = localAssets
         }
       }
+    }
+
+    OnCreate {
+      UpdatesController.bindAppContext(WeakReference(appContext))
+    }
+
+    OnStartObserving {
+      UpdatesController.shouldEmitJsEvents = true
+    }
+
+    OnStopObserving {
+      UpdatesController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { promise: Promise ->

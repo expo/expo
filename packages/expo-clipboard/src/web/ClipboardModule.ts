@@ -22,9 +22,6 @@ import {
 } from '../Clipboard.types';
 
 export default {
-  get name(): string {
-    return 'ExpoClipboard';
-  },
   async getStringAsync(options: GetStringOptions): Promise<string> {
     if (!navigator.clipboard) {
       throw new ClipboardUnavailableException();

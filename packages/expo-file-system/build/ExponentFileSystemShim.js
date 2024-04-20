@@ -1,7 +1,4 @@
 const platformModule = {
-    get name() {
-        return 'ExponentFileSystem';
-    },
     get documentDirectory() {
         return null;
     },

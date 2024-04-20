@@ -1,7 +1,13 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
+import {
+  VideoPlayerStatus,
+  VideoPlayer,
+  VideoSource,
+  VideoViewProps,
+  VideoPlayerEvents,
+} from './VideoView.types';
 
 /**
  * This audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -18,27 +24,46 @@ if (audioContext && zeroGainNode) {
   );
 }
 
-class VideoPlayerWeb implements VideoPlayer {
-  constructor(source: string | null = null) {
+class VideoPlayerWeb
+  extends globalThis.expo.SharedObject<VideoPlayerEvents>
+  implements VideoPlayer
+{
+  constructor(source: VideoSource) {
+    super();
     this.src = source;
   }
 
-  src: string | null = null;
+  src: VideoSource = null;
   _mountedVideos: Set<HTMLVideoElement> = new Set();
   _audioNodes: Set<MediaElementAudioSourceNode> = new Set();
-  isPlaying: boolean = false;
-  _isMuted: boolean = false;
-  timestamp: number = 0;
+  playing: boolean = false;
+  _muted: boolean = false;
   _volume: number = 1;
+  _loop: boolean = false;
+  _playbackRate: number = 1.0;
+  _preservesPitch: boolean = true;
+  _status: VideoPlayerStatus = 'idle';
+  staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
 
-  set isMuted(value: boolean) {
+  set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
       video.muted = value;
     });
-    this._isMuted = value;
+    this._muted = value;
   }
-  get isMuted(): boolean {
-    return this._isMuted;
+
+  get muted(): boolean {
+    return this._muted;
+  }
+
+  set playbackRate(value: number) {
+    this._mountedVideos.forEach((video) => {
+      video.playbackRate = value;
+    });
+  }
+
+  get playbackRate(): number {
+    return this._playbackRate;
   }
 
   set volume(value: number) {
@@ -53,6 +78,43 @@ class VideoPlayerWeb implements VideoPlayer {
       this._volume = video.volume;
     });
     return this._volume;
+  }
+
+  set loop(value: boolean) {
+    this._mountedVideos.forEach((video) => {
+      video.loop = value;
+    });
+    this._loop = value;
+  }
+
+  get loop(): boolean {
+    return this._loop;
+  }
+
+  get currentTime(): number {
+    // All videos should be synchronized, so we return the position of the first video.
+    return [...this._mountedVideos][0].currentTime;
+  }
+
+  set currentTime(value: number) {
+    this._mountedVideos.forEach((video) => {
+      video.currentTime = value;
+    });
+  }
+
+  get preservesPitch(): boolean {
+    return this._preservesPitch;
+  }
+
+  set preservesPitch(value: boolean) {
+    this._mountedVideos.forEach((video) => {
+      video.preservesPitch = value;
+    });
+    this._preservesPitch = value;
+  }
+
+  get status(): VideoPlayerStatus {
+    return this._status;
   }
 
   mountVideoView(video: HTMLVideoElement) {
@@ -81,34 +143,43 @@ class VideoPlayerWeb implements VideoPlayer {
     this._mountedVideos.forEach((video) => {
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
+
   pause(): void {
     this._mountedVideos.forEach((video) => {
       video.pause();
     });
-    this.isPlaying = false;
+    this.playing = false;
   }
-  replace(source: string): void {
+
+  replace(source: VideoSource): void {
     this._mountedVideos.forEach((video) => {
+      const uri = getSourceUri(source);
       video.pause();
-      video.setAttribute('src', source);
-      video.load();
-      video.play();
+      if (uri) {
+        video.setAttribute('src', uri);
+        video.load();
+        video.play();
+      } else {
+        video.removeAttribute('src');
+      }
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
+
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime += seconds;
     });
   }
+
   replay(): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime = 0;
       video.play();
     });
-    this.isPlaying = true;
+    this.playing = true;
   }
 
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
@@ -135,14 +206,14 @@ class VideoPlayerWeb implements VideoPlayer {
     };
 
     video.onplay = () => {
-      this.isPlaying = true;
+      this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
       });
     };
 
     video.onpause = () => {
-      this.isPlaying = false;
+      this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
       });
@@ -150,11 +221,10 @@ class VideoPlayerWeb implements VideoPlayer {
 
     video.onvolumechange = () => {
       this.volume = video.volume;
-      this.isMuted = video.muted;
+      this._muted = video.muted;
     };
 
     video.onseeking = () => {
-      this.timestamp = video.currentTime;
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
         mountedVideo.currentTime = video.currentTime;
@@ -162,7 +232,6 @@ class VideoPlayerWeb implements VideoPlayer {
     };
 
     video.onseeked = () => {
-      this.timestamp = video.currentTime;
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
         mountedVideo.currentTime = video.currentTime;
@@ -172,8 +241,21 @@ class VideoPlayerWeb implements VideoPlayer {
     video.onratechange = () => {
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) return;
+        this._playbackRate = video.playbackRate;
         mountedVideo.playbackRate = video.playbackRate;
       });
+    };
+
+    video.onerror = () => {
+      this._status = 'error';
+    };
+
+    video.onloadeddata = () => {
+      this._status = 'readyToPlay';
+    };
+
+    video.onwaiting = () => {
+      this._status = 'loading';
     };
   }
 }
@@ -184,11 +266,24 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
   return flattenedStyles as React.CSSProperties;
 }
 
-export function useVideoPlayer(source: string | null = null): VideoPlayer {
-  return React.useMemo(() => {
-    return new VideoPlayerWeb(source);
-    // should this not include source?
-  }, []);
+export function useVideoPlayer(
+  source: VideoSource,
+  setup?: (player: VideoPlayer) => void
+): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return useMemo(() => {
+    const player = new VideoPlayerWeb(parsedSource);
+    setup?.(player);
+    return player;
+  }, [JSON.stringify(source)]);
+}
+
+function getSourceUri(source: VideoSource): string | null {
+  if (typeof source == 'string') {
+    return source;
+  }
+  return source?.uri ?? null;
 }
 
 export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
@@ -241,7 +336,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoV
           videoRef.current = newRef;
         }
       }}
-      src={props.player?.src ?? ''}
+      src={getSourceUri(props.player?.src) ?? ''}
     />
   );
 });

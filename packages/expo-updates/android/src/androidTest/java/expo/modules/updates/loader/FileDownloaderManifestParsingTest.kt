@@ -44,9 +44,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -111,9 +110,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -170,9 +168,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -229,9 +226,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred: Exception? = null
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -280,9 +276,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -324,9 +319,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -364,9 +358,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -404,9 +397,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -445,9 +437,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred: Exception? = null
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -497,9 +488,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -583,9 +573,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -639,9 +628,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred: Exception? = null
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -734,9 +722,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true
@@ -824,9 +811,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred: Exception? = null
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -906,9 +892,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred: Exception? = null
     var resultUpdateResponse: UpdateResponse? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = e
@@ -957,9 +942,8 @@ class FileDownloaderManifestParsingTest {
     var errorOccurred = false
     var resultUpdate: Update? = null
 
-    FileDownloader(context).parseRemoteUpdateResponse(
+    FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
-      configuration,
       object : FileDownloader.RemoteUpdateDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           errorOccurred = true

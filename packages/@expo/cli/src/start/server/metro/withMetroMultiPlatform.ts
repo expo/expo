@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
+import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import * as metroResolver from 'metro-resolver';
@@ -12,16 +14,9 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { createFastResolver } from './createExpoMetroResolver';
-import {
-  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
-  EXTERNAL_REQUIRE_POLYFILL,
-  METRO_SHIMS_FOLDER,
-  getNodeExternalModuleId,
-  isNodeExternal,
-  setupNodeExternals,
-  setupShimFiles,
-} from './externals';
+import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
@@ -34,30 +29,48 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
+import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT): ConfigT {
+function withWebPolyfills(
+  config: ConfigT,
+  {
+    getMetroBundler,
+  }: {
+    getMetroBundler: () => Bundler;
+  }
+): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualModuleId = `\0polyfill:external-require`;
+
+    const contents = (() => {
+      if (ctx.platform === 'web') {
+        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+      } else {
+        // Wrap in try/catch to support Android.
+        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+      }
+    })();
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualModuleId,
+      contents
+    );
+
     if (ctx.platform === 'web') {
-      return [
-        // NOTE: We might need this for all platforms
-        path.join(config.projectRoot, EXTERNAL_REQUIRE_POLYFILL),
-        // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
-      ];
+      return [virtualModuleId];
     }
+
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-
-    return [...polyfills, path.join(config.projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL)];
+    return [...polyfills, virtualModuleId];
   };
 
   return {
@@ -93,6 +106,7 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Alias react-native renderer code to a vendored React canary build on native.
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -101,15 +115,22 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
+    isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    isReactCanaryEnabled?: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (isFastResolverEnabled) {
     Log.warn(`Experimental bundling features are enabled.`);
+  }
+  if (isReactCanaryEnabled) {
+    Log.warn(`Experimental React Canary version is enabled.`);
   }
 
   // Get the `transformer.assetRegistryPath`
@@ -151,13 +172,14 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve = tsconfig?.paths
-    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-        paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-        hasBaseUrl: !!tsconfig.baseUrl,
-      })
-    : null;
+  let tsConfigResolve =
+    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
+      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+          paths: tsconfig.paths ?? {},
+          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+          hasBaseUrl: !!tsconfig.baseUrl,
+        })
+      : null;
 
   // TODO: Move this to be a transform key for invalidation.
   if (!isExporting && isInteractive()) {
@@ -197,8 +219,6 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
-
   function getStrictResolver(
     { resolveRequest, ...context }: ResolutionContext,
     platform: string | null
@@ -227,6 +247,35 @@ export function withExtendedResolver(
   }
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
+    // Mock out production react imports in development.
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      // This resolution is dev-only to prevent bundling the production React packages in development.
+      // @ts-expect-error: dev is not on type.
+      if (!context.dev) return null;
+
+      if (
+        // Match react-native renderers.
+        (platform !== 'web' &&
+          context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/) &&
+          moduleName.match(/([\\/]ReactFabric|ReactNativeRenderer)-prod/)) ||
+        // Match react production imports.
+        (moduleName.match(/\.production(\.min)?\.js$/) &&
+          // Match if the import originated from a react package.
+          context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
+      ) {
+        debug(`Skipping production module: ${moduleName}`);
+        // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
+        // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        // /Users/path/to/expo/node_modules/react-refresh/runtime.js ./cjs/react-refresh-runtime.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/scheduler/index.native.js ./cjs/scheduler.native.production.min.js
+        // /Users/path/to/expo/node_modules/react-native/node_modules/react-is/index.js ./cjs/react-is.production.min.js
+        return {
+          type: 'empty',
+        };
+      }
+      return null;
+    },
     // tsconfig paths
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       return (
@@ -242,8 +291,12 @@ export function withExtendedResolver(
 
     // Node.js externals support
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      // This is a web-only feature, we may extend the shimming to native platforms in the future.
-      if (platform !== 'web') {
+      const isServer =
+        context.customResolverOptions?.environment === 'node' ||
+        context.customResolverOptions?.environment === 'react-server';
+
+      if (platform !== 'web' && !isServer) {
+        // This is a web/server-only feature, we may extend the shimming to native platforms in the future.
         return null;
       }
 
@@ -255,7 +308,7 @@ export function withExtendedResolver(
       if (
         // In browser runtimes, we want to either resolve a local node module by the same name, or shim the module to
         // prevent crashing when Node.js built-ins are imported.
-        context.customResolverOptions?.environment !== 'node'
+        !isServer
       ) {
         // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
         // then we can mock the file to use an empty module.
@@ -268,9 +321,17 @@ export function withExtendedResolver(
         );
       }
 
-      const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-      debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
-      return getStrictResolver(context, platform)(redirectedModuleName);
+      const contents = `module.exports=$$require_external('node:${moduleId}');`;
+      debug(`Virtualizing Node.js "${moduleId}"`);
+      const virtualModuleId = `\0node:${moduleId}`;
+      getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+        virtualModuleId,
+        contents
+      );
+      return {
+        type: 'sourceFile',
+        filePath: virtualModuleId,
+      };
     },
 
     // Basic moduleId aliases
@@ -323,25 +384,53 @@ export function withExtendedResolver(
         return result;
       }
 
-      // Replace the web resolver with the original one.
-      // This is basically an alias for web-only.
-      // TODO: Drop this in favor of the standalone asset registry module.
-      if (shouldAliasAssetRegistryForWeb(platform, result)) {
-        // @ts-expect-error: `readonly` for some reason.
-        result.filePath = assetRegistryPath;
-      }
-
-      if (platform === 'web' && result.filePath.includes('node_modules')) {
-        // Replace with static shims
-
-        const normalName = normalizeSlashes(result.filePath)
-          // Drop everything up until the `node_modules` folder.
-          .replace(/.*node_modules\//, '');
-
-        const shimPath = path.join(shimsFolder, normalName);
-        if (fs.existsSync(shimPath)) {
+      if (platform === 'web') {
+        // Replace the web resolver with the original one.
+        // This is basically an alias for web-only.
+        // TODO: Drop this in favor of the standalone asset registry module.
+        if (shouldAliasAssetRegistryForWeb(platform, result)) {
           // @ts-expect-error: `readonly` for some reason.
-          result.filePath = shimPath;
+          result.filePath = assetRegistryPath;
+        }
+
+        if (platform === 'web' && result.filePath.includes('node_modules')) {
+          // Replace with static shims
+
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          const shimFile = shouldCreateVirtualShim(normalName);
+          if (shimFile) {
+            const virtualId = `\0shim:${normalName}`;
+            const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+            if (!bundler.hasVirtualModule(virtualId)) {
+              bundler.setVirtualModule(virtualId, fs.readFileSync(shimFile, 'utf8'));
+            }
+            debug(`Redirecting module "${result.filePath}" to shim`);
+
+            return {
+              ...result,
+              filePath: virtualId,
+            };
+          }
+        }
+      } else {
+        // When server components are enabled, redirect React Native's renderer to the canary build
+        // this will enable the use hook and other requisite features from React 19.
+        if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          const canaryFile = shouldCreateVirtualCanary(normalName);
+          if (canaryFile) {
+            debug(`Redirecting React Native module "${result.filePath}" to canary build`);
+            return {
+              ...result,
+              filePath: canaryFile,
+            };
+          }
         }
       }
 
@@ -362,7 +451,7 @@ export function withExtendedResolver(
         preferNativePlatform: platform !== 'web',
       };
 
-      if (context.customResolverOptions?.environment === 'node') {
+      if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
@@ -375,6 +464,11 @@ export function withExtendedResolver(
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         context.mainFields = ['main', 'module'];
+
+        // Enable react-server import conditions.
+        if (context.customResolverOptions?.environment === 'react-server') {
+          context.unstable_conditionNames = ['node', 'require', 'react-server', 'server'];
+        }
       } else {
         // Non-server changes
 
@@ -425,18 +519,24 @@ export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   {
     config,
+    exp,
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
     isFastResolverEnabled,
     isExporting,
+    isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     config: ConfigT;
+    exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    isReactCanaryEnabled: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (!config.projectRoot) {
@@ -467,21 +567,16 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
-  if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
-
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
-  await setupShimFiles(projectRoot);
-  await setupNodeExternals(projectRoot);
-
   let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
+    .filter(
+      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+    )
     .map(([platform]) => platform);
 
   if (Array.isArray(config.resolver.platforms)) {
@@ -491,13 +586,15 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  config = withWebPolyfills(config);
+  config = withWebPolyfills(config, { getMetroBundler });
 
   return withExtendedResolver(config, {
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
+    isReactCanaryEnabled,
+    getMetroBundler,
   });
 }
 

@@ -5,6 +5,11 @@ import { join, relative } from 'path';
 import { EXPO_DIR } from './Constants';
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 
+export type GitCheckoutOptions = {
+  ref?: string;
+  paths?: string[];
+};
+
 export type GitPullOptions = {
   rebase?: boolean;
 };
@@ -19,6 +24,12 @@ export type GitLogOptions = {
   paths?: string[];
   cherryPick?: 'left' | 'right';
   symmetricDifference?: boolean;
+};
+
+export type GitCleanOptions = {
+  recursive?: boolean;
+  force?: boolean;
+  paths?: string[];
 };
 
 export type GitLog = {
@@ -129,8 +140,16 @@ export class GitDirectory {
   /**
    * Switches to given commit reference.
    */
-  async checkoutAsync(ref: string) {
-    await this.runAsync(['checkout', ref]);
+  async checkoutAsync(options: GitCheckoutOptions = {}) {
+    const args = ['checkout'];
+
+    if (options.ref) {
+      args.push(options.ref);
+    }
+    if (options.paths) {
+      args.push('--', ...options.paths);
+    }
+    await this.runAsync(args);
   }
 
   /**
@@ -313,6 +332,24 @@ export class GitDirectory {
   }
 
   /**
+   * Removes untracked files from the working tree.
+   */
+  async cleanAsync(options: GitCleanOptions = {}): Promise<void> {
+    const args = ['clean'];
+
+    if (options.recursive) {
+      args.push('-d');
+    }
+    if (options.force) {
+      args.push('--force');
+    }
+    if (options.paths) {
+      args.push('--', ...options.paths);
+    }
+    await this.runAsync(args);
+  }
+
+  /**
    * Checkouts changes and cleans untracked files at given glob paths.
    */
   async discardFilesAsync(paths?: string[]): Promise<void> {
@@ -453,7 +490,7 @@ export class GitDirectory {
     await git.initAsync();
     await git.addRemoteAsync('origin', remoteUrl);
     await git.fetchAsync({ depth: 1, remote: 'origin', ref });
-    await git.checkoutAsync('FETCH_HEAD');
+    await git.checkoutAsync({ ref: 'FETCH_HEAD' });
     return git;
   }
 }

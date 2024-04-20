@@ -17,7 +17,7 @@ export class AndroidAppIdResolver extends AppIdResolver {
       await AndroidConfig.Paths.getProjectPathOrThrowAsync(this.projectRoot);
       return true;
     } catch (error: any) {
-      debug('Expected error checking for native project:', error);
+      debug('Expected error checking for native project:', error.message);
       return false;
     }
   }

@@ -1,33 +1,14 @@
-import Minipass from 'minipass';
 import path from 'path';
-import { ReadEntry } from 'tar';
+import picomatch from 'picomatch';
+import { type ReadEntry } from 'tar';
+
+const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 
 export function sanitizedName(name: string) {
   return name
     .replace(/[\W_]+/g, '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
-}
-
-class Transformer extends Minipass {
-  data: string;
-
-  constructor(private name: string) {
-    super();
-    this.data = '';
-  }
-  write(data: string) {
-    this.data += data;
-    return true;
-  }
-  end() {
-    const replaced = this.data
-      .replace(/Hello App Display Name/g, this.name)
-      .replace(/HelloWorld/g, sanitizedName(this.name))
-      .replace(/helloworld/g, sanitizedName(this.name.toLowerCase()));
-    super.write(replaced);
-    return super.end();
-  }
 }
 
 export function createEntryResolver(name: string) {
@@ -49,29 +30,17 @@ export function createEntryResolver(name: string) {
   };
 }
 
-export function createFileTransform(name: string) {
-  return (entry: ReadEntry) => {
-    // Binary files, don't process these (avoid decoding as utf8)
-    if (
-      ![
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.gif',
-        '.webp',
-        '.psd',
-        '.tiff',
-        '.svg',
-        '.jar',
-        '.keystore',
-        // Font files
-        '.otf',
-        '.ttf',
-      ].includes(path.extname(entry.path)) &&
-      name
-    ) {
-      return new Transformer(name);
-    }
-    return undefined;
+export function createGlobFilter(
+  globPattern: picomatch.Glob,
+  options?: picomatch.PicomatchOptions
+) {
+  const matcher = picomatch(globPattern, options);
+
+  debug('filter: created for pattern %s (%s)', globPattern);
+
+  return (path: string) => {
+    const included = matcher(path);
+    debug('filter: %s - %s', included ? 'include' : 'exclude', path);
+    return included;
   };
 }

@@ -3,7 +3,8 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 
-import { createFastResolver } from '../createExpoMetroResolver';
+import { createFastResolver, FailedToResolvePathError } from '../createExpoMetroResolver';
+import { isFailedToResolvePathError } from '../metroErrors';
 
 type SupportedContext = Parameters<ReturnType<typeof createFastResolver>>[0];
 
@@ -37,8 +38,8 @@ const createContext = ({
     mainFields: preferNativePlatform
       ? ['react-native', 'browser', 'main']
       : isServer
-      ? ['main', 'module']
-      : ['browser', 'module', 'main'],
+        ? ['main', 'module']
+        : ['browser', 'module', 'main'],
     nodeModulesPaths: ['node_modules', ...nodeModulesPaths],
     originModulePath: origin,
     preferNativePlatform,
@@ -48,8 +49,8 @@ const createContext = ({
     unstable_conditionNames: isServer
       ? ['node', 'require']
       : platform === 'web'
-      ? ['require', 'import', 'browser']
-      : ['require', 'import', 'react-native'],
+        ? ['require', 'import', 'browser']
+        : ['require', 'import', 'react-native'],
   };
 };
 
@@ -124,9 +125,16 @@ function resolveTo(
   return res.type === 'sourceFile'
     ? res.filePath
     : res.type === 'assetFiles'
-    ? res.filePaths[0]
-    : null;
+      ? res.filePaths[0]
+      : null;
 }
+
+describe(isFailedToResolvePathError, () => {
+  it(`matches custom error`, () => {
+    const error = new FailedToResolvePathError('message');
+    expect(isFailedToResolvePathError(error)).toBe(true);
+  });
+});
 
 describe(createFastResolver, () => {
   describe('node built-ins', () => {

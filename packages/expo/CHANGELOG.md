@@ -10,12 +10,120 @@
 
 ### 💡 Others
 
+## 51.0.0-preview.0 — 2024-04-19
+
+### 💡 Others
+
+- Updated for dev-client bridgeless mode support. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 51.0.0-beta.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Dropped supports for React Native 0.73 and lower. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689), [#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Add global type for `process.env.EXPO_OS` value. ([#27509](https://github.com/expo/expo/pull/27509) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+- Fixed breaking changes from React Native 0.75. ([#27773](https://github.com/expo/expo/pull/27773) by [@kudo](https://github.com/kudo))
+- Added `ReactNativeHost.getJSBundleFile()` support for bridgeless mode. ([#27804](https://github.com/expo/expo/pull/27804) by [@kudo](https://github.com/kudo))
+- Fixed `NoSuchMethodException` on `getReactHost` when R8 is enabled on Android. ([#27964](https://github.com/expo/expo/pull/27964) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove implicit dependency on expo-updates to do runtime version check at runtime. ([#26080](https://github.com/expo/expo/pull/26080) by [@wschurman](https://github.com/wschurman))
+- [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+- [Android] Added `ReactNativeHostHandler.onReactInstanceException()` for expo-updates to handle exceptions on bridgeless mode. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- [Android] Do not use the workaround in the `ReactActivityDelegateWrapper` `onActivityResult` method when using the new architecture. ([#28165](https://github.com/expo/expo/pull/28165) by [@alanjhughes](https://github.com/alanjhughes))
+- Introduced `onDidCreateDevSupportManager` handler to support error recovery from expo-updates. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+
+## 50.0.14 - 2024-03-20
+
+### 🐛 Bug fixes
+
+- Fixed multiple WebSocket connections created on Web when an app containing multiple dev tools plugins. ([#27702](https://github.com/expo/expo/pull/27702) by [@kudo](https://github.com/kudo))
+- Fixed "Error : Unable to send message in a disconnected state." in dev tools plugins from fast refresh. ([#27704](https://github.com/expo/expo/pull/27704) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
-- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.13 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.11 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.10 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.9 - 2024-03-06
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.8 - 2024-02-27
+
+### 💡 Others
+
+- Export `DevToolsPluginClient` from `expo/devtools`. ([#27125](https://github.com/expo/expo/pull/27125) by [@cyrilbo](https://github.com/cyrilbo))
+
+## 50.0.7 - 2024-02-16
+
+### 💡 Others
+
+- Mark the exp prop as optional, this is only used in Expo Go ([#27095](https://github.com/expo/expo/pull/27095) by [@brentvatne](https://github.com/brentvatne))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 50.0.6 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed React Native Community CLI not being able to autolink the `expo` package when Expo autolinking is not used. ([#26932](https://github.com/expo/expo/pull/26932) by [@tsapeta](https://github.com/tsapeta))
+
+## 50.0.5 - 2024-02-01
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.4 - 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.3 - 2024-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.1 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.11 - 2024-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-preview.10 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
 
 ## 50.0.0-preview.9 - 2024-01-10
 

@@ -20,16 +20,14 @@ function _createLegacyPlugin() {
 }
 const withAppleSignInWarning = config => {
   return (0, _configPlugins().withEntitlementsPlist)(config, config => {
-    var _config$ios;
-    if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.usesAppleSignIn) {
+    if (config.ios?.usesAppleSignIn) {
       _configPlugins().WarningAggregator.addWarningIOS('ios.usesAppleSignIn', 'Install expo-apple-authentication to enable this feature', 'https://docs.expo.dev/versions/latest/sdk/apple-authentication/#eas-build');
     }
     return config;
   });
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-apple-authentication',
   fallback: withAppleSignInWarning
 });
-exports.default = _default;
 //# sourceMappingURL=expo-apple-authentication.js.map

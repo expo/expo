@@ -18,11 +18,10 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-document-picker',
   fallback(config) {
-    var _config$ios;
-    if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.usesIcloudStorage) {
+    if (config.ios?.usesIcloudStorage) {
       _configPlugins().WarningAggregator.addWarningIOS('ios.usesIcloudStorage', 'Install expo-document-picker to enable the ios.usesIcloudStorage feature'
       // TODO: add a link to a docs page with more information on how to do this
       );
@@ -30,5 +29,4 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
     return config;
   }
 });
-exports.default = _default;
 //# sourceMappingURL=expo-document-picker.js.map

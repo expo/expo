@@ -8,8 +8,15 @@ import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
+import RedirectNotification from '~/components/plugins/RedirectNotification';
 
-[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on.
+<RedirectNotification>
+  The `expo-firebase-analytics` and `expo-firebase-recaptcha` libraries have been removed from SDK
+  48 onwards. We recommend using [React Native Firebase](#using-react-native-firebase) which
+  provides capabilities similar to these libraries.
+</RedirectNotification>
+
+[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as real-time database, cloud storage, authentication, crash reporting, analytics, and so on.
 It is built on Google's infrastructure and scales automatically.
 
 There are two different ways you can use Firebase in your projects:
@@ -42,7 +49,7 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-The following sub-sections use `firebase@9.x.x`. Expo SDK do not enforce or recommend any specific version of Firebase to use in your app.
+The following sub-sections use `firebase@9.x.x`. Expo SDK does not enforce or recommend any specific version of Firebase to use in your app.
 
 If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
 

@@ -65,7 +65,7 @@ internal class MediaHandler(
       width = exportedImage.width,
       height = exportedImage.height,
       fileName = fileData?.fileName,
-      filesize = fileData?.filesize,
+      fileSize = fileData?.fileSize,
       mimeType = mimeType,
       base64 = base64,
       exif = exif,
@@ -107,7 +107,7 @@ internal class MediaHandler(
         width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
         fileName = fileData?.fileName,
-        filesize = fileData?.filesize,
+        fileSize = fileData?.fileSize,
         mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
@@ -121,5 +121,5 @@ internal class MediaHandler(
 
 data class AdditionalFileData(
   val fileName: String?,
-  val filesize: Long?
+  val fileSize: Long?
 )

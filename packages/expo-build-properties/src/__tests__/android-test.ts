@@ -1,13 +1,4 @@
-import { ExpoConfig } from 'expo/config';
-import { withGradleProperties } from 'expo/config-plugins';
-
-import { compileMockModWithResultsAsync } from './mockMods';
-import { updateAndroidProguardRules, withAndroidFlipper } from '../android';
-import withBuildProperties from '../withBuildProperties';
-
-type ExpoConfigWithMods = ExpoConfig & {
-  mods?: Record<'ios' | 'android', Record<string, unknown[]>>;
-};
+import { updateAndroidProguardRules } from '../android';
 
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
@@ -81,47 +72,5 @@ describe(updateAndroidProguardRules, () => {
       -printmapping mapping.txt
       # @generated end expo-build-properties"
     `);
-  });
-});
-
-describe(withAndroidFlipper, () => {
-  it('should do nothing by default', async () => {
-    const expoConfig: ExpoConfig = {
-      name: 'withAndroidFlipper',
-      slug: 'withAndroidFlipper',
-    };
-
-    withAndroidFlipper(expoConfig, {});
-    expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();
-
-    withAndroidFlipper(expoConfig, {
-      android: {
-        flipper: undefined,
-      },
-    });
-    expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();
-  });
-
-  it('should update the Flipper version if requested', async () => {
-    const pluginConfig = {
-      android: {
-        flipper: '0.999.0',
-      },
-    };
-
-    const { modResults: androidModResults } = await compileMockModWithResultsAsync(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps: pluginConfig,
-        mod: withGradleProperties,
-        modResults: [{ type: 'property', key: 'android.flipper', value: '0.999.0' }],
-      }
-    );
-    expect(androidModResults).toContainEqual({
-      type: 'property',
-      key: 'android.flipper',
-      value: '0.999.0',
-    });
   });
 });

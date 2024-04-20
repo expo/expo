@@ -47,13 +47,19 @@ export class MetroTerminalReporter extends TerminalReporter {
       : progress.bundleDetails.entryFile;
 
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
+
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
-      // iOS Bundling complete 150ms
-      return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
+      // iOS Bundled 150ms
+      const plural = progress.totalFileCount === 1 ? '' : 's';
+      return (
+        color(platform + status) +
+        time +
+        chalk.reset.dim(` ${localPath} (${progress.totalFileCount} module${plural})`)
+      );
     }
 
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
@@ -238,7 +244,9 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
-    return `${chalk.bold('Server')} `;
+    return chalk.bold('λ') + ' ';
+  } else if (env === 'react-server') {
+    return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
   }
 
   return '';

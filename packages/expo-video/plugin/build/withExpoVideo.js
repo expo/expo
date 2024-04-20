@@ -9,6 +9,11 @@ const withExpoVideo = (config) => {
         }
         return config;
     });
+    (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        const activity = config_plugins_1.AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
+        activity.$['android:supportsPictureInPicture'] = 'true';
+        return config;
+    });
     return config;
 };
 exports.default = withExpoVideo;

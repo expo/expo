@@ -3,6 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.jni.HybridData
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeMap
+import com.facebook.react.bridge.ReadableNativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.objects.ObjectDefinitionData
@@ -64,13 +65,13 @@ class JavaScriptModuleObject(
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerSyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
+  external fun registerSyncFunction(name: String, takesOwner: Boolean, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerAsyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
+  external fun registerAsyncFunction(name: String, takesOwner: Boolean, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
   external fun registerProperty(
     name: String,
@@ -82,9 +83,11 @@ class JavaScriptModuleObject(
     setter: JNIFunctionBody?
   )
 
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, ownerClass: Class<*>?, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
+
+  external fun emitEvent(jsiContext: JSIContext, eventName: String, eventBody: ReadableNativeMap?)
 
   @Throws(Throwable::class)
   protected fun finalize() {

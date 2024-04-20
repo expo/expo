@@ -6,7 +6,18 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
+import {
+  canGoBack,
+  canDismiss,
+  goBack,
+  linkTo,
+  navigate,
+  dismiss,
+  dismissAll,
+  push,
+  replace,
+  setParams,
+} from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -25,13 +36,14 @@ import { getQualifiedRouteComponent } from '../useScreens';
 export class RouterStore {
   routeNode!: RouteNode | null;
   rootComponent!: ComponentType;
-  linking: ExpoLinkingOptions | undefined;
+  linking?: ExpoLinkingOptions;
   private hasAttemptedToHideSplash: boolean = false;
 
-  initialState: ResultState | undefined;
-  rootState: ResultState | undefined;
-  nextState: ResultState | undefined;
-  routeInfo?: UrlObject | undefined;
+  initialState?: ResultState;
+  rootState?: ResultState;
+  nextState?: ResultState;
+  routeInfo?: UrlObject;
+  splashScreenAnimationFrame?: number;
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;
@@ -44,7 +56,10 @@ export class RouterStore {
   goBack = goBack.bind(this);
   canGoBack = canGoBack.bind(this);
   push = push.bind(this);
+  dismiss = dismiss.bind(this);
   replace = replace.bind(this);
+  dismissAll = dismissAll.bind(this);
+  canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
 
@@ -118,11 +133,10 @@ export class RouterStore {
       if (!this.hasAttemptedToHideSplash) {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-        requestAnimationFrame(
-          () =>
-            // @ts-expect-error: This function is native-only and for internal-use only.
-            SplashScreen._internal_maybeHideAsync?.()
-        );
+        this.splashScreenAnimationFrame = requestAnimationFrame(() => {
+          // @ts-expect-error: This function is native-only and for internal-use only.
+          SplashScreen._internal_maybeHideAsync?.();
+        });
       }
 
       let shouldUpdateSubscribers = this.nextState === state;
@@ -197,6 +211,12 @@ export class RouterStore {
   routeInfoSnapshot = () => {
     return this.routeInfo!;
   };
+
+  cleanup() {
+    if (this.splashScreenAnimationFrame) {
+      cancelAnimationFrame(this.splashScreenAnimationFrame);
+    }
+  }
 }
 
 export const store = new RouterStore();

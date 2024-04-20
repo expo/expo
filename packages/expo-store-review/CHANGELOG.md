@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 7.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 6.8.3 - 2024-01-18
+
+### 💡 Others
+
+- Remove expo-linking dependency and use React Native Linking instead. ([#26428](https://github.com/expo/expo/pull/26428) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 6.8.2 — 2023-12-15
 
 _This version does not introduce any user-facing changes._

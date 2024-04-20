@@ -37,28 +37,8 @@ public class ExpoUpdatesManifest: Manifest {
     return rawManifestJSON().requiredValue(forKey: "runtimeVersion")
   }
 
-  private func getSDKVersionFromRuntimeVersion() -> String? {
-    let runtimeVersion = runtimeVersion()
-    if runtimeVersion == "exposdk:UNVERSIONED" {
-      return "UNVERSIONED"
-    }
-
-    // The pattern is valid, so it'll never throw
-    // swiftlint:disable:next force_try
-    let regex = try! NSRegularExpression(pattern: "^exposdk:(\\d+\\.\\d+\\.\\d+)$", options: [])
-    guard let match = regex.firstMatch(
-      in: runtimeVersion,
-      options: [],
-      range: NSRange(runtimeVersion.startIndex..<runtimeVersion.endIndex, in: runtimeVersion)
-    ),
-    let range = Range(match.range(at: 1), in: runtimeVersion) else {
-      return nil
-    }
-    return String(runtimeVersion[range])
-  }
-
   public override func expoGoSDKVersion() -> String? {
-    return expoClientConfigRootObject()?.optionalValue(forKey: "sdkVersion") ?? getSDKVersionFromRuntimeVersion()
+    return expoClientConfigRootObject()?.optionalValue(forKey: "sdkVersion")
   }
 
   public func launchAsset() -> [String: Any] {

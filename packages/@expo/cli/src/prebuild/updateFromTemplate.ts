@@ -3,6 +3,7 @@ import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -45,6 +46,8 @@ export async function updateFromTemplateAsync(
     hasNewProjectFiles: boolean;
     /** Indicates that the project needs to run `pod install` */
     needsPodInstall: boolean;
+    /** The template checksum used to create the native project. */
+    templateChecksum: string;
   } & DependenciesModificationResults
 > {
   if (!templateDirectory) {
@@ -52,7 +55,7 @@ export async function updateFromTemplateAsync(
     templateDirectory = temporary.directory();
   }
 
-  const copiedPaths = await profile(cloneTemplateAndCopyToProjectAsync)({
+  const { copiedPaths, templateChecksum } = await profile(cloneTemplateAndCopyToProjectAsync)({
     projectRoot,
     template,
     templateDirectory,
@@ -70,6 +73,7 @@ export async function updateFromTemplateAsync(
     hasNewProjectFiles: !!copiedPaths.length,
     // If the iOS folder changes or new packages are added, we should rerun pod install.
     needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
+    templateChecksum,
     ...depsResults,
   };
 }
@@ -79,7 +83,7 @@ export async function updateFromTemplateAsync(
  *
  * @return `true` if any project files were created.
  */
-async function cloneTemplateAndCopyToProjectAsync({
+export async function cloneTemplateAndCopyToProjectAsync({
   projectRoot,
   templateDirectory,
   template,
@@ -91,7 +95,7 @@ async function cloneTemplateAndCopyToProjectAsync({
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   platforms: ModPlatform[];
-}): Promise<string[]> {
+}): Promise<{ copiedPaths: string[]; templateChecksum: string }> {
   const platformDirectories = unknownPlatforms
     .map((platform) => `./${platform}`)
     .reverse()
@@ -101,7 +105,7 @@ async function cloneTemplateAndCopyToProjectAsync({
   const ora = logNewSection(`Creating native ${pluralized} (${platformDirectories})`);
 
   try {
-    await cloneTemplateAsync({ templateDirectory, template, exp, ora });
+    const templateChecksum = await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
     const platforms = validateTemplatePlatforms({
       templateDirectory,
@@ -113,9 +117,20 @@ async function cloneTemplateAndCopyToProjectAsync({
       platforms,
     });
 
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: exp.name,
+    });
+
+    // Says: "Created native directories"
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
 
-    return results.copiedPaths;
+    return {
+      copiedPaths: results.copiedPaths,
+      templateChecksum,
+    };
   } catch (e: any) {
     if (!(e instanceof AbortCommandError)) {
       Log.error(e.message);

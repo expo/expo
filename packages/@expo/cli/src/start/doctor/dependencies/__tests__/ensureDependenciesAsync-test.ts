@@ -95,6 +95,40 @@ describe(ensureDependenciesAsync, () => {
     expect(installAsync).toBeCalledTimes(1);
     expect(installAsync).toBeCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
   });
+  it(`installs dev dependencies`, async () => {
+    jest
+      .mocked(getMissingPackagesAsync)
+      .mockResolvedValueOnce({
+        missing: [{ pkg: 'eslint', file: '', version: '~1.0.0', dev: true }],
+        resolutions: {},
+      })
+      .mockResolvedValueOnce({
+        missing: [],
+        resolutions: {},
+      });
+
+    expect(
+      await ensureDependenciesAsync('projectRoot', {
+        skipPrompt: true,
+        isProjectMutable: true,
+        installMessage: 'installMessage',
+        warningMessage: 'warningMessage',
+        requiredPackages: [{ pkg: 'eslint', file: '', version: '~1.0.0', dev: true }],
+        exp: {
+          sdkVersion: '45.0.0',
+          slug: 'my-app',
+          name: 'my-app',
+        },
+      })
+    ).toBe(true);
+
+    expect(confirmAsync).toBeCalledTimes(0);
+    expect(installAsync).toBeCalledTimes(1);
+    expect(installAsync).toBeCalledWith(['eslint@~1.0.0'], {
+      projectRoot: 'projectRoot',
+      dev: true,
+    });
+  });
   it(`asserts when the prompt is rejected`, async () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     jest
@@ -160,6 +194,6 @@ describe(createInstallCommand, () => {
           { pkg: 'other', file: '' },
         ],
       })
-    ).toBe('npx expo install bacon@~1.0.0 other');
+    ).toBe('npx expo install bacon other');
   });
 });

@@ -1,17 +1,22 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-
 import { extractExpoPathFromURL } from '../extractPathFromURL';
 
 describe(extractExpoPathFromURL, () => {
-  const originalExecutionEnv = Constants.executionEnvironment;
-
-  afterEach(() => {
-    Constants.executionEnvironment = originalExecutionEnv;
+  beforeEach(() => {
+    if (typeof expo === 'undefined') {
+      // @ts-expect-error
+      globalThis.expo = {
+        modules: {},
+      };
+    }
+    delete expo.modules.ExpoGo;
+  });
+  afterAll(() => {
+    delete globalThis.expo.modules.ExpoGo;
   });
 
   for (const [name, exenv] of [
-    ['Expo Go', ExecutionEnvironment.StoreClient],
-    ['Bare', ExecutionEnvironment.Bare],
+    ['Expo Go', {}],
+    ['Bare', undefined],
   ] as const) {
     describe(name, () => {
       test.each<string>([
@@ -44,12 +49,12 @@ describe(extractExpoPathFromURL, () => {
         'custom://?hello=bar',
         'invalid',
       ])(`parses %p`, (url) => {
-        Constants.executionEnvironment = exenv;
+        expo.modules.ExpoGo = exenv;
 
         const res = extractExpoPathFromURL(url);
         expect(res).toMatchSnapshot();
 
-        if (exenv === ExecutionEnvironment.StoreClient) {
+        if (exenv) {
           // Ensure the Expo Go handling never breaks
           expect(res).not.toMatch(/^--\//);
         }
@@ -57,11 +62,11 @@ describe(extractExpoPathFromURL, () => {
     });
   }
   it(`decodes query params in bare`, () => {
-    Constants.executionEnvironment = ExecutionEnvironment.Bare;
+    delete expo.modules.ExpoGo;
     expect(extractExpoPathFromURL(`custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
   });
   it(`decodes query params in Expo Go`, () => {
-    Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
+    expo.modules.ExpoGo = {};
     expect(extractExpoPathFromURL(`custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
     expect(extractExpoPathFromURL(`exp://127.0.0.1:19000/--/test/path?x=%20%2B%2F`)).toEqual(
       'test/path?x= +/'
@@ -70,7 +75,7 @@ describe(extractExpoPathFromURL, () => {
   });
 
   it(`only handles Expo Go URLs in Expo Go`, () => {
-    Constants.executionEnvironment = ExecutionEnvironment.Bare;
+    delete expo.modules.ExpoGo;
 
     const res = extractExpoPathFromURL('exp://127.0.0.1:19000/--/test');
     // This should look mostly broken, but it's the best we can do

@@ -56,7 +56,6 @@ public enum UpdatesConfigurationValidationResult {
 public final class UpdatesConfig: NSObject {
   public static let PlistName = "Expo"
 
-  public static let EXUpdatesConfigEnableAutoSetupKey = "EXUpdatesAutoSetup"
   public static let EXUpdatesConfigEnabledKey = "EXUpdatesEnabled"
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"
@@ -75,6 +74,8 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = "ERROR_RECOVERY_ONLY"
   public static let EXUpdatesConfigCheckOnLaunchValueNever = "NEVER"
+
+  public static let EXUpdatesConfigRuntimeVersionReadFingerprintFileSentinel = "file:fingerprint"
 
   public let scopeKey: String
   public let updateUrl: URL
@@ -130,13 +131,32 @@ public final class UpdatesConfig: NSObject {
     return dictionary
   }
 
-  private static func isMissingRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> Bool {
+  private static func getRuntimeVersion(mergingOtherDictionary: [String: Any]?) -> String? {
     guard let dictionary = try? configDictionaryWithExpoPlist(mergingOtherDictionary: mergingOtherDictionary) else {
-      return true
+      return nil
     }
 
-    let runtimeVersion: String? = dictionary.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
-    return runtimeVersion?.isEmpty ?? true
+    return getRuntimeVersion(fromDictionary: dictionary)
+  }
+
+  private static func getRuntimeVersion(fromDictionary config: [String: Any]) -> String? {
+    let runtimeVersion: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+    guard let runtimeVersion = runtimeVersion, !runtimeVersion.isEmpty else {
+      return nil
+    }
+
+    if runtimeVersion == EXUpdatesConfigRuntimeVersionReadFingerprintFileSentinel {
+      let frameworkBundle = Bundle(for: UpdatesConfig.self)
+      guard let resourceUrl = frameworkBundle.resourceURL,
+        let bundle = Bundle(url: resourceUrl.appendingPathComponent("EXUpdates.bundle")),
+        let path = bundle.path(forResource: "fingerprint", ofType: nil),
+        let fingerprint = try? String(contentsOfFile: path) else {
+        return nil
+      }
+      return fingerprint
+    }
+
+    return runtimeVersion
   }
 
   public static func getUpdatesConfigurationValidationResult(mergingOtherDictionary: [String: Any]?) -> UpdatesConfigurationValidationResult {
@@ -155,7 +175,7 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
 
-    if isMissingRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) {
+    guard getRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) != nil else {
       return UpdatesConfigurationValidationResult.InvalidMissingRuntimeVersion
     }
 
@@ -203,7 +223,7 @@ public final class UpdatesConfig: NSObject {
       }
     } ?? CheckAutomaticallyConfig.Always
 
-    guard let runtimeVersion: String = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey) else {
+    guard let runtimeVersion = getRuntimeVersion(fromDictionary: config) else {
       throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
     }
 

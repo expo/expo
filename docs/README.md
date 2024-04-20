@@ -129,7 +129,7 @@ We use Algolia as a main search results provider for our docs. Besides the query
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
 - all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (for example, `v46.0.0` or `v47.0.0`),
+- all versioned pages use the SDK version (for example, `v50.0.0` or `v49.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
@@ -231,7 +231,7 @@ In the terminal window and run the following command with to generate the JSON d
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
 ```shell
-et generate-docs-api-data --packageName expo-constants --sdk 47
+et generate-docs-api-data --packageName expo-constants --sdk 50
 
 #### NOTE ####
 # To update unversioned docs, run the command without mentioning the SDK version
@@ -285,61 +285,96 @@ import Video from '~/components/plugins/Video';
 <Video file="guides/color-schemes.mp4" />;
 ```
 
-### Inline Snack examples
+### Add code block
+
+Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
+
+<!-- prettier-ignore -->
+```mdx
+    {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
+    ```js
+    // Your code goes in here
+    ```
+
+    {/* To add a title, enter it right after the language, in the code block starting line: */}
+    ```js myFile.js
+    // Your code goes in here
+    ```
+    ```js Title for a code block
+    // Your code goes in here
+    ```
+
+    {/* Title and params can be separated by pipe ("|") characters, but they also work for block without a title: */}
+    ```js myFile.js|collapseHeight=600
+    // Your code goes in here
+    ```
+    ```js collapseHeight=200
+    // Your code goes in here
+    ```
+```
+
+#### Supported additional params
+
+| Param            | Type   | Description                                                                                                                                                            |
+| ---------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `collapseHeight` | number | The custom height that the code block uses to collapse automatically. The default value is `408` and is applied unless the `collapseHeight` param has been specified. |
+
+### Add inline Snack examples
 
 Snacks are a great way to add instantly-runnable examples to our docs. The `SnackInline` component can be imported to any markdown file, and used like this:
 
 <!-- prettier-ignore -->
-```jsx
+```mdx
 import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='My Example Label' dependencies={['array of', 'packages', 'this Snack relies on']}>
+    ```js
+    // All your code goes in here
 
-// All your JavaScript code goes in here
+    // You can use:
+    /* @info Some text goes here */
+    const myVariable = SomeCodeThatDoesStuff();
+    /* @end */
+    // to create hoverable-text, which reveals the text inside of `@info` onHover.
 
-// You can use:
-/* @info Some text goes here */
-  const myVariable = SomeCodeThatDoesStuff();
-/* @end */
-// to create hoverable-text, which reveals the text inside of `@info` onHover.
-
-// You can use:
-/* @hide Content that is still shown, like a preview. */
-  Everything in here is hidden in the example Snack until
-  you open it in snack.expo.dev
-/* @end */
-// to shorten the length of the Snack shown in our docs. Common example are hiding useless code in examples, like StyleSheets
-
+    // You can use:
+    /* @hide Content that is still shown, like a preview. */
+    Everything in here is hidden in the example Snack until
+    you open it in snack.expo.dev
+    /* @end */
+    // to shorten the length of code block shown in our docs.
+    // Hidden code will still be present when opening in Snack or using "Copy" action.
+    ```
 </SnackInline>
 ```
 
-### Embed multiple options of code
+### Add multiple code variants
 
 Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component.
 The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
-```jsx
+```mdx
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">
-
+    ```js
     addOne = async x => {
-    /* @info This text will be shown onHover */
-    return x + 1;
-    /* @end */
+      /* @info This text will be shown onHover */
+      return x + 1;
+      /* @end */
     };
-
+    ```
 </Tab>
 <Tab label="Add 1 Another Way">
-
+    ```js
     addOne = async x => {
-    /* @info This text will be shown onHover */
-    return x++;
-    /* @end */
+      /* @info This text will be shown onHover */
+      return x++;
+      /* @end */
     };
-
+    ```
 </Tab>
 </Tabs>
 ```
@@ -363,13 +398,13 @@ If you just want to hide a single page from the sidebar, set `hideInSidebar: tru
 
 Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported into any markdown file.
 
-```jsx
+```mdx
 import { Terminal } from '~/ui/components/Snippet';
 
-// for single command and one prop
+{/* for single command and one prop: */}
 <Terminal cmd={["$ npx expo install package"]} />
 
-// for multiple commands
+{/* for multiple commands: */}
 
 <Terminal cmd={[
   "# Create a new native project",

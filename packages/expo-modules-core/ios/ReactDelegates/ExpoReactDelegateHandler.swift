@@ -1,7 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import React
-
 /**
  The handler for `ExpoReactDelegate`. A module can implement a handler to process react instance creation.
  */
@@ -10,20 +8,25 @@ open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 
   /**
-   If this module wants to handle `RCTBridge` creation, it can return the instance.
+   If this module wants to handle React instance and the root view creation, it can return the instance.
    Otherwise return nil.
    */
   @objc
-  open func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
+  open func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
     return nil
   }
 
   /**
-   If this module wants to handle `RCTRootView` creation, it can return the instance.
-   Otherwise return nil.
+   Clients could override this getter to serve the latest bundleURL for React instance.
+   For example, expo-updates uses this to serve the newer bundleURL from `Updates.reloadAsync()`.
    */
   @objc
-  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
+  open func bundleURL(reactDelegate: ExpoReactDelegate) -> URL? {
     return nil
   }
 
@@ -35,18 +38,4 @@ open class ExpoReactDelegateHandler: NSObject {
   open func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
     return nil
   }
-
-  // MARK: - event callbacks
-
-  /**
-   Callback before bridge creation
-   */
-  @objc
-  open func bridgeWillCreate() {}
-
-  /**
-   Callback after bridge creation
-   */
-  @objc
-  open func bridgeDidCreate(bridge: RCTBridge) {}
 }

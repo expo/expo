@@ -22,7 +22,7 @@ import { SnackInline } from '~/ui/components/Snippet';
   alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
   src="/static/images/sdk/file-system/file-system-diagram.png"
   style={{ maxWidth: 850, maxHeight: 600 }}
-  containerStyle={{ backgroundColor: '#fff' }}
+  containerClassName="bg-palette-white"
 />
 
 <PlatformsSection android emulator ios simulator />
@@ -208,8 +208,8 @@ import * as FileSystem from 'expo-file-system';
 
 The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
-- [`FileSystem.documentDirectory`](#documendirectory)
-- [`FileSystem.cacheDirectory`](#cachedirectory)
+- [`FileSystem.documentDirectory`](#filesystemdocumentdirectory)
+- [`FileSystem.cacheDirectory`](#filesystemcachedirectory)
 
 So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `FileSystem.documentDirectory + 'myDirectory/myFile'`.
 

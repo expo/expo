@@ -25,12 +25,10 @@ Add plugin to `app.json`. For example:
           "android": {
             "compileSdkVersion": 31,
             "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0",
-            "flipper": true
+            "buildToolsVersion": "31.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.0",
-            "flipper": true
+            "deploymentTarget": "13.0"
           }
         }
       ]

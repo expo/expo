@@ -18,7 +18,7 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
- * @deprecated Use [`allowsVoipAsync()`](#allowsvoipasync) instead.
+ * @deprecated Use [`allowsVoipAsync()`](#cellularallowsvoip) instead.
  *
  */
 export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
@@ -40,7 +40,7 @@ export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
- * @deprecated Use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
+ * @deprecated Use [`getCarrierNameAsync()`](#cellulargetcarriernameasync) instead.
  *
  */
 export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
@@ -58,7 +58,7 @@ export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
- * @deprecated Use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
+ * @deprecated Use [`getIsoCountryCodeAsync()`](#cellulargetisocountrycodeasync) instead.
  *
  */
 export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
@@ -77,7 +77,7 @@ export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
- * @deprecated Use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
+ * @deprecated Use [`getMobileCountryCodeAsync()`](#cellulargetmobilecountrycodeasync) instead.
  *
  */
 export const mobileCountryCode = ExpoCellular
@@ -97,7 +97,7 @@ export const mobileCountryCode = ExpoCellular
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
- * @deprecated Use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
+ * @deprecated Use [`getMobileNetworkCodeAsync()`](#cellulargetmobilenetworkcodeasync) instead.
  *
  */
 export const mobileNetworkCode = ExpoCellular

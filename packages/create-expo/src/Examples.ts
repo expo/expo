@@ -8,8 +8,12 @@ import { Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { sanitizeTemplateAsync } from './Template';
-import { createEntryResolver, createFileTransform } from './createFileTransform';
+import {
+  getTemplateFilesToRenameAsync,
+  renameTemplateAppNameAsync,
+  sanitizeTemplateAsync,
+} from './Template';
+import { createEntryResolver } from './createFileTransform';
 import { env } from './utils/env';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
@@ -97,7 +101,6 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     tar.extract(
       {
         cwd: root,
-        transform: createFileTransform(projectName),
         onentry: createEntryResolver(projectName),
         strip: 2,
       },
@@ -105,6 +108,12 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     )
   );
 
+  const files = await getTemplateFilesToRenameAsync({ cwd: root });
+  await renameTemplateAppNameAsync({
+    cwd: root,
+    files,
+    name: projectName,
+  });
   await sanitizeTemplateAsync(root);
   await sanitizeScriptsAsync(root);
 }

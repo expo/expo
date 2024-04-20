@@ -60,14 +60,6 @@ export interface PluginConfigTypeAndroid {
      */
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
     /**
-     * By default, Flipper is enabled with the version that comes bundled with `react-native`.
-     *
-     * Use this to change the [Flipper](https://fbflipper.com/) version when
-     * running your app on Android. You can set the `flipper` property to a
-     * semver string and specify an alternate Flipper version.
-     */
-    flipper?: string;
-    /**
      * Enable the Network Inspector.
      *
      * @default true
@@ -76,21 +68,45 @@ export interface PluginConfigTypeAndroid {
     /**
      * Add extra maven repositories to all gradle projects.
      *
-     * This acts like to add the following code to **android/build.gradle**:
+     *
+     * Takes an array of objects or strings.
+     * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
+     *
+     * This adds the following code to **android/build.gradle**:
+     * ```groovy
+     * allprojects {
+     *  repositories {
+     *   maven {
+     *    url "https://foo.com/maven-releases"
+     *  }
+     * }
+     * ```
+     *
+     * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
+     *
      * ```groovy
      * allprojects {
      *   repositories {
      *     maven {
-     *       url [THE_EXTRA_MAVEN_REPOSITORY]
+     *       url "https://foo.com/maven-releases"
+     *       credentials {
+     *        username = "bar"
+     *        password = "baz"
+     *       }
+     *       authentication {
+     *        basic(BasicAuthentication)
+     *       }
      *     }
      *   }
      * }
      * ```
      *
+     * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
+     *
      * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+     * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
      */
-    extraMavenRepos?: string[];
+    extraMavenRepos?: (AndroidMavenRepository | string)[];
     /**
      * Indicates whether the app intends to use cleartext network traffic.
      *
@@ -100,6 +116,14 @@ export interface PluginConfigTypeAndroid {
      */
     usesCleartextTraffic?: boolean;
     /**
+     * Instructs the Android Gradle plugin to compress native libraries in the APK using the legacy packaging system.
+     *
+     * @default false
+     *
+     * @see [Android documentation](https://developer.android.com/build/releases/past-releases/agp-4-2-0-release-notes#compress-native-libs-dsl)
+     */
+    useLegacyPackaging?: boolean;
+    /**
      * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
      * by intent signature, or by provider authority.
      *
@@ -107,6 +131,37 @@ export interface PluginConfigTypeAndroid {
      */
     manifestQueries?: PluginConfigTypeAndroidQueries;
 }
+export interface AndroidMavenRepository {
+    /**
+     * The URL of the Maven repository.
+     */
+    url: string;
+    /**
+     * The credentials to use when accessing the Maven repository.
+     * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+     *
+     * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+     */
+    credentials?: AndroidMavenRepositoryCredentials;
+    /**
+     * The authentication scheme to use when accessing the Maven repository.
+     */
+    authentication?: 'basic' | 'digest' | 'header';
+}
+interface AndroidMavenRepositoryPasswordCredentials {
+    username: string;
+    password: string;
+}
+interface AndroidMavenRepositoryHttpHeaderCredentials {
+    name: string;
+    value: string;
+}
+interface AndroidMavenRepositoryAWSCredentials {
+    accessKey: string;
+    secretKey: string;
+    sessionToken?: string;
+}
+type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCredentials | AndroidMavenRepositoryHttpHeaderCredentials | AndroidMavenRepositoryAWSCredentials;
 /**
  * Interface representing available configuration for iOS native build properties.
  * @platform ios
@@ -125,21 +180,8 @@ export interface PluginConfigTypeIos {
     /**
      * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
      * in `Podfile` to use frameworks instead of static libraries for Pods.
-     *
-     * > You cannot use `useFrameworks` and `flipper` at the same time, and
-     * doing so will generate an error.
      */
     useFrameworks?: 'static' | 'dynamic';
-    /**
-     * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-     * Debug mode. Setting `true` enables the default version of Flipper, while
-     * setting a semver string will enable a specific version of Flipper you've
-     * declared in your **package.json**. The default for this configuration is `false`.
-     *
-     * > You cannot use `flipper` at the same time as `useFrameworks`, and
-     * doing so will generate an error.
-     */
-    flipper?: boolean | string;
     /**
      * Enable the Network Inspector.
      *
@@ -174,12 +216,18 @@ export interface ExtraIosPodDependency {
     /**
      * Version of the pod.
      * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
-     * @example `~> 0.1.2`
+     * @example
+     * ```
+     * ~> 0.1.2
+     * ```
      */
     version?: string;
     /**
      * Build configurations for which the pod should be installed.
-     * @example `['Debug', 'Release']`
+     * @example
+     * ```
+     * ['Debug', 'Release']
+     * ```
      */
     configurations?: string[];
     /**
@@ -188,22 +236,32 @@ export interface ExtraIosPodDependency {
     modular_headers?: boolean;
     /**
      * Custom source to search for this dependency.
-     * @example `https://github.com/CocoaPods/Specs.git`
+     * @example
+     * ```
+     * https://github.com/CocoaPods/Specs.git
+     * ```
      */
     source?: string;
     /**
      * Custom local filesystem path to add the dependency.
-     * @example `~/Documents/AFNetworking`
+     * @example
+     * ```
+     * ~/Documents/AFNetworking
+     * ```
      */
     path?: string;
     /**
      * Custom podspec path.
-     * @example `https://example.com/JSONKit.podspec`
+     * @example
+     * ```https://example.com/JSONKit.podspec```
      */
     podspec?: string;
     /**
      * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
-     * @example `['UnitTests', 'SomeOtherTests']`
+     * @example
+     * ```
+     * ['UnitTests', 'SomeOtherTests']
+     * ```
      */
     testspecs?: string[];
     /**
@@ -306,3 +364,4 @@ export interface PluginConfigTypeAndroidQueriesData {
  * @ignore
  */
 export declare function validateConfig(config: any): PluginConfigType;
+export {};

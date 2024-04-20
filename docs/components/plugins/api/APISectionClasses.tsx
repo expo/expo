@@ -23,10 +23,11 @@ import {
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, P, CODE, MONOSPACE, DEMI } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
+  sdkVersion: string;
 
   /**
    * Whether to expose all classes props in the sidebar.
@@ -74,7 +75,8 @@ const remapClass = (clx: ClassDefinitionData) => {
 
 const renderClass = (
   clx: ClassDefinitionData,
-  options: { exposeAllClassPropsInSidebar: boolean; baseNestingLevelForClassProps: number }
+  options: { exposeAllClassPropsInSidebar: boolean; baseNestingLevelForClassProps: number },
+  sdkVersion: string
 ): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
 
@@ -87,19 +89,23 @@ const renderClass = (
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {name}
+        </MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P className="mb-3">
-          <BOLD>Type: </BOLD>
-          {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
+          <DEMI theme="secondary">Type: </DEMI>
+          {type ? <CODE>{resolveTypeName(type, sdkVersion)}</CODE> : 'Class'}
           {extendedTypes?.length && (
             <>
               <span> extends </span>
               {extendedTypes.map(extendedType => (
-                <CODE key={`extends-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
+                <CODE key={`extends-${extendedType.name}`}>
+                  {resolveTypeName(extendedType, sdkVersion)}
+                </CODE>
               ))}
             </>
           )}
@@ -108,7 +114,7 @@ const renderClass = (
               <span> implements </span>
               {implementedTypes.map(implementedType => (
                 <CODE key={`implements-${implementedType.name}`}>
-                  {resolveTypeName(implementedType)}
+                  {resolveTypeName(implementedType, sdkVersion)}
                 </CODE>
               ))}
             </>
@@ -133,7 +139,7 @@ const renderClass = (
           />
           <div>
             {properties.map(property =>
-              renderProp(property, property?.defaultValue, {
+              renderProp(property, sdkVersion, property?.defaultValue, {
                 exposeInSidebar: options.exposeAllClassPropsInSidebar,
                 baseNestingLevel: options.baseNestingLevelForClassProps + 1,
               })
@@ -152,6 +158,7 @@ const renderClass = (
             renderMethod(method, {
               exposeInSidebar: options.exposeAllClassPropsInSidebar,
               baseNestingLevel: options.baseNestingLevelForClassProps + 1,
+              sdkVersion,
             })
           )}
         </>
@@ -160,7 +167,7 @@ const renderClass = (
   );
 };
 
-const APISectionClasses = ({ data, ...props }: APISectionClassesProps) => {
+const APISectionClasses = ({ data, sdkVersion, ...props }: APISectionClassesProps) => {
   if (data?.length) {
     const hasMultipleClasses = data.length > 1;
     const exposeAllClassPropsInSidebar = props.exposeAllClassPropsInSidebar ?? !hasMultipleClasses;
@@ -171,10 +178,14 @@ const APISectionClasses = ({ data, ...props }: APISectionClassesProps) => {
       <>
         <H2>Classes</H2>
         {data.map(clx =>
-          renderClass(remapClass(clx), {
-            exposeAllClassPropsInSidebar,
-            baseNestingLevelForClassProps,
-          })
+          renderClass(
+            remapClass(clx),
+            {
+              exposeAllClassPropsInSidebar,
+              baseNestingLevelForClassProps,
+            },
+            sdkVersion
+          )
         )}
       </>
     );

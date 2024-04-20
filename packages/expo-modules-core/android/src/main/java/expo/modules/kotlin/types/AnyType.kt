@@ -1,11 +1,11 @@
 package expo.modules.kotlin.types
 
-import android.view.View
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
+import kotlin.reflect.typeOf
 
 class LazyKType(
   override val classifier: KClass<*>,
@@ -52,6 +52,138 @@ inline fun <reified T> (() -> KType).toAnyType() = AnyType(
   )
 )
 
+inline fun <reified T> toAnyType(): AnyType {
+  return { typeOf<T>() }.toAnyType<T>()
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0> toArgsArray(
+  p0: Class<P0> = P0::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2, reified P3> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java,
+  p3: Class<P3> = P3::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>(),
+    toAnyType<P3>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2, reified P3, reified P4> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java,
+  p3: Class<P3> = P3::class.java,
+  p4: Class<P4> = P4::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>(),
+    toAnyType<P3>(),
+    toAnyType<P4>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java,
+  p3: Class<P3> = P3::class.java,
+  p4: Class<P4> = P4::class.java,
+  p5: Class<P5> = P5::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>(),
+    toAnyType<P3>(),
+    toAnyType<P4>(),
+    toAnyType<P5>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java,
+  p3: Class<P3> = P3::class.java,
+  p4: Class<P4> = P4::class.java,
+  p5: Class<P5> = P5::class.java,
+  p6: Class<P6> = P6::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>(),
+    toAnyType<P3>(),
+    toAnyType<P4>(),
+    toAnyType<P5>(),
+    toAnyType<P6>()
+  )
+}
+
+@Suppress("UNUSED_PARAMETER")
+inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> toArgsArray(
+  p0: Class<P0> = P0::class.java,
+  p1: Class<P1> = P1::class.java,
+  p2: Class<P2> = P2::class.java,
+  p3: Class<P3> = P3::class.java,
+  p4: Class<P4> = P4::class.java,
+  p5: Class<P5> = P5::class.java,
+  p6: Class<P6> = P6::class.java,
+  p7: Class<P7> = P7::class.java
+): Array<AnyType> {
+  return arrayOf(
+    toAnyType<P0>(),
+    toAnyType<P1>(),
+    toAnyType<P2>(),
+    toAnyType<P3>(),
+    toAnyType<P4>(),
+    toAnyType<P5>(),
+    toAnyType<P6>(),
+    toAnyType<P7>()
+  )
+}
+
 class AnyType(
   val kType: KType
 ) {
@@ -68,6 +200,6 @@ class AnyType(
     val kClass = kType.classifier as? KClass<*> ?: return false
     val jClass = kClass.java
 
-    return View::class.java.isAssignableFrom(jClass)
+    return T::class.java.isAssignableFrom(jClass)
   }
 }

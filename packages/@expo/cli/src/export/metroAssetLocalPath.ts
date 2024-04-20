@@ -98,7 +98,7 @@ function getAndroidAssetSuffix(scale: number): string | null {
 }
 
 // See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
+export const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
 
 function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: number): string {
   if (!drawableFileTypes.has(asset.type)) {

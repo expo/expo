@@ -121,7 +121,7 @@ export async function getBorderColorAsync(): Promise<ColorValue> {
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color Based on CSS visibility property.
+ * @param visibility Based on CSS visibility property.
  */
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
   if (Platform.OS !== 'android') {

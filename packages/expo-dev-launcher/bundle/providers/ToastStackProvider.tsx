@@ -104,10 +104,13 @@ function ToastItem(props: StackItem<ToastStackItem>) {
     }
 
     if (status === 'settled') {
-      timerRef.current = setTimeout(() => {
-        pop();
-        timerRef.current = null;
-      }, toastProps?.durationMs || 2000);
+      timerRef.current = setTimeout(
+        () => {
+          pop();
+          timerRef.current = null;
+        },
+        toastProps?.durationMs || 2000
+      );
     }
 
     return () => {

@@ -26,6 +26,7 @@ import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
@@ -161,6 +162,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
 
   internal var allowDownscaling: Boolean = true
+    set(value) {
+      field = value
+      shouldRerender = true
+    }
+
+  internal var decodeFormat: DecodeFormat = DecodeFormat.ARGB_8888
     set(value) {
       field = value
       shouldRerender = true
@@ -433,19 +440,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()
-      .apply {
-        priority(this@ExpoImageViewWrapper.priority.toGlidePriority())
-
-        if (cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
-          skipMemoryCache(true)
-        }
-        if (cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
-          diskCacheStrategy(DiskCacheStrategy.NONE)
-        }
-
-        blurRadius?.let {
-          transform(BlurTransformation(min(it, 25), 4))
-        }
+      .priority(this@ExpoImageViewWrapper.priority.toGlidePriority())
+      .customize(`when` = cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
+        skipMemoryCache(true)
+      }
+      .customize(`when` = cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
+        diskCacheStrategy(DiskCacheStrategy.NONE)
+      }
+      .customize(blurRadius) {
+        transform(BlurTransformation(min(it, 25), 4))
       }
   }
 
@@ -512,42 +515,40 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (allowDownscaling) {
+      val downsampleStrategy = if (!allowDownscaling) {
+        DownsampleStrategy.NONE
+      } else if (
+        contentFit != ContentFit.Fill &&
+        contentFit != ContentFit.None
+      ) {
         ContentFitDownsampleStrategy(newTarget, contentFit)
       } else {
-        DownsampleStrategy.NONE
+        // it won't downscale the image if the image is smaller than hardware bitmap size limit
+        SafeDownsampleStrategy(decodeFormat)
       }
 
       val request = requestManager
         .asDrawable()
         .load(model)
-        .apply {
-          if (placeholder != null) {
-            thumbnail(requestManager.load(placeholder.glideData))
-            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash() || bestPlaceholder.isThumbhash()) {
-              contentFit
-            } else {
-              placeholderContentFit
-            }
-            newTarget.placeholderContentFit = newPlaceholderContentFit
+        .customize(placeholder) { newPlaceholder ->
+          val newPlaceholderContentFit = if (bestPlaceholder?.isBlurhash() == true || bestPlaceholder?.isThumbhash() == true) {
+            contentFit
+          } else {
+            placeholderContentFit
           }
+          newTarget.placeholderContentFit = newPlaceholderContentFit
+
+          thumbnail(requestManager.load(newPlaceholder.glideData))
         }
-        .apply {
-          options?.let {
-            apply(it)
-          }
-        }
+        .apply(options)
         .downsample(downsampleStrategy)
         .addListener(GlideRequestListener(WeakReference(this)))
         .encodeQuality(100)
+        .format(decodeFormat.toGlideFormat())
         .apply(propOptions)
-
-      tintColor?.let {
-        val tintColorOptions = RequestOptions().apply {
-          set(CustomOptions.tintColor, it)
+        .customize(tintColor) {
+          apply(RequestOptions().set(CustomOptions.tintColor, it))
         }
-        request.apply(tintColorOptions)
-      }
 
       val cookie = Trace.getNextCookieValue()
       beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)

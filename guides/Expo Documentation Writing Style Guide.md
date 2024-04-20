@@ -314,7 +314,7 @@ Writing API documentation accurately and precisely helps developers use our APIs
     - Used for adding a description to the method arguments, syntax:
       - `@param [param_name] [description]`
   - `@default`
-    - Currently doesn’t support formatting, all of the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
+    - Currently, does not support Markdown formatting, all the content will be placed directly in the `InlineCode` block, so there is no need to wrap the value with ``` manually.
   - `@platform`
     - Available platforms: `android` , `ios` , `web` and `expo` (Expo Go).
     - You can also specify the minimum platform version, range, or add any other comment to the label, for example, `@platform ios 11+`.
@@ -334,6 +334,11 @@ Writing API documentation accurately and precisely helps developers use our APIs
       and their order (see `expo-notifications` source and doc page for an example usage).
 - When linking other SDK packages in a comment, use `./` instead of `../` at the beginning of the URL
   - For more information, check out [detect broken internal links in generated doc comments](https://github.com/expo/expo/pull/16771) PR on GitHub.
+- To add a subscript or superscript in the comment content use the following custom syntax:
+  ```md
+  21^st^ Century <!-- sup -->
+  H~2~O <!-- sub -->
+  ```
 
 ## Accuracy
 

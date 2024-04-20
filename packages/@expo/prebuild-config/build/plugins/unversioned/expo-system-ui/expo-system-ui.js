@@ -39,9 +39,8 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-system-ui',
   fallback: [_withAndroidRootViewBackgroundColor().withAndroidRootViewBackgroundColor, _withIosRootViewBackgroundColor().withIosRootViewBackgroundColor, _withAndroidUserInterfaceStyle().withAndroidUserInterfaceStyle, _withIosUserInterfaceStyle().withIosUserInterfaceStyle]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-system-ui.js.map

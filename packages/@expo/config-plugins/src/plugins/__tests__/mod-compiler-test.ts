@@ -3,7 +3,7 @@ import { vol } from 'memfs';
 
 import rnFixture from './fixtures/react-native-project';
 import { ExportedConfig, Mod } from '../../Plugin.types';
-import { compileModsAsync } from '../mod-compiler';
+import { compileModsAsync, sortMods } from '../mod-compiler';
 import { withMod } from '../withMod';
 
 jest.mock('fs');
@@ -162,4 +162,116 @@ describe(compileModsAsync, () => {
       );
     });
   }
+});
+
+describe(sortMods, () => {
+  it('should sort the commands based on precedences', () => {
+    const commands = [
+      ['command1', { data: 'command1Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
+    ];
+    const precedences = {
+      command1: 2,
+      command2: 1,
+      command3: 3,
+    };
+
+    const sortedCommands = sortMods(commands, precedences);
+
+    expect(sortedCommands).toEqual([
+      ['command2', { data: 'command2Data' }],
+      ['command1', { data: 'command1Data' }],
+      ['command3', { data: 'command3Data' }],
+    ]);
+  });
+
+  it('should handle commands with missing precedences', () => {
+    const commands = [
+      ['command1', { data: 'command1Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
+      ['command4', { data: 'command4Data' }],
+      ['command5', { data: 'command5Data' }],
+      ['command6', { data: 'command6Data' }],
+    ];
+    const precedences = {
+      command1: 2,
+      command3: 3,
+    };
+
+    const sortedCommands = sortMods(commands, precedences);
+
+    expect(sortedCommands).toEqual([
+      ['command2', { data: 'command2Data' }],
+      ['command4', { data: 'command4Data' }],
+      ['command5', { data: 'command5Data' }],
+      ['command6', { data: 'command6Data' }],
+      ['command1', { data: 'command1Data' }],
+      ['command3', { data: 'command3Data' }],
+    ]);
+  });
+
+  it('should handle empty commands array', () => {
+    const commands: [string, any][] = [];
+    const precedences = {
+      command1: 2,
+      command2: 1,
+      command3: 3,
+    };
+
+    const sortedCommands = sortMods(commands, precedences);
+
+    expect(sortedCommands).toEqual([]);
+  });
+
+  it('should deduplicate commands by keys and keep the first occurrence', () => {
+    const commands = [
+      ['command1', { data: 'command1Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
+      ['command3', { data: 'command4Data' }],
+      ['command3', { data: 'command5Data' }],
+      ['command3', { data: 'command6Data' }],
+    ];
+    const precedences = {
+      command2: 2,
+    };
+
+    const sortedCommands = sortMods(commands, precedences);
+
+    expect(sortedCommands).toEqual([
+      ['command1', { data: 'command1Data' }],
+      ['command3', { data: 'command3Data' }],
+      ['command2', { data: 'command2Data' }],
+    ]);
+  });
+
+  it('should sort negative precedence values at first', () => {
+    const commands = [
+      ['command1', { data: 'command1Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
+      ['command4', { data: 'command4Data' }],
+      ['command5', { data: 'command5Data' }],
+      ['command6', { data: 'command6Data' }],
+    ];
+    const precedences = {
+      command2: 1,
+      command3: 2,
+      command4: -2,
+      command5: -1,
+    };
+
+    const sortedCommands = sortMods(commands, precedences);
+
+    expect(sortedCommands).toEqual([
+      ['command4', { data: 'command4Data' }],
+      ['command5', { data: 'command5Data' }],
+      ['command1', { data: 'command1Data' }],
+      ['command6', { data: 'command6Data' }],
+      ['command2', { data: 'command2Data' }],
+      ['command3', { data: 'command3Data' }],
+    ]);
+  });
 });

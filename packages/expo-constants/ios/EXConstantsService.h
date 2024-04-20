@@ -14,12 +14,7 @@ FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 
 - (NSString *)buildVersion;
 - (CGFloat)statusBarHeight;
-- (NSString *)iosVersion;
-- (NSString *)userInterfaceIdiom;
-- (BOOL)isDevice;
 - (NSArray<NSString *> *)systemFontNames;
-
-+ (NSString *)devicePlatform;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
 

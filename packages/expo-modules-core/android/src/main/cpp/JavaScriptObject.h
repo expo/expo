@@ -37,7 +37,7 @@ public:
   static void registerNatives();
 
   static jni::local_ref<JavaScriptObject::javaobject> newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jsiContext,
     std::weak_ptr<JavaScriptRuntime> runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
@@ -51,6 +51,8 @@ public:
     WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
+
+  virtual ~JavaScriptObject() = default;
 
   std::shared_ptr<jsi::Object> get() override;
 
@@ -137,7 +139,7 @@ private:
     auto cName = name->toStdString();
     jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
     descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
-    common::definePropertyOnJSIObject(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
+    common::defineProperty(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
   }
 };
 } // namespace expo

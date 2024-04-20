@@ -7,18 +7,19 @@ import tar from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
-import { createEntryResolver, createFileTransform } from '../createFileTransform';
+import { createEntryResolver } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
 
 const debug = require('debug')('expo:init:npm') as typeof console.log;
 
-type ExtractProps = {
+export type ExtractProps = {
   name: string;
   cwd: string;
   strip?: number;
   fileList?: string[];
   disableCache?: boolean;
+  filter?: tar.ExtractOptions['filter'];
 };
 
 // @ts-ignore
@@ -121,7 +122,7 @@ export async function extractNpmTarballAsync(
   if (!stream) {
     throw new Error('Missing stream');
   }
-  const { cwd, strip, name, fileList = [] } = props;
+  const { cwd, strip, name, fileList = [], filter } = props;
 
   await fs.promises.mkdir(cwd, { recursive: true });
 
@@ -130,7 +131,7 @@ export async function extractNpmTarballAsync(
     tar.extract(
       {
         cwd,
-        transform: createFileTransform(name),
+        filter,
         onentry: createEntryResolver(name),
         strip: strip ?? 1,
       },

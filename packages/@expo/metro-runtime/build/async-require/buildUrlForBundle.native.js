@@ -8,6 +8,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildUrlForBundle = void 0;
 function buildUrlForBundle(bundlePath) {
+    if (bundlePath.match(/^https?:\/\//)) {
+        return bundlePath;
+    }
     if (process.env.NODE_ENV === 'production') {
         if (typeof location !== 'undefined') {
             return joinComponents(location.origin, bundlePath);

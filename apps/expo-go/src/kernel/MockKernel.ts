@@ -11,6 +11,7 @@ const STORAGE_PREFIX = '@@expo@@';
  */
 export default {
   sdkVersions: '',
+  sdkVersionsArray: [],
 
   async getDevMenuSettingsAsync(): Promise<null> {
     return null;

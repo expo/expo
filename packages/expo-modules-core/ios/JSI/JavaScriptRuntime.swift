@@ -60,6 +60,22 @@ public extension JavaScriptRuntime {
       }
     }
   }
+
+  /**
+   Schedules a block to be executed with granted synchronized access to the JS runtime.
+   */
+  public func schedule(priority: SchedulerPriority = .normal, _ closure: @escaping () -> Void) {
+    __schedule(closure, priority: priority.rawValue)
+  }
+}
+
+// Keep it in sync with the equivalent C++ enum from React Native (see SchedulerPriority.h from React-callinvoker).
+public enum SchedulerPriority: Int32 {
+  case immediate = 1
+  case userBlocking = 2
+  case normal = 3
+  case low = 4
+  case idle = 5
 }
 
 internal final class JavaScriptEvalException: GenericException<NSError> {

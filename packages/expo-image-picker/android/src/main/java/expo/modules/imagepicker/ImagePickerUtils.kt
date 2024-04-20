@@ -68,6 +68,7 @@ internal fun String.toImageFileExtension(): String = when {
   this.endsWith("png", ignoreCase = true) -> ".png"
   this.endsWith("gif", ignoreCase = true) -> ".gif"
   this.endsWith("bmp", ignoreCase = true) -> ".bmp"
+  this.endsWith("webp", ignoreCase = true) -> ".webp"
   !this.endsWith("jpeg", ignoreCase = true) -> {
     Log.w(TAG, "Image file $this is of unsupported type. Falling back to JPEG instead.")
     ".jpeg"
@@ -87,7 +88,8 @@ internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
 internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   this.endsWith("png", ignoreCase = true) ||
     this.endsWith("gif", ignoreCase = true) ||
-    this.endsWith("bmp", ignoreCase = true) -> {
+    this.endsWith("bmp", ignoreCase = true) ||
+    this.endsWith("webp", ignoreCase = true) -> {
     // The result image won't ever be a GIF of a BMP as the cropper doesn't support it.
     Bitmap.CompressFormat.PNG
   }

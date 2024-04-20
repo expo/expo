@@ -10,6 +10,38 @@
 
 ### 💡 Others
 
+## 1.11.0 — 2024-04-18
+
+### 🎉 New features
+
+- Expand Android auto-linking to support new expo-build-properties ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
+
+### 🐛 Bug fixes
+
+- Support custom debug build configuration for debugOnly pods (expo-dev-client for example) ([#28085](https://github.com/expo/expo/pull/28085) by [@Titozzz](https://github.com/Titozzz))
+
+### 💡 Others
+
+- Read `extraPods` from **Podfile.properties.json** and `extraMavenRepos` from **gradle.properties**. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
+
+## 1.10.3 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- Fixed generating a list of app delegate subscribers. ([#26851](https://github.com/expo/expo/pull/26851) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.10.2 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed a list of packages to include in the generated modules provider for tvOS and macOS platforms. ([#26497](https://github.com/expo/expo/pull/26497) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.10.1 - 2024-01-18
+
+### 🎉 New features
+
+- Introduced a universal `"apple"` platform as a replacement for `"ios"`, `"macos"` and `"tvos"`. ([#26398](https://github.com/expo/expo/pull/26398) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.10.0 - 2024-01-10
 
 ### 🎉 New features

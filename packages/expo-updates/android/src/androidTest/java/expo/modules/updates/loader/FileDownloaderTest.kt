@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.manifest.ManifestMetadata
@@ -39,7 +40,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -60,7 +61,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -84,7 +85,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -154,11 +155,21 @@ class FileDownloaderTest {
     val embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
     val embeddedUpdate = UpdateEntity(UUID.fromString(embeddedUpdateUUIDString), Date(), "1.0", "test", JSONObject("{}"))
 
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), launchedUpdate, embeddedUpdate)
+    val mockDatabase = mockk<UpdatesDatabase> {
+      every { updateDao() } returns mockk {
+        every { loadRecentUpdateIdsWithFailedLaunch() } returns listOf(
+          UUID.fromString("39242af2-7424-46cb-a89b-464bb9779dbd"),
+          UUID.fromString("905e8320-eb1d-4d18-b061-45bc3d3dd441")
+        )
+      }
+    }
+
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), launchedUpdate, embeddedUpdate)
 
     Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
     Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
     Assert.assertEquals("hello=\"world\", what=\"123\"", extraHeaders.get("Expo-Extra-Params"))
+    Assert.assertEquals("\"39242af2-7424-46cb-a89b-464bb9779dbd\", \"905e8320-eb1d-4d18-b061-45bc3d3dd441\"", extraHeaders.get("Expo-Recent-Failed-Update-IDs"))
 
     // cleanup
     unmockkObject(ManifestMetadata)
@@ -169,10 +180,20 @@ class FileDownloaderTest {
     mockkObject(ManifestMetadata)
     every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
 
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), null, null)
+    val mockDatabase = mockk<UpdatesDatabase> {
+      every { updateDao() } returns mockk {
+        every { loadRecentUpdateIdsWithFailedLaunch() } returns listOf(
+          UUID.fromString("39242af2-7424-46cb-a89b-464bb9779dbd"),
+          UUID.fromString("905e8320-eb1d-4d18-b061-45bc3d3dd441")
+        )
+      }
+    }
+
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), null, null)
     Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Extra-Params"))
+    Assert.assertEquals("\"39242af2-7424-46cb-a89b-464bb9779dbd\", \"905e8320-eb1d-4d18-b061-45bc3d3dd441\"", extraHeaders.get("Expo-Recent-Failed-Update-IDs"))
 
     // cleanup
     unmockkObject(ManifestMetadata)
@@ -210,10 +231,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      config,
       context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
@@ -261,10 +281,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, client).downloadAsset(
+    FileDownloader(context, config, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      config,
       context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {

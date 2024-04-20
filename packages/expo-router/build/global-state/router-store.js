@@ -48,6 +48,7 @@ class RouterStore {
     rootState;
     nextState;
     routeInfo;
+    splashScreenAnimationFrame;
     navigationRef;
     navigationRefSubscription;
     rootStateSubscribers = new Set();
@@ -57,7 +58,10 @@ class RouterStore {
     goBack = routing_1.goBack.bind(this);
     canGoBack = routing_1.canGoBack.bind(this);
     push = routing_1.push.bind(this);
+    dismiss = routing_1.dismiss.bind(this);
     replace = routing_1.replace.bind(this);
+    dismissAll = routing_1.dismissAll.bind(this);
+    canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
     initialize(context, navigationRef, initialLocation) {
@@ -115,9 +119,10 @@ class RouterStore {
             if (!this.hasAttemptedToHideSplash) {
                 this.hasAttemptedToHideSplash = true;
                 // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-                requestAnimationFrame(() => 
-                // @ts-expect-error: This function is native-only and for internal-use only.
-                SplashScreen._internal_maybeHideAsync?.());
+                this.splashScreenAnimationFrame = requestAnimationFrame(() => {
+                    // @ts-expect-error: This function is native-only and for internal-use only.
+                    SplashScreen._internal_maybeHideAsync?.();
+                });
             }
             let shouldUpdateSubscribers = this.nextState === state;
             this.nextState = undefined;
@@ -179,6 +184,11 @@ class RouterStore {
     routeInfoSnapshot = () => {
         return this.routeInfo;
     };
+    cleanup() {
+        if (this.splashScreenAnimationFrame) {
+            cancelAnimationFrame(this.splashScreenAnimationFrame);
+        }
+    }
 }
 exports.RouterStore = RouterStore;
 exports.store = new RouterStore();

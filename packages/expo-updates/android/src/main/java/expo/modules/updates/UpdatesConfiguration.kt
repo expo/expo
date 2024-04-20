@@ -6,6 +6,8 @@ import android.net.Uri
 import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
+import org.apache.commons.io.IOUtils
+import java.nio.charset.StandardCharsets
 
 enum class UpdatesConfigurationValidationResult {
   VALID,
@@ -134,6 +136,9 @@ data class UpdatesConfiguration(
 
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
 
+    const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
+    private const val FINGERPRINT_FILE_NAME = "fingerprint"
+
     private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri? {
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY)
         ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")
@@ -145,7 +150,15 @@ data class UpdatesConfiguration(
     }
 
     private fun getRuntimeVersion(context: Context?, overrideMap: Map<String, Any>?): String? {
-      return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), "")
+      val runtimeVersion = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), "")
+
+      if (context != null && runtimeVersion == UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL) {
+        return context.assets.open(FINGERPRINT_FILE_NAME).use { stream ->
+          IOUtils.toString(stream, StandardCharsets.UTF_8)
+        }
+      }
+
+      return runtimeVersion
     }
 
     fun getUpdatesConfigurationValidationResult(context: Context?, overrideMap: Map<String, Any>?): UpdatesConfigurationValidationResult {

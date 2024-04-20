@@ -13,7 +13,6 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const checkNumAssetsAsync = async () => {
   await element(by.id('readAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -23,7 +22,6 @@ const checkNumAssetsAsync = async () => {
 
 const clearNumAssetsAsync = async () => {
   await element(by.id('clearAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -44,9 +42,30 @@ const waitForAsynchronousTaskCompletion = async (timeout: number = 1000) => {
     .withTimeout(timeout);
 };
 
+const waitForExpectationAsync = async (
+  expectation: () => void,
+  { timeout, interval }: { timeout: number; interval: number }
+) => {
+  const maxTries = Math.ceil(timeout / interval);
+  let tryNumber = 0;
+  while (true) {
+    tryNumber += 1;
+
+    try {
+      expectation();
+      return;
+    } catch (e) {
+      if (tryNumber >= maxTries) {
+        throw e;
+      }
+    }
+
+    await setTimeout(interval);
+  }
+};
+
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -57,14 +76,6 @@ const readLogEntriesAsync = async () => {
     console.warn(`Error in parsing logs: ${e}`);
     return [];
   }
-};
-
-const clearLogEntriesAsync = async () => {
-  await element(by.id('clearLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
-  await waitFor(element(by.id('activity')))
-    .not.toBeVisible()
-    .withTimeout(2000);
 };
 
 const waitForAppToBecomeVisible = async () => {
@@ -185,6 +196,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -229,6 +247,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
@@ -284,11 +309,19 @@ describe('Basic tests', () => {
     await device.launchApp({
       newInstance: true,
     });
-    // give the app time to load the new update in the background
+
     await waitForAppToBecomeVisible();
     const message = await testElementValueAsync('updateString');
     jestExpect(message).toBe('test');
 
+    // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -366,6 +399,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -406,6 +446,7 @@ describe('Basic tests', () => {
     jestExpect(firstMessage).toBe('test');
 
     // give the app time to load the new update in the background (i.e. to make sure it doesn't)
+    await setTimeout(5000);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
@@ -445,6 +486,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -769,83 +817,6 @@ describe('JS API tests', () => {
     );
     jestExpect(didCheckAndDownloadHappenInParallel).toEqual('false');
   });
-
-  it('Receives expected events when update available on start', async () => {
-    const bundleFilename = 'bundle1.js';
-    const newNotifyString = 'test-update-1';
-    const hash = await Update.copyBundleToStaticFolder(
-      projectRoot,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const manifest = Update.getUpdateManifestForBundleFilename(
-      new Date(),
-      hash,
-      'test-update-1-key',
-      bundleFilename,
-      [],
-      projectRoot
-    );
-    // Launch app
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
-
-    const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
-    // Server is not running, so error received
-    console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
-
-    // Error should be surfaced in checkError
-    const checkErrorMessage = await testElementValueAsync('state.checkError');
-    console.warn(`checkErrorMessage = ${checkErrorMessage}`);
-
-    // Start server with no update available directive,
-    // then restart app, we should get "No update available" event
-    let lastUpdateEventType2 = '';
-    let checkErrorMessage2 = '';
-    if (protocolVersion === 1) {
-      Server.start(Update.serverPort, protocolVersion);
-      const directive = Update.getNoUpdateAvailableDirective();
-      await Server.serveSignedDirective(directive, projectRoot);
-      await device.terminateApp();
-      await device.launchApp();
-      await waitForAppToBecomeVisible();
-      await readLogEntriesAsync();
-
-      lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
-      checkErrorMessage2 = await testElementValueAsync('state.checkError');
-      console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
-      console.warn(`checkErrorMessage2 = ${checkErrorMessage2}`);
-      Server.stop();
-    }
-
-    // Relaunch app after server has an update,
-    // we should get the 'update available' event
-    Server.start(Update.serverPort, protocolVersion);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.terminateApp();
-    await device.launchApp();
-    await waitForAppToBecomeVisible();
-
-    const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
-    const checkErrorMessage3 = await testElementValueAsync('state.checkError');
-    console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
-    console.warn(`checkErrorMessage3 = ${checkErrorMessage3}`);
-
-    // Test passes if all the event types seen are the expected ones
-    // This test not working on Android in 0.72 in the CI environment, so disable it for now.
-    if (platform === 'ios') {
-      jestExpect(lastUpdateEventType).toEqual('error');
-      jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
-      jestExpect(lastUpdateEventType3).toEqual('updateAvailable');
-      jestExpect(checkErrorMessage).toEqual('Could not connect to the server.');
-      jestExpect(checkErrorMessage2).toEqual('');
-      jestExpect(checkErrorMessage3).toEqual('');
-    }
-  });
 });
 
 // The tests in this suite install an app with multiple assets, then clear all the assets from
@@ -1025,6 +996,13 @@ describe('Asset deletion recovery tests', () => {
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to

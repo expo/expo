@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 15.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 14.8.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 14.8.2 - 2024-01-10
 
 _This version does not introduce any user-facing changes._

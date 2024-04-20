@@ -1,6 +1,6 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,13 +41,14 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
   "dependencies": {
-    "@expo/spawn-async": "^1.5.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "find-up": "^5.0.0",
     "minimatch": "^3.0.4",
     "p-limit": "^3.1.0",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "^5.0.0",
+    "semver": "^7.6.0"
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",

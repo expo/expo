@@ -1,6 +1,5 @@
 import { SpeechOptions, WebVoice } from './Speech.types';
 declare const _default: {
-    readonly name: string;
     speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance>;
     getVoices(): Promise<WebVoice[]>;
     isSpeaking(): Promise<boolean>;

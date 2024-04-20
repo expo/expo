@@ -16,7 +16,7 @@ module.exports = {
     package: 'dev.expo.routere2e',
   },
   // For testing the output bundle
-  jsEngine: process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes',
+  jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -26,6 +26,7 @@ module.exports = {
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
+    reactCanary: process.env.EXPO_E2E_RSC,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
@@ -39,8 +40,8 @@ module.exports = {
           process.env.E2E_ROUTER_ASYNC === 'true'
             ? true
             : process.env.E2E_ROUTER_ASYNC === 'false'
-            ? false
-            : process.env.E2E_ROUTER_ASYNC || false,
+              ? false
+              : process.env.E2E_ROUTER_ASYNC || false,
         root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
         origin: 'https://smart-symbiote.netlify.app/',
       },

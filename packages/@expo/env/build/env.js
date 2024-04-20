@@ -48,8 +48,8 @@ function path() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2023 650 Industries.
@@ -106,8 +106,7 @@ function createControlledEnvironment() {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
           for (const key of Object.keys(result)) {
-            var _userDefinedEnvironme;
-            if (typeof ((_userDefinedEnvironme = userDefinedEnvironment) === null || _userDefinedEnvironme === void 0 ? void 0 : _userDefinedEnvironme[key]) !== 'undefined') {
+            if (typeof userDefinedEnvironment?.[key] !== 'undefined') {
               debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
             } else {
               if (typeof parsedEnv[key] !== 'undefined') {
@@ -138,22 +137,22 @@ function createControlledEnvironment() {
   function _expandEnv(parsedEnv) {
     const expandedEnv = {};
 
-    // When not ignoring `process.env`, values from the parsed env are overwritten by the current env if defined.
-    // We handle this ourselves, expansion should always use the current state of "current + parsed env".
+    // Pass a clone of `process.env` to avoid mutating the original environment.
+    // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
     const allExpandedEnv = (0, _dotenvExpand().expand)({
-      parsed: {
-        ...process.env,
-        ...parsedEnv
-      },
-      ignoreProcessEnv: true
+      parsed: parsedEnv,
+      processEnv: {
+        ...process.env
+      }
     });
     if (allExpandedEnv.error) {
       console.error(`Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`);
       return parsedEnv;
     }
+
+    // Only store the values that were initially parsed, from `parsedEnv`.
     for (const key of Object.keys(parsedEnv)) {
-      var _allExpandedEnv$parse;
-      if ((_allExpandedEnv$parse = allExpandedEnv.parsed) !== null && _allExpandedEnv$parse !== void 0 && _allExpandedEnv$parse[key]) {
+      if (allExpandedEnv.parsed?.[key]) {
         expandedEnv[key] = allExpandedEnv.parsed[key];
       }
     }
@@ -218,7 +217,11 @@ function getFiles(mode, {
     }
   }
   if (mode && !['development', 'test', 'production'].includes(mode)) {
-    throw new Error(`Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`);
+    if (silent) {
+      debug(`NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead.`);
+    } else {
+      console.warn(_chalk().default.yellow(`"NODE_ENV=${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead`));
+    }
   }
   if (!mode) {
     // Support environments that don't respect NODE_ENV

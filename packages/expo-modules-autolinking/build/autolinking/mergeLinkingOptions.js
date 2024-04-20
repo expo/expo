@@ -21,13 +21,13 @@ exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
- * - platform-specific options from the above (e.g. `expo.autolinking.ios`)
+ * - platform-specific options from the above (e.g. `expo.autolinking.apple`)
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
     const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
     const baseOptions = packageJson.expo?.autolinking;
-    const platformOptions = providedOptions.platform && baseOptions?.[providedOptions.platform];
+    const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
     // Makes provided paths absolute or falls back to default paths if none was provided.
     finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, providedOptions.projectRoot);
@@ -78,5 +78,14 @@ async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     const projectRoot = packageJsonPath != null ? path_1.default.join(packageJsonPath, '..') : cwd;
     const resolvedPath = path_1.default.resolve(projectRoot, nativeModulesDir || 'modules');
     return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
+}
+/**
+ * Gets the platform-specific autolinking options from the base options.
+ */
+function getPlatformOptions(platform, options) {
+    if (platform === 'apple') {
+        return options?.apple ?? options?.ios ?? {};
+    }
+    return options?.[platform] ?? {};
 }
 //# sourceMappingURL=mergeLinkingOptions.js.map

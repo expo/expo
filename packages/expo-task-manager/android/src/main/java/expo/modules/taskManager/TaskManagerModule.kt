@@ -1,5 +1,6 @@
 package expo.modules.taskManager
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import expo.modules.core.errors.ModuleNotFoundException
@@ -23,12 +24,14 @@ class TaskManagerModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoTaskManager")
 
+    Events(TaskManagerInterface.EVENT_NAME)
+
     Constants(
       "EVENT_NAME" to TaskManagerInterface.EVENT_NAME
     )
 
-    AsyncFunction("isAvailableAsync") {
-      taskService != null
+    AsyncFunction<Boolean>("isAvailableAsync") {
+      return@AsyncFunction true
     }
 
     AsyncFunction("notifyTaskFinishedAsync") { taskName: String, response: Map<String, Any?> ->
@@ -43,7 +46,7 @@ class TaskManagerModule : Module() {
       taskService.getTaskOptions(taskName, appScopeKey)
     }
 
-    AsyncFunction("getRegisteredTasksAsync") {
+    AsyncFunction<List<Bundle>>("getRegisteredTasksAsync") {
       taskService.getTasksForAppScopeKey(appScopeKey)
     }
 
@@ -51,7 +54,7 @@ class TaskManagerModule : Module() {
       taskService.unregisterTask(taskName, appScopeKey, null)
     }
 
-    AsyncFunction("unregisterAllTasksAsync") {
+    AsyncFunction<Unit>("unregisterAllTasksAsync") {
       taskService.unregisterAllTasksForAppScopeKey(appScopeKey)
     }
 

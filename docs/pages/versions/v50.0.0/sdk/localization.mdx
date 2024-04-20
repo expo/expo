@@ -6,6 +6,7 @@ packageName: 'expo-localization'
 iconUrl: '/static/images/packages/expo-localization.png'
 ---
 
+import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -18,9 +19,25 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <APIInstallSection />
 
+## Configuration in app.json/app.config.js
+
+You can configure `expo-localization` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-localization"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
 ## Usage
 
-Find more information about using `expo-localization` in the [Localization](/guides/localization) guide.
+Find more information about using `expo-localization` and adding support for right-to-left languages in the [Localization](/guides/localization) guide.
 
 ## API
 

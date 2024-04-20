@@ -8,20 +8,41 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 This guide explains how to trigger builds directly from your GitHub repository using the Expo GitHub App.
 
+> **info** This feature is in early access and may change significantly. Its performance might not be as polished or reliable as our established features during this early access period. We appreciate your understanding and welcome any feedback to help us improve!
+
 ## Prerequisites
 
-> **warning** While in preview, this feature is only available to EAS subscribers.
+### Set the `image` field in your eas.json
+
+For the build profiles you want to use with GitHub, specify an [`image`](/eas/json/#image) to use for the native platform in **eas.json**.
+
+Use the `latest` image if your project's configuration does not rely on a specific [build image](/build-reference/infrastructure/). For example:
+
+```json eas.json
+{
+  /* @hide ... */ /* @end */
+  "build": {
+    "production": {
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      }
+    }
+  }
+}
+```
 
 ### Run a successful build from your local machine
 
 To trigger EAS builds from a GitHub repo, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub.
 
-If you haven't successfully run `eas build -p [all|ios|android]` yet, see  [Create your first build](/build/setup/) for more information. Once you have, continue with the steps in this guide.
+If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information. Once you have, continue with the steps in this guide.
 
 The following must also be true:
 
 - An Expo user in the organization must have a linked GitHub user with access to the target repository. Check [User settings > Connections](https://expo.dev/settings#connections) and verify that your GitHub user account is linked.
-- The Expo account must have an active subscription for the feature preview.
 - You must accept the permissions requested by the [Expo GitHub app](https://github.com/settings/installations).
 
 ## Configure your app for GitHub
@@ -38,25 +59,29 @@ page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
 
 Install the Expo GitHub App on your GitHub account.
 
+> **Note:** You must have [Owner or Admin access](/accounts/account-types/#manage-access) of the Expo account to install the app.
+
 <ImageSpotlight
   alt="The GitHub app installation UI"
   src="/static/images/eas-build/build-from-github/install-github-app.png"
 />
 
-Link your GitHub account to your Expo account.
+Then, link the GitHub repository to your Expo project.
 
-> **Note:** You must be an admin of the Expo account to install the app. Also, you can only link GitHub organizations to Expo organizations.
-
-<ImageSpotlight
-  alt="The GitHub account linking UI"
-  src="/static/images/eas-build/build-from-github/link-github-account.png"
-/>
-
-Then, you'll be able to link your repository to your Expo project.
+> **Note:** You can only link [GitHub organization repositories](https://docs.github.com/en/organizations) to Expo organizations.
 
 <ImageSpotlight
   alt="The repository selector on the Expo project GitHub settings page"
   src="/static/images/eas-build/build-from-github/connect-a-repository.png"
+  style={{ maxWidth: 600 }}
+/>
+
+To add a repository from a different GitHub account, click the **Add new account** option in the account selector dropdown.
+
+<ImageSpotlight
+  alt="The account selector on the Expo project GitHub settings page"
+  src="/static/images/eas-build/build-from-github/add-new-account.png"
+  style={{ maxWidth: 400 }}
 />
 
 ### Configure your repository settings
@@ -115,15 +140,13 @@ of the build in the PR's checks. A link to the build will be available in the ch
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
 
-
 ### Build automatically when code is pushed to repository
 
 You can take your build automation further by automatically building your Expo project when you push code to GitHub.
 
 #### Set up build triggers
 
-You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.  
-
+You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.
 
 Open your Expo project in the dashboard. To create a build trigger, scroll down to the **Build
 triggers** section of the project GitHub settings page and click **New Build Trigger**.

@@ -2,11 +2,11 @@ import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { magenta, green, gray, cyan } = chalk;
 
@@ -22,9 +22,8 @@ export const updateBundledNativeModulesFile = new Task<TaskArgs>(
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     const bundledNativeModulesPath = path.join(EXPO_DIR, 'packages/expo/bundledNativeModules.json');
-    const bundledNativeModules = await JsonFile.readAsync<Record<string, string>>(
-      bundledNativeModulesPath
-    );
+    const bundledNativeModules =
+      await JsonFile.readAsync<Record<string, string>>(bundledNativeModulesPath);
 
     logger.info(`\n✏️  Updating ${magenta.bold('bundledNativeModules.json')} file...`);
 

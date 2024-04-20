@@ -1,7 +1,6 @@
 import { TypedArray } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoDigestOptions } from './Crypto.types';
 declare const _default: {
-    readonly name: string;
     digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options: CryptoDigestOptions): Promise<string>;
     getRandomBytes(length: number): Uint8Array;
     getRandomBytesAsync(length: number): Promise<Uint8Array>;

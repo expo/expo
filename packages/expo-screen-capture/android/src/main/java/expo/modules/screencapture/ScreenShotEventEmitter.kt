@@ -6,48 +6,36 @@ import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-
-import androidx.core.content.ContextCompat
 import androidx.annotation.Nullable
-
-import expo.modules.core.ModuleRegistry
+import androidx.core.content.ContextCompat
 import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.EventEmitter
-import expo.modules.core.interfaces.services.UIManager
 
-import java.lang.Exception
-
-class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
-  private val onScreenshotEventName: String = "onScreenshot"
+class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : LifecycleEventListener {
   private var isListening: Boolean = true
-  private var eventEmitter: EventEmitter
   private var previousPath: String = ""
 
-  init {
-    moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-
-    val contentObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
-      override fun onChange(selfChange: Boolean, uri: Uri?) {
-        super.onChange(selfChange, uri)
-        if (isListening) {
-          if (!hasPermissions(context)) {
-            Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
-            return
-          }
-          val path = getFilePathFromContentResolver(context, uri)
-          if (path != null && isPathOfNewScreenshot(path)) {
-            previousPath = path
-            eventEmitter.emit(onScreenshotEventName, Bundle())
-          }
+  private val contentObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+    override fun onChange(selfChange: Boolean, uri: Uri?) {
+      super.onChange(selfChange, uri)
+      if (isListening) {
+        if (!hasPermissions(context)) {
+          Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
+          return
+        }
+        val path = getFilePathFromContentResolver(context, uri)
+        if (path != null && isPathOfNewScreenshot(path)) {
+          previousPath = path
+          onCapture()
         }
       }
     }
+  }
+
+  init {
     context.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, contentObserver)
   }
 
@@ -60,7 +48,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   }
 
   override fun onHostDestroy() {
-    // Do nothing
+    context.contentResolver.unregisterContentObserver(contentObserver)
   }
 
   private fun hasPermissions(context: Context): Boolean {

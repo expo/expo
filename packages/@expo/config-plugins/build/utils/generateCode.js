@@ -55,7 +55,7 @@ function mergeContents({
     // Ensure the old generated contents are removed.
     const sanitizedTarget = removeGeneratedContents(src, tag);
     return {
-      contents: addLines(sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src, anchor, offset, [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]),
+      contents: addLines(sanitizedTarget ?? src, anchor, offset, [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]),
       didMerge: true,
       didClear: !!sanitizedTarget
     };
@@ -73,7 +73,7 @@ function removeContents({
   // Ensure the old generated contents are removed.
   const sanitizedTarget = removeGeneratedContents(src, tag);
   return {
-    contents: sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src,
+    contents: sanitizedTarget ?? src,
     didMerge: false,
     didClear: !!sanitizedTarget
   };

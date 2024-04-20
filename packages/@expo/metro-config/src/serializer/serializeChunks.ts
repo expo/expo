@@ -44,7 +44,6 @@ type ChunkSettings = {
 
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
-  includeBytecode: boolean;
 } & SerializerConfigOptions;
 
 // Convert file paths to regex matchers.
@@ -279,7 +278,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType === 'async') {
+        if (dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -287,8 +286,14 @@ export class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
-          const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
-          computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          // NOTE(kitten): We shouldn't have any async imports on non-async chunks
+          // However, due to how chunks merge, some async imports may now be pointing
+          // at entrypoint (or vendor) chunks. We omit the path so that the async import
+          // helper doesn't reload and reevaluate the entrypoint.
+          if (chunkContainingModule.isAsync) {
+            const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+            computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          }
         }
       });
     });
@@ -355,14 +360,15 @@ export class Chunk {
     });
   }
 
+  private boolishTransformOption(name: string) {
+    const value = this.graph.transformOptions?.customTransformOptions?.[name];
+    return value === true || value === 'true';
+  }
+
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
     chunks: Chunk[],
-    {
-      includeSourceMaps,
-      includeBytecode,
-      unstable_beforeAssetSerializationPlugins,
-    }: SerializeChunkOptions
+    { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
     const outputFile = this.getFilenameForConfig(serializerConfig);
@@ -455,7 +461,7 @@ export class Chunk {
       });
     }
 
-    if (includeBytecode && this.isHermesEnabled()) {
+    if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
       const adjustedSource = jsAsset.source.replace(
         /^\/\/# (sourceMappingURL)=(.*)$/gm,
         (...props) => {
@@ -565,7 +571,7 @@ function gatherChunks(
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
       if (
-        dependency.data.data.asyncType === 'async' &&
+        dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
         splitChunks
       ) {

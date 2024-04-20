@@ -70,19 +70,54 @@ export function formatSelfCommand() {
   }
 }
 
+function createPackageManager(
+  packageManager: PackageManagerName,
+  options?: PackageManager.PackageManagerOptions
+) {
+  switch (packageManager) {
+    case 'yarn':
+      return new PackageManager.YarnPackageManager(options);
+    case 'pnpm':
+      return new PackageManager.PnpmPackageManager(options);
+    case 'bun':
+      return new PackageManager.BunPackageManager(options);
+    case 'npm':
+    default:
+      return new PackageManager.NpmPackageManager(options);
+  }
+}
+
 export async function installDependenciesAsync(
   projectRoot: string,
   packageManager: PackageManagerName,
   flags: { silent: boolean } = { silent: false }
 ) {
-  const options = { cwd: projectRoot, silent: flags.silent };
-  if (packageManager === 'yarn') {
-    await new PackageManager.YarnPackageManager(options).installAsync();
-  } else if (packageManager === 'pnpm') {
-    await new PackageManager.PnpmPackageManager(options).installAsync();
-  } else if (packageManager === 'bun') {
-    await new PackageManager.BunPackageManager(options).installAsync();
-  } else {
-    await new PackageManager.NpmPackageManager(options).installAsync();
+  await createPackageManager(packageManager, {
+    cwd: projectRoot,
+    silent: flags.silent,
+  }).installAsync();
+}
+
+export async function configurePackageManager(
+  projectRoot: string,
+  packageManager: PackageManagerName,
+  flags: { silent: boolean } = { silent: false }
+) {
+  const manager = createPackageManager(packageManager, { cwd: projectRoot, ...flags });
+  switch (manager.name) {
+    case 'pnpm':
+      await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
+      break;
+
+    case 'yarn': {
+      const yarnVersion = await manager.versionAsync();
+      const majorVersion = parseInt(yarnVersion.split('.')[0], 10);
+
+      if (majorVersion >= 2) {
+        await manager.runAsync(['config', 'set', 'nodeLinker', 'node-modules']);
+      }
+
+      break;
+    }
   }
 }

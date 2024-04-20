@@ -32,6 +32,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
   customize: () => import('../src/customize/index.js').then((i) => i.expoCustomize),
+  lint: () => import('../src/lint/index.js').then((i) => i.expoLint),
 
   // Auth
   login: () => import('../src/login/index.js').then((i) => i.expoLogin),
@@ -91,8 +92,12 @@ if (!isSubcommand && args['--help']) {
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
     'export:embed': exportEmbed_unused,
+    // The export:web command is deprecated. Hide it from the help prompt.
+    'export:web': exportWeb_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
     run: _run,
+    // NOTE(cedric): Still pending the migration to ESLint's flat config
+    lint: _lint,
     // All other commands
     ...others
   } = commands;
@@ -204,11 +209,7 @@ commands[command]().then((exec) => {
     // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
     // We do this to determine how well deprecations are going before removing a command.
     const { logEventAsync } =
-      require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
-    logEventAsync('action', {
-      action: `expo ${command}`,
-      source: 'expo/cli',
-      source_version: process.env.__EXPO_VERSION,
-    });
+      require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
+    logEventAsync('action', { action: `expo ${command}` });
   }
 });

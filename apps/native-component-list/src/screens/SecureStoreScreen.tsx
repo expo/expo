@@ -142,10 +142,15 @@ function SecureStoreView() {
         value={service}
         onChangeText={setService}
       />
-      <View style={styles.authToggleContainer}>
-        <Text>Requires authentication:</Text>
-        <Switch value={requireAuth} onValueChange={toggleAuth} />
-      </View>
+      <Text style={{ marginBottom: 10 }}>
+        Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
+      </Text>
+      {SecureStore.canUseBiometricAuthentication() && (
+        <View style={styles.authToggleContainer}>
+          <Text>Requires authentication:</Text>
+          <Switch value={requireAuth} onValueChange={toggleAuth} />
+        </View>
+      )}
       {value && key && (
         <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />
       )}

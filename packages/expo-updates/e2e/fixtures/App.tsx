@@ -10,8 +10,12 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
 
 require('./includedAssets/test.png');
+require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
+
+// keep the line below for replacement in generate-test-update-bundles
+// REPLACE_WITH_CRASHING_CODE
 
 function TestValue(props: { testID: string; value: string }) {
   return (
@@ -39,7 +43,6 @@ export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
-  const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
@@ -62,10 +65,6 @@ export default function App() {
   React.useEffect(() => {
     setStartTime(Date.now());
   }, []);
-
-  Updates.useUpdateEvents((event) => {
-    setLastUpdateEventType(event.type);
-  });
 
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
@@ -179,7 +178,6 @@ export default function App() {
         testID="didCheckAndDownloadHappenInParallel"
         value={`${didCheckAndDownloadHappenInParallel}`}
       />
-      <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />

@@ -27,6 +27,9 @@ function _xml2js() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder');
+
+/** @example `<color key="textColor" systemColor="linkColor"/>` */
+
 function createConstraint([firstItem, firstAttribute], [secondItem, secondAttribute], constant) {
   return {
     $: {
@@ -96,12 +99,6 @@ function applyImageToSplashScreenXML(xml, {
         width,
         height
       }
-    }],
-    color: [{
-      $: {
-        key: 'backgroundColor',
-        systemColor: 'systemBackgroundColor'
-      }
     }]
   };
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
@@ -145,9 +142,8 @@ function ensureUniquePush(array, item) {
   return array;
 }
 function removeExisting(array, item) {
-  var _item$$;
-  const id = typeof item === 'string' ? item : (_item$$ = item.$) === null || _item$$ === void 0 ? void 0 : _item$$.id;
-  const existingItem = array === null || array === void 0 ? void 0 : array.findIndex(existingItem => existingItem.$.id === id);
+  const id = typeof item === 'string' ? item : item.$?.id;
+  const existingItem = array?.findIndex(existingItem => existingItem.$.id === id);
   if (existingItem > -1) {
     debug(`Removing existing IB item with id ${id}, from: %O`, array);
     array.splice(existingItem, 1);

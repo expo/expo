@@ -1,7 +1,7 @@
 import '../Expo.fx';
 import * as React from 'react';
 type InitialProps = {
-    exp: {
+    exp?: {
         notification?: any;
         manifestString?: string;
         [key: string]: any;

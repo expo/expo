@@ -19,7 +19,8 @@ import ExpoModulesCore
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
-  public weak var bridge: AnyObject?
+  public weak var appContext: AppContext?
+  public var shouldEmitJsEvents = false
 
   public weak var delegate: AppControllerDelegate?
   public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
@@ -28,7 +29,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     return launcher?.launchAssetUrl
   }
 
-  private let isEmergencyLaunch: Bool
   public var launchAssetURL: URL? {
     launcher?.launchAssetUrl
   }
@@ -56,6 +56,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   private var launcher: AppLauncher?
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
+  public let isActiveController = false
   public private(set) var isStarted: Bool = false
 
   private var _selectionPolicy: SelectionPolicy?
@@ -71,8 +72,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
-    self.isEmergencyLaunch = directoryDatabaseException != nil
-
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
       withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
     )
@@ -300,7 +299,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     return UpdatesModuleConstants(
       launchedUpdate: launcher?.launchedUpdate,
       embeddedUpdate: nil, // no embedded update in debug builds
-      isEmergencyLaunch: isEmergencyLaunch,
+      emergencyLaunchException: self.directoryDatabaseException,
       isEnabled: true,
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
       runtimeVersion: self.config?.runtimeVersion ?? "1",
@@ -318,19 +317,19 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.checkForUpdateAsync()"))
   }
 
   public func fetchUpdate(success successBlockArg: @escaping (FetchUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.fetchUpdateAsync()"))
   }
 
   public func getExtraParams(success successBlockArg: @escaping ([String: String]?) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.getExtraParamsAsync()"))
   }
 
   public func setExtraParam(key: String, value: String?, success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    errorBlockArg(NotAvailableInDevClientException())
+    errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
   }
 
   public func getNativeStateMachineContext(success successBlockArg: @escaping (UpdatesStateContext) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {

@@ -84,8 +84,7 @@ const withGoogleServicesFile = config => {
 };
 exports.withGoogleServicesFile = withGoogleServicesFile;
 function getGoogleServicesFilePath(config) {
-  var _config$android$googl, _config$android;
-  return (_config$android$googl = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.googleServicesFile) !== null && _config$android$googl !== void 0 ? _config$android$googl : null;
+  return config.android?.googleServicesFile ?? null;
 }
 async function setGoogleServicesFile(config, projectRoot, targetPath = DEFAULT_TARGET_PATH) {
   const partialSourcePath = getGoogleServicesFilePath(config);

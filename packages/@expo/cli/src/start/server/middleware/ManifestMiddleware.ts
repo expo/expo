@@ -29,7 +29,7 @@ import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-import { getPlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
@@ -96,6 +96,8 @@ export interface ManifestRequestInfo {
   platform: RuntimePlatform;
   /** Requested host name. */
   hostname?: string | null;
+  /** The protocol used to request the manifest */
+  protocol?: 'http' | 'https';
 }
 
 /** Project related info. */
@@ -123,6 +125,7 @@ export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
+  private platformBundlers: PlatformBundlers;
 
   constructor(
     protected projectRoot: string,
@@ -136,13 +139,18 @@ export abstract class ManifestMiddleware<
       ['/', '/manifest', '/index.exp']
     );
     this.initialProjectConfig = getConfig(projectRoot);
+    this.platformBundlers = getPlatformBundlers(projectRoot, this.initialProjectConfig.exp);
   }
 
   /** Exposed for testing. */
   public async _resolveProjectSettingsAsync({
     platform,
     hostname,
-  }: Pick<TManifestRequestInfo, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
+    protocol,
+  }: Pick<
+    TManifestRequestInfo,
+    'hostname' | 'platform' | 'protocol'
+  >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
 
@@ -174,6 +182,7 @@ export abstract class ManifestMiddleware<
         platform
       ),
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
+      protocol,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -229,6 +238,7 @@ export abstract class ManifestMiddleware<
     isExporting,
     asyncRoutes,
     routerRoot,
+    protocol,
   }: {
     platform: string;
     hostname?: string | null;
@@ -238,6 +248,7 @@ export abstract class ManifestMiddleware<
     asyncRoutes: boolean;
     isExporting?: boolean;
     routerRoot: string;
+    protocol?: 'http' | 'https';
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -246,6 +257,7 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
+      bytecode: engine === 'hermes',
       baseUrl,
       isExporting: !!isExporting,
       asyncRoutes,
@@ -254,7 +266,7 @@ export abstract class ManifestMiddleware<
 
     return (
       this.options.constructUrl({
-        scheme: 'http',
+        scheme: protocol ?? 'http',
         // hostType: this.options.location.hostType,
         hostname,
       }) + path
@@ -334,6 +346,7 @@ export abstract class ManifestMiddleware<
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
       isExporting: false,
+      bytecode: false,
     });
   }
 
@@ -359,9 +372,10 @@ export abstract class ManifestMiddleware<
 
   /** Exposed for testing. */
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
-    // Read the config
-    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro') {
+    if (
+      this.platformBundlers.web === 'metro' &&
+      this.initialProjectConfig.exp.platforms?.includes('web')
+    ) {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
       // code loading then they'll get a web bundle without a clear assertion of platform support.

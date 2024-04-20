@@ -10,16 +10,17 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
+  public let isActiveController = false
   public private(set) var isStarted: Bool = false
+  public var shouldEmitJsEvents = false
 
-  public weak var bridge: AnyObject?
+  public weak var appContext: AppContext?
 
   public weak var delegate: AppControllerDelegate?
 
   // disabled controller state machine can only be idle or restarting
   private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
 
-  internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
   private var launcher: AppLauncher?
 
@@ -27,7 +28,6 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   required init(error: Error?) {
     self.initializationError = error
-    self.isEmergencyLaunch = error != nil
   }
 
   public func start() {
@@ -64,7 +64,7 @@ public class DisabledAppController: InternalAppControllerInterface {
     return UpdatesModuleConstants(
       launchedUpdate: launchedUpdate(),
       embeddedUpdate: nil,
-      isEmergencyLaunch: self.isEmergencyLaunch,
+      emergencyLaunchException: self.initializationError,
       isEnabled: false,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,
@@ -91,21 +91,21 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping (CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.checkForUpdateAsync()"))
   }
 
   public func fetchUpdate(
     success successBlockArg: @escaping (FetchUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.fetchUpdateAsync()"))
   }
 
   public func getExtraParams(
     success successBlockArg: @escaping ([String: String]?) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.getExtraParamsAsync()"))
   }
 
   public func setExtraParam(
@@ -114,7 +114,7 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.setExtraParamAsync()"))
   }
 
   public func getNativeStateMachineContext(

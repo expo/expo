@@ -12,6 +12,9 @@
  * @returns a URL like "/foobar.bundle?platform=android&modulesOnly=true&runModule=false&runtimeBytecodeVersion=null"
  */
 export function buildUrlForBundle(bundlePath: string): string {
+  if (bundlePath.match(/^https?:\/\//)) {
+    return bundlePath;
+  }
   // NOTE(EvanBacon): This must come from the window origin (at least in dev mode).
   // Otherwise Metro will crash from attempting to load a bundle that doesn't exist.
   return '/' + bundlePath.replace(/^\/+/, '');

@@ -53,7 +53,6 @@ const withAndroidSplashLegacyMainActivity = config => {
 };
 exports.withAndroidSplashLegacyMainActivity = withAndroidSplashLegacyMainActivity;
 function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
-  var _config$androidStatus;
   debug(`Modify with language: "${language}"`);
   const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
   if (!splashConfig) {
@@ -69,7 +68,7 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
     return mainActivity;
   }
   // TODO: Translucent is weird
-  const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
+  const statusBarTranslucent = !!config.androidStatusBar?.translucent;
   const {
     resizeMode
   } = splashConfig;

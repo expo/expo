@@ -1,3 +1,5 @@
+import React
+
 /**
  The app context is an interface to a single Expo app.
  */
@@ -31,9 +33,11 @@ public final class AppContext: NSObject {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
+  @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  internal weak var legacyModulesProxy: LegacyNativeModulesProxy?
+  @objc
+  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -41,7 +45,7 @@ public final class AppContext: NSObject {
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
-  public internal(set) weak var reactBridge: RCTBridge?
+  public weak var reactBridge: RCTBridge?
 
   /**
    Underlying JSI runtime of the running app.
@@ -99,6 +103,12 @@ public final class AppContext: NSObject {
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
 
+  @objc
+  public convenience override init() {
+    self.init(config: .default)
+  }
+
+  @objc
   @discardableResult
   public func useModulesProvider(_ providerName: String) -> Self {
     return useModulesProvider(Self.modulesProvider(withName: providerName))
@@ -133,6 +143,8 @@ public final class AppContext: NSObject {
   }
 
   // MARK: - Classes
+
+  internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
   /**
    A registry containing references to JavaScript classes.
@@ -201,10 +213,10 @@ public final class AppContext: NSObject {
   }
 
   /**
-   Provides access to the event emitter from legacy module registry.
+   Provides an event emitter that is compatible with the legacy interface.
    */
   public var eventEmitter: EXEventEmitterService? {
-    return legacyModule(implementing: EXEventEmitterService.self)
+    return LegacyEventEmitterCompat(appContext: self)
   }
 
   /**
@@ -384,10 +396,23 @@ public final class AppContext: NSObject {
 
   internal func prepareRuntime() throws {
     let runtime = try runtime
-    let coreObject = try coreModuleHolder.definition.build(appContext: self)
+    let coreObject = runtime.createObject()
+
+    try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
     // Initialize `global.expo`.
     try runtime.initializeCoreObject(coreObject)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
+
+    // Install `global.expo.SharedObject`.
+    EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
+      sharedObjectRegistry?.delete(objectId)
+    }
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
@@ -397,9 +422,7 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
-    // FIXME: Release objects only from the current context.
-    // Making the registry non-global (similarly to the class registry) would fix it.
-    SharedObjectRegistry.clear()
+    sharedObjectRegistry.clear()
     classRegistry.clear()
 
     for module in moduleRegistry {

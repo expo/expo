@@ -3,8 +3,8 @@ type NativeModule = {
     __expo_module_name__?: string;
     startObserving?: () => void;
     stopObserving?: () => void;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
+    addListener?: any;
+    removeListeners?: any;
 };
 export type Subscription = {
     /**

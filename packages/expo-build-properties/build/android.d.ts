@@ -1,7 +1,6 @@
 import { ConfigPlugin } from 'expo/config-plugins';
 import type { PluginConfigType } from './pluginConfig';
 export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
-export declare const withAndroidFlipper: ConfigPlugin<PluginConfigType>;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */

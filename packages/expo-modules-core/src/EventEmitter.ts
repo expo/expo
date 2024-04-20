@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 
@@ -7,8 +7,11 @@ type NativeModule = {
   __expo_module_name__?: string;
   startObserving?: () => void;
   stopObserving?: () => void;
-  addListener: (eventName: string) => void;
-  removeListeners: (count: number) => void;
+
+  // Erase these types as they would conflict with the new NativeModule type.
+  // This EventEmitter is deprecated anyway.
+  addListener?: any;
+  removeListeners?: any;
 };
 
 // @needsAudit
@@ -21,25 +24,19 @@ export type Subscription = {
 
 export class EventEmitter {
   _listenerCount = 0;
+
+  // @ts-expect-error
   _nativeModule: NativeModule;
+
+  // @ts-expect-error
   _eventEmitter: NativeEventEmitter;
 
   constructor(nativeModule: NativeModule) {
-    // Expo modules installed through the JSI don't have `addListener` and `removeListeners` set,
-    // so if someone wants to use them with `EventEmitter`, make sure to provide these functions
-    // as they are required by `NativeEventEmitter`. This is only temporary — in the future
-    // JSI modules will have event emitter built in.
-    if (nativeModule.__expo_module_name__ && NativeModules.EXReactNativeEventEmitter) {
-      nativeModule.addListener = (...args) =>
-        NativeModules.EXReactNativeEventEmitter.addProxiedListener(
-          nativeModule.__expo_module_name__,
-          ...args
-        );
-      nativeModule.removeListeners = (...args) =>
-        NativeModules.EXReactNativeEventEmitter.removeProxiedListeners(
-          nativeModule.__expo_module_name__,
-          ...args
-        );
+    // If the native module is a new module, just return it back as it's already an event emitter.
+    // This is for backwards compatibility until we stop using this legacy class in other packages.
+    if (nativeModule.__expo_module_name__) {
+      // @ts-expect-error
+      return nativeModule;
     }
     this._nativeModule = nativeModule;
     this._eventEmitter = new NativeEventEmitter(nativeModule as any);

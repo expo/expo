@@ -1,10 +1,10 @@
 import { WebBrowserAuthSessionResult, WebBrowserOpenOptions, WebBrowserResult } from './WebBrowser.types';
+export declare function normalizeUrl(url: URL | Location): string;
 declare const _default: {
-    readonly name: string;
     openBrowserAsync(url: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserResult>;
     dismissAuthSession(): void;
     maybeCompleteAuthSession({ skipRedirectCheck }: {
-        skipRedirectCheck?: boolean | undefined;
+        skipRedirectCheck?: boolean;
     }): {
         type: 'success' | 'failed';
         message: string;

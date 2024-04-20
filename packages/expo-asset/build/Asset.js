@@ -2,9 +2,10 @@ import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
+import { downloadAsync } from './ExpoAsset';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
@@ -114,7 +115,7 @@ export class Asset {
         }
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
-        if (!IS_ENV_WITH_UPDATES_ENABLED) {
+        if (!IS_ENV_WITH_LOCAL_ASSETS) {
             // null-check is performed above with `getAssetByID`.
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({
@@ -184,7 +185,7 @@ export class Asset {
     // @needsAudit
     /**
      * Downloads the asset data to a local file in the device's cache directory. Once the returned
-     * promise is fulfilled without error, the [`localUri`](#assetlocaluri) field of this asset points
+     * promise is fulfilled without error, the [`localUri`](#localuri) field of this asset points
      * to a local file containing the asset data. The asset is only downloaded if an up-to-date local
      * file for the asset isn't already present due to an earlier download. The downloaded `Asset`
      * will be returned when the promise is resolved.

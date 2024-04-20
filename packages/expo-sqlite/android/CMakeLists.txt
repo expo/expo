@@ -10,6 +10,11 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src/main/cpp")
 file(GLOB SOURCES "${SRC_DIR}/*.cpp")
 
+separate_arguments(SQLITE_BUILDFLAGS)
+add_compile_options(
+  ${SQLITE_BUILDFLAGS}
+)
+
 add_library(
   ${PACKAGE_NAME}
   SHARED

@@ -2,7 +2,7 @@ import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { Router } from './types';
+import { ExpoRouter } from '../types/expo-router';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -14,14 +14,23 @@ export function useRouteInfo() {
   return useStoreRouteInfo();
 }
 
+/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
 export function useRootNavigation() {
   return store.navigationRef.current;
 }
 
-export function useRouter(): Router {
+/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+export function useNavigationContainerRef() {
+  return store.navigationRef;
+}
+
+export function useRouter(): ExpoRouter.Router {
   return React.useMemo(
     () => ({
       push: store.push,
+      dismiss: store.dismiss,
+      dismissAll: store.dismissAll,
+      canDismiss: store.canDismiss,
       back: store.goBack,
       replace: store.replace,
       setParams: store.setParams,

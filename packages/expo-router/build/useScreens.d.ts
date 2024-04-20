@@ -9,16 +9,14 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
      * If all children are redirect={true}, the layout will render `null` as there are no children to render.
      */
     redirect?: boolean;
-    initialParams?: {
-        [key: string]: any;
-    };
+    initialParams?: Record<string, any>;
     options?: TOptions;
     listeners?: ScreenListeners<State, EventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
     }) => ScreenListeners<State, EventMap>);
     getId?: ({ params }: {
-        params?: Record<string, any> | undefined;
+        params?: Record<string, any>;
     }) => string | undefined;
 };
 /**
@@ -28,7 +26,7 @@ export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Pick<any, string | number | symbol> & React.RefAttributes<unknown>>;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route'>): (({ params }: {
+export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>): ({ params }?: {
     params?: Record<string, any> | undefined;
-}) => string | undefined) | undefined;
+}) => string;
 //# sourceMappingURL=useScreens.d.ts.map

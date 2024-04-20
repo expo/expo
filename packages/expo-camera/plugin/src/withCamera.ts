@@ -3,7 +3,7 @@ import {
   withProjectBuildGradle,
   ConfigPlugin,
   createRunOncePlugin,
-  withInfoPlist,
+  IOSConfig,
 } from '@expo/config-plugins';
 import {
   createGeneratedHeaderComment,
@@ -80,25 +80,27 @@ function appendContents({
 
 const withCamera: ConfigPlugin<
   {
-    cameraPermission?: string;
-    microphonePermission?: string;
+    cameraPermission?: string | false;
+    microphonePermission?: string | false;
+    recordAudioAndroid?: boolean;
   } | void
-> = (config, { cameraPermission, microphonePermission } = {}) => {
-  config = withInfoPlist(config, (config) => {
-    config.modResults.NSCameraUsageDescription =
-      cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
-
-    config.modResults.NSMicrophoneUsageDescription =
-      microphonePermission || config.modResults.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
-
-    return config;
+> = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSCameraUsageDescription: CAMERA_USAGE,
+    NSMicrophoneUsageDescription: MICROPHONE_USAGE,
+  })(config, {
+    NSCameraUsageDescription: cameraPermission,
+    NSMicrophoneUsageDescription: microphonePermission,
   });
 
-  config = AndroidConfig.Permissions.withPermissions(config, [
-    'android.permission.CAMERA',
-    // Optional
-    'android.permission.RECORD_AUDIO',
-  ]);
+  config = AndroidConfig.Permissions.withPermissions(
+    config,
+    [
+      'android.permission.CAMERA',
+      // Optional
+      recordAudioAndroid && 'android.permission.RECORD_AUDIO',
+    ].filter(Boolean) as string[]
+  );
 
   return withAndroidCameraGradle(config);
 };

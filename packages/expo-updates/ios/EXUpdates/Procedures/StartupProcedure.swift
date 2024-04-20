@@ -2,7 +2,6 @@
 
 internal protocol StartupProcedureDelegate: AnyObject {
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure)
-  func startupProcedure(_ startupProcedure: StartupProcedure, didEmitLegacyUpdateEventForBridge eventType: String, body: [String: Any])
   func startupProcedure(_ startupProcedure: StartupProcedure, errorRecoveryDidRequestRelaunchWithCompletion completion: @escaping (Error?, Bool) -> Void)
 }
 
@@ -32,6 +31,10 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     self.errorRecovery.delegate = self
   }
 
+  func getLoggerTimerLabel() -> String {
+    "timer-startup"
+  }
+
   internal weak var delegate: StartupProcedureDelegate?
 
   // swiftlint:disable implicitly_unwrapped_optional
@@ -51,7 +54,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   internal var remoteLoadStatus: RemoteLoadStatus = .Idle
-  internal private(set) var isEmergencyLaunch: Bool = false
+  internal private(set) var emergencyLaunchException: Error?
 
   internal func launchedUpdate() -> Update? {
     return launcher?.launchedUpdate
@@ -91,7 +94,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   private func emergencyLaunch(fatalError error: NSError) {
-    isEmergencyLaunch = true
+    emergencyLaunchException = error
 
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
@@ -171,10 +174,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
     logger.error(message: logMessage, code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-    // Send legacy UpdateEvents to JS
-    delegate?.startupProcedure(self, didEmitLegacyUpdateEventForBridge: EnabledAppController.ErrorEventName, body: [
-      "message": error.localizedDescription
-    ])
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -204,10 +203,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         // .downloading
         self.procedureContext.processStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
       }
-      // Send UpdateEvents to JS
-      delegate?.startupProcedure(self, didEmitLegacyUpdateEventForBridge: EnabledAppController.ErrorEventName, body: [
-        "message": error.localizedDescription
-      ])
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -220,10 +215,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         assetId: nil
       )
       self.procedureContext.processStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
-      // Send UpdateEvents to JS
-      delegate?.startupProcedure(self, didEmitLegacyUpdateEventForBridge: EnabledAppController.UpdateAvailableEventName, body: [
-        "manifest": update.manifest.rawManifestJSON()
-      ])
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
@@ -237,8 +228,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         self.procedureContext.processStateEvent(UpdatesStateEventDownloadComplete())
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
-      // Send UpdateEvents to JS
-      delegate?.startupProcedure(self, didEmitLegacyUpdateEventForBridge: EnabledAppController.NoUpdateAvailableEventName, body: [:])
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
@@ -305,7 +294,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func markFailedLaunchForLaunchedUpdate() {
-    if isEmergencyLaunch {
+    if emergencyLaunchException != nil {
       return
     }
 
@@ -329,7 +318,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func markSuccessfulLaunchForLaunchedUpdate() {
-    if isEmergencyLaunch {
+    if emergencyLaunchException != nil {
       return
     }
 

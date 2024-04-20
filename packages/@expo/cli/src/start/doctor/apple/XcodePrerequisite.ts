@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import semver from 'semver';
@@ -26,32 +27,53 @@ const promptToOpenAppStoreAsync = async (message: string) => {
   }
 };
 
-/** Exposed for testing, use `getXcodeVersion` */
-export const getXcodeVersionAsync = (): string | null | false => {
-  try {
-    const last = execSync('xcodebuild -version', { stdio: 'pipe' })
-      .toString()
-      .match(/^Xcode (\d+\.\d+)/)?.[1];
-    // Convert to a semver string
-    if (last) {
-      const version = `${last}.0`;
+let _xcodeVersionPromise: Promise<{ value: string | null | false; error?: string }> | null = null;
 
-      if (!semver.valid(version)) {
-        // Not sure why this would happen, if it does we should add a more confident error message.
-        Log.error(`Xcode version is in an unknown format: ${version}`);
-        return false;
+export const getXcodeVersionAsync = async ({
+  silent,
+  force,
+}: { silent?: boolean; force?: boolean } = {}): Promise<string | null | false> => {
+  const logError = silent ? debug : Log.warn;
+  const getVersion = async (): Promise<{ value: string | null | false; error?: string }> => {
+    try {
+      const { stdout } = await spawnAsync('xcodebuild', ['-version']);
+      const last = stdout.match(/^Xcode (\d+\.\d+)/)?.[1];
+      // Convert to a semver string
+      if (last) {
+        const version = `${last}.0`;
+
+        if (!semver.valid(version)) {
+          // Not sure why this would happen, if it does we should add a more confident error message.
+          return { error: `Xcode version is in an unknown format: ${version}`, value: false };
+        }
+        return { value: version };
       }
 
-      return version;
+      // not sure what's going on
+      return {
+        error:
+          'Unable to check Xcode version. Command ran successfully but no version number was found.',
+        value: null,
+      };
+    } catch {
+      // not installed
     }
-    // not sure what's going on
-    Log.error(
-      'Unable to check Xcode version. Command ran successfully but no version number was found.'
-    );
-  } catch {
-    // not installed
+    return { value: null };
+  };
+
+  if (force) {
+    _xcodeVersionPromise = null;
   }
-  return null;
+
+  _xcodeVersionPromise = _xcodeVersionPromise ?? getVersion();
+
+  const result = await _xcodeVersionPromise;
+
+  if (result.error) {
+    logError(result.error);
+  }
+
+  return result.value;
 };
 
 /**
@@ -94,7 +116,7 @@ export class XcodePrerequisite extends Prerequisite {
    * Ensure Xcode is installed and recent enough to be used with Expo.
    */
   async assertImplementation(): Promise<void> {
-    const version = profile(getXcodeVersionAsync)();
+    const version = await profile(getXcodeVersionAsync)({ force: process.env.NODE_ENV === 'test' });
     debug(`Xcode version: ${version}`);
     if (!version) {
       // A couple different issues could have occurred, let's check them after we're past the point of no return

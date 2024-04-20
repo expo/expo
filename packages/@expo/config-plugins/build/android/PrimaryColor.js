@@ -57,7 +57,6 @@ const withPrimaryColorStyles = config => {
 };
 exports.withPrimaryColorStyles = withPrimaryColorStyles;
 function getPrimaryColor(config) {
-  var _config$primaryColor;
-  return (_config$primaryColor = config.primaryColor) !== null && _config$primaryColor !== void 0 ? _config$primaryColor : DEFAULT_PRIMARY_COLOR;
+  return config.primaryColor ?? DEFAULT_PRIMARY_COLOR;
 }
 //# sourceMappingURL=PrimaryColor.js.map

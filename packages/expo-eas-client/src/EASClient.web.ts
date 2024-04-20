@@ -1,5 +1,1 @@
-export default {
-  get name(): string {
-    return 'EASClient';
-  },
-};
+export default {};

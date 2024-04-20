@@ -1,7 +1,6 @@
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
-import { createProxy, startAsync, addListener } from './relapse/client';
 let Notifications;
 try {
   Notifications = require('expo-notifications');
@@ -34,25 +33,6 @@ function useLoaded() {
 }
 
 export default function Main() {
-  // @ts-ignore
-  if (global.DETOX) {
-    React.useEffect(() => {
-      addListener((data) => {
-        if (data.globals) {
-          for (const moduleName of data.globals) {
-            // @ts-ignore
-            global[moduleName] = createProxy(moduleName);
-          }
-        }
-      });
-
-      let stop;
-      startAsync().then((_stop) => (stop = _stop));
-
-      return () => stop && stop();
-    }, []);
-  }
-
   React.useEffect(() => {
     try {
       const subscription = Notifications.addNotificationResponseReceivedListener(

@@ -189,7 +189,7 @@ if [[ "$CONFIGURATION" = *Debug* ]]; then
 fi
 if [[ -z "$ENTRY_FILE" ]]; then
   # Set the entry JS file using the bundler's entry resolution.
-  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios relative | tail -n 1)"
+  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios absolute | tail -n 1)"
 fi
 
 if [[ -z "$CLI_PATH" ]]; then

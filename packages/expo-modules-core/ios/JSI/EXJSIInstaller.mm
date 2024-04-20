@@ -1,12 +1,25 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
+#import <ReactCommon/RCTRuntimeExecutor.h>
+#endif // React Native >=0.74
+
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/BridgelessJSCallInvoker.h>
 #import <ExpoModulesCore/LazyObject.h>
+#import <ExpoModulesCore/SharedObject.h>
+#import <ExpoModulesCore/EventEmitter.h>
+#import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
+
+/**
+ Property name of the core object in the global scope of the Expo JS runtime.
+ */
+NSString *const EXGlobalCoreObjectPropertyName = @"expo";
 
 /**
  Property name used to define the modules host object in the main object of the Expo JS runtime.
@@ -24,9 +37,30 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 
 + (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
-  jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
+  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
   return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
 }
+
+#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge withExecutor:(nonnull RCTRuntimeExecutor *)executor
+{
+  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
+
+  // Create a call invoker based on the given runtime executor.
+  auto callInvoker = std::make_shared<expo::BridgelessJSCallInvoker>([executor](std::function<void(jsi::Runtime &runtime)> &&callback) {
+    // Convert to Objective-C block so it can be captured properly.
+    __block auto callbackBlock = callback;
+
+    [executor execute:^(jsi::Runtime &runtime) {
+      callbackBlock(runtime);
+    }];
+  });
+
+  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:callInvoker] : nil;
+}
+#endif // React Native >=0.74
+
+#pragma mark - Installing JSI bindings
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
@@ -38,7 +72,9 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   }
 
   EXJavaScriptObject *global = [runtime global];
-  EXJavaScriptObject *coreObject = [runtime coreObject];
+  EXJavaScriptValue *coreProperty = [global getProperty:EXGlobalCoreObjectPropertyName];
+  NSAssert([coreProperty isObject], @"The global core property should be an object");
+  EXJavaScriptObject *coreObject = [coreProperty getObject];
 
   if ([coreObject hasProperty:modulesHostObjectPropertyName]) {
     return false;
@@ -53,6 +89,23 @@ static NSString *modulesHostObjectPropertyName = @"modules";
                      options:EXJavaScriptObjectPropertyDescriptorEnumerable];
 
   return true;
+}
+
++ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser
+{
+  expo::SharedObject::installBaseClass(*[runtime get], [releaser](expo::SharedObject::ObjectId objectId) {
+    releaser(objectId);
+  });
+}
+
++ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
+{
+  expo::EventEmitter::installClass(*[runtime get]);
+}
+
++ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime
+{
+  expo::NativeModule::installClass(*[runtime get]);
 }
 
 @end

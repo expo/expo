@@ -85,7 +85,7 @@ export default {
 
 In the above example, the environment variable `IS_DEV` is used to differentiate between the development and production environment. Based on its value, the different Application IDs or Bundle Identifiers are set for each variant.
 
-> **Note**: If you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`. You can also swap this configuration using the same approach as above.
+> **Note**: If you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps or Firebase Cloud Messaging (FCM), you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`. You can also swap this configuration using the same approach as above.
 
 ### Configuration for EAS Build
 

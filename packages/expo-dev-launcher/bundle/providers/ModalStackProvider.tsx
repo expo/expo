@@ -1,6 +1,6 @@
 import { Button } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, StyleSheet, useWindowDimensions, Pressable } from 'react-native';
+import { Animated, StyleSheet, Pressable } from 'react-native';
 
 import {
   createAsyncStack,
@@ -27,22 +27,19 @@ export function ModalStackProvider({ children, modalStack = defaultModalStack })
 
   React.useEffect(() => {
     if (hasModal) {
-      Animated.spring(animatedValue.current, {
+      Animated.timing(animatedValue.current, {
         toValue: 1,
-        useNativeDriver: false,
+        useNativeDriver: true,
+        duration: 200,
       }).start();
     } else {
-      Animated.spring(animatedValue.current, {
+      Animated.timing(animatedValue.current, {
         toValue: 0,
-        useNativeDriver: false,
+        useNativeDriver: true,
+        duration: 200,
       }).start();
     }
   }, [hasModal]);
-
-  const backgroundColor = animatedValue.current.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)'],
-  });
 
   function push(element: StackItemComponent) {
     return modalStack.push({ element });
@@ -56,7 +53,10 @@ export function ModalStackProvider({ children, modalStack = defaultModalStack })
     <ModalStackContext.Provider value={{ push, pop }}>
       {children}
       <Animated.View
-        style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+        style={[
+          StyleSheet.absoluteFillObject,
+          { backgroundColor: 'rgba(0,0,0,0.75)', opacity: animatedValue.current },
+        ]}
         pointerEvents={hasModal ? 'box-none' : 'none'}>
         <Pressable
           onPress={() => {
@@ -79,52 +79,20 @@ export function ModalStackProvider({ children, modalStack = defaultModalStack })
 }
 
 type ModalScreenProps = StackItem & {
-  onPushEnd: () => void;
-  onPopEnd: () => void;
   onClose: () => void;
 };
 
-function ModalScreen({ status, data, onPopEnd, onPushEnd }: ModalScreenProps) {
+function ModalScreen({ status, data }: ModalScreenProps) {
   const { element } = data;
-  const { height } = useWindowDimensions();
-
-  const animatedValue = React.useRef(new Animated.Value(status === 'settled' ? 1 : 0));
-
-  React.useEffect(() => {
-    if (status === 'pushing') {
-      Animated.spring(animatedValue.current, {
-        toValue: 1,
-        stiffness: 1000,
-        damping: 500,
-        mass: 3,
-        overshootClamping: true,
-        useNativeDriver: true,
-      }).start(() => onPushEnd());
-    }
-
-    if (status === 'popping') {
-      Animated.spring(animatedValue.current, {
-        toValue: 0,
-        stiffness: 1000,
-        damping: 500,
-        mass: 3,
-        overshootClamping: true,
-        useNativeDriver: true,
-      }).start(() => onPopEnd());
-    }
-  }, [status]);
-
-  const translateY = animatedValue.current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [height, 0],
-  });
 
   return (
     <Animated.View
       pointerEvents={status === 'popping' ? 'none' : 'box-none'}
       style={[
         StyleSheet.absoluteFillObject,
-        { justifyContent: 'center', transform: [{ translateY }] },
+        {
+          justifyContent: 'center',
+        },
       ]}>
       <Button.Container>{element}</Button.Container>
     </Animated.View>

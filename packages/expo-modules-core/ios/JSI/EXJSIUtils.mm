@@ -6,6 +6,8 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/JSIUtils.h>
+#import <ExpoModulesCore/NativeModule.h>
+#import <ExpoModulesCore/EventEmitter.h>
 
 namespace expo {
 
@@ -87,55 +89,6 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
   setupBlock(resolveBlock, rejectBlock);
 }
 
-std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor) {
-  std::string nativeConstructorKey("__native_constructor__");
-
-  // Create a string buffer of the source code to evaluate.
-  std::stringstream source;
-  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(...args); return this; })";
-  std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
-
-  // Evaluate the code and obtain returned value (the constructor function).
-  jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
-
-  // Set the native constructor in the prototype.
-  jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
-  jsi::PropNameID nativeConstructorPropId = jsi::PropNameID::forAscii(runtime, nativeConstructorKey);
-  jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
-    runtime,
-    nativeConstructorPropId,
-    // The paramCount is not obligatory to match, it only affects the `length` property of the function.
-    0,
-    [constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-      constructor(runtime, thisValue, args, count);
-      return jsi::Value::undefined();
-    });
-
-  jsi::Object descriptor(runtime);
-  descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
-
-  common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
-
-  return std::make_shared<jsi::Function>(klass.asFunction(runtime));
-}
-
-std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype) {
-  // Get the "Object" class.
-  jsi::Object objectClass = runtime
-    .global()
-    .getPropertyAsObject(runtime, "Object");
-
-  // Call "Object.create(prototype)" to create an object with the given prototype without calling the constructor.
-  jsi::Object object = objectClass
-    .getPropertyAsFunction(runtime, "create")
-    .callWithThis(runtime, objectClass, {
-      jsi::Value(runtime, *prototype)
-    })
-    .asObject(runtime);
-
-  return std::make_shared<jsi::Object>(std::move(object));
-}
-
 #pragma mark - Weak objects
 
 bool isWeakRefSupported(jsi::Runtime &runtime) {
@@ -183,3 +136,22 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
 }
 
 } // namespace expo
+
+@implementation EXJSIUtils
+
++ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime
+{
+  std::shared_ptr<jsi::Object> nativeModule = std::make_shared<jsi::Object>(expo::NativeModule::createInstance(*[runtime get]));
+  return [[EXJavaScriptObject alloc] initWith:nativeModule runtime:runtime];
+}
+
++ (void)emitEvent:(nonnull NSString *)eventName
+         toObject:(nonnull EXJavaScriptObject *)object
+    withArguments:(nonnull NSArray<id> *)arguments
+        inRuntime:(nonnull EXJavaScriptRuntime *)runtime
+{
+  const std::vector<jsi::Value> argumentsVector(expo::convertNSArrayToStdVector(*[runtime get], arguments));
+  expo::EventEmitter::emitEvent(*[runtime get], *[object get], [eventName UTF8String], std::move(argumentsVector));
+}
+
+@end

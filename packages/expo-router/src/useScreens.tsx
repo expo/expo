@@ -33,7 +33,7 @@ export type ScreenProps<
    * If all children are redirect={true}, the layout will render `null` as there are no children to render.
    */
   redirect?: boolean;
-  initialParams?: { [key: string]: any };
+  initialParams?: Record<string, any>;
   options?: TOptions;
 
   listeners?:
@@ -43,7 +43,7 @@ export type ScreenProps<
         navigation: any;
       }) => ScreenListeners<State, EventMap>);
 
-  getId?: ({ params }: { params?: Record<string, any> | undefined }) => string | undefined;
+  getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
 
 function getSortedChildren(
@@ -219,30 +219,36 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 }
 
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-export function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route'>) {
-  if (!route.dynamic?.length) {
-    return undefined;
+export function createGetIdForRoute(
+  route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>
+) {
+  const include = new Map<string, DynamicConvention>();
+
+  if (route.dynamic) {
+    for (const segment of route.dynamic) {
+      include.set(segment.name, segment);
+    }
   }
-  return ({ params }: { params?: Record<string, any> }) => {
-    const getPreferredId = (segment: DynamicConvention) => {
-      // Params can be undefined when there are no params in the route.
-      const preferredId = params?.[segment.name];
-      // If the route has a dynamic segment, use the matching parameter
-      // as the screen id. This enables pushing a screen like `/[user]` multiple times
-      // when the user is different.
-      if (preferredId) {
-        if (!Array.isArray(preferredId)) {
-          return preferredId;
-        } else if (preferredId.length) {
-          // Deep dynamic routes will return as an array, so we'll join them to create a
-          // fully qualified string.
-          return preferredId.join('/');
-        }
-        // Empty arrays...
+
+  return ({ params = {} } = {} as { params?: Record<string, any> }) => {
+    const segments: string[] = [];
+
+    for (const dynamic of include.values()) {
+      const value = params?.[dynamic.name];
+      if (Array.isArray(value) && value.length > 0) {
+        // If we are an array with a value
+        segments.push(value.join('/'));
+      } else if (value && !Array.isArray(value)) {
+        // If we have a value and not an empty array
+        segments.push(value);
+      } else if (dynamic.deep) {
+        segments.push(`[...${dynamic.name}]`);
+      } else {
+        segments.push(`[${dynamic.name}]`);
       }
-      return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
-    };
-    return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
+    }
+
+    return segments.join('/') ?? route.contextKey;
   };
 }
 

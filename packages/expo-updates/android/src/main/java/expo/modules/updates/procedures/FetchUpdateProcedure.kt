@@ -26,6 +26,8 @@ class FetchUpdateProcedure(
   private val launchedUpdate: UpdateEntity?,
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-fetch-update"
+
   override fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 

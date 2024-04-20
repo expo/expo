@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+import React
 import ExpoModulesCore
 
 final class RecreateReactContextProcedure: StateMachineProcedure {
@@ -15,6 +16,10 @@ final class RecreateReactContextProcedure: StateMachineProcedure {
     self.triggerReloadCommandListenersReason = triggerReloadCommandListenersReason
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+  }
+
+  func getLoggerTimerLabel() -> String {
+    "timer-recreate-react-context"
   }
 
   func run(procedureContext: ProcedureContext) {

@@ -1,5 +1,4 @@
 import { CornerDownRightIcon } from '@expo/styleguide-icons';
-import ReactMarkdown from 'react-markdown';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
@@ -16,7 +15,6 @@ import {
   CommentTextBlock,
   getMethodName,
   getTagNamesList,
-  mdComponents,
   renderParams,
   resolveTypeName,
   STYLES_APIBOX,
@@ -25,13 +23,13 @@ import {
   TypeDocKind,
   getH3CodeWithBaseNestingLevel,
   getTagData,
-  getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
+  sdkVersion: string;
   apiName?: string;
   header?: string;
   exposeInSidebar?: boolean;
@@ -39,6 +37,7 @@ export type APISectionMethodsProps = {
 
 export type RenderMethodOptions = {
   apiName?: string;
+  sdkVersion: string;
   header?: string;
   exposeInSidebar?: boolean;
   baseNestingLevel?: number;
@@ -46,7 +45,7 @@ export type RenderMethodOptions = {
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true, ...options }: RenderMethodOptions = {}
+  { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
 ) => {
   const signatures =
     (method as MethodDefinitionData).signatures ||
@@ -64,35 +63,34 @@ export const renderMethod = (
           key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
           css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <HeaderComponent tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+            <MONOSPACE
+              weight="medium"
+              css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
+              className="wrap-anywhere">
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
             </MONOSPACE>
           </HeaderComponent>
           {parameters && parameters.length > 0 && (
             <>
-              {renderParams(parameters)}
+              {renderParams(parameters, sdkVersion)}
               <br />
             </>
           )}
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          {resolveTypeName(type) !== 'undefined' && (
+          {resolveTypeName(type, sdkVersion) !== 'undefined' && (
             <>
               <BoxSectionHeader text="Returns" />
               <UL className="!list-none !ml-0">
                 <LI>
                   <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
-                  <APIDataType typeDefinition={type} />
+                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </LI>
               </UL>
               <>
                 <br />
-                {returnComment ? (
-                  <ReactMarkdown components={mdComponents}>
-                    {getCommentContent(returnComment.content)}
-                  </ReactMarkdown>
-                ) : undefined}
+                {returnComment && <CommentTextBlock comment={{ summary: returnComment.content }} />}
               </>
             </>
           )}
@@ -104,6 +102,7 @@ export const renderMethod = (
 
 const APISectionMethods = ({
   data,
+  sdkVersion,
   apiName,
   header = 'Methods',
   exposeInSidebar = true,
@@ -112,7 +111,7 @@ const APISectionMethods = ({
     <>
       <H2 key={`${header}-header`}>{header}</H2>
       {data.map((method: MethodDefinitionData | PropData) =>
-        renderMethod(method, { apiName, header, exposeInSidebar })
+        renderMethod(method, { apiName, sdkVersion, header, exposeInSidebar })
       )}
     </>
   ) : null;
@@ -121,6 +120,7 @@ export default APISectionMethods;
 
 export const APIMethod = ({
   name,
+  sdkVersion,
   comment,
   returnTypeName,
   isProperty = false,
@@ -131,6 +131,7 @@ export const APIMethod = ({
 }: {
   exposeInSidebar?: boolean;
   name: string;
+  sdkVersion: string;
   comment: string;
   returnTypeName: string;
   isProperty: boolean;
@@ -172,6 +173,6 @@ export const APIMethod = ({
       ],
       kind: isProperty ? TypeDocKind.Property : TypeDocKind.Function,
     },
-    { exposeInSidebar }
+    { sdkVersion, exposeInSidebar }
   );
 };

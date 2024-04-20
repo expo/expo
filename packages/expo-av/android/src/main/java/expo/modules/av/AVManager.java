@@ -20,6 +20,7 @@ import com.facebook.jni.HybridData;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
+import expo.modules.core.arguments.MapArguments;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
@@ -48,6 +49,7 @@ import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -116,6 +118,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
+  private ForwardingCookieHandler cookieHandler = new ForwardingCookieHandler();
 
   public AVManager(final Context reactContext) {
     mContext = reactContext;
@@ -159,6 +162,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public ModuleRegistry getModuleRegistry() {
     return mModuleRegistry;
+  }
+
+  @Override
+  public ForwardingCookieHandler getCookieHandler() {
+    return cookieHandler;
   }
 
   private UIManager getUIManager() {
@@ -261,6 +269,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
     abandonAudioFocus();
+
+    mHybridData.resetNative();
+    getUIManager().unregisterLifecycleEventListener(this);
   }
 
   // Global audio state control API

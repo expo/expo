@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -92,6 +92,7 @@ export async function installPackagesAsync(
     packageManagerArguments,
     fix,
     check,
+    dev,
   }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
@@ -113,11 +114,7 @@ export async function installPackagesAsync(
   }
 ): Promise<void> {
   // Read the project Expo config without plugins.
-  const { pkg } = getConfig(projectRoot, {
-    // Sometimes users will add a plugin to the config before installing the library,
-    // this wouldn't work unless we dangerously disable plugin serialization.
-    skipPlugins: true,
-  });
+  const pkg = getPackageJson(projectRoot);
 
   //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
 
@@ -191,7 +188,11 @@ export async function installPackagesAsync(
     });
   }
 
-  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  if (dev) {
+    await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
+  } else {
+    await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  }
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }

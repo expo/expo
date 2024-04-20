@@ -14,19 +14,15 @@ function _iosPlugins() {
   };
   return data;
 }
-const withOrientation = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setOrientation, {
+const withOrientation = exports.withOrientation = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setOrientation, {
   infoPlistProperty: 'UISupportedInterfaceOrientations',
   expoConfigProperty: 'orientation'
 }, 'withOrientation');
-exports.withOrientation = withOrientation;
 function getOrientation(config) {
-  var _config$orientation;
-  return (_config$orientation = config.orientation) !== null && _config$orientation !== void 0 ? _config$orientation : null;
+  return config.orientation ?? null;
 }
-const PORTRAIT_ORIENTATIONS = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown'];
-exports.PORTRAIT_ORIENTATIONS = PORTRAIT_ORIENTATIONS;
-const LANDSCAPE_ORIENTATIONS = ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
-exports.LANDSCAPE_ORIENTATIONS = LANDSCAPE_ORIENTATIONS;
+const PORTRAIT_ORIENTATIONS = exports.PORTRAIT_ORIENTATIONS = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown'];
+const LANDSCAPE_ORIENTATIONS = exports.LANDSCAPE_ORIENTATIONS = ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
 function getUISupportedInterfaceOrientations(orientation) {
   if (orientation === 'portrait') {
     return PORTRAIT_ORIENTATIONS;

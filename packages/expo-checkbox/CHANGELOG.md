@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Convert to function components and remove "use client" directives. ([#27438](https://github.com/expo/expo/pull/27438) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 2.7.0 — 2023-11-14
 
 ### 💡 Others

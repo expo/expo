@@ -10,12 +10,91 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 4.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Removed configurable `enableAutoSetup` support. ([#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- [iOS] Add Add bridgeless support for React-Native 0.74. ([#28174](https://github.com/expo/expo/pull/28174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26740](https://github.com/expo/expo/pull/26740), [#27118](https://github.com/expo/expo/pull/27118) by [@kudo](https://github.com/kudo), [#28111](https://github.com/expo/expo/pull/28111) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed to not return DevLauncherDevSupportManagerFactory in host handler when `enableAutoSetup` is false. ([#27068](https://github.com/expo/expo/pull/27068) by [@jayshah123](https://github.com/jayshah123))
+- Fixed missing `runtimeVersion` error when loading app with `expo-updates` and `expo-dev-client`. ([#27180](https://github.com/expo/expo/pull/27180) by [@kudo](https://github.com/kudo))
+- Remove legacy flag from command line hint. ([#27225](https://github.com/expo/expo/pull/27225) by [@simek](https://github.com/simek))
+
+### 💡 Others
+
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates SDK version. ([#26061](https://github.com/expo/expo/pull/26061) by [@wschurman](https://github.com/wschurman))
+- Fixed lint warning ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Removed [Flipper workaround](https://github.com/expo/expo/pull/18105) on Android. ([#27508](https://github.com/expo/expo/pull/27508) by [@kudo](https://github.com/kudo))
+- Remove debug settings for EAS Updates extension. ([#27603](https://github.com/expo/expo/pull/27603) by [@wschurman](https://github.com/wschurman))
+- Fixed breaking changes from React Native 0.74.0-rc.3. Also dropped support for React Native 0.73 and lower. ([#27573](https://github.com/expo/expo/pull/27573), [#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
+- [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
+- Deprecate `experimentalLaunchMode` config plugin option and introduce new `launchMode` option. ([#27845](https://github.com/expo/expo/pull/27845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+- Remove unused `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
-- Update react-native to 0.73.2. ([#26311](https://github.com/expo/expo/pull/26311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Replace deprecated `@babel/plugin-proposal-export-namespace-from` with updated, non-proposal package. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 3.6.9 - 2024-03-20
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.6. ([#27641](https://github.com/expo/expo/pull/27641) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.8 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- Fixed libhermes.so loading error when the app running on JSC jsEngine. ([#27507](https://github.com/expo/expo/pull/27507) by [@kudo](https://github.com/kudo))
+
+## 3.6.7 - 2024-02-16
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.73.4. ([#26774](https://github.com/expo/expo/pull/26774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.6 - 2024-02-01
+
+### 💡 Others
+
+- Update auth session URL to prompt user to select account. ([#26780](https://github.com/expo/expo/pull/26780) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update ModalStack animations. ([#26802](https://github.com/expo/expo/pull/26802) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.6.5 - 2024-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.4 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- [Android] Fixed unable to load dev client bundle on device. ([#26630](https://github.com/expo/expo/pull/26630) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.6.3 - 2024-01-18
+
+### 🐛 Bug fixes
+
+- Fixed HMR not working on Android. ([#26441](https://github.com/expo/expo/pull/26441) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.6.2 - 2024-01-10
 

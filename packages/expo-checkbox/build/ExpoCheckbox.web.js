@@ -1,4 +1,5 @@
 /**
+ * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -8,40 +9,37 @@
  * see: https://github.com/necolas/react-native-web
  */
 import React from 'react';
-// @ts-ignore
-import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
-export default class ExpoCheckbox extends React.PureComponent {
-    handleChange = (event) => {
+import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
+const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
+    const handleChange = (event) => {
         const value = event.nativeEvent.target.checked;
         event.nativeEvent.value = value;
-        this.props.onChange?.(event);
-        this.props.onValueChange?.(value);
+        onChange?.(event);
+        onValueChange?.(value);
     };
-    render() {
-        const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
-        const fakeControl = (<View style={[
-                styles.fakeControl,
-                value && styles.fakeControlChecked,
-                // custom color
-                !!color && { backgroundColor: value ? color : undefined, borderColor: color },
-                disabled && styles.fakeControlDisabled,
-                value && disabled && styles.fakeControlCheckedAndDisabled,
-            ]}/>);
-        const nativeControl = createElement('input', {
-            accessibilityChecked: value,
-            accessibilityDisabled: disabled,
-            checked: value,
-            disabled,
-            onChange: this.handleChange,
-            style: [styles.nativeControl, styles.cursorInherit],
-            type: 'checkbox',
-        });
-        return (<View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+    const fakeControl = (<View style={[
+            styles.fakeControl,
+            value && styles.fakeControlChecked,
+            // custom color
+            !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+            disabled && styles.fakeControlDisabled,
+            value && disabled && styles.fakeControlCheckedAndDisabled,
+        ]}/>);
+    const nativeControl = createElement('input', {
+        'aria-checked': value,
+        'aria-disabled': disabled,
+        checked: value,
+        disabled,
+        onChange: handleChange,
+        style: [styles.nativeControl, styles.cursorInherit],
+        type: 'checkbox',
+    });
+    return (<View ref={ref} {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
         {nativeControl}
         {fakeControl}
       </View>);
-    }
-}
+});
+export default ExpoCheckbox;
 const styles = StyleSheet.create({
     root: {
         // @ts-ignore

@@ -58,10 +58,10 @@ const generateQuestions = (suggestedModuleName: string): Question[] => [
       return !answer.length
         ? 'Module name cannot be empty'
         : /[A-Z]/.test(answer)
-        ? 'Module name cannot contain any upper case characters'
-        : /\s/.test(answer)
-        ? 'Module name cannot contain any whitespaces'
-        : true;
+          ? 'Module name cannot contain any upper case characters'
+          : /\s/.test(answer)
+            ? 'Module name cannot contain any whitespaces'
+            : true;
     },
   },
   {
@@ -72,8 +72,8 @@ const generateQuestions = (suggestedModuleName: string): Question[] => [
       !answer.length
         ? 'CocoaPod name cannot be empty'
         : /\s/.test(answer)
-        ? 'CocoaPod name cannot contain any whitespaces'
-        : true,
+          ? 'CocoaPod name cannot contain any whitespaces'
+          : true,
   },
   {
     name: 'javaPackage',
@@ -83,8 +83,8 @@ const generateQuestions = (suggestedModuleName: string): Question[] => [
       !answer.length
         ? 'Java Package name cannot be empty'
         : /\s/.test(answer)
-        ? 'Java Package name cannot contain any whitespaces'
-        : true,
+          ? 'Java Package name cannot contain any whitespaces'
+          : true,
   },
   {
     name: 'jsPackageName',
@@ -94,8 +94,8 @@ const generateQuestions = (suggestedModuleName: string): Question[] => [
       !answer.length
         ? 'Module name cannot be empty'
         : /\s/.test(answer)
-        ? 'Module name cannot contain any whitespaces'
-        : true,
+          ? 'Module name cannot contain any whitespaces'
+          : true,
   },
   {
     name: 'viewManager',

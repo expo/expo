@@ -1,15 +1,18 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThenEvalAsync = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchThenEvalAsync = void 0;
+const currentSrc = typeof document !== 'undefined' && document.currentScript
+    ? ('src' in document.currentScript && document.currentScript.src) || null
+    : null;
 // Basically `__webpack_require__.l`.
 function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
-    if (typeof document === 'undefined') {
+    if (typeof window === 'undefined') {
         return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
     }
     return new Promise((resolve, reject) => {
@@ -53,7 +56,15 @@ function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
             script.parentNode && script.parentNode.removeChild(script);
             reject(error);
         };
-        document.head.appendChild(script);
+        if (script.src === currentSrc) {
+            // NOTE(kitten): We always prevent `fetchThenEval` from loading the "current script".
+            // This points at our entrypoint bundle, and we should never reload and reevaluate the
+            // entrypoint bundle
+            resolve();
+        }
+        else {
+            document.head.appendChild(script);
+        }
     });
 }
 exports.fetchThenEvalAsync = fetchThenEvalAsync;

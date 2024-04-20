@@ -16,6 +16,9 @@ export const expoRunAndroid: Command = async (argv) => {
     '--no-install': Boolean,
     '--no-bundler': Boolean,
     '--variant': String,
+    // Unstable, temporary fallback to disable active archs only behavior
+    // TODO: replace with better fallback option, like free-form passing gradle props
+    '--all-arch': Boolean,
 
     '--port': Number,
     // Aliases
@@ -68,6 +71,7 @@ export const expoRunAndroid: Command = async (argv) => {
     bundler: !args['--no-bundler'],
     port: args['--port'],
     variant: args['--variant'],
+    allArch: args['--all-arch'],
 
     // Custom parsed args
     device: parsed.args['--device'],

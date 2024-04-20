@@ -11,7 +11,10 @@ import ExpoModulesCore
 internal final class UpdatesLogger {
   static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
+  private let logger = Logger(logHandlers: [
+    createOSLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY),
+    createPersistentFileLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+  ])
 
   // MARK: - Public logging functions
 
@@ -21,7 +24,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .trace, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .trace, duration: nil, updateId: updateId, assetId: assetId)
     logger.trace(entry)
   }
 
@@ -42,7 +45,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .debug, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .debug, duration: nil, updateId: updateId, assetId: assetId)
     logger.debug(entry)
   }
 
@@ -63,7 +66,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .info, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .info, duration: nil, updateId: updateId, assetId: assetId)
     logger.info(entry)
   }
 
@@ -84,7 +87,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .warn, duration: nil, updateId: updateId, assetId: assetId)
     logger.warn(entry)
   }
 
@@ -105,7 +108,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .error, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .error, duration: nil, updateId: updateId, assetId: assetId)
     logger.error(entry)
   }
 
@@ -122,7 +125,7 @@ internal final class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .fatal, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: message, code: code, level: .fatal, duration: nil, updateId: updateId, assetId: assetId)
     logger.fatal(entry)
   }
 
@@ -133,10 +136,17 @@ internal final class UpdatesLogger {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
+  func startTimer(label: String) -> LoggerTimer {
+    return logger.startTimer { duration in
+      self.logEntryString(message: label, code: .none, level: .timer, duration: duration, updateId: nil, assetId: nil)
+    }
+  }
+
   func logEntryString(
     message: String,
-    code: UpdatesErrorCode = .none,
-    level: LogType = .trace,
+    code: UpdatesErrorCode,
+    level: LogType,
+    duration: Double?,
     updateId: String?,
     assetId: String?
   ) -> String {
@@ -152,7 +162,8 @@ internal final class UpdatesLogger {
       level: "\(level)",
       updateId: updateId,
       assetId: assetId,
-      stacktrace: symbols
+      stacktrace: symbols,
+      duration: duration
     )
     return "\(logEntry.asString() ?? logEntry.message)"
   }

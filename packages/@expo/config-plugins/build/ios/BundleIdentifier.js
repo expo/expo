@@ -79,8 +79,7 @@ const withBundleIdentifier = (config, {
   bundleIdentifier
 }) => {
   return (0, _iosPlugins().withXcodeProject)(config, async config => {
-    var _config$ios;
-    const bundleId = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bundleIdentifier;
+    const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
     // Should never happen.
     (0, _assert().default)(bundleId, '`bundleIdentifier` must be defined in the app config (`ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.');
     config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId, false);
@@ -89,8 +88,7 @@ const withBundleIdentifier = (config, {
 };
 exports.withBundleIdentifier = withBundleIdentifier;
 function getBundleIdentifier(config) {
-  var _config$ios$bundleIde, _config$ios2;
-  return (_config$ios$bundleIde = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.bundleIdentifier) !== null && _config$ios$bundleIde !== void 0 ? _config$ios$bundleIde : null;
+  return config.ios?.bundleIdentifier ?? null;
 }
 
 /**
@@ -183,7 +181,7 @@ function updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updat
     item.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = `"${bundleIdentifier}"`;
     if (updateProductName) {
       const productName = bundleIdentifier.split('.').pop();
-      if (!(productName !== null && productName !== void 0 && productName.includes('$'))) {
+      if (!productName?.includes('$')) {
         item.buildSettings.PRODUCT_NAME = productName;
       }
     }

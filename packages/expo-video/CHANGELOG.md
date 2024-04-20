@@ -5,14 +5,33 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
- 
-- [Android] Add fullscreen support. ([#26159](https://github.com/expo/expo/pull/26159) by [@behenate](https://github.com/behenate))
-- [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
-- Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.1.0 — 2024-04-18
+
+### 🎉 New features
+
+- Create a docs page. ([#27854](https://github.com/expo/expo/pull/27854) by [@behenate](https://github.com/behenate))
+- Add support for events on Android and iOS. ([#27632](https://github.com/expo/expo/pull/27632) by [@behenate](https://github.com/behenate))
+- Add support for `loop`, `playbackRate`, `preservesPitch` and `currentTime` properties. ([#27367](https://github.com/expo/expo/pull/27367) by [@behenate](https://github.com/behenate))
+- Add background playback support. ([#27110](https://github.com/expo/expo/pull/27110) by [@behenate](https://github.com/behenate))
+- Add DRM support for Android and iOS. ([#26465](https://github.com/expo/expo/pull/26465) by [@behenate](https://github.com/behenate))
+- [Android] Add Picture in Picture support. ([#26368](https://github.com/expo/expo/pull/26368) by [@behenate](https://github.com/behenate))
+- [Android] Add fullscreen support. ([#26159](https://github.com/expo/expo/pull/26159) by [@behenate](https://github.com/behenate))
+- [web] Add volume ([#26137](https://github.com/expo/expo/pull/26137) by [@behenate](https://github.com/behenate))
+- Initial release for Android 🎉 ([#26033](https://github.com/expo/expo/pull/26033) by [@behenate](https://github.com/behenate))
+- [Android] Adds support for boarders. ([#27003](https://github.com/expo/expo/pull/27003) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fix memory leaks on fast refresh. ([#27428](https://github.com/expo/expo/pull/27428) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 0.3.1 — 2023-12-12
 

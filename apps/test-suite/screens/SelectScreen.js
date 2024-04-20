@@ -189,14 +189,15 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const isRunningInDetox = Constants.manifest && Constants.manifest.slug === 'bare-expo';
+  const isRunningInBareExpo =
+    Constants.__unsafeNoWarnManifest && Constants.__unsafeNoWarnManifest.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (
     <View
       style={[
         styles.buttonRow,
-        { paddingBottom: isRunningInDetox ? 0 : bottom, paddingLeft: left, paddingRight: right },
+        { paddingBottom: isRunningInBareExpo ? 0 : bottom, paddingLeft: left, paddingRight: right },
       ]}>
       <FooterButton
         style={{ paddingVertical, alignItems: 'flex-start' }}

@@ -25,7 +25,6 @@ We at Expo recommend using platform agnostic primitives like `View`, `Image`, an
   - For example, the `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component can accept styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no more having to create monkey patches to use `href` on a `Text` element.
-- Every component is tested render **tested universally** for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme). Each element is also **E2E tested** on iOS with Detox, and web with [`jest-expo-puppeteer`](https://www.npmjs.com/package/jest-expo-puppeteer).
 - This package is completely side-effect free!
 
 ## Setup

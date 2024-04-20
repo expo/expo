@@ -15,16 +15,14 @@ function _iosPlugins() {
   };
   return data;
 }
-const withVersion = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setVersion, {
+const withVersion = exports.withVersion = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setVersion, {
   infoPlistProperty: 'CFBundleShortVersionString',
   expoConfigProperty: 'version'
 }, 'withVersion');
-exports.withVersion = withVersion;
-const withBuildNumber = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setBuildNumber, {
+const withBuildNumber = exports.withBuildNumber = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setBuildNumber, {
   infoPlistProperty: 'CFBundleVersion',
   expoConfigProperty: 'ios.buildNumber'
 }, 'withBuildNumber');
-exports.withBuildNumber = withBuildNumber;
 function getVersion(config) {
   return config.version || '1.0.0';
 }
@@ -35,8 +33,7 @@ function setVersion(config, infoPlist) {
   };
 }
 function getBuildNumber(config) {
-  var _config$ios;
-  return (_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.buildNumber ? config.ios.buildNumber : '1';
+  return config.ios?.buildNumber ? config.ios.buildNumber : '1';
 }
 function setBuildNumber(config, infoPlist) {
   return {

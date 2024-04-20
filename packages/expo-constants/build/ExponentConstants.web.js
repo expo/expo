@@ -1,5 +1,4 @@
-import { ExecutionEnvironment, } from './Constants.types';
-const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+import { ExecutionEnvironment } from './Constants.types';
 const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 function getBrowserName() {
     if (typeof navigator !== 'undefined' && typeof navigator.userAgent === 'string') {
@@ -35,36 +34,13 @@ export default {
     get executionEnvironment() {
         return ExecutionEnvironment.Bare;
     },
-    get installationId() {
-        let installationId;
-        try {
-            installationId = localStorage.getItem(ID_KEY);
-            if (installationId == null || typeof installationId !== 'string') {
-                installationId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
-                localStorage.setItem(ID_KEY, installationId);
-            }
-        }
-        catch {
-            installationId = _sessionId;
-        }
-        finally {
-            return installationId;
-        }
-    },
     get sessionId() {
         return _sessionId;
-    },
-    get platform() {
-        return { web: typeof navigator !== 'undefined' ? { ua: navigator.userAgent } : undefined };
     },
     get isHeadless() {
         if (typeof navigator === 'undefined')
             return true;
         return /\bHeadlessChrome\//.test(navigator.userAgent);
-    },
-    get isDevice() {
-        // TODO: Bacon: Possibly want to add information regarding simulators
-        return true;
     },
     get expoVersion() {
         return this.manifest.sdkVersion || null;
@@ -84,12 +60,6 @@ export default {
     },
     get deviceName() {
         return getBrowserName();
-    },
-    get nativeAppVersion() {
-        return null;
-    },
-    get nativeBuildVersion() {
-        return null;
     },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.

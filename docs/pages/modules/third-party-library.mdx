@@ -1,5 +1,5 @@
 ---
-title: Use third-party native libraries in Expo
+title: Wrap third-party native libraries
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
@@ -21,6 +21,7 @@ The iOS library is inspired by the Android library, so they both have a very sim
 This makes them a good example for this tutorial.
 
 <Step label="1">
+
 ## Create a new module
 
 You can start by creating a new empty Expo module. We're creating a separate project for this tutorial. However, you can create a new module inside your existing project.
@@ -79,7 +80,7 @@ In another terminal window, compile and run the example app:
 
 Now, add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
 
-```diff android/build.grade
+```diff android/build.gradle
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
@@ -113,7 +114,7 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
-```diff android/build.grade
+```diff android/build.gradle
   repositories {
     mavenCentral()
 +   flatDir {
@@ -124,7 +125,7 @@ Inside the **android** directory, create another directory called **libs** and p
 
 Finally, add the dependency to the `dependencies` list. Instead of the filename, use the package path, which includes the `@aar` at the end:
 
-```diff android/build.grade
+```diff android/build.gradle
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"

@@ -151,14 +151,14 @@ describe('_getProjectHostnameAsync', () => {
     vol.fromJSON({}, projectRoot);
 
     const hostname = await ngrok._getProjectHostnameAsync();
-    expect(hostname).toEqual(expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/));
+    expect(hostname).toEqual(expect.stringMatching(/.*-anonymous-3000\.exp\.direct/));
 
     // URL-safe
     expect(encodeURIComponent(hostname)).toEqual(hostname);
 
     // Works twice in a row...
     expect(await ngrok._getProjectHostnameAsync()).toEqual(
-      expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/)
+      expect.stringMatching(/.*-anonymous-3000\.exp\.direct/)
     );
 
     // randomness is persisted

@@ -11,7 +11,7 @@ interface Destructible {
 }
 
 @DoNotStrip
-class JNIDeallocator(private val shouldCreateDestructorThread: Boolean = true) {
+class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) {
   /**
    * A [PhantomReference] queue managed by JVM
    */

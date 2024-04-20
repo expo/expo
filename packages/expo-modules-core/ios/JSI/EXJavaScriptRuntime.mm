@@ -18,28 +18,9 @@
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
-
-namespace {
-
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func) override {
-    func();
-  }
-
-  void invokeSync(std::function<void()> &&func) override {
-    func();
-  }
-
-  ~SyncCallInvoker() override = default;
-};
-
-} // namespace
+#import <ExpoModulesCore/TestingSyncJSCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -70,7 +51,7 @@ public:
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = std::make_shared<SyncCallInvoker>();
+    _jsCallInvoker = std::make_shared<expo::TestingSyncJSCallInvoker>(_runtime);
   }
   return self;
 }
@@ -131,7 +112,20 @@ public:
       if (error == nil) {
         return expo::convertObjCObjectToJSIValue(runtime, result);
       } else {
-        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+        // `expo::makeCodedError` doesn't work during unit tests, so we construct Error and add a code,
+        // instead of using the CodedError subclass.
+        jsi::String jsCode = expo::convertNSStringToJSIString(runtime, error.userInfo[@"code"]);
+        jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, error.userInfo[@"message"]);
+        jsi::Value error = runtime
+          .global()
+          .getProperty(runtime, "Error")
+          .asObject(runtime)
+          .asFunction(runtime)
+          .callAsConstructor(runtime, {
+            jsi::Value(runtime, jsMessage)
+          });
+        error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
+        throw jsi::JSError(runtime, jsi::Value(runtime, error));
       }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
@@ -167,21 +161,41 @@ public:
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
     EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
+    // Returning something else than `this` is not supported in native constructors.
     constructor(caller, arguments);
+
+    return jsi::Value(runtime, thisValue);
   };
-  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], jsConstructor);
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
 {
-  std::shared_ptr<jsi::Object> object = expo::createObjectWithPrototype(*_runtime, [prototype getShared]);
+  std::shared_ptr<jsi::Object> object = std::make_shared<jsi::Object>(expo::common::createObjectWithPrototype(*_runtime, [prototype getShared].get()));
   return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
+}
+
+#pragma mark - Shared objects
+
+- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
+                                            constructor:(nonnull ClassConstructorBlock)constructor
+{
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
+    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
+
+    constructor(caller, arguments);
+    return jsi::Value(runtime, thisValue);
+  };
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::SharedObject::createClass(*_runtime, [name UTF8String], jsConstructor));
+  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 #pragma mark - Script evaluation
@@ -209,6 +223,19 @@ public:
     }];
   }
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
+}
+
+#pragma mark - Runtime execution
+
+- (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
+{
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
+    block();
+  });
+#else
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
+#endif
 }
 
 #pragma mark - Private

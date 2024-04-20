@@ -32,13 +32,8 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
           <Fragment key={project.id}>
             <ProjectsListItem
               id={project.id}
-              // iconUrl will be an empty string if the project has no icon
-              imageURL={project.iconUrl || undefined}
-              fullName={project.fullName}
-              updateBranches={project.updateBranches}
               name={project.name}
-              subtitle={project.packageName || project.fullName}
-              sdkVersion={project.sdkVersion}
+              subtitle={project.fullName}
               first={i === 0}
               last={i === apps.length - 1 && !showMore}
             />

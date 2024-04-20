@@ -17,7 +17,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
-  #if os(iOS)
+  #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {

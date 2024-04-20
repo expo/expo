@@ -61,11 +61,9 @@ async function readXMLAsync(options) {
   return _processAndroidXML(manifest);
 }
 function _processAndroidXML(manifest) {
-  var _manifest$resources;
   // For strings.xml
-  if (Array.isArray(manifest === null || manifest === void 0 ? void 0 : (_manifest$resources = manifest.resources) === null || _manifest$resources === void 0 ? void 0 : _manifest$resources.string)) {
-    for (const string of manifest === null || manifest === void 0 ? void 0 : (_manifest$resources2 = manifest.resources) === null || _manifest$resources2 === void 0 ? void 0 : _manifest$resources2.string) {
-      var _manifest$resources2;
+  if (Array.isArray(manifest?.resources?.string)) {
+    for (const string of manifest?.resources?.string) {
       if (string.$.translatable === 'false' || string.$.translatable === false) {
         continue;
       }
@@ -87,15 +85,13 @@ function format(manifest, {
   if (typeof manifest === 'string') {
     xmlInput = manifest;
   } else if (manifest.toString) {
-    var _manifest$resources3;
     const builder = new (_xml2js().Builder)({
       headless: true
     });
 
     // For strings.xml
-    if (Array.isArray(manifest === null || manifest === void 0 ? void 0 : (_manifest$resources3 = manifest.resources) === null || _manifest$resources3 === void 0 ? void 0 : _manifest$resources3.string)) {
-      for (const string of manifest === null || manifest === void 0 ? void 0 : (_manifest$resources4 = manifest.resources) === null || _manifest$resources4 === void 0 ? void 0 : _manifest$resources4.string) {
-        var _manifest$resources4;
+    if (Array.isArray(manifest?.resources?.string)) {
+      for (const string of manifest?.resources?.string) {
         if (string.$.translatable === 'false' || string.$.translatable === false) {
           continue;
         }

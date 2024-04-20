@@ -9,12 +9,13 @@ import { Platform } from 'react-native';
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'Video';
-const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
-const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
-const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
+const imageRemoteSource = { uri: 'https://via.placeholder.com/350x150' };
+const videoRemoteSource = { uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
+const redirectingVideoRemoteSource = { uri: 'https://bit.ly/2mcW40Q' };
 const mp4Source = require('../assets/big_buck_bunny.mp4');
-const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
-const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
+const hlsStreamUri =
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+const hlsStreamUriWithRedirect = 'https://t.ly/fg37A';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
 let portraitVideoSource = null;
 let imageSource = null;

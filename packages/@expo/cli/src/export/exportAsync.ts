@@ -22,4 +22,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   // Final notes
   Log.log(`App exported to: ${options.outputDir}`);
+
+  // Force exit because various threading and analytics processes could be hanging, this command needs to run as fast as possible.
+  process.exit(0);
 }

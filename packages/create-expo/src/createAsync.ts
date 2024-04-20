@@ -12,6 +12,7 @@ import * as Template from './Template';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import {
+  configurePackageManager,
   installDependenciesAsync,
   PackageManagerName,
   resolvePackageManager,
@@ -190,6 +191,7 @@ async function installNodeDependenciesAsync(
   packageManager: PackageManagerName
 ): Promise<void> {
   try {
+    await configurePackageManager(projectRoot, packageManager, { silent: false });
     await installDependenciesAsync(projectRoot, packageManager, { silent: false });
   } catch (error: any) {
     debug(`Error installing node modules: %O`, error);

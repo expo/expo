@@ -1,13 +1,14 @@
 package expo.modules.image
 
 import android.graphics.drawable.Drawable
-import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.Headers
+import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
@@ -18,35 +19,49 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.views.ViewDefinitionBuilder
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, promise: Promise ->
+    OnCreate {
+      appContext.reactContext?.registerComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
+    OnDestroy {
+      appContext.reactContext?.unregisterComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
+    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: Map<String, String>?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       var imagesLoaded = 0
       var failed = false
 
+      val headers = headersMap?.let {
+        LazyHeaders.Builder().apply {
+          it.forEach { (key, value) ->
+            addHeader(key, value)
+          }
+        }.build()
+      } ?: Headers.DEFAULT
+
       urls.forEach {
         Glide
           .with(context)
-          .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
+          .load(GlideUrl(it, headers)) //  Use `load` instead of `download` to store the asset in the memory cache
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
-          .downsample(NoopDownsampleStrategy())
-          .apply {
-            if (cachePolicy == CachePolicy.MEMORY) {
-              diskCacheStrategy(DiskCacheStrategy.NONE)
-            }
+          .downsample(NoopDownsampleStrategy)
+          .customize(`when` = cachePolicy == CachePolicy.MEMORY) {
+            diskCacheStrategy(DiskCacheStrategy.NONE)
           }
           .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
@@ -81,13 +96,13 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction("clearMemoryCache") {
+    AsyncFunction<Boolean>("clearMemoryCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       Glide.get(activity).clearMemory()
       return@AsyncFunction true
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("clearDiskCache") {
+    AsyncFunction<Boolean>("clearDiskCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       activity.let {
         Glide.get(activity).clearDiskCache()
@@ -102,18 +117,12 @@ class ExpoImageModule : Module() {
       val glideUrl = GlideUrl(cacheKey)
       val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
 
-      try {
+      return@AsyncFunction try {
         val file = target.get()
-        val path = file.absolutePath
-
-        if (path != null) {
-          return@AsyncFunction path
-        }
+        file.absolutePath
       } catch (e: Exception) {
-        return@AsyncFunction null
+        null
       }
-
-      return@AsyncFunction null
     }
 
     View(ExpoImageViewWrapper::class) {
@@ -239,6 +248,10 @@ class ExpoImageModule : Module() {
         view.autoplay = autoplay ?: true
       }
 
+      Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->
+        view.decodeFormat = format ?: DecodeFormat.ARGB_8888
+      }
+
       AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->
         view.setIsAnimating(true)
       }
@@ -257,16 +270,5 @@ class ExpoImageModule : Module() {
         }
       }
     }
-  }
-}
-
-// TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
-@Suppress("FunctionName")
-private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
-  vararg props: Pair<String, CustomValueType>,
-  noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
-) {
-  for ((name, value) in props) {
-    Prop<T, PropType>(name) { view, prop -> body(view, value, prop) }
   }
 }

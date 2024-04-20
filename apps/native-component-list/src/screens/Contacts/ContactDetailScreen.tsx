@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
@@ -31,13 +31,13 @@ export default function ContactDetailScreen(props: any) {
       headerRight: () => (
         <HeaderContainerRight>
           <HeaderIconButton
-            name="md-share"
+            name="share"
             onPress={async () => {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
             }}
           />
           <HeaderIconButton
-            name="md-open"
+            name="open"
             onPress={async () => {
               await Contacts.presentFormAsync(props.route.params.id);
               console.log('the native contact form has been closed');
@@ -45,7 +45,7 @@ export default function ContactDetailScreen(props: any) {
           />
           {isIos && (
             <HeaderIconButton
-              name="md-copy"
+              name="copy"
               onPress={async () => {
                 await ContactUtils.cloneAsync(props.route.params.id);
                 props.navigation.goBack();
@@ -167,7 +167,7 @@ function ContactDetailView({
               transform = {
                 value: item.url,
                 onPress: () => {
-                  const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
+                  const webUrl = item.url.indexOf('://') === -1 ? 'https://' + item.url : item.url;
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -193,8 +193,8 @@ function ContactDetailView({
                   onPress: () =>
                     Linking.openURL(
                       Platform.select<string>({
-                        ios: `http://maps.apple.com/maps?daddr=${targetUriAdress}`,
-                        default: `http://maps.google.com/maps?daddr=${targetUriAdress}`,
+                        ios: `https://maps.apple.com/maps?daddr=${targetUriAdress}`,
+                        default: `https://maps.google.com/maps?daddr=${targetUriAdress}`,
                       })
                     ),
                 };
@@ -338,7 +338,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
+        <Ionicons name={icon as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

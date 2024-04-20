@@ -63,7 +63,7 @@ Rename files to convert them to TypeScript. For example, rename **App.js** to **
 
 <Terminal cmd={['$ mv App.js App.tsx']} />
 
-> **For SDK 48 and higher**, running `npx expo start` prompts you to install the required dependencies, such as `typescript` and `@types/react`. **For SDK 47 and below**, the command also prompts you to install `@types/react-native` as an additional dependency.
+> **For SDK 48 and higher**, running `npx expo start` prompts you to install the required dependencies, such as `typescript` and `@types/react`.
 
 For npm, add the following `script` to the **package.json**:
 
@@ -85,7 +85,7 @@ You can now run `npm run ts:check` or `yarn tsc` to type-check the project.
 
 A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) (which can be overwritten in your project's **tsconfig.json**):
 
-You can automatically generate a **tsconfig.json** file by running the command: 
+You can automatically generate a **tsconfig.json** file by running the command:
 
 <Terminal cmd={['$ npx expo customize tsconfig.json']} />
 
@@ -133,7 +133,7 @@ Consider the following when using path aliases:
 - Restart Expo CLI after changing **tsconfig.json** to update path aliases. You don't need to clear the Metro cache when the aliases change.
 - If not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Path aliases add additional resolution time when defined.
-- Path aliases are only supported by Metro (including Metro web) and not by `@expo/webpack-config`.
+- Path aliases are only supported by Metro (including Metro web) and not by the deprecated `@expo/webpack-config` package.
 - Bare projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
 <Tabs>
@@ -276,7 +276,7 @@ module.exports = config;
 **app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup:
 
 ```ts app.config.ts
-import 'ts-node/register' // Add this to import TypeScript files
+import 'ts-node/register'; // Add this to import TypeScript files
 import { ExpoConfig } from 'expo/config';
 
 // In SDK 46 and lower, use the following import instead:

@@ -304,7 +304,7 @@ export async function test(t) {
 
       t.it('presents a notification with attachments', async () => {
         const fileUri = FileSystem.documentDirectory + 'expo-notifications-test-image.jpg';
-        await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
+        await FileSystem.downloadAsync('https://placekitten.com/200/300', fileUri);
         await Notifications.presentNotificationAsync({
           title: 'Look at that kitten! ➡️',
           body: 'What a cutie!',

@@ -13,12 +13,13 @@ import { RequireContext } from '../types';
 export declare class RouterStore {
     routeNode: RouteNode | null;
     rootComponent: ComponentType;
-    linking: ExpoLinkingOptions | undefined;
+    linking?: ExpoLinkingOptions;
     private hasAttemptedToHideSplash;
-    initialState: ResultState | undefined;
-    rootState: ResultState | undefined;
-    nextState: ResultState | undefined;
-    routeInfo?: UrlObject | undefined;
+    initialState?: ResultState;
+    rootState?: ResultState;
+    nextState?: ResultState;
+    routeInfo?: UrlObject;
+    splashScreenAnimationFrame?: number;
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
@@ -28,7 +29,10 @@ export declare class RouterStore {
     goBack: any;
     canGoBack: any;
     push: any;
+    dismiss: any;
     replace: any;
+    dismissAll: any;
+    canDismiss: any;
     setParams: any;
     navigate: any;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, initialLocation?: URL): void;
@@ -41,6 +45,7 @@ export declare class RouterStore {
     snapshot: () => this;
     rootStateSnapshot: () => ResultState;
     routeInfoSnapshot: () => UrlObject;
+    cleanup(): void;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

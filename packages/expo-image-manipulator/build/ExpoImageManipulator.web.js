@@ -38,9 +38,6 @@ function loadImageAsync(uri) {
     });
 }
 export default {
-    get name() {
-        return 'ExpoImageManipulator';
-    },
     async manipulateAsync(uri, actions = [], options) {
         const originalCanvas = await loadImageAsync(uri);
         const resultCanvas = actions.reduce((canvas, action) => {

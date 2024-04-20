@@ -6,7 +6,7 @@
 #include "../JavaReferencesCache.h"
 #include "../Exceptions.h"
 #include "../JavaScriptTypedArray.h"
-#include "../JSIInteropModuleRegistry.h"
+#include "../JSIContext.h"
 #include "../JavaScriptObject.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
@@ -27,14 +27,13 @@ namespace expo {
 jobject IntegerFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto &integerClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Integer");
   jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
   return env->NewObject(integerClass.clazz, integerConstructor,
-                        static_cast<int>(value.getNumber()));
+                        static_cast<int>(value.asNumber()));
 }
 
 bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -44,14 +43,13 @@ bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
 jobject LongFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto &longClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Long");
   jmethodID longConstructor = longClass.getMethod("<init>", "(J)V");
   return env->NewObject(longClass.clazz, longConstructor,
-                        static_cast<jlong>(value.getNumber()));
+                        static_cast<jlong>(value.asNumber()));
 }
 
 bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -61,14 +59,13 @@ bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value
 jobject FloatFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto &floatClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Float");
   jmethodID floatConstructor = floatClass.getMethod("<init>", "(F)V");
   return env->NewObject(floatClass.clazz, floatConstructor,
-                        static_cast<float>(value.getNumber()));
+                        static_cast<float>(value.asNumber()));
 }
 
 bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -78,13 +75,12 @@ bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &valu
 jobject BooleanFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto &booleanClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Boolean");
   jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
-  return env->NewObject(booleanClass.clazz, booleanConstructor, value.getBool());
+  return env->NewObject(booleanClass.clazz, booleanConstructor, value.asBool());
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -94,13 +90,12 @@ bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
 jobject DoubleFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto &doubleClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Double");
   jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
-  return env->NewObject(doubleClass.clazz, doubleConstructor, value.getNumber());
+  return env->NewObject(doubleClass.clazz, doubleConstructor, value.asNumber());
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -110,10 +105,9 @@ bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &val
 jobject StringFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return env->NewStringUTF(value.getString(rt).utf8(rt).c_str());
+  return env->NewStringUTF(value.asString(rt).utf8(rt).c_str());
 }
 
 bool StringFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -123,7 +117,6 @@ bool StringFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &val
 jobject ReadableNativeArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto dynamic = jsi::dynamicFromValue(rt, value);
@@ -140,7 +133,6 @@ bool ReadableNativeArrayFrontendConverter::canConvert(
 jobject ReadableNativeMapArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto dynamic = jsi::dynamicFromValue(rt, value);
@@ -156,10 +148,9 @@ bool ReadableNativeMapArrayFrontendConverter::canConvert(
 jobject ByteArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  auto typedArray = TypedArray(rt, value.getObject(rt));
+  auto typedArray = TypedArray(rt, value.asObject(rt));
   size_t length = typedArray.byteLength(rt);
   auto byteArray = jni::JArrayByte::newArray(length);
   byteArray->setRegion(0, length, static_cast<const signed char *>(typedArray.getRawPointer(rt)));
@@ -183,13 +174,13 @@ bool ByteArrayFrontendConverter::canConvert(
 jobject TypedArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
+  JSIContext *jsiContext = getJSIContext(rt);
   return JavaScriptTypedArray::newInstance(
-    moduleRegistry,
-    moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Object>(value.getObject(rt))
+    jsiContext,
+    jsiContext->runtimeHolder->weak_from_this(),
+    std::make_shared<jsi::Object>(value.asObject(rt))
   ).release();
 }
 
@@ -203,12 +194,12 @@ bool TypedArrayFrontendConverter::canConvert(
 jobject JavaScriptValueFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
+  JSIContext *jsiContext = getJSIContext(rt);
   return JavaScriptValue::newInstance(
-    moduleRegistry,
-    moduleRegistry->runtimeHolder->weak_from_this(),
+    jsiContext,
+    jsiContext->runtimeHolder->weak_from_this(),
     // TODO(@lukmccall): make sure that copy here is necessary
     std::make_shared<jsi::Value>(jsi::Value(rt, value))
   ).release();
@@ -221,13 +212,13 @@ bool JavaScriptValueFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::V
 jobject JavaScriptObjectFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
+  JSIContext *jsiContext = getJSIContext(rt);
   return JavaScriptObject::newInstance(
-    moduleRegistry,
-    moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Object>(value.getObject(rt))
+    jsiContext,
+    jsiContext->runtimeHolder->weak_from_this(),
+    std::make_shared<jsi::Object>(value.asObject(rt))
   ).release();
 }
 
@@ -241,13 +232,13 @@ bool JavaScriptObjectFrontendConverter::canConvert(
 jobject JavaScriptFunctionFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
+  JSIContext *jsiContext = getJSIContext(rt);
   return JavaScriptFunction::newInstance(
-    moduleRegistry,
-    moduleRegistry->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::Function>(value.getObject(rt).asFunction(rt))
+    jsiContext,
+    jsiContext->runtimeHolder->weak_from_this(),
+    std::make_shared<jsi::Function>(value.asObject(rt).asFunction(rt))
   ).release();
 }
 
@@ -255,13 +246,12 @@ bool JavaScriptFunctionFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {
-  return value.isObject() && value.asObject(rt).isFunction(rt);
+  return value.isObject() && value.getObject(rt).isFunction(rt);
 }
 
 jobject UnknownFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto stringRepresentation = value.toString(rt).utf8(rt);
@@ -297,12 +287,11 @@ bool PolyFrontendConverter::canConvert(
 jobject PolyFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   for (auto &converter: converters) {
     if (converter->canConvert(rt, value)) {
-      return converter->convert(rt, env, moduleRegistry, value);
+      return converter->convert(rt, env, value);
     }
   }
   // That shouldn't happen.
@@ -345,7 +334,6 @@ jobject createPrimitiveArray(
 jobject PrimitiveArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto jsArray = value.asObject(rt).asArray(rt);
@@ -394,7 +382,7 @@ jobject PrimitiveArrayFrontendConverter::convert(
   );
   for (size_t i = 0; i < size; i++) {
     auto convertedElement = parameterConverter->convert(
-      rt, env, moduleRegistry, jsArray.getValueAtIndex(rt, i)
+      rt, env, jsArray.getValueAtIndex(rt, i)
     );
     env->SetObjectArrayElement(result, i, convertedElement);
     env->DeleteLocalRef(convertedElement);
@@ -403,7 +391,7 @@ jobject PrimitiveArrayFrontendConverter::convert(
 }
 
 bool PrimitiveArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.asObject(rt).isArray(rt);
+  return value.isObject() && value.getObject(rt).isArray(rt);
 }
 
 ListFrontendConverter::ListFrontendConverter(
@@ -417,7 +405,6 @@ ListFrontendConverter::ListFrontendConverter(
 jobject ListFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto jsArray = value.asObject(rt).asArray(rt);
@@ -434,7 +421,7 @@ jobject ListFrontendConverter::convert(
     }
 
     auto convertedElement = parameterConverter->convert(
-      rt, env, moduleRegistry, jsValue
+      rt, env, jsValue
     );
     arrayList->add(convertedElement);
     env->DeleteLocalRef(convertedElement);
@@ -444,7 +431,7 @@ jobject ListFrontendConverter::convert(
 }
 
 bool ListFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.asObject(rt).isArray(rt);
+  return value.isObject() && value.getObject(rt).isArray(rt);
 }
 
 MapFrontendConverter::MapFrontendConverter(
@@ -458,7 +445,6 @@ MapFrontendConverter::MapFrontendConverter(
 jobject MapFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   auto jsObject = value.asObject(rt);
@@ -479,7 +465,7 @@ jobject MapFrontendConverter::convert(
     }
 
     auto convertedValue = valueConverter->convert(
-      rt, env, moduleRegistry, jsValue
+      rt, env, jsValue
     );
 
     map->put(convertedKey, convertedValue);
@@ -498,10 +484,12 @@ bool MapFrontendConverter::canConvert(
   return value.isObject();
 }
 
-jobject ViewTagFrontendConverter::convert(jsi::Runtime &rt, JNIEnv *env,
-                                          JSIInteropModuleRegistry *moduleRegistry,
-                                          const jsi::Value &value) const {
-  auto nativeTag = value.getObject(rt).getProperty(rt, "nativeTag");
+jobject ViewTagFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto nativeTag = value.asObject(rt).getProperty(rt, "nativeTag");
   if (nativeTag.isNull()) {
     return nullptr;
   }
@@ -517,15 +505,17 @@ bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
   return value.isObject() && value.getObject(rt).hasProperty(rt, "nativeTag");
 }
 
-jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
-                                         JSIInteropModuleRegistry *moduleRegistry,
-                                         const jsi::Value &value) const {
-  auto objectId = value.getObject(rt).getProperty(rt, "__expo_shared_object_id__");
+jobject SharedObjectIdConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto objectId = value.asObject(rt).getProperty(rt, "__expo_shared_object_id__");
   if (objectId.isNull()) {
     return nullptr;
   }
 
-  auto viewTag = (int) objectId.getNumber();
+  auto viewTag = (int) objectId.asNumber();
   auto &integerClass = JavaReferencesCache::instance()
     ->getJClass("java/lang/Integer");
   jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
@@ -539,7 +529,6 @@ bool SharedObjectIdConverter::canConvert(jsi::Runtime &rt, const jsi::Value &val
 jobject AnyFrontendConvert::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
-  JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
   if (value.isUndefined() || value.isNull()) {
@@ -547,15 +536,15 @@ jobject AnyFrontendConvert::convert(
   }
 
   if (booleanConverter.canConvert(rt, value)) {
-    return booleanConverter.convert(rt, env, moduleRegistry, value);
+    return booleanConverter.convert(rt, env, value);
   }
 
   if (doubleConverter.canConvert(rt, value)) {
-    return doubleConverter.convert(rt, env, moduleRegistry, value);
+    return doubleConverter.convert(rt, env, value);
   }
 
   if (stringConverter.canConvert(rt, value)) {
-    return stringConverter.convert(rt, env, moduleRegistry, value);
+    return stringConverter.convert(rt, env, value);
   }
 
   if (!value.isObject()) {
@@ -573,7 +562,7 @@ jobject AnyFrontendConvert::convert(
       auto jsValue = jsArray.getValueAtIndex(rt, i);
 
       auto convertedElement = this->convert(
-        rt, env, moduleRegistry, jsValue
+        rt, env, jsValue
       );
       arrayList->add(convertedElement);
       env->DeleteLocalRef(convertedElement);
@@ -593,7 +582,7 @@ jobject AnyFrontendConvert::convert(
 
     auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
     auto convertedValue = this->convert(
-      rt, env, moduleRegistry, jsValue
+      rt, env, jsValue
     );
 
     map->put(convertedKey, convertedValue);

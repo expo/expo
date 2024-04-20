@@ -1,5 +1,10 @@
+// Copyright © 2024 650 Industries.
+
+'use client';
+
 import React from 'react';
-import { findNodeHandle, NativeModules, requireNativeComponent, HostComponent } from 'react-native';
+import { findNodeHandle, NativeModules, HostComponent } from 'react-native';
+import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 import { requireNativeModule } from './requireNativeModule';
 
@@ -16,6 +21,25 @@ import { requireNativeModule } from './requireNativeModule';
  * A map that caches registered native components.
  */
 const nativeComponentsCache = new Map<string, HostComponent<any>>();
+
+/**
+ * Requires a React Native component using the static view config from an Expo module.
+ */
+function requireNativeComponent<Props>(viewName: string): HostComponent<Props> {
+  return NativeComponentRegistry.get<Props>(viewName, () => {
+    const viewModuleName = viewName.replace('ViewManagerAdapter_', '');
+    const expoViewConfig = globalThis.expo?.getViewConfig(viewModuleName);
+
+    if (!expoViewConfig) {
+      console.warn('Unable to get the view config for %s', viewModuleName);
+    }
+
+    return {
+      uiViewClassName: viewName,
+      ...expoViewConfig,
+    };
+  });
+}
 
 /**
  * Requires a React Native component from cache if possible. This prevents

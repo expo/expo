@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 13.0.0 — 2024-04-18
+
+- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.7.2 - 2024-02-16
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+
+## 12.7.1 - 2024-01-23
+
+### 💡 Others
+
+- On `Android`, remove type annotation on `View`. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

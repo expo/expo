@@ -34,10 +34,9 @@ suspend fun UpdatesInterface.loadUpdate(
             true
           } else {
             cont.resume(object : UpdatesInterface.Update {
-              override fun getLaunchAssetPath(): String {
-                throw Exception("Tried to access launch asset path for a manifest that was not loaded")
-              }
-              override fun getManifest(): JSONObject = manifest
+              override val manifest: JSONObject = manifest
+              override val launchAssetPath: String
+                get() = throw Exception("Tried to access launch asset path for a manifest that was not loaded")
             })
             false
           }
@@ -46,7 +45,7 @@ suspend fun UpdatesInterface.loadUpdate(
     )
   }
 
-fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, installationID: String?): HashMap<String, Any> {
+fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion: String, installationID: String?): HashMap<String, Any> {
   val requestHeaders = hashMapOf(
     "Expo-Updates-Environment" to "DEVELOPMENT"
   )
@@ -60,6 +59,11 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, installationID:
     "launchWaitMs" to 60000,
     "checkOnLaunch" to "ALWAYS",
     "enabled" to true,
-    "requestHeaders" to requestHeaders
+    "requestHeaders" to requestHeaders,
+    "runtimeVersion" to runtimeVersion
   )
+}
+
+fun getRuntimeVersion(context: Context): String {
+  return DevLauncherMetadataHelper.getMetadataValue(context, "expo.modules.updates.EXPO_RUNTIME_VERSION")
 }

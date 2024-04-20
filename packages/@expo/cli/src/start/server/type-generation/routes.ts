@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
@@ -34,7 +35,45 @@ export interface SetupTypedRoutesOptions {
   routerDirectory: string;
 }
 
-export async function setupTypedRoutes({
+export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
+  const typedRoutesModule = resolveFrom.silent(
+    options.projectRoot,
+    'expo-router/build/typed-routes'
+  );
+  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+}
+
+async function typedRoutes(
+  typedRoutesModulePath: any,
+  { server, metro, typesDirectory, projectRoot, routerDirectory }: SetupTypedRoutesOptions
+) {
+  /**
+   * Expo Router uses EXPO_ROUTER_APP_ROOT in multiple places to determine the root of the project.
+   * In apps compiled by Metro, this code is compiled away. But Typed Routes run in NodeJS with no compilation
+   * so we need to explicitly set it.
+   */
+  process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
+
+  const typedRoutesModule = require(typedRoutesModulePath);
+
+  /**
+   * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
+   */
+  if (metro && server) {
+    // Setup out watcher first
+    metroWatchTypeScriptFiles({
+      projectRoot,
+      server,
+      metro,
+      eventTypes: ['add', 'delete', 'change'],
+      callback: typedRoutesModule.getWatchHandler(typesDirectory),
+    });
+  }
+
+  typedRoutesModule.regenerateDeclarations(typesDirectory);
+}
+
+async function legacyTypedRoutes({
   server,
   metro,
   typesDirectory,
@@ -44,8 +83,8 @@ export async function setupTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(routerDirectory);
 
+  // Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
   if (metro && server) {
-    // Setup out watcher first
     metroWatchTypeScriptFiles({
       projectRoot,
       server,
@@ -320,7 +359,7 @@ declare module "expo-router" {
   type ExternalPathString = \`\${string}:\${string}\`;
 
   type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-  type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+  export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
   /****************
    * Route Utils  *
@@ -345,14 +384,14 @@ declare module "expo-router" {
   type SingleRoutePart<S extends string> = S extends \`\${string}/\${string}\`
     ? never
     : S extends \`\${string}\${SearchOrHash}\`
-    ? never
-    : S extends ''
-    ? never
-    : S extends \`(\${string})\`
-    ? never
-    : S extends \`[\${string}]\`
-    ? never
-    : S;
+      ? never
+      : S extends ''
+        ? never
+        : S extends \`(\${string})\`
+          ? never
+          : S extends \`[\${string}]\`
+            ? never
+            : S;
 
   /**
    * Return only the CatchAll router part. If the string has search parameters or a hash return never
@@ -360,12 +399,12 @@ declare module "expo-router" {
   type CatchAllRoutePart<S extends string> = S extends \`\${string}\${SearchOrHash}\`
     ? never
     : S extends ''
-    ? never
-    : S extends \`\${string}(\${string})\${string}\`
-    ? never
-    : S extends \`\${string}[\${string}]\${string}\`
-    ? never
-    : S;
+      ? never
+      : S extends \`\${string}(\${string})\${string}\`
+        ? never
+        : S extends \`\${string}[\${string}]\${string}\`
+          ? never
+          : S;
 
   // type OptionalCatchAllRoutePart<S extends string> = S extends \`\${string}\${SearchOrHash}\` ? never : S
 
@@ -397,8 +436,8 @@ declare module "expo-router" {
       ? [...RouteSegments<PartB>]
       : [PartA, ...RouteSegments<PartB>]
     : Path extends ''
-    ? []
-    : [Path];
+      ? []
+      : [Path];
 
   /**
    * Returns a Record of the routes parameters as strings and CatchAll parameters
@@ -427,8 +466,8 @@ declare module "expo-router" {
   export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
     ? OutputRouteParams<T>
     : T extends StaticRoutes
-    ? never
-    : UnknownOutputParams;
+      ? never
+      : UnknownOutputParams;
 
   /**
    * Route is mostly used as part of Href to ensure that a valid route is provided
@@ -455,8 +494,8 @@ declare module "expo-router" {
                 ? T
                 : never
               : T extends DynamicRoutes<infer _>
-              ? T
-              : never)
+                ? T
+                : never)
     : never;
 
   /*********
@@ -471,8 +510,8 @@ declare module "expo-router" {
   > = P extends DynamicRouteTemplate
     ? { pathname: P; params: InputRouteParams<P> }
     : P extends Route<P>
-    ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
-    : never;
+      ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
+      : never;
 
   /***********************
    * Expo Router Exports *

@@ -24,10 +24,17 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
             ? String(project.manifest.name)
             : undefined);
 
+        const iconUrl =
+          project.manifest && 'extra' in project.manifest
+            ? // @ts-expect-error iconUrl exists only for local development
+              project.manifest?.extra?.expoClient?.iconUrl
+            : undefined;
+
         return (
           <Fragment key={project.manifestUrl}>
             <RecentlyOpenedListItem
               url={project.manifestUrl}
+              iconUrl={iconUrl}
               title={title}
               onPress={() => {
                 Linking.openURL(project.url);

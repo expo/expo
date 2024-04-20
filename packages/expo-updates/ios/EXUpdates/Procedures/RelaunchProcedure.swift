@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+import React
 import ExpoModulesCore
 
 final class RelaunchProcedure: StateMachineProcedure {
@@ -45,6 +46,10 @@ final class RelaunchProcedure: StateMachineProcedure {
     self.requestStartErrorMonitoring = requestStartErrorMonitoring
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+  }
+
+  func getLoggerTimerLabel() -> String {
+    "timer-relaunch"
   }
 
   func run(procedureContext: ProcedureContext) {

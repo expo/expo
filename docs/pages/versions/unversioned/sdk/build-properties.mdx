@@ -3,20 +3,18 @@ title: BuildProperties
 description: A config plugin that allows customizing native build properties during prebuild.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-build-properties'
 packageName: 'expo-build-properties'
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `expo-build-properties` is a [config plugin](/config-plugins/introduction/) configuring the native build properties
 of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
 
 > **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** folders
 > and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
-
-<PlatformsSection ios simulator android emulator />
 
 ## Installation
 
@@ -26,7 +24,7 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 
 <ConfigPluginExample>
 
-```json app.json
+```json app.json|collapseHeight=450
 {
   "expo": {
     "plugins": [
@@ -52,7 +50,7 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 
 ### Example app.config.js usage
 
-```js app.config.js
+```js app.config.js|collapseHeight=450
 export default {
   expo: {
     plugins: [

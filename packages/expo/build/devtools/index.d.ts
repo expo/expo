@@ -1,6 +1,6 @@
 import { DevToolsPluginClient } from './DevToolsPluginClient';
 import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
-export { getDevToolsPluginClientAsync };
+export { getDevToolsPluginClientAsync, DevToolsPluginClient };
 export type { EventSubscription } from 'fbemitter';
 export { setEnableLogging } from './logger';
 /**

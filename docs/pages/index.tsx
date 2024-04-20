@@ -47,7 +47,7 @@ const Home = () => {
   const { palette, background } = theme;
   return (
     <ScreenClassProvider>
-      <DocumentationPage tocVisible={false} hideFromSearch>
+      <DocumentationPage hideTOC hideFromSearch>
         <div className="h-0">
           <DevicesImageMasks />
         </div>
@@ -116,7 +116,7 @@ const Home = () => {
           <Row>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.orange3,
                 borderColor: palette.orange7,
@@ -138,7 +138,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.green3,
                 borderColor: palette.green7,
@@ -159,7 +159,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.yellow3,
                 borderColor: palette.yellow8,
@@ -180,7 +180,7 @@ const Home = () => {
             </GridCell>
             <GridCell
               xl={6}
-              lg={6}
+              lg={12}
               css={css({
                 backgroundColor: palette.purple3,
                 borderColor: palette.purple7,
@@ -212,22 +212,22 @@ const Home = () => {
             <APIGridCell
               title="Image"
               link="/versions/latest/sdk/image/"
-              icon={<Image03DuotoneIcon className="h-16 w-16" />}
+              icon={<Image03DuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<CameraPlusDuotoneIcon className="h-16 w-16" />}
+              icon={<CameraPlusDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<NotificationMessageDuotoneIcon className="h-16 w-16" />}
+              icon={<NotificationMessageDuotoneIcon className="size-16" />}
             />
             <APIGridCell
               title="View all APIs"
               link="/versions/latest/"
-              icon={<DocsLogo className="h-16 w-16" />}
+              icon={<DocsLogo className="size-16" />}
             />
           </Row>
         </CellContainer>

@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
+import { DeviceEventEmitter, CodedError } from 'expo-modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
@@ -18,9 +18,6 @@ async function getVoices() {
     });
 }
 export default {
-    get name() {
-        return 'ExponentSpeech';
-    },
     async speak(id, text, options) {
         if (text.length > MAX_SPEECH_INPUT_LENGTH) {
             throw new CodedError('ERR_SPEECH_INPUT_LENGTH', 'Speech input text is too long! Limit of input length is: ' + MAX_SPEECH_INPUT_LENGTH);
@@ -57,16 +54,16 @@ export default {
             message.onboundary = options.onBoundary;
         }
         message.onstart = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+            DeviceEventEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
         };
         message.onend = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+            DeviceEventEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
         };
         message.onpause = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+            DeviceEventEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
         };
         message.onerror = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+            DeviceEventEmitter.emit('Exponent.speakingError', { id, nativeEvent });
         };
         message.text = text;
         window.speechSynthesis.speak(message);
