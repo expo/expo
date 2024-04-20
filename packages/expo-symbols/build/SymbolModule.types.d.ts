@@ -2,25 +2,16 @@ import { ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type SymbolViewProps = {
     /**
-     * The name of the symbol. Symbols can be viewed in the [Apple SFSymbols app](https://developer.apple.com/sf-symbols/).
+     * The name of the symbol. Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
      */
     name: SFSymbol;
     /**
-     * Fallback to render on Android where `SFSymbols` are not available.
+     * Fallback to render on Android where `SF Symbols` are not available.
      */
     fallback?: React.ReactNode;
     /**
      * Determines the symbol variant to use.
-     *
-     * - `'monochrome'` - Creates a color configuration that specifies that the symbol image uses its monochrome variant.
-     *
-     * - `'hierarchical'` - Creates a color configuration with a color scheme that originates from one color.
-     *
-     * - `'palette'` - Creates a color configuration with a color scheme from a palette of multiple colors.
-     *
-     * - `'multicolor'` - Creates a color configuration that specifies that the symbol image uses its multicolor variant, if one exists.
-     *
-     *  @default 'monochrome'
+     * @default 'monochrome'
      */
     type?: SymbolType;
     /**
@@ -68,15 +59,15 @@ export interface NativeSymbolViewProps extends ViewProps {
     animationSpec?: AnimationSpec;
 }
 /**
- * @hidden Described in the {@link SymbolViewProps['weight']}
+ * The weight of the symbol to render.
  */
 export type SymbolWeight = 'unspecified' | 'ultraLight' | 'thin' | 'light' | 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy' | 'black';
 /**
- * @hidden Described in the {@link SymbolViewProps['scale']}
+ * The scale of the symbol to render.
  */
 export type SymbolScale = 'default' | 'unspecified' | 'small' | 'medium' | 'large';
 /**
- * @hidden Described in the {@link SymbolViewProps['resizeMode']}
+ * Determines how the image should be resized to fit its container.
  */
 export type ContentMode = 'scaleToFill' | 'scaleAspectFit' | 'scaleAspectFill' | 'redraw' | 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 /**
@@ -159,7 +150,15 @@ export type VariableAnimationSpec = {
     dimInactiveLayers?: boolean;
 };
 /**
- * @hidden Described in the {@link SymbolViewProps['type']}
+ * Determines the symbol variant to use.
+ *
+ * - `'monochrome'` - Creates a color configuration that specifies that the symbol image uses its monochrome variant.
+ *
+ * - `'hierarchical'` - Creates a color configuration with a color scheme that originates from one color.
+ *
+ * - `'palette'` - Creates a color configuration with a color scheme from a palette of multiple colors.
+ *
+ * - `'multicolor'` - Creates a color configuration that specifies that the symbol image uses its multicolor variant, if one exists.
  */
 export type SymbolType = 'monochrome' | 'hierarchical' | 'palette' | 'multicolor';
 //# sourceMappingURL=SymbolModule.types.d.ts.map

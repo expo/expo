@@ -5,7 +5,7 @@ import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 const NativeView: React.ComponentType<NativeSymbolViewProps> =
   requireNativeViewManager('SymbolModule');
 
-export function Symbol(props: SymbolViewProps) {
+export default function SymbolView(props: SymbolViewProps) {
   if (Platform.OS === 'android') {
     return <>{props.fallback}</>;
   }
