@@ -147,6 +147,8 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
     return resize(image: image, toSize: size, scale: scale)
   }
 
+  // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
+  // so it should never happen in our case, but let's handle it gracefully.
   if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
     return animatedImage
   }
