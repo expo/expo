@@ -134,17 +134,17 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
         return nil
       }
       return resize(image: frame, toSize: size, scale: scale)
-   }.compactMap { $0 }
+    }.compactMap { $0 }
 
    // Check if all frames were skipped or failed to load
    if resizedFrames.isEmpty {
-       print("Error: All frames failed to load and/or were skipped.")
-       return resize(image: image, toSize: size, scale: scale)
+     print("Error: All frames failed to load and/or were skipped.")
+     return resize(image: image, toSize: size, scale: scale)
    }
 
    // Create the new animated image with the resized frames
    if let newAnimatedImage = UIImage.animatedImage(with: resizedFrames, duration: image.duration) {
-       return newAnimatedImage
+     return newAnimatedImage
    }
   } catch {
     print("Error during concurrent image resizing: \(error)")
