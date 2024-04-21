@@ -57,15 +57,14 @@ internal class MediaHandler(
     val exif = options.exif.takeIf { it }
       ?.let { exportedImage.exif(context.contentResolver) }
 
-    val fileData = getAdditionalFileData(sourceUri)
 
     return ImagePickerAsset(
       type = MediaType.IMAGE,
       uri = Uri.fromFile(outputFile).toString(),
       width = exportedImage.width,
       height = exportedImage.height,
-      fileName = fileData?.fileName,
-      fileSize = fileData?.fileSize,
+      fileName = outputFile.name,
+      fileSize = outputFile.length(),
       mimeType = mimeType,
       base64 = base64,
       exif = exif,
