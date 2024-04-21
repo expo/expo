@@ -50,7 +50,17 @@ internal func registerFont(_ font: CGFont) throws {
   var error: Unmanaged<CFError>?
 
   if !CTFontManagerRegisterGraphicsFont(font, &error), let error = error?.takeRetainedValue() {
-    throw FontRegistrationFailedException(error)
+    let fontError = CTFontManagerError(rawValue: CFErrorGetCode(error))
+
+    switch fontError {
+    case .alreadyRegistered, .duplicatedName:
+      // Ignore the error if:
+      // - this exact font instance was already registered or
+      // - another instance already registered with the same name (assuming it's most likely the same font anyway)
+      return
+    default:
+      throw FontRegistrationFailedException(error)
+    }
   }
 }
 
