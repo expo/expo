@@ -256,12 +256,13 @@ class CalendarModule : Module() {
       selection += calendarQuery
     }
     selection += ")"
+    val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
     val cursor = contentResolver.query(
       uri,
       findEventsQueryParameters,
       selection,
       null,
-      null
+      sortOrder
     )
 
     requireNotNull(cursor) { "Cursor shouldn't be null" }
