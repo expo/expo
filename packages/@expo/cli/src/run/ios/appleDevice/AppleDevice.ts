@@ -13,6 +13,8 @@ import { xcrunAsync } from '../../../start/platforms/ios/xcrun';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import spawnAsync from '@expo/spawn-async';
+import { getConnectedAppleDevicesAsync, installAppWithDeviceCtlAsync } from '../../../start/platforms/ios/simctl';
 
 const debug = Debug('expo:apple-device');
 
@@ -34,6 +36,24 @@ export interface ConnectedDevice {
 
 /** @returns a list of connected Apple devices. */
 export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
+   const appleDevices = await getConnectedAppleDevicesAsync();
+
+   return appleDevices.filter(device => device.connectionProperties.pairingState === 'paired').map((device) => {
+
+      return {
+        name: device.deviceProperties.name,
+        model: device.hardwareProperties.productType,
+        osVersion: device.deviceProperties.osVersionNumber,
+        udid: device.hardwareProperties.udid,
+
+        // TODO
+        deviceType: 'device',        
+        // TODO
+        connectionType: device.connectionProperties.transportType === 'localNetwork' ? 'Network' : 'USB',
+      };
+    });
+
+
   const client = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
   const devices = await client.getDevices();
   client.socket.end();
@@ -82,6 +102,8 @@ export async function runOnDevice({
   /** Callback to be called with progress updates */
   onProgress: OnInstallProgressCallback;
 }) {
+  debug('Running on device:', { udid, appPath, bundleId, waitForApp, deltaPath })
+
   const clientManager = await ClientManager.create(udid);
 
   try {

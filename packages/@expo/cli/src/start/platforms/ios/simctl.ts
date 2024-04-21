@@ -1,8 +1,10 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-
+import assert from 'node:assert';
 import { xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
+import tempy from 'tempy';
+import JsonFile from '@expo/json-file';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
@@ -271,6 +273,11 @@ export async function getDevicesAsync(): Promise<Device[]> {
   return Object.values(simulatorDeviceInfo.devices).flat();
 }
 
+export async function getRealDevicesAsync(): Promise<Device[]> {
+  const simulatorDeviceInfo = await getRuntimesAsync('devices');
+  return Object.values(simulatorDeviceInfo.devices).flat();
+}
+
 /** Run a `simctl` command. */
 export async function simctlAsync(
   args: (string | undefined)[],
@@ -279,6 +286,325 @@ export async function simctlAsync(
   return xcrunAsync(['simctl', ...args], options);
 }
 
+const debug = require('debug')('expo:devicectl') as typeof console.log;
+
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { installExitHooks } from '../../../utils/exit';
+
+import { EOL } from 'os';
+
+// cmd: xcrun devicectl device install app --device 00008120-001638590230201E /Users/evanbacon/Library/Developer/Xcode/DerivedData/RouterE2E-hgbqaxzhrhkiftfweydvhgttadvn/Build/Products/Debug-iphoneos/ExpoAI.app
+// [stdout] >>> [ '12:42:32  Acquired tunnel connection to device.', '' ]
+// [stdout] >>> [ '12:42:32  Enabling developer disk image services.', '' ]
+// [stdout] >>> [ '12:42:33  Acquired usage assertion.', '' ]
+// [stdout] >>> [ '1%...' ]
+// [stdout] >>> [ '2%...' ]
+// [stdout] >>> [ '3%...' ]
+// [stdout] >>> [ '4%...' ]
+// [stdout] >>> [ '5%...' ]
+// [stdout] >>> [ '6%...' ]
+// [stdout] >>> [ '7%...' ]
+// [stdout] >>> [ '8%...' ]
+// [stdout] >>> [ '9%...' ]
+// [stdout] >>> [ '10%...' ]
+// [stdout] >>> [ '11%...' ]
+// [stdout] >>> [ '12%...' ]
+// [stdout] >>> [ '13%...' ]
+// [stdout] >>> [ '14%...' ]
+// [stdout] >>> [ '15%...' ]
+// [stdout] >>> [ '16%...' ]
+// [stdout] >>> [ '18%...' ]
+// [stdout] >>> [ '19%...' ]
+// [stdout] >>> [ '20%...' ]
+// [stdout] >>> [ '21%...' ]
+// [stdout] >>> [ '22%...' ]
+// [stdout] >>> [ '23%...' ]
+// [stdout] >>> [ '24%...' ]
+// [stdout] >>> [ '25%...' ]
+// [stdout] >>> [ '26%...' ]
+// [stdout] >>> [ '27%...' ]
+// [stdout] >>> [ '28%...' ]
+// [stdout] >>> [ '30%...' ]
+// [stdout] >>> [ '31%...' ]
+// [stdout] >>> [ '32%...' ]
+// [stdout] >>> [ '33%...' ]
+// [stdout] >>> [ '34%... 35%...' ]
+// [stdout] >>> [ '36%...' ]
+// [stdout] >>> [ '37%...' ]
+// [stdout] >>> [ '38%...' ]
+// [stdout] >>> [ '39%...' ]
+// [stdout] >>> [ '40%...' ]
+// [stdout] >>> [ '41%...' ]
+// [stdout] >>> [ '42%...' ]
+// [stdout] >>> [ '43%...' ]
+// [stdout] >>> [ '46%...' ]
+// [stdout] >>> [ '47%...' ]
+// [stdout] >>> [ '48%...' ]
+// [stdout] >>> [ '49%...' ]
+// [stdout] >>> [ '50%...' ]
+// [stdout] >>> [ '51%...' ]
+// [stdout] >>> [ '52%...' ]
+// [stdout] >>> [ '53%...' ]
+// [stdout] >>> [ '54%...' ]
+// [stdout] >>> [ '55%...' ]
+// [stdout] >>> [ '56%...' ]
+// [stdout] >>> [ '57%...' ]
+// [stdout] >>> [ '59%...' ]
+// [stdout] >>> [ '60%...' ]
+// [stdout] >>> [ '62%...' ]
+// [stdout] >>> [ '66%...' ]
+// [stdout] >>> [ '68%...' ]
+// [stdout] >>> [ '72%...' ]
+// [stdout] >>> [ '74%...' ]
+// [stdout] >>> [ '76%...' ]
+// [stdout] >>> [ '80%...' ]
+// [stdout] >>> [ '84%...' ]
+// [stdout] >>> [ '88%...' ]
+// [stdout] >>> [ '92%...' ]
+// [stdout] >>> [ '96%...' ]
+// [stdout] >>> [ 'Complete!', 'App installed:', '' ]
+// [stdout] >>> [
+//   '• bundleID: app.bacon.rsc',
+//   '• installationURL: file:///private/var/containers/Bundle/Application/4589F1C4-A534-4F27-A682-694C54C66D8C/ExpoAI.app/',
+//   '• launchServicesIdentifier: unknown',
+//   '• databaseUUID: 9D988F8D-8E2F-4C4A-B57A-69B11F70A7AD',
+//   '• databaseSequenceNumber: 5380',
+//   '• options:',
+//   ''
+// ]
+// [devicectl close]: 0
+
+export async function installAppWithDeviceCtlAsync(
+  uuid: string,
+  bundleIdOrAppPath: string,
+  onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // rsc-e2e 𝝠 xcrun devicectl device install app --device 00008120-001638590230201E /Users/evanbacon/Library/Developer/Xcode/DerivedData/RouterE2E-hgbqaxzhrhkiftfweydvhgttadvn/Build/Products/Debug-iphoneos/ExpoAI.app --verbose
+
+    // xcrun simctl spawn booted log stream --process --style json
+    const childProcess = spawn('xcrun', [
+      'devicectl',
+      'device',
+      'install',
+      'app',
+      '--device',
+      uuid,
+      bundleIdOrAppPath,
+    ]);
+    debug('xcrun devicectl device install app --device', uuid, bundleIdOrAppPath);
+
+    let currentProgress = 0;
+    let hasStarted = false;
+
+    function updateProgress(progress: number) {
+      hasStarted = true;
+      if (progress <= currentProgress) {
+        return;
+      }
+      currentProgress = progress;
+      onProgress({
+        progress,
+        isComplete: progress === 100,
+        status: 'Installing',
+      });
+    }
+
+    childProcess.stdout.on('data', (data: Buffer) => {
+      // Sometimes more than one chunk comes at a time, here we split by system newline,
+      // then trim and filter.
+      const strings = data
+        .toString()
+        .split(EOL)
+        .map((value) => value.trim());
+
+      strings.forEach((str) => {
+        // Match the progress percentage:
+        // - '34%... 35%...' -> 35
+        // - '31%...' -> 31
+        // - 'Complete!' -> 100
+
+        const match = str.match(/(\d+)%\.\.\./);
+        if (match) {
+          updateProgress(parseInt(match[1], 10));
+        } else if (hasStarted) {
+          updateProgress(100);
+        }
+      });
+
+      debug('[stdout]', strings);
+    });
+
+    childProcess.on('close', (code) => {
+      debug('[devicectl close]: ' + code);
+      if (code === 0) {
+        resolve();
+      } else {
+        const stderr = childProcess.stderr.read();
+        const err = new Error(stderr);
+        (err as any).code = code;
+        detach(err);
+      }
+    });
+
+    const detach = async (err?: Error) => {
+      off?.();
+      if (childProcess) {
+        return new Promise<void>((resolve) => {
+          childProcess?.on('close', resolve);
+          childProcess?.kill();
+          // childProcess = null;
+          reject(err ?? new Error('Detached'));
+        });
+      }
+    };
+
+    const off = installExitHooks(() => detach());
+  });
+}
+
+/** Run a `devicectl` command. */
+export async function devicectlAsync(
+  args: (string | undefined)[],
+  options?: SpawnOptions
+): Promise<SpawnResult> {
+  return xcrunAsync(['devicectl', ...args], options);
+}
+
+export async function getConnectedAppleDevicesAsync() {
+  const tmpPath = tempy.file();
+  const devices = await devicectlAsync([
+    'list',
+    'devices',
+    '--json-output',
+    tmpPath,
+    // Give two seconds before timing out: between 5 and 9223372036854775807
+    '--timeout',
+    '5',
+  ]);
+  debug(devices.stdout);
+  const devicesJson = await JsonFile.readAsync(tmpPath);
+
+  if ((devicesJson as any)?.info?.jsonVersion !== 2) {
+    Log.warn(
+      'Unexpected devicectl JSON version output from devicectl. Connecting to physical Apple devices may not work as expected.'
+    );
+  }
+
+  assertDevicesJson(devicesJson);
+
+  const results = devicesJson.result.devices as DeviceCtlDevice[];
+  return results;
+}
+
+function assertDevicesJson(
+  results: any
+): asserts results is { result: { devices: DeviceCtlDevice[] } } {
+  assert(
+    results != null && 'result' in results && Array.isArray(results?.result?.devices),
+    'Malformed JSON output from devicectl: ' + JSON.stringify(results, null, 2)
+  );
+}
+
 function resolveId(device: Partial<DeviceContext>): string {
   return device.udid ?? 'booted';
 }
+
+type AnyEnum<T extends string = string> = T | (string & {});
+
+type DeviceCtlDevice = {
+  capabilities: DeviceCtlDeviceCapability[];
+  connectionProperties: DeviceCtlConnectionProperties;
+  deviceProperties: DeviceCtlDeviceProperties;
+  hardwareProperties: DeviceCtlHardwareProperties;
+  /** "A1A1AAA1-0011-1AA1-11A1-10A1111AA11A" */
+  identifier: string;
+  visibilityClass: AnyEnum<'default'>;
+};
+
+type DeviceCtlHardwareProperties = {
+  cpuType: DeviceCtlCpuType;
+  deviceType: AnyEnum<'iPhone'>;
+  /** 6254404427587614 */
+  ecid: number;
+  /** "D74AP" */
+  hardwareModel: string;
+  /** 512000000000 */
+  internalStorageCapacity: number;
+  /** true */
+  isProductionFused: boolean;
+  /** "iPhone 14 Pro Max" */
+  marketingName: string;
+  /** "iOS" */
+  platform: string;
+  /** "iPhone15,3" */
+  productType: AnyEnum<'iPhone13,4' | 'iPhone15,3'>;
+  reality: AnyEnum<'physical'>;
+  /** "X2X1CC1XXX" */
+  serialNumber: string;
+  supportedCPUTypes: DeviceCtlCpuType[];
+  /** [1] */
+  supportedDeviceFamilies: number[];
+  thinningProductType: AnyEnum<'iPhone15,3'>;
+  /** "00001110-001111110110101A" */
+  udid: string;
+};
+
+type DeviceCtlDeviceProperties = {
+  /** true */
+  bootedFromSnapshot: boolean;
+  /** "com.apple.os.update-AD0CF991ACFF92A64166A76A3D1262AE42A3F56F305AF5AE1935393A7A14A7D3" */
+  bootedSnapshotName: string;
+  /** false */
+  ddiServicesAvailable: boolean;
+
+  developerModeStatus: AnyEnum<'enabled'>;
+  /** false */
+  hasInternalOSBuild: boolean;
+  /** "Evan's phone" */
+  name: string;
+  /** "21E236" */
+  osBuildUpdate: string;
+  /** "17.4.1" */
+  osVersionNumber: string;
+  /** false */
+  rootFileSystemIsWritable: boolean;
+};
+
+type DeviceCtlDeviceCapability =
+  | {
+      name: string & {};
+      featureIdentifier: string & {};
+    }
+  | {
+      featureIdentifier: 'com.apple.coredevice.feature.connectdevice';
+      name: 'Connect to Device';
+    }
+  | {
+      featureIdentifier: 'com.apple.coredevice.feature.unpairdevice';
+      name: 'Unpair Device';
+    }
+  | {
+      featureIdentifier: 'com.apple.coredevice.feature.acquireusageassertion';
+      name: 'Acquire Usage Assertion';
+    };
+
+type DeviceCtlConnectionProperties = {
+  authenticationType: AnyEnum<'manualPairing'>;
+  isMobileDeviceOnly: boolean;
+  /** "2024-04-20T22:50:04.244Z" */
+  lastConnectionDate: string;
+  pairingState: AnyEnum<'paired'>;
+  /** ["00008120-001638590230201E.coredevice.local", "B3F9CFC2-0043-4EB7-98B2-10A4353DD31E.coredevice.local"] */
+  potentialHostnames: string[];
+  transportType: AnyEnum<'localNetwork'>;
+  tunnelState: AnyEnum<'disconnected'>;
+  tunnelTransportProtocol: AnyEnum<'tcp'>;
+};
+
+type DeviceCtlCpuType = {
+  name: AnyEnum<'arm64e' | 'arm64' | 'arm64_32'>;
+  subType: number;
+  /** 16777228 */
+  type: number;
+};
