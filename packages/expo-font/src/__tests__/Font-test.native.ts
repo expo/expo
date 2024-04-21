@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform } from 'expo-modules-core';
 
 import { loaded, loadPromises } from '../memory';
 
