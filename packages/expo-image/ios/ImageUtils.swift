@@ -130,7 +130,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
   do {
     let resizedFrames = try await concurrentMap(0..<frameCount) { index -> UIImage? in
       guard let frame = await image.animatedImageFrame(at: index) else {
-        print("Warning: Frame at index \(index) could not be loaded and will be skipped.")
+        log.warn("Frame at index \(index) could not be loaded and will be skipped.")
         return nil
       }
       return resize(image: frame, toSize: size, scale: scale)
@@ -138,7 +138,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
 
     // Check if all frames were skipped or failed to load
     if resizedFrames.isEmpty {
-      print("Error: All frames failed to load and/or were skipped.")
+      log.error("All frames failed to load and/or were skipped.")
       return resize(image: image, toSize: size, scale: scale)
     }
 
@@ -149,7 +149,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
       return newAnimatedImage
     }
   } catch {
-    print("Error during concurrent image resizing: \(error)")
+    log.error("Error during concurrent image resizing: \(error)")
   }
 
   return resize(image: image, toSize: size, scale: scale)
