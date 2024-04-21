@@ -192,13 +192,16 @@ const general = [
     makePage('router/layouts.mdx'),
     makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
-    makeGroup('Advanced', [
+    makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
+      makePage('router/reference/not-found.mdx'),
+    ]),
+    makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/router-settings.mdx'),
@@ -214,7 +217,6 @@ const general = [
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
-      makePage('router/reference/not-found.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
