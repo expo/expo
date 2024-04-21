@@ -15,7 +15,7 @@ Permissions in standalone and [development builds](/develop/development-builds/i
 
 Permissions are configured with the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your app config (**app.json**, **app.config.js**).
 
-Most permissions are added automatically by libraries that you use in your app either with [config plugins](/config-plugins/plugins-and-mods/#create-a-plugin) or with a package-level **AndroidManifest.xml**. You only need to use `android.permissions` to add additional permissions that are not included by default in a library.
+Most permissions are added automatically by libraries that you use in your app either with [config plugins](/config-plugins/plugins-and-mods/#create-a-plugin) or with a package-level **AndroidManifest.xml**. You only need to use `expo.android.permissions` to add additional permissions that are not included by default in a library.
 
 ```json app.json
 {
