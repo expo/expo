@@ -7,18 +7,7 @@ nonword: true
 level: warning
 
 swap:
-  # For the word 'here' in Markdown and HTML links
   '\[here\]\(.*?\)': 'here'
   '<a\s*href\s*=\s*".*?".*?>\s*here\s*</a>': 'here'
-
-  # For the word 'this' in Markdown and HTML links
   '\[this\]\(.*?\)': 'this'
   '<a\s*href\s*=\s*".*?".*?>\s*this\s*</a>': 'this'
-
-  # # For the word 'page' in Markdown and HTML links
-  # '\[page\]\(.*?\)': 'page'
-  # '<a\s*href\s*=\s*".*?".*?>\s*page\s*</a>': 'page'
-
-  # # For the phrase 'this page' in Markdown and HTML links
-  # '\[this page\]\(.*?\)': 'this page'
-  # '<a\s*href\s*=\s*".*?".*?>\s*this page\s*</a>': 'this page'
