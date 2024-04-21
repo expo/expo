@@ -1,5 +1,3 @@
-// Copyright © 2024 650 Industries.
-'use client';
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -28,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultNavigator = exports.QualifiedSlot = exports.Slot = exports.useSlot = exports.useNavigatorContext = exports.Navigator = exports.NavigatorContext = void 0;
 const native_1 = require("@react-navigation/native");
 const React = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
@@ -83,15 +82,14 @@ function useNavigatorContext() {
 }
 exports.useNavigatorContext = useNavigatorContext;
 function useSlot() {
-    const context = useNavigatorContext();
-    const { state, descriptors } = context;
-    const current = state.routes.find((route, i) => {
-        return state.index === i;
-    });
-    if (!current) {
-        return null;
-    }
-    return descriptors[current.key]?.render() ?? null;
+    const { state, descriptors } = useNavigatorContext();
+    return (<>
+      {state.routes.map((route, i) => {
+            return (<react_native_1.View key={route.key} style={[react_native_1.StyleSheet.absoluteFill, { display: i === state.index ? 'flex' : 'none' }]}>
+            {descriptors[route.key].render()}
+          </react_native_1.View>);
+        })}
+    </>);
 }
 exports.useSlot = useSlot;
 /** Renders the currently selected content. */

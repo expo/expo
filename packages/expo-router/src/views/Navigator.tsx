@@ -1,8 +1,6 @@
-// Copyright © 2024 650 Industries.
-'use client';
-
 import { RouterFactory, StackRouter, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Screen } from './Screen';
@@ -100,19 +98,21 @@ export function useNavigatorContext() {
 }
 
 export function useSlot() {
-  const context = useNavigatorContext();
+  const { state, descriptors } = useNavigatorContext();
 
-  const { state, descriptors } = context;
-
-  const current = state.routes.find((route, i) => {
-    return state.index === i;
-  });
-
-  if (!current) {
-    return null;
-  }
-
-  return descriptors[current.key]?.render() ?? null;
+  return (
+    <>
+      {state.routes.map((route, i) => {
+        return (
+          <View
+            key={route.key}
+            style={[StyleSheet.absoluteFill, { display: i === state.index ? 'flex' : 'none' }]}>
+            {descriptors[route.key].render()}
+          </View>
+        );
+      })}
+    </>
+  );
 }
 
 /** Renders the currently selected content. */
