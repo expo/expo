@@ -50,11 +50,15 @@ describe('NpmPackageManager', () => {
   });
 
   describe('runBinAsync', () => {
-    it('delegates to npx', async () => {
-      const log = jest.fn();
-      const npm = new NpmPackageManager({ cwd: projectRoot, log });
+    it('executes npx with the expected command and options', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.runBinAsync(['eslint', '.']);
-      expect(log).toHaveBeenCalledWith('> npx eslint .');
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npx',
+        expect.arrayContaining(['eslint', '.']),
+        expect.objectContaining({ cwd: projectRoot })
+      );
     });
   });
 

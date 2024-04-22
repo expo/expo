@@ -64,11 +64,15 @@ describe('PnpmPackageManager', () => {
   });
 
   describe('runBinAsync', () => {
-    it('logs executed command', async () => {
-      const log = jest.fn();
-      const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
+    it('executes pnpm with the expected command and options', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.runBinAsync(['eslint', '.']);
-      expect(log).toHaveBeenCalledWith('> pnpm eslint .');
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        expect.arrayContaining(['eslint', '.']),
+        expect.objectContaining({ cwd: projectRoot })
+      );
     });
   });
 
