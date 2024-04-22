@@ -4,8 +4,7 @@ import { SuccessCheckmark } from './SuccessCheckmark';
 import { EAS_TUTORIAL_INITIAL_CHAPTERS, Chapter } from './TutorialData';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
-import { reportEasTutorialCompleted } from '~/providers/Analytics';
-import { H2, P, A, DEMI } from '~/ui/components/Text';
+import { P, A, DEMI } from '~/ui/components/Text';
 
 type ProgressTrackerProps = {
   currentChapterIndex: number;
@@ -39,16 +38,7 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
-  // const completedChapters = chapters.filter(chapter => chapter.completed).length;
-  // const progressPercentage = (completedChapters / chapters.length) * 100;
-
   const currentChapter = chapters[currentChapterIndex];
-  // const allChaptersCompleted = completedChapters === chapters.length;
-
-  // TODO: Move this code SidebarGroup.tsx
-  // if (allChaptersCompleted) {
-  //   reportEasTutorialCompleted();
-  // }
 
   return (
     <>

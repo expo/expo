@@ -20,6 +20,7 @@ import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
+import { reportEasTutorialCompleted } from '~/providers/Analytics';
 import { NavigationRoute } from '~/types/common';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
@@ -44,6 +45,10 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   };
   const totalChapters = chapters.length;
   const progressPercentage = (completedChaptersCount / totalChapters) * 100;
+
+  if (allChaptersCompleted) {
+    reportEasTutorialCompleted();
+  }
 
   if (route.children?.[0]?.section === 'EAS tutorial') {
     return (
@@ -73,7 +78,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
               <div className="flex-1">
                 <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
               </div>
-              {completed && <CheckIcon />}
+              {completed && <CheckIcon className="size-4" />}
             </div>
           ) : (
             <SidebarSection
