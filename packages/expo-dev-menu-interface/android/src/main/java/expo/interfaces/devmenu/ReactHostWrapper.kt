@@ -56,7 +56,10 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
 
   val hasInstance: Boolean
     get() {
-      return currentReactContext?.hasActiveReactInstance() ?: false
+      if (isBridgelessMode) {
+        return currentReactContext?.hasActiveReactInstance() ?: false
+      }
+      return reactNativeHost.hasInstance() && currentReactContext?.hasActiveReactInstance() ?: false
     }
 
   val devSupportManager: DevSupportManager?
