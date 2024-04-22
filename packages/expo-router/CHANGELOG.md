@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support loading abstract Expo Go URLs with multiple segments.
+
 ### 💡 Others
 
 ## 3.5.0 — 2024-04-18

@@ -127,3 +127,17 @@ exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath" 1`] = `"example/path"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http://acme.com/foo/bar?query=param" 1`] = `"foo/bar?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `"test/path?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://127.0.0.1:19000/--/test/path?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `"test/path?shouldBeEscaped=x%252By%2540xxx.com"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path" 1`] = `"test/path"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path/--/foobar" 1`] = `"test/path/--/foobar"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"test/path?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar" 1`] = `"foobar"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://u.expo.dev/update/123abc/--/test/path?query=param" 1`] = `"test/path?query=param"`;

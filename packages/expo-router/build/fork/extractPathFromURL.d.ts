@@ -1,5 +1,5 @@
 export declare function parsePathAndParamsFromExpoGoLink(url: string): {
-    pathname?: string;
+    pathname: string;
     queryString?: string;
 };
 export declare function parsePathFromExpoGoLink(url: string): string;

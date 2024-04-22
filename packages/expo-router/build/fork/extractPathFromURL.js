@@ -7,7 +7,7 @@ function parsePathAndParamsFromExpoGoLink(url) {
     const href = parsePathFromExpoGoLink(url);
     const results = href.match(/(.*?)(\?.*)/);
     return {
-        pathname: results?.[1],
+        pathname: results?.[1] ?? '',
         queryString: results?.[2],
     };
 }

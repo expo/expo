@@ -1,5 +1,5 @@
 export function parsePathAndParamsFromExpoGoLink(url: string): {
-  pathname?: string;
+  pathname: string;
   queryString?: string;
 } {
   // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
@@ -8,7 +8,7 @@ export function parsePathAndParamsFromExpoGoLink(url: string): {
   const href = parsePathFromExpoGoLink(url);
   const results = href.match(/(.*?)(\?.*)/);
   return {
-    pathname: results?.[1],
+    pathname: results?.[1] ?? '',
     queryString: results?.[2],
   };
 }
