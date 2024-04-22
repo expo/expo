@@ -3,6 +3,7 @@ import {
   getPathFromState,
   useNavigationContainerRef,
 } from '@react-navigation/native';
+import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
@@ -79,7 +80,11 @@ export class RouterStore {
     this.rootStateSubscribers.clear();
     this.storeSubscribers.clear();
 
-    this.routeNode = getRoutes(context, { ignoreEntryPoints: true, platform: Platform.OS });
+    this.routeNode = getRoutes(context, {
+      ...Constants.expoConfig?.extra?.router,
+      ignoreEntryPoints: true,
+      platform: Platform.OS,
+    });
 
     this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;
 

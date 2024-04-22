@@ -1,5 +1,3 @@
-import Constants from 'expo-constants';
-
 import { DynamicConvention, RouteNode } from './Route';
 import {
   matchArrayGroupName,
@@ -20,6 +18,7 @@ export type Options = {
   /* Used to simplify by skipping the generated routes */
   skipGenerated?: boolean;
   importMode?: string;
+  platformRoutes?: boolean;
   platform?: string;
 };
 
@@ -30,7 +29,6 @@ type DirectoryNode = {
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
-const hasPlatformRoutes = Constants.expoConfig?.extra?.router?.platformRoutes ?? true;
 
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -358,7 +356,7 @@ function getFileMeta(key: string, options: Options) {
   const hasPlatformExtension = validPlatforms.has(platformExtension);
 
   if (hasPlatformExtension) {
-    if (!hasPlatformRoutes) {
+    if (!options.platformRoutes) {
       // If the user has disabled platform routes, then we should ignore this file
       specificity = -1;
     } else if (!options.platform) {
