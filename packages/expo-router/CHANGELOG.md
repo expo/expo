@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix support loading abstract Expo Go URLs with multiple segments.
+- Fix support loading abstract Expo Go URLs with multiple segments. ([#28376](https://github.com/expo/expo/pull/28376) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
