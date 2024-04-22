@@ -678,7 +678,7 @@ export async function deleteCalendarAsync(id: string): Promise<void> {
 
 // @needsAudit
 /**
- * Returns all events in a given set of calendars over a specified time period. The filtering has
+ * Returns all events in a given set of calendars over a specified time period, sorted by `startDate`. The filtering has
  * slightly different behavior per-platform - on iOS, all events that overlap at all with the
  * `[startDate, endDate]` interval are returned, whereas on Android, only events that begin on or
  * after the `startDate` and end on or before the `endDate` will be returned.
