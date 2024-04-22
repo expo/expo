@@ -44,6 +44,7 @@ class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
+  showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
