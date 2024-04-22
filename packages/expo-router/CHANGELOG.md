@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support loading abstract Expo Go URLs with multiple segments. ([#28376](https://github.com/expo/expo/pull/28376) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 3.5.1 — 2024-04-22

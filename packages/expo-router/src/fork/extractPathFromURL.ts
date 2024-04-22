@@ -1,4 +1,23 @@
-import * as Linking from 'expo-linking';
+export function parsePathAndParamsFromExpoGoLink(url: string): {
+  pathname: string;
+  queryString: string;
+} {
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+
+  const href = parsePathFromExpoGoLink(url);
+  const results = href.match(/(.*?)(\?.*)/);
+  return {
+    pathname: results?.[1] ?? '',
+    queryString: results?.[2] ?? '',
+  };
+}
+
+export function parsePathFromExpoGoLink(url: string): string {
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+  return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
+}
 
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
@@ -20,21 +39,17 @@ function extractExactPathFromURL(url: string): string {
     // are passed through to other apps in Expo Go.
     url.match(/^exp(s)?:\/\//)
   ) {
-    const pathname = url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1];
+    const pathname = parsePathFromExpoGoLink(url);
     if (pathname) {
       return fromDeepLink('a://' + pathname);
     }
+    // Match the `?.*` segment of the URL.
+    const queryParams = url.match(/exps?:\/\/.*\?(.*)/)?.[1];
+    if (queryParams) {
+      return fromDeepLink('a://?' + queryParams);
+    }
 
-    const res = Linking.parse(url);
-
-    const qs = !res.queryParams
-      ? ''
-      : Object.entries(res.queryParams)
-          .map(([k, v]) => `${k}=${v}`)
-          .join('&');
-    return (
-      adjustPathname({ hostname: res.hostname, pathname: res.path || '' }) + (qs ? '?' + qs : '')
-    );
+    return '';
   }
 
   // TODO: Support dev client URLs
@@ -88,14 +103,9 @@ function fromDeepLink(url: string): string {
 }
 
 export function extractExpoPathFromURL(url: string = '') {
-  // TODO: We should get rid of this, dropping specificities is not good
-  return extractExactPathFromURL(url).replace(/^\//, '');
-}
-
-export function adjustPathname(url: { hostname?: string | null; pathname: string }) {
-  if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
-    // drop the first two segments from pathname:
-    return url.pathname.split('/').slice(2).join('/');
-  }
-  return url.pathname;
+  return (
+    extractExactPathFromURL(url)
+      // TODO: We should get rid of this, dropping specificities is not good
+      .replace(/^\//, '')
+  );
 }

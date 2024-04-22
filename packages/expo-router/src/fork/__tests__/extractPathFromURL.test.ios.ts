@@ -1,4 +1,4 @@
-import { extractExpoPathFromURL } from '../extractPathFromURL';
+import { extractExpoPathFromURL, parsePathFromExpoGoLink } from '../extractPathFromURL';
 
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
@@ -29,6 +29,10 @@ describe(extractExpoPathFromURL, () => {
         'exp://127.0.0.1:19000/--/test/path?shouldBeEscaped=x%252By%2540xxx.com',
         'exp://127.0.0.1:19000/x?y=x%252By%2540xxx.com',
         'exp://127.0.0.1:19000?query=param',
+        'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb',
+        'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar',
+        'exp://evanbacon.dev/',
+        'exp://evanbacon.dev/hello/--/',
         'exp://u.expo.dev/update/123abc',
         'exp://u.expo.dev/update/123abc/--/test/path?query=param',
         'exp://u.expo.dev/update/123abc/efg',
@@ -81,5 +85,55 @@ describe(extractExpoPathFromURL, () => {
     // This should look mostly broken, but it's the best we can do
     // when someone uses this format outside of Expo Go.
     expect(res).toEqual('127.0.0.1:19000/--/test');
+  });
+});
+
+describe(parsePathFromExpoGoLink, () => {
+  test.each<string>([
+    'scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath',
+    'scheme://expo-development-client/?url=http://acme.com/foo/bar?query=param',
+    'scheme://expo-development-client/?url=acme://foo/bar?query=param&query2=param2',
+    'app.bacon.expo://expo-development-client',
+    'https://example.com/test/path?query=param',
+    'https://example.com/test/path',
+    'https://example.com:8000/test/path',
+    'https://example.com:8000/test/path+with+plus',
+    'https://example.com/test/path?query=do+not+escape',
+    'https://example.com/test/path?missingQueryValue=',
+    'custom:///?shouldBeEscaped=x%252By%2540xxx.com',
+    'custom:///test/path?foo=bar',
+    'custom:///',
+    'custom://',
+    'custom://?hello=bar',
+    'invalid',
+  ])(`parses to empty %p`, (url) => {
+    expect(parsePathFromExpoGoLink(url)).toEqual('');
+  });
+  test.each<string>([
+    'exp://127.0.0.1:19000/',
+    'exp://evanbacon.dev/',
+    'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb',
+    'exp://127.0.0.1:19000?query=param',
+    'exp://exp.host/@test/test',
+    'exp://127.0.0.1:19000/x?y=x%252By%2540xxx.com',
+    'exp://evanbacon.dev/hello/--/',
+    'exp://u.expo.dev/update/123abc',
+    'exp://u.expo.dev/update/123abc/efg',
+  ])(`parses to empty match %p`, (url) => {
+    expect(parsePathFromExpoGoLink(url)).toEqual('');
+  });
+
+  test.each<string>([
+    'exp://127.0.0.1:19000/--/test/path?query=param',
+    'exp://127.0.0.1:19000/--/test/path?shouldBeEscaped=x%252By%2540xxx.com',
+    'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar',
+
+    'exp://u.expo.dev/update/123abc/--/test/path?query=param',
+
+    'exp://exp.host/@test/test/--/test/path?query=param',
+    'exp://exp.host/@test/test/--/test/path',
+    'exp://exp.host/@test/test/--/test/path/--/foobar',
+  ])(`parses %p`, (url) => {
+    expect(parsePathFromExpoGoLink(url)).toMatchSnapshot();
   });
 });
