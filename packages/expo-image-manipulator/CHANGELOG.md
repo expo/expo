@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 12.0.1 — 2024-04-22
+
 ### 🎉 New features
 
 - Added support for converting to WEBP on Android and iOS. ([#26379](https://github.com/expo/expo/pull/26379) by [@NikitaDudin](https://github.com/NikitaDudin))

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed promise resolved twice on denied permission. ([#28323](https://github.com/expo/expo/pull/28323) by [@mathieupost](https://github.com/mathieupost))
-
 ### 💡 Others
+
+## 16.0.2 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed promise resolved twice on denied permission. ([#28323](https://github.com/expo/expo/pull/28323) by [@mathieupost](https://github.com/mathieupost))
 
 ## 16.0.1 — 2024-04-19
 

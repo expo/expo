@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an issue where cropped images were not returning file size and file name on Android. ([#28352](https://github.com/expo/expo/pull/28352) by [@fobos531](https://github.com/fobos531))
-
 ### 💡 Others
+
+## 15.0.1 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed an issue where cropped images were not returning file size and file name on Android. ([#28352](https://github.com/expo/expo/pull/28352) by [@fobos531](https://github.com/fobos531))
 
 ## 15.0.0 — 2024-04-18
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.0.1 — 2024-04-22
+
+### 💡 Others
+
 - Remove warning when using fingerprint. ([#28329](https://github.com/expo/expo/pull/28329) by [@wschurman](https://github.com/wschurman))
 
 ## 8.0.0 — 2024-04-18
