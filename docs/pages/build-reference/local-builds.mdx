@@ -5,16 +5,12 @@ description: Learn how to use EAS Build locally on your machine or a custom infr
 
 import { Terminal } from '~/ui/components/Snippet';
 
-You can run the same build process that is typically run on the EAS Build servers directly on your machine by using the `eas build --local` flag. This is a useful way to debug build failures that are happening on your cloud builds, which you may not be able to reproduce without running the exact same set of steps.
+You can run the same build process that is typically run on the EAS Build servers directly on your machine by using the `eas build --local` flag. This is a useful way to debug build failures that are happening on your cloud builds, which you may not be able to reproduce without running the same set of steps.
 
 > **Note:** To compile and run your app locally with Expo CLI, use [`npx expo run:android` or `npx expo run:ios` commands](/more/expo-cli/#compiling) instead. If you use [Continuous Native Generation](/workflow/continuous-native-generation), you can also run [prebuild](/workflow/prebuild) to generate your **android** and **ios** directories and then proceed to open the projects in the respective IDEs and build them like any native project. With both of these approaches, you will not be following the exact process that is run on the cloud with EAS Build — that is what the `eas build --local` flag is for.
 
 <Terminal
-  cmd={[
-    '$ eas build --platform android --local',
-    '# or',
-    '$ eas build --platform ios --local'
-  ]}
+  cmd={['$ eas build --platform android --local', '# or', '$ eas build --platform ios --local']}
 />
 
 ## Prerequisites
@@ -54,4 +50,4 @@ Some of the options available for cloud builds are not available locally. Limita
   - fastlane (iOS only)
   - CocoaPods (iOS only)
   - Android SDK and NDK
-- On Windows, you can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) for local EAS Builds — however, we do not officially test against this platform and do not support Windows for local builds (macOS and Linux are supported).
+- On Windows, you can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) for local EAS Builds. However, we do not officially test against this platform and do not support Windows for local builds (macOS and Linux are supported).
