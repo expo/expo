@@ -1,3 +1,18 @@
+export function parsePathAndParamsFromExpoGoLink(url: string): {
+  pathname?: string;
+  queryString?: string;
+} {
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+
+  const href = parsePathFromExpoGoLink(url);
+  const results = href.match(/(.*?)(\?.*)/);
+  return {
+    pathname: results?.[1],
+    queryString: results?.[2],
+  };
+}
+
 export function parsePathFromExpoGoLink(url: string): string {
   // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
   // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
@@ -88,6 +103,9 @@ function fromDeepLink(url: string): string {
 }
 
 export function extractExpoPathFromURL(url: string = '') {
-  // TODO: We should get rid of this, dropping specificities is not good
-  return extractExactPathFromURL(url).replace(/^\//, '');
+  return (
+    extractExactPathFromURL(url)
+      // TODO: We should get rid of this, dropping specificities is not good
+      .replace(/^\//, '')
+  );
 }

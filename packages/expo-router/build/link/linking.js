@@ -59,11 +59,11 @@ function getInitialURL() {
             // since Expo Go is mostly just used in development.
             // Expo Go is weird and requires the root path to be `/--/`
             if (url && isExpoGo) {
-                const pathname = (0, extractPathFromURL_1.parsePathFromExpoGoLink)(url);
+                const { pathname, queryString } = (0, extractPathFromURL_1.parsePathAndParamsFromExpoGoLink)(url);
                 // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
                 // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
                 if (!pathname || pathname === '/') {
-                    return getRootURL();
+                    return getRootURL() + queryString;
                 }
             }
             // The path will be nullish in bare apps when the app is launched from the home screen.
