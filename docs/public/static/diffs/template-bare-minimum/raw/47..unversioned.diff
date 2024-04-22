@@ -1494,10 +1494,10 @@ index f35d996202..5c25e728ea 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 8181b282cd..be66878b65 100644
+index 8181b282cd..932bf7b34b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -2,64 +2,39 @@
+@@ -2,64 +2,40 @@
  
  buildscript {
      ext {
@@ -1513,7 +1513,7 @@ index 8181b282cd..be66878b65 100644
 +        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
  
 -        if (System.properties['os.arch'] == 'aarch64') {
 -            // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -1535,6 +1535,7 @@ index 8181b282cd..be66878b65 100644
 -        classpath('de.undercouch:gradle-download-task:5.0.1')
 -        // NOTE: Do not place your application dependencies here; they belong
 -        // in the individual module build.gradle files
++        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
      }
  }
  
@@ -1573,19 +1574,21 @@ index 8181b282cd..be66878b65 100644
      }
  }
 diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
-index 64436baaf5..877b87e9a5 100644
+index 64436baaf5..8a6be07718 100644
 --- a/templates/expo-template-bare-minimum/android/gitignore
 +++ b/templates/expo-template-bare-minimum/android/gitignore
-@@ -11,11 +11,5 @@ local.properties
+@@ -10,12 +10,7 @@ build/
+ local.properties
  *.iml
  *.hprof
- 
+-
 -# BUCK
 -buck-out/
 -\.buckd/
 -*.keystore
 -!debug.keystore
--
++.cxx/
+ 
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
@@ -1802,6 +1805,19 @@ index b3332319f9..0fcba3d9bb 100644
 -  project(":ReactAndroid:hermes-engine").projectDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../ReactAndroid/hermes-engine");
 -}
 +includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+diff --git a/templates/expo-template-bare-minimum/app.json b/templates/expo-template-bare-minimum/app.json
+index a36a6e08d4..e1cfd57212 100644
+--- a/templates/expo-template-bare-minimum/app.json
++++ b/templates/expo-template-bare-minimum/app.json
+@@ -2,7 +2,6 @@
+   "expo": {
+     "name": "HelloWorld",
+     "slug": "expo-template-bare",
+-    "version": "1.0.0",
+-    "assetBundlePatterns": ["**/*"]
++    "version": "1.0.0"
+   }
+ }
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
 index 67397f65f9..05647d55c7 100644
 --- a/templates/expo-template-bare-minimum/gitignore
@@ -2404,7 +2420,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..e7e9e23831 100644
+index a41fdc0d8d..1a4317d703 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2412,7 +2428,7 @@ index a41fdc0d8d..e7e9e23831 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "47.0.26",
-+  "version": "50.0.17",
++  "version": "51.0.2",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2425,10 +2441,10 @@ index a41fdc0d8d..e7e9e23831 100644
 -    "expo-status-bar": "~1.4.2",
 -    "react": "18.1.0",
 -    "react-native": "0.70.8"
-+    "expo": "~51.0.0-unreleased",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~51.0.0-preview.0",
++    "expo-status-bar": "~1.12.0",
 +    "react": "18.2.0",
-+    "react-native": "0.74.0-rc.5"
++    "react-native": "0.74.0-rc.9"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"
