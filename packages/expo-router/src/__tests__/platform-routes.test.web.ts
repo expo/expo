@@ -167,3 +167,45 @@ describe(`will throw if a route does not have a platform fallback`, () => {
     );
   });
 });
+
+it(`can display platform routes`, () => {
+  expect(
+    getRoutes(
+      inMemoryContext({
+        './(app)/index': () => null,
+        './(app)/page.ts': () => null,
+        './(app)/page.web.ts': () => null,
+      }),
+      {
+        internal_stripLoadRoute: true,
+        platform: Platform.OS,
+        skipGenerated: true,
+        platformRoutes: false,
+      }
+    )
+  ).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(app)/index.js',
+        dynamic: null,
+        entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+        route: '(app)/index',
+        type: 'route',
+      },
+      {
+        children: [],
+        contextKey: './(app)/page.ts',
+        dynamic: null,
+        entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.ts'],
+        route: '(app)/page',
+        type: 'route',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+});
