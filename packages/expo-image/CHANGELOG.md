@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531))
+- Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531), [#28371](https://github.com/expo/expo/pull/28371) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
