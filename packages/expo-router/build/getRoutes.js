@@ -275,8 +275,9 @@ function getFileMeta(key, options) {
     let specificity = 0;
     const platformExtension = filenameWithoutExtensions.split('.')[1];
     const hasPlatformExtension = validPlatforms.has(platformExtension);
+    const usePlatformRoutes = options.platformRoutes ?? true;
     if (hasPlatformExtension) {
-        if (!options.platformRoutes) {
+        if (!usePlatformRoutes) {
             // If the user has disabled platform routes, then we should ignore this file
             specificity = -1;
         }
