@@ -58,7 +58,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
               ) : (
                 <div className="flex flex-row items-center">
                   <CircularProgressBar progress={progressPercentage} />{' '}
-                  {`${completedChaptersCount} of ${totalChapters}`}
+                  <div className="ml-2">{`${completedChaptersCount} of ${totalChapters}`}</div>
                 </div>
               )}
             </p>
