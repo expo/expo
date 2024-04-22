@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NpmPackageManager = void 0;
 const json_file_1 = __importDefault(require("@expo/json-file"));
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const npm_package_arg_1 = __importDefault(require("npm-package-arg"));
 const path_1 = __importDefault(require("path"));
 const BasePackageManager_1 = require("./BasePackageManager");
@@ -63,6 +64,10 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
     }
     removeGlobalAsync(namesOrFlags) {
         return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+    }
+    runBinAsync(command, options = {}) {
+        this.log?.(`> npx ${command.join(' ')}`);
+        return (0, spawn_async_1.default)('npx', command, { ...this.options, ...options });
     }
     /**
      * Parse all package specifications from the names or flag list.

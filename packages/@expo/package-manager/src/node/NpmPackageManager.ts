@@ -1,4 +1,5 @@
 import JsonFile from '@expo/json-file';
+import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
@@ -80,6 +81,11 @@ export class NpmPackageManager extends BasePackageManager {
 
   removeGlobalAsync(namesOrFlags: string[]) {
     return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+  }
+
+  runBinAsync(command: string[], options: SpawnOptions = {}) {
+    this.log?.(`> npx ${command.join(' ')}`);
+    return spawnAsync('npx', command, { ...this.options, ...options });
   }
 
   /**
