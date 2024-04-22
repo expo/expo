@@ -68,11 +68,13 @@ describe('Error recovery tests', () => {
     // launch and crash (restart from cache doesn't work in detox)
     // we don't check current update ID header or failed update IDs header since the behavior for this request is not defined
     // (we don't guarantee current update to be set during a crash or the launch failure to have been registered yet)
-    await jestExpect(
-      device.launchApp({
+    // Detox may or may not catch the crash, we don't expect the launch to succeed or fail in this case.
+    try {
+      await device.launchApp({
         newInstance: true,
-      })
-    ).rejects.toThrow();
+      });
+    } catch {}
+
     const request2 = await Server.waitForUpdateRequest(10000);
     const request2EmbeddedUpdateId = request2.headers['expo-embedded-update-id'];
     const request2CurrentUpdateId = request2.headers['expo-current-update-id'];
