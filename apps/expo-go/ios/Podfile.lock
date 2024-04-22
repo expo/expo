@@ -95,6 +95,7 @@ PODS:
   - ExpoImageManipulator (12.0.0):
     - EXImageLoader
     - ExpoModulesCore
+    - SDWebImageWebPCoder
   - ExpoImagePicker (15.0.0):
     - ExpoModulesCore
   - ExpoKeepAwake (13.0.0):
@@ -2355,7 +2356,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 70624b064e622c1149cabcf328c3c14f84fa96ff
   ExpoHead: c8a1ce047aa86237e5dcd67afdb011e2e4b154cd
   ExpoImage: 935e6eee7eaf7d949d88808d3ce503e73488c925
-  ExpoImageManipulator: 0e9feedb937ab92d51238249702090ea423c1761
+  ExpoImageManipulator: dd85f52063abbca03e8a27ce425b3109faebac70
   ExpoImagePicker: f73a74e294b88dfa69a1d44088e852b75f50791c
   ExpoKeepAwake: e1da78da02e634704cd98bdc53e5f9c9f87a268e
   ExpoLinearGradient: 10d7c2512b5331c279ebf4ff3b4de3addb788f88
@@ -2398,7 +2399,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 118ab4d39602f2b05fd37ba7356343d2b5344b9c
+  hermes-engine: 233d40fff282f1f6cdfcd557c2903a67ee6c0869
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
