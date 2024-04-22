@@ -33,7 +33,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const title = route.sidebarTitle ?? route.name;
   const Icon = getIconElement(title);
 
-  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
+  const [chapters] = useLocalStorage<Chapter[]>({
     name: 'EAS_TUTORIAL',
     defaultValue: EAS_TUTORIAL_INITIAL_CHAPTERS,
   });
