@@ -4,6 +4,7 @@ import CoreGraphics
 import Photos
 import UIKit
 import ExpoModulesCore
+import SDWebImageWebPCoder
 
 public class ImageManipulatorModule: Module {
   typealias LoadImageCallback = (Result<UIImage, Error>) -> Void
@@ -128,5 +129,7 @@ func imageData(from image: UIImage, format: ImageFormat, compression: Double) ->
     return image.jpegData(compressionQuality: compression)
   case .png:
     return image.pngData()
+  case .webp:
+    return SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeCompressionQuality: compression])
   }
 }
