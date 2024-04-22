@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add --debug option to fingerprint:generate command. ([#28311](https://github.com/expo/expo/pull/28311) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
