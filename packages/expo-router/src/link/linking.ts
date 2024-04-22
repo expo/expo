@@ -1,7 +1,7 @@
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { adjustPathname } from '../fork/extractPathFromURL';
+import { parsePathFromExpoGoLink } from '../fork/extractPathFromURL';
 import getPathFromState from '../fork/getPathFromState';
 import getStateFromPath from '../fork/getStateFromPath';
 
@@ -33,18 +33,10 @@ export function getInitialURL(): Promise<string | null> | string {
 
       // Expo Go is weird and requires the root path to be `/--/`
       if (url && isExpoGo) {
-        const parsed = Linking.parse(url);
+        const pathname = parsePathFromExpoGoLink(url);
         // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
         // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
-        if (
-          parsed.path === null ||
-          ['', '/'].includes(
-            adjustPathname({
-              hostname: parsed.hostname,
-              pathname: parsed.path,
-            })
-          )
-        ) {
+        if (!pathname || pathname === '/') {
           return getRootURL();
         }
       }

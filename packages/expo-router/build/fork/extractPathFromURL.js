@@ -1,30 +1,12 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adjustPathname = exports.extractExpoPathFromURL = void 0;
-const Linking = __importStar(require("expo-linking"));
+exports.extractExpoPathFromURL = exports.parsePathFromExpoGoLink = void 0;
+function parsePathFromExpoGoLink(url) {
+    // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+    // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+    return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
+}
+exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
 // This is only run on native.
 function extractExactPathFromURL(url) {
     if (
@@ -40,17 +22,16 @@ function extractExactPathFromURL(url) {
         // while not exhaustive, `exp` and `exps` are the only two schemes which
         // are passed through to other apps in Expo Go.
         url.match(/^exp(s)?:\/\//)) {
-        const pathname = url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1];
+        const pathname = parsePathFromExpoGoLink(url);
         if (pathname) {
             return fromDeepLink('a://' + pathname);
         }
-        const res = Linking.parse(url);
-        const qs = !res.queryParams
-            ? ''
-            : Object.entries(res.queryParams)
-                .map(([k, v]) => `${k}=${v}`)
-                .join('&');
-        return (adjustPathname({ hostname: res.hostname, pathname: res.path || '' }) + (qs ? '?' + qs : ''));
+        // Match the `?.*` segment of the URL.
+        const queryParams = url.match(/exps?:\/\/.*\?(.*)/)?.[1];
+        if (queryParams) {
+            return fromDeepLink('a://?' + queryParams);
+        }
+        return '';
     }
     // TODO: Support dev client URLs
     return fromDeepLink(url);
@@ -97,12 +78,4 @@ function extractExpoPathFromURL(url = '') {
     return extractExactPathFromURL(url).replace(/^\//, '');
 }
 exports.extractExpoPathFromURL = extractExpoPathFromURL;
-function adjustPathname(url) {
-    if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
-        // drop the first two segments from pathname:
-        return url.pathname.split('/').slice(2).join('/');
-    }
-    return url.pathname;
-}
-exports.adjustPathname = adjustPathname;
 //# sourceMappingURL=extractPathFromURL.js.map

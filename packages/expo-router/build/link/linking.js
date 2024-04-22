@@ -59,14 +59,10 @@ function getInitialURL() {
             // since Expo Go is mostly just used in development.
             // Expo Go is weird and requires the root path to be `/--/`
             if (url && isExpoGo) {
-                const parsed = Linking.parse(url);
+                const pathname = (0, extractPathFromURL_1.parsePathFromExpoGoLink)(url);
                 // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
                 // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
-                if (parsed.path === null ||
-                    ['', '/'].includes((0, extractPathFromURL_1.adjustPathname)({
-                        hostname: parsed.hostname,
-                        pathname: parsed.path,
-                    }))) {
+                if (!pathname || pathname === '/') {
                     return getRootURL();
                 }
             }
@@ -98,7 +94,7 @@ function addEventListener(listener) {
             // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
             // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
             if (parsed.path === null ||
-                ['', '/'].includes((0, extractPathFromURL_1.adjustPathname)({ hostname: parsed.hostname, pathname: parsed.path }))) {
+                ['', '/'].includes(adjustPathname({ hostname: parsed.hostname, pathname: parsed.path }))) {
                 listener(getRootURL());
             }
             else {
