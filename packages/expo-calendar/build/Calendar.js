@@ -585,7 +585,7 @@ export const Frequency = {
     YEARLY: 'yearly',
 };
 export const Availability = {
-    NOT_SUPPORTED: 'notSupported', // iOS
+    NOT_SUPPORTED: 'notSupported',
     BUSY: 'busy',
     FREE: 'free',
     TENTATIVE: 'tentative',
@@ -614,37 +614,37 @@ export const SourceType = {
     BIRTHDAYS: 'birthdays',
 };
 export const AttendeeRole = {
-    UNKNOWN: 'unknown', // iOS
-    REQUIRED: 'required', // iOS
-    OPTIONAL: 'optional', // iOS
-    CHAIR: 'chair', // iOS
-    NON_PARTICIPANT: 'nonParticipant', // iOS
-    ATTENDEE: 'attendee', // Android
-    ORGANIZER: 'organizer', // Android
-    PERFORMER: 'performer', // Android
-    SPEAKER: 'speaker', // Android
+    UNKNOWN: 'unknown',
+    REQUIRED: 'required',
+    OPTIONAL: 'optional',
+    CHAIR: 'chair',
+    NON_PARTICIPANT: 'nonParticipant',
+    ATTENDEE: 'attendee',
+    ORGANIZER: 'organizer',
+    PERFORMER: 'performer',
+    SPEAKER: 'speaker',
     NONE: 'none', // Android
 };
 export const AttendeeStatus = {
-    UNKNOWN: 'unknown', // iOS
-    PENDING: 'pending', // iOS
+    UNKNOWN: 'unknown',
+    PENDING: 'pending',
     ACCEPTED: 'accepted',
     DECLINED: 'declined',
     TENTATIVE: 'tentative',
-    DELEGATED: 'delegated', // iOS
-    COMPLETED: 'completed', // iOS
-    IN_PROCESS: 'inProcess', // iOS
-    INVITED: 'invited', // Android
+    DELEGATED: 'delegated',
+    COMPLETED: 'completed',
+    IN_PROCESS: 'inProcess',
+    INVITED: 'invited',
     NONE: 'none', // Android
 };
 export const AttendeeType = {
-    UNKNOWN: 'unknown', // iOS
-    PERSON: 'person', // iOS
-    ROOM: 'room', // iOS
-    GROUP: 'group', // iOS
+    UNKNOWN: 'unknown',
+    PERSON: 'person',
+    ROOM: 'room',
+    GROUP: 'group',
     RESOURCE: 'resource',
-    OPTIONAL: 'optional', // Android
-    REQUIRED: 'required', // Android
+    OPTIONAL: 'optional',
+    REQUIRED: 'required',
     NONE: 'none', // Android
 };
 export const AlarmMethod = {
