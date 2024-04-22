@@ -1,6 +1,6 @@
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
-  queryString?: string;
+  queryString: string;
 } {
   // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
   // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
@@ -9,7 +9,7 @@ export function parsePathAndParamsFromExpoGoLink(url: string): {
   const results = href.match(/(.*?)(\?.*)/);
   return {
     pathname: results?.[1] ?? '',
-    queryString: results?.[2],
+    queryString: results?.[2] ?? '',
   };
 }
 
