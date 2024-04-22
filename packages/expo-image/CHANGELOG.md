@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531))
+- Fixed SVG assets without viewbox attribute not being rendered on Android.
 
 ### 💡 Others
 
