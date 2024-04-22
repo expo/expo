@@ -190,13 +190,24 @@ In this chapter, we:
 
 We can go beyond and add more development related indicators (such as a different app icon or splash screen), but for brevity, we are not going to do that in this tutorial. However, you should try it out.
 
-<ProgressTracker currentChapterIndex={4} name="EAS_TUTORIAL" />
+<ProgressTracker
+  currentChapterIndex={4}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully configured various build types, switched to <strong>app.config.js</strong> for
+      dynamic settings, added environment variables in <strong>eas.json</strong>, and started the
+      development server using a custom <strong>package.json</strong> script.
+    </>
+  }
+/>
 
 ## Next step
+
+In the next chapter, learn about what are internal distribution builds, why we need them, and how to create them.
 
 <BoxLink
   title="Configure multiple app variants"
   Icon={BookOpen02Icon}
-  description="In the next chapter, learn about what are internal distribution builds, why we need them, and how to create them."
   href="/tutorial/eas/internal-distribution-builds/"
 />

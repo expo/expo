@@ -77,13 +77,24 @@ In this chapter, we:
 - Identified the importance of unique app versions to avoid app store rejections.
 - Updated **eas.json** to automatically increment developer-facing versions for production builds, using a remote version source for developer convenience.
 
-<ProgressTracker currentChapterIndex={6} name="EAS_TUTORIAL" />
+<ProgressTracker
+  currentChapterIndex={6}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully explored app versioning differences, addressed the importance of unique
+      versions to prevent store rejections, and enabled automated version updates in{' '}
+      <strong>eas.json</strong> for production.
+    </>
+  }
+/>
 
 ## Next step
+
+In the next chapter, learn about the process of creating a production build for Android.
 
 <BoxLink
   title="Create a production build for Android"
   Icon={BookOpen02Icon}
-  description="In the next chapter, learn about the process of creating a production build for Android."
   href="/tutorial/eas/android-production-build/"
 />

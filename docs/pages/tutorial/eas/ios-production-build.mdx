@@ -10,6 +10,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { CODE } from '~/ui/components/Text';
 
 In this chapter, we're going to our app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
 
@@ -162,22 +163,24 @@ For future releases, we can streamline the process by combining build creation a
 
 </Step>
 
-## Summary
-
-In this chapter, we learned about:
-
-- Created a production-ready iOS build for our project.
-- Distributed a production build using TestFlight or the Apple App Store.
-- Learned about submitting the app to the App Store using `eas submit`.
-- Learned about automating the submission process using the `--auto-submit` flag with `eas build`.
-
-<ProgressTracker currentChapterIndex={8} name="EAS_TUTORIAL" />
+<ProgressTracker
+  currentChapterIndex={8}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully created a production-ready iOS build, discussed distribution using TestFlight
+      and Apple App Store using <CODE>eas submit</CODE>, and automated the release process with the{' '}
+      <CODE>--auto-submit</CODE> flag.
+    </>
+  }
+/>
 
 ## Next step
 
+In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team.
+
 <BoxLink
-  title="Develop with your team"
+  title="Share previews with your team"
   Icon={BookOpen02Icon}
-  description="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
   href="/tutorial/eas/team-development/"
 />
