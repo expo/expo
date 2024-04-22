@@ -9,8 +9,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import Video from '~/components/plugins/Video';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
@@ -170,14 +168,7 @@ Here is an example where we've published an update for the `preview` build. To t
   currentChapterIndex={9}
   name="EAS_TUTORIAL"
   summary="We successfully configured  EAS Update to manage and publish over-the-air updates across platforms, and explored methods to fetch updates to review."
-/>
-
-## Next step
-
-In the next chapter, learn about the process of triggering builds from a GitHub repository.
-
-<BoxLink
-  title="Trigger builds from a GitHub repository"
-  Icon={BookOpen02Icon}
-  href="/tutorial/eas/using-github/"
+  nextChapterDescription="In the next chapter, learn about the process of triggering builds from a GitHub repository."
+  nextChapterTitle="Trigger builds from a GitHub repository"
+  nextChapterLink="/tutorial/eas/using-github/"
 />

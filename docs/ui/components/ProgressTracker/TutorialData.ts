@@ -5,8 +5,6 @@ export type Chapter = {
 };
 
 // The following data is for the EAS Tutorial (/tutorial/eas/).
-// TODO: TO fix, give the items below slug/id values
-// this solve renaming problem.
 export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
   {
     title: 'Chapter 1: Configure development build in cloud',
@@ -56,7 +54,7 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
   {
     title: 'Chapter 10: Share previews with your team',
     completed: false,
-    slug: '//tutorial/eas/team-development',
+    slug: '/tutorial/eas/team-development',
   },
   {
     title: 'Chapter 11: Trigger builds from a GitHub repository',

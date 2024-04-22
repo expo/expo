@@ -7,8 +7,6 @@ description: Learn about the process of creating a production build for iOS.
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { CODE } from '~/ui/components/Text';
 
@@ -163,6 +161,8 @@ For future releases, we can streamline the process by combining build creation a
 
 </Step>
 
+## Summary
+
 <ProgressTracker
   currentChapterIndex={8}
   name="EAS_TUTORIAL"
@@ -173,14 +173,7 @@ For future releases, we can streamline the process by combining build creation a
       <CODE>--auto-submit</CODE> flag.
     </>
   }
-/>
-
-## Next step
-
-In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team.
-
-<BoxLink
-  title="Share previews with your team"
-  Icon={BookOpen02Icon}
-  href="/tutorial/eas/team-development/"
+  nextChapterDescription="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
+  nextChapterTitle="Share previews with your team"
+  nextChapterLink="/tutorial/eas/team-development/"
 />
