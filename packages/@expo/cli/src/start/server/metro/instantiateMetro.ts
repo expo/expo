@@ -233,7 +233,7 @@ export async function instantiateMetroAsync(
     watch: !isExporting && isWatchEnabled(),
   });
 
-  // If Atlas is enabled, and can register to Metro, attach it to liste for changes
+  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
   atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
