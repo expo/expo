@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Bumped the underlying SQLite version to 3.45.3 on iOS. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
 ## 0.25.0 — 2024-04-18
 
 ### 🛠 Breaking changes

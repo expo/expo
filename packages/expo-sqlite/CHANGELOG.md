@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Bumped SQLite version to 3.45.3 and enabled the [bytecodevtab](https://www.sqlite.org/bytecodevtab.html) feature. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

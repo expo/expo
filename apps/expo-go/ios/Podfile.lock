@@ -202,9 +202,10 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (14.0.1):
     - ExpoModulesCore
-    - sqlite3 (~> 3.42.0)
-    - sqlite3/fts (~> 3.42.0)
-    - sqlite3/fts5 (~> 3.42.0)
+    - "sqlite3 (~> 3.45.3+1)"
+    - "sqlite3/bytecodevtab (~> 3.45.3+1)"
+    - "sqlite3/fts (~> 3.45.3+1)"
+    - "sqlite3/fts5 (~> 3.45.3+1)"
   - ExpoStoreReview (7.0.0):
     - ExpoModulesCore
   - ExpoSymbols (0.1.0):
@@ -272,7 +273,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - sqlite3 (~> 3.42.0)
+    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdates/Tests (0.25.0):
     - DoubleConversion
@@ -301,7 +302,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - sqlite3 (~> 3.42.0)
+    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.0):
     - ExpoModulesCore
@@ -1779,12 +1780,14 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - sqlite3 (3.42.0):
-    - sqlite3/common (= 3.42.0)
-  - sqlite3/common (3.42.0)
-  - sqlite3/fts (3.42.0):
+  - "sqlite3 (3.45.3+1)":
+    - "sqlite3/common (= 3.45.3+1)"
+  - "sqlite3/bytecodevtab (3.45.3+1)":
     - sqlite3/common
-  - sqlite3/fts5 (3.42.0):
+  - "sqlite3/common (3.45.3+1)"
+  - "sqlite3/fts (3.45.3+1)":
+    - sqlite3/common
+  - "sqlite3/fts5 (3.45.3+1)":
     - sqlite3/common
   - Stripe (23.26.0):
     - StripeApplePay (= 23.26.0)
@@ -2372,7 +2375,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 0f9a83ba905a36fa79902b03ab41563edc61ab36
   ExpoSMS: e38400dbf1ef759095d74a23c9948426c4561aa6
   ExpoSpeech: 95bab00c822d58b43175df0603d668c1b442be16
-  ExpoSQLite: 54b0d0500c2479b593205c6587af52b9401d126a
+  ExpoSQLite: bb6e0e3a203f378f50a2fdb7df129d4c6d780e56
   ExpoStoreReview: 84eae5d3898b70fc7392a7f571cd5619efce68b9
   ExpoSymbols: 493a6853c3e70354daf0b365bf609967094049c3
   ExpoSystemUI: b8430b38749b5bd67ff17198efc12de48c5bc704
@@ -2383,7 +2386,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 9ec8d990273a4dc4821e18985dc31fce62449ac8
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 115302bd3342bc9bfa4271bdfe216ea66eb265a3
-  EXUpdates: a5650bbabf9c31cc51282472c65d783f4e69fbf7
+  EXUpdates: cf9d790dc53c696bc572f396fe8745699606320b
   EXUpdatesInterface: 9c4a15026e8434058e0fc0cc0418e667107e0edd
   FBLazyVector: 026c8f4ae67b06e088ae01baa2271ef8a26c0e8c
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
@@ -2477,7 +2480,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
+  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
   stripe-react-native: f1af0235d838495e0c209da6da321eb6f74b70b8
   StripeApplePay: d6ef43f2bf834463e1dcaaf4a61c681aec04990e
@@ -2491,6 +2494,6 @@ SPEC CHECKSUMS:
   Yoga: ff1d575b119f510a5de23c22a794872562078ccf
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 8e254aedd171796e47705c1b9624bb875f85115c
+PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
 
 COCOAPODS: 1.14.2
