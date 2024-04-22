@@ -344,6 +344,7 @@ const general = [
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/continuous-deployment.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
