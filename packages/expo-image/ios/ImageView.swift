@@ -129,6 +129,10 @@ public final class ImageView: ExpoView {
     context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
     context[.imageTransformer] = createTransformPipeline()
 
+    // Tell SDWebImage to use our own class for animated formats,
+    // which has better compatibility with the UIImage and fixes issues with the image duration.
+    context[.animatedImageClass] = AnimatedImage.self
+
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
@@ -222,8 +226,7 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // Create an SDAnimatedImage if needed then handle the image
-    if let image = createAnimatedIfNeeded(image: image, data: data) {
+    if let image {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
@@ -320,6 +323,7 @@ public final class ImageView: ExpoView {
 
     context[.imageScaleFactor] = placeholder.scale
     context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
+    context[.animatedImageClass] = AnimatedImage.self
 
     // Cache placeholders on the disk. Should we let the user choose whether
     // to cache them or apply the same policy as with the proper image?
