@@ -10,9 +10,12 @@
 
 ### 💡 Others
 
-## 12.2.1 — 2023-12-19
+## 12.2.1 — 2023-12-22
 
-_This version does not introduce any user-facing changes._
+### 🎉 New features
+
+- Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
+
 
 ## 12.2.0 — 2023-11-14
 
