@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix 404 when serving routes using `[value]/index` pattern. ([#28348](https://github.com/expo/expo/pull/28348) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.4.1 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fix 404 when serving routes using `[value]/index` pattern. ([#28348](https://github.com/expo/expo/pull/28348) by [@byCedric](https://github.com/byCedric))
 
 ## 0.4.0 — 2024-04-18
 
