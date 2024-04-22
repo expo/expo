@@ -85,21 +85,32 @@ function parseExpoGoUrlFromListener(url) {
     }
     return url;
 }
-function addEventListener(listener) {
-    let callback;
-    if (isExpoGo) {
-        // This extra work is only done in the Expo Go app.
-        callback = ({ url }) => {
-            listener(parseExpoGoUrlFromListener(url));
+function addEventListener(nativeLinking) {
+    return (listener) => {
+        let callback;
+        if (isExpoGo) {
+            // This extra work is only done in the Expo Go app.
+            callback = async ({ url }) => {
+                url = parseExpoGoUrlFromListener(url);
+                if (nativeLinking?.redirectSystemPath) {
+                    url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+                }
+                listener(url);
+            };
+        }
+        else {
+            callback = async ({ url }) => {
+                if (nativeLinking?.redirectSystemPath) {
+                    url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+                }
+                listener(url);
+            };
+        }
+        const subscription = Linking.addEventListener('url', callback);
+        return () => {
+            // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
+            subscription?.remove?.();
         };
-    }
-    else {
-        callback = ({ url }) => listener(url);
-    }
-    const subscription = Linking.addEventListener('url', callback);
-    return () => {
-        // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
-        subscription?.remove?.();
     };
 }
 exports.addEventListener = addEventListener;

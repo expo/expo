@@ -2,7 +2,6 @@
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -27,9 +26,6 @@ export type NativeIntent = {
     path: string | null;
     initial: boolean;
   }) => Promise<string | null | undefined> | string | null | undefined;
-  subscribe?: (
-    listener: (path: string) => void
-  ) => Promise<() => void | void> | (() => void) | void;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -107,9 +103,18 @@ function ContextNavigator({
     return contextType;
   }, []);
 
-  linking = getNativeLinking(context, linking, serverContext.location);
+  /*
+   * The serverUrl is an initial URL used in server rendering environments.
+   * e.g Static renders, units tests, etc
+   */
+  const serverUrl = serverContext.location
+    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    : undefined;
 
-  const store = useInitializeExpoRouter(context, linking);
+  const store = useInitializeExpoRouter(context, {
+    ...linking,
+    serverUrl,
+  });
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
@@ -189,84 +194,4 @@ if (process.env.NODE_ENV !== 'production') {
   };
 } else {
   onUnhandledAction = function () {};
-}
-
-function getNativeLinking(
-  context: RequireContext,
-  linking: Partial<ExpoLinkingOptions>,
-  serverLocation: ServerContextType['location']
-): Partial<ExpoLinkingOptions> {
-  const serverUrl = serverLocation
-    ? `${serverLocation.pathname}${serverLocation.search}`
-    : undefined;
-
-  if (Platform.OS === 'web') {
-    // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
-    // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
-    // So we need to ensure that the linking.getInitialURL is set to the initial location
-    if (serverLocation && !linking.getInitialURL) {
-      linking.getInitialURL = () => serverUrl;
-    }
-
-    return linking;
-  }
-
-  // Get the +native-intent file from the context
-  const nativeLinkingKey = context
-    .keys()
-    .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
-  const nativeLinking: NativeIntent | undefined = nativeLinkingKey
-    ? context(nativeLinkingKey)
-    : undefined;
-
-  return {
-    ...linking,
-    getInitialURL() {
-      if (linking.getInitialURL) {
-        // If the user has provided a getInitialURL function, use that
-        return linking.getInitialURL();
-      }
-
-      if (typeof nativeLinking?.redirectSystemPath === 'function') {
-        if (serverUrl) {
-          // Ensure we initialize the router with the SSR location if present
-          return nativeLinking.redirectSystemPath({ path: serverUrl, initial: true });
-        } else {
-          // Otherwise use the initial URL from the system
-          // This is an inline promise so the Router still acts in a synchronous manner for SSR rendering
-          return Linking.getInitialURL().then((url) => {
-            return nativeLinking?.redirectSystemPath?.({ path: url, initial: true });
-          });
-        }
-      }
-
-      return serverUrl;
-    },
-    subscribe(listener) {
-      if (linking.subscribe) {
-        // If the user has provided a subscribe function, use that
-        return linking.subscribe(listener);
-      }
-
-      const subscription = Linking.addEventListener('url', async ({ url }) => {
-        if (nativeLinking?.redirectSystemPath) {
-          const newPath = await nativeLinking.redirectSystemPath({ path: url, initial: false });
-          if (typeof newPath === 'string') {
-            listener(newPath);
-          }
-        } else {
-          listener(url);
-        }
-      });
-
-      const nativeSubscription = nativeLinking?.subscribe?.(listener);
-
-      return () => {
-        if (typeof nativeSubscription === 'function') {
-          nativeSubscription();
-        }
-        subscription.remove();
-      };
-    },
-  };
 }

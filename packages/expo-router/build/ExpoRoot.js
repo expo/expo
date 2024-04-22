@@ -29,7 +29,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const expo_linking_1 = __importDefault(require("expo-linking"));
 const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
@@ -96,8 +95,17 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
         return contextType;
     }, []);
-    linking = getNativeLinking(context, linking, serverContext.location);
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, linking);
+    /*
+     * The serverUrl is an initial URL used in server rendering environments.
+     * e.g Static renders, units tests, etc
+     */
+    const serverUrl = serverContext.location
+        ? `${serverContext.location.pathname}${serverContext.location.search}`
+        : undefined;
+    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
+        ...linking,
+        serverUrl,
+    });
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -159,73 +167,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 else {
     onUnhandledAction = function () { };
-}
-function getNativeLinking(context, linking, serverLocation) {
-    const serverUrl = serverLocation
-        ? `${serverLocation.pathname}${serverLocation.search}`
-        : undefined;
-    if (react_native_1.Platform.OS === 'web') {
-        // This might slightly counterintuitive, as if we have a location we're not rendering on a native platform
-        // But the ExpoRouter store uses the linking.getInitialURL to initialize the state
-        // So we need to ensure that the linking.getInitialURL is set to the initial location
-        if (serverLocation && !linking.getInitialURL) {
-            linking.getInitialURL = () => serverUrl;
-        }
-        return linking;
-    }
-    // Get the +native-intent file from the context
-    const nativeLinkingKey = context
-        .keys()
-        .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
-    const nativeLinking = nativeLinkingKey
-        ? context(nativeLinkingKey)
-        : undefined;
-    return {
-        ...linking,
-        getInitialURL() {
-            if (linking.getInitialURL) {
-                // If the user has provided a getInitialURL function, use that
-                return linking.getInitialURL();
-            }
-            if (typeof nativeLinking?.redirectSystemPath === 'function') {
-                if (serverUrl) {
-                    // Ensure we initialize the router with the SSR location if present
-                    return nativeLinking.redirectSystemPath({ path: serverUrl, initial: true });
-                }
-                else {
-                    // Otherwise use the initial URL from the system
-                    // This is an inline promise so the Router still acts in a synchronous manner for SSR rendering
-                    return expo_linking_1.default.getInitialURL().then((url) => {
-                        return nativeLinking?.redirectSystemPath?.({ path: url, initial: true });
-                    });
-                }
-            }
-            return serverUrl;
-        },
-        subscribe(listener) {
-            if (linking.subscribe) {
-                // If the user has provided a subscribe function, use that
-                return linking.subscribe(listener);
-            }
-            const subscription = expo_linking_1.default.addEventListener('url', async ({ url }) => {
-                if (nativeLinking?.redirectSystemPath) {
-                    const newPath = await nativeLinking.redirectSystemPath({ path: url, initial: false });
-                    if (typeof newPath === 'string') {
-                        listener(newPath);
-                    }
-                }
-                else {
-                    listener(url);
-                }
-            });
-            const nativeSubscription = nativeLinking?.subscribe?.(listener);
-            return () => {
-                if (typeof nativeSubscription === 'function') {
-                    nativeSubscription();
-                }
-                subscription.remove();
-            };
-        },
-    };
 }
 //# sourceMappingURL=ExpoRoot.js.map

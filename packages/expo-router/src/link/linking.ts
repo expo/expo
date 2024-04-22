@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
 import getPathFromState from '../fork/getPathFromState';
 import getStateFromPath from '../fork/getStateFromPath';
+import { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 
@@ -67,22 +68,36 @@ function parseExpoGoUrlFromListener<T extends string | null>(url: T): T {
   return url;
 }
 
-export function addEventListener(listener: (url: string) => void) {
-  let callback: (({ url }: { url: string }) => void) | undefined;
+export function addEventListener(nativeLinking?: NativeIntent) {
+  return (listener: (url: string) => void) => {
+    let callback: (({ url }: { url: string }) => void) | undefined;
 
-  if (isExpoGo) {
-    // This extra work is only done in the Expo Go app.
-    callback = ({ url }: { url: string }) => {
-      listener(parseExpoGoUrlFromListener(url));
+    if (isExpoGo) {
+      // This extra work is only done in the Expo Go app.
+      callback = async ({ url }) => {
+        url = parseExpoGoUrlFromListener(url);
+
+        if (nativeLinking?.redirectSystemPath) {
+          url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+        }
+
+        listener(url);
+      };
+    } else {
+      callback = async ({ url }) => {
+        if (nativeLinking?.redirectSystemPath) {
+          url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+        }
+        listener(url);
+      };
+    }
+
+    const subscription = Linking.addEventListener('url', callback);
+
+    return () => {
+      // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
+      subscription?.remove?.();
     };
-  } else {
-    callback = ({ url }: { url: string }) => listener(url);
-  }
-  const subscription = Linking.addEventListener('url', callback);
-
-  return () => {
-    // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
-    subscription?.remove?.();
   };
 }
 

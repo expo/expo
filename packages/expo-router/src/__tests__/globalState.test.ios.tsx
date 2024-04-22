@@ -94,7 +94,7 @@ describe(RouterStore, () => {
       }),
       createNavigationContainerRef(),
       {
-        getInitialURL: () => '/page',
+        serverUrl: '/page',
       }
     );
 
