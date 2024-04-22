@@ -41,12 +41,20 @@ function getRoutesManifest(distFolder) {
 exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
-    // serve a static file
+    // Serve a static file by exact route name
     const filePath = path_1.default.join(distFolder, route.page + '.html');
-    if (!fs_1.default.existsSync(filePath)) {
-        return null;
+    if (fs_1.default.existsSync(filePath)) {
+        return fs_1.default.readFileSync(filePath, 'utf-8');
     }
-    return fs_1.default.readFileSync(filePath, 'utf-8');
+    // Serve a static file by route name with hoisted index
+    // See: https://github.com/expo/expo/pull/27935
+    const hoistedFilePath = route.page.match(/\/index$/)
+        ? path_1.default.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        : null;
+    if (hoistedFilePath && fs_1.default.existsSync(hoistedFilePath)) {
+        return fs_1.default.readFileSync(hoistedFilePath, 'utf-8');
+    }
+    return null;
 }, getApiRoute = async (route) => {
     const filePath = path_1.default.join(distFolder, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
