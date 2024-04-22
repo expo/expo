@@ -127,7 +127,6 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
   } else if (!runtimeVersion.policy) {
     throw new Error(`"${runtimeVersion}" is not a valid runtime version. Only a string or a runtime version policy is supported.`);
   } else if (runtimeVersion.policy === 'fingerprint') {
-    console.warn(`Use of the experimental '${runtimeVersion.policy}' runtime policy may result in unexpected system behavior.`);
     return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
   } else {
     return await resolveRuntimeVersionPolicyAsync(runtimeVersion.policy, config, platform);
