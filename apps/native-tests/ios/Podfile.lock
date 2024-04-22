@@ -1,22 +1,22 @@
 PODS:
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
-  - EASClient (0.11.0):
+  - EASClient (0.12.0):
     - ExpoModulesCore
-  - EASClient/Tests (0.11.0):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-  - EXJSONUtils (0.12.0)
-  - EXJSONUtils/Tests (0.12.0)
-  - EXManifests (0.13.0):
-    - ExpoModulesCore
-  - EXManifests/Tests (0.13.0):
+  - EASClient/Tests (0.12.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - expo-dev-launcher (3.6.0):
+  - EXJSONUtils (0.13.0)
+  - EXJSONUtils/Tests (0.13.0)
+  - EXManifests (0.14.0):
+    - ExpoModulesCore
+  - EXManifests/Tests (0.14.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - expo-dev-launcher (4.0.1):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 3.6.0)
+    - expo-dev-launcher/Main (= 4.0.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -41,7 +41,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (3.6.0):
+  - expo-dev-launcher/Main (4.0.1):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -69,7 +69,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (3.6.0):
+  - expo-dev-launcher/Tests (4.0.1):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -101,7 +101,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (3.6.0):
+  - expo-dev-launcher/Unsafe (4.0.1):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -128,10 +128,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (4.5.1):
+  - expo-dev-menu (5.0.1):
     - DoubleConversion
-    - expo-dev-menu/Main (= 4.5.1)
-    - expo-dev-menu/ReactNativeCompatibles (= 4.5.1)
+    - expo-dev-menu/Main (= 5.0.1)
+    - expo-dev-menu/ReactNativeCompatibles (= 5.0.1)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -151,11 +151,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu-interface (1.7.0)
-  - expo-dev-menu-interface/Tests (1.7.0):
+  - expo-dev-menu-interface (1.8.1)
+  - expo-dev-menu-interface/Tests (1.8.1):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (4.5.1):
+  - expo-dev-menu/Main (5.0.1):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -180,7 +180,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (4.5.1):
+  - expo-dev-menu/ReactNativeCompatibles (5.0.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -201,7 +201,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (4.5.1):
+  - expo-dev-menu/SafeAreaView (5.0.1):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -223,7 +223,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (4.5.1):
+  - expo-dev-menu/Tests (5.0.1):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -248,7 +248,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (4.5.1):
+  - expo-dev-menu/UITests (5.0.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -271,7 +271,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (4.5.1):
+  - expo-dev-menu/Vendored (5.0.1):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -293,17 +293,17 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoClipboard (5.0.0):
+  - ExpoClipboard (6.0.0):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (5.0.0):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-  - ExpoFileSystem (16.0.1):
-    - ExpoModulesCore
-  - ExpoFileSystem/Tests (16.0.1):
+  - ExpoClipboard/Tests (6.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoModulesCore (1.11.2):
+  - ExpoFileSystem (17.0.0):
+    - ExpoModulesCore
+  - ExpoFileSystem/Tests (17.0.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - ExpoModulesCore (1.12.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -325,7 +325,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.11.2):
+  - ExpoModulesCore/Tests (1.12.0):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -348,14 +348,14 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesTestCore (0.17.0):
+  - ExpoModulesTestCore (0.18.0):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - EXStructuredHeaders (3.7.0)
-  - EXStructuredHeaders/Tests (3.7.0)
-  - EXUpdates (0.24.3):
+  - EXStructuredHeaders (3.8.0)
+  - EXStructuredHeaders/Tests (3.8.0)
+  - EXUpdates (0.25.0):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -381,9 +381,9 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - sqlite3 (~> 3.42.0)
+    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdates/Tests (0.24.3):
+  - EXUpdates/Tests (0.25.0):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -410,9 +410,9 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - sqlite3 (~> 3.42.0)
+    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdatesInterface (0.15.0):
+  - EXUpdatesInterface (0.16.0):
     - ExpoModulesCore
   - FBLazyVector (0.74.0-rc.9)
   - fmt (9.1.0)
@@ -1593,9 +1593,9 @@ PODS:
     - React-perflogger (= 0.74.0-rc.9)
     - React-utils (= 0.74.0-rc.9)
   - SocketRocket (0.7.0)
-  - sqlite3 (3.42.0):
-    - sqlite3/common (= 3.42.0)
-  - sqlite3/common (3.42.0)
+  - "sqlite3 (3.45.3+1)":
+    - "sqlite3/common (= 3.45.3+1)"
+  - "sqlite3/common (3.45.3+1)"
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1841,19 +1841,19 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
-  EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
-  EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
-  EXManifests: 2355abd4aeacfb75eec5b43393c0aef9c2789fcf
-  expo-dev-launcher: 83f33847420011309008ea4cbf83a9c0d98c9f4b
-  expo-dev-menu: 3f87f2b892d4dd30f2ab3fe2a356a72fe0e3de11
-  expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
-  ExpoClipboard: ecbf3edb5dcb460fdefca945923c38f8ad6c7859
-  ExpoFileSystem: d77b9a51d734890d4ce82a0fc7c4a10948a0be22
-  ExpoModulesCore: 39172e342cd3015c0b2ece5e71986d96211b21af
-  ExpoModulesTestCore: 0fe626daae71122fbc305d7fbb87b1afd283e4c5
-  EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
-  EXUpdates: b7e617f1c7f821ee96063f7ccaf6e877ef1f768d
-  EXUpdatesInterface: 431fbb833aefbc9b7252b24a6a563209ff94f87d
+  EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
+  EXJSONUtils: fe9e2688bdcbbd3adfd3323b19b0406c56acb471
+  EXManifests: 9099018ae9786e67a347c2f1e1441b8878774d1b
+  expo-dev-launcher: 462d558b8236351d4247a2f29cc26dfda1f5cae3
+  expo-dev-menu: bd8bf44b9f8d7296d2ec3f545d63e8b6026f2463
+  expo-dev-menu-interface: 4923b0bbaadd37467c511f7f875fd38d27685dc3
+  ExpoClipboard: 790ffdda543f33bf2aa97dfdb1a8477f4da7c299
+  ExpoFileSystem: 0830ca53664917b4b6cf43e4b52f616ebcd74aea
+  ExpoModulesCore: 754f151ea2715c9e5f6628d6f158be2287218a90
+  ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
+  EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
+  EXUpdates: 6381cb42f462b78d558f55eaf7cab672164828ae
+  EXUpdatesInterface: 9c4a15026e8434058e0fc0cc0418e667107e0edd
   FBLazyVector: 7cdfba8b4fbe5a1d8ffade8c926ddcbd7ef7547f
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
@@ -1910,7 +1910,7 @@ SPEC CHECKSUMS:
   React-utils: ab1d0edc4d9725b9979c192ffd6062365c898d7b
   ReactCommon: 5448e997e7732e230daebf51eb9996727b4a66b9
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
+  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: 86380678e6a08c6fa2215fd252543ff375d441d1
 
 PODFILE CHECKSUM: 784ae161137d8dda06e54cb14a2f2efb8933b69b
