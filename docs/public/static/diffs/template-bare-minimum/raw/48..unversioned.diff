@@ -642,10 +642,10 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index e5fda82878..be66878b65 100644
+index e5fda82878..932bf7b34b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -2,28 +2,26 @@
+@@ -2,28 +2,27 @@
  
  buildscript {
      ext {
@@ -661,7 +661,7 @@ index e5fda82878..be66878b65 100644
 +        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
  
 -        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
 -        ndkVersion = "23.1.7779620"
@@ -675,6 +675,7 @@ index e5fda82878..be66878b65 100644
 -        classpath('com.android.tools.build:gradle:7.4.1')
 +        classpath('com.android.tools.build:gradle')
          classpath('com.facebook.react:react-native-gradle-plugin')
++        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
      }
  }
  
@@ -683,7 +684,7 @@ index e5fda82878..be66878b65 100644
  allprojects {
      repositories {
          maven {
-@@ -32,7 +30,7 @@ allprojects {
+@@ -32,7 +31,7 @@ allprojects {
          }
          maven {
              // Android JSC is installed from npm
@@ -692,6 +693,18 @@ index e5fda82878..be66878b65 100644
          }
  
          google()
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 877b87e9a5..8a6be07718 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -10,6 +10,7 @@ build/
+ local.properties
+ *.iml
+ *.hprof
++.cxx/
+ 
+ # Bundle artifacts
+ *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
 index 9911ac4afd..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
@@ -899,6 +912,19 @@ index 1dc416e7c1..0fcba3d9bb 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('react-native-gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+diff --git a/templates/expo-template-bare-minimum/app.json b/templates/expo-template-bare-minimum/app.json
+index a36a6e08d4..e1cfd57212 100644
+--- a/templates/expo-template-bare-minimum/app.json
++++ b/templates/expo-template-bare-minimum/app.json
+@@ -2,7 +2,6 @@
+   "expo": {
+     "name": "HelloWorld",
+     "slug": "expo-template-bare",
+-    "version": "1.0.0",
+-    "assetBundlePatterns": ["**/*"]
++    "version": "1.0.0"
+   }
+ }
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
 index df57ba88a1..05647d55c7 100644
 --- a/templates/expo-template-bare-minimum/gitignore
@@ -1389,7 +1415,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d1fcd513cc..e7e9e23831 100644
+index d1fcd513cc..1a4317d703 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1397,7 +1423,7 @@ index d1fcd513cc..e7e9e23831 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "48.0.21",
-+  "version": "50.0.17",
++  "version": "51.0.2",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1408,11 +1434,11 @@ index d1fcd513cc..e7e9e23831 100644
 -    "expo": "~48.0.21",
 -    "expo-splash-screen": "~0.18.2",
 -    "expo-status-bar": "~1.4.4",
-+    "expo": "~51.0.0-unreleased",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~51.0.0-preview.0",
++    "expo-status-bar": "~1.12.0",
      "react": "18.2.0",
 -    "react-native": "0.71.14"
-+    "react-native": "0.74.0-rc.5"
++    "react-native": "0.74.0-rc.9"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

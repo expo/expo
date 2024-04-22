@@ -533,10 +533,10 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index bf861dbf33..be66878b65 100644
+index bf861dbf33..932bf7b34b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -2,26 +2,26 @@
+@@ -2,26 +2,27 @@
  
  buildscript {
      ext {
@@ -544,12 +544,13 @@ index bf861dbf33..be66878b65 100644
 -        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
 -        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
 -        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
+-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
+-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
 +        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
 +        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
--        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
  
 -        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
 -        ndkVersion = "23.1.7779620"
@@ -563,6 +564,7 @@ index bf861dbf33..be66878b65 100644
 -        classpath('com.android.tools.build:gradle:7.4.2')
 +        classpath('com.android.tools.build:gradle')
          classpath('com.facebook.react:react-native-gradle-plugin')
++        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
      }
  }
  
@@ -571,7 +573,7 @@ index bf861dbf33..be66878b65 100644
  allprojects {
      repositories {
          maven {
-@@ -30,7 +30,7 @@ allprojects {
+@@ -30,7 +31,7 @@ allprojects {
          }
          maven {
              // Android JSC is installed from npm
@@ -580,6 +582,18 @@ index bf861dbf33..be66878b65 100644
          }
  
          google()
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 877b87e9a5..8a6be07718 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -10,6 +10,7 @@ build/
+ local.properties
+ *.iml
+ *.hprof
++.cxx/
+ 
+ # Bundle artifacts
+ *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
 index 240ca06cbf..41b173c48a 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
@@ -771,6 +785,19 @@ index d172e59a6e..0fcba3d9bb 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+diff --git a/templates/expo-template-bare-minimum/app.json b/templates/expo-template-bare-minimum/app.json
+index a36a6e08d4..e1cfd57212 100644
+--- a/templates/expo-template-bare-minimum/app.json
++++ b/templates/expo-template-bare-minimum/app.json
+@@ -2,7 +2,6 @@
+   "expo": {
+     "name": "HelloWorld",
+     "slug": "expo-template-bare",
+-    "version": "1.0.0",
+-    "assetBundlePatterns": ["**/*"]
++    "version": "1.0.0"
+   }
+ }
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index 7d3e30a627..f945940c25 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -1064,7 +1091,7 @@ index 2402cc34b2..eaf07ca4c2 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a02dbebe41..e7e9e23831 100644
+index a02dbebe41..1a4317d703 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1072,7 +1099,7 @@ index a02dbebe41..e7e9e23831 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "49.0.26",
-+  "version": "50.0.17",
++  "version": "51.0.2",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1083,11 +1110,11 @@ index a02dbebe41..e7e9e23831 100644
 -    "expo": "~49.0.23",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~51.0.0-unreleased",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~51.0.0-preview.0",
++    "expo-status-bar": "~1.12.0",
      "react": "18.2.0",
 -    "react-native": "0.72.12"
-+    "react-native": "0.74.0-rc.5"
++    "react-native": "0.74.0-rc.9"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
