@@ -36,7 +36,7 @@ export function ProgressTracker({ currentChapterIndex, name, summary }: Progress
   }
 
   return (
-    <div className="w-full border border-solid border-default rounded-md p-4 mx-auto mt-6 max-h-80 bg-screen">
+    <div className="w-full border border-solid border-default rounded-md p-4 mx-auto mt-6 max-h-96 bg-screen">
       <div className="flex items-center justify-center pt-6">
         <SuccessCheckmark />
       </div>
@@ -46,14 +46,11 @@ export function ProgressTracker({ currentChapterIndex, name, summary }: Progress
         currentChapter && (
           <div className="flex items-center justify-center flex-col ">
             {currentChapter && (
-              <div className="flex items-center flex-row mt-6">
-                <BookOpen02Icon className="size-6" />
-                <p className="pl-2 text-center text-default heading-lg font-semibold">
-                  {currentChapter.title}
-                </p>
-              </div>
+              <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
+                <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
+              </p>
             )}
-            <div className="flex items-center justify-center mt-4 max-w-lg leading-5">
+            <div className="flex items-center justify-center mt-2 max-w-lg leading-7">
               <p className="text-center text-default pb-2">{summary}</p>
             </div>
             {/* <div className="self-center text-center mt-3">
