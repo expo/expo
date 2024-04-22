@@ -31,7 +31,7 @@ module.exports = function (babel, options) {
             require('@babel/plugin-transform-modules-commonjs'),
             {
                 strict: false,
-                strictMode: false, // prevent "use strict" injections
+                strictMode: false,
                 lazy: options.lazyImportExportTransform,
                 allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
             },
