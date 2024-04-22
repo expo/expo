@@ -39,9 +39,13 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
 }
 
 ext.applyKotlinExpoModulesCorePlugin = {
-  if (!project.plugins.hasPlugin('kotlin-android') && !project.plugins.hasPlugin('kotlin')) {
+  try {
+    // Tries to apply the kotlin-android plugin if the client project does not apply yet.
+    // On previous `applyKotlinExpoModulesCorePlugin`, it is inside the `project.buildscript` block.
+    // We cannot use `project.plugins.hasPlugin()` yet but only to try-catch instead.
     apply plugin: 'kotlin-android'
-  }
+  } catch (e) {}
+
   apply plugin: KotlinExpoModulesCorePlugin
 }
 
