@@ -37,12 +37,12 @@ export function ProgressTracker({ currentChapterIndex, name, summary }: Progress
     defaultValue: name === 'EAS_TUTORIAL' ? EAS_TUTORIAL_INITIAL_CHAPTERS : [],
   });
 
-  // const handleCompleteChapter = () => {
-  //   const updatedChapters = chapters.map((chapter, index) =>
-  //     index === currentChapterIndex ? { ...chapter, completed: true } : chapter
-  //   );
-  //   setChapters(updatedChapters);
-  // };
+  const handleCompleteChapter = () => {
+    const updatedChapters = chapters.map((chapter, index) =>
+      index === currentChapterIndex ? { ...chapter, completed: true } : chapter
+    );
+    setChapters(updatedChapters);
+  };
 
   const completedChapters = chapters.filter(chapter => chapter.completed).length;
   // const progressPercentage = (completedChapters / chapters.length) * 100;
