@@ -12,19 +12,6 @@ public final class BlurhashGenerationException: Exception {
   }
 }
 
-/**
- Checks if the image is animated and returns an SDAnimatedImage if it does. Otherwise returns the UIImage.
- */
-func createAnimatedIfNeeded(image: UIImage?, data: Data?) -> UIImage? {
-  let isAnimated = image?.sd_isAnimated ?? false
-
-  if isAnimated, let data = data {
-    return SDAnimatedImage(data: data)
-  }
-
-  return image
-}
-
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:
@@ -116,42 +103,22 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  Resizes the animated image to fit in the given size and scale.
  */
 func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
-  if !image.sd_isAnimated {
+  // If there are no image frames, only resize the main image.
+  guard let images = await image.images else {
     return resize(image: image, toSize: size, scale: scale)
   }
 
-  // Cast to SDAnimatedImage to access its properties
-  guard let image = image as? SDAnimatedImage else {
+  // Resize all animated image frames.
+  let resizedImages = await concurrentMap(images) { image in
     return resize(image: image, toSize: size, scale: scale)
   }
 
-  let frameCount = await image.animatedImageFrameCount
-
-  do {
-    let resizedFrames = try await concurrentMap(0..<frameCount) { index -> UIImage? in
-      guard let frame = await image.animatedImageFrame(at: index) else {
-        log.warn("Frame at index \(index) could not be loaded and will be skipped.")
-        return nil
-      }
-      return resize(image: frame, toSize: size, scale: scale)
-    }.compactMap { $0 }
-
-    // Check if all frames were skipped or failed to load
-    if resizedFrames.isEmpty {
-      log.error("All frames failed to load and/or were skipped.")
-      return resize(image: image, toSize: size, scale: scale)
-    }
-
-    // Create the new animated image with the resized frames
-    // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-    // so it should never happen in our case, but let's make sure to handle it gracefully.
-    if let newAnimatedImage = UIImage.animatedImage(with: resizedFrames, duration: image.duration) {
-      return newAnimatedImage
-    }
-  } catch {
-    log.error("Error during concurrent image resizing: \(error)")
+  // Create the new animated image with the resized frames.
+  // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
+  // so it should never happen in our case, but let's make sure to handle it gracefully.
+  if let newAnimatedImage = await UIImage.animatedImage(with: resizedImages, duration: image.duration) {
+    return newAnimatedImage
   }
-
   return resize(image: image, toSize: size, scale: scale)
 }
 
