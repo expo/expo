@@ -50,6 +50,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     reportEasTutorialCompleted();
   }
 
+  // @ts-ignore
   if (route.children?.[0]?.section === 'EAS tutorial') {
     return (
       <div className="mb-5">
