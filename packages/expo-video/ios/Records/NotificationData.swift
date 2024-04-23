@@ -1,17 +1,14 @@
+import Foundation
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import Foundation
 import ExpoModulesCore
 
 // swiftlint:disable redundant_optional_initialization - Initialization with nil is necessary
-internal struct VideoSource: Record {
+internal struct NotificationData: Record {
   @Field
-  var uri: URL? = nil
+  var title: String? = nil
 
   @Field
-  var drm: DRMOptions? = nil
-
-  @Field
-  var notificationData: NotificationData? = nil
+  var secondaryText: String? = nil
 }
 // swiftlint:enable redundant_optional_initialization
