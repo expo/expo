@@ -66,11 +66,43 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Android server images
 
-#### `ubuntu-22.04-jdk-17-ndk-r21e` (`latest`, `sdk-50`)
+#### `ubuntu-22.04-jdk-17-ndk-r25b` (`latest`, `sdk-51`, `sdk-50`)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-20220810`
+- NDK 25.1.8937393
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.9.2
+- npm 9.8.1
+- Java 17
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-11-ndk-r23b` (`sdk-49`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220810`
+- NDK 23.1.7779620
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.7.5
+- npm 9.8.1
+- Java 11
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-17-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -82,11 +114,11 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-11-ndk-r21e` (`sdk-49`)
+#### `ubuntu-22.04-jdk-11-ndk-r21e`
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -102,7 +134,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -114,11 +146,27 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
+#### `ubuntu-20.04-jdk-11-ndk-r23b`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:focal-20220823`
+- NDK 23.1.7779620
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 7.0.0
+- npm 9.8.1
+- Java 11
+- node-gyp 10.0.1
+
+</Collapsible>
+
 #### `ubuntu-20.04-jdk-11-ndk-r21e`
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 21.4.7075529
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -134,7 +182,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 21.4.7075529
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -150,7 +198,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 19.2.5345600
 - Node.js 18.18.0
 - Bun 1.0.14
@@ -166,7 +214,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 19.2.5345600
 - Node.js 18.18.0
 - Bun 1.0.14
