@@ -26,7 +26,8 @@
   "resolutions": {
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "wrap-ansi": "^7.0.0"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
