@@ -34,12 +34,13 @@ export function ProjectsListItem({ name, subtitle, firstTwoBranches, id, first, 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onPress() {
-    // if there's only one branch for the project and the latest update on that branch is compatible
-    // with this version of Expo Go, just launch it upon tapping the row instead of entering
+    // if there's only one branch for the project and there's only one update on that branch and
+    // it is compatible with this version of Expo Go, just launch it upon tapping the row instead of entering
     // a drill-down UI for exploring branches/updates.
     if (firstTwoBranches.length === 1) {
-      const updateToOpen = firstTwoBranches[0].updates[0];
-      if (updateToOpen) {
+      const branch = firstTwoBranches[0];
+      if (branch.updates.length === 1) {
+        const updateToOpen = branch.updates[0];
         const isCompatibleWithThisExpoGo = isUpdateCompatibleWithThisExpoGo(updateToOpen);
         if (isCompatibleWithThisExpoGo) {
           openUpdateManifestPermalink(updateToOpen);
