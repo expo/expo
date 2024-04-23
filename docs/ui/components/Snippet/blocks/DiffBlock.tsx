@@ -77,7 +77,7 @@ export const DiffBlock = ({
           Icon={Copy07Icon}
           operationType={type}
           showOperation={showOperation}
-          linkUrl={filenameToLinkUrl ? filenameToLinkUrl(newPath) : undefined}
+          linkUrl={filenameToLinkUrl && type !== 'delete' ? filenameToLinkUrl(newPath) : undefined}
           float={collapseDeletedFiles && type === 'delete'}>
           <SettingsAction />
         </SnippetHeaderComponent>

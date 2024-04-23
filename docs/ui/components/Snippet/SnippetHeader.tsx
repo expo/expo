@@ -1,5 +1,4 @@
 import { mergeClasses, Button } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import { FileStatus } from './FileStatus';
