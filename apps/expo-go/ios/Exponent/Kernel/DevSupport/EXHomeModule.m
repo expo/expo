@@ -225,8 +225,10 @@ RCT_REMAP_METHOD(setDevMenuSettingAsync,
 
   if ([key isEqualToString:@"motionGestureEnabled"]) {
     manager.interceptMotionGesture = [value boolValue];
+    return resolve(nil);
   } else if ([key isEqualToString:@"touchGestureEnabled"]) {
     manager.interceptTouchGesture = [value boolValue];
+    return resolve(nil);
   } else {
     return reject(@"ERR_DEV_MENU_SETTING_NOT_EXISTS", @"Specified dev menu setting doesn't exist.", nil);
   }

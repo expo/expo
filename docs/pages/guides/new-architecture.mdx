@@ -98,18 +98,12 @@ Run prebuild command and compile your project:
 
 <Tabs tabs={['Android', 'iOS']}>
   <Tab>
-    <Terminal cmd={[
-      '$ npx expo prebuild --clean',
-      '$ npx expo run:android',
-      '$ eas build -p android',
-    ]} />
+    <Terminal
+      cmd={['$ npx expo prebuild --clean', '$ npx expo run:android', '$ eas build -p android']}
+    />
   </Tab>
   <Tab>
-    <Terminal cmd={[
-      '$ npx expo prebuild --clean',
-      '$ npx expo run:ios',
-      '$ eas build -p ios'
-    ]} />
+    <Terminal cmd={['$ npx expo prebuild --clean', '$ npx expo run:ios', '$ eas build -p ios']} />
   </Tab>
 </Tabs>
 
@@ -121,8 +115,8 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
-- **iOS**: If your project has a **Podfile.properties.json** file (it was created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"true"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
 - **Android**: Set `newArchEnabled=true` in the **gradle.properties** file.
+- **iOS**: If your project has a **Podfile.properties.json** file (it was created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"true"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
 
 </Collapsible>
 
@@ -136,11 +130,11 @@ To use the interop layer, you will need to add the following to your **react-nat
 module.exports = {
   project: {
     android: {
-      unstable_reactLegacyComponentNames: ["NativeComponentName"]
+      unstable_reactLegacyComponentNames: ['NativeComponentName'],
     },
     ios: {
-      unstable_reactLegacyComponentNames: ["NativeComponentName"]
-    }
+      unstable_reactLegacyComponentNames: ['NativeComponentName'],
+    },
   },
 };
 ```
@@ -153,7 +147,7 @@ The interop layer is not perfect and may not work for all libraries. If you enco
 
 ## Troubleshooting
 
-Meta and Expo are working towards making the New Architecture the default for all new apps and ensuring it is as easy as possible to migrate existing apps. However, the New Architecture isn't just a name &mdash; many of the internals of React Native have been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
+Meta and Expo are working towards making the New Architecture the default for all new apps and ensuring it is as easy as possible to migrate existing apps. However, the New Architecture isn't just a name &mdash; many of the internals of React Native has been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 

@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
 
 ### 💡 Others

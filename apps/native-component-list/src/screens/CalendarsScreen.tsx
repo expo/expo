@@ -53,7 +53,8 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
 
   const findCalendars = async () => {
     const calendarGranted = (await askForCalendarPermissions()).granted;
-    const reminderGranted = (await askForReminderPermissions()).granted;
+    const reminderGranted =
+      Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
     if (calendarGranted && reminderGranted) {
       const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
       const reminderCalendars = (

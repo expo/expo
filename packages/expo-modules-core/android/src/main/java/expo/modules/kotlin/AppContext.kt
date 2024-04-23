@@ -417,6 +417,7 @@ class AppContext(
   override val currentActivity: Activity?
     get() {
       return activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
     }
 
 // endregion

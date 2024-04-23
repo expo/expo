@@ -45,7 +45,7 @@ export type Calendar = {
      * Possible values: [`CalendarType`](#calendarcalendartype).
      * @platform ios
      */
-    type?: string;
+    type?: CalendarType;
     /**
      * Color used to display this calendar's events.
      */
@@ -55,7 +55,7 @@ export type Calendar = {
      * Possible values: [`EntityTypes`](#calendarentitytypes).
      * @platform ios
      */
-    entityType?: string;
+    entityType?: EntityTypes;
     /**
      * Boolean value that determines whether this calendar can be modified.
      */
@@ -64,7 +64,7 @@ export type Calendar = {
      * Availability types that this calendar supports.
      * Possible values: Array of [`Availability`](#calendaravailability).
      */
-    allowedAvailabilities: string[];
+    allowedAvailabilities: Availability[];
     /**
      * Boolean value indicating whether this is the device's primary calendar.
      * @platform android
@@ -90,13 +90,13 @@ export type Calendar = {
      * Possible values: Array of [`AlarmMethod`](#calendaralarmmethod).
      * @platform android
      */
-    allowedReminders?: string[];
+    allowedReminders?: AlarmMethod[];
     /**
      * Attendee types that this calendar supports.
      * Possible values: Array of [`AttendeeType`](#calendarattendeetype).
      * @platform android
      */
-    allowedAttendeeTypes?: string[];
+    allowedAttendeeTypes?: AttendeeType[];
     /**
      * Indicates whether the OS displays events on this calendar.
      * @platform android
@@ -113,7 +113,7 @@ export type Calendar = {
      * Possible values: [`CalendarAccessLevel`](#calendarcalendaraccesslevel).
      * @platform android
      */
-    accessLevel?: string;
+    accessLevel?: CalendarAccessLevel;
 };
 /**
  * A source account that owns a particular calendar. Expo apps will typically not need to interact with `Source` objects.
@@ -130,7 +130,7 @@ export type Source = {
      * along with `name`, or the OS will delete the calendar.
      * On iOS, one of [`SourceType`](#calendarsourcetype)s.
      */
-    type: string;
+    type: string | SourceType;
     /**
      * Name for the account that owns this calendar and was used to sync the calendar to the device.
      */
@@ -223,12 +223,12 @@ export type Event = {
      * The availability setting for the event.
      * Possible values: [`Availability`](#calendaravailability).
      */
-    availability: string;
+    availability: Availability;
     /**
      * Status of the event.
      * Possible values: [`EventStatus`](#calendareventstatus).
      */
-    status: string;
+    status: EventStatus;
     /**
      * Organizer of the event.
      * @platform ios
@@ -244,7 +244,7 @@ export type Event = {
      * Possible values: [`EventAccessLevel`](#calendareventaccesslevel).
      * @platform android
      */
-    accessLevel?: string;
+    accessLevel?: EventAccessLevel;
     /**
      * Whether invited guests can modify the details of the event.
      * @platform android
@@ -361,17 +361,17 @@ export type Attendee = {
      * Role of the attendee at the event.
      * Possible values: [`AttendeeRole`](#calendarattendeerole).
      */
-    role: string;
+    role: AttendeeRole;
     /**
      * Status of the attendee in relation to the event.
      * Possible values: [`AttendeeStatus`](#calendarattendeestatus).
      */
-    status: string;
+    status: AttendeeStatus;
     /**
      * Type of the attendee.
      * Possible values: [`AttendeeType`](#calendarattendeetype).
      */
-    type: string;
+    type: AttendeeType;
     /**
      * URL for the attendee.
      * @platform ios
@@ -404,7 +404,7 @@ export type Alarm = {
      * Possible values: [`AlarmMethod`](#calendaralarmmethod).
      * @platform android
      */
-    method?: string;
+    method?: AlarmMethod;
 };
 export type AlarmLocation = {
     /**
@@ -454,7 +454,7 @@ export type RecurrenceRule = {
      * How often the calendar item should recur.
      * Possible values: [`Frequency`](#calendarfrequency).
      */
-    frequency: string;
+    frequency: Frequency;
     /**
      * Interval at which the calendar item should recur. For example, an `interval: 2` with `frequency: DAILY`
      * would yield an event that recurs every other day.
@@ -646,7 +646,7 @@ export declare function deleteAttendeeAsync(id: string): Promise<void>;
  * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
  * @platform ios
  */
-export declare function getRemindersAsync(calendarIds: (string | null)[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 /**
  * Returns a specific reminder selected by ID.
  * @param id ID of the reminder to return.
@@ -745,105 +745,105 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions<ob
  * ```
  */
 export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-export declare const EntityTypes: {
-    EVENT: string;
-    REMINDER: string;
-};
-export declare const Frequency: {
-    DAILY: string;
-    WEEKLY: string;
-    MONTHLY: string;
-    YEARLY: string;
-};
-export declare const Availability: {
-    NOT_SUPPORTED: string;
-    BUSY: string;
-    FREE: string;
-    TENTATIVE: string;
-    UNAVAILABLE: string;
-};
-export declare const CalendarType: {
-    LOCAL: string;
-    CALDAV: string;
-    EXCHANGE: string;
-    SUBSCRIBED: string;
-    BIRTHDAYS: string;
-    UNKNOWN: string;
-};
-export declare const EventStatus: {
-    NONE: string;
-    CONFIRMED: string;
-    TENTATIVE: string;
-    CANCELED: string;
-};
-export declare const SourceType: {
-    LOCAL: string;
-    EXCHANGE: string;
-    CALDAV: string;
-    MOBILEME: string;
-    SUBSCRIBED: string;
-    BIRTHDAYS: string;
-};
-export declare const AttendeeRole: {
-    UNKNOWN: string;
-    REQUIRED: string;
-    OPTIONAL: string;
-    CHAIR: string;
-    NON_PARTICIPANT: string;
-    ATTENDEE: string;
-    ORGANIZER: string;
-    PERFORMER: string;
-    SPEAKER: string;
-    NONE: string;
-};
-export declare const AttendeeStatus: {
-    UNKNOWN: string;
-    PENDING: string;
-    ACCEPTED: string;
-    DECLINED: string;
-    TENTATIVE: string;
-    DELEGATED: string;
-    COMPLETED: string;
-    IN_PROCESS: string;
-    INVITED: string;
-    NONE: string;
-};
-export declare const AttendeeType: {
-    UNKNOWN: string;
-    PERSON: string;
-    ROOM: string;
-    GROUP: string;
-    RESOURCE: string;
-    OPTIONAL: string;
-    REQUIRED: string;
-    NONE: string;
-};
-export declare const AlarmMethod: {
-    ALARM: string;
-    ALERT: string;
-    EMAIL: string;
-    SMS: string;
-    DEFAULT: string;
-};
-export declare const EventAccessLevel: {
-    CONFIDENTIAL: string;
-    PRIVATE: string;
-    PUBLIC: string;
-    DEFAULT: string;
-};
-export declare const CalendarAccessLevel: {
-    CONTRIBUTOR: string;
-    EDITOR: string;
-    FREEBUSY: string;
-    OVERRIDE: string;
-    OWNER: string;
-    READ: string;
-    RESPOND: string;
-    ROOT: string;
-    NONE: string;
-};
-export declare const ReminderStatus: {
-    COMPLETED: string;
-    INCOMPLETE: string;
-};
+export declare enum EntityTypes {
+    EVENT = "event",
+    REMINDER = "reminder"
+}
+export declare enum Frequency {
+    DAILY = "daily",
+    WEEKLY = "weekly",
+    MONTHLY = "monthly",
+    YEARLY = "yearly"
+}
+export declare enum Availability {
+    NOT_SUPPORTED = "notSupported",
+    BUSY = "busy",
+    FREE = "free",
+    TENTATIVE = "tentative",
+    UNAVAILABLE = "unavailable"
+}
+export declare enum CalendarType {
+    LOCAL = "local",
+    CALDAV = "caldav",
+    EXCHANGE = "exchange",
+    SUBSCRIBED = "subscribed",
+    BIRTHDAYS = "birthdays",
+    UNKNOWN = "unknown"
+}
+export declare enum EventStatus {
+    NONE = "none",
+    CONFIRMED = "confirmed",
+    TENTATIVE = "tentative",
+    CANCELED = "canceled"
+}
+export declare enum SourceType {
+    LOCAL = "local",
+    EXCHANGE = "exchange",
+    CALDAV = "caldav",
+    MOBILEME = "mobileme",
+    SUBSCRIBED = "subscribed",
+    BIRTHDAYS = "birthdays"
+}
+export declare enum AttendeeRole {
+    UNKNOWN = "unknown",
+    REQUIRED = "required",
+    OPTIONAL = "optional",
+    CHAIR = "chair",
+    NON_PARTICIPANT = "nonParticipant",
+    ATTENDEE = "attendee",
+    ORGANIZER = "organizer",
+    PERFORMER = "performer",
+    SPEAKER = "speaker",
+    NONE = "none"
+}
+export declare enum AttendeeStatus {
+    UNKNOWN = "unknown",
+    PENDING = "pending",
+    ACCEPTED = "accepted",
+    DECLINED = "declined",
+    TENTATIVE = "tentative",
+    DELEGATED = "delegated",
+    COMPLETED = "completed",
+    IN_PROCESS = "inProcess",
+    INVITED = "invited",
+    NONE = "none"
+}
+export declare enum AttendeeType {
+    UNKNOWN = "unknown",
+    PERSON = "person",
+    ROOM = "room",
+    GROUP = "group",
+    RESOURCE = "resource",
+    OPTIONAL = "optional",
+    REQUIRED = "required",
+    NONE = "none"
+}
+export declare enum AlarmMethod {
+    ALARM = "alarm",
+    ALERT = "alert",
+    EMAIL = "email",
+    SMS = "sms",
+    DEFAULT = "default"
+}
+export declare enum EventAccessLevel {
+    CONFIDENTIAL = "confidential",
+    PRIVATE = "private",
+    PUBLIC = "public",
+    DEFAULT = "default"
+}
+export declare enum CalendarAccessLevel {
+    CONTRIBUTOR = "contributor",
+    EDITOR = "editor",
+    FREEBUSY = "freebusy",
+    OVERRIDE = "override",
+    OWNER = "owner",
+    READ = "read",
+    RESPOND = "respond",
+    ROOT = "root",
+    NONE = "none"
+}
+export declare enum ReminderStatus {
+    COMPLETED = "completed",
+    INCOMPLETE = "incomplete"
+}
 //# sourceMappingURL=Calendar.d.ts.map

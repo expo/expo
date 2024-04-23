@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Skip Cocoapods version check when not on macOS ([#27751](https://github.com/expo/expo/pull/27751) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 💡 Others
+
+## 1.5.1 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Skip Cocoapods version check when not on macOS ([#27751](https://github.com/expo/expo/pull/27751) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.5.0 — 2024-03-06
 

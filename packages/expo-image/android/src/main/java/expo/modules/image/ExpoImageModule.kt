@@ -31,6 +31,14 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
+    OnCreate {
+      appContext.reactContext?.registerComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
+    OnDestroy {
+      appContext.reactContext?.unregisterComponentCallbacks(ExpoImageComponentCallbacks)
+    }
+
     AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: Map<String, String>?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
@@ -40,7 +48,7 @@ class ExpoImageModule : Module() {
       val headers = headersMap?.let {
         LazyHeaders.Builder().apply {
           it.forEach { (key, value) ->
-            addHeader(key, value.toString())
+            addHeader(key, value)
           }
         }.build()
       } ?: Headers.DEFAULT
@@ -52,10 +60,8 @@ class ExpoImageModule : Module() {
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
           .downsample(NoopDownsampleStrategy)
-          .apply {
-            if (cachePolicy == CachePolicy.MEMORY) {
-              diskCacheStrategy(DiskCacheStrategy.NONE)
-            }
+          .customize(`when` = cachePolicy == CachePolicy.MEMORY) {
+            diskCacheStrategy(DiskCacheStrategy.NONE)
           }
           .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
@@ -111,18 +117,12 @@ class ExpoImageModule : Module() {
       val glideUrl = GlideUrl(cacheKey)
       val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
 
-      try {
+      return@AsyncFunction try {
         val file = target.get()
-        val path = file.absolutePath
-
-        if (path != null) {
-          return@AsyncFunction path
-        }
+        file.absolutePath
       } catch (e: Exception) {
-        return@AsyncFunction null
+        null
       }
-
-      return@AsyncFunction null
     }
 
     View(ExpoImageViewWrapper::class) {

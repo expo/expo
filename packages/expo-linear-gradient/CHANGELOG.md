@@ -2,15 +2,25 @@
 
 ## Unpublished
 
-- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

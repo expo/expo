@@ -6,6 +6,26 @@
 
 ### 🎉 New features
 
+- Add Expo Atlas support for both `expo start` and `expo export`. ([#27895](https://github.com/expo/expo/pull/27895) by [@byCedric](https://github.com/byCedric))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.18.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.1 — 2024-04-19
+
+### 🐛 Bug fixes
+
+- Fixed `TypeError: osascript(...) is not a function` when pressing "j" to open JS debugger. ([#28315](https://github.com/expo/expo/pull/28315) by [@kudo](https://github.com/kudo))
+
+## 0.18.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add source map outputs when exporting API route bundles. ([#27913](https://github.com/expo/expo/pull/27913) by [@kitten](https://github.com/kitten))
 - Add experimental support for using a canary build of the React Native renderer. ([#27303](https://github.com/expo/expo/pull/27303) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
@@ -14,6 +34,7 @@
 - Add better API Route error messages. ([#27024](https://github.com/expo/expo/pull/27024) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent bundling production react modules in development. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 - Added building only for connected CPU architectures on Android when using the new architecture. ([#26800](https://github.com/expo/expo/pull/26800) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `expo lint` command to configure and run ESLint. ([#28104](https://github.com/expo/expo/pull/28104) by [@kadikraman](https://github.com/kadikraman), [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
@@ -45,6 +66,7 @@
 - Update the legacy inspector overrides to new device middleware API. ([#27425](https://github.com/expo/expo/pull/27425) by [@byCedric](https://github.com/byCedric))
 - Add new telemetry API to replace legacy analytics. ([#27787](https://github.com/expo/expo/pull/27787) by [@byCedric](https://github.com/byCedric))
 - Skip building and packing `__typetests__` files. ([#27089](https://github.com/expo/expo/pull/27089) by [@byCedric](https://github.com/byCedric))
+- Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ### 📚 3rd party library updates
 

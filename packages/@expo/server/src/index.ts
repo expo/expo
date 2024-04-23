@@ -48,13 +48,22 @@ export function createRequestHandler(
   {
     getRoutesManifest: getInternalRoutesManifest,
     getHtml = async (_request, route) => {
-      // serve a static file
+      // Serve a static file by exact route name
       const filePath = path.join(distFolder, route.page + '.html');
-
-      if (!fs.existsSync(filePath)) {
-        return null;
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, 'utf-8');
       }
-      return fs.readFileSync(filePath, 'utf-8');
+
+      // Serve a static file by route name with hoisted index
+      // See: https://github.com/expo/expo/pull/27935
+      const hoistedFilePath = route.page.match(/\/index$/)
+        ? path.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        : null;
+      if (hoistedFilePath && fs.existsSync(hoistedFilePath)) {
+        return fs.readFileSync(hoistedFilePath, 'utf-8');
+      }
+
+      return null;
     },
     getApiRoute = async (route) => {
       const filePath = path.join(distFolder, route.file);

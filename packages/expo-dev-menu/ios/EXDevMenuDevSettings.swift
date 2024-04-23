@@ -35,9 +35,7 @@ class EXDevMenuDevSettings: NSObject {
       devSettings["isRemoteDebuggingAvailable"] = bridgeSettings.isRemoteDebuggingAvailable
       devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
       devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
-
-      // bridge mode has the `bridge.batched` and the bridgeless mode references the later.
-      devSettings["isJSInspectorAvailable"] = bridge.batched?.isInspectable ?? bridge.isInspectable
+      devSettings["isJSInspectorAvailable"] = bridgeSettings.isDeviceDebuggingAvailable
 
       let isElementInspectorAvailable = manager.currentManifest?.isDevelopmentMode()
       devSettings["isElementInspectorAvailable"] = isElementInspectorAvailable

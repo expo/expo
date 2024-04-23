@@ -33,7 +33,7 @@ export async function createFingerprintForBuildAsync(
     return;
   }
 
-  if (runtimeVersion.policy !== 'fingerprintExperimental') {
+  if (runtimeVersion.policy !== 'fingerprint') {
     // not a policy that needs fingerprinting
     return;
   }

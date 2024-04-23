@@ -143,6 +143,7 @@ redirects[guides/setup-native-firebase]=guides/using-firebase
 redirects[guides/using-clojurescript]=guides/overview
 redirects[distribution/hosting-your-app]=distribution/publishing-websites
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[accounts/working-together]=accounts/account-types
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -348,6 +349,9 @@ redirects[versions/latest/sdk/overview]=versions/latest
 
 # Deprecated webpack
 redirects[guides/customizing-webpack]=archive/customizing-webpack
+
+# Stop encouraging usage of Expo Go when using native modules
+redirects[bare/using-expo-client]=archive/using-expo-client
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
