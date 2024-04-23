@@ -278,7 +278,7 @@ async function installAppWithDeviceCtlAsync(
 }
 
 export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
-  return devicectlAsync(['device', 'process', 'launch', '--device', deviceId, bundleId]);
+  await devicectlAsync(['device', 'process', 'launch', '--device', deviceId, bundleId]);
 }
 
 /** Find all error codes from the output log */
