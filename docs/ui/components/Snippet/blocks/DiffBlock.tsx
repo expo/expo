@@ -1,9 +1,10 @@
-import { Copy07Icon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon, Copy07Icon } from '@expo/styleguide-icons';
 import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 import { PermalinkedSnippetHeader } from '../PermalinkedSnippetHeader';
 import { Snippet } from '../Snippet';
+import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
@@ -77,8 +78,16 @@ export const DiffBlock = ({
           Icon={Copy07Icon}
           operationType={type}
           showOperation={showOperation}
-          linkUrl={filenameToLinkUrl && type !== 'delete' ? filenameToLinkUrl(newPath) : undefined}
           float={collapseDeletedFiles && type === 'delete'}>
+          {newPath && filenameToLinkUrl && type !== 'delete' ? (
+            <SnippetAction
+              leftSlot={<ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />}
+              onClick={() => {
+                window.open(filenameToLinkUrl(newPath), '_blank');
+              }}>
+              Raw
+            </SnippetAction>
+          ) : null}
           <SettingsAction />
         </SnippetHeaderComponent>
         {!collapseDeletedFiles || type !== 'delete' ? (

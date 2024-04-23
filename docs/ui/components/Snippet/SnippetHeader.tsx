@@ -1,4 +1,4 @@
-import { mergeClasses, Button } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import { FileStatus } from './FileStatus';
@@ -12,7 +12,6 @@ export type SnippetHeaderProps = PropsWithChildren<{
   float?: boolean;
   operationType?: 'delete' | 'add' | 'modify' | undefined;
   showOperation?: boolean;
-  linkUrl?: string;
 }>;
 
 export const SnippetHeader = ({
@@ -23,7 +22,6 @@ export const SnippetHeader = ({
   alwaysDark = false,
   operationType,
   showOperation = false,
-  linkUrl,
 }: SnippetHeaderProps) => (
   <div
     className={mergeClasses(
@@ -42,17 +40,6 @@ export const SnippetHeader = ({
       {title}
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
     </LABEL>
-    {linkUrl && (
-      <LABEL className="flex flex-1 justify-end items-center pr-2">
-        <Button
-          size="xs"
-          theme="secondary"
-          onClick={() => window.open(linkUrl, '_blank')}
-          openInNewTab>
-          Raw
-        </Button>
-      </LABEL>
-    )}
     {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
 );
