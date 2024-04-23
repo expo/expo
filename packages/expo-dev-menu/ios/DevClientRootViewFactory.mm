@@ -23,7 +23,6 @@
 
 @implementation DevClientRootViewFactory
 
-
 - (void)createBridgeIfNeeded:(NSDictionary *)launchOptions
 {
   if (self.bridge != nil) {
