@@ -45,7 +45,7 @@ type DeviceCtlDevice = {
 type DeviceCtlHardwareProperties = {
   cpuType: DeviceCtlCpuType;
   deviceType: AnyEnum<'iPhone'>;
-  /** 6254404427587614 */
+  /** 1114404411111111 */
   ecid: number;
   /** "D74AP" */
   hardwareModel: string;
@@ -73,7 +73,7 @@ type DeviceCtlHardwareProperties = {
 type DeviceCtlDeviceProperties = {
   /** true */
   bootedFromSnapshot: boolean;
-  /** "com.apple.os.update-AD0CF991ACFF92A64166A76A3D1262AE42A3F56F305AF5AE1935393A7A14A7D3" */
+  /** "com.apple.os.update-AD0CF111ACFF11A11111A76A3D1262AE42A3F56F305AF5AE1135393A7A14A7D1" */
   bootedSnapshotName: string;
   /** false */
   ddiServicesAvailable: boolean;
@@ -189,7 +189,7 @@ function assertDevicesJson(
   );
 }
 
-export async function installAppWithDeviceCtlAsync(
+async function installAppWithDeviceCtlAsync(
   uuid: string,
   bundleIdOrAppPath: string,
   onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void
@@ -246,11 +246,11 @@ export async function installAppWithDeviceCtlAsync(
         }
       });
 
-      debug('[devicectl stdout]:', strings);
+      debug('[stdout]:', strings);
     });
 
     childProcess.on('close', (code) => {
-      debug('[devicectl close]: ' + code);
+      debug('[close]: ' + code);
       if (code === 0) {
         resolve();
       } else {
