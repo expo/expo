@@ -31,10 +31,6 @@ export async function installOnDeviceAsync(props: {
   udid: string;
   deviceName: string;
 }): Promise<void> {
-  if (devicectl.hasDevicectlEverBeenInstalled()) {
-    return await devicectl.installAndLaunchAppAsync(props);
-  }
-
   const { bundle, bundleIdentifier, appDeltaDirectory, udid, deviceName } = props;
   let indicator: Ora | undefined;
 
@@ -65,6 +61,20 @@ export async function installOnDeviceAsync(props: {
       },
     });
   } catch (error: any) {
+    if (error instanceof CommandError) {
+      if (error.code === 'APPLE_DEVICE_USBMUXD') {
+        // Couldn't find device, could be OTA...
+        // Fallback on much slower devicectl method which supports OTA installs.
+        if (devicectl.hasDevicectlEverBeenInstalled()) {
+          // This should never happen.
+          if (indicator) {
+            indicator.clear();
+          }
+          return await devicectl.installAndLaunchAppAsync(props);
+        }
+      }
+    }
+
     if (indicator) {
       indicator.fail();
     }

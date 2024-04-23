@@ -5,26 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import chalk from 'chalk';
 import { spawn, execSync } from 'child_process';
+import fs from 'fs';
 import assert from 'node:assert';
+import { Ora } from 'ora';
 import { EOL } from 'os';
+import path from 'path';
 import tempy from 'tempy';
 
-import * as Log from '../../../log';
-import { installExitHooks } from '../../../utils/exit';
 import { xcrunAsync } from './xcrun';
+import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import path from 'path';
-import fs from 'fs';
-
-import { getExpoHomeDirectory, getUserStatePath } from '@expo/config/build/getUserState';
-import { Ora } from 'ora';
-import { ora } from '../../../utils/ora';
+import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
+import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
-import chalk from 'chalk';
 
 const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exists');
 
@@ -334,10 +333,15 @@ export async function installAndLaunchAppAsync(props: {
   udid: string;
   deviceName: string;
 }): Promise<void> {
+  debug('Running on device:', props);
   const { bundle, bundleIdentifier, udid, deviceName } = props;
   let indicator: Ora | undefined;
 
   try {
+    if (!indicator) {
+      indicator = ora(`Connecting to: ${props.deviceName}`).start();
+    }
+
     await installAppWithDeviceCtlAsync(
       udid,
       bundle,

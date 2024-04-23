@@ -9,12 +9,13 @@ import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
-import { delayAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
 import * as devicectl from '../../../start/platforms/ios/devicectl';
 import { launchAppWithDeviceCtl } from '../../../start/platforms/ios/devicectl';
 import { uniqBy } from '../../../utils/array';
+import { delayAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
+import { profile } from '../../../utils/profile';
 
 const debug = Debug('expo:apple-device');
 
@@ -59,15 +60,14 @@ async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevi
 
 /** @returns a list of connected Apple devices. */
 export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
-  const devices = (
-    await Promise.all([
-      // Prioritize native tools since they can provide more accurate information.
-      getConnectedDevicesUsingNativeToolsAsync(),
-      getConnectedDevicesUsingCustomToolingAsync(),
-    ])
-  ).flat();
+  const devices = await Promise.all([
+    // Prioritize native tools since they can provide more accurate information.
+    // NOTE: xcrun is substantially slower than custom tooling. +1.5s vs 9ms.
+    profile(getConnectedDevicesUsingNativeToolsAsync)(),
+    profile(getConnectedDevicesUsingCustomToolingAsync)(),
+  ]);
 
-  return uniqBy(devices, (device) => device.udid);
+  return uniqBy(devices.flat(), (device) => device.udid);
 }
 
 /**
