@@ -184,6 +184,11 @@ class Env {
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
   }
+
+  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
+  get EXPO_UNSTABLE_ATLAS() {
+    return boolish('EXPO_UNSTABLE_ATLAS', false);
+  }
 }
 
 export const env = new Env();
