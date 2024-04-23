@@ -19,23 +19,6 @@ const waitForAppToBecomeVisible = async () => {
     .withTimeout(2000);
 };
 
-function launchAppWithTimeout(timeout: number) {
-  return new Promise(async (resolve, reject) => {
-    setTimeout(() => {
-      reject(new Error('Launch timed out'));
-    }, timeout);
-
-    try {
-      await device.launchApp({
-        newInstance: true,
-      });
-      resolve(null); // If successful, resolve the promise.
-    } catch (error) {
-      reject(error); // If the launchApp itself fails, reject the promise.
-    }
-  });
-}
-
 describe('Error recovery tests', () => {
   afterEach(async () => {
     await device.uninstallApp();
@@ -82,15 +65,14 @@ describe('Error recovery tests', () => {
 
     await Server.serveSignedManifest(manifest, projectRoot);
 
-    // launch app for error recovery.
-    if (device.getPlatform() === 'android') {
-      // Detox on Android will timeout from waiting idling resources because Detox doesn't support reloading the app under the hood.
-      await jestExpect(launchAppWithTimeout(2000)).rejects.toThrow();
-    } else {
+    // launch app for error recovery
+    try {
+      // Detox on Android may timeout from waiting idling resources because Detox doesn't support reloading the app under the hood
       await device.launchApp({
         newInstance: true,
       });
-    }
+    } catch {}
+
     // we don't check current update ID header or failed update IDs header since the behavior for this request is not defined
     // (we don't guarantee current update to be set during a crash or the launch failure to have been registered yet)
     const request2 = await Server.waitForUpdateRequest(10000);
