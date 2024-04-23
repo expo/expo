@@ -21,6 +21,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fixed `TypeError: osascript(...) is not a function` when pressing "j" to open JS debugger. ([#28315](https://github.com/expo/expo/pull/28315) by [@kudo](https://github.com/kudo))
+- Fix API routes in folders starting with `.` characters. ([#28366](https://github.com/expo/expo/pull/28366) by [@byCedric](https://github.com/byCedric))
 
 ## 0.18.0 — 2024-04-18
 
