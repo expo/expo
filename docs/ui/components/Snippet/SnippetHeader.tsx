@@ -1,4 +1,4 @@
-import { mergeClasses } from '@expo/styleguide';
+import { mergeClasses, Button } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
@@ -42,13 +42,18 @@ export const SnippetHeader = ({
       {Icon && <Icon className="icon-sm" />}
       {title}
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
-      {linkUrl && (
-        <ArrowUpRightIcon
-          onClick={() => window.open(linkUrl, '_blank')}
-          className="text-icon-secondary shrink-0 icon-sm"
-        />
-      )}
     </LABEL>
+    {linkUrl && (
+      <LABEL className="flex flex-1 justify-end items-center pr-2">
+        <Button
+          size="xs"
+          theme="secondary"
+          onClick={() => window.open(linkUrl, '_blank')}
+          openInNewTab>
+          Raw
+        </Button>
+      </LABEL>
+    )}
     {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
 );
