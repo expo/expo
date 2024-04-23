@@ -271,11 +271,6 @@ export async function getDevicesAsync(): Promise<Device[]> {
   return Object.values(simulatorDeviceInfo.devices).flat();
 }
 
-export async function getRealDevicesAsync(): Promise<Device[]> {
-  const simulatorDeviceInfo = await getRuntimesAsync('devices');
-  return Object.values(simulatorDeviceInfo.devices).flat();
-}
-
 /** Run a `simctl` command. */
 export async function simctlAsync(
   args: (string | undefined)[],
