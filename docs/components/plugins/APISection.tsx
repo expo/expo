@@ -217,16 +217,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 

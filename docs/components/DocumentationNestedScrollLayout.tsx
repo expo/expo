@@ -52,7 +52,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
     } = this.props;
 
     return (
-      <div className="w-full h-[100vh] overflow-hidden mx-auto flex flex-col">
+      <div className="w-full h-dvh overflow-hidden mx-auto flex flex-col">
         <div className="max-lg-gutters:sticky">{header}</div>
         <div className="flex mx-auto justify-between items-center w-full h-[calc(100vh-60px)]">
           <div
@@ -76,7 +76,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
               isMobileMenuVisible && 'hidden'
             )}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
-              <div className="max-w-[1200px] mx-auto">{children}</div>
+              <div className="max-w-screen-xl mx-auto">{children}</div>
             </ScrollContainer>
           </div>
           {!hideTOC && (

@@ -42,6 +42,7 @@ export default {
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
+    topLevelAwait: true,
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: {

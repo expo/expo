@@ -553,15 +553,14 @@ export const renderTypeOrSignatureType = ({
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
-        {signatures?.map(
-          ({ parameters }) =>
-            parameters?.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}
-                <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-              </span>
-            ))
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}
+              <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+            </span>
+          ))
         )}
         <span className="text-quaternary">{') =>'}</span>{' '}
         {signatures[0].type ? resolveTypeName(signatures[0].type, sdkVersion) : 'void'}
