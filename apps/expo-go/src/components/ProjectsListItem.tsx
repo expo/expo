@@ -5,12 +5,18 @@ import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-component
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { CommonAppDataFragment } from 'src/graphql/types';
+import {
+  isUpdateCompatibleWithThisExpoGo,
+  openUpdateManifestPermalink,
+} from 'src/utils/UpdateUtils';
 
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 import { AppIcon } from '../screens/HomeScreen/AppIcon';
 
 type Props = {
   name: string;
+  firstTwoBranches: CommonAppDataFragment['firstTwoBranches'];
   subtitle?: string;
   id: string;
   first: boolean;
@@ -22,13 +28,30 @@ type Props = {
  * the projects list page for an account.
  */
 
-export function ProjectsListItem({ name, subtitle, id, first, last }: Props) {
+export function ProjectsListItem({ name, subtitle, firstTwoBranches, id, first, last }: Props) {
   const theme = useExpoTheme();
 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onPress() {
-    navigation.push('ProjectDetails', { id });
+    // if there's only one branch for the project and the latest update on that branch is compatible
+    // with this version of Expo Go, just launch it upon tapping the row instead of entering
+    // a drill-down UI for exploring branches/updates.
+    if (firstTwoBranches.length === 1) {
+      const updateToOpen = firstTwoBranches[0].updates[0];
+      if (updateToOpen) {
+        const isCompatibleWithThisExpoGo = isUpdateCompatibleWithThisExpoGo(updateToOpen);
+        if (isCompatibleWithThisExpoGo) {
+          openUpdateManifestPermalink(updateToOpen);
+        } else {
+          navigation.push('ProjectDetails', { id });
+        }
+      } else {
+        navigation.push('ProjectDetails', { id });
+      }
+    } else {
+      navigation.push('ProjectDetails', { id });
+    }
   }
 
   const showSubtitle = subtitle && name.toLowerCase() !== subtitle.toLowerCase();
