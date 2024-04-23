@@ -13,6 +13,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
@@ -29,6 +30,7 @@ import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutation
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -219,6 +221,9 @@ export async function instantiateMetroAsync(
   prependMiddleware(middleware, debugMiddleware);
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
+  // Attach Expo Atlas if enabled
+  const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints: {
@@ -227,6 +232,9 @@ export async function instantiateMetroAsync(
     },
     watch: !isExporting && isWatchEnabled(),
   });
+
+  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
+  atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent

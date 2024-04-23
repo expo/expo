@@ -10,6 +10,21 @@ import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 
+export type EnsureDependenciesOptions = {
+  /** The packages and/or version ranges that should be enforced in the project */
+  requiredPackages: ResolvedPackage[];
+  /** The user-facing message when the required packages are missing or incorrect */
+  installMessage: string;
+  /** The user-facing message when users aborted the installation */
+  warningMessage: string;
+  /** A previously loaded Expo configuration (loads when omitted) */
+  exp?: ExpoConfig;
+  /** If the prompts asking users to install should be skipped (defaults to false, in CI defaults to true) */
+  skipPrompt?: boolean;
+  /** Project can be mutated in the current environment (defaults to true, in CI defaults to false) */
+  isProjectMutable?: boolean;
+};
+
 export async function ensureDependenciesAsync(
   projectRoot: string,
   {
@@ -20,15 +35,7 @@ export async function ensureDependenciesAsync(
     // Don't prompt in CI
     skipPrompt = !isInteractive(),
     isProjectMutable = isInteractive(),
-  }: {
-    exp?: ExpoConfig;
-    installMessage: string;
-    warningMessage: string;
-    requiredPackages: ResolvedPackage[];
-    skipPrompt?: boolean;
-    /** Project can be mutated in the current environment. */
-    isProjectMutable?: boolean;
-  }
+  }: EnsureDependenciesOptions
 ): Promise<boolean> {
   const { missing } = await getMissingPackagesAsync(projectRoot, {
     sdkVersion: exp.sdkVersion,
