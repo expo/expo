@@ -47,10 +47,7 @@ async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevi
           model: device.hardwareProperties.productType,
           osVersion: device.deviceProperties.osVersionNumber,
           udid: device.hardwareProperties.udid,
-
-          // TODO
           deviceType: 'device',
-          // TODO
           connectionType:
             device.connectionProperties.transportType === 'localNetwork' ? 'Network' : 'USB',
         };

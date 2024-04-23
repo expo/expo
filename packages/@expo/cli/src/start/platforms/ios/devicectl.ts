@@ -115,9 +115,9 @@ type DeviceCtlConnectionProperties = {
   /** "2024-04-20T22:50:04.244Z" */
   lastConnectionDate: string;
   pairingState: AnyEnum<'paired'>;
-  /** ["00008120-001638590230201E.coredevice.local", "B3F9CFC2-0043-4EB7-98B2-10A4353DD31E.coredevice.local"] */
+  /** ["00001111-001111110110101A.coredevice.local", "A1A1AAA1-0011-1AA1-11A1-10A1111AA11A.coredevice.local"] */
   potentialHostnames: string[];
-  transportType: AnyEnum<'localNetwork'>;
+  transportType: AnyEnum<'localNetwork' | 'wired'>;
   tunnelState: AnyEnum<'disconnected'>;
   tunnelTransportProtocol: AnyEnum<'tcp'>;
 };
