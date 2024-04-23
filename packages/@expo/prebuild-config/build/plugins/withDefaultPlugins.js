@@ -36,6 +36,13 @@ function _withIosIcons() {
   };
   return data;
 }
+function _ccachePlugin() {
+  const data = require("./ios/ccache-plugin");
+  _ccachePlugin = function () {
+    return data;
+  };
+  return data;
+}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -138,7 +145,9 @@ const withIosExpoPlugins = (config, {
   // XcodeProject
   _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
   // Dangerous
-  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
+  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo,
+  // Podfile.properties.json
+  _ccachePlugin().withCcachePodfileProperties]);
 };
 
 /**
