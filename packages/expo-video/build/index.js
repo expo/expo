@@ -1,4 +1,5 @@
 import Video from './NativeVideoModule';
-export { VideoView, useVideoPlayer, isPictureInPictureSupported } from './VideoView';
+export { VideoView, isPictureInPictureSupported } from './VideoView';
+export { useVideoPlayer } from './VideoPlayer';
 export { Video };
 //# sourceMappingURL=index.js.map
