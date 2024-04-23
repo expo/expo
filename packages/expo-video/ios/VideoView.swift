@@ -61,7 +61,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.updatesNowPlayingInfoCenter = false
 
     addSubview(playerViewController.view)
-    playerViewController.beginAppearanceTransition(true, animated: true)
   }
 
   deinit {
@@ -149,5 +148,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
     isInPictureInPicture = false
     onPictureInPictureStop()
+  }
+
+  public override func didMoveToWindow() {
+    playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
   }
 }
