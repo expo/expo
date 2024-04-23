@@ -8,7 +8,7 @@ export async function getSchemaAsync(sdkVersion: string): Promise<any> {
     ).toString()
   );
   const resultJson = await result.json();
-  return resultJson.data.schema;
+  return resultJson.data?.schema;
 }
 
 function getExpoHostApiBaseUrl(): string {

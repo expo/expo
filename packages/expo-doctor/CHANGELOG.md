@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix error when fetching schema for unpublished SDK versions ([#28204](https://github.com/expo/expo/pull/28204) by [@leonhh](https://github.com/leonhh))
+
 ### 💡 Others
 
 ## 1.5.1 — 2024-04-18

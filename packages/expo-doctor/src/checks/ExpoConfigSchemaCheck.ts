@@ -12,7 +12,15 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
-    const schema = await getSchemaAsync(exp.sdkVersion!);
+    let schema = await getSchemaAsync(exp.sdkVersion!);
+    let isUsingUnversionedSchema = false;
+
+    // If the schema is not available for the current SDK version, fall back to the unversioned schema (e.g., when using a canary SDK version).
+    // During the SDK beta window, canary may return a schema version, as major version will match the next SDK version.
+    if (!schema) {
+      schema = await getSchemaAsync('UNVERSIONED');
+      isUsingUnversionedSchema = true;
+    }
 
     const configPaths = getConfigFilePaths(projectRoot);
 
@@ -31,6 +39,12 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
       }
       if (assetsErrorMessage) {
         issues.push(assetsErrorMessage!);
+      }
+
+      if (isUsingUnversionedSchema && issues.length > 0) {
+        issues.push(
+          `Warning: we could not find a schema for SDK version ${exp.sdkVersion}, used UNVERSIONED schema instead. This is expected when using a canary SDK version.`
+        );
       }
     }
 
