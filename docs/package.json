@@ -16,7 +16,7 @@
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "vale .",
     "watch": "tsc --noEmit -w",
-    "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "yarn generate-static-resoures && yarn node --experimental-vm-modules $(yarn bin jest)",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
@@ -27,7 +27,7 @@
     "@isaacs/cliui": "npm:cliui@^8",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "string-width": "^4"
+    "string-width": "^4.2.3"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
