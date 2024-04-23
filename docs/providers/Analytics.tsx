@@ -77,9 +77,9 @@ export function reportPageVote({ status }: { status: boolean }) {
 }
 
 export function reportEasTutorialCompleted() {
-  window?.gtag?.('event', 'eas_tutorial_completed', {
+  window?.gtag?.('event', 'eas_tutorial', {
     event_category: 'EAS Tutorial Completed',
-    event_label: 'All chapters in EAS Tutorial Completed',
+    event_label: 'All chapters in EAS Tutorial completed',
     // Use a non-interaction event to avoid affecting bounce rate.
     non_interaction: true,
     anonymize_ip: true,
