@@ -72,6 +72,37 @@ it(
   120 * 1000
 );
 
+it(
+  'runs `npx expo config --json` with a warning',
+  async () => {
+    const projectName = 'basic-config';
+    const projectRoot = getRoot(projectName);
+    // Create the project root aot
+    await fs.mkdir(projectRoot, { recursive: true });
+    // Create a fake package.json -- this is a terminal file that cannot be overwritten.
+    await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+    await fs.writeFile(
+      path.join(projectRoot, 'app.json'),
+      '{ "foobar": true, "expo": { "name": "foobar" } }'
+    );
+    // Add an environment variable file to test that it's not included in the config.
+    await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
+
+    const results = await execute('config', projectName, '--json');
+    // @ts-ignore
+    const exp = JSON.parse(results.stdout);
+
+    expect(exp.foobar).not.toBeDefined();
+    expect(exp.name).toEqual('foobar');
+    expect(exp.slug).toEqual('foobar');
+    expect(exp.platforms).toStrictEqual([]);
+    expect(exp.version).toBe('1.0.0');
+    expect(exp._internal.dynamicConfigPath).toBe(null);
+    expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
+  }, // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
 it('throws on invalid project root', async () => {
   expect.assertions(1);
   try {
