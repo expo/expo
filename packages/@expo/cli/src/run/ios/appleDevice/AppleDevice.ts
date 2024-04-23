@@ -9,10 +9,13 @@ import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
-import { xcrunAsync } from '../../../start/platforms/ios/xcrun';
+import * as devicectl from '../../../start/platforms/ios/devicectl';
+import { launchAppWithDeviceCtl } from '../../../start/platforms/ios/devicectl';
+import { uniqBy } from '../../../utils/array';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { profile } from '../../../utils/profile';
 
 const debug = Debug('expo:apple-device');
 
@@ -32,8 +35,44 @@ export interface ConnectedDevice {
   osVersion: string;
 }
 
+async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevice[]> {
+  return (
+    (await devicectl.getConnectedAppleDevicesAsync())
+      // Filter out unpaired devices.
+      // TODO: We could improve this logic in the future to attempt pairing if specified.
+      .filter((device) => device.connectionProperties.pairingState === 'paired')
+      .map((device) => {
+        return {
+          name: device.deviceProperties.name,
+          model: device.hardwareProperties.productType,
+          osVersion: device.deviceProperties.osVersionNumber,
+          udid: device.hardwareProperties.udid,
+          deviceType: 'device',
+          connectionType:
+            device.connectionProperties.transportType === 'localNetwork' ? 'Network' : 'USB',
+        };
+      })
+  );
+}
+
 /** @returns a list of connected Apple devices. */
 export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
+  const devices = await Promise.all([
+    // Prioritize native tools since they can provide more accurate information.
+    // NOTE: xcrun is substantially slower than custom tooling. +1.5s vs 9ms.
+    profile(getConnectedDevicesUsingNativeToolsAsync)(),
+    profile(getConnectedDevicesUsingCustomToolingAsync)(),
+  ]);
+
+  return uniqBy(devices.flat(), (device) => device.udid);
+}
+
+/**
+ * This supports devices that are running OS versions older than iOS 17.
+ *
+ * @returns a list of connected Apple devices.
+ */
+async function getConnectedDevicesUsingCustomToolingAsync(): Promise<ConnectedDevice[]> {
   const client = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
   const devices = await client.getDevices();
   client.socket.end();
@@ -82,6 +121,8 @@ export async function runOnDevice({
   /** Callback to be called with progress updates */
   onProgress: OnInstallProgressCallback;
 }) {
+  debug('Running on device:', { udid, appPath, bundleId, waitForApp, deltaPath });
+
   const clientManager = await ClientManager.create(udid);
 
   try {
@@ -222,27 +263,6 @@ async function launchAppWithUsbmux(
     }
   }
   throw new CommandError('Unable to launch app, number of tries exceeded');
-}
-
-/** @internal Exposed for testing */
-export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
-  try {
-    await xcrunAsync(['devicectl', 'device', 'process', 'launch', '--device', deviceId, bundleId]);
-  } catch (error: any) {
-    if ('stderr' in error) {
-      const errorCodes = getDeviceCtlErrorCodes(error.stderr);
-      if (errorCodes.includes('Locked')) {
-        throw new CommandError('APPLE_DEVICE_LOCKED', 'Device is locked, unlock and try again.');
-      }
-    }
-
-    throw new CommandError(`There was an error launching app: ${error}`);
-  }
-}
-
-/** Find all error codes from the output log */
-function getDeviceCtlErrorCodes(log: string): string[] {
-  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code);
 }
 
 /**
