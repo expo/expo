@@ -14,6 +14,7 @@ import url from 'url';
 import ApolloClient from './api/ApolloClient';
 import { ColorTheme } from './constants/Colors';
 import {
+  AppPlatform,
   HomeScreenDataDocument,
   HomeScreenDataQuery,
   HomeScreenDataQueryVariables,
@@ -167,6 +168,7 @@ export default function HomeApp() {
             query: HomeScreenDataDocument,
             variables: {
               accountName: firstLoadAccountName,
+              platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
             },
             context: { headers: { 'expo-session': storedSession?.sessionSecret } },
           });

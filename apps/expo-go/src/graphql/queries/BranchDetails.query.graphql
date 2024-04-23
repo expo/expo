@@ -14,13 +14,7 @@ query BranchDetails(
         name
         updates(limit: 100, offset: 0, filter: { platform: $platform }) {
           id
-          group
-          message
-          createdAt
-          runtimeVersion
-          expoGoSDKVersion
-          platform
-          manifestPermalink
+          ...UpdateData
         }
       }
     }

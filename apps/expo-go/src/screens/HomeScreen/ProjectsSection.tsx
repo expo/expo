@@ -33,6 +33,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
             <ProjectsListItem
               id={project.id}
               name={project.name}
+              firstTwoBranches={project.firstTwoBranches}
               subtitle={project.fullName}
               first={i === 0}
               last={i === apps.length - 1 && !showMore}

@@ -656,7 +656,7 @@ export type AccountQueryByNameArgs = {
 export type AccountSsoConfiguration = {
   __typename?: 'AccountSSOConfiguration';
   authProtocol: AuthProtocolType;
-  authProviderIdentifier: Scalars['String'];
+  authProviderIdentifier: AuthProviderIdentifier;
   clientIdentifier: Scalars['String'];
   clientSecret: Scalars['String'];
   createdAt: Scalars['DateTime'];
@@ -667,7 +667,7 @@ export type AccountSsoConfiguration = {
 
 export type AccountSsoConfigurationData = {
   authProtocol: AuthProtocolType;
-  authProviderIdentifier: Scalars['String'];
+  authProviderIdentifier: AuthProviderIdentifier;
   clientIdentifier: Scalars['String'];
   clientSecret: Scalars['String'];
   issuer: Scalars['String'];
@@ -704,7 +704,7 @@ export type AccountSsoConfigurationMutationUpdateAccountSsoConfigurationArgs = {
 export type AccountSsoConfigurationPublicData = {
   __typename?: 'AccountSSOConfigurationPublicData';
   authProtocol: AuthProtocolType;
-  authProviderIdentifier: Scalars['String'];
+  authProviderIdentifier: AuthProviderIdentifier;
   authorizationUrl: Scalars['String'];
   id: Scalars['ID'];
   issuer: Scalars['String'];
@@ -1094,6 +1094,7 @@ export type AndroidJobInput = {
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
   gradleCommand?: InputMaybe<Scalars['String']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   projectArchive: ProjectArchiveSourceInput;
   projectRootDirectory: Scalars['String'];
@@ -1122,9 +1123,11 @@ export type AndroidJobOverridesInput = {
   buildType?: InputMaybe<AndroidBuildType>;
   builderEnvironment?: InputMaybe<AndroidBuilderEnvironmentInput>;
   cache?: InputMaybe<BuildCacheInput>;
+  customBuildConfig?: InputMaybe<CustomBuildConfigInput>;
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
   gradleCommand?: InputMaybe<Scalars['String']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   releaseChannel?: InputMaybe<Scalars['String']>;
   secrets?: InputMaybe<AndroidJobSecretsInput>;
@@ -1281,6 +1284,7 @@ export type App = Project & {
   isDeprecated: Scalars['Boolean'];
   /** @deprecated 'likes' have been deprecated. */
   isLikedByMe: Scalars['Boolean'];
+  lastDeletionAttemptTime?: Maybe<Scalars['DateTime']>;
   /** @deprecated No longer supported */
   lastPublishedTime: Scalars['DateTime'];
   /** Time of the last user activity (update, branch, submission). */
@@ -1316,6 +1320,8 @@ export type App = Project & {
    * @deprecated Classic updates have been deprecated.
    */
   published: Scalars['Boolean'];
+  /** App query field for querying details about an app's push notifications */
+  pushNotifications: AppPushNotifications;
   pushSecurityEnabled: Scalars['Boolean'];
   /**
    * Classic update release channel names (to be removed)
@@ -1729,6 +1735,23 @@ export enum AppPrivacy {
   Public = 'PUBLIC',
   Unlisted = 'UNLISTED'
 }
+
+export type AppPushNotifications = {
+  __typename?: 'AppPushNotifications';
+  id: Scalars['ID'];
+  insights: AppPushNotificationsInsights;
+};
+
+export type AppPushNotificationsInsights = {
+  __typename?: 'AppPushNotificationsInsights';
+  id: Scalars['ID'];
+  notificationsSentOverTime: NotificationsSentOverTimeData;
+};
+
+
+export type AppPushNotificationsInsightsNotificationsSentOverTimeArgs = {
+  timespan: InsightsTimespan;
+};
 
 export type AppQuery = {
   __typename?: 'AppQuery';
@@ -2297,6 +2320,7 @@ export type AuditLog = {
   actor?: Maybe<Actor>;
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
+  metadata?: Maybe<Scalars['JSONObject']>;
   targetEntityId: Scalars['ID'];
   targetEntityMutationType: TargetEntityMutationType;
   targetEntityTableName: Scalars['String'];
@@ -2326,6 +2350,13 @@ export type AuditLogQueryByIdArgs = {
 
 export enum AuthProtocolType {
   Oidc = 'OIDC'
+}
+
+export enum AuthProviderIdentifier {
+  GoogleWs = 'GOOGLE_WS',
+  MsEntraId = 'MS_ENTRA_ID',
+  Okta = 'OKTA',
+  OneLogin = 'ONE_LOGIN'
 }
 
 export type BackgroundJobReceipt = {
@@ -3750,10 +3781,17 @@ export type GitHubRepositoryMetadata = {
 
 export type GitHubRepositoryMutation = {
   __typename?: 'GitHubRepositoryMutation';
+  /** Configure EAS by pushing a commit to the default branch which updates or creates app.json, eas.json, and installs necessary dependencies. */
+  configureEAS: BackgroundJobReceipt;
   /** Create a GitHub repository for an App */
   createGitHubRepository: GitHubRepository;
   /** Delete a GitHub repository by ID */
   deleteGitHubRepository: GitHubRepository;
+};
+
+
+export type GitHubRepositoryMutationConfigureEasArgs = {
+  githubRepositoryId: Scalars['ID'];
 };
 
 
@@ -4126,6 +4164,7 @@ export type IosJobInput = {
   /** @deprecated */
   distribution?: InputMaybe<DistributionType>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   projectArchive: ProjectArchiveSourceInput;
   projectRootDirectory: Scalars['String'];
@@ -4151,10 +4190,12 @@ export type IosJobOverridesInput = {
   buildType?: InputMaybe<IosBuildType>;
   builderEnvironment?: InputMaybe<IosBuilderEnvironmentInput>;
   cache?: InputMaybe<BuildCacheInput>;
+  customBuildConfig?: InputMaybe<CustomBuildConfigInput>;
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   /** @deprecated */
   distribution?: InputMaybe<DistributionType>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   releaseChannel?: InputMaybe<Scalars['String']>;
   resign?: InputMaybe<BuildResignInput>;
@@ -4489,6 +4530,11 @@ export enum NotificationType {
   Email = 'EMAIL',
   Web = 'WEB'
 }
+
+export type NotificationsSentOverTimeData = {
+  __typename?: 'NotificationsSentOverTimeData';
+  data: LineChartData;
+};
 
 export type Offer = {
   __typename?: 'Offer';
@@ -6329,6 +6375,15 @@ export type WebsiteNotificationsConnection = {
   pageInfo: PageInfo;
 };
 
+export enum WorkerLoggerLevel {
+  Debug = 'DEBUG',
+  Error = 'ERROR',
+  Fatal = 'FATAL',
+  Info = 'INFO',
+  Trace = 'TRACE',
+  Warn = 'WARN'
+}
+
 export type DeleteAndroidAppBuildCredentialsResult = {
   __typename?: 'deleteAndroidAppBuildCredentialsResult';
   id: Scalars['ID'];
@@ -6349,7 +6404,7 @@ export type DeleteApplePushKeyResult = {
   id: Scalars['ID'];
 };
 
-export type CommonAppDataFragment = { __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } };
+export type CommonAppDataFragment = { __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> };
 
 export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
 
@@ -6359,14 +6414,17 @@ type CurrentUserActorData_User_Fragment = { __typename: 'User', id: string, user
 
 export type CurrentUserActorDataFragment = CurrentUserActorData_SsoUser_Fragment | CurrentUserActorData_User_Fragment;
 
+export type UpdateDataFragment = { __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string };
+
 export type Home_AccountDataQueryVariables = Exact<{
   accountName: Scalars['String'];
   appLimit: Scalars['Int'];
   snackLimit: Scalars['Int'];
+  platform: AppPlatform;
 }>;
 
 
-export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export type BranchDetailsQueryVariables = Exact<{
   name: Scalars['String'];
@@ -6385,7 +6443,7 @@ export type BranchesForProjectQueryVariables = Exact<{
 }>;
 
 
-export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, fullName: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, fullName: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> } } };
 
 export type Home_CurrentUserActorQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6395,18 +6453,20 @@ export type Home_CurrentUserActorQuery = { __typename?: 'RootQuery', meUserActor
 export type Home_ProfileData2QueryVariables = Exact<{
   appLimit: Scalars['Int'];
   snackLimit: Scalars['Int'];
+  platform: AppPlatform;
 }>;
 
 
-export type Home_ProfileData2Query = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
+export type Home_ProfileData2Query = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
 
 export type Home_MyAppsQueryVariables = Exact<{
   limit: Scalars['Int'];
   offset: Scalars['Int'];
+  platform: AppPlatform;
 }>;
 
 
-export type Home_MyAppsQuery = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } | { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } | null };
+export type Home_MyAppsQuery = { __typename?: 'RootQuery', meUserActor?: { __typename?: 'SSOUser', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }> } | { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }> } | null };
 
 export type Home_ProfileSnacksQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -6420,10 +6480,11 @@ export type Home_AccountAppsQueryVariables = Exact<{
   accountName: Scalars['String'];
   limit: Scalars['Int'];
   offset: Scalars['Int'];
+  platform: AppPlatform;
 }>;
 
 
-export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }> } } };
+export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }> } } };
 
 export type ProjectsQueryVariables = Exact<{
   appId: Scalars['String'];
@@ -6431,7 +6492,7 @@ export type ProjectsQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+export type ProjectsQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> } } };
 
 export type Home_AccountSnacksQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -6470,11 +6531,24 @@ export type UserPermissionDataFragment = { __typename?: 'UserPermission', permis
 
 export type HomeScreenDataQueryVariables = Exact<{
   accountName: Scalars['String'];
+  platform: AppPlatform;
 }>;
 
 
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string } }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
+export const UpdateDataFragmentDoc = gql`
+    fragment UpdateData on Update {
+  id
+  group
+  message
+  createdAt
+  runtimeVersion
+  expoGoSDKVersion
+  platform
+  manifestPermalink
+}
+    `;
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
   id
@@ -6483,8 +6557,16 @@ export const CommonAppDataFragmentDoc = gql`
   ownerAccount {
     name
   }
+  firstTwoBranches: updateBranches(limit: 2, offset: 0) {
+    id
+    name
+    updates(limit: 1, offset: 0, filter: {platform: $platform}) {
+      id
+      ...UpdateData
+    }
+  }
 }
-    `;
+    ${UpdateDataFragmentDoc}`;
 export const CommonSnackDataFragmentDoc = gql`
     fragment CommonSnackData on Snack {
   id
@@ -6543,7 +6625,7 @@ export const UserPermissionDataFragmentDoc = gql`
 }
     `;
 export const Home_AccountDataDocument = gql`
-    query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!) {
+    query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id
@@ -6576,6 +6658,7 @@ ${CommonSnackDataFragmentDoc}`;
  *      accountName: // value for 'accountName'
  *      appLimit: // value for 'appLimit'
  *      snackLimit: // value for 'snackLimit'
+ *      platform: // value for 'platform'
  *   },
  * });
  */
@@ -6606,19 +6689,13 @@ export const BranchDetailsDocument = gql`
         name
         updates(limit: 100, offset: 0, filter: {platform: $platform}) {
           id
-          group
-          message
-          createdAt
-          runtimeVersion
-          expoGoSDKVersion
-          platform
-          manifestPermalink
+          ...UpdateData
         }
       }
     }
   }
 }
-    `;
+    ${UpdateDataFragmentDoc}`;
 
 /**
  * __useBranchDetailsQuery__
@@ -6664,18 +6741,13 @@ export const BranchesForProjectDocument = gql`
         name
         updates(limit: 1, offset: 0, filter: {platform: $platform}) {
           id
-          group
-          message
-          createdAt
-          runtimeVersion
-          platform
-          manifestPermalink
+          ...UpdateData
         }
       }
     }
   }
 }
-    `;
+    ${UpdateDataFragmentDoc}`;
 
 /**
  * __useBranchesForProjectQuery__
@@ -6748,7 +6820,7 @@ export function refetchHome_CurrentUserActorQuery(variables?: Home_CurrentUserAc
       return { query: Home_CurrentUserActorDocument, variables: variables }
     }
 export const Home_ProfileData2Document = gql`
-    query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
+    query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!, $platform: AppPlatform!) {
   meUserActor {
     id
     username
@@ -6785,6 +6857,7 @@ ${CommonSnackDataFragmentDoc}`;
  *   variables: {
  *      appLimit: // value for 'appLimit'
  *      snackLimit: // value for 'snackLimit'
+ *      platform: // value for 'platform'
  *   },
  * });
  */
@@ -6803,7 +6876,7 @@ export function refetchHome_ProfileData2Query(variables: Home_ProfileData2QueryV
       return { query: Home_ProfileData2Document, variables: variables }
     }
 export const Home_MyAppsDocument = gql`
-    query Home_MyApps($limit: Int!, $offset: Int!) {
+    query Home_MyApps($limit: Int!, $offset: Int!, $platform: AppPlatform!) {
   meUserActor {
     id
     appCount
@@ -6828,6 +6901,7 @@ export const Home_MyAppsDocument = gql`
  *   variables: {
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
+ *      platform: // value for 'platform'
  *   },
  * });
  */
@@ -6888,7 +6962,7 @@ export function refetchHome_ProfileSnacksQuery(variables: Home_ProfileSnacksQuer
       return { query: Home_ProfileSnacksDocument, variables: variables }
     }
 export const Home_AccountAppsDocument = gql`
-    query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
+    query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id
@@ -6916,6 +6990,7 @@ export const Home_AccountAppsDocument = gql`
  *      accountName: // value for 'accountName'
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
+ *      platform: // value for 'platform'
  *   },
  * });
  */
@@ -6949,18 +7024,13 @@ export const ProjectsQueryDocument = gql`
         name
         updates(limit: 1, offset: 0, filter: {platform: $platform}) {
           id
-          group
-          message
-          createdAt
-          runtimeVersion
-          platform
-          manifestPermalink
+          ...UpdateData
         }
       }
     }
   }
 }
-    `;
+    ${UpdateDataFragmentDoc}`;
 
 /**
  * __useProjectsQuery__
@@ -7210,7 +7280,7 @@ export type SendSmsotpToSecondFactorDeviceMutationHookResult = ReturnType<typeof
 export type SendSmsotpToSecondFactorDeviceMutationMutationResult = Apollo.MutationResult<SendSmsotpToSecondFactorDeviceMutation>;
 export type SendSmsotpToSecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<SendSmsotpToSecondFactorDeviceMutation, SendSmsotpToSecondFactorDeviceMutationVariables>;
 export const HomeScreenDataDocument = gql`
-    query HomeScreenData($accountName: String!) {
+    query HomeScreenData($accountName: String!, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id
@@ -7246,6 +7316,7 @@ ${CommonSnackDataFragmentDoc}`;
  * const { data, loading, error } = useHomeScreenDataQuery({
  *   variables: {
  *      accountName: // value for 'accountName'
+ *      platform: // value for 'platform'
  *   },
  * });
  */

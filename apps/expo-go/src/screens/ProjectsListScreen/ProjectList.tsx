@@ -133,6 +133,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
           key={app.id}
           id={app.id}
           name={app.name}
+          firstTwoBranches={app.firstTwoBranches}
           subtitle={app.fullName}
           first={index === 0}
           last={index === (data.apps ?? []).length - 1}

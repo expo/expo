@@ -1,12 +1,12 @@
 import { BranchIcon, iconSize, spacing } from '@expo/styleguide-native';
 import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BranchDetailsQuery } from 'src/graphql/types';
-
-import * as Kernel from '../../kernel/Kernel';
-import * as UrlUtils from '../../utils/UrlUtils';
+import {
+  isUpdateCompatibleWithThisExpoGo,
+  openUpdateManifestPermalink,
+} from 'src/utils/UpdateUtils';
 
 type Props = {
   name: string;
@@ -18,12 +18,10 @@ export function BranchHeader(props: Props) {
 
   const latestUpdate = props.latestUpdate;
   const openButton =
-    latestUpdate &&
-    latestUpdate.expoGoSDKVersion &&
-    Kernel.sdkVersionsArray.includes(latestUpdate.expoGoSDKVersion) ? (
+    latestUpdate && isUpdateCompatibleWithThisExpoGo(latestUpdate) ? (
       <TouchableOpacity
         onPress={() => {
-          Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(latestUpdate.manifestPermalink)));
+          openUpdateManifestPermalink(latestUpdate);
         }}
         style={{
           backgroundColor: theme.button.tertiary.background,
