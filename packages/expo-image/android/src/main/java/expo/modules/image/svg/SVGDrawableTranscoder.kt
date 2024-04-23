@@ -27,8 +27,10 @@ class SVGPictureDrawable(picture: Picture, val svgIntrinsicWidth: Int, val svgIn
 class SVGDrawableTranscoder(val context: Context) : ResourceTranscoder<SVG?, Drawable> {
   override fun transcode(toTranscode: Resource<SVG?>, options: Options): Resource<Drawable> {
     val svgData = toTranscode.get()
-    val intrinsicWidth = svgData.documentViewBox.width().toInt()
-    val intrinsicHeight = svgData.documentViewBox.height().toInt()
+    // If the svg doesn't have a viewBox, we can't determine its intrinsic width and height, so we default to 512x512.
+    // Same dimensions are used in the AndroidSVG library when the viewBox is not set.
+    val intrinsicWidth = svgData.documentViewBox?.width()?.toInt() ?: 512
+    val intrinsicHeight = svgData.documentViewBox?.height()?.toInt() ?: 512
 
     val tintColor = options.get(CustomOptions.tintColor)
     if (tintColor != null) {
