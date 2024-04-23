@@ -47,9 +47,9 @@
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
   };
 
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> self, NSDictionary *launchOptions)
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> bridge, NSDictionary *launchOptions)
   {
-    return [weakSelf createBridgeWithDelegate:self launchOptions:launchOptions];
+    return [weakSelf createBridgeWithDelegate:bridge launchOptions:launchOptions];
   };
 
   return [[DevClientRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
