@@ -1,27 +1,8 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
 import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
-
-/**
- * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
- * @param source - A video source that is used to initialize the player.
- * @param setup - A function that allows setting up the player. It will run after the player is created.
- */
-export function useVideoPlayer(
-  source: VideoSource,
-  setup?: (player: VideoPlayer) => void
-): VideoPlayer {
-  const parsedSource = typeof source === 'string' ? { uri: source } : source;
-
-  return useReleasingSharedObject(() => {
-    const player = new NativeVideoModule.VideoPlayer(parsedSource);
-    setup?.(player);
-    return player;
-  }, [JSON.stringify(parsedSource)]);
-}
+import { VideoPlayer, VideoViewProps } from './VideoView.types';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
