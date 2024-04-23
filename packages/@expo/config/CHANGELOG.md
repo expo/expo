@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added warning when extraneous top-level keys are ignored in the final config. ([#28399](https://github.com/expo/expo/pull/28399) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

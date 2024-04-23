@@ -26,6 +26,8 @@ import { getRootPackageJsonPath } from './resolvePackageJson';
 
 type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
 
+let hasWarnedAboutRootConfig = false;
+
 /**
  * If a config has an `expo` object then that will be used as the config.
  * This method reduces out other top level values if an `expo` object exists.
@@ -34,6 +36,26 @@ type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
  */
 function reduceExpoObject(config?: any): SplitConfigs {
   if (!config) return config === undefined ? null : config;
+
+  if (config.expo && !hasWarnedAboutRootConfig) {
+    const keys = Object.keys(config).filter((key) => key !== 'expo');
+    if (keys.length) {
+      hasWarnedAboutRootConfig = true;
+      const ansiYellow = (str: string) => `\u001B[33m${str}\u001B[0m`;
+      const ansiGray = (str: string) => `\u001B[90m${str}\u001B[0m`;
+      const ansiBold = (str: string) => `\u001B[1m${str}\u001B[22m`;
+      const plural = keys.length > 1;
+      console.warn(
+        ansiYellow(
+          ansiBold('Warning: ') +
+            `Root-level ${ansiBold(`"expo"`)} object found. Ignoring extra key${plural ? 's' : ''} in Expo config: ${keys
+              .map((key) => `"${key}"`)
+              .join(', ')}\n` +
+            ansiGray(`Learn more: https://expo.fyi/root-expo-object`)
+        )
+      );
+    }
+  }
 
   const { mods, ...expo } = config.expo ?? config;
 

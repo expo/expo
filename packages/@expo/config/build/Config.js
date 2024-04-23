@@ -120,6 +120,8 @@ Object.keys(_Config).forEach(function (key) {
   });
 });
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+let hasWarnedAboutRootConfig = false;
+
 /**
  * If a config has an `expo` object then that will be used as the config.
  * This method reduces out other top level values if an `expo` object exists.
@@ -128,6 +130,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function reduceExpoObject(config) {
   if (!config) return config === undefined ? null : config;
+  if (config.expo && !hasWarnedAboutRootConfig) {
+    const keys = Object.keys(config).filter(key => key !== 'expo');
+    if (keys.length) {
+      hasWarnedAboutRootConfig = true;
+      const ansiYellow = str => `\u001B[33m${str}\u001B[0m`;
+      const ansiGray = str => `\u001B[90m${str}\u001B[0m`;
+      const ansiBold = str => `\u001B[1m${str}\u001B[22m`;
+      const plural = keys.length > 1;
+      console.warn(ansiYellow(ansiBold('Warning: ') + `Root-level ${ansiBold(`"expo"`)} object found. Ignoring extra key${plural ? 's' : ''} in Expo config: ${keys.map(key => `"${key}"`).join(', ')}\n` + ansiGray(`Learn more: https://expo.fyi/root-expo-object`)));
+    }
+  }
   const {
     mods,
     ...expo
