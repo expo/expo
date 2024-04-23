@@ -11,8 +11,8 @@ declare const _default: {
     setAudioIsEnabled(): Promise<void>;
     getStatusForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     loadForSound(nativeSource: string | {
-        uri: string;
         [key: string]: any;
+        uri: string;
     }, fullInitialStatus: AVPlaybackStatusToSet): Promise<[HTMLMediaElement, AVPlaybackStatus]>;
     unloadForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     setStatusForSound(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;

@@ -16,7 +16,7 @@ async function resolveRuntimeVersionAsync(projectRoot, platform, options) {
         return { runtimeVersion: runtimeVersion ?? null, fingerprintSources: null, workflow };
     }
     const policy = runtimeVersion.policy;
-    if (policy === 'fingerprintExperimental') {
+    if (policy === 'fingerprint') {
         const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, options);
         return { runtimeVersion: fingerprint.hash, fingerprintSources: fingerprint.sources, workflow };
     }

@@ -23,6 +23,10 @@ public final class BarometerModule: Module {
     }
 
     OnStartObserving {
+      if CMAltimeter.authorizationStatus() == .notDetermined {
+        CMSensorRecorder().recordAccelerometer(forDuration: 0.1)
+      }
+
       altimeter.startRelativeAltitudeUpdates(to: operationQueue) { [weak self] data, _ in
         guard let data else {
           return

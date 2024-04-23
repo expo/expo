@@ -4,9 +4,35 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 4.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Removed configurable `enableAutoSetup` support. ([#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
+
+- [iOS] Add Add bridgeless support for React-Native 0.74. ([#28174](https://github.com/expo/expo/pull/28174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

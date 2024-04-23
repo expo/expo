@@ -28,10 +28,6 @@ module.exports = {
 
   resolver: {
     ...baseConfig.resolver,
-    assetExts: [
-      ...baseConfig.resolver.assetExts,
-      'db', // Copied from expo-yarn-workspaces
-    ],
     blockList: [
       // Copied from expo-yarn-workspaces
       /\/__tests__\//,

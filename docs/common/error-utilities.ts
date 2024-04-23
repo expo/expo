@@ -200,6 +200,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
 
+  // Expo Accounts
+  '/accounts/working-together/': '/accounts/account-types/',
+
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/archive/glossary/#expokit/',
@@ -448,5 +451,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // Stop encouraging usage of Expo Go when using native modules
-  '/bare/using-expo-client': '/archive/using-expo-client',
+  '/bare/using-expo-client/': '/archive/using-expo-client/',
 };

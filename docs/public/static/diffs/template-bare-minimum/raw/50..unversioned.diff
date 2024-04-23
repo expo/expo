@@ -112,18 +112,41 @@ index 73b37e4d99..5c25e728ea 100644
      <selector>
          <!--
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 513b766148..be66878b65 100644
+index 513b766148..932bf7b34b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -8,7 +8,7 @@ buildscript {
+@@ -6,9 +6,9 @@ buildscript {
+         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
          targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
+-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
  
 -        ndkVersion = "25.1.8937393"
 +        ndkVersion = "26.1.10909125"
      }
      repositories {
          google()
+@@ -17,6 +17,7 @@ buildscript {
+     dependencies {
+         classpath('com.android.tools.build:gradle')
+         classpath('com.facebook.react:react-native-gradle-plugin')
++        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+     }
+ }
+ 
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 877b87e9a5..8a6be07718 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -10,6 +10,7 @@ build/
+ local.properties
+ *.iml
+ *.hprof
++.cxx/
+ 
+ # Bundle artifacts
+ *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 7f93135c49..d64cd49177 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -185,6 +208,19 @@ index 53a6b238d4..7101f8e467 100644
  
  goto fail
  
+diff --git a/templates/expo-template-bare-minimum/app.json b/templates/expo-template-bare-minimum/app.json
+index a36a6e08d4..e1cfd57212 100644
+--- a/templates/expo-template-bare-minimum/app.json
++++ b/templates/expo-template-bare-minimum/app.json
+@@ -2,7 +2,6 @@
+   "expo": {
+     "name": "HelloWorld",
+     "slug": "expo-template-bare",
+-    "version": "1.0.0",
+-    "assetBundlePatterns": ["**/*"]
++    "version": "1.0.0"
+   }
+ }
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index efbdc6e741..f945940c25 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -287,7 +323,7 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f4630b8f1d..e7e9e23831 100644
+index f4630b8f1d..1a4317d703 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -295,7 +331,7 @@ index f4630b8f1d..e7e9e23831 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "50.0.42",
-+  "version": "50.0.17",
++  "version": "51.0.2",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -305,11 +341,11 @@ index f4630b8f1d..e7e9e23831 100644
    "dependencies": {
 -    "expo": "~50.0.14",
 -    "expo-status-bar": "~1.11.1",
-+    "expo": "~51.0.0-unreleased",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~51.0.0-preview.0",
++    "expo-status-bar": "~1.12.0",
      "react": "18.2.0",
 -    "react-native": "0.73.6"
-+    "react-native": "0.74.0-rc.5"
++    "react-native": "0.74.0-rc.9"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

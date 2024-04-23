@@ -98,14 +98,11 @@ export default function App() {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
 
-  /* @hide if (!permission) ... */
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
-  /* @end */
 
-  /* @hide if (!permission.granted) ... */
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -115,7 +112,6 @@ export default function App() {
       </View>
     );
   }
-  /* @end */
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));

@@ -1,11 +1,22 @@
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-import { adjustPathname } from '../fork/extractPathFromURL';
+import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
 import getPathFromState from '../fork/getPathFromState';
 import getStateFromPath from '../fork/getStateFromPath';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+
+function getInitialURLWithTimeout(): Promise<string | null> {
+  return Promise.race([
+    Linking.getInitialURL(),
+    new Promise<null>((resolve) =>
+      // Timeout in 150ms if `getInitialState` doesn't resolve
+      // Workaround for https://github.com/facebook/react-native/issues/25675
+      setTimeout(() => resolve(null), 150)
+    ),
+  ]);
+}
 
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
@@ -24,40 +35,14 @@ export function getInitialURL(): Promise<string | null> | string {
       return window.location.href;
     }
   }
-  return Promise.race<string>([
-    (async () => {
-      const url = await Linking.getInitialURL();
 
-      // NOTE(EvanBacon): This could probably be wrapped with the development boundary
-      // since Expo Go is mostly just used in development.
-
-      // Expo Go is weird and requires the root path to be `/--/`
-      if (url && isExpoGo) {
-        const parsed = Linking.parse(url);
-        // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
-        // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
-        if (
-          parsed.path === null ||
-          ['', '/'].includes(
-            adjustPathname({
-              hostname: parsed.hostname,
-              pathname: parsed.path,
-            })
-          )
-        ) {
-          return getRootURL();
-        }
-      }
+  return getInitialURLWithTimeout().then(
+    (url) =>
+      parseExpoGoUrlFromListener(url) ??
       // The path will be nullish in bare apps when the app is launched from the home screen.
       // TODO(EvanBacon): define some policy around notifications.
-      return url ?? getRootURL();
-    })(),
-    new Promise<string>((resolve) =>
-      // Timeout in 150ms if `getInitialState` doesn't resolve
-      // Workaround for https://github.com/facebook/react-native/issues/25675
-      setTimeout(() => resolve(getRootURL()), 150)
-    ),
-  ]);
+      getRootURL()
+  );
 }
 
 let _rootURL: string | undefined;
@@ -69,24 +54,27 @@ export function getRootURL(): string {
   return _rootURL;
 }
 
+// Expo Go is weird and requires the root path to be `/--/`
+function parseExpoGoUrlFromListener<T extends string | null>(url: T): T {
+  if (!url || !isExpoGo) {
+    return url;
+  }
+  const { pathname, queryString } = parsePathAndParamsFromExpoGoLink(url);
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+  if (!pathname || pathname === '/') {
+    return (getRootURL() + queryString) as T;
+  }
+  return url;
+}
+
 export function addEventListener(listener: (url: string) => void) {
   let callback: (({ url }: { url: string }) => void) | undefined;
 
   if (isExpoGo) {
     // This extra work is only done in the Expo Go app.
     callback = ({ url }: { url: string }) => {
-      const parsed = Linking.parse(url);
-
-      // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
-      // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
-      if (
-        parsed.path === null ||
-        ['', '/'].includes(adjustPathname({ hostname: parsed.hostname, pathname: parsed.path }))
-      ) {
-        listener(getRootURL());
-      } else {
-        listener(url);
-      }
+      listener(parseExpoGoUrlFromListener(url));
     };
   } else {
     callback = ({ url }: { url: string }) => listener(url);

@@ -61,6 +61,13 @@ object ExceptionUtils {
     return null
   }
 
+  fun exceptionToCanRetry(exception: Exception): Boolean {
+    if (exception is ManifestException) {
+      return exception.canRetry
+    }
+    return true
+  }
+
   private fun getUserErrorMessage(exception: Exception?, context: Context): String? {
     if (exception is UnknownHostException || exception is ConnectException) {
       if (isAirplaneModeOn(context)) {

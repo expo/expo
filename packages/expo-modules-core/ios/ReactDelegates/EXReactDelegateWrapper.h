@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
               initialProperties:(nullable NSDictionary *)initialProperties
                   launchOptions:(nullable NSDictionary *)launchOptions;
 
+- (NSURL *)bundleURL;
+
 - (UIViewController *)createRootViewController;
 
 @end

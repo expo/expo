@@ -22,6 +22,10 @@ exports[`extractExpoPathFromURL Bare parses "exp://127.0.0.1:19000/x?y=x%252By%2
 
 exports[`extractExpoPathFromURL Bare parses "exp://127.0.0.1:19000?query=param" 1`] = `"127.0.0.1:19000?query=param"`;
 
+exports[`extractExpoPathFromURL Bare parses "exp://evanbacon.dev/" 1`] = `"evanbacon.dev/"`;
+
+exports[`extractExpoPathFromURL Bare parses "exp://evanbacon.dev/hello/--/" 1`] = `"evanbacon.dev/hello/--/"`;
+
 exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test" 1`] = `"exp.host/@test/test"`;
 
 exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/path" 1`] = `"exp.host/@test/test/--/test/path"`;
@@ -29,6 +33,10 @@ exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/p
 exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/path/--/foobar" 1`] = `"exp.host/@test/test/--/test/path/--/foobar"`;
 
 exports[`extractExpoPathFromURL Bare parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"exp.host/@test/test/--/test/path?query=param"`;
+
+exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb" 1`] = `"u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb"`;
+
+exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar" 1`] = `"u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar"`;
 
 exports[`extractExpoPathFromURL Bare parses "exp://u.expo.dev/update/123abc" 1`] = `"u.expo.dev/update/123abc"`;
 
@@ -74,9 +82,13 @@ exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000/--/test/pa
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000/--/test/path?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `"test/path?shouldBeEscaped=x+y@xxx.com"`;
 
-exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000/x?y=x%252By%2540xxx.com" 1`] = `"x?y=x+y@xxx.com"`;
+exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000/x?y=x%252By%2540xxx.com" 1`] = `"?y=x+y@xxx.com"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000?query=param" 1`] = `"?query=param"`;
+
+exports[`extractExpoPathFromURL Expo Go parses "exp://evanbacon.dev/" 1`] = `""`;
+
+exports[`extractExpoPathFromURL Expo Go parses "exp://evanbacon.dev/hello/--/" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test" 1`] = `""`;
 
@@ -86,11 +98,15 @@ exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test/--/tes
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"test/path?query=param"`;
 
+exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb" 1`] = `""`;
+
+exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar" 1`] = `"foobar"`;
+
 exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/update/123abc" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/update/123abc/--/test/path?query=param" 1`] = `"test/path?query=param"`;
 
-exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/update/123abc/efg" 1`] = `"efg"`;
+exports[`extractExpoPathFromURL Expo Go parses "exp://u.expo.dev/update/123abc/efg" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Expo Go parses "https://example.com/test/path" 1`] = `"test/path"`;
 
@@ -111,3 +127,17 @@ exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath" 1`] = `"example/path"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http://acme.com/foo/bar?query=param" 1`] = `"foo/bar?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `"test/path?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://127.0.0.1:19000/--/test/path?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `"test/path?shouldBeEscaped=x%252By%2540xxx.com"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path" 1`] = `"test/path"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path/--/foobar" 1`] = `"test/path/--/foobar"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `"test/path?query=param"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar" 1`] = `"foobar"`;
+
+exports[`parsePathFromExpoGoLink parses "exp://u.expo.dev/update/123abc/--/test/path?query=param" 1`] = `"test/path?query=param"`;

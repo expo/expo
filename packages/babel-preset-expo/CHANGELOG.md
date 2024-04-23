@@ -4,6 +4,24 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Remove all unused babel plugins on web and SSR. ([#27907](https://github.com/expo/expo/pull/27907) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
@@ -29,6 +47,7 @@
 - Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases. ([#27214](https://github.com/expo/expo/pull/27214) by [@EvanBacon](https://github.com/EvanBacon))
 - Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
 - Simplify react server code injection by using more expensive template code. ([#27879](https://github.com/expo/expo/pull/27879) by [@EvanBacon](https://github.com/EvanBacon))
+- Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ## 10.0.1 - 2023-12-19
 

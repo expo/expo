@@ -6,6 +6,24 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.2 — 2024-04-23
+
+### 🐛 Bug fixes
+
+- Fix support loading abstract Expo Go URLs with multiple segments. ([#28376](https://github.com/expo/expo/pull/28376) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.5.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add URL hash support ([#27105](https://github.com/expo/expo/pull/27105) by [@marklawlor](https://github.com/marklawlor))
 - Type `Href` is no longer generic ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))
