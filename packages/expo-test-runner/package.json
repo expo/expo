@@ -1,6 +1,6 @@
 {
   "name": "expo-test-runner",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Script that enchants test experience.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

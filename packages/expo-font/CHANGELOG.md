@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 12.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2024-04-22
+
+### 💡 Others
+
 - Stopped scoping font family names in Expo Go on iOS. ([#28344](https://github.com/expo/expo/pull/28344) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.0.0 — 2024-04-18

@@ -13,6 +13,16 @@
 
 ### 💡 Others
 
+## 1.12.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.2 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531), [#28371](https://github.com/expo/expo/pull/28371) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.12.1 — 2024-04-19
 
 _This version does not introduce any user-facing changes._

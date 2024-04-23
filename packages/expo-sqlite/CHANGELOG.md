@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 14.0.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2024-04-22
+
+### 🎉 New features
+
+- Bumped SQLite version to 3.45.3 and enabled the [bytecodevtab](https://www.sqlite.org/bytecodevtab.html) feature. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
 ## 14.0.1 — 2024-04-19
 
 ### 🎉 New features

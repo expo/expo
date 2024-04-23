@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 0.25.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.1 — 2024-04-22
+
+### 🎉 New features
+
+- Add --debug option to fingerprint:generate command. ([#28311](https://github.com/expo/expo/pull/28311) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Bumped the underlying SQLite version to 3.45.3 on iOS. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
 ## 0.25.0 — 2024-04-18
 
 ### 🛠 Breaking changes
