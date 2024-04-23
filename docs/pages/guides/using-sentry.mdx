@@ -87,7 +87,10 @@ Configuring `@sentry/react-native` can be done through the config plugin. Add th
 }
 ```
 
-Next, in an environment where you want to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/build-reference/variables/#using-secrets-in-environment-variables).
+Next, in an environment where you want to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/).
+
+- If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/build-reference/variables/#using-secrets-in-environment-variables).
+- If you are using EAS Build for building on your local infraestructure (`eas build --local`), add also the `SENTRY_AUTH_TOKEN` variable in `~/.bash_profile` (or `~/.zshrc` if you use Zsh)
 
 > **warning** The Sentry auth token should be stored securely. Do not commit it to a public repository, and treat it as you would any other sensitive API key.
 
