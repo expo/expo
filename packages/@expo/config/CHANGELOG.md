@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added warning when extraneous top-level keys are ignored in the final config.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
