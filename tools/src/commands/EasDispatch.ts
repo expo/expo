@@ -212,7 +212,7 @@ async function iosBuildAndSubmitAsync() {
       path.join(projectDir, 'credentials.json'),
       JSON.stringify({
         ios: {
-          'Expo Go (versioned)': {
+          'Expo Go': {
             provisioningProfilePath: path.join(
               fastlaneMatchBucketCopyPath,
               'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.mobileprovision'
