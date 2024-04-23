@@ -125,6 +125,8 @@ You can create up to 100 account-wide secrets for each Expo account and 100 app-
 
 You can manage secrets through the Expo website and EAS CLI.
 
+> If you are using EAS Build for building in your local infraestructure (`eas build --local`), remember to also add the variables in `~/.bash_profile` (or `~/.zshrc` if you use Zsh)
+
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**.
 > EAS Secrets are intended to be used to provide values to an EAS Build job so that they may be used during the build process.
 > Examples of correct usage include setting the `NPM_TOKEN` for installing private packages from npm, or a Sentry API key to create a release and upload your sourcemaps to their service.
