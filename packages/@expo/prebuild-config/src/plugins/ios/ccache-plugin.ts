@@ -12,7 +12,7 @@ import { ConfigPlugin, withPodfileProperties } from '@expo/config-plugins';
 export const withCcachePodfileProperties: ConfigPlugin = (config) => {
   return withPodfileProperties(config, (config) => {
     // @ts-expect-error: not available on ExpoConfig yet.
-    if (config.experiments.ccacheIos) {
+    if (config.experiments?.ccacheIos) {
       config.modResults['ccache'] = 'true';
     } else {
       delete config.modResults['ccache'];

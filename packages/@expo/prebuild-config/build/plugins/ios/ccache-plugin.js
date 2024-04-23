@@ -23,7 +23,7 @@ function _configPlugins() {
 const withCcachePodfileProperties = config => {
   return (0, _configPlugins().withPodfileProperties)(config, config => {
     // @ts-expect-error: not available on ExpoConfig yet.
-    if (config.experiments.ccacheIos) {
+    if (config.experiments?.ccacheIos) {
       config.modResults['ccache'] = 'true';
     } else {
       delete config.modResults['ccache'];
