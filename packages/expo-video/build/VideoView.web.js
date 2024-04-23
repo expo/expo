@@ -5,7 +5,7 @@ function createAudioContext() {
     return typeof window !== 'undefined' ? new window.AudioContext() : null;
 }
 function createZeroGainNode(audioContext) {
-    const zeroGainNode = audioContext && audioContext.createGain();
+    const zeroGainNode = audioContext?.createGain() ?? null;
     if (audioContext && zeroGainNode) {
         zeroGainNode.gain.value = 0;
         zeroGainNode.connect(audioContext.destination);

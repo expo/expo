@@ -9,7 +9,7 @@ function createAudioContext(): AudioContext | null {
 }
 
 function createZeroGainNode(audioContext: AudioContext | null): GainNode | null {
-  const zeroGainNode = audioContext && audioContext.createGain();
+  const zeroGainNode = audioContext?.createGain() ?? null;
 
   if (audioContext && zeroGainNode) {
     zeroGainNode.gain.value = 0;
