@@ -1,5 +1,5 @@
 import { xcrunAsync } from '../../../../start/platforms/ios/xcrun';
-import { launchAppWithDeviceCtl } from '../AppleDevice';
+import { launchAppWithDeviceCtl } from '../devicectl';
 
 jest.mock('../../../../start/platforms/ios/xcrun');
 
