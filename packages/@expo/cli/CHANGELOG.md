@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue with installing OTA on iOS devices.
+
 ### 💡 Others
 
 ## 0.18.2 — 2024-04-22
