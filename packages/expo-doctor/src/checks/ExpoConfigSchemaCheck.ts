@@ -15,7 +15,8 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
     let schema = await getSchemaAsync(exp.sdkVersion!);
     let isUsingUnversionedSchema = false;
 
-    // if the schema is not available for the current SDK version, fallback to the unversioned schema (for example when using a canary SDK version)
+    // If the schema is not available for the current SDK version, fall back to the unversioned schema (e.g., when using a canary SDK version).
+    // During the SDK beta window, canary may return a schema version, as major version will match the next SDK version.
     if (!schema) {
       schema = await getSchemaAsync('UNVERSIONED');
       isUsingUnversionedSchema = true;
