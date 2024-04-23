@@ -4,33 +4,63 @@ description: Learn about the next steps in your journey with EAS.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import {
+  BookOpen02Icon,
+  BuildIcon,
+  EasSubmitIcon,
+  EasMetadataIcon,
+  LayersTwo02Icon,
+  DataIcon,
+} from '@expo/styleguide-icons';
 import { CODE } from '~/ui/components/Text';
 
 Congratulations! You've completed the EAS tutorial and learned about the main features. Now, you have a working [EAS project](https://expo.dev/eas).
+
+## EAS
 
 But this is just the beginning. Here are some next steps to continue your journey with EAS:
 
 <BoxLink
   title="EAS Build"
-  Icon={BookOpen02Icon}
+  Icon={BuildIcon}
   description="See EAS Build documentation to learn more about compiling and signing Android and iOS apps."
   href="/build/introduction/"
 />
 
 <BoxLink
   title="EAS Submit"
-  Icon={BookOpen02Icon}
+  Icon={EasSubmitIcon}
   description="See EAS Submit documentation to learn more about uploading app to Google Play Store and Apple App Store with on CLI command."
   href="/submit/introduction/"
 />
 
 <BoxLink
   title="EAS Update"
-  Icon={BookOpen02Icon}
+  Icon={LayersTwo02Icon}
   description="See EAS Update documentation to learn more about publishing updates and applying customizable strategies."
   href="/eas-update/introduction/"
 />
+
+<BoxLink
+  title="EAS Metadata"
+  Icon={EasMetadataIcon}
+  description="See EAS Metadata documentation to automate and maintain your app store presence from the command line."
+  href="/eas/metadata/"
+/>
+
+<BoxLink
+  title="EAS Insights"
+  Icon={DataIcon}
+  description={
+    <>
+      See EAS Insights documentation to learn more about how to use <CODE>expo-insights</CODE>{' '}
+      library and get precise usage metrics.
+    </>
+  }
+  href="/eas-insights/introduction/"
+/>
+
+## eas.json reference
 
 <BoxLink
   title="eas.json schema"
@@ -39,12 +69,16 @@ But this is just the beginning. Here are some next steps to continue your journe
   href="/eas/json/"
 />
 
+## Custom builds
+
 <BoxLink
   title="Custom builds"
   Icon={BookOpen02Icon}
   description="See custom builds documentation to extend EAS Build with custom build workflows."
   href="/custom-builds/get-started/"
 />
+
+## Relevant guides
 
 <BoxLink
   title="Automate submissions"
@@ -72,25 +106,6 @@ But this is just the beginning. Here are some next steps to continue your journe
   Icon={BookOpen02Icon}
   description="An overview of the development process of building an Expo app to help build a mental model of the core development loop."
   href="/workflow/overview/"
-/>
-
-<BoxLink
-  title="EAS Metadata"
-  Icon={BookOpen02Icon}
-  description="See EAS Metadata documentation to automate and maintain your app store presence from the command line."
-  href="/eas/metadata/"
-/>
-
-<BoxLink
-  title="EAS Insights"
-  Icon={BookOpen02Icon}
-  description={
-    <>
-      See EAS Insights documentation to learn more about how to use <CODE>expo-insights</CODE>{' '}
-      library and get precise usage metrics.
-    </>
-  }
-  href="/eas-insights/introduction/"
 />
 
 We hope you enjoyed this course. If you have any questions or feedback, don't hesitate to reach out to us on [Discord](https://chat.expo.dev/), or share your experience on [X](https://twitter.com/expo).
