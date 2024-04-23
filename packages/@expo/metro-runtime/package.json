@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "types": "build",
