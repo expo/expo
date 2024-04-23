@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue with installing OTA on iOS devices.
+- Fix issue with installing OTA on iOS devices. ([#28406](https://github.com/expo/expo/pull/28406) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
