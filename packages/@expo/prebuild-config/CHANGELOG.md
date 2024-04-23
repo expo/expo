@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] add support for `experiments.ccacheIos` to enable ccache for speeding up subsequent iOS builds.
+- [iOS] add support for `experiments.ccacheIos` to enable ccache for speeding up subsequent iOS builds. ([#28398](https://github.com/expo/expo/pull/28398) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
