@@ -1,4 +1,5 @@
 #import <EXDevMenu/DevClientAppDelegate.h>
+#import <EXDevMenu/DevClientRootViewFactory.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -28,12 +29,31 @@
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTTurboModuleManagerDelegate>
 
-- (RCTRootViewFactory *)createRCTRootViewFactory;
-
 @end
 
 @implementation DevClientAppDelegate
 
+- (RCTRootViewFactory *)createRCTRootViewFactory
+{
+  RCTRootViewFactoryConfiguration *configuration =
+  [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL
+                                              newArchEnabled:self.fabricEnabled
+                                          turboModuleEnabled:self.turboModuleEnabled
+                                           bridgelessEnabled:self.bridgelessEnabled];
+
+  __weak __typeof(self) weakSelf = self;
+  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
+  {
+    return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+  };
+
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> bridge, NSDictionary *launchOptions)
+  {
+    return [weakSelf createBridgeWithDelegate:bridge launchOptions:launchOptions];
+  };
+
+  return [[DevClientRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+}
 
 - (void)initRootViewFactory {
   RCTSetNewArchEnabled([self newArchEnabled]);
