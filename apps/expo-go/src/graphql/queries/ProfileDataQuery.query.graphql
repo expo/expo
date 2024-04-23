@@ -1,4 +1,4 @@
-query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
+query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!, $platform: AppPlatform!) {
   meUserActor {
     id
     username
