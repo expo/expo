@@ -61,6 +61,10 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("createRootView")
   }
 
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
+  }
+
   override fun getReactNativeHost(): ReactNativeHost {
     return _reactNativeHost
   }

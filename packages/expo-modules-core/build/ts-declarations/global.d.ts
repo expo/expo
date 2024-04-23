@@ -31,6 +31,10 @@ export interface ExpoGlobal {
      * or `null` if the view has not been registered.
      */
     getViewConfig(viewName: string): ViewConfig | null;
+    /**
+     * Reloads the app.
+     */
+    reloadAsync(reason: string): Promise<void>;
 }
 type ViewConfig = {
     validAttributes: Record<string, any>;
