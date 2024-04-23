@@ -1,4 +1,4 @@
-import { RouterLogo } from '@expo/styleguide';
+import { Button, RouterLogo } from '@expo/styleguide';
 import {
   Cube01Icon,
   CpuChip01Icon,
@@ -33,7 +33,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const title = route.sidebarTitle ?? route.name;
   const Icon = getIconElement(title);
 
-  const [chapters] = useLocalStorage<Chapter[]>({
+  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
     name: 'EAS_TUTORIAL',
     defaultValue: EAS_TUTORIAL_INITIAL_CHAPTERS,
   });
@@ -49,6 +49,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   if (allChaptersCompleted) {
     reportEasTutorialCompleted();
   }
+
+  const resetTutorial = () => {
+    if (allChaptersCompleted) {
+      const resetChapters = chapters.map(chapter => ({ ...chapter, completed: false }));
+      setChapters(resetChapters);
+    }
+  };
 
   // @ts-ignore
   if (route.children?.[0]?.section === 'EAS tutorial') {
@@ -87,6 +94,15 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             />
           );
         })}
+        {allChaptersCompleted && (
+          <Button
+            onClick={resetTutorial}
+            theme="secondary"
+            className="w-full flex items-center justify-center"
+            href="/tutorial/eas/introduction">
+            Reset tutorial
+          </Button>
+        )}
       </div>
     );
   }
