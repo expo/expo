@@ -30,12 +30,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateFingerprint = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const args_1 = require("./utils/args");
+const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
 const generateFingerprint = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
         '--help': Boolean,
         '--platform': String,
+        '--debug': Boolean,
         // Aliases
         '-h': '--help',
     }, argv ?? []);
@@ -49,6 +51,7 @@ Generate fingerprint for use in expo-updates runtime version
 
   Options
   --platform <string>                  Platform to generate a fingerprint for
+  --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `, 0);
     }
@@ -58,11 +61,18 @@ Generate fingerprint for use in expo-updates runtime version
     ]);
     const platform = (0, args_1.requireArg)(args, '--platform');
     if (!['ios', 'android'].includes(platform)) {
-        throw new Error(`Invalid platform argument: ${platform}`);
+        throw new errors_1.CommandError(`Invalid platform argument: ${platform}`);
     }
+    const debug = args['--debug'];
     const projectRoot = (0, args_1.getProjectRoot)(args);
-    const workflow = await resolveWorkflowAsync(projectRoot, platform);
-    const result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true });
+    let result;
+    try {
+        const workflow = await resolveWorkflowAsync(projectRoot, platform);
+        result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true, debug });
+    }
+    catch (e) {
+        throw new errors_1.CommandError(e.message);
+    }
     console.log(JSON.stringify(result));
 };
 exports.generateFingerprint = generateFingerprint;

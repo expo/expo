@@ -192,6 +192,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
@@ -553,15 +554,14 @@ export const renderTypeOrSignatureType = ({
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
-        {signatures?.map(
-          ({ parameters }) =>
-            parameters?.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}
-                <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-              </span>
-            ))
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}
+              <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+            </span>
+          ))
         )}
         <span className="text-quaternary">{') =>'}</span>{' '}
         {signatures[0].type ? resolveTypeName(signatures[0].type, sdkVersion) : 'void'}

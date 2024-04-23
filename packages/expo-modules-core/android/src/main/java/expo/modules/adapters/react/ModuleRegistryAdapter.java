@@ -97,7 +97,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
       nativeModulesList.addAll(reactPackage.createNativeModules(reactContext));
     }
 
-    nativeModulesList.add(new ExpoBridgeModule(new WeakReference<>(nativeModulesProxy)));
+    nativeModulesList.add(new ExpoBridgeModule(reactContext, new WeakReference<>(nativeModulesProxy)));
     return nativeModulesList;
   }
 

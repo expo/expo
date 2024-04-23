@@ -1,8 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-apply plugin: 'kotlin-kapt'
-
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -52,8 +50,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    versionCode 221
-    versionName '2.30.5'
+    versionCode 226
+    versionName '2.31.0'
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -241,10 +239,6 @@ dependencies {
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-
-  // expo-image
-  def GLIDE_VERSION = "4.13.2"
-  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

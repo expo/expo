@@ -2,15 +2,14 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { setPrivacyInfo, PrivacyInfo } from '../PrivacyInfo';
-
 jest.mock('fs');
 
 jest.mock('../utils/Xcodeproj', () => ({
   getProjectName: () => 'testproject',
-  addBuildSourceFileToGroup: jest.fn(),
+  addResourceFileToGroup: jest.fn(),
 }));
 
-const projectRoot = '/testproject';
+const projectRoot = 'myapp';
 
 const project = {
   name: 'test',
@@ -31,7 +30,7 @@ const mockConfig = {
   },
   modRawConfig: project,
   ...project,
-};
+} as any;
 
 const privacyManifests: PrivacyInfo = {
   NSPrivacyAccessedAPITypes: [
@@ -55,7 +54,7 @@ describe('withPrivacyInfo', () => {
     // mock the data in the PrivacyInfo.xcprivacy file using vol
     vol.fromJSON(
       {
-        'ios/testproject/PrivacyInfo.xcprivacy': originalFs.readFileSync(
+        [filePath]: originalFs.readFileSync(
           path.join(__dirname, 'fixtures/PrivacyInfo.xcprivacy'),
           'utf-8'
         ),

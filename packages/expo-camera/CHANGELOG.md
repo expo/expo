@@ -6,14 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `pictureSize` prop to `CameraView` component. ([#27664](https://github.com/expo/expo/pull/27664) by [@alanjhughes](https://github.com/alanjhughes))
 - Allow user to remove `NSMicrophoneUsageDescription` and ignore the `mute` prop if they don't intend to use video. ([#28156](https://github.com/expo/expo/pull/28156) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `animateShutter` prop to provide feedback when a picture is taken. Also added shutter sound on android. ([#28211](https://github.com/expo/expo/pull/28211) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - Allow users using xcode 14 to still build when including camera. ([#27873](https://github.com/expo/expo/pull/27873) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix an issue where the permission functions were being imported from the wrong file. ([#27988](https://github.com/expo/expo/pull/27988) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix an issue on `iOS` where the barcode types did not match the typescript representation. Also enabled scanning `upc_a` codes on `iOS`. ([#28233](https://github.com/expo/expo/pull/28233) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -22,6 +36,7 @@
 - Prevent unnecessary configuration changes wherever possible. ([#27919](https://github.com/expo/expo/pull/27919) by [@alanjhughes](https://github.com/alanjhughes))
 - On `Android`, only recreate camera after certain props have changed. ([#27952](https://github.com/expo/expo/pull/27952) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Promote `next` package to stable. ([#28226](https://github.com/expo/expo/pull/28226) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.1.1 - 2024-03-13
 

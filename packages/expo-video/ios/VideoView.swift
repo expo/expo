@@ -149,4 +149,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     isInPictureInPicture = false
     onPictureInPictureStop()
   }
+
+  public override func didMoveToWindow() {
+    playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
+  }
 }

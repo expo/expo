@@ -13,16 +13,16 @@ function _plist() {
   };
   return data;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
 }
-function _XcodeProjectFile() {
-  const data = require("./XcodeProjectFile");
-  _XcodeProjectFile = function () {
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
@@ -52,23 +52,43 @@ function withPrivacyInfo(config) {
   });
 }
 function setPrivacyInfo(projectConfig, privacyManifests) {
-  const projectName = (0, _Xcodeproj().getProjectName)(projectConfig.modRequest.projectRoot);
-  const existingFileContent = (0, _XcodeProjectFile().readBuildSourceFile)({
-    project: projectConfig.modResults,
-    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-    filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy')
-  });
+  const {
+    projectRoot,
+    platformProjectRoot
+  } = projectConfig.modRequest;
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
+  const privacyFilePath = _path().default.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
+  const existingFileContent = getFileContents(privacyFilePath);
   const parsedContent = existingFileContent ? _plist().default.parse(existingFileContent) : {};
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = _plist().default.build(mergedContent);
-  projectConfig.modResults = (0, _XcodeProjectFile().createBuildSourceFile)({
-    project: projectConfig.modResults,
-    nativeProjectRoot: projectConfig.modRequest.platformProjectRoot,
-    fileContents: contents,
-    filePath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
-    overwrite: true
-  });
+  ensureFileExists(privacyFilePath, contents);
+  if (!projectConfig.modResults.hasFile(privacyFilePath)) {
+    projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
+      filepath: privacyFilePath,
+      groupName: projectName,
+      project: projectConfig.modResults,
+      isBuildFile: true,
+      verbose: true
+    });
+  }
   return projectConfig;
+}
+function getFileContents(filePath) {
+  if (!_fs().default.existsSync(filePath)) {
+    return null;
+  }
+  return _fs().default.readFileSync(filePath, {
+    encoding: 'utf8'
+  });
+}
+function ensureFileExists(filePath, contents) {
+  if (!_fs().default.existsSync(_path().default.dirname(filePath))) {
+    _fs().default.mkdirSync(_path().default.dirname(filePath), {
+      recursive: true
+    });
+  }
+  _fs().default.writeFileSync(filePath, contents);
 }
 function mergePrivacyInfo(existing, privacyManifests) {
   let {

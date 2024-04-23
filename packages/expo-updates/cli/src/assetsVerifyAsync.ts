@@ -9,6 +9,7 @@ import {
   MissingAsset,
   Platform,
 } from './assetsVerifyTypes';
+import { CommandError } from './utils/errors';
 
 const debug = require('debug')('expo-updates:assets:verify') as typeof console.log;
 
@@ -145,7 +146,7 @@ export function getExportedMetadataHashSet(metadata: ExportedMetadata, platform:
   const fileMetadata =
     platform === 'android' ? metadata.fileMetadata.android : metadata.fileMetadata.ios;
   if (!fileMetadata) {
-    throw new Error(`Exported bundle was not exported for platform ${platform}`);
+    throw new CommandError(`Exported bundle was not exported for platform ${platform}`);
   }
   const assets: ExportedMetadataAsset[] = fileMetadata?.assets ?? [];
   // Asset paths in the export metadata are of the form 'assets/<hash string>'

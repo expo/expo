@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getExportedMetadataHashSet = exports.getExportedMetadataAsync = exports.getFullAssetDumpHashSet = exports.getFullAssetDumpAsync = exports.getBuildManifestHashSet = exports.getBuildManifestAsync = exports.getMissingAssetsAsync = void 0;
 const fs_1 = require("fs");
+const errors_1 = require("./utils/errors");
 const debug = require('debug')('expo-updates:assets:verify');
 /**
  * Finds any assets that will be missing from an app given a build and an exported update bundle.
@@ -116,7 +117,7 @@ exports.getExportedMetadataAsync = getExportedMetadataAsync;
 function getExportedMetadataHashSet(metadata, platform) {
     const fileMetadata = platform === 'android' ? metadata.fileMetadata.android : metadata.fileMetadata.ios;
     if (!fileMetadata) {
-        throw new Error(`Exported bundle was not exported for platform ${platform}`);
+        throw new errors_1.CommandError(`Exported bundle was not exported for platform ${platform}`);
     }
     const assets = fileMetadata?.assets ?? [];
     // Asset paths in the export metadata are of the form 'assets/<hash string>'

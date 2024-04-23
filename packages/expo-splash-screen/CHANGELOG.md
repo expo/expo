@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 0.27.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fixed white screen flickering when using expo-updates with longer `fallbackToCacheTimeout`. ([#28227](https://github.com/expo/expo/pull/28227) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 0.26.4 - 2024-01-24

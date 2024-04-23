@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 14.0.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2024-04-22
+
+### 🎉 New features
+
+- Bumped SQLite version to 3.45.3 and enabled the [bytecodevtab](https://www.sqlite.org/bytecodevtab.html) feature. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
+## 14.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added `SQLiteProvider.assetSource` to import an existing database from assets. ([#28291](https://github.com/expo/expo/pull/28291) by [@kudo](https://github.com/kudo))
+
+## 14.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Moved the previous default export as `expo-sqlite/legacy` and promoted `expo-sqlite/next` as the default. `expo-sqlite/next` import is still as-is for backward compatibility. ([#28278](https://github.com/expo/expo/pull/28278) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 

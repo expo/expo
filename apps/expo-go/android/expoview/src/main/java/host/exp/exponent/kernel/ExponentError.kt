@@ -11,7 +11,8 @@ class ExponentError(
   val errorHeader: String?,
   val stack: Array<Bundle>,
   val exceptionId: Int,
-  val isFatal: Boolean
+  val isFatal: Boolean,
+  val canRetry: Boolean = true
 ) {
   val timestamp: Date = Calendar.getInstance().time
 
@@ -22,6 +23,7 @@ class ExponentError(
         put("errorMessage", errorMessage.developerErrorMessage())
         put("exceptionId", exceptionId)
         put("isFatal", isFatal)
+        put("canRetry", canRetry)
       }
     } catch (e: JSONException) {
       null

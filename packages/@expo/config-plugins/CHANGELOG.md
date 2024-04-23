@@ -6,10 +6,31 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 8.0.1 — 2024-04-22
+
+### 💡 Others
+
+- Remove warning when using fingerprint. ([#28329](https://github.com/expo/expo/pull/28329) by [@wschurman](https://github.com/wschurman))
+
+## 8.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Update fingerprintExperimental -> fingerprint runtime version policy. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
+
+## 8.0.0-beta.0 — 2024-04-17
+
+### 🎉 New features
+
 - Add privacy info config plugin. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
+- Fix xcprivacy being added to build sources instead of resources. ([#28223](https://github.com/expo/expo/pull/28223) by [@aleqsio](https://github.com/aleqsio))
 - Fix filepath and make the plugin merge new and existing privacy info. ([#28082](https://github.com/expo/expo/pull/28082) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others

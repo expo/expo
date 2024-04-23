@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 4.0.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 4.0.0 — 2024-04-18
+
+### 💡 Others
+
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 3.3.11 - 2024-03-20

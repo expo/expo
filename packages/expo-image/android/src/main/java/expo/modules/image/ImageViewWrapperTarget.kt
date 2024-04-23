@@ -52,6 +52,16 @@ class ImageViewWrapperTarget(
    */
   var sourceWidth = -1
 
+  /**
+   * The placeholder height where -1 means unknown
+   */
+  var placeholderHeight = -1
+
+  /**
+   * The placeholder width where -1 means unknown
+   */
+  var placeholderWidth = -1
+
   private var cookie = -1
 
   fun setCookie(newValue: Int) {

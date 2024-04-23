@@ -6,15 +6,22 @@
 
 ### 🎉 New features
 
-- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 51.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add support for internal `process.env.EXPO_OS` environment variable and passing `platform` to `babel-jest` caller. ([#27637](https://github.com/expo/expo/pull/27637) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
 - Mock `EventEmitter` from `expo-modules-core`. ([#26945](https://github.com/expo/expo/pull/26945) by [@aleqsio](https://github.com/aleqsio))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 - Simulate the mocked `expo-modules-core.EventEmitter` like a true EventEmitter. ([#27257](https://github.com/expo/expo/pull/27257) by [@kudo](https://github.com/kudo))
+- Rename `ExpoCamera` to `ExpoCameraLegacy`. ([#28226](https://github.com/expo/expo/pull/28226) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 50.0.4 - 2024-03-13
 

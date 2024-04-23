@@ -4,14 +4,30 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0-beta.0 — 2024-04-17
+
+### 🛠 Breaking changes
+
 - [iOS] remove default APNS entitlement. ([#27924](https://github.com/expo/expo/pull/27924) by [@douglowder](https://github.com/douglowder))
 
 ### 🎉 New features
 
 - Include new privacy info plugin in default plugins. ([#28005](https://github.com/expo/expo/pull/28005) by [@aleqsio](https://github.com/aleqsio))
 - Add default icon on iOS to prevent submission failure when no `icon` is defined. ([#27774](https://github.com/expo/expo/pull/27774) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

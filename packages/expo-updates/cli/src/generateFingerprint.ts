@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
+import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
 
 export const generateFingerprint: Command = async (argv) => {
@@ -11,6 +12,7 @@ export const generateFingerprint: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--platform': String,
+      '--debug': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -28,6 +30,7 @@ Generate fingerprint for use in expo-updates runtime version
 
   Options
   --platform <string>                  Platform to generate a fingerprint for
+  --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,
       0
@@ -41,11 +44,20 @@ Generate fingerprint for use in expo-updates runtime version
 
   const platform = requireArg(args, '--platform');
   if (!['ios', 'android'].includes(platform)) {
-    throw new Error(`Invalid platform argument: ${platform}`);
+    throw new CommandError(`Invalid platform argument: ${platform}`);
   }
 
+  const debug = args['--debug'];
+
   const projectRoot = getProjectRoot(args);
-  const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true });
+
+  let result;
+  try {
+    const workflow = await resolveWorkflowAsync(projectRoot, platform);
+    result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true, debug });
+  } catch (e: any) {
+    throw new CommandError(e.message);
+  }
+
   console.log(JSON.stringify(result));
 };

@@ -4,9 +4,34 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.25.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.1 — 2024-04-22
+
+### 🎉 New features
+
+- Add --debug option to fingerprint:generate command. ([#28311](https://github.com/expo/expo/pull/28311) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Bumped the underlying SQLite version to 3.45.3 on iOS. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
+## 0.25.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
 - Remove deprecated APIs: useUpdateEvents(), addListener(), and UpdateEvent type. ([#27882](https://github.com/expo/expo/pull/27882) by [@douglowder](https://github.com/douglowder))
 - Remove the support for configurable `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml** and `EXUpdatesAutoSetup` in **Expo.plist**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+- Update fingerprintExperimental -> fingerprint runtime version policy. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
@@ -33,6 +58,7 @@
 - Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
 - Fixed bridgeless error recovery support for launch errors on Android. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
 - Fixed error recovery on Android. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+- Fixed `Updates.reloadAsync()` not working on iOS. ([#28256](https://github.com/expo/expo/pull/28256) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -54,6 +80,7 @@
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
 - Always initialize UpdatesController to prevent accidentally accessing the singleton instance. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+- Improve error printing in CLI. ([#28188](https://github.com/expo/expo/pull/28188) by [@wschurman](https://github.com/wschurman))
 
 ## 0.24.12 - 2024-03-13
 
