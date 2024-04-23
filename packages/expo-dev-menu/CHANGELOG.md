@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix JS Debugger not using the correct app target. ([#28373](https://github.com/expo/expo/pull/28373) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 5.0.3 — 2024-04-23

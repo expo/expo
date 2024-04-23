@@ -123,9 +123,6 @@
 
 @interface DevClientAppDelegate (DevMenuRCTAppDelegate)
 
-#ifdef __cplusplus
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
-#endif
 @end
 
 @implementation DevMenuRCTAppDelegate
@@ -134,22 +131,6 @@
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
-}
-
-#pragma mark - RCTCxxBridgeDelegate
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
-{
-    std::unique_ptr<facebook::react::JSExecutorFactory> executorFactory  = [super jsExecutorFactoryForBridge:bridge];
-
-    #if __has_include(<reacthermes/HermesExecutorFactory.h>)
-        auto rawExecutorFactory = executorFactory.get();
-        auto hermesExecFactory = dynamic_cast<facebook::react::HermesExecutorFactory*>(rawExecutorFactory);
-        if (hermesExecFactory != nullptr) {
-            hermesExecFactory->setEnableDebugger(false);
-        }
-    #endif
-
-    return executorFactory;
 }
 
 @end
