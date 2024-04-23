@@ -35,7 +35,7 @@
   "devDependencies": {
     "@expo/config": "~9.0.0-beta.0",
     "@expo/json-file": "~8.3.0",
-    "@expo/schemer": "1.5.1",
+    "@expo/schemer": "1.5.2",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "chalk": "^4.0.0",

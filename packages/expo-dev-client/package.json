@@ -32,15 +32,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/clients/introduction/",
   "dependencies": {
-    "expo-dev-launcher": "4.0.2",
-    "expo-dev-menu": "5.0.2",
+    "expo-dev-launcher": "4.0.3",
+    "expo-dev-menu": "5.0.3",
     "expo-dev-menu-interface": "1.8.2",
     "expo-manifests": "~0.14.0",
     "expo-updates-interface": "~0.16.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0",
-    "expo-test-runner": "0.0.19"
+    "expo-test-runner": "0.0.20"
   },
   "peerDependencies": {
     "expo": "*"

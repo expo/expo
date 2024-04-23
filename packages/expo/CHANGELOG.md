@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 51.0.0-preview.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
 ## 51.0.0-preview.1 — 2024-04-22
 
 _This version does not introduce any user-facing changes._
