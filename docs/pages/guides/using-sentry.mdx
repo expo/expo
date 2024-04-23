@@ -205,7 +205,7 @@ Sentry.init({
     new Sentry.ReactNativeTracing({
       // Pass instrumentation to be used as `routingInstrumentation`
       routingInstrumentation,
-      enableNativeFramesTracking: Constants.appOwnership !== 'expo', // Only in native builds, not in Expo Go.
+      enableNativeFramesTracking: !isRunningInExpoGo(),
       // ...
     }),
   ],
