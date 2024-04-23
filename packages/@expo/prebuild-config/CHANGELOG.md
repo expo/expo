@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] add support for `experiments.ccacheIos` to enable ccache for speeding up subsequent iOS builds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -2,6 +2,7 @@ import plist from '@expo/plist';
 import matchers from 'expect/build/matchers';
 import { AndroidConfig, ExportedConfig, IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
+import path from 'path';
 
 import { getInfoPlistPathLikePrebuild, getProjectRootLikePrebuild } from './prebuild-tester';
 
@@ -30,6 +31,12 @@ expect.extend({
 
     return matchers.toEqual(infoPlist, expected);
   },
+  toMatchPodfileProperties(config: ExportedConfig, expected: any) {
+    const filePath = path.join(getProjectRootLikePrebuild(config), 'ios/Podfile.properties.json');
+    const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    return matchers.toEqual(json, expected);
+  },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
     const filePath = IOSConfig.Entitlements.getEntitlementsPath(getProjectRootLikePrebuild(config));
     if (!filePath) throw new Error('iOS entitlements path not found');
@@ -47,7 +54,9 @@ expect.extend({
       return {
         pass: false,
         message: () =>
-          `expected config to have _internal.pluginHistory.${name}. Instead found: ${Object.keys(config._internal!.pluginHistory!)}`,
+          `expected config to have _internal.pluginHistory.${name}. Instead found: ${Object.keys(
+            config._internal!.pluginHistory!
+          )}`,
       };
     }
     return {
@@ -71,6 +80,7 @@ declare global {
   namespace jest {
     interface Matchers<R> {
       toMatchInfoPlist(data: Record<string, any>): R;
+      toMatchPodfileProperties(data: Record<string, any>): R;
       toMatchAppleEntitlements(data: Record<string, any>): R;
       toHaveModHistory(name: string): R;
       toMatchAndroidProjectBuildGradle(matcher: string | RegExp): R;

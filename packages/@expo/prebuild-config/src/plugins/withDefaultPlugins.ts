@@ -14,6 +14,7 @@ import Debug from 'debug';
 
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
+import { withCcachePodfileProperties } from './ios/ccache-plugin';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
@@ -63,6 +64,9 @@ export const withIosExpoPlugins: ConfigPlugin<{
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
+
+    // Podfile.properties.json
+    withCcachePodfileProperties,
   ]);
 };
 
