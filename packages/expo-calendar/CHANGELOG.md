@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.0.2 — 2024-04-24
+
+### 💡 Others
+
 - Use enums instead of objects for enumerable types. ([#27777](https://github.com/expo/expo/pull/27777) by [@behenate](https://github.com/behenate))
 
 ## 13.0.1 — 2024-04-23
