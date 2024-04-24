@@ -18,13 +18,11 @@ public extension UIFont {
     
   @objc
   static dynamic func _expo_init(name fontName: String, size fontSize: CGFloat) -> Optional<UIFont>  {
-      
     let font = UIFont._expo_init(name: fontName, size: fontSize)
 
     if let aliasedFamilyName = FontFamilyAliasManager.familyName(forAlias: fontName) {
       return UIFont._expo_init(name: aliasedFamilyName, size: fontSize)
     }
-
     return font
   }
 }
