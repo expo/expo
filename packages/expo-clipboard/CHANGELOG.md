@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update mocks for SDK51.
+- Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
 
 ## 6.0.1 — 2024-04-23
 
