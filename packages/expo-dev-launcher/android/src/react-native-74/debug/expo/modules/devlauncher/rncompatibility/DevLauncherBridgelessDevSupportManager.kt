@@ -5,6 +5,7 @@ import android.util.Log
 import com.facebook.react.runtime.NonFinalBridgelessDevSupportManager
 import com.facebook.react.runtime.ReactHostImpl
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
@@ -17,6 +18,10 @@ class DevLauncherBridgelessDevSupportManager(
   packagerPathForJSBundleName: String?
 ) : NonFinalBridgelessDevSupportManager(host, context, packagerPathForJSBundleName), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface? by optInject()
+
+  init {
+    injectDevServerHelper(context, this, controller)
+  }
 
   override fun showNewJavaError(message: String?, e: Throwable) {
     Log.e("DevLauncher", "$message", e)
@@ -35,7 +40,7 @@ class DevLauncherBridgelessDevSupportManager(
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }
 
-  override fun getUniqueTag() = "DevLauncherApp - Bridgeless"
+  override fun getUniqueTag() = "DevLauncherApp-Bridgeless"
 
   override fun startInspector() {
     // no-op for the default `startInspector` which would be implicitly called
