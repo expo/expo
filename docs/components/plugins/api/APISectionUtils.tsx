@@ -194,6 +194,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
+  SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
+  SpeechSynthesisUtterance:
+    'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
