@@ -274,7 +274,9 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
     class="css-1na8e0o-A"
-    href="#speechsynthesisevent"
+    href="https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent"
+    rel="noopener noreferrer"
+    target="_blank"
   >
     SpeechSynthesisEvent
   </a>
