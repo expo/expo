@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed integration with `react-native-reanimated`. ([#28414](https://github.com/expo/expo/pull/28414) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-04-23
