@@ -88,9 +88,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("mute") { (view, muted: Bool?) in
-        if let muted, view.isMuted != muted {
-          view.isMuted = muted
-        }
+        view.isMuted = muted ?? false
       }
 
       Prop("animateShutter") { (view, animate: Bool?) in
@@ -107,6 +105,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
+      }
+
+      OnViewDidUpdateProps { view in
+        view.initCamera()
       }
 
       AsyncFunction("getAvailablePictureSizes") { (_: String?) in
