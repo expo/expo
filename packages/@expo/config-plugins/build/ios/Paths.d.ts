@@ -3,8 +3,8 @@ interface ProjectFile<L extends string = string> {
     language: L;
     contents: string;
 }
-type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'ruby';
-export type PodfileProjectFile = ProjectFile<'ruby'>;
+type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
+export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 export declare function getAppDelegateHeaderFilePath(projectRoot: string): string;
 export declare function getAppDelegateFilePath(projectRoot: string): string;

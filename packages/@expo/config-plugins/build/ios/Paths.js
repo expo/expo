@@ -150,7 +150,7 @@ function getPodfilePath(projectRoot) {
 function getLanguage(filePath) {
   const extension = path().extname(filePath);
   if (!extension && path().basename(filePath) === 'Podfile') {
-    return 'ruby';
+    return 'rb';
   }
   switch (extension) {
     case '.mm':
