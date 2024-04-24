@@ -45,6 +45,9 @@ export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener'
     } | {
         manifest: Manifest;
     })) | UpdateFetchResultFailure | UpdateFetchResultRollBackToEmbedded>;
+    /**
+     * @hidden
+     */
     getNativeStateMachineContextAsync: () => Promise<UpdatesNativeStateMachineContext & {
         latestManifestString?: string;
         downloadedManifestString?: string;

@@ -50,8 +50,8 @@ const download = assign({
     isDownloading: (context) => true,
 });
 /**
- * Model of the expo-updates state machine, written in Typescript.
- * The actual implementations of this state machine will be in Swift on iOS and Kotlin on Android.
+ * Model of the `expo-updates` state machine, written in Typescript.
+ * The actual implementations of this state machine will be in Kotlin on Android and Swift on iOS.
  */
 export const UpdatesStateMachine = createMachine({
     id: 'Updates',
