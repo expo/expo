@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix CLI VCS detection in CLI and add workflow override ability. ([#28403](https://github.com/expo/expo/pull/28403) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.25.3 — 2024-04-24

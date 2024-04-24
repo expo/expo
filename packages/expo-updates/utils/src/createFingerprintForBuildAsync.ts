@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
-import { resolveWorkflowAsync } from './workflow';
+import { resolveWorkflowAsync, validateWorkflow } from './workflow';
 
 export async function createFingerprintForBuildAsync(
   platform: 'ios' | 'android',
@@ -40,12 +40,15 @@ export async function createFingerprintForBuildAsync(
 
   let fingerprint: { hash: string };
 
-  const override = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
-  if (override) {
-    console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${override}`);
-    fingerprint = { hash: override };
+  const fingerprintOverride = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
+  if (fingerprintOverride) {
+    console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${fingerprintOverride}`);
+    fingerprint = { hash: fingerprintOverride };
   } else {
-    const workflow = await resolveWorkflowAsync(projectRoot, platform);
+    const workflowOverride = process.env.EXPO_UPDATES_WORKFLOW_OVERRIDE;
+    const workflow = workflowOverride
+      ? validateWorkflow(workflowOverride)
+      : await resolveWorkflowAsync(projectRoot, platform);
     const createdFingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
     console.log(JSON.stringify(createdFingerprint.sources));
     fingerprint = createdFingerprint;
