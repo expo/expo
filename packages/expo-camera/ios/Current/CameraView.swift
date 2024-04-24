@@ -138,7 +138,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
     previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
   }
-  
+
   func initCamera() {
     guard cameraShouldInit else {
       return
@@ -232,7 +232,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.addErrorNotification()
       self.changePreviewOrientation()
     }
-    
+
     // Delay starting the scanner
     sessionQueue.asyncAfter(deadline: .now() + 0.5) {
       self.barcodeScanner.maybeStartBarcodeScanning()
@@ -516,7 +516,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.updateSessionPreset(preset: preset)
       }
     }
-    
+
     sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {

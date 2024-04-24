@@ -106,7 +106,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
-      
+
       OnViewDidUpdateProps { view in
         view.initCamera()
       }
