@@ -15,9 +15,9 @@ public extension UIFont {
     }
     return fontNames
   }
-    
+ 
   @objc
-  static dynamic func _expo_init(name fontName: String, size fontSize: CGFloat) -> Optional<UIFont>  {
+  static dynamic func _expo_init(name fontName: String, size fontSize: CGFloat) -> Optional<UIFont> {
     let font = UIFont._expo_init(name: fontName, size: fontSize)
 
     if let aliasedFamilyName = FontFamilyAliasManager.familyName(forAlias: fontName) {
