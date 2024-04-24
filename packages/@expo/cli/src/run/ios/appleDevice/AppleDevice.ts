@@ -11,6 +11,7 @@ import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
 import * as devicectl from '../../../start/platforms/ios/devicectl';
 import { launchAppWithDeviceCtl } from '../../../start/platforms/ios/devicectl';
+import { OSType } from '../../../start/platforms/ios/simctl';
 import { uniqBy } from '../../../utils/array';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
@@ -33,6 +34,8 @@ export interface ConnectedDevice {
   connectionType: 'USB' | 'Network';
   /** @example `15.4.1` */
   osVersion: string;
+
+  osType: OSType;
 }
 
 async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevice[]> {
@@ -50,9 +53,33 @@ async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevi
           deviceType: 'device',
           connectionType:
             device.connectionProperties.transportType === 'localNetwork' ? 'Network' : 'USB',
+          osType: coercePlatformToOsType(device.hardwareProperties.platform),
         };
       })
   );
+}
+
+function coercePlatformToOsType(platform: string): OSType {
+  // The only two devices I have to test against...
+  switch (platform) {
+    case 'iOS':
+      return 'iOS';
+    case 'xrOS':
+      return 'xrOS';
+    default:
+      debug('Unknown devicectl platform (needs to be added to Expo CLI):', platform);
+      return platform as OSType;
+  }
+}
+function coerceUsbmuxdPlatformToOsType(platform: string): OSType {
+  // The only connectable device I have to test against...
+  switch (platform) {
+    case 'iPhone OS':
+      return 'iOS';
+    default:
+      debug('Unknown usbmuxd platform (needs to be added to Expo CLI):', platform);
+      return platform as OSType;
+  }
 }
 
 /** @returns a list of connected Apple devices. */
@@ -94,6 +121,7 @@ async function getConnectedDevicesUsingCustomToolingAsync(): Promise<ConnectedDe
         deviceType: 'device',
         connectionType: device.Properties.ConnectionType,
         udid: device.Properties.SerialNumber,
+        osType: coerceUsbmuxdPlatformToOsType(deviceValues.DeviceClass),
       };
     })
   );

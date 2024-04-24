@@ -10,10 +10,10 @@ import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
  * @param devices list of devices to sort.
  * @param osType optional sort by operating system.
  */
-export async function sortDefaultDeviceToBeginningAsync(
-  devices: Device[],
+export async function sortDefaultDeviceToBeginningAsync<T extends { udid: string }>(
+  devices: T[],
   osType?: Device['osType']
-): Promise<Device[]> {
+): Promise<T[]> {
   const defaultId = await getBestSimulatorAsync({ osType });
   if (defaultId) {
     let iterations = 0;

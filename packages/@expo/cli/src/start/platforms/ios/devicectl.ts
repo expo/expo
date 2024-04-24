@@ -7,7 +7,7 @@
 
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
 import { spawn, execSync } from 'child_process';
 import fs from 'fs';
@@ -56,7 +56,7 @@ type DeviceCtlHardwareProperties = {
   /** "iPhone 14 Pro Max" */
   marketingName: string;
   /** "iOS" */
-  platform: string;
+  platform: AnyEnum<'iOS' | 'xrOS'>;
   /** "iPhone15,3" */
   productType: AnyEnum<'iPhone13,4' | 'iPhone15,3'>;
   reality: AnyEnum<'physical'>;
@@ -187,6 +187,29 @@ function assertDevicesJson(
     results != null && 'result' in results && Array.isArray(results?.result?.devices),
     'Malformed JSON output from devicectl: ' + JSON.stringify(results, null, 2)
   );
+}
+
+export async function launchBinaryOnMacAsync(
+  bundleId: string,
+  appBinaryPath: string
+): Promise<void> {
+  const args = ['-b', bundleId, appBinaryPath];
+  try {
+    await spawnAsync('open', args);
+  } catch (error: any) {
+    if ('code' in error) {
+      if (error.code === 1) {
+        throw new CommandError(
+          'MACOS_LAUNCH',
+          'Failed to launch the compatible binary on macOS: open ' +
+            args.join(' ') +
+            '\n\n' +
+            error.message
+        );
+      }
+    }
+    throw error;
+  }
 }
 
 async function installAppWithDeviceCtlAsync(

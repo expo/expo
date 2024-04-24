@@ -1,3 +1,4 @@
+import { OSType } from '../../start/platforms/ios/simctl';
 import { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = 'Debug' | 'Release';
@@ -30,7 +31,7 @@ export type BuildProps = {
   /** Is the target a simulator. */
   isSimulator: boolean;
   xcodeProject: ProjectInfo;
-  device: { name: string; udid: string };
+  device: { name: string; udid: string; osType: OSType };
   configuration: XcodeConfiguration;
   /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
