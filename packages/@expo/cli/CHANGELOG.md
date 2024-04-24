@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support building for macOS devices and visionOS simulators with `npx expo run:ios -d`.
+
 ### 🐛 Bug fixes
 
 - Fix issue with installing OTA on iOS devices. ([#28406](https://github.com/expo/expo/pull/28406) by [@EvanBacon](https://github.com/EvanBacon))
