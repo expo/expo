@@ -26,7 +26,8 @@ export const isEnabled: boolean = !!ExpoUpdates.isEnabled;
  * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form and will always use lowercase letters.
  * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
- * @example xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+ * @example
+ * `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
@@ -219,7 +220,7 @@ export async function getExtraParamsAsync(): Promise<Record<string, string>> {
 
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](/technical-specs/expo-sfv-0/)
  * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  *
  * This method cannot be used in Expo Go or development mode. It also rejects when expo-updates is not enabled.
