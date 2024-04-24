@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `TypeError: (0, _ExpoAsset.downloadAsync) is not a function` when loading assets using Expo Web. ([#28405](https://github.com/expo/expo/pull/28405) by [@jamiees2](https://github.com/jamiees2))
+
 ### 💡 Others
 
 ## 10.0.2 — 2024-04-23
