@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
-- Add ability to install apps on OTA Apple devices with `expo run:ios -d`. ([#28402](https://github.com/expo/expo/pull/28402) by [@EvanBacon](https://github.com/EvanBacon))
-- Add Expo Atlas support for both `expo start` and `expo export`. ([#27895](https://github.com/expo/expo/pull/27895) by [@byCedric](https://github.com/byCedric))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.18.3 — 2024-04-24
+
+### 🎉 New features
+
+- Add ability to install apps on OTA Apple devices with `expo run:ios -d`. ([#28402](https://github.com/expo/expo/pull/28402) by [@EvanBacon](https://github.com/EvanBacon))
+- Add Expo Atlas support for both `expo start` and `expo export`. ([#27895](https://github.com/expo/expo/pull/27895) by [@byCedric](https://github.com/byCedric))
 
 ## 0.18.2 — 2024-04-22
 
