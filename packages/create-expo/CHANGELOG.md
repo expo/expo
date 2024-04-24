@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- support GitHub URLs that don't have a protocol.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
