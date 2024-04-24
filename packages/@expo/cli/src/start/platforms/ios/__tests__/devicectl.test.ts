@@ -11,7 +11,7 @@ describe(launchAppWithDeviceCtl, () => {
 
     await expect(() =>
       launchAppWithDeviceCtl('fake-device-id', 'com.exponent.Test')
-    ).rejects.toThrow(`There was an error launching app: ${error}`);
+    ).rejects.toThrow(`Test: unknown error`);
   });
 
   it('throws `APPLE_DEVICE_LOCKED` error when device is locked', async () => {
