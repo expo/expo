@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed integration with `react-native-reanimated`.
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-04-23
