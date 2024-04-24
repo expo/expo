@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed integration with `react-native-reanimated`.
+- Fixed integration with `react-native-reanimated`. ([#28414](https://github.com/expo/expo/pull/28414) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
