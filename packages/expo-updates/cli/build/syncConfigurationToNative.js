@@ -38,6 +38,7 @@ const syncConfigurationToNative = async (argv) => {
         // Types
         '--help': Boolean,
         '--platform': String,
+        '--workflow': String,
         // Aliases
         '-h': '--help',
     }, argv ?? []);
@@ -52,6 +53,7 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
 
   Options
   --platform <string>                  Platform to sync
+  --workflow <string>                  Workflow to use for configuration sync
   -h, --help                           Output usage information
     `, 0);
     }
@@ -59,9 +61,14 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
     if (!['ios', 'android'].includes(platform)) {
         throw new errors_1.CommandError(`Invalid platform argument: ${platform}`);
     }
+    const workflow = (0, args_1.requireArg)(args, '--workflow');
+    if (!['generic', 'managed'].includes(workflow)) {
+        throw new errors_1.CommandError(`Invalid workflow argument: ${workflow}. Must be either 'managed' or 'generic'`);
+    }
     await (0, syncConfigurationToNativeAsync_1.syncConfigurationToNativeAsync)({
         projectRoot: (0, args_1.getProjectRoot)(args),
         platform,
+        workflow,
     });
 };
 exports.syncConfigurationToNative = syncConfigurationToNative;

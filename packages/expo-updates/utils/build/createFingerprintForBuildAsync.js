@@ -36,13 +36,16 @@ async function createFingerprintForBuildAsync(platform, possibleProjectRoot, des
         return;
     }
     let fingerprint;
-    const override = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
-    if (override) {
-        console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${override}`);
-        fingerprint = { hash: override };
+    const fingerprintOverride = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
+    if (fingerprintOverride) {
+        console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${fingerprintOverride}`);
+        fingerprint = { hash: fingerprintOverride };
     }
     else {
-        const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
+        const workflowOverride = process.env.EXPO_UPDATES_WORKFLOW_OVERRIDE;
+        const workflow = workflowOverride
+            ? (0, workflow_1.validateWorkflow)(workflowOverride)
+            : await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
         const createdFingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, {});
         console.log(JSON.stringify(createdFingerprint.sources));
         fingerprint = createdFingerprint;

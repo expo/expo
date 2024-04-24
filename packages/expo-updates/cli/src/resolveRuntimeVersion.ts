@@ -12,6 +12,7 @@ export const resolveRuntimeVersion: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--platform': String,
+      '--workflow': String,
       '--debug': Boolean,
       // Aliases
       '-h': '--help',
@@ -30,6 +31,7 @@ Resolve expo-updates runtime version
 
   Options
   --platform <string>                  Platform to resolve runtime version for
+  --workflow <string>                  Workflow to use for runtime version resolution, and auto-detected if not provided
   --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,
@@ -46,14 +48,28 @@ Resolve expo-updates runtime version
     throw new CommandError(`Invalid platform argument: ${platform}`);
   }
 
+  const workflow = args['--workflow'];
+  if (workflow && !['generic', 'managed'].includes(workflow)) {
+    throw new CommandError(
+      `Invalid workflow argument: ${workflow}. Must be either 'managed' or 'generic'`
+    );
+  }
+
   const debug = args['--debug'];
 
   let runtimeVersionInfo;
   try {
-    runtimeVersionInfo = await resolveRuntimeVersionAsync(getProjectRoot(args), platform, {
-      silent: true,
-      debug,
-    });
+    runtimeVersionInfo = await resolveRuntimeVersionAsync(
+      getProjectRoot(args),
+      platform,
+      {
+        silent: true,
+        debug,
+      },
+      {
+        workflowOverride: workflow,
+      }
+    );
   } catch (e: any) {
     throw new CommandError(e.message);
   }
