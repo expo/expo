@@ -34,6 +34,7 @@ export async function promptOrQueryNativeSchemeAsync(
   const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
     configuration,
   });
+
   if (!schemes.length) {
     throw new CommandError('IOS_MALFORMED', 'No native iOS build schemes found');
   }
