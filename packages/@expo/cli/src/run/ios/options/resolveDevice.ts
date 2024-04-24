@@ -1,3 +1,4 @@
+import { resolveDestinationsAsync } from './appleDestinations';
 import { promptDeviceAsync } from './promptDevice';
 import * as Log from '../../../log';
 import {
@@ -13,7 +14,6 @@ import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
 import { BuildProps } from '../XcodeBuild.types';
 import * as AppleDevice from '../appleDevice/AppleDevice';
-import { resolveDestinationsAsync } from './appleDestinations';
 
 type AnyDevice = {
   name: string;

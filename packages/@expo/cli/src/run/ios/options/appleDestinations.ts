@@ -3,8 +3,8 @@ import spawnAsync from '@expo/spawn-async';
 import { Log } from '../../../log';
 import { OSType } from '../../../start/platforms/ios/simctl';
 import * as SimControl from '../../../start/platforms/ios/simctl';
-import * as AppleDevice from '../appleDevice/AppleDevice';
 import { BuildProps } from '../XcodeBuild.types';
+import * as AppleDevice from '../appleDevice/AppleDevice';
 
 const debug = require('debug')('expo:apple-destination') as typeof console.log;
 
