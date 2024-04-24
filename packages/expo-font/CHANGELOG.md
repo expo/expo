@@ -12,7 +12,7 @@
 
 ## 12.0.3 — 2024-04-24
 
-_This version does not introduce any user-facing changes._
+- Fix font name lookup when name is not the same as family. ([#28407](https://github.com/expo/expo/pull/28407) by [@brentvatne](https://github.com/brentvatne))
 
 ## 12.0.2 — 2024-04-23
 
