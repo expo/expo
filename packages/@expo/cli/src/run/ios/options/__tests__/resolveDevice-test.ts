@@ -86,11 +86,7 @@ describe(resolveDeviceAsync, () => {
       ).name
     ).toEqual(`Evan's phone`);
 
-    expect(promptDeviceAsync).toBeCalledWith([
-      expect.anything(),
-      expect.anything(),
-      // expect.anything(),
-    ]);
+    expect(promptDeviceAsync).toBeCalledWith([expect.anything(), expect.anything()]);
 
     expect(AppleDeviceManager.assertSystemRequirementsAsync).toBeCalled();
     expect(sortDefaultDeviceToBeginningAsync).toBeCalled();
