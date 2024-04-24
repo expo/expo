@@ -278,15 +278,7 @@ async function installAppWithDeviceCtlAsync(
 }
 
 export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
-  try {
-    await devicectlAsync(['device', 'process', 'launch', '--device', deviceId, bundleId]);
-  } catch (error: any) {
-    if (error instanceof CommandError) {
-      throw error;
-    }
-
-    throw new CommandError(`There was an error launching app: ${error}`);
-  }
+  await devicectlAsync(['device', 'process', 'launch', '--device', deviceId, bundleId]);
 }
 
 /** Find all error codes from the output log */
