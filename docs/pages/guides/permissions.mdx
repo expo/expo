@@ -13,33 +13,29 @@ Permissions in standalone and [development builds](/develop/development-builds/i
 
 ## Android
 
-Permissions are configured with the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your app config (**app.json**, **app.config.js**).
+Permissions are configured with the [`android.permissions`](/versions/latest/config/app/#permissions) and [`android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your [app config](/workflow/configuration/).
 
-Most permissions are added automatically by libraries that you use in your app either with [config plugins](/config-plugins/plugins-and-mods/#create-a-plugin) or with a package-level **AndroidManifest.xml**. You only need to use `expo.android.permissions` to add additional permissions that are not included by default in a library.
+Most permissions are added automatically by libraries that you use in your app either with [config plugins](/config-plugins/plugins-and-mods/#create-a-plugin) or with a package-level **AndroidManifest.xml**. You only need to use `android.permissions` to add additional permissions that are not included by default in a library.
 
 ```json app.json
 {
-  "expo": {
-    "android": {
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
-    }
+  "android": {
+    "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
   }
 }
 ```
 
-The only way to remove permissions that are added by package-level **AndroidManifest.xml** files is to block them with the [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) property. To do this, specify the **full permission name**. For example, if you want to remove the audio recording permissions added by `expo-av`:
+The only way to remove permissions that are added by package-level **AndroidManifest.xml** files is to block them with the [`android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) property. To do this, specify the **full permission name**. For example, if you want to remove the audio recording permissions added by `expo-av`:
 
 ```json app.json
 {
-  "expo": {
-    "android": {
-      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
-    }
+  "android": {
+    "blockedPermissions": ["android.permission.RECORD_AUDIO"]
   }
 }
 ```
 
-- See [`expo.android.permissions`](/versions/latest/config/app/#permissions) to learn about which permissions are included in the default [prebuild template](/workflow/prebuild#templates).
+- See [`android.permissions`](/versions/latest/config/app/#permissions) to learn about which permissions are included in the default [prebuild template](/workflow/prebuild#templates).
 - Apps using _dangerous_ or _signature_ permissions without valid reasons **may be rejected by Google**. Ensure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 - [All available Android `Manifest.permissions`](https://developer.android.com/reference/android/Manifest.permission).
 
@@ -59,17 +55,15 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 
 ## iOS
 
-Your iOS app can ask for system permissions from the user. For example, to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/config-plugins/introduction/). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
+Your iOS app can ask for system permissions from the user. For example, to use the device's camera or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/config-plugins/introduction/). These default messages will most likely need to be tailored to your specific use case for your app to be accepted by the App Store.
 
-To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
+To set permission messages, use the [`ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your [app config](/workflow/configuration/), for example:
 
 ```json app.json
 {
-  "expo": {
-    "ios": {
-      "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
-      }
+  "ios": {
+    "infoPlist": {
+      "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
     }
   }
 }
@@ -79,17 +73,15 @@ Many of these properties are also directly configurable using the [config plugin
 
 ```json app.json
 {
-  "expo": {
-    "plugins": [
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
-        }
-      ]
+  "plugins": [
+    [
+      "expo-media-library",
+      {
+        "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+        "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
+      }
     ]
-  }
+  ]
 }
 ```
 
