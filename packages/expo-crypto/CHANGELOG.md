@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update mocks for SDK51.
+
 ## 13.0.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

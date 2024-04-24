@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update mocks for SDK51.
+
 ## 51.0.0 — 2024-04-18
 
 ### 🎉 New features
