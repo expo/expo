@@ -65,14 +65,16 @@ describe('Error recovery tests', () => {
 
     await Server.serveSignedManifest(manifest, projectRoot);
 
-    // launch and crash (restart from cache doesn't work in detox)
+    // launch app for error recovery
+    try {
+      // Detox on Android may timeout from waiting idling resources because Detox doesn't support reloading the app under the hood
+      await device.launchApp({
+        newInstance: true,
+      });
+    } catch {}
+
     // we don't check current update ID header or failed update IDs header since the behavior for this request is not defined
     // (we don't guarantee current update to be set during a crash or the launch failure to have been registered yet)
-    await jestExpect(
-      device.launchApp({
-        newInstance: true,
-      })
-    ).rejects.toThrow();
     const request2 = await Server.waitForUpdateRequest(10000);
     const request2EmbeddedUpdateId = request2.headers['expo-embedded-update-id'];
     const request2CurrentUpdateId = request2.headers['expo-current-update-id'];
