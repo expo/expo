@@ -1,6 +1,6 @@
 import { Platform, requireNativeViewManager } from 'expo-modules-core';
 const NativeView = requireNativeViewManager('SymbolModule');
-export default function SymbolView(props) {
+export function SymbolView(props) {
     if (Platform.OS === 'android') {
         return <>{props.fallback}</>;
     }

@@ -1,3 +1,3 @@
-export { default as Symbol } from './SymbolView';
+export { SymbolView } from './SymbolView';
 export * from './SymbolModule.types';
 //# sourceMappingURL=index.js.map
