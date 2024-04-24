@@ -28,6 +28,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     mm.gyroUpdateInterval = 0.2
     return mm
   }()
+  private var cameraShouldInit = true
 
   // MARK: Property Observers
 
@@ -124,8 +125,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     setupPreview()
     #endif
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-    initializeCaptureSessionInput()
-    startSession()
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(orientationChanged(notification:)),
@@ -140,13 +139,16 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
   }
 
-  private func updateType() {
-    sessionQueue.async {
-      self.initializeCaptureSessionInput()
-      if !self.session.isRunning {
-        self.startSession()
-      }
+  func initCamera() {
+    guard cameraShouldInit else {
+      return
     }
+    cameraShouldInit = false
+    self.initializeCaptureSessionInput()
+  }
+
+  private func updateType() {
+    cameraShouldInit = true
   }
 
   public func onAppForegrounded() {
@@ -199,7 +201,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       if self.mode == .video {
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
-          self.updateSessionAudioIsMuted()
         }
       } else {
         self.cleanupMovieFileCapture()
@@ -230,16 +231,13 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
       self.addErrorNotification()
       self.changePreviewOrientation()
-      self.session.commitConfiguration()
+    }
 
-      // Delay starting the scanner
-      self.sessionQueue.asyncAfter(deadline: .now() + 0.5) {
-        self.barcodeScanner.maybeStartBarcodeScanning()
-        if !self.session.isRunning {
-          self.session.startRunning()
-        }
-        self.onCameraReady()
-      }
+    // Delay starting the scanner
+    sessionQueue.asyncAfter(deadline: .now() + 0.5) {
+      self.barcodeScanner.maybeStartBarcodeScanning()
+      self.session.startRunning()
+      self.onCameraReady()
     }
   }
 
@@ -513,6 +511,13 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   func record(options: CameraRecordingOptions, promise: Promise) {
     sessionQueue.async {
+      let preset = options.quality?.toPreset()
+      if let preset {
+        self.updateSessionPreset(preset: preset)
+      }
+    }
+
+    sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {
           if !connection.isVideoStabilizationSupported {
@@ -531,9 +536,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
             connection.isVideoMirrored = options.mirror
           }
         }
-
-        let preset = options.quality?.toPreset() ?? .high
-        self.updateSessionPreset(preset: preset)
 
         if !self.isValidVideoOptions {
           return
@@ -582,13 +584,13 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   func updateSessionAudioIsMuted() {
     sessionQueue.async {
       self.session.beginConfiguration()
-      for input in self.session.inputs {
-        if let deviceInput = input as? AVCaptureDeviceInput {
-          if deviceInput.device.hasMediaType(.audio) {
-            if self.isMuted {
+      if self.isMuted {
+        for input in self.session.inputs {
+          if let deviceInput = input as? AVCaptureDeviceInput {
+            if deviceInput.device.hasMediaType(.audio) {
               self.session.removeInput(input)
+              return
             }
-            return
           }
         }
       }
@@ -687,9 +689,11 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   func updateSessionPreset(preset: AVCaptureSession.Preset) {
 #if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
-      self.session.beginConfiguration()
-      self.session.sessionPreset = preset
-      self.session.commitConfiguration()
+      if self.session.sessionPreset != preset {
+        self.session.beginConfiguration()
+        self.session.sessionPreset = preset
+        self.session.commitConfiguration()
+      }
     }
 #endif
   }
@@ -722,6 +726,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.onMountError(["message": "Camera could not be started - \(error.localizedDescription)"])
       }
       self.session.commitConfiguration()
+      self.startSession()
     }
   }
 
