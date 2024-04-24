@@ -1,7 +1,7 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
-import com.facebook.react.packagerconnection.PackagerConnectionSettings
+import com.facebook.react.devsupport.DevInternalSettings.Listener
 import expo.modules.devlauncher.react.DevLauncherPackagerConnectionSettings
 
 internal class DevLauncherInternalSettings(
@@ -14,17 +14,4 @@ internal class DevLauncherInternalSettings(
 
   @Suppress("FunctionName")
   fun public_getPackagerConnectionSettings() = getPackagerConnectionSettings()
-}
-
-/**
- * A wrapper of [DevInternalSettings] allows us to access the package-private [DevInternalSettings] properties
- */
-internal class DevLauncherInternalSettingsWrapper(private val devSettings: DevInternalSettings) {
-  val isStartSamplingProfilerOnInit = devSettings.isStartSamplingProfilerOnInit
-  var isRemoteJSDebugEnabled: Boolean
-    get() = devSettings.isRemoteJSDebugEnabled
-    set(value) {
-      devSettings.isRemoteJSDebugEnabled = value
-    }
-  val packagerConnectionSettings: PackagerConnectionSettings = devSettings.packagerConnectionSettings
 }
