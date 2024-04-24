@@ -25,7 +25,7 @@ export var UpdateCheckResultNotAvailableReason;
     UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED"] = "rollbackNoEmbeddedConfiguration";
 })(UpdateCheckResultNotAvailableReason || (UpdateCheckResultNotAvailableReason = {}));
 /**
- * The possible code values for expo-updates log entries
+ * The possible code values for `expo-updates` log entries
  */
 export var UpdatesLogEntryCode;
 (function (UpdatesLogEntryCode) {
@@ -42,7 +42,7 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
 })(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
 /**
- * The possible log levels for expo-updates log entries
+ * The possible log levels for `expo-updates` log entries
  */
 export var UpdatesLogEntryLevel;
 (function (UpdatesLogEntryLevel) {
@@ -54,7 +54,7 @@ export var UpdatesLogEntryLevel;
     UpdatesLogEntryLevel["FATAL"] = "fatal";
 })(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
 /**
- * The possible settings that determine if expo-updates will check for updates on app startup.
+ * The possible settings that determine if `expo-updates` will check for updates on app startup.
  * By default, Expo will check for updates every time the app is loaded.
  * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
  * Set this to `NEVER` to completely disable automatic checking.
