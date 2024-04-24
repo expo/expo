@@ -1,6 +1,6 @@
 ---
 title: Stack
-description: Learn how to use the Stack layout in Expo Router.
+description: Learn how to use the Stack navigator in Expo Router.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
@@ -8,19 +8,19 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { A, CODE } from '~/ui/components/Text';
 
-Stack is a common way to navigate between different routes of an app. Expo Router provides a `Stack` layout to help you manage the navigation stack and allows you to add a new route in your app that is pushed on top of the previous route.
+A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
-The guide provides information on how you can create a `Stack` layout in your project and customize an individual route's options and header.
+This guide provides information on how you can create a `Stack` navigator in your project and customize an individual route's options and header.
 
 ## Get started
 
-You can use file-based routing to create a stack layout. Here's an example file structure:
+You can use file-based routing to create a stack navigator. Here's an example file structure:
 
 <FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/details.tsx']} />
 
-This file structure produces a layout where the `index` route is the first screen in the stack, and the `details` route is pushed on top of the `index` route when navigated.
+This file structure produces a layout where the `index` route is the first route in the stack, and the `details` route is pushed on top of the `index` route when navigated.
 
-You can use the **app/\_layout.tsx** file to define your app's `Stack` layout with these two routes:
+You can use the **app/\_layout.tsx** file to define your app's `Stack` navigator with these two routes:
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router/stack';
@@ -30,11 +30,9 @@ export default function Layout() {
 }
 ```
 
-> **info** The `Stack` layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation (not to be confused with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator)).
-
 ## Screen options and header configuration
 
-### Statically configure screen options
+### Statically configure route options
 
 You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure a route's options. This is also useful for [tabs](/router/advanced/tabs/) or [drawers](/router/advanced/drawer/) as they need an icon defined ahead of time.
 
@@ -62,7 +60,7 @@ export default function Layout() {
 }
 ```
 
-As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure a route's options from within the component file.
+As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure a route's options from within the route's component file.
 
 ```tsx app/index.tsx
 import { Stack, useNavigation } from 'expo-router';
@@ -86,7 +84,7 @@ export default function Home() {
 
 ### Configure header bar
 
-You can configure the header bar for all routes in a `Stack` layout by using the `screenOptions` prop. This is useful for setting a common header style across all routes.
+You can configure the header bar for all routes in a `Stack` navigator by using the `screenOptions` prop. This is useful for setting a common header style across all routes.
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -108,7 +106,7 @@ export default function Layout() {
 }
 ```
 
-To configure the header bar dynamically for an individual route, use that layout's `<Stack.Screen>` component in the routes's file. This is useful for interactions that change the UI.
+To configure the header bar dynamically for an individual route, use that navigator's `<Stack.Screen>` component in the routes's file. This is useful for interactions that change the UI.
 
 ```tsx app/index.tsx
 import { Link, Stack } from 'expo-router';
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
 
 ### Set screen options dynamically
 
-To configure a screen's option dynamically, you can always use the `<Stack.Screen>` component in that screen's file.
+To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
 
 As an alternative, you can also use the [imperative API's `router.setParams()`](/router/navigating-pages/#imperative-navigation) function to configure the route dynamically.
 
@@ -239,9 +237,9 @@ const styles = StyleSheet.create({
 
 ## Custom push behavior
 
-By default, the `Stack` layout removes duplicate screens when pushing a route that is already in the stack. For example, if you push the same screen twice, the second push will be ignored. You can change the pushing behavior by providing a custom `getId()` function to the `<Stack.Screen>`.
+By default, the `Stack` navigator removes duplicate screens when pushing a route that is already in the stack. For example, if you push the same screen twice, the second push will be ignored. You can change this push behavior by providing a custom `getId()` function to the `<Stack.Screen>`.
 
-For example, the `index` screen in our layout structure shows a list of different user profiles in the app. Let's make the `[details]` screen a [dynamic route](/router/create-pages/#dynamic-routes) so that the app user can navigate to see a profile's details.
+For example, the `index` route in the following layout structure shows a list of different user profiles in the app. Let's make the `[details]` route a [dynamic route](/router/create-pages/#dynamic-routes) so that the app user can navigate to see a profile's details.
 
 <FileTree
   files={[
@@ -251,7 +249,7 @@ For example, the `index` screen in our layout structure shows a list of differen
   ]}
 />
 
-The `Stack` layout try will push a new screen every time the app user navigates to a different profile but will fail. If you provide a `getId()` function that returns a new ID every time, the `Stack` layout will push a new screen every time the app user navigates to a profile.
+The `Stack` navigator will push a new screen every time the app user navigates to a different profile but will fail. If you provide a `getId()` function that returns a new ID every time, the `Stack` will push a new screen every time the app user navigates to a profile.
 
 You can use the `<Stack.Screen name="[profile]" getId={}>` component in the layout component route to modify the push behavior:
 
@@ -273,60 +271,13 @@ export default function Layout() {
 }
 ```
 
-## JavaScript stack with @react-navigation/stack
-
-Expo Router uses the `@react-navigation/native-stack` library for the `Stack` layout. However, you can also use the JavaScript-powered `@react-navigation/stack` library instead to create a custom layout component by wrapping this library with the `withLayoutContext`.
-
-In the following example, `JsStack` component is defined using `@react-navigation/stack` library:
-
-```tsx layouts/js-stack.tsx
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackNavigationEventMap,
-  StackNavigationOptions,
-} from '@react-navigation/stack';
-import { withLayoutContext } from 'expo-router';
-
-const { Navigator } = createStackNavigator();
-
-export const JsStack = withLayoutContext<
-  StackNavigationOptions,
-  typeof Navigator,
-  StackNavigationState<ParamListBase>,
-  StackNavigationEventMap
->(Navigator);
-```
-
-After defining the `JsStack` component, you can use it in your app:
-
-{/* prettier-ignore */}
-```tsx app/_layout.tsx
-import { JsStack } from '../layouts/js-stack';
-
-export default function Layout() {
-  return (
-    <JsStack
-      screenOptions={
-        {
-          /* @hide ... */
-          /* @end */
-        }
-      }
-    />
-  );
-}
-```
-
-For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
-
 ## Removing stack screens
 
-There are different actions you can use to dismiss and remove one or many screens from a stack.
+There are different actions you can use to dismiss and remove one or many routes from a stack.
 
 ### `dismiss` action
 
-Dismissed the last screen in the closest stack. If the current screen is the only screen in the stack, it will dismiss the entire stack.
+Dismisses the last screen in the closest stack. If the current screen is the only route in the stack, it will dismiss the entire stack.
 
 You can optionally pass a positive number to dismiss up to that specified number of screens.
 
@@ -429,6 +380,57 @@ export default function Settings() {
   );
 }
 ```
+
+## Relation with Native Stack Navigator
+
+The `Stack` navigator in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation. Options available in the Native Stack Navigator are all available in the `Stack` navigator in Expo Router.
+
+### JavaScript stack with @react-navigation/stack
+
+You can also use the JavaScript-powered `@react-navigation/stack` library to create a custom layout component by wrapping this library with the `withLayoutContext`.
+
+In the following example, `JsStack` component is defined using `@react-navigation/stack` library:
+
+```tsx layouts/js-stack.tsx
+import { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import {
+  createStackNavigator,
+  StackNavigationEventMap,
+  StackNavigationOptions,
+} from '@react-navigation/stack';
+import { withLayoutContext } from 'expo-router';
+
+const { Navigator } = createStackNavigator();
+
+export const JsStack = withLayoutContext<
+  StackNavigationOptions,
+  typeof Navigator,
+  StackNavigationState<ParamListBase>,
+  StackNavigationEventMap
+>(Navigator);
+```
+
+After defining the `JsStack` component, you can use it in your app:
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { JsStack } from '../layouts/js-stack';
+
+export default function Layout() {
+  return (
+    <JsStack
+      screenOptions={
+        {
+          /* @hide ... */
+          /* @end */
+        }
+      }
+    />
+  );
+}
+```
+
+For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
 
 ## More
 
