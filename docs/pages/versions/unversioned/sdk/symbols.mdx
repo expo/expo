@@ -28,18 +28,13 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 ## Usage
 
 ```jsx App.js
-import { Symbol, SymbolViewProps, SFSymbol } from 'expo-symbols';
+import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
 import { StyleSheet, View } from 'react-native';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Symbol
-        name="airpods.chargingcase"
-        style={styles.symbol}
-        type="hierarchical"
-        weight={weight}
-      />
+      <SymbolView name="airpods.chargingcase" style={styles.symbol} type="hierarchical" />
     </View>
   );
 }
@@ -62,7 +57,7 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
-import { Symbol } from 'expo-symbols';
+import { SymbolView } from 'expo-symbols';
 ```
 
 <APISection packageName="expo-symbols" apiName="Symbol" />

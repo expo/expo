@@ -1,4 +1,4 @@
-import { Symbol, SymbolViewProps, SFSymbol } from 'expo-symbols';
+import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 
 import { Symbols } from '../constants';
@@ -18,7 +18,7 @@ function SymbolRow({ title, ...props }: RowProps) {
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
         {getRandomRow(Symbols).map((symbol, index) => (
-          <Symbol
+          <SymbolView
             {...props}
             name={symbol as SFSymbol}
             key={index}
@@ -51,7 +51,7 @@ function SymbolWeights({ title, ...props }: RowProps) {
           const weight = weights[index % weights.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
-              <Symbol
+              <SymbolView
                 {...props}
                 name={symbol as SFSymbol}
                 style={styles.symbol}
@@ -78,7 +78,12 @@ function SymbolScales({ title, ...props }: RowProps) {
           const scale = scales[index % scales.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
-              <Symbol {...props} name={symbol as SFSymbol} style={styles.symbol} scale={scale} />
+              <SymbolView
+                {...props}
+                name={symbol as SFSymbol}
+                style={styles.symbol}
+                scale={scale}
+              />
               <Text style={{ color: 'white', fontSize: 8 }}>{scale}</Text>
             </View>
           );
@@ -92,7 +97,7 @@ export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
-      <Symbol name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
+      <SymbolView name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
       <SymbolRow title="Monochrome (default)" type="monochrome" />
       <SymbolRow title="Hierarchical" type="hierarchical" tintColor="magenta" />
       <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
