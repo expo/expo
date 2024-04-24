@@ -190,7 +190,7 @@ function getMockedFunctions(functions, async = false) {
         const func = typescript_1.default.factory.createFunctionDeclaration([
             typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword),
             async ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.AsyncKeyword) : undefined,
-        ].filter((f) => !!f), undefined, name, undefined, fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType, typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true));
+        ].flatMap((f) => (f ? [f] : [])), undefined, name, undefined, fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType, typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true));
         return func;
     });
 }
@@ -238,14 +238,8 @@ and works out of the box with the expo jest preset.
 function getPrefix() {
     return [typescript_1.default.factory.createJSDocComment(prefix)];
 }
-/*
-Generate a mock for view props and functions.
-*/
-function getMockedView(definition) {
-    if (!definition) {
-        return [];
-    }
-    const propsType = typescript_1.default.factory.createTypeAliasDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], 'ViewProps', undefined, typescript_1.default.factory.createTypeLiteralNode([
+function generatePropTypesForDefinition(definition) {
+    return typescript_1.default.factory.createTypeAliasDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], 'ViewProps', undefined, typescript_1.default.factory.createTypeLiteralNode([
         ...definition.props.map((p) => {
             const propType = mapSwiftTypeToTsType(p.types.parameters[0].typename);
             return typescript_1.default.factory.createPropertySignature(undefined, p.name, undefined, propType);
@@ -257,9 +251,27 @@ function getMockedView(definition) {
             return typescript_1.default.factory.createPropertySignature(undefined, e.name, undefined, eventType);
         }),
     ]));
+}
+/*
+Generate a mock for view props and functions.
+*/
+function getMockedView(definition) {
+    if (!definition) {
+        return [];
+    }
+    const propsType = generatePropTypesForDefinition(definition);
     const props = typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'props', undefined, typescript_1.default.factory.createTypeReferenceNode('ViewProps', undefined), undefined);
     const viewFunction = typescript_1.default.factory.createFunctionDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], undefined, 'View', undefined, [props], undefined, typescript_1.default.factory.createBlock([]));
     return [propsType, viewFunction];
+}
+function getMockedClass(def) {
+    const classDecl = typescript_1.default.factory.createClassDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(def.name), undefined, undefined, 
+    // need to fix this before merging, it's not mapping it correctly
+    [...getMockedFunctions(def.functions), ...getMockedFunctions(def.asyncFunctions, true)]);
+    return classDecl;
+}
+function getMockedClasses(def) {
+    return def.map((d) => getMockedClass(d));
 }
 const newlineIdentifier = typescript_1.default.factory.createIdentifier('\n\n');
 function separateWithNewlines(arr) {
@@ -267,7 +279,7 @@ function separateWithNewlines(arr) {
 }
 function getMockForModule(module, includeTypes) {
     return []
-        .concat(getPrefix(), newlineIdentifier, includeTypes ? getMockedTypes(getTypesToMock(module)) : [], newlineIdentifier, getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [], newlineIdentifier, getMockedView(module.view))
+        .concat(getPrefix(), newlineIdentifier, includeTypes ? getMockedTypes(getTypesToMock(module)) : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [], newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {

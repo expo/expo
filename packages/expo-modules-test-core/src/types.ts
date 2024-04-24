@@ -47,11 +47,13 @@ export type Prop = {
 
 export type OutputModuleDefinition = {
   name: string;
-  view: OutputViewDefinition | null;
+  view: OutputNestedClassDefinition | null;
+  classes: OutputNestedClassDefinition[];
   events: {
     name: string;
   }[];
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> &
   Record<'props', Prop[]>;
 
-export type OutputViewDefinition = Omit<OutputModuleDefinition, 'view'>;
+// views and classes are a very simillar structure, same as module but without more nesting levels
+export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'view' | 'classes'>;

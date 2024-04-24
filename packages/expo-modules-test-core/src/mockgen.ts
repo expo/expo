@@ -6,7 +6,12 @@ import path from 'path';
 import * as prettier from 'prettier';
 import ts from 'typescript';
 
-import { Closure, ClosureTypes, OutputModuleDefinition, OutputViewDefinition } from './types';
+import {
+  Closure,
+  ClosureTypes,
+  OutputModuleDefinition,
+  OutputNestedClassDefinition,
+} from './types';
 
 const directoryPath = process.cwd();
 
@@ -197,7 +202,7 @@ function getMockedFunctions(functions: Closure[], async = false) {
       [
         ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
         async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined,
-      ].filter((f) => !!f) as ts.ModifierToken<any>[],
+      ].flatMap((f) => (f ? [f] : [])),
       undefined,
       name,
       undefined,
@@ -232,7 +237,7 @@ function getAllTypeReferences(node: ts.Node, accumulator: string[]) {
 /**
  * Iterates over types to collect the aliases.
  */
-function getTypesToMock(module: OutputModuleDefinition | OutputViewDefinition) {
+function getTypesToMock(module: OutputModuleDefinition | OutputNestedClassDefinition) {
   const foundTypes: string[] = [];
 
   Object.values(module)
@@ -272,14 +277,8 @@ function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
-/*
-Generate a mock for view props and functions.
-*/
-function getMockedView(definition: OutputViewDefinition | null) {
-  if (!definition) {
-    return [];
-  }
-  const propsType = ts.factory.createTypeAliasDeclaration(
+function generatePropTypesForDefinition(definition: OutputNestedClassDefinition) {
+  return ts.factory.createTypeAliasDeclaration(
     [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
     'ViewProps',
     undefined,
@@ -306,6 +305,15 @@ function getMockedView(definition: OutputViewDefinition | null) {
       }),
     ])
   );
+}
+/*
+Generate a mock for view props and functions.
+*/
+function getMockedView(definition: OutputNestedClassDefinition | null) {
+  if (!definition) {
+    return [];
+  }
+  const propsType = generatePropTypesForDefinition(definition);
   const props = ts.factory.createParameterDeclaration(
     undefined,
     undefined,
@@ -326,24 +334,43 @@ function getMockedView(definition: OutputViewDefinition | null) {
   return [propsType, viewFunction];
 }
 
+function getMockedClass(def: OutputNestedClassDefinition) {
+  const classDecl = ts.factory.createClassDeclaration(
+    [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+    ts.factory.createIdentifier(def.name),
+    undefined,
+    undefined,
+    // need to fix this before merging, it's not mapping it correctly
+    [...getMockedFunctions(def.functions), ...getMockedFunctions(def.asyncFunctions, true)] as any
+  );
+  return classDecl;
+}
+
+function getMockedClasses(def: OutputNestedClassDefinition[]) {
+  return def.map((d) => getMockedClass(d));
+}
+
 const newlineIdentifier = ts.factory.createIdentifier('\n\n') as any;
 function separateWithNewlines<T>(arr: T) {
   return [arr, newlineIdentifier];
 }
 
 function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
-  return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[])
+  return (
+    [] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc | ts.ClassDeclaration)[]
+  )
     .concat(
       getPrefix(),
       newlineIdentifier,
       includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
       newlineIdentifier,
-      getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]),
+      getMockedFunctions(module.functions),
       getMockedFunctions(module.asyncFunctions, true),
       newlineIdentifier,
       includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [],
       newlineIdentifier,
-      getMockedView(module.view)
+      getMockedView(module.view),
+      getMockedClasses(module.classes)
     )
     .flatMap(separateWithNewlines);
 }
