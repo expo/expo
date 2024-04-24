@@ -6,5 +6,5 @@ import java.io.Serializable
 
 internal class VolumeEvent(
   @Field var volume: Float? = null,
-  @Field var muted: Boolean? = null
+  @Field var isMuted: Boolean? = null
 ) : Record, Serializable
