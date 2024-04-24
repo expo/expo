@@ -537,9 +537,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
           }
         }
 
-//        let preset = options.quality?.toPreset() ?? .high
-//        self.updateSessionPreset(preset: preset)
-
         if !self.isValidVideoOptions {
           return
         }
