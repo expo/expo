@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed "Missing transform.routerRoot option in Metro bundling request" error when loading the bundle. ([#28428](https://github.com/expo/expo/pull/28428) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 5.0.5 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fixed "Missing transform.routerRoot option in Metro bundling request" error when loading the bundle. ([#28428](https://github.com/expo/expo/pull/28428) by [@kudo](https://github.com/kudo))
 
 ## 5.0.4 — 2024-04-24
 

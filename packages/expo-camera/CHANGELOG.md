@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fixed regression where recording a video captures dark frames. Reduced frequency of camera initialization. ([#28427](https://github.com/expo/expo/pull/28427) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 15.0.2 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- On `iOS`, fixed regression where recording a video captures dark frames. Reduced frequency of camera initialization. ([#28427](https://github.com/expo/expo/pull/28427) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.1 — 2024-04-23
 
