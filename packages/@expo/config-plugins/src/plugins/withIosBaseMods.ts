@@ -275,6 +275,20 @@ const defaultProviders = {
     },
   }),
 
+  podfile: provider<Paths.PodfileProjectFile>({
+    getFilePath({ modRequest: { projectRoot } }) {
+      return Paths.getPodfilePath(projectRoot);
+    },
+    // @ts-expect-error
+    async read(filePath) {
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath, { modResults: { contents } }) {
+      await writeFile(filePath, contents);
+    },
+  }),
+
   // Append a rule to supply Podfile.properties.json data to mods on `mods.ios.podfileProperties`
   podfileProperties: provider<Record<string, JSONValue>>({
     isIntrospective: true,

@@ -14,8 +14,9 @@ interface ProjectFile<L extends string = string> {
   contents: string;
 }
 
-type AppleLanguage = 'objc' | 'objcpp' | 'swift';
+type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 
+export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 
 export function getAppDelegateHeaderFilePath(projectRoot: string): string {
@@ -92,8 +93,35 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
+export function getPodfilePath(projectRoot: string): string {
+  const [using, ...extra] = globSync('ios/Podfile', {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths,
+  });
+
+  if (!using) {
+    throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+  }
+
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'podfile',
+      fileName: 'Podfile',
+      projectRoot,
+      using,
+      extra,
+    });
+  }
+
+  return using;
+}
+
 function getLanguage(filePath: string): AppleLanguage {
   const extension = path.extname(filePath);
+  if (!extension && path.basename(filePath) === 'Podfile') {
+    return 'rb';
+  }
   switch (extension) {
     case '.mm':
       return 'objcpp';

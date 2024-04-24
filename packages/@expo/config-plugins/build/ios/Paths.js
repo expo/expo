@@ -18,6 +18,7 @@ exports.getExpoPlistPath = getExpoPlistPath;
 exports.getFileInfo = getFileInfo;
 exports.getInfoPlistPath = getInfoPlistPath;
 exports.getPBXProjectPath = getPBXProjectPath;
+exports.getPodfilePath = getPodfilePath;
 exports.getSourceRoot = getSourceRoot;
 exports.getSupportingPath = getSupportingPath;
 exports.getXcodeProjectPath = getXcodeProjectPath;
@@ -126,8 +127,31 @@ function getAppDelegateObjcHeaderFilePath(projectRoot) {
   }
   return using;
 }
+function getPodfilePath(projectRoot) {
+  const [using, ...extra] = (0, _glob().sync)('ios/Podfile', {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths
+  });
+  if (!using) {
+    throw new (_errors().UnexpectedError)(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+  }
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'podfile',
+      fileName: 'Podfile',
+      projectRoot,
+      using,
+      extra
+    });
+  }
+  return using;
+}
 function getLanguage(filePath) {
   const extension = path().extname(filePath);
+  if (!extension && path().basename(filePath) === 'Podfile') {
+    return 'rb';
+  }
   switch (extension) {
     case '.mm':
       return 'objcpp';
