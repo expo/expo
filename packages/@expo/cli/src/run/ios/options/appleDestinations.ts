@@ -154,7 +154,7 @@ function coerceDestinationObjectToKnownDeviceType(device: Destination) {
 
 export async function resolveDestinationsAsync(
   props: Pick<BuildProps, 'configuration' | 'scheme' | 'xcodeProject'>
-): Promise<{ name: string; osType: string; osVersion: string; udid: string }[]> {
+): Promise<{ name: string; osType: OSType; osVersion: string; udid: string }[]> {
   // xcodebuild -workspace /Users/evanbacon/Documents/GitHub/lab/apr23/ios/apr23.xcworkspace -configuration Debug -scheme apr23 -showdestinations -json
 
   const { stdout } = await spawnAsync('xcodebuild', [

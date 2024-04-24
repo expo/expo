@@ -17,7 +17,7 @@ import * as AppleDevice from '../appleDevice/AppleDevice';
 
 type AnyDevice = {
   name: string;
-  osType: string;
+  osType: OSType;
   osVersion: string;
   udid: string;
   deviceType?: string;
@@ -77,7 +77,7 @@ async function getDevicesAsync({
 }
 
 /** @returns a list of devices, filtered by the provided `osType`. */
-function filterDevicesForOsType<TDevice extends { osType: string }>(
+function filterDevicesForOsType<TDevice extends { osType: OSType }>(
   devices: TDevice[],
   osType: OSType
 ): TDevice[] {

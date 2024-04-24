@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 
-import { CommandError } from '../../../../utils/errors';
 import { resolveDestinationsAsync } from '../appleDestinations';
 
 it(`parses destinations`, async () => {
