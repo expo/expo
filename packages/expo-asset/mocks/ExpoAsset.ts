@@ -5,8 +5,10 @@
  * and works out of the box with the expo jest preset.
  *  */
 
+export type URL = any;
+
 export async function downloadAsync(
-  url: string,
+  url: URL,
   md5Hash: string | undefined,
   type: string
 ): Promise<any> {}

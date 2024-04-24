@@ -7,7 +7,7 @@
 
 export async function isAvailableAsync(): Promise<any> {}
 
-export async function getStepCountAsync(endTime: number): Promise<any> {}
+export async function getStepCountAsync(startTime: number, endTime: number): Promise<any> {}
 
 export async function getPermissionsAsync(): Promise<any> {}
 
