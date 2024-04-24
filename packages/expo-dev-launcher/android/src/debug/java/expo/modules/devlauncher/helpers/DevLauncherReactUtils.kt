@@ -10,13 +10,17 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
+import com.facebook.react.devsupport.DevLauncherDevServerHelper
 import com.facebook.react.devsupport.DevLauncherInternalSettings
+import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgelessDevSupportManager
@@ -123,11 +127,12 @@ private fun injectDebugServerHost(
   val mDevServerHelperField = devSupportManagerBaseClass.getDeclaredField("mDevServerHelper")
   mDevServerHelperField.isAccessible = true
   val devServerHelper = mDevServerHelperField[devSupportManager]
-  val mSettingsField = devServerHelper.javaClass.getDeclaredField("mSettings")
+  check(devServerHelper is DevLauncherDevServerHelper)
+  val mSettingsField = DevServerHelper::class.java.getDeclaredField("mSettings")
   mSettingsField.isAccessible = true
   mSettingsField[devServerHelper] = settings
 
-  val packagerConnectionSettingsField = devServerHelper.javaClass.getDeclaredField("mPackagerConnectionSettings")
+  val packagerConnectionSettingsField = DevServerHelper::class.java.getDeclaredField("mPackagerConnectionSettings")
   packagerConnectionSettingsField.isAccessible = true
   packagerConnectionSettingsField[devServerHelper] = settings.public_getPackagerConnectionSettings()
 }
@@ -208,6 +213,22 @@ private fun injectLocalBundleLoader(
     Log.e("DevLauncher", "Unable to load local bundle file", e)
     false
   }
+}
+
+fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {
+  val defaultServerHost = AndroidInfoHelpers.getServerHost(context)
+  val devSettings = DevLauncherInternalSettings(context, defaultServerHost)
+  val devLauncherDevServerHelper = DevLauncherDevServerHelper(
+    context = context,
+    controller = controller,
+    devSettings = devSettings,
+    packagerConnection = devSettings.public_getPackagerConnectionSettings()
+  )
+  DevSupportManagerBase::class.java.setProtectedDeclaredField(
+    devSupportManager,
+    "mDevServerHelper",
+    devLauncherDevServerHelper
+  )
 }
 
 fun findDevMenuPackage(): ReactPackage? {
