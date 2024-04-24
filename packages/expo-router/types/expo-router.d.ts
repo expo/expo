@@ -182,7 +182,7 @@ export namespace ExpoRouter {
     navigate: (href: Href) => void;
     /** Navigate to route without appending to the history. */
     replace: (href: Href) => void;
-    /** Navigate to the provided href using a push operation if possible. */
+    /** Navigate to a screen with a stack lower than the current screen. Using the provided count if possible, otherwise 1. */
     dismiss: (count?: number) => void;
     /** Navigate to first screen within the lowest stack. */
     dismissAll: () => void;
