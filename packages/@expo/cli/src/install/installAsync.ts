@@ -149,7 +149,7 @@ export async function installPackagesAsync(
         )} because ${
           alreadyExcluded.length > 1 ? 'they are' : 'it is'
         } listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
@@ -164,7 +164,7 @@ export async function installPackagesAsync(
         )} because ${
           specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
         } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
