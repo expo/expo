@@ -89,6 +89,9 @@ export const TemplateBareMinimumDiffViewer = () => {
             showOperation
             collapseDeletedFiles
             SnippetHeaderComponent={PermalinkedSnippetHeader}
+            filenameToLinkUrl={filename =>
+              `https://github.com/expo/expo/tree/sdk-${toVersion}/${filename}`
+            }
           />
         </>
       ) : null}
