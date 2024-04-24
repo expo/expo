@@ -281,7 +281,7 @@ const defaultProviders = {
     },
     // @ts-expect-error
     async read(filePath) {
-      // Note(cedric): this file is ruby, which throws off the language detection
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
       return Paths.getFileInfo(filePath);
     },
     async write(filePath, { modResults: { contents } }) {
