@@ -2,5 +2,5 @@ import Video from './NativeVideoModule';
 export { VideoView, isPictureInPictureSupported } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 export { Video };
-export { VideoSource, VideoPlayerEvents, VideoPlayerStatus, VideoContentFit, } from './VideoView.types';
+export * from './VideoView.types';
 //# sourceMappingURL=index.d.ts.map
