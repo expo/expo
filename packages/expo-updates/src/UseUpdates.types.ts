@@ -79,7 +79,7 @@ export enum UpdateInfoType {
 /**
  * Structure representing a new update.
  */
-type UpdateInfoNew = {
+export type UpdateInfoNew = {
   /**
    * The type of update.
    */
@@ -106,7 +106,7 @@ type UpdateInfoNew = {
 /**
  * Structure representing a rollback directive.
  */
-type UpdateInfoRollback = {
+export type UpdateInfoRollback = {
   /**
    * The type of update.
    */
