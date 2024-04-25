@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 5.0.7 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.6 — 2024-04-25
 

@@ -32,7 +32,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.0-preview.5):
+  - Expo (51.0.0-preview.6):
     - ExpoModulesCore
   - expo-dev-client (4.0.5):
     - EXManifests
@@ -155,10 +155,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (5.0.6):
+  - expo-dev-menu (5.0.7):
     - DoubleConversion
-    - expo-dev-menu/Main (= 5.0.6)
-    - expo-dev-menu/ReactNativeCompatibles (= 5.0.6)
+    - expo-dev-menu/Main (= 5.0.7)
+    - expo-dev-menu/ReactNativeCompatibles (= 5.0.7)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -182,7 +182,7 @@ PODS:
   - expo-dev-menu-interface/Tests (1.8.2):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (5.0.6):
+  - expo-dev-menu/Main (5.0.7):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -207,7 +207,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (5.0.6):
+  - expo-dev-menu/ReactNativeCompatibles (5.0.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -228,7 +228,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (5.0.6):
+  - expo-dev-menu/SafeAreaView (5.0.7):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -250,7 +250,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (5.0.6):
+  - expo-dev-menu/Tests (5.0.7):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -275,7 +275,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (5.0.6):
+  - expo-dev-menu/UITests (5.0.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -298,7 +298,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (5.0.6):
+  - expo-dev-menu/Vendored (5.0.7):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -2509,10 +2509,10 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 9099018ae9786e67a347c2f1e1441b8878774d1b
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 2076b5094b7f59cfb206cd81da195afb62945ce9
+  Expo: e9ad6b85ef3dfaa6e25db8596ba78611414f18b6
   expo-dev-client: 19112f69da5c5ff5416e02fecd6baf03da5ad891
   expo-dev-launcher: 1c16fdf25d10494511727704a06e02ec45dd4768
-  expo-dev-menu: 5aafb6520e1de3f86946f53c6131f8f0eb2b02c1
+  expo-dev-menu: 8af75aa218cc0b70c4500deed8d2267db69e09d3
   expo-dev-menu-interface: 97705186cf710d42ff42b285cf97f5877be377c6
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
   ExpoAsset: e0db7ae7bd48b077640d8d8071ad5526d9320c3d
