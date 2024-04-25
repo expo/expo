@@ -131,7 +131,7 @@ export async function unlockAsync(): Promise<void> {
 // @needsAudit
 /**
  * Gets the current screen orientation.
- * @return Returns a promise that fulfils with an [`Orientation`](#screenorientationorientation)
+ * @return Returns a promise that fulfils with an [`Orientation`](#orientation)
  * value that reflects the current screen orientation.
  */
 export async function getOrientationAsync(): Promise<Orientation> {
