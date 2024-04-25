@@ -66,7 +66,7 @@ function setPrivacyInfo(projectConfig, privacyManifests) {
   ensureFileExists(privacyFilePath, contents);
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
     projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
-      filepath: privacyFilePath,
+      filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
       groupName: projectName,
       project: projectConfig.modResults,
       isBuildFile: true,
