@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.4.9 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 3.4.8 — 2024-02-29
 
 ### 🎉 New features
