@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Disable macos builds for now.
+
 ## 0.18.4 — 2024-04-24
 
 ### 🎉 New features
