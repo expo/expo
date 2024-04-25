@@ -1,15 +1,15 @@
 /** `lodash.memoize` */
 export function memoize<T extends (...args: any[]) => any>(fn: T): T {
-  const cache: { [key: string]: any } = {};
+  const cache = new Map<string, any>();
   return ((...args: any[]) => {
     const key = JSON.stringify(args);
-    if (cache[key]) {
-      return cache[key];
+    if (cache.has(key)) {
+      return cache.get(key);
     }
     const result = fn(...args);
-    cache[key] = result;
+    cache.set(key, result);
     return result;
-  }) as any;
+  }) as T;
 }
 
 /** memoizes an async function to prevent subsequent calls that might be invoked before the function has finished resolving. */
