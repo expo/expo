@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix reversed `SizeClassIOS` enum values.
+- Fix reversed `SizeClassIOS` enum values. ([#28448](https://github.com/expo/expo/pull/28448) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
