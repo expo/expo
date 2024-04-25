@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent duplicate watchman warnings.
+
 ### 💡 Others
 
 ## 0.18.5 — 2024-04-25
