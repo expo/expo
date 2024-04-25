@@ -1,10 +1,10 @@
 import assert from 'assert';
-import semver from 'semver';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
 
+import { ExpoVersionMappings } from '../../../utils/expoVersionMappings';
 import { setModulesMainApplication } from '../withAndroidModulesMainApplication';
-import { ExpoVersionMappings } from '../../../utils/expoVersionMappings'
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
