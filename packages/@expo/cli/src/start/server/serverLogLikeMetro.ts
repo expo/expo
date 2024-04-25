@@ -140,7 +140,7 @@ function augmentLogsInternal(projectRoot: string) {
               });
 
               // Replace args[1] with the formatted stack.
-              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, symbolicatedStack);
+              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, symbolicatedStack, true);
             } catch {
               // If symbolication fails, log the original stack.
               args.push('\n' + formatStackLikeMetro(projectRoot, customStack));
@@ -177,7 +177,8 @@ export function formatStackLikeMetro(projectRoot: string, stack: string) {
 
 function formatParsedStackLikeMetro(
   projectRoot: string,
-  stackTrace: stackTraceParser.StackFrame[]
+  stackTrace: stackTraceParser.StackFrame[],
+  isComponentStack = false
 ) {
   // Remove `Error: ` from the beginning of the stack trace.
   // Dim traces that match `INTERNAL_CALLSITES_REGEX`
@@ -186,14 +187,13 @@ function formatParsedStackLikeMetro(
     .filter(
       (line) =>
         line.file &&
-        line.file !== '<anonymous>' &&
         // Ignore unsymbolicated stack frames. It's not clear how this is possible but it sometimes happens when the graph changes.
         !/^https?:\/\//.test(line.file)
     )
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
       const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
-      if (isCollapsed && !env.EXPO_DEBUG) {
+      if (!isComponentStack && isCollapsed && !env.EXPO_DEBUG) {
         return null;
       }
       // If a file is collapsed, print it with dim styling.
