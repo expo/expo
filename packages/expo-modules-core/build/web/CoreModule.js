@@ -47,7 +47,7 @@ globalThis.expo = {
     getViewConfig: () => {
         throw new Error('Method not implemented.');
     },
-    reloadAsync: async () => {
+    reloadAppAsync: async () => {
         window.location.reload();
     },
 };

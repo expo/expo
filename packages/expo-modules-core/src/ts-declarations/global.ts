@@ -46,7 +46,7 @@ export interface ExpoGlobal {
   /**
    * Reloads the app.
    */
-  reloadAsync(reason: string): Promise<void>;
+  reloadAppAsync(reason: string): Promise<void>;
 }
 
 type ViewConfig = {

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Introduced the `reloadAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
+- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

@@ -56,7 +56,7 @@ class CoreModule : Module() {
       )
     }
 
-    AsyncFunction("reloadAsync") { _: String ->
+    AsyncFunction("reloadAppAsync") { _: String ->
       val reactActivity = appContext.currentActivity as? ReactActivity ?: return@AsyncFunction
 
       // TODO(kudo): Use ReactActivity.getReactDelegate() after react-native 0.74.1
