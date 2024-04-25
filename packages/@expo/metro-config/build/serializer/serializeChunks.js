@@ -184,7 +184,7 @@ class Chunk {
             modulesOnly: this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
-            splitChunks: (0, baseJSBundle_1.getSplitChunksOption)(this.graph, this.options),
+            splitChunks: !!this.options.serializerOptions?.splitChunks,
             skipWrapping: true,
             computedAsyncModulePaths: null,
             ...options,
@@ -415,12 +415,11 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
         }
     }
     chunks.add(entryChunk);
-    const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
             if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
-                splitChunks) {
+                entryChunk.options.serializerOptions?.splitChunks !== false) {
                 gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);
             }
             else {

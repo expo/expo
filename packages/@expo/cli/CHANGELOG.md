@@ -80,6 +80,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Add unstable environment variable to disable bundle splitting. ([#27932](https://github.com/expo/expo/pull/27932) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `experiments.serverComponents` to `experiments.reactCanary`. ([#27303]( ([#27923](https://github.com/expo/expo/pull/27923) by [@EvanBacon](https://github.com/EvanBacon))
 - Change server log tag. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
 - Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))
