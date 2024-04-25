@@ -24,13 +24,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   var allowPictureInPicture: Bool = false {
     didSet {
-      if allowPictureInPicture {
-        // We need to set the audio session when the prop first changes to allow, because the PiP button in the native
-        // controls shows up automatically only when a correct audioSession category is set.
-        VideoManager.shared.switchToActiveAudioSessionOrWarn(
-          warning: "Failed to set the audio session category. This might break Picture in Picture functionality"
-        )
-      }
+      // PiP requires `.playback` audio session category in `.moviePlayback` mode
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
       playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
     }
   }
