@@ -29,7 +29,7 @@ export declare function lockPlatformAsync(options: PlatformOrientationInfo): Pro
 export declare function unlockAsync(): Promise<void>;
 /**
  * Gets the current screen orientation.
- * @return Returns a promise that fulfils with an [`Orientation`](#screenorientationorientation)
+ * @return Returns a promise that fulfils with an [`Orientation`](#orientation)
  * value that reflects the current screen orientation.
  */
 export declare function getOrientationAsync(): Promise<Orientation>;
