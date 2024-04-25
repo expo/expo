@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove export exit that breaks atlas writing. ([#28438](https://github.com/expo/expo/pull/28438) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Disable macos builds for now. ([#28441](https://github.com/expo/expo/pull/28441) by [@EvanBacon](https://github.com/EvanBacon))
