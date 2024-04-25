@@ -1,3 +1,4 @@
+import { lightTheme } from '@expo/styleguide-native';
 import {
   View,
   WarningIcon,
@@ -205,7 +206,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                 <View roundedBottom="large" bg="default">
                   <SettingsRowButton
                     label="Go home"
-                    icon={<HomeFilledIcon />}
+                    icon={<HomeFilledIcon tintColor={lightTheme.icon.default} />}
                     onPress={actions.navigateToLauncher}
                   />
                 </View>
