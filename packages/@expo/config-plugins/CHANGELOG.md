@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix absolute path included in `.pbxproj` by the privacy info plugin.
+
 ### 💡 Others
 
 ## 8.0.2 — 2024-04-24
