@@ -7,6 +7,9 @@
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
+import resolveFrom from 'resolve-from';
+// @ts-expect-error
+import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
 import { env } from '../../utils/env';
@@ -88,10 +91,65 @@ function augmentLogsInternal(projectRoot: string) {
       const stack = new Error().stack;
       // Check if the log originates from the server.
       const isServerLog = !!stack?.match(SERVER_STACK_MATCHER);
+
       if (isServerLog) {
         if (name === 'error' || name === 'warn') {
-          args.push('\n' + formatStackLikeMetro(projectRoot, stack!));
+          if (
+            args.length === 2 &&
+            typeof args[1] === 'string' &&
+            args[1].trim().startsWith('at ')
+          ) {
+            // react-dom custom stacks which are always broken.
+            // A stack string like:
+            //    at div
+            //    at http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:38008:27
+            //    at Background (http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:151009:7)
+            const customStack = args[1];
+            const { parseErrorStack } = require(
+              resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+            );
+            try {
+              const parsedStack = parseErrorStack(customStack);
+              const symbolicatedStack = parsedStack.map((line: any) => {
+                const mapped = mapSourcePosition({
+                  source: line.file,
+                  line: line.lineNumber,
+                  column: line.column,
+                }) as {
+                  // '/Users/evanbacon/Documents/GitHub/lab/sdk51-beta/node_modules/react-native-web/dist/exports/View/index.js',
+                  source: string;
+                  line: number;
+                  column: number;
+                  // 'hrefAttrs'
+                  name: string | null;
+                };
+
+                const fallbackName = mapped.name ?? '<unknown>';
+                return {
+                  file: mapped.source,
+                  lineNumber: mapped.line,
+                  column: mapped.column,
+                  // Attempt to preserve the react component name if possible.
+                  methodName: line.methodName
+                    ? line.methodName === '<unknown>'
+                      ? fallbackName
+                      : line.methodName
+                    : fallbackName,
+                  arguments: line.arguments ?? [],
+                };
+              });
+
+              // Replace args[1] with the formatted stack.
+              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, symbolicatedStack, true);
+            } catch {
+              // If symbolication fails, log the original stack.
+              args.push('\n' + formatStackLikeMetro(projectRoot, customStack));
+            }
+          } else {
+            args.push('\n' + formatStackLikeMetro(projectRoot, stack!));
+          }
         }
+
         logLikeMetro(originalFn, name, 'λ', ...args);
       } else {
         originalFn(...args);
@@ -114,18 +172,29 @@ export function formatStackLikeMetro(projectRoot: string, stack: string) {
   // Dim traces that match `INTERNAL_CALLSITES_REGEX`
 
   const stackTrace = stackTraceParser.parse(stack);
+  return formatParsedStackLikeMetro(projectRoot, stackTrace);
+}
+
+function formatParsedStackLikeMetro(
+  projectRoot: string,
+  stackTrace: stackTraceParser.StackFrame[],
+  isComponentStack = false
+) {
+  // Remove `Error: ` from the beginning of the stack trace.
+  // Dim traces that match `INTERNAL_CALLSITES_REGEX`
+
   return stackTrace
     .filter(
       (line) =>
         line.file &&
-        line.file !== '<anonymous>' &&
         // Ignore unsymbolicated stack frames. It's not clear how this is possible but it sometimes happens when the graph changes.
-        !/^https?:\/\//.test(line.file)
+        !/^https?:\/\//.test(line.file) &&
+        (isComponentStack ? true : line.file !== '<anonymous>')
     )
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
       const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
-      if (isCollapsed && !env.EXPO_DEBUG) {
+      if (!isComponentStack && isCollapsed && !env.EXPO_DEBUG) {
         return null;
       }
       // If a file is collapsed, print it with dim styling.

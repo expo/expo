@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix reversed `SizeClassIOS` enum values. ([#28448](https://github.com/expo/expo/pull/28448) by [@Simek](https://github.com/Simek))
+
 ### 💡 Others
 
 ## 7.0.1 — 2024-04-23
@@ -18,7 +20,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 6.4.1 - 2023-12-19

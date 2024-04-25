@@ -26,9 +26,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var staysActiveInBackground = false {
     didSet {
       if staysActiveInBackground {
-        VideoManager.shared.switchToActiveAudioSessionOrWarn(
-          warning: "Failed to set the audio session category. This might affect background playback functionality"
-        )
+        VideoManager.shared.setAppropriateAudioSessionOrWarn()
       }
     }
   }
@@ -60,6 +58,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         self.emit(event: "volumeChange", arguments: newVolumeEvent.isMuted, oldVolumeEvent.isMuted)
       }
       pointer.isMuted = isMuted
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
     }
   }
 
@@ -125,6 +124,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {
     self.emit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
     isPlaying = newIsPlaying
+
+    VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {

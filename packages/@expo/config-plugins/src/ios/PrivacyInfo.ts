@@ -53,7 +53,7 @@ export function setPrivacyInfo(
 
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
     projectConfig.modResults = addResourceFileToGroup({
-      filepath: privacyFilePath,
+      filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
       groupName: projectName,
       project: projectConfig.modResults,
       isBuildFile: true,

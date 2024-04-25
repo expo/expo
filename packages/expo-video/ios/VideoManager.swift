@@ -50,17 +50,42 @@ class VideoManager {
 
   // MARK: - Audio Session Management
 
-  private func switchToActiveAudioSession() throws {
+  internal func setAppropriateAudioSessionOrWarn() {
     let audioSession = AVAudioSession.sharedInstance()
-    try audioSession.setCategory(.playback, mode: .moviePlayback)
-    try audioSession.setActive(true)
-  }
+    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = []
 
-  internal func switchToActiveAudioSessionOrWarn(warning: String) {
-    do {
-      try switchToActiveAudioSession()
-    } catch {
-      log.warn("\(warning). \(error.localizedDescription)")
+    let isAnyPlayerPlaying = videoPlayers.allObjects.contains { player in
+      player.isPlaying
+    }
+    let areAllPlayersMuted = videoPlayers.allObjects.allSatisfy { player in
+      player.isMuted
+    }
+    let needsPiPSupport = videoViews.allObjects.contains { view in
+      view.allowPictureInPicture
+    }
+    let shouldAllowMixing = !isAnyPlayerPlaying || areAllPlayersMuted
+    let isOutputtingAudio = !areAllPlayersMuted && isAnyPlayerPlaying
+    let shouldUpdateToAllowMixing = !audioSession.categoryOptions.contains(.mixWithOthers) && shouldAllowMixing
+
+    if shouldAllowMixing {
+      audioSessionCategoryOptions.insert(.mixWithOthers)
+    }
+
+    if isOutputtingAudio || needsPiPSupport || shouldUpdateToAllowMixing {
+      do {
+        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
+      } catch {
+        log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
+      }
+    }
+
+    // Make sure audio session is active if any video is playing
+    if isAnyPlayerPlaying {
+      do {
+        try audioSession.setActive(true)
+      } catch {
+        log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
+      }
     }
   }
 }
