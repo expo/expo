@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix launching web from run:ios.
+- Fix launching web from run:ios. ([#28439](https://github.com/expo/expo/pull/28439) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
