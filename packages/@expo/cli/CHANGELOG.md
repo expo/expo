@@ -60,6 +60,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix package exports resolution for `react-server` bundles. ([#28238](https://github.com/expo/expo/pull/28238) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver race condition with new internal virtual modules patch in Metro. ([#28061](https://github.com/expo/expo/pull/28061) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing nested Node.js externals. ([#28092](https://github.com/expo/expo/pull/28092) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
