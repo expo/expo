@@ -1,3 +1,5 @@
+import assert from 'assert';
+import semver from 'semver';
 import { ConfigPlugin, withMainApplication } from '@expo/config-plugins';
 import {
   addImports,
@@ -8,7 +10,9 @@ import { replaceContentsWithOffset } from '@expo/config-plugins/build/utils/comm
 
 export const withAndroidModulesMainApplication: ConfigPlugin = (config) => {
   return withMainApplication(config, (config) => {
+    assert(config.sdkVersion)
     config.modResults.contents = setModulesMainApplication(
+      config.sdkVersion,
       config.modResults.contents,
       config.modResults.language
     );
@@ -17,12 +21,14 @@ export const withAndroidModulesMainApplication: ConfigPlugin = (config) => {
 };
 
 export function setModulesMainApplication(
+  sdkVersion: string,
   mainApplication: string,
   language: 'java' | 'kt'
 ): string {
   const isJava = language === 'java';
 
   mainApplication = addDefaultReactNativeHostWrapperIfNeeded(mainApplication, language, isJava);
+  mainApplication = addReactHostWrapperIfNeeded(sdkVersion, mainApplication, language, isJava);
   mainApplication = addReactNativeHostWrapperIfNeeded(mainApplication, language, isJava);
   mainApplication = addReactNativeNewArchHostWrapperIfNeeded(mainApplication, language, isJava);
   mainApplication = addApplicationLifecycleDispatchImportIfNeeded(
@@ -79,6 +85,23 @@ function addDefaultReactNativeHostWrapperIfNeeded(
     newInstanceCodeBlock.end
   );
   return mainApplication;
+}
+
+/**
+ * Replace `ReactNativeHostWrapper.create()` for `getDefaultReactHost()`.
+ * For react-native@>=0.74 and SDK >= 51.0.0
+ */
+function addReactHostWrapperIfNeeded(
+  sdkVersion: string,
+  mainApplication: string,
+  language: 'java' | 'kt',
+  isJava: boolean
+): string {
+  if (semver.lt(sdkVersion, '51.0.0')) {
+    return mainApplication;
+  };
+
+  return mainApplication.replace(/(\s+)getDefaultReactHost\(/gm, '$1ReactNativeHostWrapper.createReactHost(');
 }
 
 function addReactNativeHostWrapperIfNeeded(
