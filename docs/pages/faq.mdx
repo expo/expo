@@ -86,11 +86,48 @@ Expo is an [open-source framework](https://github.com/expo/expo) for apps that r
 
 In the same way React.js frameworks help users create larger websites with ease, Expo helps users create larger apps with ease. Expo provides a suite of well-tested React Native modules that run on Android, iOS, and the web. Expo also provides a [suite of tools](/eas) for building, deploying, and updating your app.
 
-## Should I use Expo CLI or React Native CLI?
+## What are the store policies regarding interpreted code?
 
-Expo CLI can be used simultaneously with React Native CLI. Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/more/expo-cli).
+React Native uses a JavaScript intepreter (JSC, V8, or Hermes) to run your application code. Refer to the [Google Play Policy Center](https://play.google/developer-content-policy/) and [Apple Developer Program License Agreement](https://developer.apple.com/support/terms/apple-developer-program-license-agreement) directly for the most up-to-date policy information.
+
+*The following are excerpts of related policies, as of April 25, 2024.*
+
+### Google Play Store
+
+```
+...an app may not download executable code (such as dex, JAR, .so files) from a
+source other than Google Play. This restriction does not apply to code that runs
+in a virtual machine or an interpreter where either provides indirect access to
+Android APIs (such as JavaScript in a webview or browser).
+
+Apps or third-party code, like SDKs, with interpreted languages (JavaScript,
+Python, Lua, etc.) loaded at run time (for example, not packaged with the app)
+must not allow potential violations of Google Play policies.
+```
+
+Source: [Google Play Policy Center](https://support.google.com/googleplay/android-developer/answer/9888379?hl=en).
+
+
+### Apple App Store
+
+```
+...Interpreted code may be downloaded to an Application but only so long as such code:
+(a) does not change the primary purpose of the Application by providing features
+    or functionality that are inconsistent with the intended and advertised purpose
+    of the Application as submitted to the App Store,
+(b) does not create a store or storefront for other code or applications, and
+(c) does not bypass signing, sandbox, or other security features of the OS.
+```
+
+Source: [3.3.1 APIs and Functionality - B. Executable Code](https://developer.apple.com/support/terms/apple-developer-program-license-agreement#b331).
+
+## Should I use Expo CLI or React Native Community CLI?
+
+Expo CLI can be used simultaneously with React Native Community CLI (also sometimes referred to as "React Native CLI"). Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/more/expo-cli).
 
 Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project.
+
+[Learn more about why you might want to use Expo CLI](/bare/using-expo-cli/).
 
 ## Is Expo Go open source?
 
