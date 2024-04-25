@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent duplicate watchman warnings.
+- Prevent duplicate watchman warnings. ([#28461](https://github.com/expo/expo/pull/28461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
