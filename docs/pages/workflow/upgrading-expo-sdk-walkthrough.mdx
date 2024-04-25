@@ -9,7 +9,9 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 > **info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-Expo maintains approximately 6 months of backward compatibility. Once an SDK version has been deprecated, you can no longer use it in the Expo Go app. SDK deprecations **will not** affect the standalone apps you have in production or your [development builds](/develop/development-builds/introduction/), and backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
+With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
+
+If you are looking to install a specific version of Expo Go, visit [expo.dev/go](https://expo.dev/go). It supports downloads for Android devices/emulators and iOS simulators. However, due to iOS platform restrictions, only the latest version of Expo Go is available for installation on physical iOS devices.
 
 ## How to upgrade to the latest SDK version
 
@@ -27,8 +29,8 @@ Install the new version of the Expo package:
     '# Install latest',
     '$ npm install expo@latest',
     '',
-    '# Install a specific SDK version (for example, SDK 49)',
-    '$ npm install expo@49',
+    '# Install a specific SDK version (for example, SDK 50)',
+    '$ npm install expo@50',
   ]}
 />
 
@@ -41,8 +43,8 @@ Install the new version of the Expo package:
     '# Install latest',
     '$ yarn add expo@latest',
     '',
-    '# Install a specific SDK version (for example, SDK 49)',
-    '$ yarn add expo@49',
+    '# Install a specific SDK version (for example, SDK 50)',
+    '$ yarn add expo@50',
   ]}
 />
 
