@@ -10,6 +10,8 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
+> **info** We recommend using SDK 51 or later for the best experience with the New Architecture.
+
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
 In this guide, we'll talk about how to use the New Architecture in Expo projects today.
@@ -38,15 +40,17 @@ The changes that come with the New Architecture address the technical debt of th
 
 ## Expo tools and the New Architecture
 
-As of SDK 49, nearly all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture.
+As of SDK 51, nearly all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture (including [bridgeless](https://github.com/reactwg/react-native-new-architecture/discussions/154)). [Learn more about known issues](#known-issues-in-expo-sdk-libraries).
 
 Additionally, all modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
 
-### Known incompatibilities
+## Third-party libraries and the New Architecture
 
-- `expo-updates` does not yet support the New Architecture. This is expected to be ready for SDK 51.
-- `Font.loadAsync()` from `expo-font` is not yet compatible. This is expected to be ready by SDK 51. [Use the `expo-font` config plugin](/develop/user-interface/fonts/#embed-the-font-in-your-native-project) to statically embed fonts in your app instead.
-- Bridgeless mode is not yet supported. This will be worked on for SDK 51, but may not be ready.
+The compatibility status of many of the most popular libraries, such as `react-native-bootsplash`, `react-native-fbsdk-next`, and `react-native-pdf`, are tracked in the ["New Architecture support in popular libraries" spreadsheet](https://docs.google.com/spreadsheets/d/1F1tI9PQLl_uab3HNYNwgjPVL2r0hJ9VymXcgDp5etdg/edit?usp=sharing). This does not track every library, only those that appeared in the top 400 most installed libraries on EAS Build, so if a library is not there it does not mean it is necessarily unsupported.
+
+In React Native 0.74, there are various Interop Layers enabled by default which allows many libraries to work without any changes — however, it's not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
+
+[Learn more about known issues](#known-issues-in-third-party-libraries).
 
 ## Initialize a new project with the New Architecture
 
@@ -111,7 +115,9 @@ Run prebuild command and compile your project:
 
 If the build succeeds, you will now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
 
-Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading the [Using the interop layer](#using-the-interop-layer) and [Troubleshooting](#troubleshooting) sections below for more information.
+Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading [Troubleshooting](#troubleshooting) sections below for more information.
+
+> **warning** If you use Expo Router or React Navigation, your app may be impacted by a [known issue with `useLayoutEffect` in React Native with the New Architecture](#known-issues-in-react-native). This issue is expected to be resolved in a patch release for React Native 0.74.
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
@@ -120,34 +126,49 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 </Collapsible>
 
-## Using the interop layer
-
-Not all libraries have been migrated to support the New Architecture yet. To use these libraries in your app, you can use the interop layer as described in the ["New Renderer Interop Layer" working group post](https://github.com/reactwg/react-native-new-architecture/discussions/135).
-
-To use the interop layer, you will need to add the following to your **react-native.config.js**:
-
-```js react-native.config.js
-module.exports = {
-  project: {
-    android: {
-      unstable_reactLegacyComponentNames: ['NativeComponentName'],
-    },
-    ios: {
-      unstable_reactLegacyComponentNames: ['NativeComponentName'],
-    },
-  },
-};
-```
-
-Replace `"NativeComponentName"` with the name of the native component that you want to use. For example, the view component in [@react-native-segmented-control/segmented-control](https://github.com/react-native-segmented-control/segmented-control) is `RNCSegmentedControl`, so you would add `"RNCSegmentedControl"` to the list of `unstable_reactLegacyComponentNames`.
-
-You may need to look at the library source code to determine the name, it may be helpful to look for `requireNativeComponent` in the library to find the name ([example](https://github.com/react-native-segmented-control/segmented-control/blob/ca72237642499d9b06edd0d2adefb6bba7eaaea3/js/RNCSegmentedControlNativeComponent.js#L17-L19)).
-
-The interop layer is not perfect and may not work for all libraries. If you encounter issues, please file an issue with the library.
-
 ## Troubleshooting
 
 Meta and Expo are working towards making the New Architecture the default for all new apps and ensuring it is as easy as possible to migrate existing apps. However, the New Architecture isn't just a name &mdash; many of the internals of React Native has been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
+
+<Collapsible summary="Can I still try the New Architecture even if some of the libraries I use aren't supported?">
+
+Yes! You can try the New Architecture in your app even if some of the libraries you use aren't supported. Create a new branch in your repository and remove any of the libraries that aren't compatible, until your app is running. This will give you a good idea of what libraries still need work before you can fully migrate to the New Architecture. We recommend creating issues or pull requests on those libraries' repositories to help them become compatible with the New Architecture.
+
+We'd also love it if you could [report your experience](https://github.com/reactwg/react-native-new-architecture/discussions/177), so we can learn how developers like you are getting on and help you out where possible.
+
+</Collapsible>
+
+<Collapsible summary="Known issues in Expo SDK libraries">
+
+While there are likely incompatibilities we are not aware of, the following are the known issues with the New Architecture in the Expo SDK:
+
+- **expo-splash-screen**: on iOS, `preventAutoHideAsync()` does not prevent hiding the splash screen. This will be fixed in React Native 0.74.1.
+- **expo-dev-client**: we are currently investigating issues with stability on iOS, so you may encounter an increased crash rate in your development builds.
+- **expo-notifications**: local notifications work, but remote notifications not yet fully supported.
+- **expo-task-manager** and **expo-background-fetch**: not yet supported.
+- **expo-location**: background location is not yet supported.
+
+</Collapsible>
+
+<Collapsible summary="Known issues in React Native">
+
+- [facebook/react-native#44111](https://github.com/facebook/react-native/issues/44111) **impacts navigation libraries like Expo Router and React Navigation**, causing navigation properties for a screen to not be applied until after a transition has completed, and potentially other similar issues with navigation ([see an example](https://github.com/facebook/react-native/issues/44111#issuecomment-2076185849)). There is work in progress to fix this and we expect that it will be available soon in a patch release for React Native 0.74.
+
+</Collapsible>
+
+<Collapsible summary="Known issues in third-party libraries">
+
+Refer to the [reactwg/react-native-new-architecture/discussions#167](https://github.com/reactwg/react-native-new-architecture/discussions/167) for general information, and the issues on any specific libraries you use for more details. The following is a summary of issues and, when available, workarounds for some popular libraries that Expo has tracked:
+
+- **React Native Firebase**: this suite of libraries does not yet support the New Architecture.
+- **@react-native-community/masked-view**: use `@react-native-masked-view/masked-view` instead.
+- **@react-native-community/clipboard**: use `@react-native-clipboard/clipboard` instead.
+- **rn-fetch-blob**: use `react-native-blob-util` instead.
+- **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
+- **react-native-geolocation-service**: use `expo-location` instead.
+- **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
+
+</Collapsible>
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 
