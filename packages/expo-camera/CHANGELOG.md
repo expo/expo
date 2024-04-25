@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support scanning barcodes from a provided image URL.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
