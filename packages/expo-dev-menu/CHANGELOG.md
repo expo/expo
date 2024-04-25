@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix DevMenu Home icon color in dark mode. ([#28442](https://github.com/expo/expo/pull/28442) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 5.0.6 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix DevMenu Home icon color in dark mode. ([#28442](https://github.com/expo/expo/pull/28442) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.5 — 2024-04-24
 
