@@ -150,6 +150,14 @@ async function readGradleReportAndConvertIntoAndroidReport(
     if (await pathExists(gradleBuildKotlin)) {
       return gradleBuildKotlin;
     }
+    const projectGradleBuildGroovy = path.resolve(reportPath, '../../../../build.gradle');
+    const projectGradleBuildKotlin = path.resolve(reportPath, '../../../../build.gradle.kts');
+    if (await pathExists(projectGradleBuildGroovy)) {
+      return gradleBuildGroovy;
+    }
+    if (await pathExists(projectGradleBuildKotlin)) {
+      return gradleBuildKotlin;
+    }
     throw new Error(`Failed to locate gradle.build(.kts)? for report: ${reportPath}`);
   };
 
@@ -182,7 +190,11 @@ async function readAndConvertReports(): Promise<AndroidProjectReport[]> {
   const findGradleReportsFiles = async (cwd: string): Promise<string[]> => {
     const result = await glob('**/build/dependencyUpdates/report.json', {
       cwd,
-      ignore: ['**/node_modules, **/ios'],
+      ignore: [
+        '**/node_modules, **/ios',
+        '**/packages/react-native/**',
+        '**/vendored/unversioned/**',
+      ],
     });
     return Promise.all(result.map(async (el) => path.resolve(cwd, el)));
   };
