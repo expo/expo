@@ -29,6 +29,7 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { logEventAsync } from '../../../utils/telemetry';
@@ -250,6 +251,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const devBundleUrlPathname = createBundleUrlPath({
+      splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
       minify,
@@ -337,6 +339,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const devBundleUrlPathname = createBundleUrlPath({
+      splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
       environment: 'client',

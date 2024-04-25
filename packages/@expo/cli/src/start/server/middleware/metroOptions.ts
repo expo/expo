@@ -29,11 +29,13 @@ export type ExpoMetroOptions = {
   baseUrl?: string;
   isExporting: boolean;
   inlineSourceMap?: boolean;
+  splitChunks?: boolean;
 };
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
+  splitChunks?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -132,6 +134,7 @@ export function getMetroDirectBundleOptions(
     routerRoot,
     isExporting,
     inlineSourceMap,
+    splitChunks,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -181,6 +184,7 @@ export function getMetroDirectBundleOptions(
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
+      splitChunks,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -219,6 +223,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     routerRoot,
     inlineSourceMap,
     isExporting,
+    splitChunks,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -270,6 +275,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.environment', environment);
   }
 
+  if (splitChunks) {
+    queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
   }

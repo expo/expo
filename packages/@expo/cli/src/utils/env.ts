@@ -185,6 +185,11 @@ class Env {
     return string('EXPO_ADB_USER', '0');
   }
 
+  /** Unstable: Force single-bundle exports in production. */
+  get EXPO_NO_BUNDLE_SPLITTING(): boolean {
+    return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
+  }
+
   /** Enable unstable/experimental Atlas to gather bundle information during development or export */
   get EXPO_UNSTABLE_ATLAS() {
     return boolish('EXPO_UNSTABLE_ATLAS', false);

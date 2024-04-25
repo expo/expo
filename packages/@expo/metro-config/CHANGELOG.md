@@ -35,6 +35,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Add unstable environment variable to disable bundle splitting. ([#27932](https://github.com/expo/expo/pull/27932) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - Uncomment all Metro tests. ([#26610](https://github.com/expo/expo/pull/26610) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `db` to the default `resolver.assetExts` to support `expo-sqlite`. ([#28290](https://github.com/expo/expo/pull/28290) by [@kudo](https://github.com/kudo))

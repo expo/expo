@@ -52,6 +52,7 @@ export function microBundle({
     sourceMaps?: boolean;
     inlineSourceMaps?: boolean;
     hot?: boolean;
+    splitChunks?: boolean;
   };
 }): [
   string,
@@ -130,10 +131,11 @@ export function microBundle({
     {
       // @ts-ignore
       serializerOptions:
-        options.output || options.hermes || options.sourceMaps
+        options.output || options.hermes || options.sourceMaps || options.splitChunks
           ? {
               output: options.output,
               includeSourceMaps: options.sourceMaps,
+              splitChunks: options.splitChunks,
             }
           : undefined,
 

@@ -19,13 +19,13 @@ export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {
         baseUrl?: string;
         skipWrapping?: boolean;
+        splitChunks?: boolean;
         output?: string;
         includeSourceMaps?: boolean;
     };
     debugId?: string;
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;
-export declare function getSplitChunksOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>): boolean;
 export declare function getBaseUrlOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<ExpoSerializerOptions, 'serializerOptions'>): string;
 export declare function baseJSBundle(entryPoint: string, preModules: readonly Module[], graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>, options: ExpoSerializerOptions): Bundle;
 export declare function baseJSBundleWithDependencies(entryPoint: string, preModules: readonly Module[], dependencies: Module<MixedOutput>[], options: ExpoSerializerOptions & {
