@@ -1,4 +1,4 @@
-import { resolveDestinationsAsync } from './appleDestinations';
+// import { resolveDestinationsAsync } from './appleDestinations';
 import { promptDeviceAsync } from './promptDevice';
 import * as Log from '../../../log';
 import {
@@ -27,7 +27,7 @@ type AnyDevice = {
 /** Get a list of devices (called destinations) that are connected to the host machine. Filter by `osType` if defined. */
 async function getDevicesAsync({
   osType,
-  ...buildProps
+  // ...buildProps
 }: { osType?: OSType } & Pick<BuildProps, 'xcodeProject' | 'scheme' | 'configuration'>): Promise<
   AnyDevice[]
 > {
@@ -37,7 +37,7 @@ async function getDevicesAsync({
         await Promise.all([
           AppleDevice.getConnectedDevicesAsync(),
           await profile(SimControl.getDevicesAsync)(),
-          resolveDestinationsAsync(buildProps),
+          // resolveDestinationsAsync(buildProps),
         ])
       ).flat(),
       (item) => item.udid
