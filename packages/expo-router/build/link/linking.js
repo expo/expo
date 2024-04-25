@@ -92,7 +92,7 @@ function addEventListener(nativeLinking) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
                 url = parseExpoGoUrlFromListener(url);
-                if (nativeLinking?.redirectSystemPath) {
+                if (url && nativeLinking?.redirectSystemPath) {
                     url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
                 }
                 listener(url);
@@ -100,7 +100,7 @@ function addEventListener(nativeLinking) {
         }
         else {
             callback = async ({ url }) => {
-                if (nativeLinking?.redirectSystemPath) {
+                if (url && nativeLinking?.redirectSystemPath) {
                     url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
                 }
                 listener(url);

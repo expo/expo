@@ -77,7 +77,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
       callback = async ({ url }) => {
         url = parseExpoGoUrlFromListener(url);
 
-        if (nativeLinking?.redirectSystemPath) {
+        if (url && nativeLinking?.redirectSystemPath) {
           url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
         }
 
@@ -85,7 +85,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
       };
     } else {
       callback = async ({ url }) => {
-        if (nativeLinking?.redirectSystemPath) {
+        if (url && nativeLinking?.redirectSystemPath) {
           url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
         }
         listener(url);

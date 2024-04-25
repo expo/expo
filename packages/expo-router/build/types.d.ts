@@ -12,7 +12,7 @@ export interface RequireContext {
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type NativeIntent = {
     redirectSystemPath?: (event: {
-        path: string | null;
+        path: string;
         initial: boolean;
     }) => Promise<string> | string;
 };
