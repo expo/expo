@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix absolute path included in `.pbxproj` by the privacy info plugin.
+- Fix absolute path included in `.pbxproj` by the privacy info plugin. ([#28449](https://github.com/expo/expo/pull/28449) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
