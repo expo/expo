@@ -325,8 +325,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&

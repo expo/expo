@@ -3,9 +3,9 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
+import { BundlerStartOptions } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { isInteractive } from '../utils/interactive';
-import { BundlerStartOptions } from '../start/server/BundlerDevServer';
 
 export async function startBundlerAsync(
   projectRoot: string,

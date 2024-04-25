@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix launching web from run:ios.
+
 ### 💡 Others
 
 ## 0.18.4 — 2024-04-24
