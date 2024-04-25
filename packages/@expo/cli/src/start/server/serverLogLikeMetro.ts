@@ -188,7 +188,8 @@ function formatParsedStackLikeMetro(
       (line) =>
         line.file &&
         // Ignore unsymbolicated stack frames. It's not clear how this is possible but it sometimes happens when the graph changes.
-        !/^https?:\/\//.test(line.file)
+        !/^https?:\/\//.test(line.file) &&
+        (isComponentStack ? true : line.file !== '<anonymous>')
     )
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
