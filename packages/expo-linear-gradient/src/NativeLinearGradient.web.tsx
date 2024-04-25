@@ -101,7 +101,10 @@ function calculatePseudoAngle(
   return 90 + (Math.atan2(py, px) * 180) / Math.PI;
 }
 
-function calculateGradientColors(colors: readonly number[] | string[], locations?: readonly number[] | null) {
+function calculateGradientColors(
+  colors: readonly number[] | string[],
+  locations?: readonly number[] | null
+) {
   return colors.map((color: number | string, index: number): string | void => {
     const output = normalizeColor(color);
     if (locations && locations[index]) {
