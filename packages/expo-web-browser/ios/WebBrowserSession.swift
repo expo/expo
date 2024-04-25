@@ -7,7 +7,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   let viewController: SFSafariViewController
   let onDismiss: (String) -> Void
   let didPresent: () -> Void
-  
+
   init(url: URL, options: WebBrowserOptions, onDismiss: @escaping (String) -> Void, didPresent: @escaping () -> Void) {
     self.onDismiss = onDismiss
     self.didPresent = didPresent
@@ -48,7 +48,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     finish(type: "cancel")
   }
-  
+
   // MARK: - UIAdaptivePresentationControllerDelegate
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {

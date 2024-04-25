@@ -21,7 +21,7 @@ final public class WebBrowserModule: Module {
         self.currentWebBrowserSession = nil
         vcDidPresent = false
       }
-      
+
       guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }

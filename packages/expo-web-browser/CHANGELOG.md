@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix an issue where rapidly opening and closing the browser would leave the module in a bad state, preventing opening the browser again.
+- On `iOS`, fix an issue where rapidly opening and closing the browser would leave the module in a bad state, preventing opening the browser again. ([#28452](https://github.com/expo/expo/pull/28452) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
