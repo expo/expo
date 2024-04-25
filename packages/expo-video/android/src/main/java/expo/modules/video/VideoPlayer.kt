@@ -26,6 +26,7 @@ import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
@@ -33,7 +34,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
-
+  val audioFocusManager = VideoPlayerAudioFocusManager(context, WeakReference(this))
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
@@ -89,6 +90,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(volume, field))
       player.volume = if (muted) 0f else userVolume
       field = muted
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
@@ -107,6 +109,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -131,6 +134,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
 
     override fun onVolumeChanged(volume: Float) {
       this@VideoPlayer.volume = volume
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
@@ -194,6 +198,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   override fun close() {
+    audioFocusManager.onPlayerDestroyed()
     appContext?.reactContext?.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
