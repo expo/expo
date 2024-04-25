@@ -5,6 +5,7 @@ import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { isInteractive } from '../utils/interactive';
+import { BundlerStartOptions } from '../start/server/BundlerDevServer';
 
 export async function startBundlerAsync(
   projectRoot: string,
@@ -18,10 +19,11 @@ export async function startBundlerAsync(
     scheme?: string;
   }
 ): Promise<DevServerManager> {
-  const options = {
+  const options: BundlerStartOptions = {
     port,
     headless,
     devClient: true,
+    minify: false,
 
     location: {
       scheme,
