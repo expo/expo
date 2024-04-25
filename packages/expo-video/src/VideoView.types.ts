@@ -249,7 +249,7 @@ export type VideoSource =
        * Specifies information which will be displayed in the now playing notification.
        * When undefined the player will display information contained in the video metadata.
        */
-      notificationData?: NotificationData;
+      metadata?: VideoMetadata;
     }
   | null;
 
@@ -305,7 +305,7 @@ export type VolumeEvent = {
 /**
  * Contains information that will be displayed in the now playing notification when the video is playing.
  */
-export type NotificationData = {
+export type VideoMetadata = {
   /**
    * The title of the video.
    */
@@ -313,5 +313,5 @@ export type NotificationData = {
   /**
    * Secondary text that will be displayed under the title.
    */
-  secondaryText?: string;
+  artist?: string;
 };

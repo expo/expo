@@ -142,26 +142,29 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       return
     }
     let videoPlayerItem = currentItem as? VideoPlayerItem
-    let notificationData = videoPlayerItem?.videoSource.notificationData
 
-    let metadata = currentItem.asset.commonMetadata
+    // Metadata explicily specified by the user
+    let userMetadata = videoPlayerItem?.videoSource.metadata
 
-    let title = metadata.first(where: {
+    // Metadata fetched with the video
+    let assetMetadata = currentItem.asset.commonMetadata
+
+    let title = assetMetadata.first(where: {
       $0.commonKey == .commonKeyTitle
     })
 
-    let artist = metadata.first(where: {
+    let artist = assetMetadata.first(where: {
       $0.commonKey == .commonKeyArtist
     })
 
-    let artwork = metadata.first(where: {
+    let artwork = assetMetadata.first(where: {
       $0.commonKey == .commonKeyArtwork
     })
 
     var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
 
-    nowPlayingInfo[MPMediaItemPropertyTitle] = notificationData?.title ?? title
-    nowPlayingInfo[MPMediaItemPropertyArtist] = notificationData?.secondaryText ?? artist
+    nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
+    nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
     nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
     nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
     nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate

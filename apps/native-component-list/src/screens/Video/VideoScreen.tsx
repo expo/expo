@@ -11,9 +11,9 @@ import TitledSwitch from '../../components/TitledSwitch';
 
 const bigBuckBunnySource: VideoSource = {
   uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-  notificationData: {
+  metadata: {
     title: 'Big Buck Bunny',
-    secondaryText: 'The Open Movie Project',
+    artist: 'The Open Movie Project',
   },
 };
 
