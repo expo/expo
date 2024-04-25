@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Disable macos builds for now.
+- Disable macos builds for now. ([#28441](https://github.com/expo/expo/pull/28441) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.4 — 2024-04-24
 
