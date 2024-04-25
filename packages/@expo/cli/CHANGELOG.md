@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Symbolicate React component stacks in SSR. ([#28443](https://github.com/expo/expo/pull/28443) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove export exit that breaks atlas writing. ([#28438](https://github.com/expo/expo/pull/28438) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
