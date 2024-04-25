@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "ajv": "8.11.0",
-    "expo-dev-menu": "5.0.6",
+    "expo-dev-menu": "5.0.7",
     "expo-manifests": "~0.14.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
