@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove export exit that breaks atlas writing.
+
 ### 💡 Others
 
 ## 0.18.4 — 2024-04-24
