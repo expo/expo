@@ -202,7 +202,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }> {
     const { mode, minify, isExporting } = this.instanceMetroOptions;
     assert(
-      mode != null && minify != null && isExporting != null,
+      mode != null && isExporting != null,
       'The server must be started before calling ssrLoadModule.'
     );
 
@@ -240,7 +240,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.instanceMetroOptions;
     assert(
       mode != null &&
-        minify != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
@@ -326,11 +325,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
     assert(
       mode != null &&
-        minify != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
