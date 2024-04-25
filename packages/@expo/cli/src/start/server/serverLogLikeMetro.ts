@@ -124,11 +124,17 @@ function augmentLogsInternal(projectRoot: string) {
                   name: string | null;
                 };
 
+                const fallbackName = mapped.name ?? '<unknown>';
                 return {
                   file: mapped.source,
                   lineNumber: mapped.line,
                   column: mapped.column,
-                  methodName: mapped.name ?? '<unknown>',
+                  // Attempt to preserve the react component name if possible.
+                  methodName: line.methodName
+                    ? line.methodName === '<unknown>'
+                      ? fallbackName
+                      : line.methodName
+                    : fallbackName,
                   arguments: line.arguments ?? [],
                 };
               });
