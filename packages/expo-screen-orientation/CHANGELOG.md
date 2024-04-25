@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix reversed `SizeClassIOS` enum values. ([#28448](https://github.com/expo/expo/pull/28448) by [@Simek](https://github.com/Simek))
-
 ### 💡 Others
+
+## 7.0.2 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix reversed `SizeClassIOS` enum values. ([#28448](https://github.com/expo/expo/pull/28448) by [@Simek](https://github.com/Simek))
 
 ## 7.0.1 — 2024-04-23
 
