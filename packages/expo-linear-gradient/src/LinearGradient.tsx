@@ -30,12 +30,12 @@ export type LinearGradientPoint =
 // @needsAudit
 export type LinearGradientProps = ViewProps & {
   /**
-   * An array of colors that represent stops in the gradient. At least two colors are required
+   * A readonly array of colors that represent stops in the gradient. At least two colors are required
    * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
    */
   colors: readonly string[];
   /**
-   * An array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
+   * A readonly array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
    * Each number indicates a color-stop location where each respective color should be located.
    * If not specified, the colors will be distributed evenly across the gradient.
    *
