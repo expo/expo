@@ -6,7 +6,7 @@ import ExpoModulesCore
 public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   lazy var playerViewController = AVPlayerViewController()
 
-  var player: VideoPlayer? {
+  weak var player: VideoPlayer? {
     didSet {
       playerViewController.player = player?.pointer
     }
