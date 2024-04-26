@@ -192,15 +192,17 @@ const general = [
     makePage('router/layouts.mdx'),
     makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
-    makeGroup('Advanced', [
+    makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
-      makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+    ]),
+    makeGroup('Advanced', [
+      makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
