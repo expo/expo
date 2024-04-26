@@ -71,7 +71,7 @@ function setPrivacyInfo(projectConfig, privacyManifests) {
     targetUUIDs = [applicationTarget, ...privacyManifests.additionalTargets.map(t => projectConfig.modResults.pbxTargetByName(t)?.productReference)];
   }
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    targetUUIDs.forEach(uuid => {
+    targetUUIDs.filter(uuid => !!uuid).forEach(uuid => {
       projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
         filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
         groupName: projectName,

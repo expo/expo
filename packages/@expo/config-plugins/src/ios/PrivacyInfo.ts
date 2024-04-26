@@ -28,7 +28,6 @@ export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
   if (!privacyManifests) {
     return config;
   }
-
   return withXcodeProject(config, (projectConfig: ExportedConfigWithProps<XcodeProject>) => {
     return setPrivacyInfo(projectConfig, privacyManifests);
   });
@@ -60,7 +59,7 @@ export function setPrivacyInfo(
   }
 
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    targetUUIDs.forEach(uuid => {
+    targetUUIDs.filter(uuid=>!!uuid).forEach(uuid => {
       projectConfig.modResults = addResourceFileToGroup({
         filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
         groupName: projectName,
