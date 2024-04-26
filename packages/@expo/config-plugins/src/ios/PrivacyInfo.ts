@@ -20,6 +20,7 @@ export type PrivacyInfo = {
   }[];
   NSPrivacyTracking: boolean;
   NSPrivacyTrackingDomains: string[];
+  additionalTargets?: string[];
 };
 
 export function withPrivacyInfo(config: ExpoConfig): ExpoConfig {
@@ -51,13 +52,23 @@ export function setPrivacyInfo(
 
   ensureFileExists(privacyFilePath, contents);
 
+  // Will not work when doing a dirty prebuild and changing the targetNames
+  const applicationTarget = projectConfig.modResults.getTarget('com.apple.product-type.application')?.uuid
+  let targetUUIDs = [applicationTarget]
+  if(privacyManifests.additionalTargets) {
+    targetUUIDs = [applicationTarget, ...privacyManifests.additionalTargets.map(t=>projectConfig.modResults.pbxTargetByName(t)?.productReference)]
+  }
+
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    projectConfig.modResults = addResourceFileToGroup({
-      filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-      groupName: projectName,
-      project: projectConfig.modResults,
-      isBuildFile: true,
-      verbose: true,
+    targetUUIDs.forEach(uuid => {
+      projectConfig.modResults = addResourceFileToGroup({
+        filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+        groupName: projectName,
+        project: projectConfig.modResults,
+        isBuildFile: true,
+        targetUuid: uuid,
+        verbose: true,
+      });
     });
   }
 

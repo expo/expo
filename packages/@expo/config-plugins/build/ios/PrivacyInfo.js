@@ -63,13 +63,23 @@ function setPrivacyInfo(projectConfig, privacyManifests) {
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = _plist().default.build(mergedContent);
   ensureFileExists(privacyFilePath, contents);
+
+  // Will not work when doing a dirty prebuild and changing the targetNames
+  const applicationTarget = projectConfig.modResults.getTarget('com.apple.product-type.application')?.uuid;
+  let targetUUIDs = [applicationTarget];
+  if (privacyManifests.additionalTargets) {
+    targetUUIDs = [applicationTarget, ...privacyManifests.additionalTargets.map(t => projectConfig.modResults.pbxTargetByName(t)?.productReference)];
+  }
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
-      filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
-      groupName: projectName,
-      project: projectConfig.modResults,
-      isBuildFile: true,
-      verbose: true
+    targetUUIDs.forEach(uuid => {
+      projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
+        filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
+        groupName: projectName,
+        project: projectConfig.modResults,
+        isBuildFile: true,
+        targetUuid: uuid,
+        verbose: true
+      });
     });
   }
   return projectConfig;

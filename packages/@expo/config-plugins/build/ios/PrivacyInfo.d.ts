@@ -14,6 +14,7 @@ export type PrivacyInfo = {
     }[];
     NSPrivacyTracking: boolean;
     NSPrivacyTrackingDomains: string[];
+    additionalTargets?: string[];
 };
 export declare function withPrivacyInfo(config: ExpoConfig): ExpoConfig;
 export declare function setPrivacyInfo(projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>): ExportedConfigWithProps<XcodeProject>;
