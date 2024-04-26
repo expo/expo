@@ -114,6 +114,10 @@ function openFileBrowserAsync({
       document.body.removeChild(input);
     });
 
+    input.addEventListener('cancel', () => {
+      resolve({ canceled: true, assets: null });
+    });
+
     const event = new MouseEvent('click');
     input.dispatchEvent(event);
   });
