@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add support for customizing the now playing notification. ([#28386](https://github.com/expo/expo/pull/28386) by [@behenate](https://github.com/behenate))
+- Add support for customizing the now playing notification. ([#28386](https://github.com/expo/expo/pull/28386) and [#28390](https://github.com/expo/expo/pull/28390) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
