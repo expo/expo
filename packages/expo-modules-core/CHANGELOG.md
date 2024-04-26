@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 1.12.3 — 2024-04-26
+
+### 🐛 Bug fixes
+
+- [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.12.2 — 2024-04-23
 

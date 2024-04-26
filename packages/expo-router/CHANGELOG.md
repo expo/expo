@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.5.4 — 2024-04-26
+
+### 🎉 New features
+
+- Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.3 — 2024-04-25
 
