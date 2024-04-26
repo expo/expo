@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing types for Link when using Typed Route
+
 ### 💡 Others
 
 ## 3.5.3 — 2024-04-25
