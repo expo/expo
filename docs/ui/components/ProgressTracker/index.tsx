@@ -1,6 +1,7 @@
+import { Button } from '@expo/styleguide';
 import { BookOpen02Icon, ArrowRightIcon } from '@expo/styleguide-icons';
 
-import { SuccessCheckmark } from './SuccessCheckmark';
+import { SuccessCheckmarkIcon, InfoIcon } from './Icons';
 import { EAS_TUTORIAL_INITIAL_CHAPTERS, Chapter } from './TutorialData';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
@@ -38,21 +39,57 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
+  const handleMarkChapterIncomplete = () => {
+    const updatedChapters = chapters.map((chapter, index) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: false };
+      }
+      return chapter;
+    });
+    setChapters(updatedChapters);
+  };
+
   const currentChapter = chapters[currentChapterIndex];
 
   return (
     <>
       <div className="w-full border border-solid border-default rounded-md p-4 mx-auto mt-6 max-h-96 bg-screen">
-        <div className="flex items-center justify-center pt-6">
-          <SuccessCheckmark />
-        </div>
         {currentChapter && (
-          <div className="flex items-center justify-center flex-col ">
-            {currentChapter && (
-              <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
-                <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
-              </p>
+          <div className="flex items-center justify-center flex-col">
+            {currentChapter.completed ? (
+              <>
+                <div className="flex items-center justify-center pt-6">
+                  <SuccessCheckmarkIcon />
+                </div>
+                <div className="flex items-center mt-6">
+                  <Button
+                    onClick={handleMarkChapterIncomplete}
+                    theme="secondary"
+                    className="flex items-center justify-center"
+                    skipCapitalization>
+                    Still reading? Mark this chapter incomplete.
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-center pt-6">
+                  <InfoIcon />
+                </div>
+                <div className="flex flex-col items-center justify-center pt-6">
+                  <Button
+                    onClick={handleCompleteChapter}
+                    theme="secondary"
+                    className="flex items-center justify-center"
+                    skipCapitalization>
+                    Done reading? Mark this chapter complete.
+                  </Button>
+                </div>
+              </>
             )}
+            <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
+              <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
+            </p>
             <div className="flex items-center justify-center mt-2 max-w-lg leading-7">
               <p className="text-center text-default pb-2">{summary}</p>
             </div>
@@ -62,7 +99,6 @@ export function ProgressTracker({
       <>
         <P className="my-4">{nextChapterDescription}</P>
         <A
-          onClick={handleCompleteChapter}
           href={nextChapterLink}
           className="flex flex-row justify-between border border-solid border-default rounded-md py-3 px-4 mb-3 hocus:shadow-xs"
           isStyled>
@@ -71,7 +107,7 @@ export function ProgressTracker({
               <BookOpen02Icon className="icon-lg text-icon-default" />
             </div>
             <div>
-              <DEMI>Next chapter: {nextChapterTitle}</DEMI>
+              <DEMI>Next: {nextChapterTitle}</DEMI>
             </div>
           </div>
           <ArrowRightIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
