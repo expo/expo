@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import glob from 'fast-glob';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,6 +13,23 @@ export class ProjectSetupCheck implements DoctorCheck {
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
+    // ** check that expo modules native projects aren't getting gitignored **
+
+    if (fs.existsSync(path.join(projectRoot, 'modules'))) {
+      const keyFilePathsForModules = [
+        path.join(projectRoot, 'modules', '**', 'ios', '*.podspec'),
+        path.join(projectRoot, 'modules', '**', 'android', 'build.gradle'),
+      ];
+
+      if (
+        (await Promise.all(keyFilePathsForModules.map(isPathIgnoredAsync))).find((result) => result)
+      ) {
+        issues.push(
+          'This project contains local Expo modules, but the android/ios folders inside the modules are gitignored. These files are required to build your native module into your app. Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level android and ios folders.'
+        );
+      }
+    }
+
     // ** possibly-unintentionally-bare check **
 
     if (
@@ -21,7 +39,7 @@ export class ProjectSetupCheck implements DoctorCheck {
         (await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'android', 'Podfile'))))
     ) {
       issues.push(
-        'This project has native project folders but is also configured to use Prebuild. EAS Build will not sync your native configuration if the ios or android folders are present. Add these folders to your .gitignore file if you intend to use prebuild (aka "managed" workflow).'
+        'This project has native project folders but also has config plugins, indicating it is configured to use Prebuild. EAS Build will not sync your native configuration if the ios or android folders are present. Add these folders to your .gitignore file if you intend to use prebuild (aka "managed" workflow).'
       );
     }
 
@@ -69,4 +87,14 @@ async function isFileIgnoredAsync(filePath: string): Promise<boolean> {
 
 async function getRootPathAsync(): Promise<string> {
   return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
+}
+
+/**
+ * Glob returns matching files and `git check-ignore` checks files, as well, but we want to check if the path is gitignored,
+ * so we pick vital files to match off of (e.g., .podspec, build.gradle).
+ */
+async function isPathIgnoredAsync(filePath: string): Promise<boolean> {
+  const matchingNativeFiles = await glob(filePath);
+  if (!matchingNativeFiles.length) return false;
+  return await isFileIgnoredAsync(matchingNativeFiles[0]);
 }
