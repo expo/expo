@@ -187,14 +187,16 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     const rootPayload = { params: {} };
     let payload = rootPayload;
     let params = payload.params;
+    let { screen, ...paramsWithoutScreen } = params;
     // The root level of payload is a bit weird, its params are in the child object
     while (actionStateRoute) {
         Object.assign(params, { ...actionStateRoute.params });
         payload.screen = actionStateRoute.name;
         actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-        payload.params ??= {};
+        payload.params = Object.assign({}, { ...paramsWithoutScreen }, payload.params);
         payload = payload.params;
         params = payload;
+        ({ screen, ...paramsWithoutScreen } = params);
     }
     // Expo Router uses only three actions, but these don't directly translate to all navigator actions
     if (type === 'PUSH') {

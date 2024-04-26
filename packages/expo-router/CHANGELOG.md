@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `useLocalSearchParams` not passing all parameters to nested navigators.
+
 ### 💡 Others
 
 ## 3.5.3 — 2024-04-25
