@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed gziped payload does not correctly shown in network inspector. ([#28486](https://github.com/expo/expo/pull/28486) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
