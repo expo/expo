@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `useLocalSearchParams` not passing all parameters to nested navigators.
+- Fix `useLocalSearchParams` not passing all parameters to nested navigators. ([#28468](https://github.com/expo/expo/pull/28468) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
