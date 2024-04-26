@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing types for Link when using Typed Route
+- Fix missing types for Link when using Typed Routes
 
 ### 💡 Others
 
