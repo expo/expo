@@ -12,12 +12,14 @@ function createMockContextModule(map = []) {
     });
     return contextModule;
 }
-function createRoutesManifest(paths) {
+function createRoutesManifest(paths, options) {
     // TODO: Drop this part for Node.js
     const routeTree = (0, getRoutes_1.getRoutes)(createMockContextModule(paths), {
+        ...options,
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
         ignoreEntryPoints: true,
+        platform: 'web',
     });
     if (!routeTree) {
         return null;

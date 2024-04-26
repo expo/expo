@@ -181,7 +181,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     // getBuiltTimeServerManifest
+    const { exp } = getConfig(this.projectRoot);
     const manifest = await fetchManifest(this.projectRoot, {
+      ...exp.extra?.router?.platformRoutes,
       asJson: true,
       appDir,
     });
@@ -219,10 +221,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       );
 
+    const { exp } = getConfig(this.projectRoot);
+
     return {
       serverManifest: await getBuildTimeServerManifestAsync(),
       // Get routes from Expo Router.
-      manifest: await getManifest({ preserveApiRoutes: false }),
+      manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
       async renderAsync(path: string) {
         return await getStaticContent(new URL(path, url));
@@ -574,6 +578,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             appDir,
             routerRoot,
             config,
+            ...config.exp.extra?.router,
             bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname);

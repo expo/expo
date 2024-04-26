@@ -769,6 +769,25 @@ describe('api routes', () => {
   });
 });
 
+it('ignores API routes with platform extensions', () => {
+  expect(() => {
+    getRoutes(
+      inMemoryContext({
+        './folder/one.tsx': () => null,
+        './folder/two+api.web.tsx': () => null,
+      }),
+      {
+        internal_stripLoadRoute: true,
+        platform: 'web',
+        skipGenerated: true,
+        preserveApiRoutes: true,
+      }
+    );
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"Api routes cannot have platform extensions. Please remove '.web' from './folder/two+api.web.tsx'"`
+  );
+});
+
 describe('group expansion', () => {
   it(`array syntax`, () => {
     expect(

@@ -40,6 +40,10 @@
                     "description": "Changes the routes directory from `app` to another value. Defaults to `app`. Avoid using this property.",
                     "type": "string"
                 },
+                "platformRoutes": {
+                    "description": "Enable or disable platform-specific routes. Defaults to `true`.",
+                    "type": "boolean"
+                },
                 "asyncRoutes": {
                     "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
                     "oneOf": [

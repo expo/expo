@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-import { getRoutes } from '../getRoutes';
+import { Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1 } from '../getServerManifest';
 /** Get the linking manifest from a Node.js process. */
-declare function getManifest(options?: Parameters<typeof getRoutes>[1]): Promise<{
+declare function getManifest(options?: Options): Promise<{
     initialRouteName?: string | undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
@@ -19,7 +19,7 @@ declare function getManifest(options?: Parameters<typeof getRoutes>[1]): Promise
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
-declare function getBuildTimeServerManifestAsync(options?: Parameters<typeof getRoutes>[1]): Promise<ExpoRouterServerManifestV1>;
+declare function getBuildTimeServerManifestAsync(options?: Options): Promise<ExpoRouterServerManifestV1>;
 export declare function getStaticContent(location: URL): Promise<string>;
 export { getManifest, getBuildTimeServerManifestAsync };
 //# sourceMappingURL=renderStaticContent.d.ts.map

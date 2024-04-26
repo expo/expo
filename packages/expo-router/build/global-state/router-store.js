@@ -22,11 +22,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = require("react");
+const react_native_1 = require("react-native");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
@@ -74,7 +79,11 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
+        this.routeNode = (0, getRoutes_1.getRoutes)(context, {
+            ...expo_constants_1.default.expoConfig?.extra?.router,
+            ignoreEntryPoints: true,
+            platform: react_native_1.Platform.OS,
+        });
         this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
         // Only error in production, in development we will show the onboarding screen
         if (!this.routeNode && process.env.NODE_ENV === 'production') {
