@@ -226,8 +226,7 @@ function omitParamsFromClosureArguments<T extends Closure>(
     ...d,
     types: {
       ...d.types,
-      parameters:
-        d.types?.parameters?.filter((t, idx) => idx !== 0 && !paramsToOmit.includes(t.name)) ?? [],
+      parameters: d.types?.parameters?.filter((t, idx) => !paramsToOmit.includes(t.name)) ?? [],
     },
   }));
 }
