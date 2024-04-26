@@ -1,8 +1,5 @@
 package expo.modules.kotlin.jni
 
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.WritableNativeArray
-import com.facebook.react.bridge.WritableNativeMap
 import expo.modules.BuildConfig
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
@@ -30,7 +27,7 @@ private const val STACK_FRAME_KEY_METHOD_NAME = "methodName"
 
 @DoNotStrip
 class PromiseImpl @DoNotStrip internal constructor(
-  @DoNotStrip internal val callback: JavaCallback,
+  @DoNotStrip internal val callback: JavaCallback
 ) : Promise {
   internal var wasSettled = false
     private set

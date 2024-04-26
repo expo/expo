@@ -80,6 +80,7 @@ void JavaCallback::invokeJSFunction(
   T arg
 ) {
   const auto strongCallbackContext = this->callbackContext.lock();
+  // The context were deallocated before the callback was invoked.
   if (strongCallbackContext == nullptr) {
     return;
   }
@@ -276,6 +277,7 @@ void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result)
 
 void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {
   const auto strongCallbackContext = this->callbackContext.lock();
+  // The context were deallocated before the callback was invoked.
   if (strongCallbackContext == nullptr) {
     return;
   }
