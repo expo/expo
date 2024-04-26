@@ -353,6 +353,13 @@ redirects[guides/customizing-webpack]=archive/customizing-webpack
 # Stop encouraging usage of Expo Go when using native modules
 redirects[bare/using-expo-client]=archive/using-expo-client
 
+# May 2024 home / get started section
+redirects[/overview]=get-started/introduction
+redirects[/get-started/installation]=get-started/create-a-project
+redirects[/get-started/expo-go]=get-started/set-up-your-environment
+redirects[/get-started/create-a-project]=get-started/create-a-project
+
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

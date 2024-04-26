@@ -35,7 +35,7 @@ import {
   WhyImage,
 } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
+import { H1, RawH2, RawH3, P, A, CALLOUT } from '~/ui/components/Text';
 
 const Description = ({ children }: PropsWithChildren<object>) => (
   <P css={css({ marginTop: spacing[1], marginBottom: spacing[3], color: theme.text.secondary })}>
@@ -58,7 +58,7 @@ const Home = () => {
         <AppJSBanner />
         <CellContainer>
           <Row>
-            <GridCell xl={4} lg={12} css={quickStartCellStyle}>
+            <GridCell xl={6} lg={12} css={quickStartCellStyle}>
               <div
                 css={[
                   baseGradientStyle,
@@ -71,11 +71,17 @@ const Home = () => {
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <Terminal cmd={['$ npx create-expo-app my-app']} />
+                <div>
+                  <Terminal cmd={['$ npx create-expo-app@latest']} />
+                  <CALLOUT theme="secondary">
+                    Then continue{' '}
+                    <A href="/get-started/set-up-your-environment">setting up your environment</A>.
+                  </CALLOUT>
+                </div>
               </div>
             </GridCell>
             <GridCell
-              xl={8}
+              xl={6}
               lg={12}
               css={[
                 tutorialCellStyle,
@@ -95,9 +101,7 @@ const Home = () => {
               />
               <DevicesImage />
               <RawH2 css={css({ color: palette.blue12, zIndex: 1, position: 'relative' })}>
-                Create a universal Android, iOS,
-                <br />
-                and web app
+                Create a universal Android, iOS, and web app
               </RawH2>
               <HomeButton
                 className="hocus:bg-button-primary hocus:opacity-80"
@@ -335,7 +339,7 @@ const tutorialCellStyle = css({
   backgroundColor: theme.palette.blue4,
   backgroundImage: 'url("/static/images/home/TutorialPattern.svg")',
   backgroundBlendMode: 'multiply',
-  minHeight: 220,
+  minHeight: 250,
 
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,

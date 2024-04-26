@@ -1,0 +1,24 @@
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
+
+<Step label="1">
+
+### Install Xcode
+
+Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and click **Install** (or **Update** if you have it already).
+
+</Step>
+
+<Step label="2">
+
+### Install Xcode Command Line Tools
+
+Open Xcode, choose **Settings...** from the Xcode menu (or press <kbd>cmd ⌘</kbd> + <kbd>,</kbd>). Go to the **Locations** and install the tools by selecting the most recent version in the **Command Line Tools** dropdown.
+
+<ImageSpotlight
+  alt="Xcode preferences"
+  src="/static/images/ios-simulator/xcode-command-line.png"
+  style={{ maxWidth: 580 }}
+/>
+
+</Step>

@@ -60,6 +60,7 @@
     "react-grid-system": "^8.1.9",
     "react-markdown": "^8.0.7",
     "react-player": "^2.16.0",
+    "react-qr-code": "^2.0.12",
     "react-visibility-sensor": "^5.1.1",
     "remark-frontmatter": "^4.0.1",
     "remark-gfm": "^3.0.1",
