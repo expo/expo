@@ -139,9 +139,7 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        val mediaItem = source.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, source)
-        VideoPlayer(activity.applicationContext, appContext, mediaItem, source)
+        VideoPlayer(activity.applicationContext, appContext, source)
       }
 
       Property("playing")

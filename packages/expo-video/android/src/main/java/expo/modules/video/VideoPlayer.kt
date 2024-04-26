@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem, source: VideoSource?) : AutoCloseable, SharedObject(appContext) {
+class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext) {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -222,8 +222,15 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   fun prepare() {
-    player.setMediaItem(mediaItem)
-    player.prepare()
+    videoSource?.let { videoSource ->
+      val mediaItem = videoSource.toMediaItem()
+      VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
+      player.setMediaItem(mediaItem)
+      player.prepare()
+    } ?: run {
+      player.removeMediaItem(0)
+      player.prepare()
+    }
   }
 
   private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
