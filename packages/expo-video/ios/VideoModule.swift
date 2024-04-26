@@ -139,6 +139,13 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
+      Property("showNowPlayingNotification") { player -> Bool in
+        return player.showNowPlayingNotification
+      }
+      .set {(player, showNowPlayingNotification: Bool) in
+        player.showNowPlayingNotification = showNowPlayingNotification
+      }
+
       Property("status") { player -> PlayerStatus in
         return player.status
       }
@@ -162,7 +169,7 @@ public final class VideoModule: Module {
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {
-          videoSource = VideoSource(uri: Field(wrappedValue: URL(string: url)))
+          videoSource = VideoSource(uri: URL(string: url))
         } else if source.is(VideoSource.self) {
           videoSource = source.get()
         }

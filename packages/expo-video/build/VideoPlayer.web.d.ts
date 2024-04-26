@@ -14,6 +14,7 @@ export declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _preservesPitch: boolean;
     _status: VideoPlayerStatus;
     staysActiveInBackground: boolean;
+    showNowPlayingNotification: boolean;
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);
