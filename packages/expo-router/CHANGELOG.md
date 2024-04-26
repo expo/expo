@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent crash when `EXPO_ROUTER_APP_ROOT` directory does not exist
+
 ### 💡 Others
 
 ## 3.5.3 — 2024-04-25
