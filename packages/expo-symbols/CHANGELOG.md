@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `size` prop to match api of similar packages.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
