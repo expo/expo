@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix vscode quick help link.
+- Fix vscode quick help link. ([#28493](https://github.com/expo/expo/pull/28493) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
