@@ -77,7 +77,7 @@ export const useMicrophonePermissions = createPermissionHook({
 /**
  * Scan bar codes from the image at the given URL.
  * @param url URL to get the image from.
- * @param barCodeTypes An array of bar code types. Defaults to all supported bar code types on
+ * @param barcodeTypes An array of bar code types. Defaults to all supported bar code types on
  * the platform.
  * > __Note:__ Only QR codes are supported on iOS.
  * On android, the barcode should take up the majority of the image for best results.
