@@ -34,7 +34,7 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-native-community/datetimepicker": "7.7.0",
+    "@react-native-community/datetimepicker": "8.0.0",
     "@react-native-community/netinfo": "11.3.1",
     "@react-native-community/slider": "4.5.2",
     "@react-native-masked-view/masked-view": "0.3.1",
@@ -118,7 +118,7 @@
     "expo-three": "6.0.1",
     "expo-tracking-transparency": "~4.0.0",
     "expo-updates": "0.25.5",
-    "expo-video": "1.1.4",
+    "expo-video": "1.1.5",
     "expo-video-thumbnails": "~8.0.0",
     "expo-web-browser": "~13.0.0",
     "fbemitter": "^2.1.1",
