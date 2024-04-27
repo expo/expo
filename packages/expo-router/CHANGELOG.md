@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing types for Link when using Typed Routes
+- Fix missing types for Link when using Typed Routes ([#28467](https://github.com/expo/expo/pull/28467) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
