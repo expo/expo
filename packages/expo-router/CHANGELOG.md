@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect require.context regex for Android
+
 ### 💡 Others
 
 ## 3.5.4 — 2024-04-26
