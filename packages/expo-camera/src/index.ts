@@ -82,8 +82,7 @@ export const useMicrophonePermissions = createPermissionHook({
  * > __Note:__ Only QR codes are supported on iOS.
  * On android, the barcode should take up the majority of the image for best results.
  * @return A possibly empty array of objects of the `BarcodeScanningResult` shape, where the type
- * refers to the bar code type that was scanned and the data is the information encoded in the bar
- * code.
+ * refers to the barcode type that was scanned and the data is the information encoded in the barcode.
  */
 export async function scanFromURLAsync(
   url: string,
