@@ -37,6 +37,37 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       return false
     }
 
+    AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
+      guard let imageLoader = appContext?.imageLoader else {
+        throw ImageLoaderNotFound()
+      }
+
+      imageLoader.loadImage(for: url) { error, image in
+        if error != nil {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let cgImage = image?.cgImage else {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let detector = CIDetector(
+          ofType: CIDetectorTypeQRCode,
+          context: nil,
+          options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        ) else {
+          promise.reject(InitScannerFailed())
+          return
+        }
+
+        let ciImage = CIImage(cgImage: cgImage)
+        let features = detector.features(in: ciImage)
+        promise.resolve(BarcodeUtils.getResultFrom(features))
+      }
+    }
+
     // swiftlint:disable:next closure_body_length
     View(CameraView.self) {
       Events(cameraNextEvents)
