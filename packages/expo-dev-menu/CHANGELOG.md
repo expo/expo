@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing header that causes an error when using `JSC`. ([#28492](https://github.com/expo/expo/pull/28492) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 5.0.6 — 2024-04-25
 
