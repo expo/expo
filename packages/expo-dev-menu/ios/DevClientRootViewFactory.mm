@@ -16,6 +16,7 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import <jsireact/JSIExecutor.h>
 
 @interface RCTRootViewFactory () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
