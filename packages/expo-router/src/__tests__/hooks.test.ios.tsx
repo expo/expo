@@ -1,12 +1,11 @@
 import { renderHook as tlRenderHook } from '@testing-library/react-native';
 import React from 'react';
-import { Text } from 'react-native';
 import { expectType } from 'tsd';
 
 import { ExpoRoot, Slot, router } from '../exports';
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useSegments } from '../hooks';
 import Stack from '../layouts/Stack';
-import { screen, act, renderRouter } from '../testing-library';
+import { act, renderRouter } from '../testing-library';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 /*
