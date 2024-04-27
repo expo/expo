@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix vscode quick help link.
+
 ### 💡 Others
 
 ## 0.1.3 — 2024-04-24
