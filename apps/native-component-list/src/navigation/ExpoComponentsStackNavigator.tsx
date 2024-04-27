@@ -69,6 +69,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcodeFromURL'));
+    },
+    name: 'Camera (barcode from URL)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/TextScreen'));
     },
     name: 'Text',

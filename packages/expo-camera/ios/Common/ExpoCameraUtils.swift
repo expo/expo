@@ -24,7 +24,7 @@ struct ExpoCameraUtils {
     }
 
     return orientation
-}
+  }
 
   static func videoOrientation(for interfaceOrientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
     switch interfaceOrientation {

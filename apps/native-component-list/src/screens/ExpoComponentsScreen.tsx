@@ -9,6 +9,7 @@ const screens = [
   'Camera',
   'Camera (legacy)',
   'Camera (barcode)',
+  'Camera (barcode from URL)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',
