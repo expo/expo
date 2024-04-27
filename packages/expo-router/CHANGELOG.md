@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `useLocalSearchParams` not passing all parameters to nested navigators. ([#28468](https://github.com/expo/expo/pull/28468) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect require.context regex for Android ([#28490](https://github.com/expo/expo/pull/28490) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
