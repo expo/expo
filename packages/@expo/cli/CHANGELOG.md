@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent overwriting exported Atlas data when exporting web with static renderer. ([#28502](https://github.com/expo/expo/pull/28502) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.18.6 — 2024-04-26
