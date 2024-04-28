@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed type exports for isolatedModules option in typescript
+- Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
 
 ### 💡 Others
 
