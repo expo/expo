@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed type exports for isolatedModules option in typescript
+
 ### 💡 Others
 
 ## 15.0.2 — 2024-04-23
