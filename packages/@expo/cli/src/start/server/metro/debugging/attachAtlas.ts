@@ -76,7 +76,6 @@ async function attachAtlasToExport(
   }
 
   if (options.resetAtlasFile) {
-    // @ts-expect-error
     const filePath = await atlas.resetExpoAtlasFile(options.projectRoot);
     debug('(Re)created Atlas file at:', filePath);
   }
