@@ -7,6 +7,7 @@ import RedirectNotification from '~/components/plugins/RedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 <RedirectNotification>
   The page you are looking for does not exist in this SDK version. It may have been deprecated or
@@ -45,12 +46,14 @@ Expo apps are React Native apps, so all Expo SDK packages work in any React Nati
       SDK packages.
     </>
   }
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
-  title="Using libraries"
+  title="Use libraries"
   description="Learn how to install Expo SDK packages in your project."
   href="/workflow/using-libraries"
+  Icon={BookOpen02Icon}
 />
 
 ## Using pre-release versions
