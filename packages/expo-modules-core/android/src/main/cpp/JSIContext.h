@@ -123,7 +123,7 @@ public:
   );
 
   static void deleteSharedObject(
-    jni::global_ref<JSIContext::javaobject> javaObject,
+    jni::alias_ref<JSIContext::javaobject> javaObject,
     int objectId
   );
 
