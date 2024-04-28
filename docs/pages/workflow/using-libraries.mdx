@@ -21,12 +21,11 @@ To use a React Native component or API in your project, import it from the `reac
 <SnackInline>
 
 ```jsx
-import * as React from 'react';
 import { Text, View } from 'react-native';
 
 export default function App() {
   return (
-    <View style={{ flex: 1, paddingTop: 100 }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Hello, world!</Text>
     </View>
   );
@@ -57,9 +56,9 @@ After the platform compatibility table, there will be an Installation section, w
 
 The `npx expo install` command will pick a version of the library that is compatible with your project and then use your JavaScript package manager (such as npm) to install it.
 
-Next, under the API section the reference page will tell you how to import the library in your code:
+Next, under the API section, the reference page will tell you how to import the library in your code:
 
-```js
+```jsx
 import * as Device from 'expo-device';
 ```
 
@@ -70,13 +69,12 @@ Now you can use the library in your project:
 <SnackInline dependencies={['expo-device']}>
 
 ```jsx
-import * as React from 'react';
 import { Text, View } from 'react-native';
 import * as Device from 'expo-device';
 
 export default function App() {
   return (
-    <View style={{ flex: 1, paddingTop: 100 }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>
         {Device.manufacturer}: {Device.modelName}
       </Text>
