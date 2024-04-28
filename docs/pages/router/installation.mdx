@@ -63,7 +63,8 @@ You'll need to install the following dependencies:
 
 <Tabs>
   <Tab label="SDK 50 and above">
-    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar']} />
+    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react@^18.3.1
+']} />
 
     The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
 
@@ -71,11 +72,10 @@ You'll need to install the following dependencies:
   <Tab label="SDK 49 and below">
     <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler']} />
 
-    The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+    The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using. Note that `react-helmet-async` in the `expo-router` relies on `react-dom@18.3.1`. Hence you need to include react-dom^18.3.1.
 
   </Tab>
 </Tabs>
-
 </Step>
 
 <Step label="3">
