@@ -17,9 +17,14 @@ function getNativeProps(props: SymbolViewProps): NativeSymbolViewProps {
   const colors = Array.isArray(props.colors) ? props.colors : props.colors ? [props.colors] : [];
   const animated = !!props.animationSpec || false;
   const type = props.type || 'monochrome';
+  const size = props.size || 24;
+  const style = props.style
+    ? [{ width: size, height: size }, props.style]
+    : { width: size, height: size };
 
   return {
     ...props,
+    style,
     colors,
     animated,
     type,

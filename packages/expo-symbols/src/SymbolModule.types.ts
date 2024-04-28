@@ -30,6 +30,11 @@ export type SymbolViewProps = {
    */
   colors?: string | string[] | null;
   /**
+   * The size of the symbol.
+   * @default 24
+   */
+  size?: number;
+  /**
    * The tint color to apply to the symbol.
    * @default null
    */

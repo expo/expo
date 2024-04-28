@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `size` prop to match api of similar packages. ([#28497](https://github.com/expo/expo/pull/28497) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
