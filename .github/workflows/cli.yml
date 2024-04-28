@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
