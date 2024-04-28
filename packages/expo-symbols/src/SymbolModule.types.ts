@@ -26,7 +26,7 @@ export type SymbolViewProps = {
    */
   weight?: SymbolWeight;
   /**
-   * An array of colors to use when the [SymbolType](#symboltype) is `palette`.
+   * An array of colors to use when the {@link SymbolType} is `palette`.
    */
   colors?: string | string[] | null;
   /**

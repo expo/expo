@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix vscode quick help link. ([#28493](https://github.com/expo/expo/pull/28493) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.1.3 — 2024-04-24
