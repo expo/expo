@@ -12,6 +12,7 @@ type AttachAtlasOptions = Pick<EnsureDependenciesOptions, 'exp'> & {
   projectRoot: string;
   middleware?: ConnectServer;
   metroConfig: MetroConfig;
+  resetAtlasFile?: boolean;
 };
 
 export async function attachAtlasAsync({
@@ -20,6 +21,7 @@ export async function attachAtlasAsync({
   projectRoot,
   middleware,
   metroConfig,
+  resetAtlasFile,
 }: AttachAtlasOptions): Promise<void | ReturnType<
   typeof import('expo-atlas/cli').createExpoAtlasMiddleware
 >> {
@@ -31,12 +33,21 @@ export async function attachAtlasAsync({
 
   await new AtlasPrerequisite(projectRoot).bootstrapAsync({ exp });
 
+  // Expo CLI instantiates multiple Metro instances when exporting static web.
+  // Fully resetting this atlas file is therefore an opt-in.
+  if (isExporting && resetAtlasFile) {
+    const atlas = importAtlas(projectRoot);
+    if (!atlas) return debug('Atlas is not installed in the project, skipping initialization');
+
+    const atlasPath = atlas.getAtlasPath(projectRoot);
+    await atlas?.createAtlasFile(atlasPath);
+    debug('(Re)created Atlas file at:', atlasPath);
+  }
+
   // Exporting only sets up Metro, without attaching middleware
   if (isExporting) {
     const atlas = importAtlasForExport(projectRoot);
-    if (!atlas) {
-      return debug('Atlas is not installed in the project, skipping initialization');
-    }
+    if (!atlas) return debug('Atlas is not installed in the project, skipping initialization');
 
     atlas.withExpoAtlas(metroConfig);
     debug('Attached Atlas to Metro config for exporting');
@@ -50,14 +61,21 @@ export async function attachAtlasAsync({
     );
   } else if (!isExporting && middleware) {
     const atlas = importAtlasForDev(projectRoot);
-    if (!atlas) {
-      return debug('Atlas is not installed in the project, skipping initialization');
-    }
+    if (!atlas) return debug('Atlas is not installed in the project, skipping initialization');
 
     const instance = atlas.createExpoAtlasMiddleware(metroConfig);
     middleware.use('/_expo/atlas', instance.middleware);
     debug('Attached Atlas middleware for development on: /_expo/atlas');
     return instance;
+  }
+}
+
+function importAtlas(projectRoot: string): null | typeof import('expo-atlas') {
+  try {
+    return require(require.resolve('expo-atlas', { paths: [projectRoot] }));
+  } catch (error: any) {
+    debug('Failed to load Atlas from project:', error);
+    return null;
   }
 }
 
