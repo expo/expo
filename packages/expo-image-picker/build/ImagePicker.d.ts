@@ -95,5 +95,6 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  */
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
 export * from './ImagePicker.types';
-export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export type { PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.d.ts.map
