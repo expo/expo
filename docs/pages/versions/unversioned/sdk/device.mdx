@@ -9,12 +9,34 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
+import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-device`** provides access to system information about the physical device, such as its manufacturer and model.
+`expo-device` provides access to system information about the physical device, such as its manufacturer and model.
 
 ## Installation
 
 <APIInstallSection />
+
+## Usage
+
+<SnackInline label='Basic Device Usage' dependencies={['expo-device']}>
+
+```jsx
+import { Text, View } from 'react-native';
+import * as Device from 'expo-device';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>
+        {Device.manufacturer}: {Device.modelName}
+      </Text>
+    </View>
+  );
+}
+```
+
+</SnackInline>
 
 ## API
 
