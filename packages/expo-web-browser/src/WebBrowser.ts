@@ -185,10 +185,7 @@ export async function openBrowserAsync(
  * @platform ios
  */
 export function dismissBrowser(): void {
-  if (!ExponentWebBrowser.dismissBrowser) {
-    throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
-  }
-  ExponentWebBrowser.dismissBrowser();
+  ExponentWebBrowser.dismissBrowser?.();
 }
 
 // @needsAudit
