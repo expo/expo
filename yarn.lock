@@ -1400,12 +1400,12 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@expo/browser-polyfill@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-0.1.1.tgz#1c4ee31744fa2f8e07a7ec0bfd47fbea80deba8f"
-  integrity sha512-PuG+1ZJUUACqWjyCe/pDq9YS8CsNsf08Ir1iftydvjCDqQjXmzQcZSffCeamTdHhIzFr9KA/ICg8+Z22+EeNvQ==
+"@expo/browser-polyfill@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-1.0.1.tgz#6bcc53f041bbe1f09e60582e1c1c66c767c51634"
+  integrity sha512-0K6USycVKDj/k9Gr2UYa+7MiCjb0f2NznsE4LX11H85vQMJma5JS3a2oe6lxCfleY9hDcQ/9zKCYS8O6crsv3A==
   dependencies:
-    expo-2d-context "^0.0.2"
+    expo-2d-context "^0.0.3"
     fbemitter "^2.1.1"
     text-encoding "^0.7.0"
     uuid "^8.3.2"
@@ -9885,10 +9885,10 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-expo-2d-context@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/expo-2d-context/-/expo-2d-context-0.0.2.tgz#7aeea5b146b3f7091ca7d17fcf7a713024ef82f5"
-  integrity sha512-W4TCuTBXZgvAHhQ15u0fpQiBVw14u4vIDcUv/hk2PBA9a3HYav+1lQp2+dCXLM2DXUjV5T4POY+VlePBWBORhw==
+expo-2d-context@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/expo-2d-context/-/expo-2d-context-0.0.3.tgz#6b307c34993ad9d789ead37b6b5922c7fde8d458"
+  integrity sha512-loO/cIj5owNXv0GJxEQ7Sm1vlGOYoJwHCaf2uiPKG3BZm+gQw6GnDgxN+2WDisNZKLTjnMLUGP1HhBsNnElt6g==
   dependencies:
     adaptive-bezier-curve "1.0.3"
     adaptive-quadratic-curve "1.0.2"
@@ -9955,12 +9955,12 @@ expo-pwa@0.0.124:
     commander "2.20.0"
     update-check "1.5.3"
 
-expo-three@6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-6.0.1.tgz#c79ca978e04830da065efb1f0bbd3db8d77ed3f3"
-  integrity sha512-RJld8p3IODpGQ0UNFsBLQGL9hCk5tTaCzrVVvgF1sEJIuzWgoN9RqeNFMF/N0I+pQAF/9vqhQHnP9SW8Bto6Tw==
+expo-three@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-7.0.1.tgz#689688b529b8443fe6c1324000c0714858e37c55"
+  integrity sha512-B8OyGwjQZ+NbGBMT3zqe2ngV7mI147yJL8eR56y9SQLrsEkv8+DiMpm3f88r7/LJoFXKGg8mmMrK09hMvRqGHg==
   dependencies:
-    "@expo/browser-polyfill" "^0.1.1"
+    "@expo/browser-polyfill" "^1.0.1"
     expo-asset-utils "~3.0.0"
 
 exponential-backoff@^3.1.1:
