@@ -1,5 +1,6 @@
-import spawnAsync, { type SpawnResult } from '@expo/spawn-async';
-import { SpawnOptions } from 'child_process';
+import type { NodePackageManager } from '@expo/package-manager';
+import type { SpawnResult, SpawnOptions } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -23,7 +24,7 @@ export function getTestPath(...args: string[]) {
 /** Get the path witihin the default project root, and ensure that folder exists */
 export function createTestPath(...args: string[]) {
   const testPath = getTestPath(...args);
-  ensureFolderExists(path.dirname(testPath));
+  ensureFolderExists(testPath);
   return testPath;
 }
 
@@ -32,7 +33,7 @@ export function ensureFolderExists(folder: string) {
   fs.mkdirSync(folder, { recursive: true });
 }
 
-/** Run `create-expo` in the default project root */
+/** Run `create-expo` asynchronously, with default settings */
 export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOptions = {}) {
   return spawnAsync('node', [bin, ...args], {
     cwd,
@@ -44,25 +45,47 @@ export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOp
   });
 }
 
+/** Run `create-expo` asynchronously, with default settings, and validate the status is `0` */
+export async function executePassing(args: string[], options?: SpawnOptions) {
+  let result: SpawnResult | null = null;
+
+  try {
+    result = await execute(args, options);
+  } catch (error: any) {
+    result = error;
+  }
+
+  return expectExecutePassing(result!);
+}
+
 /** Generate a fake `npm_config_user_agent` environment variable, to force `create-expo` using this package manager */
-export function forcePackageManagerEnv(packageManager: string) {
+export function forcePackageManagerEnv(packageManager: NodePackageManager['name']) {
   return { npm_config_user_agent: `${packageManager}/x.x.x` };
 }
 
 /** Expect the received spawn result to be ok or "passing" */
 export function expectExecutePassing(spawn: SpawnResult) {
-  expect(spawn.status).toBe(0);
+  // Copy the spawn result, that could be an error, and force Jest to list out stdout/stderr when status is not 0
+  expect({ status: spawn.status, stdout: spawn.stdout, stderr: spawn.stderr }).toEqual(
+    expect.objectContaining({
+      status: 0,
+      stdout: expect.any(String),
+      stderr: expect.any(String),
+    })
+  );
   return spawn;
 }
 
 /** Expect the file to exist, using proper failure message when it does not */
 export function expectFileExists(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);
-  expect(fs.existsSync(targetPath)).toBe(true);
+  // Force Jest to list the path when it does not exist
+  expect({ [targetPath]: fs.existsSync(targetPath) }).toEqual({ [targetPath]: true });
 }
 
 /** Expect the file to not-exist, using proper failure message when it does not */
 export function expectFileNotExists(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);
-  expect(fs.existsSync(targetPath)).toBe(false);
+  // Force Jest to list the path when it does exist
+  expect({ [targetPath]: fs.existsSync(targetPath) }).toEqual({ [targetPath]: false });
 }

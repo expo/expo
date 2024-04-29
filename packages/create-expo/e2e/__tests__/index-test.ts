@@ -6,6 +6,7 @@ import {
   createTestPath,
   ensureFolderExists,
   execute,
+  executePassing,
   expectExecutePassing,
   expectFileExists,
   expectFileNotExists,
@@ -20,10 +21,10 @@ beforeAll(async () => {
 
 it('prevents overwriting directories with projects', async () => {
   const projectName = 'cannot-overwrite-files';
-  const projectRoot = createTestPath(projectName);
 
+  createTestPath(projectName);
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-  fs.writeFileSync(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  fs.writeFileSync(getTestPath(projectName, 'package.json'), '{ "version": "1.0.0" }');
 
   expect.assertions(1);
   try {
@@ -35,7 +36,7 @@ it('prevents overwriting directories with projects', async () => {
 
 it('creates a full basic project by default', async () => {
   const projectName = 'defaults-to-basic';
-  await execute([projectName]);
+  await executePassing([projectName]);
 
   expectFileExists(projectName, 'package.json');
   expectFileExists(projectName, 'App.js');
@@ -57,11 +58,90 @@ it('creates a full basic project by default', async () => {
   expect(packageJson.name).toBe('defaults-to-basic');
 });
 
+it('uses pnpm', async () => {
+  const projectName = 'uses-pnpm';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* pnpm create expo-app
+    env: forcePackageManagerEnv('pnpm'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/pnpm install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'App.js');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+
+  // Check if `pnpm` node linker is set
+  expectFileExists(projectName, '.npmrc');
+  const { stdout } = expectExecutePassing(
+    await spawnAsync('pnpm', ['config', 'get', 'node-linker'], { cwd: getTestPath(projectName) })
+  );
+  expect(stdout).toContain('hoisted');
+});
+
+it('uses Bun', async () => {
+  const projectName = 'uses-bun';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* bunx create-expo-app
+    env: forcePackageManagerEnv('bun'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/bun install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'App.js');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
+
+it('uses npm', async () => {
+  const projectName = 'uses-npm';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* npm create expo-app
+    env: forcePackageManagerEnv('npm'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/npm install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'App.js');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
+
+it('uses yarn', async () => {
+  const projectName = 'uses-yarn';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* yarn create expo-app
+    env: forcePackageManagerEnv('yarn'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/yarn install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'App.js');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
+
 describe('yes', () => {
   it('creates a default project in the current directory', async () => {
     const projectName = 'yes-default-directory';
 
-    expectExecutePassing(await execute(['--no-install', '--yes']));
+    await executePassing([projectName, '--no-install', '--yes']);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
@@ -70,105 +150,20 @@ describe('yes', () => {
   });
 
   it('creates a default project in a new directory', async () => {
-    const projectName = 'yes-new-directory';
+    const projectName = 'yes-other-directory';
 
-    expectExecutePassing(await execute([projectName, '--no-install', '-y']));
-
-    expectFileExists(projectName, 'package.json');
-    expectFileExists(projectName, 'App.js');
-    expectFileExists(projectName, '.gitignore');
-    expectFileNotExists(projectName, 'node_modules');
-  });
-
-  it('uses pnpm', async () => {
-    const projectName = 'uses-pnpm';
-    const results = await execute([projectName, '--no-install'], {
-      // Run: DEBUG=create-expo-app:* pnpm create expo-app
-      env: forcePackageManagerEnv('pnpm'),
-    });
-
-    expectExecutePassing(results);
-
-    // Test that the user was warned about deps
-    expect(results.stdout).toMatch(/make sure you have modules installed/);
-    expect(results.stdout).toMatch(/pnpm install/);
+    await executePassing([projectName, '--no-install', '-y']);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
     expectFileExists(projectName, '.gitignore');
-    // Check if it skipped install
-    expectFileNotExists(projectName, 'node_modules');
-
-    // Check if `pnpm` node linker is set
-    expectFileExists(projectName, '.npmrc');
-    const { stdout } = expectExecutePassing(
-      await spawnAsync('pnpm', ['config', 'get', 'node-linker'], { cwd: getTestPath(projectName) })
-    );
-    expect(stdout).toContain('hoisted');
-  });
-
-  it('uses Bun', async () => {
-    const projectName = 'uses-bun';
-    const results = await execute([projectName, '--no-install'], {
-      // Run: DEBUG=create-expo-app:* bunx create-expo-app
-      env: forcePackageManagerEnv('bun'),
-    });
-
-    expectExecutePassing(results);
-
-    // Test that the user was warned about deps
-    expect(results.stdout).toMatch(/make sure you have modules installed/);
-    expect(results.stdout).toMatch(/bun install/);
-
-    expectFileExists(projectName, 'package.json');
-    expectFileExists(projectName, 'App.js');
-    expectFileExists(projectName, '.gitignore');
-    // Check if it skipped install
-    expectFileNotExists(projectName, 'node_modules');
-  });
-
-  it('uses npm', async () => {
-    const projectName = 'uses-npm';
-    const results = await execute([projectName, '--no-install'], {
-      // Run: DEBUG=create-expo-app:* npm create expo-app
-      env: forcePackageManagerEnv('npm'),
-    });
-
-    // Test that the user was warned about deps
-    expect(results.stdout).toMatch(/make sure you have modules installed/);
-    expect(results.stdout).toMatch(/npm install/);
-
-    expectFileExists(projectName, 'package.json');
-    expectFileExists(projectName, 'App.js');
-    expectFileExists(projectName, '.gitignore');
-    // Check if it skipped install
-    expectFileNotExists(projectName, 'node_modules');
-  });
-
-  it('uses yarn', async () => {
-    const projectName = 'uses-yarn';
-    const results = await execute([projectName, '--no-install'], {
-      // Run: DEBUG=create-expo-app:* yarn create expo-app
-      env: forcePackageManagerEnv('yarn'),
-    });
-
-    // Test that the user was warned about deps
-    expect(results.stdout).toMatch(/make sure you have modules installed/);
-    expect(results.stdout).toMatch(/yarn install/);
-
-    expectFileExists(projectName, 'package.json');
-    expectFileExists(projectName, 'App.js');
-    expectFileExists(projectName, '.gitignore');
-    // Check if it skipped install
     expectFileNotExists(projectName, 'node_modules');
   });
 
   xit('creates a default project in a new directory with a custom template', async () => {
     const projectName = 'yes-custom-template';
 
-    expectExecutePassing(
-      await execute([projectName, '--no-install', '--yes', '--template', 'blank'])
-    );
+    await executePassing([projectName, '--no-install', '--yes', '--template', 'blank']);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
@@ -198,14 +193,12 @@ xdescribe('templates', () => {
     // Create a fake package.json -- this is a terminal file that cannot be overwritten.
     fs.writeFileSync(path.join(projectRoot, 'LICENSE'), 'hello world');
 
-    expectExecutePassing(
-      await execute([
-        projectName,
-        '--no-install',
-        '--template',
-        'https://github.com/expo/examples/tree/master/blank',
-      ])
-    );
+    executePassing([
+      projectName,
+      '--no-install',
+      '--template',
+      'https://github.com/expo/examples/tree/master/blank',
+    ]);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
@@ -243,7 +236,7 @@ xdescribe('templates', () => {
   it('downloads a valid template', async () => {
     const projectName = 'valid-template-name';
 
-    expectExecutePassing(await execute([projectName, '--template', 'blank']));
+    await executePassing([projectName, '--template', 'blank']);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
@@ -255,9 +248,7 @@ xdescribe('templates', () => {
 
   it(`doesn't prompt to install cocoapods in a project without an ios folder`, async () => {
     const projectName = 'no-install-no-pods-no-prompt';
-    const results = await execute([projectName, '--no-install', '--template', 'blank']);
-
-    expectExecutePassing(results);
+    const results = await executePassing([projectName, '--no-install', '--template', 'blank']);
 
     // Ensure it doesn't warn to install pods since blank doesn't have an ios folder.
     expect(results.stdout).not.toMatch(/make sure you have CocoaPods installed/);
@@ -272,9 +263,7 @@ xdescribe('templates', () => {
 
   it('uses npm', async () => {
     const projectName = 'uses-npm';
-    const results = await execute([projectName, '--no-install', '--use-npm']);
-
-    expectExecutePassing(results);
+    const results = await executePassing([projectName, '--no-install', '--use-npm']);
 
     // Test that the user was warned about deps
     expect(results.stdout).toMatch(/make sure you have modules installed/);
@@ -293,14 +282,12 @@ xdescribe('templates', () => {
 
   it('downloads a github repo with sub-project', async () => {
     const projectName = 'full-url';
-    const results = await execute([
+    const results = await executePassing([
       projectName,
       '--no-install',
       '--template',
       'https://github.com/expo/examples/tree/master/blank',
     ]);
-
-    expectExecutePassing(results);
 
     // Test that the user was warned about deps
     expect(results.stdout).toMatch(/make sure you have modules installed/);
@@ -316,16 +303,14 @@ xdescribe('templates', () => {
   it('downloads a github repo with the template path option', async () => {
     const projectName = 'partial-url-and-path';
 
-    expectExecutePassing(
-      await execute([
-        projectName,
-        '--no-install',
-        '--template',
-        'https://github.com/expo/examples/tree/master',
-        '--template-path',
-        'blank',
-      ])
-    );
+    await executePassing([
+      projectName,
+      '--no-install',
+      '--template',
+      'https://github.com/expo/examples/tree/master',
+      '--template-path',
+      'blank',
+    ]);
 
     expectFileExists(projectName, 'package.json');
     expectFileExists(projectName, 'App.js');
