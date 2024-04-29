@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
+- On Android, use `ACTION_GET_CONTENT` for picking images and videos ([#28510](https://github.com/expo/expo/pull/28510) by [@haileyok](https://github.com/haileyok))
 
 ### 💡 Others
 
