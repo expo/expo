@@ -34,6 +34,7 @@ import kotlin.coroutines.resumeWithException
 private const val moduleName = "ExponentImagePicker"
 
 class ImagePickerModule : Module() {
+  private var isPickerOpen = false
 
   override fun definition() = ModuleDefinition {
     Name(moduleName)
@@ -129,6 +130,11 @@ class ImagePickerModule : Module() {
     options: ImagePickerOptions
   ): Any {
     return try {
+      if (isPickerOpen) {
+        return ImagePickerResponse(canceled = true)
+      }
+
+      isPickerOpen = true
       var result = launchPicker(pickerLauncher)
       if (
         !options.allowsMultipleSelection &&
@@ -143,6 +149,8 @@ class ImagePickerModule : Module() {
       mediaHandler.readExtras(result.data, options)
     } catch (cause: OperationCanceledException) {
       return ImagePickerResponse(canceled = true)
+    } finally {
+      isPickerOpen = false
     }
   }
 
