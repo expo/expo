@@ -21,18 +21,18 @@ PODS:
   - EXImageLoader (4.7.0):
     - ExpoModulesCore
     - React-Core
-  - EXJSONUtils (0.13.0)
-  - EXJSONUtils/Tests (0.13.0)
+  - EXJSONUtils (0.13.1)
+  - EXJSONUtils/Tests (0.13.1)
   - EXLocation (17.0.1):
     - ExpoModulesCore
-  - EXManifests (0.14.0):
+  - EXManifests (0.14.1):
     - ExpoModulesCore
-  - EXManifests/Tests (0.14.0):
+  - EXManifests/Tests (0.14.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.0-preview.7):
+  - Expo (51.0.0-preview.8):
     - ExpoModulesCore
   - expo-dev-client (4.0.6):
     - EXManifests
@@ -155,10 +155,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (5.0.7):
+  - expo-dev-menu (5.0.8):
     - DoubleConversion
-    - expo-dev-menu/Main (= 5.0.7)
-    - expo-dev-menu/ReactNativeCompatibles (= 5.0.7)
+    - expo-dev-menu/Main (= 5.0.8)
+    - expo-dev-menu/ReactNativeCompatibles (= 5.0.8)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -182,7 +182,7 @@ PODS:
   - expo-dev-menu-interface/Tests (1.8.2):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (5.0.7):
+  - expo-dev-menu/Main (5.0.8):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -207,7 +207,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (5.0.7):
+  - expo-dev-menu/ReactNativeCompatibles (5.0.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -228,7 +228,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (5.0.7):
+  - expo-dev-menu/SafeAreaView (5.0.8):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -250,7 +250,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (5.0.7):
+  - expo-dev-menu/Tests (5.0.8):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -275,7 +275,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (5.0.7):
+  - expo-dev-menu/UITests (5.0.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -298,7 +298,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (5.0.7):
+  - expo-dev-menu/Vendored (5.0.8):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -336,7 +336,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (13.0.2):
     - ExpoModulesCore
-  - ExpoCamera (15.0.2):
+  - ExpoCamera (15.0.3):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -377,7 +377,7 @@ PODS:
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (15.0.2):
+  - ExpoImagePicker (15.0.3):
     - ExpoModulesCore
   - ExpoInsights (0.7.0):
     - EASClient
@@ -399,7 +399,7 @@ PODS:
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
     - React-Core
-  - ExpoModulesCore (1.12.3):
+  - ExpoModulesCore (1.12.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -421,7 +421,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.12.3):
+  - ExpoModulesCore/Tests (1.12.4):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -497,17 +497,17 @@ PODS:
     - "sqlite3/fts5 (~> 3.45.3+1)"
   - ExpoStoreReview (7.0.1):
     - ExpoModulesCore
-  - ExpoSymbols (0.1.3):
+  - ExpoSymbols (0.1.4):
     - ExpoModulesCore
   - ExpoSystemUI (3.0.2):
     - ExpoModulesCore
-  - ExpoTrackingTransparency (4.0.1):
+  - ExpoTrackingTransparency (4.0.2):
     - ExpoModulesCore
   - ExpoVideo (1.1.5):
     - ExpoModulesCore
   - ExpoVideoThumbnails (8.0.0):
     - ExpoModulesCore
-  - ExpoWebBrowser (13.0.2):
+  - ExpoWebBrowser (13.0.3):
     - ExpoModulesCore
   - EXSplashScreen (0.27.2):
     - DoubleConversion
@@ -593,7 +593,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdatesInterface (0.16.0):
+  - EXUpdatesInterface (0.16.1):
     - ExpoModulesCore
   - FBLazyVector (0.74.0)
   - fmt (9.1.0)
@@ -2505,14 +2505,14 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
   EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
-  EXJSONUtils: 8e62e1053b2c36be4922417e07b1d6290689f84f
+  EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
-  EXManifests: 12cfac62e55f54fbb252dc6aaa6eece1237fbc17
+  EXManifests: 7832a9a6562afc89e57190d5a8702affc0cfe77e
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 3d55b9ed388fb85d26ff82bea46edf5472fa9dd1
+  Expo: 5023eca14968f8122e58505712ca089fec21b4d2
   expo-dev-client: f1fe17913de8de725f5a313b2b6638e217c1b227
   expo-dev-launcher: ce1799afff618e4f9604676d2408177a1340b727
-  expo-dev-menu: 8af75aa218cc0b70c4500deed8d2267db69e09d3
+  expo-dev-menu: 5d3b3fe7086c930f99e10e6e7737c681df68bf7c
   expo-dev-menu-interface: 97705186cf710d42ff42b285cf97f5877be377c6
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
   ExpoAsset: e0db7ae7bd48b077640d8d8071ad5526d9320c3d
@@ -2522,7 +2522,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 2a80440a81040ab3575bc78f7c5234d40c110c58
   ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
   ExpoCalendar: d94c926d22680109190d8d1f5fc52e01d67558db
-  ExpoCamera: 02123626efd0a27da7f078aaa884fc45160353fb
+  ExpoCamera: 61ab6839230b0b8a9634f371fc377ddcb73fb4c5
   ExpoCellular: 3bf2ea0ab0aee311608170fd1e341abbafd4afad
   ExpoClipboard: 45bd408b0163bfb836450ae6c3a7d656bb369b18
   ExpoContacts: cdc1d6423ef13e5486b0014bb71f67cb1801b4b2
@@ -2535,7 +2535,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoImage: 80a5b14f9e0d845f2c2877cee1c2b1038ba276a6
   ExpoImageManipulator: 6a77db525b1a5f39c91fc071bee7b6dbac2f5227
-  ExpoImagePicker: 31b4a619a9910d12efc762f7c151129828bca4fe
+  ExpoImagePicker: 84a2a5d8807397cbaff750a194852271f5aed87a
   ExpoInsights: e88a27cb4ba1b644f8f6bbb2473a5a8204767948
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
   ExpoLinearGradient: 99736b51da8bac4970013bdea81d19f4db546fa1
@@ -2544,7 +2544,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMaps: ae5f30377143632c3e18368c7e0b73409dce975b
   ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
-  ExpoModulesCore: b322e60d4f954f1c369f167ce1ccb7157cfcaf56
+  ExpoModulesCore: a6e3dbeeb297d51b76bdaa0bda60cc6dea607765
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a
@@ -2558,17 +2558,17 @@ SPEC CHECKSUMS:
   ExpoSpeech: a5036d13996e5d707996ad1e77301a9ef0d418da
   ExpoSQLite: 0091da247fdd8095f2cc213d98f812dba0ec7ca3
   ExpoStoreReview: cabf13ccaa380f05ec5fbf7c448fa9f4c4af217b
-  ExpoSymbols: 2d09289714c3d3ac4254e076c5d75a19116d3c59
+  ExpoSymbols: 5adb1166f2929fc8d2497b98d5c48c4b94effe33
   ExpoSystemUI: f204247738681293eb231159a2476e68c8438ab3
-  ExpoTrackingTransparency: c390c0cbb6716e8eabd8eb7c2e4320c003decf24
+  ExpoTrackingTransparency: 005340638bbd48449066a6c1a54ee44ae65ed7b4
   ExpoVideo: d6b3b1bcb42ee2809df07e5288f18af7e6a1ab9b
   ExpoVideoThumbnails: 40c737b2507a7470b14e9452e286513beb9a7d77
-  ExpoWebBrowser: 247e3ff48a7554eb2db0d96b6e64e1bda4d4011f
+  ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: f4a379f0ef239cfd7e070fb7de4650bf8663e0cc
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
   EXUpdates: 456b313b8e78537839a6cd705e23e4066413dc11
-  EXUpdatesInterface: ea7b193a243592e5a38d0ac99bf0e10321d4bf7a
+  EXUpdatesInterface: e5ec53f49ac304d173471f15e70abf8723f00fe5
   FBLazyVector: 026c8f4ae67b06e088ae01baa2271ef8a26c0e8c
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2

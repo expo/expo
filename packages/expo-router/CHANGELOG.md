@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.5.5 — 2024-04-29
+
+### 🐛 Bug fixes
+
 - Fix `useLocalSearchParams` not passing all parameters to nested navigators. ([#28468](https://github.com/expo/expo/pull/28468) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect require.context regex for Android ([#28490](https://github.com/expo/expo/pull/28490) by [@marklawlor](https://github.com/marklawlor))
 - Switch to react-native-helmet-async (fork of react-helmet-async) in order remove react-dom peer dependency. ([#28532](https://github.com/expo/expo/pull/28532) by [@brentvatne](https://github.com/brentvatne))
-
-### 💡 Others
 
 ## 3.5.4 — 2024-04-26
 

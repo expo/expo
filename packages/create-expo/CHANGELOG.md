@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- support GitHub URLs that don't have a protocol. ([#28435](https://github.com/expo/expo/pull/28435) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.3.3 — 2024-04-29
+
+### 🎉 New features
+
+- support GitHub URLs that don't have a protocol. ([#28435](https://github.com/expo/expo/pull/28435) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.3.2 — 2024-04-24
 
