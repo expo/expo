@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent overwriting exported Atlas data when exporting web with static renderer. ([#28502](https://github.com/expo/expo/pull/28502) by [@byCedric](https://github.com/byCedric))
+- Improve login info message for other login options. ([#28523](https://github.com/expo/expo/pull/28523) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
