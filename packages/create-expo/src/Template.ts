@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
@@ -304,25 +305,25 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     await fs.promises.copyFile(templatePath, ignorePath);
   }
 
-  const config: Record<string, any> = {
-    expo: {
-      name: projectName,
-      slug: projectName,
-    },
+  const defaultConfig: ExpoConfig = {
+    name: projectName,
+    slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
-    default: { expo: {} },
-  });
-  const appJson = deepMerge(await appFile.readAsync(), config);
-  await appFile.writeAsync(appJson);
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
+  const appJson = deepMerge(
+    appContent,
+    'expo' in appContent ? { expo: defaultConfig } : defaultConfig
+  );
 
+  await appFile.writeAsync(appJson);
   debug(`Created app.json:\n%O`, appJson);
 
   const packageFile = new JsonFile(path.join(projectRoot, 'package.json'));
   const packageJson = await packageFile.readAsync();
   // name and version are required for yarn workspaces (monorepos)
-  const inputName = 'name' in config ? config.name : config.expo.name;
+  const inputName = 'name' in appJson ? appJson.name : appJson.expo.name;
   packageJson.name = applyKnownNpmPackageNameRules(inputName) || 'app';
   // These are metadata fields related to the template package, let's remove them from the package.json.
   // A good place to start

@@ -29,12 +29,13 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
+    "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
     "watch": "yarn run build --watch",
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
     "@expo/json-file": "8.3.3",
+    "@expo/config": "9.0.1",
     "@expo/package-manager": "^1.5.0",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.7",
