@@ -34,7 +34,9 @@ export default function requireContext(
     });
   }
 
-  readDirectory(base);
+  if (fs.existsSync(base)) {
+    readDirectory(base);
+  }
 
   const context: RequireContextPonyFill = Object.assign(
     function Module(file: string) {

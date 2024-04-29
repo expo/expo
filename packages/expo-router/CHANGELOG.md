@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent crash when `EXPO_ROUTER_APP_ROOT` directory does not exist ([#28466](https://github.com/expo/expo/pull/28466) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 3.5.5 — 2024-04-29
