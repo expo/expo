@@ -27,6 +27,8 @@ export type CommentTagData = {
 export type CommentContentData = {
   kind: string;
   text: string;
+  tag?: string;
+  tsLinkText?: string;
 };
 
 export type TypeDefinitionData = {
