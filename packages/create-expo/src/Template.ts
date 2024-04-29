@@ -53,21 +53,28 @@ function deepMerge(target: any, source: any) {
   return target;
 }
 
+function coerceUrl(urlString: string) {
+  try {
+    return new URL(urlString);
+  } catch (e) {
+    if (!/^(https?:\/\/)/.test(urlString)) {
+      return new URL(`https://${urlString}`);
+    }
+    throw e;
+  }
+}
+
 export function resolvePackageModuleId(moduleId: string) {
   if (
     // Supports github repository URLs
-    moduleId.startsWith('https://github.com')
+    /^(https?:\/\/)?github\.com\//.test(moduleId)
   ) {
     try {
-      const uri = new URL(moduleId);
+      const uri = coerceUrl(moduleId);
       debug('Resolved moduleId to repository path:', moduleId);
       return { type: 'repository', uri } as const;
-    } catch (error: any) {
-      if (error.code === 'ERR_INVALID_URL') {
-        throw new Error(`Invalid URL: "${moduleId}" provided`);
-      } else {
-        throw error;
-      }
+    } catch {
+      throw new Error(`Invalid URL: "${moduleId}" provided`);
     }
   }
 
