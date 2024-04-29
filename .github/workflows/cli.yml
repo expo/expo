@@ -44,6 +44,9 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -70,7 +73,7 @@ jobs:
         run: yarn typecheck
         working-directory: packages/@expo/cli
       - name: E2E Test CLI
-        run: yarn test:e2e
+        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
       # - name: 🔔 Notify on Slack
       #   uses: 8398a7/action-slack@v3
