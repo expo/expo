@@ -45,6 +45,9 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var cameraType: CameraType = CameraType.BACK
 
+  @Field
+  val legacy: Boolean = false
+
   fun toCameraContractOptions(uri: String) = CameraContractOptions(uri, this)
 
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)

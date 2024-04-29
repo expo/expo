@@ -26,9 +26,14 @@ export type SymbolViewProps = {
    */
   weight?: SymbolWeight;
   /**
-   * An array of colors to use when the [SymbolType](#symboltype) is `palette`.
+   * An array of colors to use when the {@link SymbolType} is `palette`.
    */
   colors?: string | string[] | null;
+  /**
+   * The size of the symbol.
+   * @default 24
+   */
+  size?: number;
   /**
    * The tint color to apply to the symbol.
    * @default null

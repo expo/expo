@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.0.3 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix an issue where rapidly opening and closing the browser would leave the module in a bad state, preventing opening the browser again. ([#28452](https://github.com/expo/expo/pull/28452) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 13.0.2 — 2024-04-24
 
 _This version does not introduce any user-facing changes._

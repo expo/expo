@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 1.12.4 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed gziped payload does not correctly shown in network inspector. ([#28486](https://github.com/expo/expo/pull/28486) by [@kudo](https://github.com/kudo))
+- [Android] Fixed crashes during the deallocation of shared objects. ([#28491](https://github.com/expo/expo/pull/28491) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.3 — 2024-04-26
+
+### 🐛 Bug fixes
+
+- [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.12.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

@@ -160,7 +160,6 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
      * - /1/page -> /2/anotherPage needs to target the /[id] navigator
      *
      * Other parameters such as search params and hash are not evaluated.
-     *
      */
     let actionStateRoute;
     // Traverse the state tree comparing the current state and the action state until we find where they diverge
@@ -189,12 +188,18 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     let params = payload.params;
     // The root level of payload is a bit weird, its params are in the child object
     while (actionStateRoute) {
-        Object.assign(params, { ...actionStateRoute.params });
+        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
+        // Assign the screen name to the payload
         payload.screen = actionStateRoute.name;
-        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-        payload.params ??= {};
+        // Merge the params, ensuring that we create a new object
+        payload.params = { ...params };
+        // Params don't include the screen, thats a separate attribute
+        delete payload.params['screen'];
+        // Continue down the payload tree
+        // Initially these values are separate, but React Nav merges them after the first layer
         payload = payload.params;
         params = payload;
+        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
     }
     // Expo Router uses only three actions, but these don't directly translate to all navigator actions
     if (type === 'PUSH') {

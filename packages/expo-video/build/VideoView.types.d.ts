@@ -49,6 +49,10 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     status: VideoPlayerStatus;
     /**
+     * Boolean value determining whether the player should show the now playing notification.
+     */
+    showNowPlayingNotification: boolean;
+    /**
      * Determines whether the player should continue playing after the app enters the background.
      * @default false
      * @platform ios
@@ -163,7 +167,7 @@ export interface VideoViewProps extends ViewProps {
 }
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
- * */
+ */
 export type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
 /**
  * Specifies DRM options which will be used by the player while loading the video.
@@ -200,8 +204,19 @@ export type DRMOptions = {
     certificateUrl?: string;
 };
 export type VideoSource = string | {
+    /**
+     * The URI of the video.
+     */
     uri: string;
+    /**
+     * Specifies the DRM options which will be used by the player while loading the video.
+     */
     drm?: DRMOptions;
+    /**
+     * Specifies information which will be displayed in the now playing notification.
+     * When undefined the player will display information contained in the video metadata.
+     */
+    metadata?: VideoMetadata;
 } | null;
 /**
  * Handlers for events which can be emitted by the player.
@@ -244,5 +259,18 @@ export type PlayerError = {
 export type VolumeEvent = {
     volume: number;
     isMuted: boolean;
+};
+/**
+ * Contains information that will be displayed in the now playing notification when the video is playing.
+ */
+export type VideoMetadata = {
+    /**
+     * The title of the video.
+     */
+    title?: string;
+    /**
+     * Secondary text that will be displayed under the title.
+     */
+    artist?: string;
 };
 //# sourceMappingURL=VideoView.types.d.ts.map
