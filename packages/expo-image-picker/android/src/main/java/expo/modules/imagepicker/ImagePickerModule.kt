@@ -34,8 +34,6 @@ import kotlin.coroutines.resumeWithException
 private const val moduleName = "ExponentImagePicker"
 
 class ImagePickerModule : Module() {
-  private var isPickerOpen = false
-
   override fun definition() = ModuleDefinition {
     Name(moduleName)
 
@@ -121,6 +119,8 @@ class ImagePickerModule : Module() {
    * The user can retrieve the data using exported `getPendingResultAsync` method.
    */
   private var pendingMediaPickingResult: PendingMediaPickingResult? = null
+
+  private var isPickerOpen = false
 
   /**
    * Calls [launchPicker] and unifies flow shared between "launchCameraAsync" and "launchImageLibraryAsync"
