@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
