@@ -16,6 +16,7 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
+import { attachAtlasAsync } from '../start/server/metro/debugging/attachAtlas';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -143,6 +144,15 @@ async function bundleProductionMetroClientAsync(
   });
 
   assertMetroConfig(config);
+
+  // Attach Expo Atlas if enabled
+  await attachAtlasAsync({
+    exp: expoConfig,
+    projectRoot,
+    metroConfig: config,
+    isExporting: true,
+    resetAtlasFile: true, // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
+  });
 
   const metroServer = await Metro.runMetro(config, {
     watch: false,

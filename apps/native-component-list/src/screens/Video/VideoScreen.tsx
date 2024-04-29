@@ -9,8 +9,13 @@ import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-const bigBuckBunnySource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const bigBuckBunnySource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  metadata: {
+    title: 'Big Buck Bunny',
+    artist: 'The Open Movie Project',
+  },
+};
 
 const elephantsDreamSource: VideoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
@@ -58,12 +63,14 @@ export default function VideoScreen() {
   const [volume, setVolume] = React.useState(1);
   const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
   const [logEvents, setLogEvents] = React.useState(false);
+  const [showNowPlayingNotification, setShowNowPlayingNotification] = React.useState(true);
 
   const player = useVideoPlayer(currentSource, (player) => {
     player.volume = volume;
     player.loop = loop;
     player.preservesPitch = preservePitch;
     player.staysActiveInBackground = staysActiveInBackground;
+    player.showNowPlayingNotification = true;
     player.play();
   });
 
@@ -119,6 +126,14 @@ export default function VideoScreen() {
     (preservesPitch: boolean) => {
       player.preservesPitch = preservesPitch;
       setPreservePitch(preservesPitch);
+    },
+    [player]
+  );
+
+  const updateShowNowPlayingNotification = useCallback(
+    (showNowPlayingNotification: boolean) => {
+      player.showNowPlayingNotification = showNowPlayingNotification;
+      setShowNowPlayingNotification(showNowPlayingNotification);
     },
     [player]
   );
@@ -270,6 +285,15 @@ export default function VideoScreen() {
             title="Log events"
             value={logEvents}
             setValue={setLogEvents}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Show now playing notification"
+            value={showNowPlayingNotification}
+            setValue={updateShowNowPlayingNotification}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />

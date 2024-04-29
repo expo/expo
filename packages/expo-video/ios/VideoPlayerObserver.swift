@@ -4,6 +4,14 @@ import Foundation
 import ExpoModulesCore
 import AVFoundation
 
+private struct Weak<T: AnyObject> {
+  weak var value: T?
+
+  init(_ value: T?) {
+    self.value = value
+  }
+}
+
 protocol VideoPlayerObserverDelegate: AnyObject {
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?)
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool)
@@ -12,17 +20,55 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onPlayedToEnd(player: AVPlayer)
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?)
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool)
+  func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status)
+}
+
+// Default implementations for the delegate
+extension VideoPlayerObserverDelegate {
+  func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {}
+  func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {}
+  func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {}
+  func onVolumeChanged(player: AVPlayer, oldVolume: Float?, newVolume: Float) {}
+  func onPlayedToEnd(player: AVPlayer) {}
+  func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {}
+  func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {}
+  func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {}
+}
+
+// Wrapper used to store WeakReferences to the observer delegate
+final class WeakPlayerObserverDelegate: Hashable {
+  private(set) weak var value: VideoPlayerObserverDelegate?
+
+  init(value: VideoPlayerObserverDelegate? = nil) {
+    self.value = value
+  }
+
+  static func == (lhs: WeakPlayerObserverDelegate, rhs: WeakPlayerObserverDelegate) -> Bool {
+    guard let lhsValue = lhs.value, let rhsValue = rhs.value else {
+      return lhs.value == nil && rhs.value == nil
+    }
+    return ObjectIdentifier(lhsValue) == ObjectIdentifier(rhsValue)
+  }
+
+  func hash(into hasher: inout Hasher) {
+    if let value {
+      hasher.combine(ObjectIdentifier(value))
+    }
+  }
 }
 
 class VideoPlayerObserver {
   let player: AVPlayer
+  var delegates = Set<WeakPlayerObserverDelegate>()
   weak var delegate: VideoPlayerObserverDelegate?
   private var currentItem: VideoPlayerItem?
 
   private var isPlaying: Bool = false {
     didSet {
       if oldValue != isPlaying {
-        delegate?.onIsPlayingChanged(player: player, oldIsPlaying: oldValue, newIsPlaying: isPlaying)
+        delegates.forEach { delegate in
+          delegate.value?.onIsPlayingChanged(player: player, oldIsPlaying: oldValue, newIsPlaying: isPlaying)
+        }
       }
     }
   }
@@ -30,7 +76,9 @@ class VideoPlayerObserver {
   private var status: PlayerStatus = .idle {
     didSet {
       if oldValue != status {
-        delegate?.onStatusChanged(player: player, oldStatus: oldValue, newStatus: status, error: error)
+        delegates.forEach { delegate in
+          delegate.value?.onStatusChanged(player: player, oldStatus: oldValue, newStatus: status, error: error)
+        }
       }
     }
   }
@@ -50,15 +98,23 @@ class VideoPlayerObserver {
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
 
-  init(player: AVPlayer, delegate: VideoPlayerObserverDelegate) {
+  init(player: AVPlayer) {
     self.player = player
-    self.delegate = delegate
     initializePlayerObservers()
   }
 
   deinit {
     invalidatePlayerObservers()
     invalidateCurrentPlayerItemObservers()
+  }
+
+  func registerDelegate(delegate: VideoPlayerObserverDelegate) {
+    let weakDelegate = WeakPlayerObserverDelegate(value: delegate)
+    delegates.insert(weakDelegate)
+  }
+
+  func unregisterDelegate(delegate: VideoPlayerObserverDelegate) {
+    delegates.remove(WeakPlayerObserverDelegate(value: delegate))
   }
 
   private func initializePlayerObservers() {
@@ -80,7 +136,6 @@ class VideoPlayerObserver {
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
-    // Dual question marks due to the change wrapping an optional value as an optional Optional<Optional<PlayerItem>>
     playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty, changeHandler: onIsBufferEmptyChanged)
     playbackLikelyToKeepUpObserver = playerItem.observe(\.isPlaybackLikelyToKeepUp, changeHandler: onPlayerLikelyToKeepUpChanged)
     playerItemStatusObserver = playerItem.observe(\.status, options: [.initial, .new], changeHandler: onItemStatusChanged)
@@ -90,7 +145,9 @@ class VideoPlayerObserver {
       object: playerItem,
       queue: nil
     ) { [weak self] _ in
-      self?.delegate?.onPlayedToEnd(player: player)
+      self?.delegates.forEach { delegate in
+        delegate.value?.onPlayedToEnd(player: player)
+      }
     }
   }
 
@@ -110,13 +167,18 @@ class VideoPlayerObserver {
 
     if let videoPlayerItem = newPlayerItem as? VideoPlayerItem {
       initializeCurrentPlayerItemObservers(player: player, playerItem: videoPlayerItem)
-      delegate?.onItemChanged(player: player, oldVideoPlayerItem: currentItem, newVideoPlayerItem: videoPlayerItem)
       currentItem = videoPlayerItem
+
+      delegates.forEach { delegate in
+        delegate.value?.onItemChanged(player: player, oldVideoPlayerItem: currentItem, newVideoPlayerItem: videoPlayerItem)
+      }
       return
     }
 
     if newPlayerItem == nil {
-      delegate?.onItemChanged(player: player, oldVideoPlayerItem: currentItem, newVideoPlayerItem: nil)
+      delegates.forEach { delegate in
+        delegate.value?.onItemChanged(player: player, oldVideoPlayerItem: currentItem, newVideoPlayerItem: nil)
+      }
       status = .idle
     } else {
       log.warn(
@@ -144,6 +206,10 @@ class VideoPlayerObserver {
       } else {
         status = .readyToPlay
       }
+    }
+
+    delegates.forEach { delegate in
+      delegate.value?.onPlayerItemStatusChanged(player: player, oldStatus: change.oldValue, newStatus: playerItem.status)
     }
   }
 
@@ -193,19 +259,25 @@ class VideoPlayerObserver {
 
   private func onPlayerRateChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<Float>) {
     if let newRate = change.newValue, change.oldValue != change.newValue {
-      delegate?.onRateChanged(player: player, oldRate: change.oldValue, newRate: newRate)
+      delegates.forEach { delegate in
+        delegate.value?.onRateChanged(player: player, oldRate: change.oldValue, newRate: newRate)
+      }
     }
   }
 
   private func onPlayerVolumeChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<Float>) {
     if let newVolume = change.newValue, change.oldValue != change.newValue {
-      delegate?.onVolumeChanged(player: player, oldVolume: change.oldValue, newVolume: newVolume)
+      delegates.forEach { delegate in
+        delegate.value?.onVolumeChanged(player: player, oldVolume: change.oldValue, newVolume: newVolume)
+      }
     }
   }
 
   private func onPlayerIsMutedChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<Bool>) {
     if let newIsMuted = change.newValue, change.oldValue != change.newValue {
-      delegate?.onIsMutedChanged(player: player, oldIsMuted: change.oldValue, newIsMuted: newIsMuted)
+      delegates.forEach { delegate in
+        delegate.value?.onIsMutedChanged(player: player, oldIsMuted: change.oldValue, newIsMuted: newIsMuted)
+      }
     }
   }
 }
