@@ -422,6 +422,9 @@ export type ImagePickerOptions = {
    * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
    * Setting the value to `0` sets the selection limit to the maximum that the system supports.
    *
+   * On Android, the user may be allowed to select more items than the limit, but only the number of items allowed by
+   * the limit will be returned.
+   *
    * @platform ios 14+
    * @platform android
    * @default 0
