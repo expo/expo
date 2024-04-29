@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing types for Link when using Typed Routes ([#28467](https://github.com/expo/expo/pull/28467) by [@marklawlor](https://github.com/marklawlor))
 - Prevent crash when `EXPO_ROUTER_APP_ROOT` directory does not exist ([#28466](https://github.com/expo/expo/pull/28466) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
