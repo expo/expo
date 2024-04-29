@@ -35,9 +35,9 @@ internal class ImageLibraryContract(
       .putExtra(
         Intent.EXTRA_MIME_TYPES,
         when (input.options.mediaTypes) {
-          MediaTypes.ALL -> arrayOf("image/*", "video/*")
           MediaTypes.IMAGES -> arrayOf("image/*")
           MediaTypes.VIDEOS -> arrayOf("video/*")
+          else -> arrayOf("image/*", "video/*")
         }
       )
 
