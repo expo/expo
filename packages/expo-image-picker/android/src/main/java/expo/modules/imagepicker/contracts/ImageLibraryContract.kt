@@ -33,6 +33,10 @@ internal class ImageLibraryContract(
       ?: throw Exceptions.ReactContextLost()
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
+    if (input.options.legacy) {
+      return createLegacyIntent(input.options)
+    }
+
     val request = PickVisualMediaRequest.Builder()
       .setMediaType(
         when (input.options.mediaTypes) {
@@ -50,10 +54,6 @@ internal class ImageLibraryContract(
         }
       )
       .build()
-
-    if (input.options.legacy) {
-      return createLegacyIntent(input.options)
-    }
 
     if (input.options.allowsMultipleSelection) {
       val selectionLimit = input.options.selectionLimit
@@ -84,14 +84,14 @@ internal class ImageLibraryContract(
       intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
         if (input.options.allowsMultipleSelection) {
           val results = uris.map { uri ->
-              uri.toMediaType(contentResolver) to uri
-            }.let {
-             if (input.options.selectionLimit > 0) {
-                it.take(input.options.selectionLimit)
-              } else {
-                it
-             }
+            uri.toMediaType(contentResolver) to uri
+          }.let {
+            if (input.options.selectionLimit > 0) {
+              it.take(input.options.selectionLimit)
+            } else {
+              it
             }
+          }
 
           ImagePickerContractResult.Success(results)
         } else {
@@ -121,7 +121,7 @@ internal class ImageLibraryContract(
         else -> arrayOf("image/*", "video/*")
       }
     ).apply {
-      if (options.selectionLimit > 1) {
+      if (options.allowsMultipleSelection) {
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
       }
     }

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android.
+- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android. ([#28514](https://github.com/expo/expo/pull/28514) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
