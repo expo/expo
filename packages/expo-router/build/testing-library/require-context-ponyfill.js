@@ -23,7 +23,9 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
             files[relativePath] = true;
         });
     }
-    readDirectory(base);
+    if (node_fs_1.default.existsSync(base)) {
+        readDirectory(base);
+    }
     const context = Object.assign(function Module(file) {
         return require(node_path_1.default.join(base, file));
     }, {
