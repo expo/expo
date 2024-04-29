@@ -143,8 +143,6 @@ export async function coolDownAsync(browserPackage?: string): Promise<WebBrowser
   }
 }
 
-let browserLocked = false;
-
 // @needsAudit
 /**
  * Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller),
@@ -169,25 +167,11 @@ export async function openBrowserAsync(
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
 
-  if (browserLocked) {
-    // Prevent multiple sessions from running at the same time, WebBrowser doesn't
-    // support it this makes the behavior predictable.
-    if (__DEV__) {
-      console.warn(
-        'Attempted to call WebBrowser.openBrowserAsync multiple times while already active. Only one WebBrowser controller can be active at any given time.'
-      );
-    }
-
-    return { type: WebBrowserResultType.LOCKED };
-  }
-  browserLocked = true;
-
   let result: WebBrowserResult;
   try {
     result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
-  } finally {
-    // WebBrowser session complete, unset lock
-    browserLocked = false;
+  } catch {
+    return { type: WebBrowserResultType.LOCKED };
   }
 
   return result;
@@ -201,10 +185,7 @@ export async function openBrowserAsync(
  * @platform ios
  */
 export function dismissBrowser(): void {
-  if (!ExponentWebBrowser.dismissBrowser) {
-    throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
-  }
-  ExponentWebBrowser.dismissBrowser();
+  ExponentWebBrowser.dismissBrowser?.();
 }
 
 // @needsAudit
