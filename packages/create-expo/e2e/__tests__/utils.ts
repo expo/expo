@@ -21,6 +21,19 @@ export function getTestPath(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
+/** Get the path to a local fixture */
+export function getFixturePath(fixtureName: string) {
+  return path.join(__dirname, '../fixtures', fixtureName);
+}
+
+/** Create a tarball from a local fixture, and return the absolute tarball path */
+export async function createFixtureTarball(fixtureName: string) {
+  const fixturePath = getFixturePath(fixtureName);
+  const result = await spawnAsync('npm', ['pack', '--json'], { cwd: fixturePath });
+  expectExecutePassing(result);
+  return path.join(fixturePath, JSON.parse(result.stdout).pop().filename);
+}
+
 /** Get the path witihin the default project root, and ensure that folder exists */
 export function createTestPath(...args: string[]) {
   const testPath = getTestPath(...args);
