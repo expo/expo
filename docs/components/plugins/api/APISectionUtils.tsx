@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -662,7 +663,12 @@ const getParamTags = (shortText?: string) => {
 
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
-    .map(entry => entry.text)
+    .map(entry => {
+      if (entry.tag === '@link' && !entry.text.includes('/')) {
+        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+      }
+      return entry.text;
+    })
     .join('')
     .trim();
 };
