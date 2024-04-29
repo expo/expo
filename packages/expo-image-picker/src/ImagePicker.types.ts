@@ -470,6 +470,12 @@ export type ImagePickerOptions = {
    * @platform ios 14+
    */
   preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
+  /**
+   * Uses the legacy image picker on Android. This will allow media to be selected from outside the users photo library.
+   * @platform android
+   * @default false
+   */
+  legacy?: boolean;
 };
 
 // @needsAudit
