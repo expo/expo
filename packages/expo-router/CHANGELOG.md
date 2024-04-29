@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Switch to react-native-helmet-async (fork of react-helmet-async) in order remove react-dom peer dependency. ([#28532](https://github.com/expo/expo/pull/28532) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 3.4.10 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- Switch to react-native-helmet-async (fork of react-helmet-async) in order remove react-dom peer dependency. ([#28532](https://github.com/expo/expo/pull/28532) by [@brentvatne](https://github.com/brentvatne))
 
 ## 3.4.9 — 2024-04-25
 

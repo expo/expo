@@ -62,7 +62,7 @@
   "expo-notifications": "~0.27.7",
   "expo-print": "~12.8.1",
   "expo-random": "~13.6.0",
-  "expo-router": "~3.4.9",
+  "expo-router": "~3.4.10",
   "expo-screen-capture": "~5.8.1",
   "expo-screen-orientation": "~6.4.1",
   "expo-secure-store": "~12.8.1",
