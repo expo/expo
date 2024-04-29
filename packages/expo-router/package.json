@@ -99,7 +99,7 @@
     "@react-navigation/native": "~6.1.6",
     "@react-navigation/native-stack": "~6.9.12",
     "expo-splash-screen": "0.27.2",
-    "react-helmet-async": "^1.3.0",
+    "react-native-helmet-async": "2.0.4",
     "schema-utils": "^4.0.1"
   }
 }
