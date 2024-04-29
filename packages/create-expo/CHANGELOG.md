@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow templates and examples omitting root `expo:` object in `app.json`. ([#28521](https://github.com/expo/expo/pull/28521) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 2.3.2 — 2024-04-24
