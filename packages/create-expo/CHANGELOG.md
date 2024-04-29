@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- support GitHub URLs that don't have a protocol. ([#28435](https://github.com/expo/expo/pull/28435) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
