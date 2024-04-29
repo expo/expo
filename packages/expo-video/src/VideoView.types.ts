@@ -86,6 +86,11 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   replace(source: VideoSource): void;
 
   /**
+   * Seeks the playback to the given position in seconds.
+   */
+  seekTo(position: number): void;
+
+  /**
    * Seeks the playback by the given number of seconds.
    */
   seekBy(seconds: number): void;

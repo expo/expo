@@ -189,6 +189,12 @@ export class VideoPlayerWeb
     this.playing = true;
   }
 
+  seekTo(position: number): void {
+    this._mountedVideos.forEach((video) => {
+      video.currentTime = position;
+    });
+  }
+
   seekBy(seconds: number): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime += seconds;

@@ -259,6 +259,13 @@ class VideoModule : Module() {
         }
       }
 
+      Function("seekTo") { ref: VideoPlayer, seekTime: Double ->
+        appContext.mainQueue.launch {
+          val seekPos = (seekTime * 1000).toLong()
+          ref.player.seekTo(seekPos)
+        }
+      }
+
       Function("seekBy") { ref: VideoPlayer, seekTime: Double ->
         appContext.mainQueue.launch {
           val seekPos = ref.player.currentPosition + (seekTime * 1000).toLong()

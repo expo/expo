@@ -177,6 +177,12 @@ public final class VideoModule: Module {
         try player.replaceCurrentItem(with: videoSource)
       }
 
+      Function("seekTo") { (player, position: Double) in
+        let newTime = CMTime(seconds: position, preferredTimescale: .max)
+
+        player.pointer.seek(to: newTime)
+      }
+
       Function("seekBy") { (player, seconds: Double) in
         let newTime = player.pointer.currentTime() + CMTime(seconds: seconds, preferredTimescale: .max)
 

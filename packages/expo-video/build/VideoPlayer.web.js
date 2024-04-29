@@ -148,6 +148,11 @@ export class VideoPlayerWeb extends globalThis.expo.SharedObject {
         });
         this.playing = true;
     }
+    seekTo(position) {
+        this._mountedVideos.forEach((video) => {
+            video.currentTime = position;
+        });
+    }
     seekBy(seconds) {
         this._mountedVideos.forEach((video) => {
             video.currentTime += seconds;

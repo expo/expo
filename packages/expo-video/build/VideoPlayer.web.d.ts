@@ -35,6 +35,7 @@ export declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     play(): void;
     pause(): void;
     replace(source: VideoSource): void;
+    seekTo(position: number): void;
     seekBy(seconds: number): void;
     replay(): void;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
