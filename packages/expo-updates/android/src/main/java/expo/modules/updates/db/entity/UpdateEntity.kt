@@ -59,4 +59,6 @@ class UpdateEntity(
 
   @ColumnInfo(name = "failed_launch_count", defaultValue = "0")
   var failedLaunchCount = 0
+
+  fun debugInfo(): String = JSONObject(mapOf("id" to id.toString(), "status" to status.name)).toString()
 }
