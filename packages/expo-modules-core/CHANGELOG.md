@@ -16,6 +16,7 @@
 
 - [Android] Fixed gziped payload does not correctly shown in network inspector. ([#28486](https://github.com/expo/expo/pull/28486) by [@kudo](https://github.com/kudo))
 - [Android] Fixed crashes during the deallocation of shared objects. ([#28491](https://github.com/expo/expo/pull/28491) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix accessing the view registry to avoid infinite loop crash. ([#28531](https://github.com/expo/expo/pull/28531) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.12.3 — 2024-04-26
 

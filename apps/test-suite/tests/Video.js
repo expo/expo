@@ -11,11 +11,11 @@ import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } f
 export const name = 'Video';
 const imageRemoteSource = { uri: 'https://via.placeholder.com/350x150' };
 const videoRemoteSource = { uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
-const redirectingVideoRemoteSource = { uri: 'https://bit.ly/2mcW40Q' };
+const redirectingVideoRemoteSource = { uri: 'https://bit.ly/3Qld7fa' };
 const mp4Source = require('../assets/big_buck_bunny.mp4');
 const hlsStreamUri =
   'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
-const hlsStreamUriWithRedirect = 'https://t.ly/fg37A';
+const hlsStreamUriWithRedirect = 'https://bit.ly/3xXhpTT';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
 let portraitVideoSource = null;
 let imageSource = null;

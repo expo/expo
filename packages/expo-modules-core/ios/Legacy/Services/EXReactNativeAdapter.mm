@@ -296,7 +296,7 @@ EX_REGISTER_MODULE();
       UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
       UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
 #else
-      UIView *view = viewRegistry[viewId];
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
 #endif
       block(view);
     }];
@@ -313,7 +313,7 @@ EX_REGISTER_MODULE();
       UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
       UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
 #else
-      UIView *view = viewRegistry[viewId];
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
 #endif
       block(view);
     }];
