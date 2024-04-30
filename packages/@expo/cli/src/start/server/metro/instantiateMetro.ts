@@ -224,14 +224,21 @@ export async function instantiateMetroAsync(
   // Attach Expo Atlas if enabled
   const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
 
-  const { server, metro } = await runServer(metroBundler, metroConfig, {
-    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints: {
-      ...websocketEndpoints,
-      ...debugWebsocketEndpoints,
+  const { server, metro } = await runServer(
+    metroBundler,
+    metroConfig,
+    {
+      // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
+      websocketEndpoints: {
+        ...websocketEndpoints,
+        ...debugWebsocketEndpoints,
+      },
+      watch: !isExporting && isWatchEnabled(),
     },
-    watch: !isExporting && isWatchEnabled(),
-  });
+    {
+      mockServer: isExporting,
+    }
+  );
 
   // If Atlas is enabled, and can register to Metro, attach it to listen for changes
   atlas?.registerMetro(metro);
