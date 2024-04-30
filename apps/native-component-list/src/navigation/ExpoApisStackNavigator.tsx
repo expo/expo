@@ -321,12 +321,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/RandomScreen'));
-    },
-    name: 'Random',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/RemindersScreen'));
     },
     name: 'Reminders',
