@@ -3,6 +3,8 @@ import path from 'path';
 import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
+const VALID_ARCHITECTURES = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
+
 export type GradleProps = {
   /** Directory for the APK based on the `variant`. */
   apkVariantDirectory: string;
@@ -60,5 +62,8 @@ async function getConnectedDeviceABIS(
   }
 
   const abis = await getDeviceABIsAsync(device);
-  return abis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
+  const validArchitectures = new Set(VALID_ARCHITECTURES);
+
+  const validAbis = abis.filter((abi) => validArchitectures.has(abi));
+  return validAbis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
 }
