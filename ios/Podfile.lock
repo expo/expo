@@ -837,7 +837,7 @@ PODS:
     - React-Core
   - EXNotifications (0.27.7):
     - ExpoModulesCore
-  - Expo (50.0.17):
+  - Expo (50.0.18):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
@@ -3275,7 +3275,7 @@ SPEC CHECKSUMS:
   EXManifests: 5e8c29f36c716af768a4ea47ec05e1b89ab93091
   EXMediaLibrary: ffa90dc06abeccbd1bfd1526506e028cf9bb20d1
   EXNotifications: 1c117bf042bd05a5b1a1ffd06f4c36ff9921ed2b
-  Expo: 2cdb5916749a1509cf88114f1f510bd458630eb4
+  Expo: 09bd48f31bb7f1a3c97fd5a6cb28feae89cb4e40
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoBackgroundFetch: 80d41ec15c6cce0bafb5d2326b8e85f42152eba7
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
