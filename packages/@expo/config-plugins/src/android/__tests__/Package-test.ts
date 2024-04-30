@@ -163,5 +163,5 @@ describe(kotlinSanitized, () => {
     expect(kotlinSanitized('com.example.xyz')).toBe('com.example.xyz');
     expect(kotlinSanitized('is.pvin.appname')).toBe('`is`.pvin.appname');
     expect(kotlinSanitized('com.fun.wow')).toBe('com.`fun`.wow');
-  })
-})
+  });
+});

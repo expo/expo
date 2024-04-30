@@ -284,10 +284,10 @@ function transformJavaClassDescriptor(packageName: string) {
  * e.g. is.pvin.hello -> `is`.pvin.hello
  */
 export function kotlinSanitized(packageName: string) {
-  const stringsToWrap = ['is', 'in' , 'as', 'fun']
+  const stringsToWrap = ['is', 'in', 'as', 'fun'];
 
   const parts = packageName.split('.');
-  const cleanParts = parts.map((part) => stringsToWrap.includes(part) ? '`' + part + '`' : part);
+  const cleanParts = parts.map((part) => (stringsToWrap.includes(part) ? '`' + part + '`' : part));
 
   const cleanName = cleanParts.join('.');
   return cleanName;
