@@ -1,6 +1,6 @@
 import React from 'react';
 import { VideoPlayerWeb } from './VideoPlayer.web';
-import { VideoViewProps } from './VideoView.types';
+import type { VideoViewProps } from './VideoView.types';
 export declare const VideoView: React.ForwardRefExoticComponent<{
     player?: VideoPlayerWeb | undefined;
 } & VideoViewProps & React.RefAttributes<unknown>>;

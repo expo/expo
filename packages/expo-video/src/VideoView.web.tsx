@@ -2,7 +2,7 @@ import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react
 import { StyleSheet } from 'react-native';
 
 import { VideoPlayerWeb, getSourceUri } from './VideoPlayer.web';
-import { VideoViewProps } from './VideoView.types';
+import type { VideoViewProps } from './VideoView.types';
 
 function createAudioContext(): AudioContext | null {
   return typeof window !== 'undefined' ? new window.AudioContext() : null;

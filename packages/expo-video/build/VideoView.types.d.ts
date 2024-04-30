@@ -16,11 +16,17 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     loop: boolean;
     /**
      * Boolean value whether the player is currently muted.
+     * Setting this property to `true`/`false` will mute/unmute the player.
      * @default false
      */
     muted: boolean;
     /**
-     * Integer value representing the current position in seconds.
+     * Float value indicating the current playback time in seconds.
+     *
+     * If the player is not yet playing, this value indicates the time position
+     * at which playback will begin once the `play()` method is called.
+     *
+     * Setting `currentTime` to a new value seeks the player to the given time.
      */
     currentTime: number;
     /**
@@ -59,6 +65,11 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * @platform android
      */
     staysActiveInBackground: boolean;
+    /**
+     * Initializes a new video player instance with the given source.
+     * @hidden
+     */
+    constructor(source: VideoSource);
     /**
      * Resumes the player.
      */
@@ -225,27 +236,27 @@ export type VideoPlayerEvents = {
     /**
      * Handler for an event emitted when the status of the player changes.
      */
-    statusChange: (newStatus: VideoPlayerStatus, oldStatus: VideoPlayerStatus, error: PlayerError) => void;
+    statusChange(newStatus: VideoPlayerStatus, oldStatus: VideoPlayerStatus, error: PlayerError): void;
     /**
      * Handler for an event emitted when the player starts or stops playback.
      */
-    playingChange: (newIsPlaying: boolean, oldIsPlaying: boolean) => void;
+    playingChange(newIsPlaying: boolean, oldIsPlaying: boolean): void;
     /**
      * Handler for an event emitted when the `playbackRate` property of the player changes.
      */
-    playbackRateChange: (newPlaybackRate: number, oldPlaybackRate: number) => void;
+    playbackRateChange(newPlaybackRate: number, oldPlaybackRate: number): void;
     /**
      * Handler for an event emitted when the `volume` property of the player changes.
      */
-    volumeChange: (newVolume: VolumeEvent, oldVolume: VolumeEvent) => void;
+    volumeChange(newVolume: VolumeEvent, oldVolume: VolumeEvent): void;
     /**
      * Handler for an event emitted when the player plays to the end of the current source.
      */
-    playToEnd: () => void;
+    playToEnd(): void;
     /**
      * Handler for an event emitted when the current media source of the player changes.
      */
-    sourceChange: (newSource: VideoSource, previousSource: VideoSource) => void;
+    sourceChange(newSource: VideoSource, previousSource: VideoSource): void;
 };
 /**
  * Contains information about any errors that the player encountered during the playback
