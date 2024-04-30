@@ -803,7 +803,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (5.8.4):
     - ExpoModulesCore
-  - EXAV (13.10.5):
+  - EXAV (13.10.6):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBarCodeScanner (12.9.3):
@@ -849,7 +849,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (11.8.0):
     - ExpoModulesCore
-  - ExpoCamera (14.1.2):
+  - ExpoCamera (14.1.3):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -876,7 +876,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.8.1):
     - ExpoModulesCore
-  - ExpoHead (3.4.8):
+  - ExpoHead (3.4.10):
     - ExpoModulesCore
   - ExpoImage (1.10.6):
     - ExpoModulesCore
@@ -956,7 +956,7 @@ PODS:
     - ExpoModulesCore
   - EXScreenCapture (5.8.1):
     - ExpoModulesCore
-  - EXSplashScreen (0.26.4):
+  - EXSplashScreen (0.26.5):
     - ExpoModulesCore
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -3263,7 +3263,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a42ee8bf36c93b3128352faf2ae49405ab4f80bd
   EXApplication: 16bcea16789221bd566e64b5ea2608cf7756b005
-  EXAV: 07e50f934907fa8274dd06fbcd20ee4b9478c619
+  EXAV: e4f6137431ddc4cb025895046bfefa9612025c35
   EXBarCodeScanner: d59fd943cebee3f913ebf4ffde0d05d344da8b78
   EXCalendar: 93cc0af8a143e9fce72b2451e058779bb270f9f1
   EXConstants: a5f6276e565d98f9eb4280f81241fc342d641590
@@ -3281,7 +3281,7 @@ SPEC CHECKSUMS:
   ExpoBattery: 60bf880aea8f769fe39f709a920442542c1bfd62
   ExpoBlur: e832d874bd94afc0645daddbd3162ec1ce172080
   ExpoBrightness: 6d160de5877289d11674aea61aacdb37422774cf
-  ExpoCamera: ed3dd4ae8e32603c91336ea8e27c5d1e2822d8f6
+  ExpoCamera: f3f157db67e5a491e1104a2c0018c240242936e7
   ExpoCellular: e4e0788a9949726f0d068c4ae45414b4b7d4566d
   ExpoClipboard: b597982124f067ff9f5b89093eb3d97898d5d877
   ExpoCrypto: b6428f48599c007676dc81a9b5f72c07e62fdccc
@@ -3290,7 +3290,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 74cc0fae916f9f044248433971dcfc8c3befd057
   ExpoGL: 085542f97b13f2428ac2edb077c9a90f4566944d
   ExpoHaptics: 28a771b630353cd6e8dcf1b1e3e693e38ad7c3c3
-  ExpoHead: 8224345e80abcf4c97b31c99805dd5a3c8d3404d
+  ExpoHead: 89ffd324e60520751c2c285233fe45e875c91874
   ExpoImage: 8cf2d51de3d03b7e984e9b0ba8f19c0c22057001
   ExpoImageManipulator: c1d7cb865eacd620a35659f3da34c70531f10b59
   ExpoImagePicker: 66970181d1c838f444e5e1f81b804ab2d5ff49bd
@@ -3318,7 +3318,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 9b6c0dada0b3240dd3527e0dc688711e17842c88
   ExpoWebBrowser: e31c97230ea93b51a2a74c6c2381b0d4fca5698c
   EXScreenCapture: 7a491c16de021638078f50281d411e3352bb28c2
-  EXSplashScreen: 7e2781d4dfc853a9f83f495eb71a87b84e573bab
+  EXSplashScreen: 4c72e1778dabcca6dccd47c775b264dfca0ff0db
   EXStructuredHeaders: 5b0f47259db047dc1fdfa84752e292c2bfa68ecd
   EXTaskManager: 07d427a5213dd275c13b6b6c07bba35a672e6698
   EXUpdates: 4d7db984d9847e08d8a4c99a8c96f1a0a262091e
