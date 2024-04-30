@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a `forcesRTL` manifest flag for forcing RTL to be on.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

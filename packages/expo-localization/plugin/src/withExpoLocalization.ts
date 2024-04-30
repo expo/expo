@@ -47,18 +47,18 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
         [
           {
             $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-            _: String(mergedConfig?.supportsRTL),
+            _: String(mergedConfig?.supportsRTL ?? 'unset'),
           },
         ],
         config.modResults
       );
     }
-    if (mergedConfig?.supportsRTL != null) {
+    if (mergedConfig?.forcesRTL != null) {
       config.modResults = AndroidConfig.Strings.setStringItem(
         [
           {
             $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' },
-            _: String(mergedConfig?.forcesRTL),
+            _: String(mergedConfig?.forcesRTL ?? 'unset'),
           },
         ],
         config.modResults
