@@ -38,13 +38,6 @@ if (!process.isBun) {
   });
 }
 
-export function wrapBundle(str: string) {
-  // Skip the metro runtime so debugging is a bit easier.
-  // Replace the __r() call with an export statement.
-  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
-}
-
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
@@ -118,7 +111,7 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetro(projectRoot: string, src: string, filename: string) {
+function evalMetro(projectRoot: string, src: string, filename: string) {
   try {
     return evalMetroNoHandling(projectRoot, src, filename);
   } catch (error: any) {

@@ -11,10 +11,12 @@ import assert from 'assert';
 import chalk from 'chalk';
 import { AssetData, TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import {
+  sourceMapGeneratorNonBlocking,
+  type SourceMapGeneratorOptions,
+} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import bundleToString from 'metro/src/lib/bundleToString';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
-// import fetch from 'node-fetch';
 import path from 'path';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -42,9 +44,6 @@ import {
   cachedSourceMaps,
   evalMetroAndWrapFunctions,
   evalMetroNoHandling,
-  // getStaticRenderFunctionsForEntry,
-  // requireFileContentsWithMetro,
-  wrapBundle,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -97,7 +96,6 @@ type MetroServerType = import('metro').Server & {
   _config: import('metro-config').ConfigT;
   _createModuleId: (path: string) => number;
   _isEnded: boolean;
-  // _logger: typeof import('metro-core').Logger;
   _nextBundleBuildNumber: number;
   _platforms: Set<string>;
   _reporter: import('metro/src/lib/reporting').Reporter;
@@ -298,7 +296,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const resolvedMainModuleName =
       mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
-    return await this.metroImportArtifactsAsync(resolvedMainModuleName, {
+    return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -384,7 +382,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return await evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
-  async metroImportArtifactsAsync(
+  private async metroImportAsArtifactsAsync(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<{
@@ -413,7 +411,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
     throw new CommandError('Invalid bundler results: ' + data);
   }
-  async ssrLoadModuleContents(
+
+  private async ssrLoadModuleContents(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<{ src: string; filename: string; map: string }> {
@@ -934,8 +933,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = this.metro._config;
     assert(config, 'Metro server is missing private _config member.');
 
-    debug('Bundling:', resolvedEntryFilePath);
-
     const buildNumber = this.metro.getNewBuildNumber();
     const bundlePerfLogger = config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
       key: buildNumber,
@@ -974,7 +971,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         customResolverOptions: resolverOptions.customResolverOptions,
         customTransformOptions: transformOptions.customTransformOptions,
       },
-      isPrefetch: false, //req.method === 'HEAD',
+      isPrefetch: false,
       type: 'bundle_build_started',
     });
 
@@ -1005,10 +1002,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const shouldAddToIgnoreList = this.metro._shouldAddModuleToIgnoreList.bind(this.metro);
 
-      const serializer =
-        config.serializer.customSerializer ||
-        ((entryPoint, preModules, graph, options) =>
-          bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code);
+      const serializer = this.getMetroSerializer();
 
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
@@ -1065,7 +1059,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           prepend = [];
         }
 
-        bundleMap = sourceMapString(
+        bundleMap = await sourceMapStringAsync(
           [
             //
             ...prepend,
@@ -1100,6 +1094,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       throw error;
     }
   }
+
+  private getMetroSerializer() {
+    return (
+      this.metro?._config?.serializer.customSerializer ||
+      ((entryPoint, preModules, graph, options) =>
+        bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code)
+    );
+  }
 }
 
 function getBuildID(buildNumber: number): string {
@@ -1126,4 +1128,20 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+function wrapBundle(str: string) {
+  // Skip the metro runtime so debugging is a bit easier.
+  // Replace the __r() call with an export statement.
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+}
+
+async function sourceMapStringAsync(
+  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  options: SourceMapGeneratorOptions
+): Promise<string> {
+  return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
+    excludeSource: options.excludeSource,
+  });
 }
