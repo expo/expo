@@ -63,7 +63,6 @@ describe(resolveGradlePropsAsync, () => {
     });
   });
 
-  const VALID_ARCHITECTURES = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
   it(`should filter out duplicate abis`, async () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
     jest
@@ -73,7 +72,7 @@ describe(resolveGradlePropsAsync, () => {
         DeviceABI.arm64v8a,
         DeviceABI.arm64v8a,
         DeviceABI.x8664,
-        DeviceABI.x8664
+        DeviceABI.x8664,
       ]);
 
     expect(await resolveGradlePropsAsync('/', {}, testDevice)).toEqual({
