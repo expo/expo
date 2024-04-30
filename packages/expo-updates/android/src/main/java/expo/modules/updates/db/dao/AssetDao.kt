@@ -39,9 +39,9 @@ abstract class AssetDao {
 
   @Query(
     "UPDATE assets SET marked_for_deletion = 0 WHERE id IN (" +
-        " SELECT launch_asset_id" +
-        " FROM updates" +
-        " WHERE updates.keep);"
+      " SELECT launch_asset_id" +
+      " FROM updates" +
+      " WHERE updates.keep);"
   )
   abstract fun _unmarkUsedLaunchAssetsFromDeletion()
 
