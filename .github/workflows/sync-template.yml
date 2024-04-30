@@ -25,3 +25,4 @@ jobs:
           user-name: Expo Bot
           user-email: expo-bot@users.noreply.github.com
           target-branch: main
+          commit-message: Sync the default project template from ORIGIN_COMMIT
