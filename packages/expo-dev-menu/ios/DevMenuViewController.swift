@@ -82,9 +82,9 @@ class DevMenuViewController: UIViewController {
     reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
       if traitCollection.userInterfaceStyle == .dark {
         return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
-      } else {
-        return UIColor.clear
       }
+        
+      return UIColor.clear
     }
 
     if isViewLoaded, let reactRootView = reactRootView {

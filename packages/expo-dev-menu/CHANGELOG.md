@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update Menu background color in dark mode. ([#28549](https://github.com/expo/expo/pull/28549) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 5.0.9 — 2024-05-01
 
 _This version does not introduce any user-facing changes._
