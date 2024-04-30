@@ -3,6 +3,7 @@ import path from 'path';
 import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
+// Supported ABIs for Android. see https://developer.android.com/ndk/guides/abis
 const VALID_ARCHITECTURES = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
 
 export type GradleProps = {
