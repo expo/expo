@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- Change default git branch from `master` to `main`.
+- Change default git branch from `master` to `main`. ([#28540](https://github.com/expo/expo/pull/28540) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.3.3 — 2024-04-29
 
