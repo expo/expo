@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `seekTo` method on Android and iOS. ([#28522](https://github.com/expo/expo/pull/28522) by [@justjoostnl](https://github.com/justjoostnl))
+- Add `seekTo` method on Android and iOS. ([#28529](https://github.com/expo/expo/pull/28529) by [@justjoostnl](https://github.com/justjoostnl))
 
 ### 🐛 Bug fixes
 
