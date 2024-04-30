@@ -22,5 +22,6 @@ jobs:
           source-directory: 'templates/expo-template-default'
           destination-github-username: 'expo'
           destination-repository-name: 'expo-template-default'
-          user-name: Expo Sync Bot
+          user-name: Expo Bot
+          user-email: expo-bot@users.noreply.github.com
           target-branch: main
