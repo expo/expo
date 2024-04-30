@@ -9,7 +9,7 @@ import { Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1 } from '../getServerManifest';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Options): Promise<{
-    initialRouteName?: string | undefined;
+    initialRouteName: string | undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
 /**
