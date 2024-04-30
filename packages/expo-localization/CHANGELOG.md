@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added a `forcesRTL` manifest flag for forcing RTL to be on.
+- Added a `forcesRTL` manifest flag for forcing RTL to be on. ([#28129](https://github.com/expo/expo/pull/28129) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
