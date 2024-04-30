@@ -14,6 +14,7 @@ describe('server-output', () => {
 
   beforeAll(
     async () => {
+      console.time('export-server');
       await ensurePortFreeAsync(8081);
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
@@ -25,6 +26,7 @@ describe('server-output', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
+      console.timeEnd('export-server');
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
@@ -185,7 +187,7 @@ describe('server-output', () => {
       const map = JSON.parse(
         await fs.readFile(
           path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
-          { encoding: 'utf8' },
+          { encoding: 'utf8' }
         )
       );
 

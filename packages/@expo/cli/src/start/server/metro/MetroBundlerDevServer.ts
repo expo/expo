@@ -14,7 +14,7 @@ import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
-import fetch from 'node-fetch';
+// import fetch from 'node-fetch';
 import path from 'path';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -296,7 +296,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const platform = 'web';
 
-    const devBundleUrlPathname = createBundleUrlPath({
+    const resolvedMainModuleName =
+      mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
+    return await this.metroImportArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -304,7 +306,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       serializerIncludeMaps: includeSourceMaps,
-      mainModuleName: mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform }),
+      mainModuleName: resolvedMainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       asyncRoutes,
       baseUrl,
@@ -312,64 +314,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot,
       bytecode: false,
     });
-
-    const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-
-    // Fetch the generated HTML from our custom Metro serializer
-    const results = await fetch(bundleUrl.toString());
-
-    const txt = await results.text();
-
-    let data: any;
-    try {
-      data = JSON.parse(txt);
-    } catch (error: any) {
-      debug(txt);
-
-      // Metro can throw this error when the initial module id cannot be resolved.
-      if (!results.ok && txt.startsWith('<!DOCTYPE html>')) {
-        throw new ForwardHtmlError(
-          `Metro failed to bundle the project. Check the console for more information.`,
-          txt,
-          results.status
-        );
-      }
-
-      Log.error(
-        'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
-      );
-      throw error;
-    }
-
-    // NOTE: This could potentially need more validation in the future.
-    if ('artifacts' in data && Array.isArray(data.artifacts)) {
-      return data;
-    }
-
-    if (data != null && (data.errors || data.type?.match(/.*Error$/))) {
-      // {
-      //   type: 'InternalError',
-      //   errors: [],
-      //   message: 'Metro has encountered an error: While trying to resolve module `stylis` from file `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js`, the package `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs`. Indeed, none of these files exist:\n' +
-      //     '\n' +
-      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css)\n' +
-      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs/index(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css): /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/metro/src/node-haste/DependencyGraph.js (289:17)\n' +
-      //     '\n' +
-      //     '\x1B[0m \x1B[90m 287 |\x1B[39m         }\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 288 |\x1B[39m         \x1B[36mif\x1B[39m (error \x1B[36minstanceof\x1B[39m \x1B[33mInvalidPackageError\x1B[39m) {\x1B[0m\n' +
-      //     '\x1B[0m\x1B[31m\x1B[1m>\x1B[22m\x1B[39m\x1B[90m 289 |\x1B[39m           \x1B[36mthrow\x1B[39m \x1B[36mnew\x1B[39m \x1B[33mPackageResolutionError\x1B[39m({\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m     |\x1B[39m                 \x1B[31m\x1B[1m^\x1B[22m\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 290 |\x1B[39m             packageError\x1B[33m:\x1B[39m error\x1B[33m,\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 291 |\x1B[39m             originModulePath\x1B[33m:\x1B[39m \x1B[36mfrom\x1B[39m\x1B[33m,\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 292 |\x1B[39m             targetModuleName\x1B[33m:\x1B[39m to\x1B[33m,\x1B[39m\x1B[0m'
-      // }
-      // The Metro logger already showed this error.
-      throw new Error(data.message);
-    }
-
-    throw new Error(
-      'Invalid resources returned from the Metro serializer. Expected array, found: ' + data
-    );
   }
 
   private async getStaticPageAsync(pathname: string) {
@@ -440,6 +384,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return await evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
+  async metroImportArtifactsAsync(
+    filePath: string,
+    specificOptions: Partial<ExpoMetroOptions> = {}
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets?: AssetData[];
+    src: string;
+    filename: string;
+    map: string;
+  }> {
+    const results = await this.ssrLoadModuleContents(filePath, {
+      serializerOutput: 'static',
+      ...specificOptions,
+    });
+
+    const data = JSON.parse(results.src);
+
+    // NOTE: This could potentially need more validation in the future.
+    if ('artifacts' in data && Array.isArray(data.artifacts)) {
+      return {
+        artifacts: data.artifacts,
+        assets: data.assets,
+        src: results.src,
+        filename: results.filename,
+        map: results.map,
+      };
+    }
+    throw new CommandError('Invalid bundler results: ' + data);
+  }
   async ssrLoadModuleContents(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
