@@ -228,7 +228,9 @@ export abstract class BundlerDevServer {
     }
     await this.startDevSessionAsync();
 
-    this.watchConfig();
+    if (!options.isExporting) {
+      this.watchConfig();
+    }
   }
 
   protected abstract getConfigModuleIds(): string[];

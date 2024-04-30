@@ -45,7 +45,9 @@ export class DevServerManager {
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.notifier = this.watchBabelConfig();
+    if (!options.isExporting) {
+      this.notifier = this.watchBabelConfig();
+    }
     this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 
