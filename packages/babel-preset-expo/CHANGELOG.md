@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Align versions of fast refresh. ([#28550](https://github.com/expo/expo/pull/28550) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 11.0.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
