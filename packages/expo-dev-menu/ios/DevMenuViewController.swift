@@ -79,7 +79,13 @@ class DevMenuViewController: UIViewController {
   private func rebuildRootView() {
     reactRootView = manager.appInstance.rootViewFactory.view(withModuleName: "main", initialProperties: initialProps())
     reactRootView?.frame = view.bounds
-    reactRootView?.backgroundColor = UIColor.clear
+    reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+      if traitCollection.userInterfaceStyle == .dark {
+        return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
+      } else {
+        return UIColor.clear
+      }
+    }
 
     if isViewLoaded, let reactRootView = reactRootView {
       view.addSubview(reactRootView)
