@@ -22,7 +22,7 @@ jobs:
       - name: 🚀 Push changes to the template repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         with:
           source-directory: 'templates/expo-template-default'
           destination-github-username: 'expo'
