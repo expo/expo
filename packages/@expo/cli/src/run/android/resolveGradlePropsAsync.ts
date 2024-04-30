@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { Device, DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 const VALID_ARCHITECTURES = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
