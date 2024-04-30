@@ -10,6 +10,10 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import chalk from 'chalk';
 import { AssetData, TransformInputOptions } from 'metro';
+import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import bundleToString from 'metro/src/lib/bundleToString';
+import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -101,8 +105,8 @@ type MetroServerType = import('metro').Server & {
 
   getNewBuildNumber(): number;
   _getSortedModules(
-    graph: import('metro/src/DeltaBundler/types').ReadOnlyGraph<>
-  ): Array<import('metro/src/DeltaBundler/types').Module>;
+    graph: import('metro/src/IncrementalBundler').OutputGraph
+  ): import('metro/src/DeltaBundler/types').Module[];
 
   _resolveRelativePath(
     filePath: string,
@@ -534,7 +538,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     if (map) {
       debug('Registering SSR source map for:', filename);
-      cachedSourceMaps.set(filename, { url: this.projectRoot, map: map });
+      cachedSourceMaps.set(filename, { url: this.projectRoot, map });
     } else {
       debug('No SSR source map found for:', filename);
     }
@@ -1014,12 +1018,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       buildID: getBuildID(buildNumber),
       bundleDetails: {
         bundleType: transformOptions.type,
-        customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
         dev: transformOptions.dev,
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
+        // @ts-expect-error: typed incorrectly upstream
+        customResolverOptions: resolverOptions.customResolverOptions,
+        customTransformOptions: transformOptions.customTransformOptions,
       },
       isPrefetch: false, //req.method === 'HEAD',
       type: 'bundle_build_started',
@@ -1092,7 +1097,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           shouldAddToIgnoreList,
         }
       );
+
+      this.metro._reporter.update({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_build_done',
+      });
+
       bundlePerfLogger.point('serializingBundle_end');
+
       let bundleCode: string | null = null;
       let bundleMap: string | null = null;
 
@@ -1122,13 +1134,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundleMap = bundle.map;
       }
 
-      // const bundleCode = typeof bundle === 'string' ? bundle : bundle.code;
-
-      this.metro._reporter.update({
-        buildID: getBuildID(buildNumber),
-        type: 'bundle_build_done',
-      });
-
       return {
         numModifiedFiles: delta.reset
           ? delta.added.size + revision.prepend.length
@@ -1142,21 +1147,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_failed',
-        bundleOptions: {
-          // TODO:...
-        },
       });
 
       throw error;
     }
   }
 }
-
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
-import bundleToString from 'metro/src/lib/bundleToString';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 const noopLogger: import('metro-config/src/configTypes').RootPerfLogger = {
   start: () => {},
   point: () => {},
