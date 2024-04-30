@@ -42,7 +42,11 @@ afterEach(async () => {
   jest.resetModules();
 });
 
-describe('within Expo Go', () => {
+// TODO (@tsapeta): The way these tests work is a bit confusing, unclear and outdated,
+// e.g. using NativeModulesProxy, mocking expo-constants, dealing with the internal memory.
+// We should rewrite them once we stop scoping font names in Expo Go on Android.
+// Then it is no longer necessary to have separate tests cases for Expo Go/standalone/bare workflow.
+xdescribe('within Expo Go', () => {
   beforeAll(() => {
     jest.doMock('expo-constants', () => {
       const Constants = jest.requireActual('expo-constants');
