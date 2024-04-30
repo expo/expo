@@ -472,7 +472,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   if (!_isHomeApp) {
-    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+    BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
