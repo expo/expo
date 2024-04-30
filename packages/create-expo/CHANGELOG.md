@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Change default git branch from `master` to `main`.
+
 ## 2.3.3 — 2024-04-29
 
 ### 🎉 New features
