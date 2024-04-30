@@ -9,7 +9,7 @@ import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { AssetData } from 'metro';
+import { AssetData, TransformInputOptions } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -84,8 +84,37 @@ const EXPO_GO_METRO_PORT = 8081;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
+type MetroServerType = import('metro').Server & {
+  _bundler: import('metro/src/IncrementalBundler').default;
+  _config: import('metro-config').ConfigT;
+  _createModuleId: (path: string) => number;
+  _isEnded: boolean;
+  // _logger: typeof import('metro-core').Logger;
+  _nextBundleBuildNumber: number;
+  _platforms: Set<string>;
+  _reporter: import('metro/src/lib/reporting').Reporter;
+  _serverOptions: import('metro').ServerOptions | void;
+
+  getNewBuildNumber(): number;
+
+  _resolveRelativePath(
+    filePath: string,
+    {
+      relativeTo,
+      resolverOptions,
+      transformOptions,
+    }: {
+      relativeTo: 'project' | 'server';
+      resolverOptions: import('metro/src/shared/types').ResolverInputOptions;
+      transformOptions: TransformInputOptions;
+    }
+  ): Promise<string>;
+
+  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<>): boolean;
+};
+
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: import('metro').Server | null = null;
+  private metro: MetroServerType | null = null;
 
   get name(): string {
     return 'metro';
@@ -633,7 +662,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    this.metro = metro;
+    this.metro = metro as MetroServerType;
     return {
       server,
       location: {
@@ -782,7 +811,219 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
   }
+
+  private getMetroRevision(
+    resolvedEntryFilePath: string,
+    {
+      graphOptions,
+      transformOptions,
+      resolverOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+      graphOptions: {
+        shallow: boolean;
+        lazy: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'Metro server must be running to bundle directly.');
+    const config = this.metro._config;
+    assert(config, 'Metro server is missing private _config member.');
+
+    const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
+      unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
+      resolverOptions,
+      shallow: graphOptions.shallow,
+      lazy: graphOptions.lazy,
+    });
+    return this.metro.getBundler().getRevisionByGraphId(graphId);
+  }
+
+  // Direct Metro access
+
+  // Emulates the Metro dev server .bundle endpoint without having to go through a server.
+  async _bundleDirectAsync(
+    resolvedEntryFilePath: string,
+    {
+      transformOptions,
+      resolverOptions,
+      graphOptions,
+      serializerOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+      serializerOptions: {
+        modulesOnly: boolean;
+        runModule: boolean;
+        sourceMapUrl: string;
+        sourceUrl: string;
+        inlineSourceMap: boolean;
+      };
+      graphOptions: {
+        shallow: boolean;
+        lazy: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'Metro server must be running to bundle directly.');
+    const config = this.metro._config;
+    assert(config, 'Metro server is missing private _config member.');
+    const buildNumber = this.metro.getNewBuildNumber();
+    const bundlePerfLogger =
+      config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
+        key: buildNumber,
+      }) ?? noopLogger;
+
+    const onProgress = (transformedFileCount: number, totalFileCount: number) => {
+      this.metro?._reporter?.update?.({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_transform_progressed',
+        transformedFileCount,
+        totalFileCount,
+      });
+    };
+    // const {
+    //   entryFile,
+    //   // graphOptions,
+    //   // resolverOptions,
+    //   serializerOptions,
+    //   // transformOptions,
+    // } = splitBundleOptions(bundleOptions);
+
+    const revPromise = this.getMetroRevision(resolvedEntryFilePath, {
+      graphOptions,
+      transformOptions,
+      resolverOptions,
+    });
+
+    bundlePerfLogger.point('resolvingAndTransformingDependencies_start');
+    bundlePerfLogger.annotate({
+      bool: {
+        initial_build: revPromise == null,
+      },
+    });
+    const { delta, revision } = await (revPromise != null
+      ? this.metro.getBundler().updateGraph(await revPromise, false)
+      : this.metro.getBundler().initializeGraph(
+          // NOTE: Using absolute path instead of relative input path is a breaking change.
+          // entryFile,
+          resolvedEntryFilePath,
+
+          transformOptions,
+          resolverOptions,
+          {
+            onProgress,
+            shallow: graphOptions.shallow,
+            // @ts-expect-error: typed incorrectly
+            lazy: graphOptions.lazy,
+          }
+        ));
+    bundlePerfLogger.annotate({
+      int: {
+        graph_node_count: revision.graph.dependencies.size,
+      },
+    });
+    bundlePerfLogger.point('resolvingAndTransformingDependencies_end');
+    bundlePerfLogger.point('serializingBundle_start');
+
+    const shouldAddToIgnoreList = this.metro._shouldAddModuleToIgnoreList;
+
+    const serializer =
+      config.serializer.customSerializer ||
+      ((entryPoint, preModules, graph, options) =>
+        bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code);
+    const bundle = await serializer(
+      // NOTE: Using absolute path instead of relative input path is a breaking change.
+      // entryFile,
+      resolvedEntryFilePath,
+
+      revision.prepend as any,
+      revision.graph as any,
+      {
+        asyncRequireModulePath: await this.metro._resolveRelativePath(
+          config.transformer.asyncRequireModulePath,
+          {
+            relativeTo: 'project',
+            resolverOptions,
+            transformOptions,
+          }
+        ),
+        processModuleFilter: config.serializer.processModuleFilter,
+        createModuleId: this.metro._createModuleId,
+        getRunModuleStatement: config.serializer.getRunModuleStatement,
+        includeAsyncPaths: graphOptions.lazy,
+        dev: transformOptions.dev,
+        projectRoot: config.projectRoot,
+        modulesOnly: serializerOptions.modulesOnly,
+        runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
+          resolvedEntryFilePath
+          // path.relative(config.projectRoot, entryFile)
+        ),
+        runModule: serializerOptions.runModule,
+        sourceMapUrl: serializerOptions.sourceMapUrl,
+        sourceUrl: serializerOptions.sourceUrl,
+        inlineSourceMap: serializerOptions.inlineSourceMap,
+        serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+        shouldAddToIgnoreList,
+      }
+    );
+    bundlePerfLogger.point('serializingBundle_end');
+    let bundleCode: string | null = null;
+    let bundleMap: string | null = null;
+
+    if (typeof bundle === 'string') {
+      bundleCode = bundle;
+    } else {
+      bundleCode = bundle.code;
+      bundleMap = bundle.map;
+    }
+
+    // const bundleCode = typeof bundle === 'string' ? bundle : bundle.code;
+
+    return {
+      numModifiedFiles: delta.reset
+        ? delta.added.size + revision.prepend.length
+        : delta.added.size + delta.modified.size + delta.deleted.size,
+      lastModifiedDate: revision.date,
+      nextRevId: revision.id,
+      bundle: bundleCode,
+      map: bundleMap,
+    };
+  }
 }
+
+import type { CustomResolverOptions } from 'metro-resolver/src/types';
+import bundleToString from 'metro/src/lib/bundleToString';
+import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+const noopLogger: import('metro-config/src/configTypes').RootPerfLogger = {
+  start: () => {},
+  point: () => {},
+  annotate: () => {},
+  subSpan: () => noopLogger,
+  end: () => {},
+};
+
+function getBuildID(buildNumber: number): string {
+  return buildNumber.toString(36);
+}
+
+const getGraphId = require('metro/src/lib/getGraphId') as (
+  entryFile: string,
+  options: any,
+  etc: {
+    shallow: boolean;
+    lazy: boolean;
+    unstable_allowRequireContext: boolean;
+    resolverOptions: unknown;
+  }
+) => string;
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
   return async ({ runtime }) => {
