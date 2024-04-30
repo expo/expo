@@ -37,15 +37,15 @@ function withExpoLocalizationAndroid(config, data) {
             config.modResults = config_plugins_1.AndroidConfig.Strings.setStringItem([
                 {
                     $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-                    _: String(mergedConfig?.supportsRTL),
+                    _: String(mergedConfig?.supportsRTL ?? 'unset'),
                 },
             ], config.modResults);
         }
-        if (mergedConfig?.supportsRTL != null) {
+        if (mergedConfig?.forcesRTL != null) {
             config.modResults = config_plugins_1.AndroidConfig.Strings.setStringItem([
                 {
                     $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' },
-                    _: String(mergedConfig?.forcesRTL),
+                    _: String(mergedConfig?.forcesRTL ?? 'unset'),
                 },
             ], config.modResults);
         }
