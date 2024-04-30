@@ -7,7 +7,7 @@ export type Screen = string | {
 };
 export declare function getReactNavigationScreensConfig(nodes: RouteNode[], metaOnly: boolean): Record<string, Screen>;
 export declare function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean): {
-    initialRouteName?: string;
+    initialRouteName: string | undefined;
     screens: Record<string, Screen>;
 };
 //# sourceMappingURL=getReactNavigationConfig.d.ts.map

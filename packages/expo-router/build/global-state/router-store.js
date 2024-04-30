@@ -69,12 +69,11 @@ class RouterStore {
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
-    initialize(context, navigationRef, initialLocation) {
+    initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;
         this.rootState = undefined;
         this.nextState = undefined;
-        this.routeInfo = undefined;
         this.linking = undefined;
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
@@ -84,33 +83,39 @@ class RouterStore {
             ignoreEntryPoints: true,
             platform: react_native_1.Platform.OS,
         });
-        this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
-        // Only error in production, in development we will show the onboarding screen
-        if (!this.routeNode && process.env.NODE_ENV === 'production') {
-            throw new Error('No routes found');
-        }
-        this.navigationRef = navigationRef;
+        // We always needs routeInfo, even if there are no routes. This can happen if:
+        //  - there are no routes (we are showing the onboarding screen)
+        //  - getInitialURL() is async
+        this.routeInfo = {
+            unstable_globalHref: '',
+            pathname: '',
+            isIndex: false,
+            params: {},
+            segments: [],
+        };
         if (this.routeNode) {
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode);
-            if (initialLocation) {
-                this.linking.getInitialURL = () => initialLocation.toString();
-                this.initialState = this.linking.getStateFromPath?.(initialLocation.pathname + initialLocation.search, this.linking.config);
+            // We have routes, so get the linking config and the root component
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode, context, linkingConfigOptions);
+            this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
+            // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
+            // This will cause static rendering to fail, which once performs a single pass.
+            // If the initialURL is a string, we can preload the state and routeInfo, skipping React Navigation's async behavior.
+            const initialURL = this.linking?.getInitialURL?.();
+            if (typeof initialURL === 'string') {
+                this.rootState = this.linking.getStateFromPath?.(initialURL, this.linking.config);
+                this.initialState = this.rootState;
+                if (this.rootState) {
+                    this.routeInfo = this.getRouteInfo(this.rootState);
+                }
             }
         }
-        // There is no routeNode, so we will be showing the onboarding screen
-        // In the meantime, just mock the routeInfo
-        if (this.initialState) {
-            this.rootState = this.initialState;
-            this.routeInfo = this.getRouteInfo(this.initialState);
-        }
         else {
-            this.routeInfo = {
-                unstable_globalHref: '',
-                pathname: '',
-                isIndex: false,
-                params: {},
-                segments: [],
-            };
+            // Only error in production, in development we will show the onboarding screen
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('No routes found');
+            }
+            // In development, we will show the onboarding screen
+            this.rootComponent = react_1.Fragment;
         }
         /**
          * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
@@ -123,6 +128,7 @@ class RouterStore {
          * that hooks will manually update the store.
          *
          */
+        this.navigationRef = navigationRef;
         this.navigationRefSubscription = navigationRef.addListener('state', (data) => {
             const state = data.data.state;
             if (!this.hasAttemptedToHideSplash) {
@@ -163,7 +169,7 @@ class RouterStore {
     getRouteInfo(state) {
         return (0, LocationProvider_1.getRouteInfoFromState)((state, asPath) => {
             return (0, getPathFromState_1.getPathDataFromState)(state, {
-                screens: [],
+                screens: {},
                 ...this.linking?.config,
                 preserveDynamicRoutes: asPath,
                 preserveGroups: asPath,
@@ -223,9 +229,9 @@ function useStoreRouteInfo() {
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.routeInfoSnapshot, exports.store.routeInfoSnapshot);
 }
 exports.useStoreRouteInfo = useStoreRouteInfo;
-function useInitializeExpoRouter(context, initialLocation) {
+function useInitializeExpoRouter(context, options) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
-    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, initialLocation), [context, initialLocation]);
+    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, options), context.keys());
     useExpoRouter();
     return exports.store;
 }

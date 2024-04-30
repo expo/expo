@@ -35,7 +35,7 @@ const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
 const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = require("./global-state/serverLocationContext");
+const serverContext_1 = __importDefault(require("./global-state/serverContext"));
 const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
@@ -69,8 +69,43 @@ exports.ExpoRoot = ExpoRoot;
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, }) {
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, initialLocation);
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
+    // location and linking.getInitialURL are both used to initialize the router state
+    //  - location is used on web and during static rendering
+    //  - linking.getInitialURL is used on native
+    const serverContext = (0, react_1.useMemo)(() => {
+        let contextType = {};
+        if (initialLocation instanceof URL) {
+            contextType = {
+                location: {
+                    pathname: initialLocation.pathname,
+                    search: initialLocation.search,
+                },
+            };
+        }
+        else if (typeof initialLocation === 'string') {
+            // The initial location is a string, so we need to parse it into a URL.
+            const url = new URL(initialLocation, 'http://placeholder.base');
+            contextType = {
+                location: {
+                    pathname: url.pathname,
+                    search: url.search,
+                },
+            };
+        }
+        return contextType;
+    }, []);
+    /*
+     * The serverUrl is an initial URL used in server rendering environments.
+     * e.g Static renders, units tests, etc
+     */
+    const serverUrl = serverContext.location
+        ? `${serverContext.location.pathname}${serverContext.location.search}`
+        : undefined;
+    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
+        ...linking,
+        serverUrl,
+    });
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -88,11 +123,11 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverLocationContext_1.ServerLocationContext.Provider value={initialLocation}>
+      <serverContext_1.default.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </serverLocationContext_1.ServerLocationContext.Provider>
+      </serverContext_1.default.Provider>
     </NavigationContainer_1.default>);
 }
 let onUnhandledAction;

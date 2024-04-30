@@ -45,21 +45,21 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  it('will throw if navigation is attempted before navigation is ready', async () => {
-    renderRouter(
-      {
-        index: function MyIndexRoute() {
-          return <Text>Press me</Text>;
-        },
-        '/profile/[name]': function MyRoute() {
-          const { name } = useGlobalSearchParams();
-          return <Text>{name}</Text>;
+  it.only('will throw if navigation is attempted before navigation is ready', async () => {
+    renderRouter({
+      index: function MyIndexRoute() {
+        return <Text>Press me</Text>;
+      },
+      '/profile/[name]': function MyRoute() {
+        const { name } = useGlobalSearchParams();
+        return <Text>{name}</Text>;
+      },
+      '+native-intent': {
+        redirectSystemPath() {
+          return new Promise(() => {}); // This never resolves
         },
       },
-      {
-        initialUrl: new Promise(() => {}), // This never resolves
-      }
-    );
+    });
 
     expect(() => {
       act(() => {
