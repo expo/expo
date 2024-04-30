@@ -18,6 +18,8 @@ export enum DeviceABI {
   arm64 = 'arm64',
   x64 = 'x64',
   x86 = 'x86',
+  x8664 = 'x86_64',
+  arm64v8a = 'arm64-v8a',
   armeabiV7a = 'armeabi-v7a',
   armeabi = 'armeabi',
   universal = 'universal',
