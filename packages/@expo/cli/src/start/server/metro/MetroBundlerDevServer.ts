@@ -446,22 +446,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const expoBundleOptions = getMetroDirectBundleOptions(opts);
 
-    // cachedSourceMaps.set(url, { url: projectRoot, map });
-
-    // {
-    //   // Bundle in Node.js mode for SSR.
-    //   environment: 'node',
-    //   platform: 'web',
-    //   mode: 'development',
-    //   bytecode: false,
-
-    //   ...this.instanceMetroOptions,
-    //   baseUrl,
-    //   routerRoot,
-    //   isExporting,
-    //   ...specificOptions,
-    // },
-
     const resolverOptions = {
       customResolverOptions: expoBundleOptions.customResolverOptions ?? {},
       dev: expoBundleOptions.dev ?? true,
@@ -474,11 +458,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       type: 'module',
       unstable_transformProfile: expoBundleOptions.unstable_transformProfile ?? 'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
-      // experimentalImportSupport: expoBundleOptions.
-      // nonInlinedRequires: expoBundleOptions
       platform: expoBundleOptions.platform ?? 'web',
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
-      // unstable_disableES6Transforms: expoBundleOptions.unstable_disableES6Transforms ?? false,
     };
 
     const resolvedEntryFilePath = await this.resolveRelativePathAsync(filePath, {
@@ -956,10 +937,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('Bundling:', resolvedEntryFilePath);
 
     const buildNumber = this.metro.getNewBuildNumber();
-    const bundlePerfLogger =
-      config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
-        key: buildNumber,
-      }) ?? noopLogger;
+    const bundlePerfLogger = config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
+      key: buildNumber,
+    });
 
     const onProgress = (transformedFileCount: number, totalFileCount: number) => {
       this.metro?._reporter?.update?.({
@@ -969,13 +949,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         totalFileCount,
       });
     };
-    // const {
-    //   entryFile,
-    //   // graphOptions,
-    //   // resolverOptions,
-    //   serializerOptions,
-    //   // transformOptions,
-    // } = splitBundleOptions(bundleOptions);
 
     const revPromise = this.getMetroRevision(resolvedEntryFilePath, {
       graphOptions,
@@ -983,8 +956,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resolverOptions,
     });
 
-    bundlePerfLogger.point('resolvingAndTransformingDependencies_start');
-    bundlePerfLogger.annotate({
+    bundlePerfLogger?.point('resolvingAndTransformingDependencies_start');
+    bundlePerfLogger?.annotate({
       bool: {
         initial_build: revPromise == null,
       },
@@ -1022,13 +995,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               lazy: graphOptions.lazy,
             }
           ));
-      bundlePerfLogger.annotate({
+      bundlePerfLogger?.annotate({
         int: {
           graph_node_count: revision.graph.dependencies.size,
         },
       });
-      bundlePerfLogger.point('resolvingAndTransformingDependencies_end');
-      bundlePerfLogger.point('serializingBundle_start');
+      bundlePerfLogger?.point('resolvingAndTransformingDependencies_end');
+      bundlePerfLogger?.point('serializingBundle_start');
 
       const shouldAddToIgnoreList = this.metro._shouldAddModuleToIgnoreList.bind(this.metro);
 
@@ -1078,7 +1051,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         type: 'bundle_build_done',
       });
 
-      bundlePerfLogger.point('serializingBundle_end');
+      bundlePerfLogger?.point('serializingBundle_end');
 
       let bundleCode: string | null = null;
       let bundleMap: string | null = null;
@@ -1128,13 +1101,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
   }
 }
-const noopLogger: import('metro-config/src/configTypes').RootPerfLogger = {
-  start: () => {},
-  point: () => {},
-  annotate: () => {},
-  subSpan: () => noopLogger,
-  end: () => {},
-};
 
 function getBuildID(buildNumber: number): string {
   return buildNumber.toString(36);
