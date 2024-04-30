@@ -184,19 +184,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             /\/\/# sourceMappingURL=.*/g,
             `//# sourceMappingURL=${artifactBasename}`
           );
+
+          const parsedMap = JSON.parse(contents.map);
           files.set(artifactFilename + '.map', {
             contents: JSON.stringify({
-              version: contents.map.version,
-              sources: contents.map.sources.map((source: string) => {
+              version: parsedMap.version,
+              sources: parsedMap.sources.map((source: string) => {
                 source =
                   typeof source === 'string' && source.startsWith(this.projectRoot)
                     ? path.relative(this.projectRoot, source)
                     : source;
                 return source.split(path.sep).join('/');
               }),
-              sourcesContent: new Array(contents.map.sources.length).fill(null),
-              names: contents.map.names,
-              mappings: contents.map.mappings,
+              sourcesContent: new Array(parsedMap.sources.length).fill(null),
+              names: parsedMap.names,
+              mappings: parsedMap.mappings,
             }),
             targetDomain: 'server',
           });
@@ -814,7 +816,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private pendingRouteOperations = new Map<
     string,
-    Promise<{ src: string; filename: string; map?: any } | null>
+    Promise<{ src: string; filename: string; map: string } | null>
   >();
 
   // API Routes
@@ -822,7 +824,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string
-  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
+  ): Promise<{ src: string; filename: string; map: string } | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
