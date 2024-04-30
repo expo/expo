@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import { Device, DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 const VALID_ARCHITECTURES = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
@@ -62,8 +62,7 @@ async function getConnectedDeviceABIS(
   }
 
   const abis = await getDeviceABIsAsync(device);
-  const validArchitectures = new Set(VALID_ARCHITECTURES);
 
-  const validAbis = abis.filter((abi) => validArchitectures.has(abi));
+  const validAbis = abis.filter((abi) => VALID_ARCHITECTURES.includes(abi));
   return validAbis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
 }
