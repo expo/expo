@@ -34,7 +34,7 @@ class MetroNodeError extends Error {
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
-const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
+export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
 // Support unhandled rejections
 // Detect if running in Bun
@@ -51,7 +51,7 @@ if (!process.isBun) {
   });
 }
 
-function wrapBundle(str: string) {
+export function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
@@ -217,7 +217,7 @@ export async function getStaticRenderFunctionsForEntry<T = any>(
   };
 }
 
-function evalMetroAndWrapFunctions<T = Record<string, any>>(
+export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string
