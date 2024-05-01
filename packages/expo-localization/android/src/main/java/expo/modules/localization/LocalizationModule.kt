@@ -74,13 +74,13 @@ class LocalizationModule : Module() {
 
     if (forcesRTL == "true") {
       context
-          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-          .edit()
-          .also {
-            it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, true)
-            it.putBoolean(KEY_FOR_PREFS_FORCERTL, true)
-            it.apply()
-          }
+        .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .also {
+          it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, true)
+          it.putBoolean(KEY_FOR_PREFS_FORCERTL, true)
+          it.apply()
+        }
     } else {
       if (supportsRTL == "true" || supportsRTL == "false") {
         context

@@ -24,14 +24,14 @@ class ExperienceRTLManager {
     }
 
     fun setRTLPreferencesFromManifest(context: Context, manifest: Manifest) {
-        // get supportsRTL from manifest and set it in shared preferences
-        val supportsRTL = manifest.getExpoClientConfigRootObject()?.optJSONObject("extra")?.optBoolean("supportsRTL") ?: false
-        val forcesRTL = manifest.getExpoClientConfigRootObject()?.optJSONObject("extra")?.optBoolean("forcesRTL") ?: false
-        if(forcesRTL) {
-            setRTLPreferences(context, true, true)
-            } else {
-            setRTLPreferences(context, supportsRTL, false)
-        }
+      // get supportsRTL from manifest and set it in shared preferences
+      val supportsRTL = manifest.getExpoClientConfigRootObject()?.optJSONObject("extra")?.optBoolean("supportsRTL") ?: false
+      val forcesRTL = manifest.getExpoClientConfigRootObject()?.optJSONObject("extra")?.optBoolean("forcesRTL") ?: false
+      if (forcesRTL) {
+        setRTLPreferences(context, true, true)
+      } else {
+        setRTLPreferences(context, supportsRTL, false)
+      }
     }
   }
 }
