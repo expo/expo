@@ -1895,7 +1895,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.9.0-rc.1):
+  - RNReanimated (3.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
