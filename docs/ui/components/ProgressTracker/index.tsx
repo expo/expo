@@ -73,7 +73,9 @@ export function ProgressTracker({
           <Checkbox
             id={`chapter-${currentChapterIndex}`}
             checked={currentChapter.completed}
-            label={currentChapter.completed ? 'Mark this chapter unread' : 'Mark this chapter read'}
+            label={
+              currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
+            }
             // readOnly
             onChange={handleCheckboxChange}
           />
