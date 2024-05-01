@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.3.4 — 2024-05-01
+
+### 🐛 Bug fixes
+
 - Allow templates and examples omitting root `expo:` object in `app.json`. ([#28521](https://github.com/expo/expo/pull/28521) by [@byCedric](https://github.com/byCedric))
 - Configure `pnpm` and `yarn` v3+ package managers when providing `--no-install`. ([#28521](https://github.com/expo/expo/pull/28521) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 2.3.3 — 2024-04-29
 

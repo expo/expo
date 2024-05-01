@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Android: Fix hard crash due to missing asset edge row. ([#28264](https://github.com/expo/expo/pull/28264) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.25.6 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- Android: Fix hard crash due to missing asset edge row. ([#28264](https://github.com/expo/expo/pull/28264) by [@douglowder](https://github.com/douglowder))
 
 ## 0.25.5 — 2024-04-24
 

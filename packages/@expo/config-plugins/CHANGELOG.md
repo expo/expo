@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Package names using kotlin keywords like `is`, `in`, `fun` etc work. ([#27458](https://github.com/expo/expo/pull/27458) by [@pvinis](https://github.com/pvinis))
-
 ### 💡 Others
+
+## 8.0.4 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- Package names using kotlin keywords like `is`, `in`, `fun` etc work. ([#27458](https://github.com/expo/expo/pull/27458) by [@pvinis](https://github.com/pvinis))
 
 ## 8.0.3 — 2024-04-25
 
