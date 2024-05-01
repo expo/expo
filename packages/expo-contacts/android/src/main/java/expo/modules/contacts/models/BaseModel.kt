@@ -137,7 +137,7 @@ abstract class BaseModel : CommonProvider {
       }
 
       return input.map {
-        val item = clazz.newInstance()
+        val item = clazz.getDeclaredConstructor().newInstance()
         item.fromMap(it)
         item
       }.toMutableList()

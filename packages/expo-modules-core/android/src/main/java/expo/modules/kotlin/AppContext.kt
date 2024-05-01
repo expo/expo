@@ -363,7 +363,7 @@ class AppContext(
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
+    activityResultsManager.onActivityResult(requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,

@@ -15,7 +15,6 @@ object NavigationBar {
     activity: Activity,
     color: Int,
     successCallback: () -> Unit,
-    failureCallback: (reason: String) -> Unit
   ) {
     activity.window.navigationBarColor = color
     successCallback()
