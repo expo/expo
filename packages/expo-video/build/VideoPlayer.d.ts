@@ -1,4 +1,4 @@
-import { VideoPlayer, VideoSource } from './VideoView.types';
+import type { VideoPlayer, VideoSource } from './VideoView.types';
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.
