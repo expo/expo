@@ -83,7 +83,7 @@ class DevMenuViewController: UIViewController {
       if traitCollection.userInterfaceStyle == .dark {
         return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
       }
-        
+
       return UIColor.clear
     }
 
