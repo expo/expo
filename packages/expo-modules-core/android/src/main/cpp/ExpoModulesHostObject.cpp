@@ -41,6 +41,13 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
   // Create a lazy object for the specific module. It defers initialization of the final module object.
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(
     [this, cName](jsi::Runtime &rt) {
+      // Check if the installer has been deallocated.
+      // If so, return nullptr to avoid a "field operation on NULL object" crash.
+      // As it's probably the best we can do in this case.
+      if (installer->wasDeallocated()) {
+        return std::shared_ptr<jsi::Object>(nullptr);
+      }
+
       auto module = installer->getModule(cName);
       return module->cthis()->getJSIObject(rt);
     });

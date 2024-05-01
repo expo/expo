@@ -145,9 +145,13 @@ public:
 
   void prepareForDeallocation();
 
+  bool wasDeallocated() const;
+
 private:
   friend HybridBase;
   jni::global_ref<JSIContext::javaobject> javaPart_;
+
+  bool wasDeallocated_ = false;
 
   explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
