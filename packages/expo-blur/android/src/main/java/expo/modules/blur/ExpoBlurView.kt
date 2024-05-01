@@ -7,7 +7,6 @@ import android.os.Build
 import android.view.ViewGroup
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderEffectBlur
-import eightbitlab.com.blurview.RenderScriptBlur
 import expo.modules.blur.enums.BlurMethod
 import expo.modules.blur.enums.TintStyle
 import expo.modules.kotlin.AppContext
@@ -25,12 +24,13 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     val decorView = (appContext.currentActivity ?: throw Exceptions.MissingActivity()).window?.decorView
-    val rootView = decorView?.findViewById(android.R.id.content) as ViewGroup
+    val rootView = decorView?.findViewById<ViewGroup>(android.R.id.content) ?: throw Exceptions.MissingRootView()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       it.setupWith(rootView, RenderEffectBlur())
         .setFrameClearDrawable(decorView.background)
     } else {
-      it.setupWith(rootView, RenderScriptBlur(context))
+      @Suppress("DEPRECATION")
+      it.setupWith(rootView, eightbitlab.com.blurview.RenderScriptBlur(context))
         .setFrameClearDrawable(decorView.background)
     }
     addView(it)

@@ -60,9 +60,8 @@ class PedometerModule : Module() {
       }
     }
 
-    AsyncFunction("getStepCountAsync") { _: Int, _: Int ->
+    AsyncFunction<Unit, Int, Int>("getStepCountAsync") { _, _ ->
       throw NotSupportedException("Getting step count for date range is not supported on Android yet")
-      Unit
     }
   }
 }

@@ -30,6 +30,7 @@ internal object FileUtils {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         CompressFormat.WEBP_LOSSY
       } else {
+        @Suppress("DEPRECATION")
         CompressFormat.WEBP
       } -> ".webp"
       else -> ".jpg"

@@ -61,15 +61,15 @@ object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate 
   ) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
 
-    val params = ResponseReceivedParams(now, requestId, request, response)
+    val params = ResponseReceivedParams(now, requestId, response)
     dispatchEvent(Event("Network.responseReceived", params))
 
     if (body != null) {
-      val params2 = ExpoReceivedResponseBodyParams(now, requestId, request, response, body)
+      val params2 = ExpoReceivedResponseBodyParams(requestId, body)
       dispatchEvent(Event("Expo(Network.receivedResponseBody)", params2))
     }
 
-    val params3 = LoadingFinishedParams(now, requestId, request, response)
+    val params3 = LoadingFinishedParams(now, requestId, response)
     dispatchEvent(Event("Network.loadingFinished", params3))
   }
 

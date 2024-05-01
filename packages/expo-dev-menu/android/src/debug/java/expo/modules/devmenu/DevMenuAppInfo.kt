@@ -61,15 +61,11 @@ object DevMenuAppInfo {
   }
 
   private fun getApplicationIconUri(reactContext: ReactContext): String {
-    var appIcon = ""
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
 
-    if (applicationInfo.icon != null) {
-      appIcon = "" + applicationInfo.icon
-    }
     //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
+    return applicationInfo.icon.toString()
   }
 }
