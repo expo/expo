@@ -214,9 +214,40 @@ On your project's GitHub settings page in the Expo dashboard, you can click the 
 a build trigger row to disable, edit, or delete the trigger.
 
 <ImageSpotlight
-  alt="Manage GitHub build trigger with the options button"
-  src="/static/images/eas-build/build-from-github/managing-build-triggers.png"
+  alt="The options button on the build trigger row"
+  src="/static/images/eas-build/build-from-github/edit-trigger-option.png"
+  style={{ maxWidth: 320 }}
 />
+
+You can also run a GitHub build with the parameters from the trigger manually. This will not count towards your automatic build trigger record.
+
+#### Automatic app stores submission with EAS Submit
+
+Once your build completes, you can automatically submit your app to the app stores using EAS Submit. This feature streamlines the process, reducing the manual steps required to publish your app.
+
+To enable automatic submission, you need to configure your build triggers to include submission as part of the build process. Here's how you can set it up:
+
+- Navigate to your project's GitHub settings page on the Expo dashboard.
+- Find the build trigger you want to modify, and click the options button.
+- Select **Edit trigger** and in the dialog that appears, check the option **Submit to store after build**.
+
+<ImageSpotlight
+  alt="The EAS Submit form fields on the trigger edit form"
+  src="/static/images/eas-build/build-from-github/eas-submit-form-fields.png"
+  style={{ maxWidth: 640 }}
+/>
+
+- Save your changes.
+
+<ImageSpotlight
+  alt="An enabled build trigger with automatic submission enabled"
+  src="/static/images/eas-build/build-from-github/auto-submit-trigger-column.png"
+  style={{ maxWidth: 400 }}
+/>
+
+Once enabled, every time a build is triggered from this configuration, it will automatically be submitted to the app stores you have configured in your **eas.json** under the `submit` field.
+
+> **Note:** Ensure that your **eas.json** is properly configured for submission, including specifying the correct app store's credentials and submission profile. For more information, see the [EAS Submit](/submit/eas-json/).
 
 ### Troubleshooting
 
