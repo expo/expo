@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Improve audio focus management. ([#28453](https://github.com/expo/expo/pull/28453) by [@behenate](https://github.com/behenate))
+
 ## 1.1.5 — 2024-04-26
 
 ### 🎉 New features

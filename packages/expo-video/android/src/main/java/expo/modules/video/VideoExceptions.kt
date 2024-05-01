@@ -23,3 +23,6 @@ internal class UnsupportedDRMTypeException(type: DRMType) :
 
 internal class PlaybackException(reason: String?, cause: Throwable? = null) :
   CodedException("A playback exception has occurred: ${reason ?: "reason unknown"}", cause)
+
+internal class FailedToGetAudioFocusManagerException :
+  CodedException("Failed to get AudioFocusManager service")
