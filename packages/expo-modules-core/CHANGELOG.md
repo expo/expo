@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `field operation on NULL object` when reloading the app.
+
 ### 💡 Others
 
 ## 1.12.5 — 2024-05-01
