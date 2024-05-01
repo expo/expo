@@ -96,9 +96,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
-          href="#bare-workflow"
+        <span
+          class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
         >
           <span
             class="css-1n5kx9e-TextComponent"
@@ -106,6 +105,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
+        </span>
+        <a
+          href="#bare-workflow"
+        >
           <svg
             aria-label="permalink"
             class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
@@ -238,9 +241,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
-          href="#expokit"
+        <span
+          class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
         >
           <span
             class="css-1n5kx9e-TextComponent"
@@ -248,6 +250,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             ExpoKit
           </span>
+        </span>
+        <a
+          href="#expokit"
+        >
           <svg
             aria-label="permalink"
             class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
@@ -313,9 +319,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
-          href="#bare-workflow-1"
+        <span
+          class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
         >
           <span
             class="css-1n5kx9e-TextComponent"
@@ -323,6 +328,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
+        </span>
+        <a
+          href="#bare-workflow-1"
+        >
           <svg
             aria-label="permalink"
             class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
@@ -463,9 +472,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </g>
             </svg>
           </div>
-          <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative"
-            href="#expokit-1"
+          <span
+            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
           >
             <span
               class="css-1n5kx9e-TextComponent"
@@ -473,6 +481,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               ExpoKit
             </span>
+          </span>
+          <a
+            href="#expokit-1"
+          >
             <svg
               aria-label="permalink"
               class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
@@ -772,9 +784,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </g>
           </svg>
         </div>
-        <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative"
-          href="#bare-workflow-2"
+        <span
+          class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
         >
           <span
             class="css-1n5kx9e-TextComponent"
@@ -782,6 +793,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Bare Workflow
           </span>
+        </span>
+        <a
+          href="#bare-workflow-2"
+        >
           <svg
             aria-label="permalink"
             class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
