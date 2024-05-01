@@ -10,7 +10,6 @@ import {
   useRef,
   useState,
   useEffect,
-  SyntheticEvent,
   MouseEventHandler,
 } from 'react';
 
@@ -72,8 +71,6 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         event.preventDefault();
       }
     };
-
-    console.log({ rendering: true, isOpen });
 
     return (
       <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
