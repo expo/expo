@@ -1,7 +1,7 @@
 import path from 'path';
 
 import {
-  FileStub,
+  MemoryContext,
   inMemoryContext,
   requireContext,
   requireContextWithOverrides,
@@ -9,21 +9,15 @@ import {
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getExactRoutes } from '../getRoutes';
 
-function isOverrideContext(
-  context: object
-): context is { appDir: string; overrides: Record<string, FileStub> } {
-  return Boolean(typeof context === 'object' && 'appDir' in context);
-}
-
 export type MockContextConfig =
   | string // Pathname to a directory
   | string[] // Array of filenames to mock as empty components, e.g () => null
-  | Record<string, FileStub> // Map of filenames and their exports
+  | MemoryContext // Map of filenames and their exports
   | {
       // Directory to load as context
       appDir: string;
       // Map of filenames and their exports. Will override contents of files loaded in `appDir
-      overrides: Record<string, FileStub>;
+      overrides: MemoryContext;
     };
 
 export function getMockConfig(context: MockContextConfig, metaOnly: boolean = true) {
@@ -37,9 +31,11 @@ export function getMockContext(context: MockContextConfig) {
     return inMemoryContext(
       Object.fromEntries(context.map((filename) => [filename, { default: () => null }]))
     );
-  } else if (isOverrideContext(context)) {
-    return requireContextWithOverrides(context.appDir, context.overrides);
-  } else {
+  } else if (!('appDir' in context)) {
     return inMemoryContext(context);
+  } else if ('appDir' in context && typeof context.appDir === 'string') {
+    return requireContextWithOverrides(context.appDir, context.overrides as MemoryContext);
+  } else {
+    throw new Error('Invalid context');
   }
 }

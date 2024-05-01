@@ -1,8 +1,12 @@
 package expo.modules.camera
 
 import android.Manifest
+import android.graphics.Bitmap
 import android.util.Log
+import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
+import expo.modules.camera.analyzers.MLKitBarCodeScanner
 import expo.modules.camera.records.BarcodeSettings
+import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
@@ -10,6 +14,7 @@ import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -33,6 +38,7 @@ val cameraEvents = arrayOf(
 
 class CameraViewModule : Module() {
   private val moduleScope = CoroutineScope(Dispatchers.Main)
+
   override fun definition() = ModuleDefinition {
     Name("ExpoCamera")
 
@@ -67,6 +73,30 @@ class CameraViewModule : Module() {
         permissionsManager,
         promise,
         Manifest.permission.RECORD_AUDIO
+      )
+    }
+
+    AsyncFunction("scanFromURLAsync") { url: String, barcodeTypes: List<BarcodeType>, promise: Promise ->
+      appContext.imageLoader?.loadImageForManipulationFromURL(
+        url,
+        object : ImageLoaderInterface.ResultListener {
+          override fun onSuccess(bitmap: Bitmap) {
+            val scanner = MLKitBarCodeScanner()
+            val formats = barcodeTypes.map { it.mapToBarcode() }
+            scanner.setSettings(formats)
+
+            moduleScope.launch {
+              val barcodes = scanner.scan(bitmap)
+                .filter { formats.contains(it.type) }
+                .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
+              promise.resolve(barcodes)
+            }
+          }
+
+          override fun onFailure(cause: Throwable?) {
+            promise.reject(CameraExceptions.ImageRetrievalException(url))
+          }
+        }
       )
     }
 

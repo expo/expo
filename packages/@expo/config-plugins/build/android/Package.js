@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getApplicationIdAsync = getApplicationIdAsync;
 exports.getPackage = getPackage;
+exports.kotlinSanitized = kotlinSanitized;
 exports.renameJniOnDiskForType = renameJniOnDiskForType;
 exports.renamePackageOnDisk = renamePackageOnDisk;
 exports.renamePackageOnDiskForType = renamePackageOnDiskForType;
@@ -239,12 +240,17 @@ async function renamePackageOnDiskForType({
     // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(_path().default.join(projectRoot, 'android', 'app', 'BUCK'));
   }
+  const kotlinSanitizedPackageName = kotlinSanitized(packageName);
   // Replace all occurrences of the path in the project
   filesToUpdate.forEach(filepath => {
     try {
       if (_fs().default.lstatSync(filepath).isFile()) {
         let contents = _fs().default.readFileSync(filepath).toString();
-        contents = replacePackageName(contents, currentPackageName, packageName);
+        if (_path().default.extname(filepath) === '.kt') {
+          contents = replacePackageName(contents, currentPackageName, kotlinSanitizedPackageName);
+        } else {
+          contents = replacePackageName(contents, currentPackageName, packageName);
+        }
         if (['.h', '.cpp'].includes(_path().default.extname(filepath))) {
           contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'), transformJavaClassDescriptor(packageName));
         }
@@ -301,5 +307,17 @@ function replacePackageName(content, oldName, newName) {
  */
 function transformJavaClassDescriptor(packageName) {
   return `L${packageName.replace(/\./g, '/')}`;
+}
+
+/**
+ * Make a package name safe to use in a kotlin file,
+ * e.g. is.pvin.hello -> `is`.pvin.hello
+ */
+function kotlinSanitized(packageName) {
+  const stringsToWrap = ['is', 'in', 'as', 'fun'];
+  const parts = packageName.split('.');
+  const cleanParts = parts.map(part => stringsToWrap.includes(part) ? '`' + part + '`' : part);
+  const cleanName = cleanParts.join('.');
+  return cleanName;
 }
 //# sourceMappingURL=Package.js.map

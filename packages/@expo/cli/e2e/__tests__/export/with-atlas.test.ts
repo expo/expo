@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
+import { AtlasFileSource } from 'expo-atlas';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -8,13 +9,13 @@ import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-describe('exports static with atlas file', () => {
+describe('exports all platforms with static export', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-atlas-file';
 
   beforeAll(
     async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+      await execa('node', [bin, 'export', '-p', 'all', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
@@ -33,5 +34,18 @@ describe('exports static with atlas file', () => {
   it('has .expo/atlas.jsonl file', async () => {
     const filePath = path.join(projectRoot, '.expo', 'atlas.jsonl');
     expect(fs.existsSync(filePath)).toBe(true);
+  });
+
+  it('atlas file contains all platforms', async () => {
+    const source = new AtlasFileSource(path.join(projectRoot, '.expo', 'atlas.jsonl'));
+
+    expect(await source.listBundles()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ platform: 'android' }),
+        expect.objectContaining({ platform: 'ios' }),
+        expect.objectContaining({ platform: 'web' }),
+        expect.objectContaining({ platform: 'server' }),
+      ])
+    );
   });
 });

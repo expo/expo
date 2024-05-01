@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.0.3 — 2024-04-29
+
+### 🎉 New features
+
+- Support scanning barcodes from a provided image URL. ([#28445](https://github.com/expo/expo/pull/28445) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.0.2 — 2024-04-24
 
 ### 🐛 Bug fixes

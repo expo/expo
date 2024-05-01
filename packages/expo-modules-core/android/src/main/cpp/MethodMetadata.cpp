@@ -7,13 +7,14 @@
 #include "Exceptions.h"
 #include "JavaCallback.h"
 #include "types/JNIToJSIConverter.h"
+#include "JSReferencesCache.h"
 
 #include <utility>
 #include <functional>
 #include <unistd.h>
 #include <optional>
 
-#include "JSReferencesCache.h"
+#include <ReactCommon/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -21,10 +22,10 @@ namespace react = facebook::react;
 
 namespace expo {
 
-jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
-  jsi::Function &&function,
-  jsi::Runtime &rt,
-  bool isRejectCallback = false
+jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
+  jsi::Function &&resolveFunction,
+  jsi::Function &&rejectFunction,
+  jsi::Runtime &rt
 ) {
   JSIContext *jsiContext = getJSIContext(rt);
   std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
@@ -32,9 +33,15 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   std::shared_ptr<JavaCallback::CallbackContext> callbackContext = std::make_shared<JavaCallback::CallbackContext>(
     rt,
     std::move(jsInvoker),
-    std::move(function),
-    isRejectCallback
+    std::move(resolveFunction),
+    std::move(rejectFunction)
   );
+
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
+#else
+  facebook::react::LongLivedObjectCollection::get().add(callbackContext);
+#endif
 
   return JavaCallback::newInstance(jsiContext, std::move(callbackContext));
 }
@@ -336,15 +343,10 @@ jsi::Function MethodMetadata::createPromiseBody(
       jsi::Function resolveJSIFn = promiseConstructorArgs[0].getObject(rt).getFunction(rt);
       jsi::Function rejectJSIFn = promiseConstructorArgs[1].getObject(rt).getFunction(rt);
 
-      jobject resolve = createJavaCallbackFromJSIFunction(
+      jobject javaCallback = createJavaCallback(
         std::move(resolveJSIFn),
-        rt
-      ).release();
-
-      jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
-        rt,
-        true
+        rt
       ).release();
 
       JNIEnv *env = jni::Environment::current();
@@ -353,15 +355,14 @@ jsi::Function MethodMetadata::createPromiseBody(
         "expo/modules/kotlin/jni/PromiseImpl");
       jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
-        "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"
+        "(Lexpo/modules/kotlin/jni/JavaCallback;)V"
       );
 
       // Creates a promise object
       jobject promise = env->NewObject(
         jPromise.clazz,
         jPromiseConstructor,
-        resolve,
-        reject
+        javaCallback
       );
 
       // Cast in this place is safe, cause we know that this function expects promise.
