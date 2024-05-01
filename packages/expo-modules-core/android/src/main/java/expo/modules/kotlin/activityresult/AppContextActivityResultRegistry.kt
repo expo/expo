@@ -183,8 +183,10 @@ class AppContextActivityResultRegistry(
 
           // 1. No callbacks registered yet, other path would take care of the results
           @Suppress("UNCHECKED_CAST")
-          val callbacksAndContract: CallbacksAndContract<I, O> = (keyToCallbacksAndContract[key]
-            ?: return@LifecycleEventObserver) as CallbacksAndContract<I, O>
+          val callbacksAndContract: CallbacksAndContract<I, O> = (
+            keyToCallbacksAndContract[key]
+              ?: return@LifecycleEventObserver
+            ) as CallbacksAndContract<I, O>
 
           // 2. There are results to be delivered to the callbacks
           val activityResult = pendingResults.safeGetParcelable<ActivityResult>(key)

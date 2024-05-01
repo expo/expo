@@ -1,7 +1,6 @@
 package expo.modules.kotlin
 
 import android.content.Intent
-import android.os.BaseBundle
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable

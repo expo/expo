@@ -82,7 +82,7 @@ class ClipboardFileProvider : ContentProvider() {
   }
 
   override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
-    val finalProjection  = projection ?: defaultProjectionColumns
+    val finalProjection = projection ?: defaultProjectionColumns
     val file: File = strategy.getFileForUri(uri)
     var columns = arrayOfNulls<String>(finalProjection.size)
     var values = arrayOfNulls<Any>(finalProjection.size)
