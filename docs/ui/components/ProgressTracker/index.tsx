@@ -1,10 +1,11 @@
-import { Button } from '@expo/styleguide';
 import { BookOpen02Icon, ArrowRightIcon } from '@expo/styleguide-icons';
+import React from 'react';
 
-import { SuccessCheckmarkIcon, InfoIcon } from './Icons';
-import { EAS_TUTORIAL_INITIAL_CHAPTERS, Chapter } from './TutorialData';
+import { SuccessCheckmark } from './SuccessCheckmark';
+import { Chapter } from './TutorialData';
+import { Checkbox } from '../Form/Checkbox';
 
-import { useLocalStorage } from '~/common/useLocalStorage';
+import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { P, A, DEMI } from '~/ui/components/Text';
 
 type ProgressTrackerProps = {
@@ -18,19 +19,16 @@ type ProgressTrackerProps = {
 
 export function ProgressTracker({
   currentChapterIndex,
-  name,
   summary,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
-    name,
-    defaultValue: name === 'EAS_TUTORIAL' ? EAS_TUTORIAL_INITIAL_CHAPTERS : [],
-  });
+  const { chapters, setChapters } = useTutorialChapterCompletion();
+  const currentChapter = chapters[currentChapterIndex];
 
-  const handleCompleteChapter = () => {
-    const updatedChapters = chapters.map((chapter, index) => {
+  const handleChapterComplete = () => {
+    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
       if (index === currentChapterIndex) {
         return { ...chapter, completed: true };
       }
@@ -39,8 +37,8 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
-  const handleMarkChapterIncomplete = () => {
-    const updatedChapters = chapters.map((chapter, index) => {
+  const handleChapterIncomplete = () => {
+    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
       if (index === currentChapterIndex) {
         return { ...chapter, completed: false };
       }
@@ -49,52 +47,37 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
-  const currentChapter = chapters[currentChapterIndex];
+  const handleCheckboxChange = () => {
+    if (currentChapter.completed) {
+      handleChapterIncomplete();
+    } else {
+      handleChapterComplete();
+    }
+  };
 
   return (
     <>
-      <div className="w-full border border-solid border-default rounded-md p-4 mx-auto mt-6 max-h-96 bg-screen">
-        {currentChapter && (
-          <div className="flex items-center justify-center flex-col">
-            {currentChapter.completed ? (
-              <>
-                <div className="flex items-center justify-center pt-6">
-                  <SuccessCheckmarkIcon />
-                </div>
-                <div className="flex items-center mt-6">
-                  <Button
-                    onClick={handleMarkChapterIncomplete}
-                    theme="secondary"
-                    className="flex items-center justify-center"
-                    skipCapitalization>
-                    Still reading? Mark this chapter incomplete.
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center justify-center pt-6">
-                  <InfoIcon />
-                </div>
-                <div className="flex flex-col items-center justify-center pt-6">
-                  <Button
-                    onClick={handleCompleteChapter}
-                    theme="secondary"
-                    className="flex items-center justify-center"
-                    skipCapitalization>
-                    Done reading? Mark this chapter complete.
-                  </Button>
-                </div>
-              </>
-            )}
-            <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
-              <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
-            </p>
-            <div className="flex items-center justify-center mt-2 max-w-lg leading-7">
-              <p className="text-center text-default pb-2">{summary}</p>
-            </div>
+      <div className="w-full border border-solid border-default rounded-md p-3 mx-auto mt-6 max-h-96 bg-screen">
+        <div className="flex items-center justify-center pt-2">
+          <SuccessCheckmark />
+        </div>
+        <div className="flex items-center justify-center flex-col">
+          <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
+            <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
+          </p>
+          <div className="flex items-center justify-center mt-2 max-w-lg leading-7">
+            <p className="text-center text-default pb-2">{summary}</p>
           </div>
-        )}
+        </div>
+        <div className="flex items-center justify-center mt-4">
+          <Checkbox
+            id={`chapter-${currentChapterIndex}`}
+            checked={currentChapter.completed}
+            label={currentChapter.completed ? 'Mark this chapter unread' : 'Mark this chapter read'}
+            // readOnly
+            onChange={handleCheckboxChange}
+          />
+        </div>
       </div>
       <>
         <P className="my-4">{nextChapterDescription}</P>

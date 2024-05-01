@@ -19,28 +19,24 @@ import {
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';
 
-import { useLocalStorage } from '~/common/useLocalStorage';
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
+import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { NavigationRoute } from '~/types/common';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
-import {
-  EAS_TUTORIAL_INITIAL_CHAPTERS,
-  Chapter,
-} from '~/ui/components/ProgressTracker/TutorialData';
+import { Chapter } from '~/ui/components/ProgressTracker/TutorialData';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const title = route.sidebarTitle ?? route.name;
   const Icon = getIconElement(title);
+  const { chapters, setChapters } = useTutorialChapterCompletion();
 
-  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
-    name: 'EAS_TUTORIAL',
-    defaultValue: EAS_TUTORIAL_INITIAL_CHAPTERS,
-  });
-  const allChaptersCompleted = chapters.every(chapter => chapter.completed);
-  const completedChaptersCount = chapters.filter(chapter => chapter.completed).length;
+  const allChaptersCompleted = chapters.every((chapter: Chapter) => chapter.completed);
+  const completedChaptersCount = chapters.filter((chapter: Chapter) => chapter.completed).length;
   const isChapterCompleted = (childSlug: string) => {
-    const isCompleted = chapters.some(chapter => chapter.slug === childSlug && chapter.completed);
+    const isCompleted = chapters.some(
+      (chapter: Chapter) => chapter.slug === childSlug && chapter.completed
+    );
     return isCompleted;
   };
   const totalChapters = chapters.length;
@@ -52,7 +48,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
 
   const resetTutorial = () => {
     if (allChaptersCompleted) {
-      const resetChapters = chapters.map(chapter => ({ ...chapter, completed: false }));
+      const resetChapters = chapters.map((chapter: Chapter) => ({ ...chapter, completed: false }));
       setChapters(resetChapters);
     }
   };
@@ -79,19 +75,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           const childSlug = child.href;
           const completed = isChapterCompleted(childSlug);
 
-          return child.type === 'page' ? (
+          return (
             <div className="flex justify-between items-center" key={`${route.name}-${child.name}`}>
               <div className="flex-1">
                 <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
               </div>
               {completed && <CheckIcon className="size-4" />}
             </div>
-          ) : (
-            <SidebarSection
-              key={`group-${child.name}-${route.name}`}
-              route={child}
-              parentRoute={route}
-            />
           );
         })}
         {allChaptersCompleted && (
@@ -99,7 +89,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             onClick={resetTutorial}
             theme="secondary"
             className="w-full flex items-center justify-center"
-            href="/tutorial/eas/introduction">
+            href="/tutorial/eas/introduction/">
             Reset tutorial
           </Button>
         )}
