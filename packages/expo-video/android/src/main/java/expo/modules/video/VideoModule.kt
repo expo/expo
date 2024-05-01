@@ -139,9 +139,7 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource ->
-        val mediaItem = source.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, source)
-        VideoPlayer(activity.applicationContext, appContext, mediaItem)
+        VideoPlayer(activity.applicationContext, appContext, source)
       }
 
       Property("playing")
@@ -206,6 +204,16 @@ class VideoModule : Module() {
           }
         }
 
+      Property("showNowPlayingNotification")
+        .get { ref: VideoPlayer ->
+          ref.showNowPlayingNotification
+        }
+        .set { ref: VideoPlayer, showNotification: Boolean ->
+          appContext.mainQueue.launch {
+            ref.showNowPlayingNotification = showNotification
+          }
+        }
+
       Property("status")
         .get { ref: VideoPlayer ->
           ref.status
@@ -255,6 +263,7 @@ class VideoModule : Module() {
         VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
+          ref.videoSource = videoSource
           ref.player.setMediaItem(mediaItem)
         }
       }
