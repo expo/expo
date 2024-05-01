@@ -161,7 +161,8 @@ class VideoPlayerObserver {
   // MARK: - VideoPlayerObserverDelegate
 
   private func onPlayerCurrentItemChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<AVPlayerItem?>) {
-    let newPlayerItem = change.newValue
+    // Unwraps Optional<Optional<AVPlayerItem>> into Optional<AVPlayerItem>
+    let newPlayerItem = change.newValue?.flatMap({ $0 })
 
     invalidateCurrentPlayerItemObservers()
 
@@ -182,7 +183,7 @@ class VideoPlayerObserver {
       status = .idle
     } else {
       log.warn(
-        "VideoPlayer's AVPlayer has been initialized with a `AVPlayerItem` instead of a `VideoPlayerItem`." +
+        "VideoPlayer's AVPlayer has been initialized with a `AVPlayerItem` instead of a `VideoPlayerItem`. " +
         "Always use `VideoPlayerItem` as a wrapper for media played in `VideoPlayer`."
       )
     }
