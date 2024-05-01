@@ -1,4 +1,4 @@
-import { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoView.types';
+import type { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoView.types';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
 export declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {

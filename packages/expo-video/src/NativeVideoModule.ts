@@ -1,6 +1,10 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-/**
- * @hidden
- */
-export default requireNativeModule('ExpoVideo');
+import type { VideoPlayer } from './VideoView.types';
+
+type ExpoVideoModule = {
+  VideoPlayer: typeof VideoPlayer;
+  isPictureInPictureSupported(): boolean;
+};
+
+export default requireNativeModule<ExpoVideoModule>('ExpoVideo');

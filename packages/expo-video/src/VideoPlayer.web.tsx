@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 
-import { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoView.types';
+import type {
+  VideoPlayer,
+  VideoPlayerEvents,
+  VideoPlayerStatus,
+  VideoSource,
+} from './VideoView.types';
 
 export function useVideoPlayer(
   source: VideoSource,

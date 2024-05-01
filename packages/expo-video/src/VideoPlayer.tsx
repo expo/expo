@@ -1,7 +1,7 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoPlayer, VideoSource } from './VideoView.types';
+import type { VideoPlayer, VideoSource } from './VideoView.types';
 
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
