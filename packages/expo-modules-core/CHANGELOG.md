@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `field operation on NULL object` when reloading the app.
+- [Android] Fix `field operation on NULL object` when reloading the app. ([#28555](https://github.com/expo/expo/pull/28555) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
