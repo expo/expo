@@ -83,41 +83,18 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Spacer.Vertical size="medium" />
                 <View px="small">
                   <Text size="small" align="center">
-                    Extensions allow you to customize your development build with additional
-                    capabilities.{' '}
+                    Preview updates published with EAS Update. Only updates compatible with the
+                    runtime version of this development build will be displayed.
                     <Text
                       size="small"
                       style={{ textDecorationLine: 'underline' }}
                       onPress={() =>
-                        Linking.openURL(`https://docs.expo.dev/development/extensions/`)
+                        Linking.openURL(
+                          `https://docs.expo.dev/develop/development-builds/development-workflows/#eas-update`
+                        )
                       }
                       accessibilityRole="link">
                       Learn more.
-                    </Text>
-                  </Text>
-
-                  {/* <Spacer.Vertical size="small" />
-
-                  <View align="centered">
-                    <Button.FadeOnPressContainer bg="ghost" rounded="small">
-                      <View border="default" px="small" py="2" rounded="small">
-                        <Button.Text color="ghost" weight="semibold" size="small">
-                          Learn More
-                        </Button.Text>
-                      </View>
-                    </Button.FadeOnPressContainer>
-                  </View> */}
-
-                  <Spacer.Vertical size="medium" />
-
-                  <Text size="small" align="center">
-                    If you would like to extend the display on this screen{' '}
-                    <Text
-                      size="small"
-                      style={{ textDecorationLine: 'underline' }}
-                      onPress={() => Linking.openURL(`https://expo.canny.io/feature-requests`)}
-                      accessibilityRole="link">
-                      let us know about your use case
                     </Text>
                   </Text>
                 </View>
@@ -143,7 +120,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
                 <Text color="secondary" size="small">
-                  Log in or create an account to get started with Extensions
+                  Log in
                 </Text>
 
                 <Spacer.Vertical size="large" />
@@ -177,22 +154,6 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
-            </View>
-          )}
-
-          {compatibleExtensions.length > 0 && (
-            <View px="xl">
-              <Text size="small" color="secondary">
-                Extensions allow you to customize your development build with additional
-                capabilities.{' '}
-                <Text
-                  size="small"
-                  style={{ textDecorationLine: 'underline' }}
-                  onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
-                  accessibilityRole="link">
-                  Learn more.
-                </Text>
-              </Text>
             </View>
           )}
 
@@ -237,12 +198,6 @@ function EASUpdatesPreview({
   if (branches.length === 0 && emptyBranches.length > 0) {
     return (
       <View mx="medium">
-        <View py="small" px="small">
-          <Heading size="small" color="secondary">
-            EAS Update
-          </Heading>
-        </View>
-
         {emptyBranches.slice(0, 3).map((branch, index, arr) => {
           const isFirst = index === 0;
           const isLast = index === arr?.length - 1;
@@ -296,11 +251,6 @@ function EASUpdatesPreview({
   // some compatible branches, possible some empty branches
   return (
     <View mx="medium">
-      <View py="small" px="small">
-        <Heading size="small" color="secondary">
-          EAS Update
-        </Heading>
-      </View>
       {branches?.slice(0, 2).map((branch, index, arr) => {
         const isFirst = index === 0;
         const isLast = index === arr.length - 1 && branchCount <= 1;

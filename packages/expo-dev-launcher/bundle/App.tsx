@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
+  // This is based on a bunch of images.. Probably 1 or 2 images and tintColor is ideal
   ExtensionsFilledIcon,
   HomeFilledIcon,
   InfoIcon,
@@ -66,7 +67,7 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
-          title: 'Extensions',
+          title: 'Updates',
         }}
       />
       <Tab.Screen
