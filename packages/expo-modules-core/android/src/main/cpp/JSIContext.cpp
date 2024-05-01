@@ -359,6 +359,7 @@ void JSIContext::prepareForDeallocation() {
   runtimeHolder.reset();
   jniDeallocator.reset();
   javaPart_.reset();
+  wasDeallocated_ = true;
 }
 
 void JSIContext::jniSetNativeStateForSharedObject(
@@ -384,6 +385,10 @@ void JSIContext::jniSetNativeStateForSharedObject(
     ->cthis()
     ->get()
     ->setNativeState(runtimeHolder->get(), std::move(nativeState));
+}
+
+bool JSIContext::wasDeallocated() const {
+  return wasDeallocated_;
 }
 
 thread_local std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
