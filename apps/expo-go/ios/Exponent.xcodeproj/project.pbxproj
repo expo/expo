@@ -240,6 +240,7 @@
 		BAF227C84082AD4EF8643DE2 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
+		CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */; };
 		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
@@ -1204,6 +1205,7 @@
 		DF1B991D1D1D4B59AEFEAB9E /* RNCPicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPicker.h; sourceTree = "<group>"; };
 		E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerLabel.m; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
+		CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
 		F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureInterceptor.h; sourceTree = "<group>"; };
@@ -1653,6 +1655,7 @@
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
 				8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */,
+				CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -2541,6 +2544,7 @@
 				B287BB2427DD909C008DA282 /* expo-root.pem in Resources */,
 				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
+				CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */,
