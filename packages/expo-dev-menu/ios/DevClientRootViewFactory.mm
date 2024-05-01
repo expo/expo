@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "DevClientRootViewFactory.h"
+#import <EXDevMenu/DevMenuRCTBridge.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -15,6 +16,7 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import <jsireact/JSIExecutor.h>
 
 @interface RCTRootViewFactory () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
@@ -29,7 +31,7 @@
     return;
   }
 
-  self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  self.bridge = [[DevMenuRCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 }
 
 #pragma mark - RCTCxxBridgeDelegate

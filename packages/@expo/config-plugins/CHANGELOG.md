@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 8.0.4 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- Package names using kotlin keywords like `is`, `in`, `fun` etc work. ([#27458](https://github.com/expo/expo/pull/27458) by [@pvinis](https://github.com/pvinis))
+
+## 8.0.3 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix absolute path included in `.pbxproj` by the privacy info plugin. ([#28449](https://github.com/expo/expo/pull/28449) by [@aleqsio](https://github.com/aleqsio))
+
 ## 8.0.2 — 2024-04-24
 
 ### 🎉 New features

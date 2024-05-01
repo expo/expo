@@ -18,6 +18,7 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
 
   walkRouteNode(
     getRoutes(ctx, {
+      platformRoutes: false, // We don't need to generate platform specific routes
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async',

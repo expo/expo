@@ -6,7 +6,7 @@ import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   lazy var contentKeyManager = ContentKeyManager()
-  var observer: VideoPlayerObserver?
+  let observer: VideoPlayerObserver
 
   var loop = false
   private(set) var isPlaying = false
@@ -26,9 +26,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var staysActiveInBackground = false {
     didSet {
       if staysActiveInBackground {
-        VideoManager.shared.switchToActiveAudioSessionOrWarn(
-          warning: "Failed to set the audio session category. This might affect background playback functionality"
-        )
+        VideoManager.shared.setAppropriateAudioSessionOrWarn()
       }
     }
   }
@@ -60,19 +58,34 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         self.emit(event: "volumeChange", arguments: newVolumeEvent.isMuted, oldVolumeEvent.isMuted)
       }
       pointer.isMuted = isMuted
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
+    }
+  }
+
+  var showNowPlayingNotification = false {
+    didSet {
+      // The audio session needs to be appropriate before displaying the notfication
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
+
+      if showNowPlayingNotification {
+        NowPlayingManager.shared.registerPlayer(self)
+      } else {
+        NowPlayingManager.shared.unregisterPlayer(self)
+      }
     }
   }
 
   override init(_ pointer: AVPlayer) {
+    observer = VideoPlayerObserver(player: pointer)
     super.init(pointer)
-    observer = VideoPlayerObserver(player: pointer, delegate: self)
-    NowPlayingManager.shared.registerPlayer(pointer)
+    observer.registerDelegate(delegate: self)
     VideoManager.shared.register(videoPlayer: self)
   }
 
   deinit {
-    NowPlayingManager.shared.unregisterPlayer(pointer)
+    NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
+    observer.unregisterDelegate(delegate: self)
     pointer.replaceCurrentItem(with: nil)
   }
 
@@ -125,6 +138,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {
     self.emit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
     isPlaying = newIsPlaying
+
+    VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {

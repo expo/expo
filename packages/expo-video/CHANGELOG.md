@@ -10,7 +10,17 @@
 
 ### 💡 Others
 
-- [Android] Improve audio focus management ([#28453](https://github.com/expo/expo/pull/28453) by [@behenate](https://github.com/behenate))
+- [Android] Improve audio focus management. ([#28453](https://github.com/expo/expo/pull/28453) by [@behenate](https://github.com/behenate))
+
+## 1.1.5 — 2024-04-26
+
+### 🎉 New features
+
+- [iOS] Add support for customizing the now playing notification. ([#28386](https://github.com/expo/expo/pull/28386) by [@behenate](https://github.com/behenate))
+
+## 1.1.4 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
 
 ## 1.1.3 — 2024-04-24
 

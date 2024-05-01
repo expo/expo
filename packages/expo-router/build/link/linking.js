@@ -50,9 +50,6 @@ function getInitialURLWithTimeout() {
 // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
 // then `/index` would be used on web and `/settings` would be used on native.
 function getInitialURL() {
-    if (process.env.NODE_ENV === 'test') {
-        return Linking.getInitialURL() ?? getRootURL();
-    }
     if (react_native_1.Platform.OS === 'web') {
         if (typeof window === 'undefined') {
             return '';
@@ -88,21 +85,32 @@ function parseExpoGoUrlFromListener(url) {
     }
     return url;
 }
-function addEventListener(listener) {
-    let callback;
-    if (isExpoGo) {
-        // This extra work is only done in the Expo Go app.
-        callback = ({ url }) => {
-            listener(parseExpoGoUrlFromListener(url));
+function addEventListener(nativeLinking) {
+    return (listener) => {
+        let callback;
+        if (isExpoGo) {
+            // This extra work is only done in the Expo Go app.
+            callback = async ({ url }) => {
+                url = parseExpoGoUrlFromListener(url);
+                if (url && nativeLinking?.redirectSystemPath) {
+                    url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+                }
+                listener(url);
+            };
+        }
+        else {
+            callback = async ({ url }) => {
+                if (url && nativeLinking?.redirectSystemPath) {
+                    url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
+                }
+                listener(url);
+            };
+        }
+        const subscription = Linking.addEventListener('url', callback);
+        return () => {
+            // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
+            subscription?.remove?.();
         };
-    }
-    else {
-        callback = ({ url }) => listener(url);
-    }
-    const subscription = Linking.addEventListener('url', callback);
-    return () => {
-        // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
-        subscription?.remove?.();
     };
 }
 exports.addEventListener = addEventListener;

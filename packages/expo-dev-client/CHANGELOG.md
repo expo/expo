@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.6 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.5 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.4 — 2024-04-24
 
 _This version does not introduce any user-facing changes._

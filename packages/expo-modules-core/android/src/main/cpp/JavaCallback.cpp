@@ -13,6 +13,39 @@
 
 namespace expo {
 
+#if REACT_NATIVE_TARGET_VERSION >= 75
+
+JavaCallback::CallbackContext::CallbackContext(
+  jsi::Runtime &rt,
+  std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
+  std::optional<jsi::Function> resolveHolder,
+  std::optional<jsi::Function> rejectHolder
+) : react::LongLivedObject(rt),
+    rt(rt),
+    jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
+    resolveHolder(std::move(resolveHolder)),
+    rejectHolder(std::move(rejectHolder)) {}
+
+#else
+
+JavaCallback::CallbackContext::CallbackContext(
+  jsi::Runtime &rt,
+  std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
+  std::optional<jsi::Function> resolveHolder,
+  std::optional<jsi::Function> rejectHolder
+) : rt(rt),
+    jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
+    resolveHolder(std::move(resolveHolder)),
+    rejectHolder(std::move(rejectHolder)) {}
+
+#endif
+
+void JavaCallback::CallbackContext::invalidate() {
+  resolveHolder.reset();
+  rejectHolder.reset();
+  allowRelease();
+}
+
 JavaCallback::JavaCallback(std::shared_ptr<CallbackContext> callbackContext)
   : callbackContext(std::move(callbackContext)) {}
 
@@ -27,6 +60,7 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedRef),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeError),
                  });
 }
 
@@ -45,24 +79,41 @@ void JavaCallback::invokeJSFunction(
   ArgsConverter<T> argsConverter,
   T arg
 ) {
-  const auto jsInvoker = callbackContext->jsCallInvokerHolder;
+  const auto strongCallbackContext = this->callbackContext.lock();
+  // The context were deallocated before the callback was invoked.
+  if (strongCallbackContext == nullptr) {
+    return;
+  }
+
+  const auto jsInvoker = strongCallbackContext->jsCallInvokerHolder.lock();
+  // Call invoker is already released, so we cannot invoke the callback.
+  if (jsInvoker == nullptr) {
+    return;
+  }
+
   jsInvoker->invokeAsync(
     [
-      context = std::move(callbackContext),
+      context = callbackContext,
       argsConverter = std::move(argsConverter),
       arg = std::move(arg)
     ]() -> void {
-      if (!context->jsFunctionHolder.has_value()) {
+      auto strongContext = context.lock();
+      // The context were deallocated before the callback was invoked.
+      if (strongContext == nullptr) {
+        return;
+      }
+
+      if (!strongContext->resolveHolder.has_value()) {
         throw std::runtime_error(
           "JavaCallback was already settled. Cannot invoke it again"
         );
       }
 
-      jsi::Function &jsFunction = context->jsFunctionHolder.value();
-      jsi::Runtime &rt = context->rt;
+      jsi::Function &jsFunction = strongContext->resolveHolder.value();
+      jsi::Runtime &rt = strongContext->rt;
 
-      argsConverter(rt, jsFunction, std::move(arg), context->isRejectCallback);
-      context->jsFunctionHolder.reset();
+      argsConverter(rt, jsFunction, std::move(arg));
+      strongContext->invalidate();
     });
 }
 
@@ -72,8 +123,7 @@ void JavaCallback::invokeJSFunction(T arg) {
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      T arg,
-      bool isRejectCallback
+      T arg
     ) {
       jsFunction.call(rt, {jsi::Value(rt, arg)});
     },
@@ -86,8 +136,7 @@ void JavaCallback::invoke() {
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      nullptr_t arg,
-      bool isRejectCallback
+      nullptr_t arg
     ) {
       jsFunction.call(rt, {jsi::Value::null()});
     },
@@ -116,8 +165,7 @@ void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      std::string arg,
-      bool isRejectCallback
+      std::string arg
     ) {
       std::optional<jsi::Value> extendedString = convertStringToFollyDynamicIfNeeded(
         rt,
@@ -145,8 +193,7 @@ void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaob
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      folly::dynamic arg,
-      bool isRejectCallback
+      folly::dynamic arg
     ) {
       jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
       auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
@@ -169,28 +216,8 @@ void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      folly::dynamic arg,
-      bool isRejectCallback
+      folly::dynamic arg
     ) {
-      if (isRejectCallback) {
-        auto errorCode = arg.find("code")->second.asString();
-        auto message = arg.find("message")->second.asString();
-
-        auto codedError = makeCodedError(
-          rt,
-          jsi::String::createFromUtf8(rt, errorCode),
-          jsi::String::createFromUtf8(rt, message)
-        );
-
-        jsFunction.call(
-          rt,
-          (const jsi::Value *) &codedError,
-          (size_t) 1
-        );
-
-        return;
-      }
-
       jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
       auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
       if (enhancedArg) {
@@ -212,8 +239,7 @@ void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result)
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      jni::global_ref<SharedRef::javaobject> arg,
-      bool isRejectCallback
+      jni::global_ref<SharedRef::javaobject> arg
     ) {
       const auto jsiContext = getJSIContext(rt);
       auto native = jni::make_local(arg);
@@ -247,5 +273,55 @@ void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result)
     },
     jni::make_global(result)
   );
+}
+
+void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {
+  const auto strongCallbackContext = this->callbackContext.lock();
+  // The context were deallocated before the callback was invoked.
+  if (strongCallbackContext == nullptr) {
+    return;
+  }
+
+  const auto jsInvoker = strongCallbackContext->jsCallInvokerHolder.lock();
+  // Call invoker is already released, so we cannot invoke the callback.
+  if (jsInvoker == nullptr) {
+    return;
+  }
+
+  jsInvoker->invokeAsync(
+    [
+      context = callbackContext,
+      code = code->toStdString(),
+      errorMessage = errorMessage->toStdString()
+    ]() -> void {
+      auto strongContext = context.lock();
+      // The context were deallocated before the callback was invoked.
+      if (strongContext == nullptr) {
+        return;
+      }
+
+      if (!strongContext->rejectHolder.has_value()) {
+        throw std::runtime_error(
+          "JavaCallback was already settled. Cannot invoke it again"
+        );
+      }
+
+      jsi::Function &jsFunction = strongContext->rejectHolder.value();
+      jsi::Runtime &rt = strongContext->rt;
+
+      auto codedError = makeCodedError(
+        rt,
+        jsi::String::createFromUtf8(rt, code),
+        jsi::String::createFromUtf8(rt, errorMessage)
+      );
+
+      jsFunction.call(
+        rt,
+        (const jsi::Value *) &codedError,
+        (size_t) 1
+      );
+
+      strongContext->invalidate();
+    });
 }
 } // namespace expo

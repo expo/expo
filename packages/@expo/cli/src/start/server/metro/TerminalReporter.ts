@@ -3,6 +3,7 @@
 import chalk from 'chalk';
 import UpstreamTerminalReporter from 'metro/src/lib/TerminalReporter';
 import { Terminal } from 'metro-core';
+import type { WatcherStatus } from 'metro-file-map';
 import util from 'util';
 
 import {
@@ -100,6 +101,15 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
    * @param duration duration of the build in milliseconds.
    */
   bundleBuildEnded(event: TerminalReportableEvent, duration: number): void {}
+
+  _logWatcherStatus(status: WatcherStatus) {
+    // Metro logs this warning twice. This helps reduce the noise.
+
+    if (status.type === 'watchman_warning') {
+      return;
+    }
+    return super._logWatcherStatus(status);
+  }
 
   /**
    * This function is exclusively concerned with updating the internal state.

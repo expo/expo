@@ -8,9 +8,24 @@
 
 ### 🐛 Bug fixes
 
-- Fix DevMenu Home icon color in dark mode. ([#28442](https://github.com/expo/expo/pull/28442) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 5.0.8 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.7 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing header that causes an error when using `JSC`. ([#28492](https://github.com/expo/expo/pull/28492) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.0.6 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix DevMenu Home icon color in dark mode. ([#28442](https://github.com/expo/expo/pull/28442) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.5 — 2024-04-24
 

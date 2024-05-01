@@ -12,53 +12,46 @@ type AttachAtlasOptions = Pick<EnsureDependenciesOptions, 'exp'> & {
   projectRoot: string;
   middleware?: ConnectServer;
   metroConfig: MetroConfig;
+  resetAtlasFile?: boolean;
 };
 
-export async function attachAtlasAsync({
-  exp,
-  isExporting,
-  projectRoot,
-  middleware,
-  metroConfig,
-}: AttachAtlasOptions): Promise<void | ReturnType<
-  typeof import('expo-atlas/cli').createExpoAtlasMiddleware
->> {
+export async function attachAtlasAsync(
+  options: AttachAtlasOptions
+): Promise<void | ReturnType<typeof import('expo-atlas/cli').createExpoAtlasMiddleware>> {
   if (!env.EXPO_UNSTABLE_ATLAS) {
     return;
   }
 
   debug('Atlas is enabled, initializing for this project...');
+  await new AtlasPrerequisite(options.projectRoot).bootstrapAsync({ exp: options.exp });
 
-  await new AtlasPrerequisite(projectRoot).bootstrapAsync({ exp });
+  return !options.isExporting
+    ? attachAtlasToDevServer(options)
+    : await attachAtlasToExport(options);
+}
 
-  // Exporting only sets up Metro, without attaching middleware
-  if (isExporting) {
-    const atlas = importAtlasForExport(projectRoot);
-    if (!atlas) {
-      return debug('Atlas is not installed in the project, skipping initialization');
-    }
-
-    atlas.withExpoAtlas(metroConfig);
-    debug('Attached Atlas to Metro config for exporting');
-    return;
-  }
-
-  // Running in development mode requires middleware to be attached
-  if (!isExporting && !middleware) {
+/**
+ * Attach Atlas to the Metro bundler for development mode.
+ * This includes attaching to Metro's middleware stack to host the Atlas UI.
+ */
+function attachAtlasToDevServer(
+  options: Pick<AttachAtlasOptions, 'projectRoot' | 'middleware' | 'metroConfig'>
+): void | ReturnType<typeof import('expo-atlas/cli').createExpoAtlasMiddleware> {
+  if (!options.middleware) {
     throw new Error(
       'Expected middleware to be provided for Atlas when running in development mode'
     );
-  } else if (!isExporting && middleware) {
-    const atlas = importAtlasForDev(projectRoot);
-    if (!atlas) {
-      return debug('Atlas is not installed in the project, skipping initialization');
-    }
-
-    const instance = atlas.createExpoAtlasMiddleware(metroConfig);
-    middleware.use('/_expo/atlas', instance.middleware);
-    debug('Attached Atlas middleware for development on: /_expo/atlas');
-    return instance;
   }
+
+  const atlas = importAtlasForDev(options.projectRoot);
+  if (!atlas) {
+    return debug('Atlas is not installed in the project, skipping initialization');
+  }
+
+  const instance = atlas.createExpoAtlasMiddleware(options.metroConfig);
+  options.middleware.use('/_expo/atlas', instance.middleware);
+  debug('Attached Atlas middleware for development on: /_expo/atlas');
+  return instance;
 }
 
 function importAtlasForDev(projectRoot: string): null | typeof import('expo-atlas/cli') {
@@ -68,6 +61,27 @@ function importAtlasForDev(projectRoot: string): null | typeof import('expo-atla
     debug('Failed to load Atlas from project:', error);
     return null;
   }
+}
+
+/**
+ * Attach Atlas to the Metro bundler for exporting mode.
+ * This only includes attaching the custom serializer to the Metro config.
+ */
+async function attachAtlasToExport(
+  options: Pick<AttachAtlasOptions, 'projectRoot' | 'metroConfig' | 'resetAtlasFile'>
+): Promise<void> {
+  const atlas = importAtlasForExport(options.projectRoot);
+  if (!atlas) {
+    return debug('Atlas is not installed in the project, skipping initialization');
+  }
+
+  if (options.resetAtlasFile) {
+    const filePath = await atlas.resetExpoAtlasFile(options.projectRoot);
+    debug('(Re)created Atlas file at:', filePath);
+  }
+
+  atlas.withExpoAtlas(options.metroConfig);
+  debug('Attached Atlas to Metro config for exporting');
 }
 
 function importAtlasForExport(projectRoot: string): null | typeof import('expo-atlas/metro') {

@@ -8,6 +8,28 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.18.7 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- Prevent overwriting exported Atlas data when exporting web with static renderer. ([#28502](https://github.com/expo/expo/pull/28502) by [@byCedric](https://github.com/byCedric))
+- Improve login info message for other login options. ([#28523](https://github.com/expo/expo/pull/28523) by [@wschurman](https://github.com/wschurman))
+- Filter out invalid architectures before passing `-PreactNativeArchitectures` to `gradle`. ([#28548](https://github.com/expo/expo/pull/28548) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.18.6 — 2024-04-26
+
+### 🐛 Bug fixes
+
+- Prevent duplicate watchman warnings. ([#28461](https://github.com/expo/expo/pull/28461) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.5 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix launching web from run:ios. ([#28439](https://github.com/expo/expo/pull/28439) by [@EvanBacon](https://github.com/EvanBacon))
+- Symbolicate React component stacks in SSR. ([#28443](https://github.com/expo/expo/pull/28443) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove export exit that breaks atlas writing. ([#28438](https://github.com/expo/expo/pull/28438) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
@@ -41,6 +63,7 @@ _This version does not introduce any user-facing changes._
 
 - Fixed `TypeError: osascript(...) is not a function` when pressing "j" to open JS debugger. ([#28315](https://github.com/expo/expo/pull/28315) by [@kudo](https://github.com/kudo))
 - Fix API routes in folders starting with `.` characters. ([#28366](https://github.com/expo/expo/pull/28366) by [@byCedric](https://github.com/byCedric))
+- Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.18.0 — 2024-04-18
 
@@ -58,6 +81,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix package exports resolution for `react-server` bundles. ([#28238](https://github.com/expo/expo/pull/28238) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver race condition with new internal virtual modules patch in Metro. ([#28061](https://github.com/expo/expo/pull/28061) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing nested Node.js externals. ([#28092](https://github.com/expo/expo/pull/28092) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue with fast resolver. ([#27686](https://github.com/expo/expo/pull/27686) by [@EvanBacon](https://github.com/EvanBacon))
@@ -77,6 +101,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Add unstable environment variable to disable bundle splitting. ([#27932](https://github.com/expo/expo/pull/27932) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `experiments.serverComponents` to `experiments.reactCanary`. ([#27303]( ([#27923](https://github.com/expo/expo/pull/27923) by [@EvanBacon](https://github.com/EvanBacon))
 - Change server log tag. ([#26834](https://github.com/expo/expo/pull/26834) by [@EvanBacon](https://github.com/EvanBacon))
 - Eagerly perform iOS system checks to speed up iOS simulator launches. ([#26746](https://github.com/expo/expo/pull/26746) by [@EvanBacon](https://github.com/EvanBacon))

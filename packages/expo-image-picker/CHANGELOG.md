@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 15.0.3 — 2024-04-29
+
+### 🎉 New features
+
+- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android. ([#28514](https://github.com/expo/expo/pull/28514) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
+- On Android, fixed an issue where multiple pickers could be opened, causing a crash. ([#28509](https://github.com/expo/expo/pull/28509) by [@haileyok](https://github.com/haileyok))
+
 ## 15.0.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
