@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Check if local modules native code is unintentionally gitignored ([#28484](https://github.com/expo/expo/pull/28484) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
