@@ -16845,10 +16845,10 @@ react-native-paper@^4.0.1:
     color "^3.1.2"
     react-native-iphone-x-helper "^1.3.1"
 
-react-native-reanimated@~3.9.0-rc.1:
-  version "3.9.0-rc.1"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.9.0-rc.1.tgz#af50c901ae5500b3a1d811f7ffd676af2907782b"
-  integrity sha512-/u1reKR6dIlirf4CXBTtjOLCT7XybPLIPB2xRgZyswptoDLRLX2BiBJS4ec0IZkT2gBv8QwSPqoDru1J8Z8lUQ==
+react-native-reanimated@~3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.10.0.tgz#7367f0ae9c79193315f4f1ef4d359bfac678a761"
+  integrity sha512-oiQiO+iJ8HTXTli94+Cl5R7nd+TzZf+3MYnMKWtnVDDCxFsqBgpkKO2Xp2ZhZyseXY/JDdH0//E7LlPQRRxpXg==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-nullish-coalescing-operator" "^7.0.0-0"
