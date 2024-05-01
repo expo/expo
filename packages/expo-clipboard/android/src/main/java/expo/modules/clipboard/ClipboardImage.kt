@@ -19,7 +19,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.StringBuilder
-import java.util.*
 
 // region Structs and interfaces
 data class ImageResult(
@@ -130,6 +129,7 @@ internal suspend fun clipDataFromBase64Image(
 internal suspend fun bitmapFromContentUriAsync(context: Context, imageUri: Uri): Bitmap =
   runInterruptible(Dispatchers.IO) {
     val contentResolver = context.contentResolver
+    @Suppress("DEPRECATION")
     when {
       Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(
         contentResolver,

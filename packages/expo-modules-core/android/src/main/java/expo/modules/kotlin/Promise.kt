@@ -79,6 +79,7 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
       expoPromise.reject(code ?: unknownCode, message, throwable)
     }
 
+    @Deprecated("Use reject(code, message, throwable) instead")
     override fun reject(message: String?) {
       expoPromise.reject(unknownCode, message, null)
     }

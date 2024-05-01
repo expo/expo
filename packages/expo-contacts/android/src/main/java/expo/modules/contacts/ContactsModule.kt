@@ -223,7 +223,7 @@ class ContactsModule : Module() {
       resolver.delete(uri, null, null)
     }
 
-    AsyncFunction("shareContactAsync") { contactId: String?, subject: String?, promise: Promise ->
+    AsyncFunction("shareContactAsync") { contactId: String?, subject: String? ->
       val lookupKey = getLookupKeyForContactId(contactId) ?: throw LookupKeyNotFoundException()
 
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
@@ -243,7 +243,7 @@ class ContactsModule : Module() {
       uri.toString()
     }
 
-    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, options: Map<String, Any?>?, promise: Promise ->
+    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, _: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
 
       if (contactManipulationPromise != null) {
@@ -325,8 +325,8 @@ class ContactsModule : Module() {
   private val resolver: ContentResolver
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
-  private fun mutateContact(contact: Contact?, data: Map<String, Any>): Contact {
-    val contact = contact ?: Contact(UUID.randomUUID().toString())
+  private fun mutateContact(initContact: Contact?, data: Map<String, Any>): Contact {
+    val contact = initContact ?: Contact(UUID.randomUUID().toString())
 
     data.safeGet<String>("firstName")?.let { contact.firstName = it }
     data.safeGet<String>("middleName")?.let { contact.middleName = it }
@@ -565,11 +565,11 @@ class ContactsModule : Module() {
     pageOffset: Int,
     pageSize: Int,
     queryStrings: Array<String>?,
-    queryField: String?,
+    initQueryField: String?,
     keysToFetch: Set<String>,
     sortOrder: String?
   ): ContactPage? {
-    val queryField = queryField ?: ContactsContract.Data.CONTACT_ID
+    val queryField = initQueryField ?: ContactsContract.Data.CONTACT_ID
     val getAll = pageSize == 0
     val queryArguments = createProjectionForQuery(keysToFetch)
     val contacts: Map<String, Contact>

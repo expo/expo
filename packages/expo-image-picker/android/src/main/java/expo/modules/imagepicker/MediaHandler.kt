@@ -93,7 +93,7 @@ internal class MediaHandler(
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
 
-    return try {
+    try {
       val metadataRetriever = MediaMetadataRetriever().apply {
         setDataSource(context, outputUri)
       }

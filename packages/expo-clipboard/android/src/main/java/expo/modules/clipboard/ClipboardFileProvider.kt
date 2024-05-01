@@ -81,13 +81,13 @@ class ClipboardFileProvider : ContentProvider() {
     return "application/octet-stream"
   }
 
-  override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-    val projection = projection ?: defaultProjectionColumns
+  override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
+    val finalProjection = projection ?: defaultProjectionColumns
     val file: File = strategy.getFileForUri(uri)
-    var columns = arrayOfNulls<String>(projection.size)
-    var values = arrayOfNulls<Any>(projection.size)
+    var columns = arrayOfNulls<String>(finalProjection.size)
+    var values = arrayOfNulls<Any>(finalProjection.size)
     var i = 0
-    for (column in projection) {
+    for (column in finalProjection) {
       when (column) {
         OpenableColumns.DISPLAY_NAME -> {
           columns[i] = OpenableColumns.DISPLAY_NAME

@@ -23,6 +23,7 @@ data class SaveOptions(
       ImageFormat.WEBP -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         CompressFormat.WEBP_LOSSY
       } else {
+        @Suppress("DEPRECATION")
         CompressFormat.WEBP
       }
     }

@@ -29,9 +29,9 @@ class DateModel : BaseModel() {
     val noYearPattern = SimpleDateFormat("--MM-dd", Locale.getDefault())
     try {
       if (hasYear) {
-        calendar.time = datePattern.parse(dateString)
+        calendar.time = datePattern.parse(dateString)!!
       } else {
-        calendar.time = noYearPattern.parse(dateString)
+        calendar.time = noYearPattern.parse(dateString)!!
       }
     } catch (e: Exception) {
       // TODO: ??

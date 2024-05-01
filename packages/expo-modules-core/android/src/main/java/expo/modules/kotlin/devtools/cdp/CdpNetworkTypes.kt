@@ -183,7 +183,7 @@ data class ResponseReceivedParams(
   val response: Response,
   val hasExtraInfo: Boolean = false
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, okhttpResponse: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, okhttpResponse: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
     type = ResourceType.fromMimeType(okhttpResponse.header("Content-Type", "") ?: ""),
@@ -207,7 +207,7 @@ data class LoadingFinishedParams(
   val timestamp: MonotonicTime,
   val encodedDataLength: Long
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, response: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
     encodedDataLength = response.body?.contentLength() ?: 0
@@ -228,10 +228,7 @@ data class ExpoReceivedResponseBodyParams(
   var base64Encoded: Boolean
 ) : JsonSerializable {
   constructor(
-    now: BigDecimal,
     requestId: RequestId,
-    request: okhttp3.Request,
-    response: okhttp3.Response,
     body: okhttp3.ResponseBody
   ) : this(
     requestId = requestId,

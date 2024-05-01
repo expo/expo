@@ -70,7 +70,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     }
 
     // We can't use `OnStopObserving`, because we need access to the promise.
-    AsyncFunction("stopObserving") { eventName: String?, promise: Promise ->
+    AsyncFunction("stopObserving") { _: String?, promise: Promise ->
       uiManager.runOnUiQueueThread {
         serviceSubscriptions.forEach { it.stop() }
         currentFrameCallback.stop()

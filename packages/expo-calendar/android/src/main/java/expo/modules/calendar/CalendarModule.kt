@@ -112,7 +112,7 @@ class CalendarModule : Module() {
       }
     }
 
-    AsyncFunction("saveEventAsync") { details: ReadableArguments, options: ReadableArguments?, promise: Promise ->
+    AsyncFunction("saveEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
@@ -129,7 +129,7 @@ class CalendarModule : Module() {
       }
     }
 
-    AsyncFunction("deleteEventAsync") { details: ReadableArguments, options: ReadableArguments?, promise: Promise ->
+    AsyncFunction("deleteEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {

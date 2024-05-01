@@ -114,6 +114,7 @@ class LocalizationModule : Module() {
         }
         locales
       } else {
+        @Suppress("DEPRECATION")
         listOf(configuration.locale)
       }
     }
