@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.6.0 — 2024-05-01
+
+### 🎉 New features
+
 - Check if local modules native code is unintentionally gitignored ([#28484](https://github.com/expo/expo/pull/28484) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🐛 Bug fixes
 
 - Fix failed deep dependency checks when using npm@~10.6+ ([#28563](https://github.com/expo/expo/pull/28563) by [@keith-kurak](https://github.com/keith-kurak))
-
-### 💡 Others
 
 ## 1.5.2 — 2024-04-24
 
