@@ -83,13 +83,13 @@ class VideoPlayerAudioFocusManager(val context: Context, private val player: Wea
       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
         player.get()?.let { player ->
           volumeBeforeDuck = player.player.volume
-          player.volume = (player.volume) / 2f
+          player.volume = player.volume / 2f
           player.userVolume = player.volume
         }
       }
 
       AudioManager.AUDIOFOCUS_GAIN -> {
-        // TODO: For now this behaves like iOS and doesn't resume playback automatically
+        //  TODO: For now this behaves like iOS and doesn't resume playback automatically
         //  In future versions we can add a prop to control this behavior.
         player.get()?.let { player ->
           if (player.playing && !player.muted && player.volume > 0) {
