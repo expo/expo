@@ -18,6 +18,7 @@ import {
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+const originalOffline = process.env.EXPO_OFFLINE;
 
 const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
 
@@ -45,11 +46,13 @@ beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
+  process.env.EXPO_OFFLINE = '0';
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+  process.env.EXPO_OFFLINE = originalOffline;
 });
 
 it('loads expected modules by default', async () => {

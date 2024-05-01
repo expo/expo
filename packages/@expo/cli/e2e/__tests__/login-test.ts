@@ -6,14 +6,17 @@ import { execute, getLoadedModulesAsync, projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+const originalOffline = process.env.EXPO_OFFLINE;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
+  process.env.EXPO_OFFLINE = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+  process.env.EXPO_OFFLINE = originalOffline;
 });
 
 it('loads expected modules by default', async () => {
