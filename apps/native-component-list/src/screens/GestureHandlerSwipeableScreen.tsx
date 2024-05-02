@@ -46,7 +46,6 @@ export default function GestureHandlerSwipeableScreen() {
   );
 }
 
-
 GestureHandlerSwipeableScreen.navigationOptions = {
   title: 'Swipeable Rows',
 };
