@@ -49,6 +49,7 @@ const screens = [
   'FileSystem',
   'Font',
   'Errors',
+  'ExpoCoreModule',
   'ExpoModules',
   'Geocoding',
   'Haptics',

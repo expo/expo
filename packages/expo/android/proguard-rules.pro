@@ -3,6 +3,10 @@
   protected *;
   private ReactDelegate mReactDelegate;
 }
+# Remove this after react-native 0.74.1
+-keepclassmembers public class expo.modules.ReactActivityDelegateWrapper {
+  protected ReactDelegate getReactDelegate();
+}
 -keepclassmembers public class com.facebook.react.ReactActivity {
   private final ReactActivityDelegate mDelegate;
 }

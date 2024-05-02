@@ -47,5 +47,8 @@ globalThis.expo = {
     getViewConfig: () => {
         throw new Error('Method not implemented.');
     },
+    reloadAppAsync: async () => {
+        window.location.reload();
+    },
 };
 //# sourceMappingURL=CoreModule.js.map

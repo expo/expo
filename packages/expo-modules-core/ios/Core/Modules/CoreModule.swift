@@ -39,5 +39,9 @@ internal final class CoreModule: Module {
         "directEventTypes": directEventTypes
       ]
     }
+
+    AsyncFunction("reloadAppAsync") { (reason: String) in
+      RCTTriggerReloadCommandListeners(reason)
+    }
   }
 }
