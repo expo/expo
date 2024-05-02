@@ -20,7 +20,7 @@ class ManifestException : ExponentException {
   private var fixInstructions: String? = null
   private val isSnackURL: Boolean
     get() =
-    manifestUrl.contains(SNACK_STAGING) || manifestUrl.contains(SNACK_PROD)
+      manifestUrl.contains(SNACK_STAGING) || manifestUrl.contains(SNACK_PROD)
 
   var canRetry: Boolean = true
   val errorHeader: String?
@@ -105,11 +105,11 @@ class ManifestException : ExponentException {
               "• The $projectType you opened uses <b>SDK $sdkVersionRequired</b>."
             fixInstructions = if (isSnackURL) {
               "Either select SDK ${supportedSdksString("or")} on <a href='https:/snack.expo.dev/'>https:/snack.expo.dev/</a> or install an older version of Expo Go that is compatible with your project." +
-                      "<br>If your required SDK version is not listed on Snack, use an emulator or one of the online emulators inside of Snack<br><br>"
+                "<br>If your required SDK version is not listed on Snack, use an emulator or one of the online emulators inside of Snack<br><br>"
             } else {
               "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with your project.<br><br>"
             } + "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>" +
-                    "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
+              "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
             canRetry = false
           }
 
