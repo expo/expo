@@ -72,8 +72,6 @@ function SwipableList(): React.ReactElement {
         keyExtractor={(item) => item.id}
       />
     </View>
-
-
   );
 }
 
