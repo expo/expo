@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `ReactDOMServer.renderToString` to support React 19 beta.
+
 ## 3.5.6 — 2024-05-01
 
 ### 🎉 New features
