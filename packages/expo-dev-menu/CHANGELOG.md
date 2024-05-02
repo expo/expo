@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.0.10 — 2024-05-02
+
+### 🐛 Bug fixes
+
 - Fixed some dev menu items like "Reload" that are not functional. ([#28578](https://github.com/expo/expo/pull/28578) by [@kudo](https://github.com/kudo))
 - Fixed DevMenu showing up before the app is loaded when using the new architecture. ([#28589](https://github.com/expo/expo/pull/28589) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
