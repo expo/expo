@@ -1,10 +1,10 @@
 /**
  * Reloads the app.
  *
- * This function should work for both release and debug builds.
+ * This function works for both release and debug builds.
  *
- * Unlike the [`Updates.reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync),
- * this function does not change the loading bundle. It only reloads with the same JavaScript bundle.
+ * Unlike [`Updates.reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync),
+ * this function does not use a new update even if one is available. It only reloads the app using the same JavaScript bundle that is currently running.
  *
  * @param reason The reason for reloading the app. This is used only for some platforms.
  */
