@@ -58,6 +58,11 @@ interface DevMenuManagerInterface {
   fun dispatchCallable(actionId: String, args: ReadableMap?)
 
   /**
+   * Registers an extra [DevMenuExtensionInterface] to the manager.
+   */
+  fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface)
+
+  /**
    * @return a list of dev menu items serialized to the [Bundle].
    */
   fun serializedItems(): List<Bundle>

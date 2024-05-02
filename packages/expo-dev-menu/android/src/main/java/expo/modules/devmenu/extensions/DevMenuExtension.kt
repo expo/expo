@@ -22,6 +22,10 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
+  init {
+    DevMenuManager.registerExtensionInterface(this)
+  }
+
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface) = DevMenuItemsContainer.export {
     if (!settings.wasRunOnDevelopmentBridge()) {
       return@export
