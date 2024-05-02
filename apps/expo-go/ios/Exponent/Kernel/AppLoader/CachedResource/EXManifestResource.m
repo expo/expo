@@ -345,25 +345,22 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
                        requiredVersionNum
     ];
 #else
+    NSString *instructions;
     if (self.isSnackURL) {
-      fixInstructions = [NSString stringWithFormat:@"Either select SDK %@ on https://snack.expo.dev, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n"
-                         @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
-                         @"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
-                         [self supportedSdkVersionsConjunctionString:@"or"],
-                         [[supportedSDKVersionInts lastObject] intValue],
-                         expoDevLink,
-                         requiredVersionNum
+      instructions = [NSString stringWithFormat:@"Either select SDK %@ on https://snack.expo.dev, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n",
+                      [self supportedSdkVersionsConjunctionString:@"or"]
       ];
     } else {
-      fixInstructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n"
-                         @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
-                         @"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
-                         [self supportedSdkVersionsConjunctionString:@"or"],
-                         [[supportedSDKVersionInts lastObject] intValue],
-                         expoDevLink,
-                         requiredVersionNum
+      instructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n",
+                      [self supportedSdkVersionsConjunctionString:@"or"]
       ];
     }
+    
+    fixInstructions = [instructions stringByAppendingFormat:@"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
+                       @"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
+                       [[supportedSDKVersionInts lastObject] intValue],
+                       expoDevLink,
+                       requiredVersionNum];
 #endif
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
     NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
