@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Gradle Plugin build error when no specified `entryFile` in **android/app/build.gradle**. ([#28546](https://github.com/expo/expo/pull/28546) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.25.7 — 2024-05-02
+
+### 🐛 Bug fixes
+
+- Fixed Gradle Plugin build error when no specified `entryFile` in **android/app/build.gradle**. ([#28546](https://github.com/expo/expo/pull/28546) by [@kudo](https://github.com/kudo))
 
 ## 0.25.6 — 2024-05-01
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.0.3 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
 ## 7.0.2 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

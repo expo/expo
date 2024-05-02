@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 51.0.0-preview.11 — 2024-05-02
+
+### 🎉 New features
+
+- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
 
 ## 51.0.0-preview.10 — 2024-05-01
 
