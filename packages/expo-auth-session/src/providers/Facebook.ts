@@ -44,10 +44,6 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
    * Android native client ID for use in development builds and bare workflow.
    */
   androidClientId?: string;
-  /**
-   * Proxy client ID for use when testing with Expo Go on Android and iOS.
-   */
-  expoClientId?: string;
 }
 
 // @needsAudit
@@ -135,13 +131,7 @@ export function useAuthRequest(
       default: 'webClientId',
     });
     return config[propertyName as any] ?? config.clientId;
-  }, [
-    config.expoClientId,
-    config.iosClientId,
-    config.androidClientId,
-    config.webClientId,
-    config.clientId,
-  ]);
+  }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
 
   const redirectUri = useMemo((): string => {
     if (typeof config.redirectUri !== 'undefined') {
