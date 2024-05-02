@@ -5,6 +5,7 @@ import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDevic
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
+  reversePort?: number;
   variant?: string;
   device?: boolean | string;
   port?: number;
