@@ -37,6 +37,7 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		BBA7CF25DC088CAE6D7A18F1 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F30697BC9AC5F8C8A66DEB7F /* libPods-BareExpoMain-BareExpoTests.a */; };
 		C4646A25A05E494F9DC4A1B3 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6F906615D6F7426F93226251 /* notification.wav */; };
+		D7D1CD9FF756FCC49A9B873F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +87,7 @@
 		41B63EBCAA219161360788BE /* Pods-BareExpoMain-BareExpoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoTests.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5011CACA040B4EC49D327CB1 /* BareExpo-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "BareExpo-Bridging-Header.h"; path = "BareExpo/BareExpo-Bridging-Header.h"; sourceTree = "<group>"; };
 		57FFECAB053942999310E7F8 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "BareExpo/noop-file.swift"; sourceTree = "<group>"; };
+		638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = BareExpo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpo/Pods-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
 		6EC5EFD75D8ADD489B03287F /* Pods-BareExpoMain-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoTests.release.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
 		6F906615D6F7426F93226251 /* notification.wav */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = notification.wav; path = BareExpo/notification.wav; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 				57FFECAB053942999310E7F8 /* noop-file.swift */,
 				5011CACA040B4EC49D327CB1 /* BareExpo-Bridging-Header.h */,
 				6F906615D6F7426F93226251 /* notification.wav */,
+				638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */,
 			);
 			name = BareExpo;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				C4646A25A05E494F9DC4A1B3 /* notification.wav in Resources */,
 				47A7E3329B8846E5A11CF543 /* icomoon.ttf in Resources */,
+				D7D1CD9FF756FCC49A9B873F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

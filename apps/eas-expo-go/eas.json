@@ -20,7 +20,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk51-0.74.1-rc.0",
+          "key": "sdk51-0.74.1",
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-ventura-13.6-xcode-15.0",
