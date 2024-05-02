@@ -60,22 +60,22 @@ export default function App({ Component, pageProps }: AppProps) {
     <AnalyticsProvider>
       <ThemeProvider>
         <TutorialChapterCompletionProvider>
-        <CodeBlockSettingsProvider>
-          <MDXProvider components={rootMarkdownComponents}>
-            <Tooltip.Provider>
-              <Global
-                styles={css({
-                  'html, body, kbd, button, input, select': {
-                    fontFamily: regularFont.style.fontFamily,
-                  },
-                  'code, pre, table.diff': {
-                    fontFamily: monospaceFont.style.fontFamily,
-                  },
-                })}
-              />
-              <Component {...pageProps} />
-            </Tooltip.Provider>
-          </MDXProvider>
+          <CodeBlockSettingsProvider>
+            <MDXProvider components={rootMarkdownComponents}>
+              <Tooltip.Provider>
+                <Global
+                  styles={css({
+                    'html, body, kbd, button, input, select': {
+                      fontFamily: regularFont.style.fontFamily,
+                    },
+                    'code, pre, table.diff': {
+                      fontFamily: monospaceFont.style.fontFamily,
+                    },
+                  })}
+                />
+                <Component {...pageProps} />
+              </Tooltip.Provider>
+            </MDXProvider>
           </CodeBlockSettingsProvider>
         </TutorialChapterCompletionProvider>
       </ThemeProvider>
