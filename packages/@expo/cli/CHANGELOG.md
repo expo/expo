@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added an argument `--reverse-port` for `run:android` command. ([#28583](https://github.com/expo/expo/pull/28583) by [@Gorb1k](https://github.com/Gorb1k))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
