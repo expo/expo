@@ -103,7 +103,8 @@ open class DevMenuManager: NSObject {
         return
       }
 
-      if bridge.isLoading {
+      // When using the proxy bridge isLoading is always false, so always add the ContentDidAppearNotification observer
+      if bridge.isLoading || bridge.isProxy() {
         NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
       } else {
         autoLaunch()
