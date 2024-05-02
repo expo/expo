@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Use `ReactDOMServer.renderToString` to support React 19 beta.
+- Use `ReactDOMServer.renderToString` to support React 19 beta. ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.5.6 — 2024-05-01
 
