@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop deprecated `expoClientId` field from auth proxy.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

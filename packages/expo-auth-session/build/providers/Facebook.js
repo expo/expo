@@ -83,13 +83,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             default: 'webClientId',
         });
         return config[propertyName] ?? config.clientId;
-    }, [
-        config.expoClientId,
-        config.iosClientId,
-        config.androidClientId,
-        config.webClientId,
-        config.clientId,
-    ]);
+    }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
     const redirectUri = useMemo(() => {
         if (typeof config.redirectUri !== 'undefined') {
             return config.redirectUri;
