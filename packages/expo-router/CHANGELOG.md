@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.5.7 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
 ## 3.5.6 — 2024-05-01
 
 ### 🎉 New features

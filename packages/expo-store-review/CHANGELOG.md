@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- fixes incorrect scene when multiple windowscenes opened, while requesting a review. ([#28577](https://github.com/expo/expo/pull/28577) by [@dylancom](https://github.com/dylancom))
-
 ### 💡 Others
+
+## 7.0.2 — 2024-05-02
+
+### 🐛 Bug fixes
+
+- fixes incorrect scene when multiple windowscenes opened, while requesting a review. ([#28577](https://github.com/expo/expo/pull/28577) by [@dylancom](https://github.com/dylancom))
 
 ## 7.0.1 — 2024-04-23
 
