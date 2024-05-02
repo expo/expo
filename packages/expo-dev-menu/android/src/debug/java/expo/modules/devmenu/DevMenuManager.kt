@@ -91,23 +91,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   /**
    * Returns an collection of modules conforming to [DevMenuExtensionInterface].
-   * Bridge may register multiple modules with the same name – in this case it returns only the one that overrides the others.
    */
-  private val delegateExtensions: Collection<DevMenuExtensionInterface>
-    get() {
-      val reactContext = delegateReactContext ?: return emptyList()
-      val uniqueExtensionClasses = reactContext
-        .nativeModules
-        .filterIsInstance<DevMenuExtensionInterface>()
-        .filterIsInstance<NativeModule>()
-        .map { it.javaClass }
-        .toSet()
-
-      return uniqueExtensionClasses
-        .map { extensionClass ->
-          reactContext.getNativeModule(extensionClass) as DevMenuExtensionInterface
-        }
-    }
+  @get:Synchronized
+  private val delegateExtensions = mutableListOf<DevMenuExtensionInterface>()
 
   private val cachedDevMenuDataSources by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuDataSourceInterface>> {
     delegateExtensions
@@ -458,6 +444,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
           is DevMenuExportedFunction -> call(args)
         }
       }
+  }
+
+  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) {
+    delegateExtensions.add(extensionInterface)
   }
 
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {

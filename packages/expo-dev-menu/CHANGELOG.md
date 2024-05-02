@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed some dev menu items like "Reload" that are not functional. ([#28578](https://github.com/expo/expo/pull/28578) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Update Menu background color in dark mode. ([#28549](https://github.com/expo/expo/pull/28549) by [@gabrieldonadel](https://github.com/gabrieldonadel))
