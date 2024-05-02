@@ -1,11 +1,10 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
-import { isRouteActive } from '~/common/routes';
+import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
@@ -13,47 +12,16 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
-import { NavigationRouteWithSection } from '~/types/common';
+import { PageMetadata } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
 import { P } from '~/ui/components/Text';
 
-const STYLES_DOCUMENT = css`
-  background: ${theme.background.default};
-  margin: 0 auto;
-  padding: 40px 56px;
-
-  @media screen and (max-width: ${breakpoints.medium + 124}px) {
-    padding: 20px 16px 48px 16px;
-  }
-`;
-
-type Props = React.PropsWithChildren<{
-  title?: string;
-  description?: string;
-  sourceCodeUrl?: string;
-  tocVisible: boolean;
-  packageName?: string;
-  iconUrl?: string;
-  /** If the page should not show up in the Algolia Docsearch results */
-  hideFromSearch?: boolean;
-}>;
-
-function appendSectionToRoute(route?: NavigationRouteWithSection) {
-  if (route?.children) {
-    return route.children.map((entry: NavigationRouteWithSection) =>
-      route.type !== 'page'
-        ? Object.assign(entry, {
-            section: route.section ? `${route.section} - ${route.name}` : route.name,
-          })
-        : route
-    );
-  }
-  return route;
-}
+export type DocPageProps = PropsWithChildren<PageMetadata>;
 
 export default function DocumentationPage({
   title,
@@ -63,8 +31,9 @@ export default function DocumentationPage({
   iconUrl,
   children,
   hideFromSearch,
-  tocVisible,
-}: Props) {
+  platforms,
+  hideTOC,
+}: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
@@ -140,7 +109,7 @@ export default function DocumentationPage({
       sidebar={sidebarElement}
       sidebarRight={sidebarRightElement}
       sidebarActiveGroup={sidebarActiveGroup}
-      tocVisible={tocVisible}
+      hideTOC={hideTOC ?? false}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
@@ -160,7 +129,11 @@ export default function DocumentationPage({
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
       </Head>
-      <div css={STYLES_DOCUMENT}>
+      <div
+        className={mergeClasses(
+          'mx-auto py-10 px-14',
+          'max-lg-gutters:px-4 max-lg-gutters:pt-5 max-lg-gutters:pb-12'
+        )}>
         {title && (
           <PageTitle
             title={title}
@@ -174,6 +147,7 @@ export default function DocumentationPage({
             {description}
           </P>
         )}
+        {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
         {children}
         <Footer

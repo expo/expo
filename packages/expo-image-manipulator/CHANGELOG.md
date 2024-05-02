@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 12.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2024-04-22
+
+### 🎉 New features
+
+- Added support for converting to WEBP on Android and iOS. ([#26379](https://github.com/expo/expo/pull/26379) by [@NikitaDudin](https://github.com/NikitaDudin))
+
+## 12.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
 ## 11.8.0 — 2023-12-12
 
 ### 🐛 Bug fixes

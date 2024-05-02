@@ -8,6 +8,7 @@ export type PageMetadata = {
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
   hideTOC?: boolean;
+  platforms?: string[];
 };
 
 /**
@@ -49,4 +50,13 @@ export type NavigationRouteWithSection = NavigationRoute & { section?: string };
  * Available platforms supported by our APIs.
  * Temporarily it also accepts other strings for compatibility reasons.
  */
-export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;
+export type PlatformName =
+  | 'ios'
+  | 'ios-nosim'
+  | 'android'
+  | 'android-noemu'
+  | 'web'
+  | 'expo'
+  | 'macos'
+  | 'tvos'
+  | string;

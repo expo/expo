@@ -310,7 +310,7 @@
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleReactContentEvent:)
                                                name:RCTContentDidAppearNotification
-                                             object:bridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeEvent:)
                                                name:RCTBridgeWillReloadNotification

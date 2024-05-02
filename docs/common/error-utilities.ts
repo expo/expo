@@ -200,6 +200,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
 
+  // Expo Accounts
+  '/accounts/working-together/': '/accounts/account-types/',
+
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/archive/glossary/#expokit/',
@@ -293,6 +296,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
+  // Random API replaced with Crypto
+  '/versions/v50.0.0/sdk/random/': '/versions/v50.0.0/sdk/crypto/',
+  '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
+
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/overview/',
@@ -364,6 +371,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
+  '/archive/classic-updates/building-standalone-apps/':
+    '/archive/classic-builds/building-standalone-apps/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -405,6 +414,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
   '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
+  '/bare/error-recovery/': '/eas-update/error-recovery/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -439,4 +449,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
+
+  // Stop encouraging usage of Expo Go when using native modules
+  '/bare/using-expo-client/': '/archive/using-expo-client/',
 };

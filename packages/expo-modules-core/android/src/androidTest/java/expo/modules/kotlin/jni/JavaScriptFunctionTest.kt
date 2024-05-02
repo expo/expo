@@ -5,12 +5,12 @@ import org.junit.Before
 import org.junit.Test
 
 class JavaScriptFunctionTest {
-  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  private lateinit var jsiInterop: JSIContext
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
-      installJSIForTests()
+    jsiInterop = JSIContext().apply {
+      installJSIForTests(defaultAppContextMock())
     }
   }
 

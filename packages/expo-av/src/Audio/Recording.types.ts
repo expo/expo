@@ -12,23 +12,33 @@ import {
 export type RecordingStatus = {
   /**
    * A boolean describing if the `Recording` can initiate the recording.
+   * @platform android
+   * @platform ios
    */
   canRecord: boolean;
   /**
    * A boolean describing if the `Recording` is currently recording.
+   * @platform android
+   * @platform ios
    */
   isRecording: boolean;
   /**
    * A boolean describing if the `Recording` has been stopped.
+   * @platform android
+   * @platform ios
    */
   isDoneRecording: boolean;
   /**
    * The current duration of the recorded audio or the final duration is the recording has been stopped.
+   * @platform android
+   * @platform ios
    */
   durationMillis: number;
   /**
    * A number that's the most recent reading of the loudness in dB. The value ranges from `–160` dBFS, indicating minimum power,
    * to `0` dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
+   * @platform android
+   * @platform ios
    */
   metering?: number;
   // @docsMissing
@@ -44,7 +54,9 @@ export type RecordingStatus = {
   mediaServicesDidReset?: boolean;
 };
 
-// @needsAudit
+/**
+ * @platform android
+ */
 export type RecordingOptionsAndroid = {
   /**
    * The desired file extension. Example valid values are `.3gp` and `.m4a`.
@@ -68,7 +80,8 @@ export type RecordingOptionsAndroid = {
    * the sampling rate supported by AMRNB is 8kHz, and the sampling rate supported by AMRWB is 16kHz.
    * Please consult with the related audio coding standard for the supported audio sampling rate.
    *
-   * @example 44100
+   * @example
+   * 44100
    */
   sampleRate?: number;
   /**
@@ -77,7 +90,8 @@ export type RecordingOptionsAndroid = {
    * Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified
    * number of audio channels are applicable.
    *
-   * @example `1`, `2`
+   * @example
+   * `1`, `2`
    */
   numberOfChannels?: number;
   /**
@@ -87,24 +101,29 @@ export type RecordingOptionsAndroid = {
    * bit rate is applicable, and sometimes the passed bitRate will be clipped internally to ensure the audio recording
    * can proceed smoothly based on the capabilities of the platform.
    *
-   * @example `128000`
+   * @example
+   * `128000`
    */
   bitRate?: number;
   /**
    * The desired maximum file size in bytes, after which the recording will stop (but `stopAndUnloadAsync()` must still
    * be called after this point).
    *
-   * @example `65536`
+   * @example
+   * `65536`
    */
   maxFileSize?: number;
 };
 
-// @needsAudit
+/**
+ * @platform ios
+ */
 export type RecordingOptionsIOS = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example
+   * `'.caf'`
    */
   extension: string;
   /**
@@ -118,19 +137,22 @@ export type RecordingOptionsIOS = {
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example
+   * `44100`
    */
   sampleRate: number;
   /**
    * The desired number of channels.
    *
-   * @example `1`, `2`
+   * @example
+   * `1`, `2`
    */
   numberOfChannels: number;
   /**
    * The desired bit rate.
    *
-   * @example `128000`
+   * @example
+   * `128000`
    */
   bitRate: number;
   /**
@@ -140,13 +162,15 @@ export type RecordingOptionsIOS = {
   /**
    * The desired bit depth hint.
    *
-   * @example `16`
+   * @example
+   * `16`
    */
   bitDepthHint?: number;
   /**
    * The desired PCM bit depth.
    *
-   * @example `16`
+   * @example
+   * `16`
    */
   linearPCMBitDepth?: number;
   /**
@@ -204,14 +228,20 @@ export type RecordingOptions = {
   web: RecordingOptionsWeb;
 };
 
-// @docsMissing
+/**
+ * @platform android
+ * @platform ios
+ */
 export type RecordingInput = {
   name: string;
   type: string;
   uid: string;
 };
 
-// @needsAudit
+/**
+ * @platform android
+ * @platform ios
+ */
 export type RecordingObject = {
   /**
    * The newly created and started `Recording` object.

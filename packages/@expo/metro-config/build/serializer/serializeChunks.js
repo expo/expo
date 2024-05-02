@@ -184,7 +184,7 @@ class Chunk {
             modulesOnly: this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
-            splitChunks: (0, baseJSBundle_1.getSplitChunksOption)(this.graph, this.options),
+            splitChunks: !!this.options.serializerOptions?.splitChunks,
             skipWrapping: true,
             computedAsyncModulePaths: null,
             ...options,
@@ -206,8 +206,14 @@ class Chunk {
                 if (dependency.data.data.asyncType) {
                     const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
-                    const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
-                    computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+                    // NOTE(kitten): We shouldn't have any async imports on non-async chunks
+                    // However, due to how chunks merge, some async imports may now be pointing
+                    // at entrypoint (or vendor) chunks. We omit the path so that the async import
+                    // helper doesn't reload and reevaluate the entrypoint.
+                    if (chunkContainingModule.isAsync) {
+                        const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+                        computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+                    }
                 }
             });
         });
@@ -409,12 +415,11 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
         }
     }
     chunks.add(entryChunk);
-    const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
             if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
-                splitChunks) {
+                entryChunk.options.serializerOptions?.splitChunks !== false) {
                 gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);
             }
             else {

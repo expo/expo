@@ -1,7 +1,7 @@
 platform :ios, '13.4'
 
-# Disable expo-updates auto create manifest in podspec script_phase
-$expo_updates_create_manifest = false
+# Disable expo-updates auto create updates resources in podspec script_phase
+$expo_updates_create_updates_resources = false
 
 # Require autolinking script
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")

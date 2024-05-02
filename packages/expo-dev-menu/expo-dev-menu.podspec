@@ -106,10 +106,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|
-    if reactNativeTargetVersion >= 73
+    if reactNativeTargetVersion >= 74
       ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
-    else
-      ss.source_files = 'ios/ReactNativeCompatibles/ReactNative72/**/*'
     end
     ss.compiler_flags = compiler_flags
     ss.dependency 'React-Core'

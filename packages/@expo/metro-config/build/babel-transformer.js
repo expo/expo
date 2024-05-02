@@ -4,14 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
-const node_crypto_1 = __importDefault(require("node:crypto"));
-const node_fs_1 = __importDefault(require("node:fs"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
-const cacheKeyParts = [
-    node_fs_1.default.readFileSync(__filename),
-    require('babel-preset-fbjs/package.json').version,
-];
 function isCustomTruthy(value) {
     return value === true || value === 'true';
 }
@@ -32,7 +26,9 @@ const memoizeWarning = memoize((message) => {
 });
 function getBabelCaller({ filename, options }) {
     const isNodeModule = filename.includes('node_modules');
-    const isServer = options.customTransformOptions?.environment === 'node';
+    const isReactServer = options.customTransformOptions?.environment === 'react-server';
+    const isGenericServer = options.customTransformOptions?.environment === 'node';
+    const isServer = isReactServer || isGenericServer;
     const routerRoot = typeof options.customTransformOptions?.routerRoot === 'string'
         ? decodeURI(options.customTransformOptions.routerRoot)
         : undefined;
@@ -46,6 +42,8 @@ function getBabelCaller({ filename, options }) {
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer,
+        // Enable React Server Component rules for AST.
+        isReactServer,
         // The base url to make requests from, used for hosting from non-standard locations.
         baseUrl: typeof options.customTransformOptions?.baseUrl === 'string'
             ? decodeURI(options.customTransformOptions.baseUrl)
@@ -121,14 +119,8 @@ plugins, }) => {
         }
     }
 };
-function getCacheKey() {
-    const key = node_crypto_1.default.createHash('md5');
-    cacheKeyParts.forEach((part) => key.update(part));
-    return key.digest('hex');
-}
 const babelTransformer = {
     transform,
-    getCacheKey,
 };
 module.exports = babelTransformer;
 //# sourceMappingURL=babel-transformer.js.map

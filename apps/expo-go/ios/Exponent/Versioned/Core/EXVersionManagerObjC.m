@@ -35,7 +35,6 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -447,7 +446,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Standard
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
-      return @[[RCTLocalAssetImageLoader new], [EXMediaLibraryImageLoader new]];
+      return @[[RCTLocalAssetImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
       return @[[RCTGIFImageDecoder new]];
     }];

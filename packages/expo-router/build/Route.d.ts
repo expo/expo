@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import type { ErrorBoundaryProps } from './exports';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 export type DynamicConvention = {
@@ -41,9 +41,8 @@ export type RouteNode = {
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
 /** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node }: {
-    children: ReactNode;
+export declare function Route({ children, node }: PropsWithChildren<{
     node: RouteNode;
-}): JSX.Element;
+}>): JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

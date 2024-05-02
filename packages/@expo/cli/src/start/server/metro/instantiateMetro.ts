@@ -4,13 +4,16 @@ import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import Bundler from 'metro/src/Bundler';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
+import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
@@ -18,8 +21,8 @@ import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
-import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
@@ -49,18 +52,43 @@ function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string):
   }
 }
 
+// Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
+class LogRespectingTerminal extends Terminal {
+  constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
+    super(stream);
+
+    const sendLog = (...args: any[]) => {
+      // @ts-expect-error
+      this._logLines.push(
+        // format args like console.log
+        util.format(...args)
+      );
+      // @ts-expect-error
+      this._scheduleUpdate();
+
+      // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
+      this.flush();
+    };
+
+    console.log = sendLog;
+    console.info = sendLog;
+  }
+}
+
+// Share one instance of Terminal for all instances of Metro.
+const terminal = new LogRespectingTerminal(process.stdout);
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
-  }: { exp?: ExpoConfig; isExporting: boolean }
+    getMetroBundler,
+  }: { exp?: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
-
-  const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const hasConfig = await resolveConfig(options.config, projectRoot);
@@ -113,6 +141,8 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
+    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    getMetroBundler,
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -147,7 +177,13 @@ export async function instantiateMetroAsync(
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
     options,
-    { exp, isExporting }
+    {
+      exp,
+      isExporting,
+      getMetroBundler() {
+        return metro.getBundler().getBundler();
+      },
+    }
   );
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
@@ -185,6 +221,9 @@ export async function instantiateMetroAsync(
   prependMiddleware(middleware, debugMiddleware);
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
+  // Attach Expo Atlas if enabled
+  const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints: {
@@ -193,6 +232,9 @@ export async function instantiateMetroAsync(
     },
     watch: !isExporting && isWatchEnabled(),
   });
+
+  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
+  atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent

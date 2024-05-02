@@ -6,7 +6,7 @@ import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    async prefetch(urls, _) {
+    async prefetch(urls, _, __) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
         return new Promise((resolve) => {
             let imagesLoaded = 0;
@@ -67,7 +67,8 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
-    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
+    const containerRef = React.useRef(null);
+    const selectedSource = useSourceSelection(source, responsivePolicy, containerRef, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
     const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
     const initialNode = placeholder?.[0]?.uri
         ? [

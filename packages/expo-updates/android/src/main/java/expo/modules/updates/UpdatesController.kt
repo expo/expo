@@ -2,11 +2,12 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactNativeHost
+import expo.modules.kotlin.AppContext
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesControllerRegistry
+import java.lang.ref.WeakReference
 
 /**
  * Main entry point to expo-updates. Singleton that keeps track of updates state, holds references
@@ -16,9 +17,6 @@ import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
  * the application lifecycle, via [UpdatesPackage]. It delegates to an instance of [LoaderTask] to
  * start the process of loading and launching an update, then responds appropriately depending on
  * the callbacks that are invoked.
- *
- * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
- * expo-updates to reload JS and send events through the bridge.
  */
 class UpdatesController {
   companion object {
@@ -31,54 +29,63 @@ class UpdatesController {
       }
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
-      if (singletonInstance == null) {
-        var updatesDirectoryException: Exception? = null
-        val updatesDirectory = try {
-          UpdatesUtils.getOrCreateUpdatesDirectory(context)
-        } catch (e: Exception) {
-          updatesDirectoryException = e
-          null
-        }
-
-        val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
-          val logger = UpdatesLogger(context)
-          when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
-            UpdatesConfigurationValidationResult.VALID -> {
-              return@run UpdatesConfiguration(context, null)
-            }
-            UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
-              "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
-              UpdatesErrorCode.InitializationError
-            )
-            UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
-              "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
-              UpdatesErrorCode.InitializationError
-            )
-            UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
-              "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
-              UpdatesErrorCode.InitializationError
-            )
-          }
-          return@run null
-        }
-
-        singletonInstance = if (updatesConfiguration != null && updatesDirectory != null) {
-          EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
+      if (singletonInstance != null) {
+        return
+      }
+      val useDeveloperSupport = (context as? ReactApplication)?.reactNativeHost?.useDeveloperSupport ?: false
+      if (useDeveloperSupport && !BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
+        if (BuildConfig.USE_DEV_CLIENT) {
+          val devLauncherController = initializeAsDevLauncherWithoutStarting(context)
+          singletonInstance = devLauncherController
+          UpdatesControllerRegistry.controller = WeakReference(devLauncherController)
         } else {
-          val logger = UpdatesLogger(context)
-          if (updatesDirectory == null) {
-            // this means there was a storage error
-            logger.error(
-              "The expo-updates system is disabled due to a storage access error: ${updatesDirectoryException?.message ?: "Unknown Error"}",
-              UpdatesErrorCode.InitializationError
-            )
-          }
-          DisabledUpdatesController(context, updatesDirectoryException)
+          singletonInstance = DisabledUpdatesController(context, null)
         }
+        return
+      }
+
+      val logger = UpdatesLogger(context)
+
+      val updatesDirectory = try {
+        UpdatesUtils.getOrCreateUpdatesDirectory(context)
+      } catch (e: Exception) {
+        logger.error(
+          "The expo-updates system is disabled due to a storage access error: ${e.message}",
+          UpdatesErrorCode.InitializationError
+        )
+        singletonInstance = DisabledUpdatesController(context, e)
+        return
+      }
+
+      val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
+        when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
+          UpdatesConfigurationValidationResult.VALID -> {
+            return@run UpdatesConfiguration(context, null)
+          }
+          UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
+            "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
+            UpdatesErrorCode.InitializationError
+          )
+          UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
+            "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
+            UpdatesErrorCode.InitializationError
+          )
+          UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
+            "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
+            UpdatesErrorCode.InitializationError
+          )
+        }
+        return@run null
+      }
+
+      singletonInstance = if (updatesConfiguration != null) {
+        EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
+      } else {
+        DisabledUpdatesController(context, null)
       }
     }
 
-    @JvmStatic fun initializeAsDevLauncherWithoutStarting(context: Context, callbacks: UpdatesInterfaceCallbacks): UpdatesDevLauncherController {
+    private fun initializeAsDevLauncherWithoutStarting(context: Context): UpdatesDevLauncherController {
       check(singletonInstance == null) { "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting" }
 
       var updatesDirectoryException: Exception? = null
@@ -101,8 +108,7 @@ class UpdatesController {
         context,
         initialUpdatesConfiguration,
         updatesDirectory,
-        updatesDirectoryException,
-        callbacks
+        updatesDirectoryException
       )
       singletonInstance = instance
       return instance
@@ -113,7 +119,6 @@ class UpdatesController {
      * application's lifecycle. Can pass additional configuration to this method to set or override
      * configuration values at runtime rather than just AndroidManifest.xml.
      * @param context the base context of the application, ideally a [ReactApplication]
-     * @param configuration map of configuration pairs to override those from AndroidManifest.xml
      */
     @JvmStatic fun initialize(context: Context) {
       if (singletonInstance == null) {
@@ -142,6 +147,24 @@ class UpdatesController {
       } else {
         val logger = UpdatesLogger(context)
         logger.warn("Failed to overrideConfiguration: invalid configuration: ${updatesConfigurationValidationResult.name}")
+      }
+    }
+
+    /**
+     * For [UpdatesModule] to set the [shouldEmitJsEvents] property.
+     */
+    internal var shouldEmitJsEvents: Boolean
+      get() = singletonInstance?.shouldEmitJsEvents ?: false
+      set(value) {
+        singletonInstance?.let { it.shouldEmitJsEvents = value }
+      }
+
+    /**
+     * Binds the [AppContext] instance from [UpdatesModule].
+     */
+    internal fun bindAppContext(appContext: WeakReference<AppContext>) {
+      singletonInstance?.let {
+        it.appContext = appContext
       }
     }
   }

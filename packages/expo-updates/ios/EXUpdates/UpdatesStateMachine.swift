@@ -10,7 +10,7 @@ import Foundation
  In production, this will be implemented by the AppController.sharedInstance.
  */
 internal protocol UpdatesStateChangeDelegate: AnyObject {
-  func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any?])
+  func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?])
 }
 
 // MARK: - Enums
@@ -461,7 +461,7 @@ internal class UpdatesStateMachine {
    On each state change, all context properties are sent to JS
    */
   private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventDelegate?.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
+    changeEventDelegate?.sendUpdateStateChangeEventToAppContext(event?.type ?? .restart, body: [
       "context": context.json
     ])
   }

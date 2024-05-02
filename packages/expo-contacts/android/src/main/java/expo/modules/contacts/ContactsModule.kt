@@ -18,13 +18,8 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -32,18 +27,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
-
-class MissingPermissionException(permission: String) : CodedException("Missing $permission permission")
-
-class RetrieveIdException : CodedException("Couldn't get the contact id")
-
-class AddContactException : CodedException("Given contact couldn't be added")
-
-class ContactNotFoundException : CodedException("Couldn't find contact")
-
-class ContactUpdateException : CodedException("Given contact couldn't be updated")
-
-class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for contact")
 
 data class ContactPage(
   val data: List<Contact>,
@@ -83,6 +66,7 @@ private val defaultFields = setOf(
 )
 
 const val RC_EDIT_CONTACT = 2137
+const val RC_PICK_CONTACT = 2138
 
 // TODO: Evan: default API is confusing. Duplicate data being requested.
 private val DEFAULT_PROJECTION = listOf(
@@ -134,9 +118,8 @@ class QueryArguments(
 )
 
 class ContactsModule : Module() {
-  private val mActivityEventListener: ActivityEventListener = ContactsActivityEventListener()
-  private var mModuleRegistry: ModuleRegistry? = null
-  private var mPendingPromise: Promise? = null
+  private var contactPickingPromise: Promise? = null
+  private var contactManipulationPromise: Promise? = null
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -146,18 +129,6 @@ class ContactsModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
-
-    OnCreate {
-      appContext
-        .legacyModule<UIManager>()
-        ?.registerActivityEventListener(mActivityEventListener)
-    }
-
-    OnDestroy {
-      appContext
-        .legacyModule<UIManager>()
-        ?.unregisterActivityEventListener(mActivityEventListener)
-    }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
@@ -252,7 +223,7 @@ class ContactsModule : Module() {
       resolver.delete(uri, null, null)
     }
 
-    AsyncFunction("shareContactAsync") { contactId: String?, subject: String?, promise: Promise ->
+    AsyncFunction("shareContactAsync") { contactId: String?, subject: String? ->
       val lookupKey = getLookupKeyForContactId(contactId) ?: throw LookupKeyNotFoundException()
 
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
@@ -272,8 +243,12 @@ class ContactsModule : Module() {
       uri.toString()
     }
 
-    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>, options: Map<String, Any?>?, promise: Promise ->
+    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, _: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
+
+      if (contactManipulationPromise != null) {
+        throw ContactManipulationInProgressException()
+      }
 
       if (contactId != null) {
         val contact = getContactById(contactId, defaultFields) ?: throw ContactNotFoundException()
@@ -281,8 +256,50 @@ class ContactsModule : Module() {
         return@AsyncFunction
       }
       // Create contact from supplied data.
-      val contact = mutateContact(null, contactData)
-      presentForm(contact)
+      if (contactData != null) {
+        val contact = mutateContact(null, contactData)
+        contactManipulationPromise = promise
+        presentForm(contact)
+      }
+      promise.resolve()
+    }
+
+    OnActivityResult { _, payload ->
+      val (requestCode, resultCode, intent) = payload
+      if (requestCode == RC_EDIT_CONTACT) {
+        val pendingPromise = contactManipulationPromise ?: return@OnActivityResult
+
+        pendingPromise.resolve(0)
+
+        contactManipulationPromise = null
+      }
+      if (requestCode == RC_PICK_CONTACT) {
+        val pendingPromise = contactPickingPromise ?: return@OnActivityResult
+
+        if (resultCode == Activity.RESULT_CANCELED) {
+          pendingPromise.resolve()
+        }
+
+        if (resultCode == Activity.RESULT_OK) {
+          val contactId = intent?.data?.lastPathSegment
+          val contact = getContactById(contactId, defaultFields)
+          pendingPromise.resolve(contact?.toMap(defaultFields))
+        }
+
+        contactPickingPromise = null
+      }
+    }
+
+    AsyncFunction("presentContactPickerAsync") { promise: Promise ->
+      if (contactPickingPromise != null) {
+        throw ContactPickingInProgressException()
+      }
+
+      val intent = Intent(Intent.ACTION_PICK)
+      intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
+
+      contactPickingPromise = promise
+      activity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
@@ -291,8 +308,7 @@ class ContactsModule : Module() {
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    val activityProvider = mModuleRegistry!!.getModule(ActivityProvider::class.java)
-    activityProvider.currentActivity.startActivity(intent)
+    activity.startActivity(intent)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
@@ -302,16 +318,15 @@ class ContactsModule : Module() {
     )
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-    val activityProvider = mModuleRegistry!!.getModule(ActivityProvider::class.java)
-    mPendingPromise = promise
-    activityProvider.currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
+    contactManipulationPromise = promise
+    activity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
   private val resolver: ContentResolver
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
-  private fun mutateContact(contact: Contact?, data: Map<String, Any>): Contact {
-    val contact = contact ?: Contact(UUID.randomUUID().toString())
+  private fun mutateContact(initContact: Contact?, data: Map<String, Any>): Contact {
+    val contact = initContact ?: Contact(UUID.randomUUID().toString())
 
     data.safeGet<String>("firstName")?.let { contact.firstName = it }
     data.safeGet<String>("middleName")?.let { contact.middleName = it }
@@ -550,11 +565,11 @@ class ContactsModule : Module() {
     pageOffset: Int,
     pageSize: Int,
     queryStrings: Array<String>?,
-    queryField: String?,
+    initQueryField: String?,
     keysToFetch: Set<String>,
     sortOrder: String?
   ): ContactPage? {
-    val queryField = queryField ?: ContactsContract.Data.CONTACT_ID
+    val queryField = initQueryField ?: ContactsContract.Data.CONTACT_ID
     val getAll = pageSize == 0
     val queryArguments = createProjectionForQuery(keysToFetch)
     val contacts: Map<String, Contact>
@@ -662,17 +677,6 @@ class ContactsModule : Module() {
   private fun ensurePermissions() {
     ensureReadPermission()
     ensureWritePermission()
-  }
-
-  private inner class ContactsActivityEventListener : ActivityEventListener {
-    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
-      val pendingPromise = mPendingPromise ?: return
-      if (requestCode == RC_EDIT_CONTACT) {
-        pendingPromise.resolve(0)
-      }
-    }
-
-    override fun onNewIntent(intent: Intent) = Unit
   }
 }
 

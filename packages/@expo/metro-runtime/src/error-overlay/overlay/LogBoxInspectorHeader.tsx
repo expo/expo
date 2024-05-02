@@ -162,6 +162,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   safeArea: {
-    paddingTop: Platform.OS !== 'ios' ? StatusBar.currentHeight : 40,
+    paddingTop: process.env.EXPO_OS !== 'ios' ? StatusBar.currentHeight : 40,
   },
 });

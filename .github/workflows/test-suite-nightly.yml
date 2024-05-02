@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/Bare Expo.app
+          path: apps/bare-expo/ios/build/BareExpo.app
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
@@ -79,29 +79,30 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-14
+    runs-on: macos-12
+    # runs-on: macos-14
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      # - name: 🔨 Switch to Xcode 15.2
+      #   run: sudo xcode-select --switch /Applications/Xcode_15.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
         uses: actions/download-artifact@v3
         with:
           name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/Bare Expo.app
+          path: apps/bare-expo/ios/build/BareExpo.app
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-        env:
-          MAESTRO_VERSION: '1.33.1'
+        # env:
+        #   MAESTRO_VERSION: '1.33.1'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -143,6 +144,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -190,7 +193,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: macos-13
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         api-level: [33]

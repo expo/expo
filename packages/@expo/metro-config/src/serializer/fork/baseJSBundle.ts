@@ -29,6 +29,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
+    splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
   };
@@ -54,14 +55,6 @@ export function getPlatformOption(
     : options.sourceUrl;
   const url = new URL(sourceUrl, 'https://expo.dev');
   return url.searchParams.get('platform') ?? null;
-}
-
-export function getSplitChunksOption(
-  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>
-): boolean {
-  // Only enable when the entire bundle is being split, and only run on web.
-  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
 
 export function getBaseUrlOption(
@@ -93,7 +86,7 @@ export function baseJSBundle(
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
     baseUrl: getBaseUrlOption(graph, options),
-    splitChunks: getSplitChunksOption(graph, options),
+    splitChunks: !!options.serializerOptions?.splitChunks,
     platform,
     skipWrapping: !!options.serializerOptions?.skipWrapping,
     computedAsyncModulePaths: null,

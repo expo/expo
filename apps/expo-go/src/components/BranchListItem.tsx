@@ -7,15 +7,14 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DateFormats } from '../constants/DateFormats';
-import { WebContainerProjectPage_Query } from '../graphql/types';
+import { ProjectsQuery } from '../graphql/types';
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 
-type Update =
-  WebContainerProjectPage_Query['app']['byId']['updateBranches'][number]['updates'][number];
+type Update = ProjectsQuery['app']['byId']['updateBranches'][number]['updates'][number];
 
 type Props = {
   name: string;
-  latestUpdate: Update;
+  latestUpdate?: Update;
   appId: string;
   first: boolean;
   last: boolean;
@@ -26,13 +25,7 @@ type Props = {
  * the branches list page for an app.
  */
 
-export function BranchListItem({
-  name,
-  appId,
-  latestUpdate: { message, createdAt },
-  first,
-  last,
-}: Props) {
+export function BranchListItem({ name, appId, latestUpdate, first, last }: Props) {
   const theme = useExpoTheme();
 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
@@ -65,7 +58,7 @@ export function BranchListItem({
                   Branch: {name}
                 </Text>
               </Row>
-              {message && (
+              {latestUpdate?.message && (
                 <>
                   <View flex="0" height="2" />
                   <Row flex="1">
@@ -79,7 +72,7 @@ export function BranchListItem({
                         size="small"
                         ellipsizeMode="middle"
                         numberOfLines={1}>
-                        "{message}"
+                        "{latestUpdate.message}"
                       </Text>
                       <Spacer.Vertical size="tiny" />
                       <Text
@@ -88,7 +81,7 @@ export function BranchListItem({
                         size="small"
                         ellipsizeMode="tail"
                         numberOfLines={1}>
-                        Published {format(new Date(createdAt), DateFormats.timestamp)}
+                        Published {format(new Date(latestUpdate.createdAt), DateFormats.timestamp)}
                       </Text>
                     </View>
                   </Row>

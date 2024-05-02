@@ -165,5 +165,6 @@ enum AuthenticationType: Int {
 enum SecurityLevel: Int {
   case none = 0
   case secret = 1
-  case biometric = 2
+  // We return any biometric as strong biometric, because there are currently no iOS devices with weak biometric options.
+  case biometric = 3
  }

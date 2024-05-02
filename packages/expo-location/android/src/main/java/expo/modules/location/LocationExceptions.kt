@@ -57,4 +57,7 @@ internal class ConversionException(fromClass: Class<*>, toClass: Class<*>, messa
   CodedException("Couldn't cast from ${fromClass::class.simpleName} to ${toClass::class.java.simpleName}: $message")
 
 internal class ForegroundServiceStartNotAllowedException :
-  CodedException("Couldn't start the foreground service. Foreground service cannot be started when the application is in the background.")
+  CodedException("Couldn't start the foreground service. Foreground service cannot be started when the application is in the background")
+
+internal class ForegroundServicePermissionsException :
+  CodedException("Couldn't start the foreground service. Foreground service permissions were not found in the manifest")

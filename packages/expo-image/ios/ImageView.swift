@@ -129,6 +129,10 @@ public final class ImageView: ExpoView {
     context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
     context[.imageTransformer] = createTransformPipeline()
 
+    // Tell SDWebImage to use our own class for animated formats,
+    // which has better compatibility with the UIImage and fixes issues with the image duration.
+    context[.animatedImageClass] = AnimatedImage.self
+
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
@@ -162,6 +166,11 @@ public final class ImageView: ExpoView {
     // Some loaders (e.g. blurhash) need access to the source and the screen scale.
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
+
+    // Do it here so we don't waste resources trying to fetch from a remote URL
+    if maybeRenderLocalAsset(from: source) {
+      return
+    }
 
     onLoadStart([:])
 
@@ -217,8 +226,7 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // Create an SDAnimatedImage if needed then handle the image
-    if let image = createAnimatedIfNeeded(image: image, data: data) {
+    if let image {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
@@ -247,6 +255,25 @@ public final class ImageView: ExpoView {
     } else {
       displayPlaceholderIfNecessary()
     }
+  }
+
+  private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+    let path: String? = {
+      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
+      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
+      // manually drop the leading slash below iOS 16
+      if let path = source.uri?.path {
+        return String(path.dropFirst())
+      }
+      return nil
+    }()
+
+    if let path, let local = UIImage(named: path) {
+      renderImage(local)
+      return true
+    }
+
+    return false
   }
 
   // MARK: - Placeholder
@@ -296,6 +323,7 @@ public final class ImageView: ExpoView {
 
     context[.imageScaleFactor] = placeholder.scale
     context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
+    context[.animatedImageClass] = AnimatedImage.self
 
     // Cache placeholders on the disk. Should we let the user choose whether
     // to cache them or apply the same policy as with the proper image?
@@ -389,11 +417,11 @@ public final class ImageView: ExpoView {
       sdImageView.image = image
     }
 
-    #if !os(tvOS)
+#if !os(tvOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
-    #endif
+#endif
   }
 
   // MARK: - Helpers
@@ -433,7 +461,7 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Live Text Interaction
-  #if !os(tvOS)
+#if !os(tvOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
@@ -483,5 +511,5 @@ public final class ImageView: ExpoView {
     }
     return interaction as? ImageAnalysisInteraction
   }
-  #endif
+#endif
 }

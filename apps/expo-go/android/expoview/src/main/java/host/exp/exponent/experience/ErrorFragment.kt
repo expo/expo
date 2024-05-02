@@ -54,6 +54,7 @@ class ErrorFragment : Fragment() {
     val userErrorMessage = bundle.getString(ErrorActivity.USER_ERROR_MESSAGE_KEY)
     val developerErrorMessage = bundle.getString(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY)
     val errorHeader = bundle.getString(ErrorActivity.ERROR_HEADER_KEY)
+    val canRetry = bundle.getBoolean(ErrorActivity.CAN_RETRY_KEY, true)
 
     var defaultErrorMessage = userErrorMessage
 
@@ -72,6 +73,10 @@ class ErrorFragment : Fragment() {
     if (isHomeError || manifestUrl == null) {
       // Cannot go home in any of these cases
       binding.homeButton.visibility = View.GONE
+    }
+
+    if (!canRetry) {
+      binding.reloadButton.visibility = View.GONE
     }
 
     // Some errors are in HTML format and contain hyperlinks with instructions / more information (

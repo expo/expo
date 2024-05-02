@@ -11,16 +11,16 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.*
-import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.facebook.react.views.text.ReactFontManager
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.interfaces.devmenu.items.DevMenuCallableProvider
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
@@ -53,14 +53,17 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
   private var fontsWereLoaded = false
 
+  // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
+  private val useDeveloperSupport = false
+
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
-  private lateinit var devMenuHost: DevMenuHost
-  private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
+  private lateinit var devMenuHost: ReactHostWrapper
+  private var currentReactInstance: WeakReference<ReactHostWrapper?> = WeakReference(null)
   private var currentScreenName: String? = null
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
@@ -70,42 +73,29 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //region helpers
 
-  fun getReactInstanceManager(): ReactInstanceManager? {
-    return delegate?.reactInstanceManager()
+  fun getReactHost(): ReactHostWrapper? {
+    return delegate?.reactHost()
   }
 
   private val delegateReactContext: ReactContext?
-    get() = delegate?.reactInstanceManager()?.currentReactContext
+    get() = delegate?.reactHost()?.currentReactContext
 
   private val delegateActivity: Activity?
     get() = delegateReactContext?.currentActivity
 
   private val hostReactContext: ReactContext?
-    get() = devMenuHost.reactInstanceManager.currentReactContext
+    get() = devMenuHost.currentReactContext
 
   private val hostActivity: Activity?
     get() = hostReactContext?.currentActivity
 
   /**
    * Returns an collection of modules conforming to [DevMenuExtensionInterface].
-   * Bridge may register multiple modules with the same name – in this case it returns only the one that overrides the others.
    */
-  private val delegateExtensions: Collection<DevMenuExtensionInterface>
-    get() {
-      val catalystInstance = delegateReactContext?.catalystInstance ?: return emptyList()
-      val uniqueExtensionNames = catalystInstance
-        .nativeModules
-        .filterIsInstance<DevMenuExtensionInterface>()
-        .map { it.getName() }
-        .toSet()
+  @get:Synchronized
+  private val delegateExtensions = mutableListOf<DevMenuExtensionInterface>()
 
-      return uniqueExtensionNames
-        .map { extensionName ->
-          catalystInstance.getNativeModule(extensionName) as DevMenuExtensionInterface
-        }
-    }
-
-  private val cachedDevMenuDataSources by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuDataSourceInterface>> {
+  private val cachedDevMenuDataSources by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuDataSourceInterface>> {
     delegateExtensions
       .map { it.devMenuDataSources(extensionSettings) ?: emptyList() }
       .flatten()
@@ -113,11 +103,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val dataSources: List<DevMenuDataSourceInterface>
     get() {
-      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
-      return cachedDevMenuDataSources[delegateBridge]
+      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
+      return cachedDevMenuDataSources[delegateReactHost]
     }
 
-  private val cachedDevMenuScreens by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuScreen>> {
+  private val cachedDevMenuScreens by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuScreen>> {
     delegateExtensions
       .map { it.devMenuScreens(extensionSettings) ?: emptyList() }
       .flatten()
@@ -125,19 +115,19 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val delegateScreens: List<DevMenuScreen>
     get() {
-      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
-      return cachedDevMenuScreens[delegateBridge]
+      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
+      return cachedDevMenuScreens[delegateReactHost]
     }
 
-  private val cachedDevMenuItems by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuItemsContainerInterface>> {
+  private val cachedDevMenuItems by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuItemsContainerInterface>> {
     delegateExtensions
       .mapNotNull { it.devMenuItems(extensionSettings) }
   }
 
   private val delegateMenuItemsContainers: List<DevMenuItemsContainerInterface>
     get() {
-      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
-      return cachedDevMenuItems[delegateBridge]
+      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
+      return cachedDevMenuItems[delegateReactHost]
     }
 
   private val delegateRootMenuItems: List<DevMenuScreenItem>
@@ -171,41 +161,44 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   @Suppress("UNCHECKED_CAST")
   private fun maybeInitDevMenuHost(application: Application) {
     if (!this::devMenuHost.isInitialized) {
-      devMenuHost = DevMenuHost(application)
+      devMenuHost = ReactHostWrapper(
+        reactNativeHost = DevMenuReactNativeHost(application, useDeveloperSupport),
+        reactHost = DevMenuReactHost.create(application, useDeveloperSupport)
+      )
       UiThreadUtil.runOnUiThread {
-        devMenuHost.reactInstanceManager.createReactContextInBackground()
+        devMenuHost.start()
       }
     }
   }
 
-  private fun setUpReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    currentReactInstanceManager = WeakReference(reactInstanceManager)
+  private fun setUpReactInstance(reactHost: ReactHostWrapper) {
+    currentReactInstance = WeakReference(reactHost)
 
-    val handlers = DevMenuCommandHandlersProvider(this, reactInstanceManager)
+    val handlers = DevMenuCommandHandlersProvider(this, reactHost)
       .createCommandHandlers()
 
     DevMenuPackagerCommandHandlersSwapper()
       .swapPackagerCommandHandlers(
-        reactInstanceManager,
+        reactHost,
         handlers
       )
 
     DevMenuShakeDetectorListenerSwapper()
       .swapShakeDetectorListener(
-        reactInstanceManager
+        reactHost
       ) {}
 
-    if (reactInstanceManager.currentReactContext == null) {
-      reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
+    if (reactHost.currentReactContext == null) {
+      reactHost.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
-          if (currentReactInstanceManager.get() === reactInstanceManager) {
+          if (currentReactInstance.get() === reactHost) {
             handleLoadedDelegateContext(context)
           }
-          reactInstanceManager.removeReactInstanceEventListener(this)
+          reactHost.removeReactInstanceEventListener(this)
         }
       })
     } else {
-      handleLoadedDelegateContext(reactInstanceManager.currentReactContext!!)
+      handleLoadedDelegateContext(reactHost.currentReactContext!!)
     }
   }
 
@@ -225,7 +218,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       reactContext.currentActivity?.application
         ?: reactContext.applicationContext as Application
     )
-    maybeStartDetectors(devMenuHost.getContext())
+    maybeStartDetectors(reactContext.applicationContext)
     preferences = (
       testInterceptor.overrideSettings()
         ?: DevMenuPreferencesHandle(reactContext)
@@ -243,15 +236,15 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun getAppInfo(): Bundle {
     val reactContext = delegateReactContext ?: return Bundle.EMPTY
-    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
+    val reactHost = delegate?.reactHost() ?: return Bundle.EMPTY
 
-    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
+    return DevMenuAppInfo.getAppInfo(reactHost, reactContext)
   }
 
   fun getDevSettings(): Bundle {
-    if (delegate?.reactInstanceManager() != null) {
-      val reactInstanceManager = delegate!!.reactInstanceManager()
-      return DevMenuDevSettings.getDevSettings(reactInstanceManager)
+    val reactHost = delegate?.reactHost()
+    if (reactHost != null) {
+      return DevMenuDevSettings.getDevSettings(reactHost)
     }
 
     return Bundle.EMPTY
@@ -428,12 +421,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     delegateReactContext?.removeLifecycleEventListener(this)
 
     delegate = newDelegate.apply {
-      setUpReactInstanceManager(this.reactInstanceManager())
+      setUpReactInstance(this.reactHost())
     }
   }
 
-  override fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost) {
-    setDelegate(DevMenuDefaultDelegate(reactNativeHost))
+  override fun initializeWithReactHost(reactHost: ReactHostWrapper) {
+    setDelegate(DevMenuDefaultDelegate(reactHost))
   }
 
   override fun dispatchCallable(actionId: String, args: ReadableMap?) {
@@ -451,6 +444,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
           is DevMenuExportedFunction -> call(args)
         }
       }
+  }
+
+  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) {
+    delegateExtensions.add(extensionInterface)
   }
 
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
@@ -477,16 +474,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
-  override fun getMenuHost(): ReactNativeHost = devMenuHost
+  override fun getMenuHost(): ReactHostWrapper = devMenuHost
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
 
   override fun synchronizeDelegate() {
-    val newReactInstanceManager = requireNotNull(delegate).reactInstanceManager()
-    if (newReactInstanceManager != currentReactInstanceManager.get()) {
-      setUpReactInstanceManager(newReactInstanceManager)
+    val newReactInstance = requireNotNull(delegate).reactHost()
+    if (newReactInstance != currentReactInstance.get()) {
+      setUpReactInstance(newReactInstance)
     }
   }
 

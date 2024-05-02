@@ -6,13 +6,14 @@ import ExpoModulesCore
 public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   lazy var playerViewController = AVPlayerViewController()
 
-  var player: AVPlayer? {
+  weak var player: VideoPlayer? {
     didSet {
-      playerViewController.player = player
+      playerViewController.player = player?.pointer
     }
   }
 
   var isFullscreen: Bool = false
+  var isInPictureInPicture = false
   var startPictureInPictureAutomatically = false {
     didSet {
       if #available(iOS 14.2, *) {
@@ -23,17 +24,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   var allowPictureInPicture: Bool = false {
     didSet {
-      if allowPictureInPicture {
-        // We need to set the audio session when the prop first changes to allow, because the PiP button in the native
-        // controls shows up automatically only when a correct audioSession category is set.
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-          try audioSession.setCategory(.playback, mode: .default)
-          try audioSession.setActive(true)
-        } catch {
-          log.warn("Failed to set the audio session category. This might break Picture in Picture functionality")
-        }
-      }
+      // PiP requires `.playback` audio session category in `.moviePlayback` mode
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
       playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
     }
   }
@@ -54,12 +46,20 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
+    VideoManager.shared.register(videoView: self)
+
     clipsToBounds = true
     playerViewController.delegate = self
     playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     playerViewController.view.backgroundColor = .clear
+    // Now playing is managed by the `NowPlayingManager`
+    playerViewController.updatesNowPlayingInfoCenter = false
 
     addSubview(playerViewController.view)
+  }
+
+  deinit {
+    VideoManager.shared.unregister(videoView: self)
   }
 
   func enterFullscreen() {
@@ -123,12 +123,12 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   ) {
     // Platform's behavior is to pause the player when exiting the fullscreen mode.
     // It seems better to continue playing, so we resume the player once the dismissing animation finishes.
-    let wasPlaying = player?.timeControlStatus == .playing
+    let wasPlaying = player?.pointer.timeControlStatus == .playing
 
     coordinator.animate(alongsideTransition: nil) { context in
       if !context.isCancelled {
         if wasPlaying {
-          self.player?.play()
+          self.player?.pointer.play()
         }
         self.isFullscreen = false
       }
@@ -136,10 +136,16 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    isInPictureInPicture = true
     onPictureInPictureStart()
   }
 
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    isInPictureInPicture = false
     onPictureInPictureStop()
+  }
+
+  public override func didMoveToWindow() {
+    playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
   }
 }

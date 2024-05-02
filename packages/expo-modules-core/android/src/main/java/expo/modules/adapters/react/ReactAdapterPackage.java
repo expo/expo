@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.adapters.react.permissions.PermissionsService;
-import expo.modules.adapters.react.services.CookieManagerModule;
 import expo.modules.adapters.react.services.EventEmitterModule;
 import expo.modules.adapters.react.services.FontManagerModule;
 import expo.modules.adapters.react.services.RuntimeEnvironmentModule;
@@ -27,7 +26,6 @@ public class ReactAdapterPackage extends BasePackage {
     // We can force-cast here, because this package will only be used in React Native context.
     ReactContext reactContext = (ReactContext) context;
     return Arrays.asList(
-        new CookieManagerModule(reactContext),
         new UIManagerModuleWrapper(reactContext),
         new EventEmitterModule(reactContext),
         new FontManagerModule(),

@@ -17,6 +17,10 @@ public final class UpdatesModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      EXUpdatesStateChangeEventName
+    )
+
     Constants {
       let constantsForModule = AppController.sharedInstance.getConstantsForModule()
 
@@ -29,6 +33,8 @@ public final class UpdatesModule: Module {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
+          "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
+          "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
           "channel": channel,
@@ -48,7 +54,8 @@ public final class UpdatesModule: Module {
         "updateId": launchedUpdate.updateId.uuidString,
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": constantsForModule.assetFilesMap,
-        "isEmergencyLaunch": constantsForModule.isEmergencyLaunch,
+        "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
+        "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,
         "channel": channel,
@@ -56,6 +63,18 @@ public final class UpdatesModule: Module {
         "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
           constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
       ]
+    }
+
+    OnCreate {
+      AppController.bindAppContext(self.appContext)
+    }
+
+    OnStartObserving {
+      AppController.shouldEmitJsEvents = true
+    }
+
+    OnStopObserving {
+      AppController.shouldEmitJsEvents = false
     }
 
     AsyncFunction("reload") { (promise: Promise) in

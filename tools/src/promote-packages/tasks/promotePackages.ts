@@ -37,9 +37,15 @@ export const promotePackages = new Task<TaskArgs>(
           formatVersionChange(versionToReplace, currentVersion)
         );
 
+        // check if two factor auth is required for publishing
+        const npmProfile = await Npm.getProfileAsync();
+        const requiresOTP = npmProfile?.tfa?.mode === 'auth-and-writes';
+
         // Tag the local version of the package.
         if (!options.dry) {
-          await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag);
+          await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag, {
+            stdio: requiresOTP ? 'inherit' : undefined,
+          });
         }
 
         // If the local version had any tags assigned, we can drop the old ones.
@@ -48,7 +54,9 @@ export const promotePackages = new Task<TaskArgs>(
             batch.log('    ', `Dropping ${yellow(distTag)} tag (${cyan(currentVersion)})...`);
 
             if (!options.dry) {
-              await Npm.removeTagAsync(pkg.packageName, distTag);
+              await Npm.removeTagAsync(pkg.packageName, distTag, {
+                stdio: requiresOTP ? 'inherit' : undefined,
+              });
             }
           }
         }

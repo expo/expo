@@ -574,111 +574,126 @@ export const useRemindersPermissions = createPermissionHook({
     getMethod: getRemindersPermissionsAsync,
     requestMethod: requestRemindersPermissionsAsync,
 });
-export const EntityTypes = {
-    EVENT: 'event',
-    REMINDER: 'reminder',
-};
-export const Frequency = {
-    DAILY: 'daily',
-    WEEKLY: 'weekly',
-    MONTHLY: 'monthly',
-    YEARLY: 'yearly',
-};
-export const Availability = {
-    NOT_SUPPORTED: 'notSupported',
-    BUSY: 'busy',
-    FREE: 'free',
-    TENTATIVE: 'tentative',
-    UNAVAILABLE: 'unavailable', // iOS
-};
-export const CalendarType = {
-    LOCAL: 'local',
-    CALDAV: 'caldav',
-    EXCHANGE: 'exchange',
-    SUBSCRIBED: 'subscribed',
-    BIRTHDAYS: 'birthdays',
-    UNKNOWN: 'unknown',
-}; // iOS
-export const EventStatus = {
-    NONE: 'none',
-    CONFIRMED: 'confirmed',
-    TENTATIVE: 'tentative',
-    CANCELED: 'canceled',
-};
-export const SourceType = {
-    LOCAL: 'local',
-    EXCHANGE: 'exchange',
-    CALDAV: 'caldav',
-    MOBILEME: 'mobileme',
-    SUBSCRIBED: 'subscribed',
-    BIRTHDAYS: 'birthdays',
-};
-export const AttendeeRole = {
-    UNKNOWN: 'unknown',
-    REQUIRED: 'required',
-    OPTIONAL: 'optional',
-    CHAIR: 'chair',
-    NON_PARTICIPANT: 'nonParticipant',
-    ATTENDEE: 'attendee',
-    ORGANIZER: 'organizer',
-    PERFORMER: 'performer',
-    SPEAKER: 'speaker',
-    NONE: 'none', // Android
-};
-export const AttendeeStatus = {
-    UNKNOWN: 'unknown',
-    PENDING: 'pending',
-    ACCEPTED: 'accepted',
-    DECLINED: 'declined',
-    TENTATIVE: 'tentative',
-    DELEGATED: 'delegated',
-    COMPLETED: 'completed',
-    IN_PROCESS: 'inProcess',
-    INVITED: 'invited',
-    NONE: 'none', // Android
-};
-export const AttendeeType = {
-    UNKNOWN: 'unknown',
-    PERSON: 'person',
-    ROOM: 'room',
-    GROUP: 'group',
-    RESOURCE: 'resource',
-    OPTIONAL: 'optional',
-    REQUIRED: 'required',
-    NONE: 'none', // Android
-};
-export const AlarmMethod = {
-    ALARM: 'alarm',
-    ALERT: 'alert',
-    EMAIL: 'email',
-    SMS: 'sms',
-    DEFAULT: 'default',
-};
-export const EventAccessLevel = {
-    CONFIDENTIAL: 'confidential',
-    PRIVATE: 'private',
-    PUBLIC: 'public',
-    DEFAULT: 'default',
-};
-export const CalendarAccessLevel = {
-    CONTRIBUTOR: 'contributor',
-    EDITOR: 'editor',
-    FREEBUSY: 'freebusy',
-    OVERRIDE: 'override',
-    OWNER: 'owner',
-    READ: 'read',
-    RESPOND: 'respond',
-    ROOT: 'root',
-    NONE: 'none',
-};
-export const ReminderStatus = {
-    COMPLETED: 'completed',
-    INCOMPLETE: 'incomplete',
-};
+export var EntityTypes;
+(function (EntityTypes) {
+    EntityTypes["EVENT"] = "event";
+    EntityTypes["REMINDER"] = "reminder";
+})(EntityTypes || (EntityTypes = {}));
+export var Frequency;
+(function (Frequency) {
+    Frequency["DAILY"] = "daily";
+    Frequency["WEEKLY"] = "weekly";
+    Frequency["MONTHLY"] = "monthly";
+    Frequency["YEARLY"] = "yearly";
+})(Frequency || (Frequency = {}));
+export var Availability;
+(function (Availability) {
+    Availability["NOT_SUPPORTED"] = "notSupported";
+    Availability["BUSY"] = "busy";
+    Availability["FREE"] = "free";
+    Availability["TENTATIVE"] = "tentative";
+    Availability["UNAVAILABLE"] = "unavailable";
+})(Availability || (Availability = {}));
+export var CalendarType;
+(function (CalendarType) {
+    CalendarType["LOCAL"] = "local";
+    CalendarType["CALDAV"] = "caldav";
+    CalendarType["EXCHANGE"] = "exchange";
+    CalendarType["SUBSCRIBED"] = "subscribed";
+    CalendarType["BIRTHDAYS"] = "birthdays";
+    CalendarType["UNKNOWN"] = "unknown";
+})(CalendarType || (CalendarType = {})); // iOS
+export var EventStatus;
+(function (EventStatus) {
+    EventStatus["NONE"] = "none";
+    EventStatus["CONFIRMED"] = "confirmed";
+    EventStatus["TENTATIVE"] = "tentative";
+    EventStatus["CANCELED"] = "canceled";
+})(EventStatus || (EventStatus = {}));
+export var SourceType;
+(function (SourceType) {
+    SourceType["LOCAL"] = "local";
+    SourceType["EXCHANGE"] = "exchange";
+    SourceType["CALDAV"] = "caldav";
+    SourceType["MOBILEME"] = "mobileme";
+    SourceType["SUBSCRIBED"] = "subscribed";
+    SourceType["BIRTHDAYS"] = "birthdays";
+})(SourceType || (SourceType = {}));
+export var AttendeeRole;
+(function (AttendeeRole) {
+    AttendeeRole["UNKNOWN"] = "unknown";
+    AttendeeRole["REQUIRED"] = "required";
+    AttendeeRole["OPTIONAL"] = "optional";
+    AttendeeRole["CHAIR"] = "chair";
+    AttendeeRole["NON_PARTICIPANT"] = "nonParticipant";
+    AttendeeRole["ATTENDEE"] = "attendee";
+    AttendeeRole["ORGANIZER"] = "organizer";
+    AttendeeRole["PERFORMER"] = "performer";
+    AttendeeRole["SPEAKER"] = "speaker";
+    AttendeeRole["NONE"] = "none";
+})(AttendeeRole || (AttendeeRole = {}));
+export var AttendeeStatus;
+(function (AttendeeStatus) {
+    AttendeeStatus["UNKNOWN"] = "unknown";
+    AttendeeStatus["PENDING"] = "pending";
+    AttendeeStatus["ACCEPTED"] = "accepted";
+    AttendeeStatus["DECLINED"] = "declined";
+    AttendeeStatus["TENTATIVE"] = "tentative";
+    AttendeeStatus["DELEGATED"] = "delegated";
+    AttendeeStatus["COMPLETED"] = "completed";
+    AttendeeStatus["IN_PROCESS"] = "inProcess";
+    AttendeeStatus["INVITED"] = "invited";
+    AttendeeStatus["NONE"] = "none";
+})(AttendeeStatus || (AttendeeStatus = {}));
+export var AttendeeType;
+(function (AttendeeType) {
+    AttendeeType["UNKNOWN"] = "unknown";
+    AttendeeType["PERSON"] = "person";
+    AttendeeType["ROOM"] = "room";
+    AttendeeType["GROUP"] = "group";
+    AttendeeType["RESOURCE"] = "resource";
+    AttendeeType["OPTIONAL"] = "optional";
+    AttendeeType["REQUIRED"] = "required";
+    AttendeeType["NONE"] = "none";
+})(AttendeeType || (AttendeeType = {}));
+export var AlarmMethod;
+(function (AlarmMethod) {
+    AlarmMethod["ALARM"] = "alarm";
+    AlarmMethod["ALERT"] = "alert";
+    AlarmMethod["EMAIL"] = "email";
+    AlarmMethod["SMS"] = "sms";
+    AlarmMethod["DEFAULT"] = "default";
+})(AlarmMethod || (AlarmMethod = {}));
+export var EventAccessLevel;
+(function (EventAccessLevel) {
+    EventAccessLevel["CONFIDENTIAL"] = "confidential";
+    EventAccessLevel["PRIVATE"] = "private";
+    EventAccessLevel["PUBLIC"] = "public";
+    EventAccessLevel["DEFAULT"] = "default";
+})(EventAccessLevel || (EventAccessLevel = {}));
+export var CalendarAccessLevel;
+(function (CalendarAccessLevel) {
+    CalendarAccessLevel["CONTRIBUTOR"] = "contributor";
+    CalendarAccessLevel["EDITOR"] = "editor";
+    CalendarAccessLevel["FREEBUSY"] = "freebusy";
+    CalendarAccessLevel["OVERRIDE"] = "override";
+    CalendarAccessLevel["OWNER"] = "owner";
+    CalendarAccessLevel["READ"] = "read";
+    CalendarAccessLevel["RESPOND"] = "respond";
+    CalendarAccessLevel["ROOT"] = "root";
+    CalendarAccessLevel["NONE"] = "none";
+})(CalendarAccessLevel || (CalendarAccessLevel = {}));
+export var ReminderStatus;
+(function (ReminderStatus) {
+    ReminderStatus["COMPLETED"] = "completed";
+    ReminderStatus["INCOMPLETE"] = "incomplete";
+})(ReminderStatus || (ReminderStatus = {}));
 function stringifyIfDate(date) {
     return date instanceof Date ? date.toISOString() : date;
 }
 function stringifyDateValues(obj) {
+    if (typeof obj !== 'object' || obj === null)
+        return obj;
     return Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
         if (value != null && typeof value === 'object' && !(value instanceof Date)) {

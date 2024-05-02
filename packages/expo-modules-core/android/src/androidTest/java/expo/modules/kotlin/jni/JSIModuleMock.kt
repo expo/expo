@@ -48,7 +48,7 @@ internal fun defaultAppContextMock(
 @OptIn(ExperimentalCoroutinesApi::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit,
+  block: JSIContext.(methodQueue: TestScope) -> Unit,
   afterCleanup: (deallocator: JNIDeallocator) -> Unit
 ) {
   val jniDeallocator = JNIDeallocator(
@@ -91,15 +91,13 @@ internal inline fun withJSIInterop(
       register(it)
     }
   }
-  val sharedObjectRegistry = SharedObjectRegistry()
+  val sharedObjectRegistry = SharedObjectRegistry(appContextMock)
   every { appContextMock.registry } answers { registry }
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
-  val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests(jniDeallocator)
-  }
-
+  val jsiIterop = JSIContext()
   every { appContextMock.jsiInterop } answers { jsiIterop }
+  jsiIterop.installJSIForTests(appContextMock, jniDeallocator)
 
   block(jsiIterop, methodQueue)
 
@@ -110,17 +108,18 @@ internal inline fun withJSIInterop(
 }
 
 open class TestContext(
-  val jsiInterop: JSIInteropModuleRegistry,
+  val jsiInterop: JSIContext,
   val methodQueue: TestScope
 ) {
   fun global() = jsiInterop.global()
   fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
+  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
   fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
 }
 
 class SingleTestContext(
-  private val moduleName: String,
-  jsiInterop: JSIInteropModuleRegistry,
+  moduleName: String,
+  jsiInterop: JSIContext,
   methodQueue: TestScope
 ) : TestContext(jsiInterop, methodQueue) {
   val moduleRef = "expo.modules.$moduleName"
@@ -167,7 +166,7 @@ class SingleTestContext(
 
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+  block: JSIContext.(methodQueue: TestScope) -> Unit
 ) = withJSIInterop(*modules, block = block, afterCleanup = {})
 
 internal inline fun withSingleModule(
@@ -205,7 +204,7 @@ internal inline fun inlineModule(
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(ExperimentalCoroutinesApi::class)
 @Throws(PromiseException::class)
-internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
+internal inline fun JSIContext.waitForAsyncFunction(
   methodQueue: TestScope,
   jsCode: String
 ): JavaScriptValue {

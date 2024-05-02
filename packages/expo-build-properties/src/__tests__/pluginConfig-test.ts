@@ -81,4 +81,80 @@ describe(validateConfig, () => {
       validateConfig({ ios: { extraPods: [{}] } });
     }).toThrow();
   });
+
+  it('should validate android.extraMavenRepos', () => {
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+            {
+              url: 'https://bar.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).toThrow();
+
+    // Maintain backwards compatibility
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos'],
+        },
+      });
+    }).not.toThrow();
+
+    // Allow mix and match of old and new format
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos', { url: 'https://bar.com/maven-repos' }],
+        },
+      });
+    }).not.toThrow();
+
+    // Empty array is allowed
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [],
+        },
+      });
+    }).not.toThrow();
+  });
 });

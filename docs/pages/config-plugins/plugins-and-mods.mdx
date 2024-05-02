@@ -264,18 +264,16 @@ A mod plugin gets passed a `config` object with additional properties `modResult
 Say you wanted to write a mod to update the Xcode Project's "product name":
 
 ```ts my-config-plugin.ts
-import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import { ConfigPlugin, withXcodeProject, IOSConfig } from 'expo/config-plugins';
 
-const withCustomProductName: ConfigPlugin = (config, customName) => {
+const withCustomProductName: ConfigPlugin<string> = (config, customName) => {
   return withXcodeProject(
     config,
     async (
       /* @info <b>{ modResults, modRequest }</b> */ config
       /* @end */
     ) => {
-      const xcodeProject = config.modResults;
-      xcodeProject.productName = customName;
-
+      config.modResults = IOSConfig.Name.setProductName({ name: customName }, config.modResults);
       return config;
     }
   );

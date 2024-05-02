@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import ComponentListScreen from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
@@ -9,8 +7,9 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
-  'Camera (next)',
-  'Camera (next barcode)',
+  'Camera (legacy)',
+  'Camera (barcode)',
+  'Camera (barcode from URL)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',
@@ -40,6 +39,7 @@ const screens = [
   'SegmentedControl',
   'Slider',
   'Switch',
+  'Symbols',
   'Text',
   'TextInput',
   'TouchableBounce',
@@ -58,12 +58,12 @@ export const ScreenItems = screens.map((name) => ({
 }));
 
 export default function ExpoComponentsScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={ScreenItems}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

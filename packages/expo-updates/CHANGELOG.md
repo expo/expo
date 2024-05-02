@@ -4,25 +4,88 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed Gradle Plugin build error when no specified `entryFile` in **android/app/build.gradle**. ([#28546](https://github.com/expo/expo/pull/28546) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.25.6 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- Android: Fix hard crash due to missing asset edge row. ([#28264](https://github.com/expo/expo/pull/28264) by [@douglowder](https://github.com/douglowder))
+
+## 0.25.5 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.4 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fix CLI VCS detection in CLI and add workflow override ability. ([#28403](https://github.com/expo/expo/pull/28403) by [@wschurman](https://github.com/wschurman))
+
+## 0.25.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.1 — 2024-04-22
+
+### 🎉 New features
+
+- Add --debug option to fingerprint:generate command. ([#28311](https://github.com/expo/expo/pull/28311) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Bumped the underlying SQLite version to 3.45.3 on iOS. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+- Fixed error recovery E2E test on iOS. ([#28372](https://github.com/expo/expo/pull/28372) by [@kudo](https://github.com/kudo))
+
+## 0.25.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Deprecated `UpdatesController.initialize(Context, Map)` and replaced with `UpdatesController.overrideConfiguration()` method to prevent ANR when overriding the `UpdatesConfiguration` on Android. [#26093](https://github.com/expo/expo/pull/26093) by [@kudo](https://github.com/kudo))
+- Remove deprecated APIs: useUpdateEvents(), addListener(), and UpdateEvent type. ([#27882](https://github.com/expo/expo/pull/27882) by [@douglowder](https://github.com/douglowder))
+- Remove the support for configurable `expo.modules.updates.AUTO_SETUP` in **AndroidManifest.xml** and `EXUpdatesAutoSetup` in **Expo.plist**. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+- Update fingerprintExperimental -> fingerprint runtime version policy. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
 - Add more failure logs in asset download. ([#26268](https://github.com/expo/expo/pull/26268) by [@wschurman](https://github.com/wschurman))
 - Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
-- Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
+- Fix fingerprint runtime version policy. Calculate fingerprint at build time. ([#26901](https://github.com/expo/expo/pull/26901) by [@wschurman](https://github.com/wschurman))
+- Add expo-updates cli fingerprint:generate command. ([#27119](https://github.com/expo/expo/pull/27119) by [@wschurman](https://github.com/wschurman))
+- Add expo-updates cli runtimeversion:resolve command. ([#27263](https://github.com/expo/expo/pull/27263) by [@wschurman](https://github.com/wschurman))
+- Add expo-updates cli configuration:syncnative command. ([#27511](https://github.com/expo/expo/pull/27511) by [@wschurman](https://github.com/wschurman))
+- Add --version top-level flag and also add handler for missing command in expo-update cli. ([#27296](https://github.com/expo/expo/pull/27296) by [@wschurman](https://github.com/wschurman))
+- Add more debug information to runtimeversion:resolve CLI output. ([#27323](https://github.com/expo/expo/pull/27323), [#27387](https://github.com/expo/expo/pull/27387) by [@wschurman](https://github.com/wschurman))
+- Added React Native New Architecture support. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Add ability to override build-time fingerprint. ([#27597](https://github.com/expo/expo/pull/27597) by [@wschurman](https://github.com/wschurman))
+- Expose emergency launch reason on constants. ([#27714](https://github.com/expo/expo/pull/27714) by [@wschurman](https://github.com/wschurman))
+- Add header to manifest request containing recently-errored update IDs. ([#27991](https://github.com/expo/expo/pull/27991) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - Fix development status for modern updates. ([#26042](https://github.com/expo/expo/pull/26042) by [@wschurman](https://github.com/wschurman))
-- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix case where launch wait ms timeout is greater than okhttp default timeout. ([#26731](https://github.com/expo/expo/pull/26731) by [@wschurman](https://github.com/wschurman))
-- Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
 - Make error messages consistent across platforms for dev client and disabled controllers. ([#26988](https://github.com/expo/expo/pull/26988) by [@wschurman](https://github.com/wschurman))
 - Fixed ANR issue from Detox testing on Android. ([#27031](https://github.com/expo/expo/pull/27031) by [@kudo](https://github.com/kudo))
+- Fix inconsistent hashes for autolinking for fingerprint policy. ([#27390](https://github.com/expo/expo/pull/27390) by [@wschurman](https://github.com/wschurman))
+- Fixed launch crash when running on a project without expo-dev-client and debug build. ([#27780](https://github.com/expo/expo/pull/27780) by [@kudo](https://github.com/kudo))
+- Fixed bridgeless error recovery support for launch errors on Android. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
+- Fixed error recovery on Android. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+- Fixed `Updates.reloadAsync()` not working on iOS. ([#28256](https://github.com/expo/expo/pull/28256) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - [ios] Remove unnecessary delegate from FileDownloader. ([#25783](https://github.com/expo/expo/pull/25783) by [@wschurman](https://github.com/wschurman))
 - Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
 - Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26037](https://github.com/expo/expo/pull/26037), [#26048](https://github.com/expo/expo/pull/26048), [#26059](https://github.com/expo/expo/pull/26059), [#26061](https://github.com/expo/expo/pull/26061), [#26065](https://github.com/expo/expo/pull/26065), [#26080](https://github.com/expo/expo/pull/26080), [#26230](https://github.com/expo/expo/pull/26230) by [@wschurman](https://github.com/wschurman))
@@ -30,6 +93,43 @@
 - Rename native classes. ([#26234](https://github.com/expo/expo/pull/26234), [#26235](https://github.com/expo/expo/pull/26235) by [@wschurman](https://github.com/wschurman))
 - Remove support for multiple runtime versions. ([#26258](https://github.com/expo/expo/pull/26258) by [@wschurman](https://github.com/wschurman))
 - Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+- Convert manifest creation scripts to typescript. ([#27082](https://github.com/expo/expo/pull/27082) by [@wschurman](https://github.com/wschurman))
+- Move cli and utils subpackages to new expo-module-scripts system. ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
+- Remove legacy expo bundle-assets utilities. ([#27123](https://github.com/expo/expo/pull/27123) by [@wschurman](https://github.com/wschurman))
+- [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
+- [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+- Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+- Always initialize UpdatesController to prevent accidentally accessing the singleton instance. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+- Improve error printing in CLI. ([#28188](https://github.com/expo/expo/pull/28188) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.12 - 2024-03-13
+
+### 💡 Others
+
+- [iOS] Moved expo-dev-client + expo-updates interop setup out from `application:willFinishLaunchingWithOptions:`. ([#27477](https://github.com/expo/expo/pull/27477) by [@kudo](https://github.com/kudo))
+
+## 0.24.11 - 2024-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.10 - 2024-02-06
+
+### 🎉 New features
+
+- Add assets:verify command to CLI. ([#26756](https://github.com/expo/expo/pull/26756) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- Fix assets:verify command for images with multiple scales. ([#26940](https://github.com/expo/expo/pull/26940) by [@douglowder](https://github.com/douglowder))
+
+## 0.24.9 - 2024-01-26
+
+### 🐛 Bug fixes
+
+- [Android] correct drawable types in updates embedded manifest. ([#26676](https://github.com/expo/expo/pull/26676) by [@douglowder](https://github.com/douglowder))
 
 ## 0.24.8 - 2024-01-18
 

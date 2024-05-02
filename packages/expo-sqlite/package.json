@@ -1,10 +1,24 @@
 {
   "name": "expo-sqlite",
-  "version": "13.1.0",
+  "version": "14.0.3",
   "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "default": "./build/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./legacy": {
+      "default": "./build/legacy/index.js",
+      "types": "./build/legacy/index.d.ts"
+    },
+    "./next": {
+      "default": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

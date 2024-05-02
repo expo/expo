@@ -55,6 +55,7 @@ internal class CropImageContract(
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT, CropImage.ActivityResult::class.java)
     } else {
+      @Suppress("DEPRECATION")
       intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT)
     }
     if (resultCode == Activity.RESULT_CANCELED || result == null) {

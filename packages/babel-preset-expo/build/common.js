@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 const path_1 = __importDefault(require("path"));
 function hasModule(name) {
     try {
@@ -56,6 +56,11 @@ function getPossibleProjectRoot(caller) {
     return process.env.EXPO_PROJECT_ROOT;
 }
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
+/** If bundling for a react-server target. */
+function getIsReactServer(caller) {
+    return caller?.isReactServer ?? false;
+}
+exports.getIsReactServer = getIsReactServer;
 function getIsDev(caller) {
     if (caller?.isDev != null)
         return caller.isDev;

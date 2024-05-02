@@ -217,14 +217,16 @@ export async function test(t) {
       });
     });
 
-    t.describe('requestReminderPermissionsAsync()', () => {
-      t.it('requests for Reminder permissions', async () => {
-        const results = await Calendar.requestRemindersPermissionsAsync();
+    if (Platform.OS === 'ios') {
+      t.describe('requestReminderPermissionsAsync()', () => {
+        t.it('requests for Reminder permissions', async () => {
+          const results = await Calendar.requestRemindersPermissionsAsync();
 
-        t.expect(results.granted).toBe(true);
-        t.expect(results.status).toBe('granted');
+          t.expect(results.granted).toBe(true);
+          t.expect(results.status).toBe('granted');
+        });
       });
-    });
+    }
 
     t.describe('createCalendarAsync()', () => {
       let calendarId;

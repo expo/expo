@@ -1,5 +1,7 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
+import { WebSocketBackingStore } from './WebSocketBackingStore';
+import { WebSocketWithReconnect } from './WebSocketWithReconnect';
 import type { ConnectionInfo } from './devtools.types';
 import * as logger from './logger';
 
@@ -15,25 +17,64 @@ export const DevToolsPluginMethod = 'Expo:DevToolsPlugin';
 export abstract class DevToolsPluginClient {
   protected eventEmitter: EventEmitter = new EventEmitter();
 
-  public constructor(public readonly connectionInfo: ConnectionInfo) {}
+  private static defaultWSStore: WebSocketBackingStore = new WebSocketBackingStore();
+  private readonly wsStore: WebSocketBackingStore = DevToolsPluginClient.defaultWSStore;
+
+  protected isClosed = false;
+  protected retries = 0;
+
+  public constructor(public readonly connectionInfo: ConnectionInfo) {
+    this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
+  }
 
   /**
    * Initialize the connection.
    * @hidden
    */
-  public abstract initAsync(): Promise<void>;
+  public async initAsync(): Promise<void> {
+    if (this.wsStore.ws == null) {
+      this.wsStore.ws = await this.connectAsync();
+    }
+    this.wsStore.refCount += 1;
+    this.wsStore.ws.addEventListener('message', this.handleMessage);
+  }
 
   /**
    * Close the connection.
    */
-  public abstract closeAsync(): Promise<void>;
+  public async closeAsync(): Promise<void> {
+    this.isClosed = true;
+    this.wsStore.ws?.removeEventListener('message', this.handleMessage);
+    this.wsStore.refCount -= 1;
+    if (this.wsStore.refCount < 1) {
+      this.wsStore.ws?.close();
+      this.wsStore.ws = null;
+    }
+    this.eventEmitter.removeAllListeners();
+  }
 
   /**
    * Send a message to the other end of DevTools.
    * @param method A method name.
    * @param params any extra payload.
    */
-  public abstract sendMessage(method: string, params: any): void;
+  public sendMessage(method: string, params: any) {
+    if (this.wsStore.ws?.readyState === WebSocket.CLOSED) {
+      logger.warn('Unable to send message in a disconnected state.');
+      return;
+    }
+
+    const payload: Record<string, any> = {
+      version: MESSAGE_PROTOCOL_VERSION,
+      pluginName: this.connectionInfo.pluginName,
+      method: DevToolsPluginMethod,
+      params: {
+        method,
+        params,
+      },
+    };
+    this.wsStore.ws?.send(JSON.stringify(payload));
+  }
 
   /**
    * Subscribe to a message from the other end of DevTools.
@@ -56,7 +97,35 @@ export abstract class DevToolsPluginClient {
   /**
    * Returns whether the client is connected to the server.
    */
-  public abstract isConnected(): boolean;
+  public isConnected(): boolean {
+    return this.wsStore.ws?.readyState === WebSocket.OPEN;
+  }
+
+  /**
+   * The method to create the WebSocket connection.
+   */
+  protected connectAsync(): Promise<WebSocket> {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+        onError: (e: unknown) => {
+          if (e instanceof Error) {
+            console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);
+          } else {
+            console.warn(`Error happened from the WebSocket connection: ${JSON.stringify(e)}`);
+          }
+        },
+      });
+      ws.addEventListener('open', () => {
+        resolve(ws);
+      });
+      ws.addEventListener('error', (e) => {
+        reject(e);
+      });
+      ws.addEventListener('close', (e: WebSocketCloseEvent) => {
+        logger.info('WebSocket closed', e.code, e.reason);
+      });
+    });
+  }
 
   protected handleMessage = (event: WebSocketMessageEvent): void => {
     let payload;
@@ -76,4 +145,12 @@ export abstract class DevToolsPluginClient {
 
     this.eventEmitter.emit(payload.params.method, payload.params.params);
   };
+
+  /**
+   * Get the WebSocket backing store. Exposed for testing.
+   * @hidden
+   */
+  public getWebSocketBackingStore(): WebSocketBackingStore {
+    return this.wsStore;
+  }
 }

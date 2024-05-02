@@ -49,13 +49,13 @@ export declare function coolDownAsync(browserPackage?: string): Promise<WebBrows
  * Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller),
  * and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs)
  * on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need
- * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-browserparams).
+ * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-options).
  *
  * @param url The url to open in the web browser.
  * @param browserParams A dictionary of key-value pairs.
  *
  * @return The promise behaves differently based on the platform.
- * On Android promise resolves with `{type: 'opened'}` if we were able to open browser.
+ * On Android promise resolves with `{ type: 'opened' }` if we were able to open browser.
  * On iOS:
  * - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
@@ -83,7 +83,7 @@ export declare function dismissBrowser(): void;
  *
  * # On web:
  * > This API can only be used in a secure environment (localhost/https).
- * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#errwebbrowsercrypto) will be thrown.
+ * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#err_web_browser_crypto) will be thrown.
  * This will use the browser's [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) API.
  * - _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.
  * - _Mobile_: This will open a new tab in the browser which can be closed using `WebBrowser.maybeCompleteAuthSession()`.
@@ -101,7 +101,7 @@ export declare function dismissBrowser(): void;
  *
  * > On mobile web, Chrome and Safari will block any call to [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open)
  * which takes too long to fire after a user interaction. This method must be invoked immediately
- * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
+ * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#err_web_browser_blocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
  * @param redirectUrl _Optional_ - The url to deep link back into your app.

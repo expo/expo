@@ -8,12 +8,32 @@
 
 ### 🐛 Bug fixes
 
-- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich))
+### 💡 Others
+
+## 3.5.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add support for package cli and utils subpackages (like plugins). ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Use appropriate version of `tsc` when executing `expo-module build` in monorepos with multiple typescript versions installed ([#27779](https://github.com/expo/expo/pull/27779) by [@peter.jozsa](https://github.com/peter.jozsa)
 
 ### 💡 Others
 
 - Target Node 18 in the Babel CLI preset. ([#26847](https://github.com/expo/expo/pull/26847) by [@simek](https://github.com/simek))
 - Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+
+## 3.4.1 - 2024-02-01
+
+### 🐛 Bug fixes
+
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich)) ([#26738](https://github.com/expo/expo/pull/26738) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 3.4.0 — 2023-12-12
 

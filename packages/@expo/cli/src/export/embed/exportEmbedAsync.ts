@@ -91,6 +91,7 @@ export async function createMetroServerAndBundleRequestAsync(
     | 'entryFile'
     | 'minify'
     | 'dev'
+    | 'resetCache'
     | 'unstableTransformProfile'
   >
 ): Promise<{ server: Server; bundleRequest: BundleOptions }> {
@@ -100,13 +101,18 @@ export async function createMetroServerAndBundleRequestAsync(
   const { config } = await loadMetroConfigAsync(
     projectRoot,
     {
+      // TODO: This is always enabled in the native script and there's no way to disable it.
+      resetCache: options.resetCache,
+
       maxWorkers: options.maxWorkers,
-      resetCache: false, //options.resetCache,
       config: options.config,
     },
     {
       exp,
       isExporting: true,
+      getMetroBundler() {
+        return server.getBundler().getBundler();
+      },
     }
   );
 
@@ -120,6 +126,7 @@ export async function createMetroServerAndBundleRequestAsync(
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
+      splitChunks: false,
       mainModuleName: options.entryFile,
       platform: options.platform,
       minify: options.minify,

@@ -6,11 +6,12 @@
 
 import Foundation
 import ExpoModulesCore
+import EXUpdatesInterface
 
 public struct UpdatesModuleConstants {
   let launchedUpdate: Update?
   let embeddedUpdate: Update?
-  let isEmergencyLaunch: Bool
+  let emergencyLaunchException: Error?
   let isEnabled: Bool
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
@@ -52,12 +53,6 @@ public enum FetchUpdateResult {
 @objc(EXUpdatesAppControllerInterface)
 public protocol AppControllerInterface {
   /**
-   The RCTBridge for which EXUpdates is providing the JS bundle and assets.
-   This is optional, but required in order for `Updates.reload()` and Updates module events to work.
-   */
-  @objc weak var bridge: AnyObject? { get set }
-
-  /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
    `launchAssetUrl` is nonnull.
    */
@@ -69,6 +64,12 @@ public protocol AppControllerInterface {
    This should be provided in the `sourceURLForBridge:` method of RCTBridgeDelegate.
    */
   @objc func launchAssetUrl() -> URL?
+
+  /**
+   Indicates that the controller is in active state.
+   Currently it's only active for `EnabledAppController`.
+   */
+  @objc var isActiveController: Bool { get }
 
   @objc var isStarted: Bool { get }
 
@@ -85,7 +86,15 @@ public protocol AppControllerInterface {
 }
 
 public protocol InternalAppControllerInterface: AppControllerInterface {
+  /**
+   The AppContext from expo-modules-core.
+   This is optional, but required for expo-updates module events to work.
+   */
+  var appContext: AppContext? { get set }
+
   var updatesDirectory: URL? { get }
+
+  var shouldEmitJsEvents: Bool { get set }
 
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(
@@ -148,6 +157,19 @@ public class AppController: NSObject {
 
   public static func initializeWithoutStarting() {
     if _sharedInstance != nil {
+      return
+    }
+
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
+      #if USE_DEV_CLIENT
+      // Passing a reference to DevLauncherController over to the registry,
+      // which expo-dev-client can access.
+      let devLauncherController = initializeAsDevLauncherWithoutStarting()
+      _sharedInstance = devLauncherController
+      UpdatesControllerRegistry.sharedInstance.controller = devLauncherController
+      #else
+      _sharedInstance = DisabledAppController(error: nil)
+      #endif
       return
     }
 
@@ -227,7 +249,7 @@ public class AppController: NSObject {
     }
   }
 
-  public static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
+  private static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
     assert(_sharedInstance == nil, "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting")
 
     var config: UpdatesConfig?
@@ -276,6 +298,21 @@ public class AppController: NSObject {
     if let dbError = dbError {
       throw dbError
     }
+  }
+
+  /**
+   For `UpdatesModule` to set the `shouldEmitJsEvents` property
+   */
+  internal static var shouldEmitJsEvents: Bool {
+    get { _sharedInstance?.shouldEmitJsEvents ?? false }
+    set { _sharedInstance?.shouldEmitJsEvents = newValue }
+  }
+
+  /**
+   Binds the `AppContext` instance from `UpdatesModule`.
+   */
+  internal static func bindAppContext(_ appContext: AppContext?) {
+    _sharedInstance?.appContext = appContext
   }
 }
 

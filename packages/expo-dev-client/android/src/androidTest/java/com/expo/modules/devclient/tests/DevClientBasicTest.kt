@@ -27,7 +27,6 @@ internal class DevClientBasicTest : DevLauncherKoinTest() {
   fun checks_if_menu_can_be_toggled() = DevLauncherBasicScenario().setUpAndLaunch {
     val activity = it.launcherController()
       .devClientHost
-      .reactInstanceManager
       .currentReactContext!!
       .currentActivity!!
 

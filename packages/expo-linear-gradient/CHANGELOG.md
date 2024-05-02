@@ -6,9 +6,39 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.2 — 2024-05-01
+
+### 💡 Others
+
+- Changed type of `colors` and `locations` array to readonly ([#28450](https://github.com/expo/expo/pull/28450) by [@kowczarz](https://github.com/kowczarz))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.7.2 - 2024-02-16
+
+### 🎉 New features
+
 - Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
 
-### 🐛 Bug fixes
+## 12.7.1 - 2024-01-23
 
 ### 💡 Others
 

@@ -14,7 +14,7 @@ import StoreReview from './ExpoStoreReview';
  * - On Web, it will resolve to `false`.
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  return StoreReview.isAvailableAsync();
+  return StoreReview.isAvailableAsync?.() ?? false;
 }
 
 // @needsAudit
@@ -25,22 +25,21 @@ export async function isAvailableAsync(): Promise<boolean> {
  */
 export async function requestReview(): Promise<void> {
   if (StoreReview?.requestReview) {
-    await StoreReview.requestReview();
-    return;
+    return StoreReview.requestReview();
   }
   // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
   const url = storeUrl();
   if (url) {
     const supported = await Linking.canOpenURL(url);
     if (!supported) {
-      console.warn("Expo.StoreReview.requestReview(): Can't open store url: ", url);
+      console.warn("StoreReview.requestReview(): Can't open store url: ", url);
     } else {
       await Linking.openURL(url);
     }
   } else {
     // If the store URL is missing, let the dev know.
     console.warn(
-      "Expo.StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`"
+      "StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`"
     );
   }
 }

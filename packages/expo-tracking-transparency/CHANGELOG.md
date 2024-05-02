@@ -10,6 +10,25 @@
 
 ### 💡 Others
 
+## 4.0.2 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fix crash caused by accessing UIApplication apis off the main thread. ([#20272](https://github.com/expo/expo/pull/20272) by [@cltnschlosser](https://github.com/cltnschlosser))
+
+### 💡 Others
+
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
 ## 3.3.0 — 2023-11-14
 
 ### 🛠 Breaking changes

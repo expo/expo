@@ -13,5 +13,31 @@ internal final class CoreModule: Module {
 
       return uuidv5(name: name, namespace: namespaceUuid).uuidString.lowercased()
     }
+
+    Function("getViewConfig") { (viewName: String) -> [String: Any]? in
+      var validAttributes: [String: Any] = [:]
+      var directEventTypes: [String: Any] = [:]
+      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: viewName)
+
+      guard let viewDefinition = moduleHolder?.definition.view else {
+        return nil
+      }
+      for prop in viewDefinition.props {
+        validAttributes[prop.name] = true
+      }
+      for eventName in viewDefinition.eventNames {
+        guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
+          continue
+        }
+        directEventTypes[normalizedEventName] = [
+          "registrationName": eventName
+        ]
+      }
+
+      return [
+        "validAttributes": validAttributes,
+        "directEventTypes": directEventTypes
+      ]
+    }
   }
 }

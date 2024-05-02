@@ -118,6 +118,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
+  private ForwardingCookieHandler cookieHandler = new ForwardingCookieHandler();
 
   public AVManager(final Context reactContext) {
     mContext = reactContext;
@@ -161,6 +162,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public ModuleRegistry getModuleRegistry() {
     return mModuleRegistry;
+  }
+
+  @Override
+  public ForwardingCookieHandler getCookieHandler() {
+    return cookieHandler;
   }
 
   private UIManager getUIManager() {
@@ -263,6 +269,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
     abandonAudioFocus();
+
+    mHybridData.resetNative();
+    getUIManager().unregisterLifecycleEventListener(this);
   }
 
   // Global audio state control API
@@ -671,8 +680,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
 
-    final ReadableNativeMap androidMap = (ReadableNativeMap) options.get(RECORDING_OPTIONS_KEY);
-    final ReadableArguments androidOptions = new MapArguments(androidMap.toHashMap());
+    final ReadableArguments androidOptions = options.getArguments(RECORDING_OPTIONS_KEY);
 
     final String filename = "recording-" + UUID.randomUUID().toString()
       + androidOptions.getString(RECORDING_OPTION_EXTENSION_KEY);

@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 14.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- `SecurityLevel.BIOMETRIC` has been deprecated in favour of `SecurityLevel.BIOMETRIC_STRONG` and `SecurityLevel.BIOMETRIC_WEAK`. Using `SecurityLevel.BIOMETRIC` might lead to unexpected behaviour. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- [Android] Add support for `weak` and `strong` biometric authentication. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
 ## 13.8.0 — 2023-11-14
 
 ### 🛠 Breaking changes

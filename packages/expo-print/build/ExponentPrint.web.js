@@ -1,7 +1,4 @@
 export default {
-    get name() {
-        return 'ExponentPrint';
-    },
     get Orientation() {
         return {
             portrait: 'portrait',

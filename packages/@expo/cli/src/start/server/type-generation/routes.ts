@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import debounce from 'lodash.debounce';
 import { Server } from 'metro';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
@@ -34,7 +35,45 @@ export interface SetupTypedRoutesOptions {
   routerDirectory: string;
 }
 
-export async function setupTypedRoutes({
+export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
+  const typedRoutesModule = resolveFrom.silent(
+    options.projectRoot,
+    'expo-router/build/typed-routes'
+  );
+  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+}
+
+async function typedRoutes(
+  typedRoutesModulePath: any,
+  { server, metro, typesDirectory, projectRoot, routerDirectory }: SetupTypedRoutesOptions
+) {
+  /**
+   * Expo Router uses EXPO_ROUTER_APP_ROOT in multiple places to determine the root of the project.
+   * In apps compiled by Metro, this code is compiled away. But Typed Routes run in NodeJS with no compilation
+   * so we need to explicitly set it.
+   */
+  process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
+
+  const typedRoutesModule = require(typedRoutesModulePath);
+
+  /**
+   * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
+   */
+  if (metro && server) {
+    // Setup out watcher first
+    metroWatchTypeScriptFiles({
+      projectRoot,
+      server,
+      metro,
+      eventTypes: ['add', 'delete', 'change'],
+      callback: typedRoutesModule.getWatchHandler(typesDirectory),
+    });
+  }
+
+  typedRoutesModule.regenerateDeclarations(typesDirectory);
+}
+
+async function legacyTypedRoutes({
   server,
   metro,
   typesDirectory,
@@ -44,8 +83,8 @@ export async function setupTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(routerDirectory);
 
+  // Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
   if (metro && server) {
-    // Setup out watcher first
     metroWatchTypeScriptFiles({
       projectRoot,
       server,

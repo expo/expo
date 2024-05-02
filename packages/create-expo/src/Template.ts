@@ -1,10 +1,13 @@
+import type { ExpoConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
+import { glob } from 'fast-glob';
 import fs from 'fs';
 import ora from 'ora';
 import path from 'path';
 
+import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
 import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
 import { env } from './utils/env';
@@ -13,6 +16,7 @@ import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
   downloadAndExtractNpmModuleAsync,
+  ExtractProps,
   getResolvedTemplateName,
 } from './utils/npm';
 
@@ -50,21 +54,28 @@ function deepMerge(target: any, source: any) {
   return target;
 }
 
+function coerceUrl(urlString: string) {
+  try {
+    return new URL(urlString);
+  } catch (e) {
+    if (!/^(https?:\/\/)/.test(urlString)) {
+      return new URL(`https://${urlString}`);
+    }
+    throw e;
+  }
+}
+
 export function resolvePackageModuleId(moduleId: string) {
   if (
     // Supports github repository URLs
-    moduleId.startsWith('https://github.com')
+    /^(https?:\/\/)?github\.com\//.test(moduleId)
   ) {
     try {
-      const uri = new URL(moduleId);
+      const uri = coerceUrl(moduleId);
       debug('Resolved moduleId to repository path:', moduleId);
       return { type: 'repository', uri } as const;
-    } catch (error: any) {
-      if (error.code === 'ERR_INVALID_URL') {
-        throw new Error(`Invalid URL: "${moduleId}" provided`);
-      } else {
-        throw error;
-      }
+    } catch {
+      throw new Error(`Invalid URL: "${moduleId}" provided`);
     }
   }
 
@@ -115,9 +126,169 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
+  try {
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: projectName,
+    });
+  } catch (error: any) {
+    Log.error('Error renaming app name in template');
+    throw error;
+  }
+
   await sanitizeTemplateAsync(projectRoot);
 
   return projectRoot;
+}
+
+function escapeXMLCharacters(original: string): string {
+  const noAmps = original.replace('&', '&amp;');
+  const noLt = noAmps.replace('<', '&lt;');
+  const noGt = noLt.replace('>', '&gt;');
+  const noApos = noGt.replace('"', '\\"');
+  return noApos.replace("'", "\\'");
+}
+
+/**
+ * # Background
+ *
+ * `@expo/cli` and `create-expo` extract a template from a tarball (whether from
+ * a local npm project or a GitHub repository), but these templates have a
+ * static name that needs to be updated to match whatever app name the user
+ * specified.
+ *
+ * By convention, the app name of all templates is "HelloWorld". During
+ * extraction, filepaths are transformed via `createEntryResolver()` in
+ * `createFileTransform.ts`, but the contents of files are left untouched.
+ * Technically, the contents used to be transformed during extraction as well,
+ * but due to poor configurability, we've moved to a post-extraction approach.
+ *
+ * # The new approach: Renaming the app post-extraction
+ *
+ * In this new approach, we take a list of file patterns, otherwise known as the
+ * "rename config" to determine explicitly which files – relative to the root of
+ * the template – to perform find-and-replace on, to update the app name.
+ *
+ * ## The rename config
+ *
+ * The rename config can be passed directly as a string array to
+ * `getTemplateFilesToRenameAsync()`.
+ *
+ * The file patterns are formatted as glob expressions to be interpreted by
+ * [fast-glob](https://github.com/mrmlnc/fast-glob). Comments are supported with
+ * the `#` symbol, both in the plain-text file and string array formats.
+ * Whitespace is trimmed and whitespace-only lines are ignored.
+ *
+ * If no rename config has been passed directly to
+ * `getTemplateFilesToRenameAsync()` then this default rename config will be
+ * used instead.
+ */
+export const defaultRenameConfig = [
+  // Common
+  '!**/node_modules',
+  'app.json',
+
+  // Android
+  'android/**/*.gradle',
+  'android/app/BUCK',
+  'android/app/src/**/*.java',
+  'android/app/src/**/*.kt',
+  'android/app/src/**/*.xml',
+
+  // iOS
+  'ios/Podfile',
+  'ios/**/*.xcodeproj/project.pbxproj',
+  'ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
+] as const;
+
+/**
+ * Returns a list of files within a template matched by the resolved rename
+ * config.
+ *
+ * The rename config is resolved in the order of preference:
+ * Config provided as function param > defaultRenameConfig
+ */
+export async function getTemplateFilesToRenameAsync({
+  cwd,
+  /**
+   * An array of patterns following the rename config format. If omitted, then
+   * we fall back to defaultRenameConfig.
+   * @see defaultRenameConfig
+   */
+  renameConfig: userConfig,
+}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+  let config = userConfig ?? defaultRenameConfig;
+
+  // Strip comments, trim whitespace, and remove empty lines.
+  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+
+  return await glob(config, {
+    cwd,
+    // `true` is consistent with .gitignore. Allows `*.xml` to match .xml files
+    // in all subdirs.
+    baseNameMatch: true,
+    dot: true,
+    // Prevent climbing out of the template directory in case a template
+    // includes a symlink to an external directory.
+    followSymbolicLinks: false,
+  });
+}
+
+export async function renameTemplateAppNameAsync({
+  cwd,
+  name,
+  files,
+}: Pick<ExtractProps, 'cwd' | 'name'> & {
+  /**
+   * An array of files to transform. Usually provided by calling
+   * getTemplateFilesToRenameAsync().
+   * @see getTemplateFilesToRenameAsync
+   */
+  files: string[];
+}) {
+  debug(`Got files to transform: ${JSON.stringify(files)}`);
+
+  await Promise.all(
+    files.map(async (file) => {
+      const absoluteFilePath = path.resolve(cwd, file);
+
+      let contents: string;
+      try {
+        contents = await fs.promises.readFile(absoluteFilePath, { encoding: 'utf-8' });
+      } catch (error) {
+        throw new Error(
+          `Failed to read template file: "${absoluteFilePath}". Was it removed mid-operation?`,
+          { cause: error }
+        );
+      }
+
+      debug(`Renaming app name in file: ${absoluteFilePath}`);
+
+      const safeName = ['.xml', '.plist'].includes(path.extname(file))
+        ? escapeXMLCharacters(name)
+        : name;
+
+      try {
+        const replacement = contents
+          .replace(/Hello App Display Name/g, safeName)
+          .replace(/HelloWorld/g, sanitizedName(safeName))
+          .replace(/helloworld/g, sanitizedName(safeName.toLowerCase()));
+
+        if (replacement === contents) {
+          return;
+        }
+
+        await fs.promises.writeFile(absoluteFilePath, replacement);
+      } catch (error) {
+        throw new Error(
+          `Failed to overwrite template file: "${absoluteFilePath}". Was it removed mid-operation?`,
+          { cause: error }
+        );
+      }
+    })
+  );
 }
 
 /**
@@ -134,25 +305,25 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     await fs.promises.copyFile(templatePath, ignorePath);
   }
 
-  const config: Record<string, any> = {
-    expo: {
-      name: projectName,
-      slug: projectName,
-    },
+  const defaultConfig: ExpoConfig = {
+    name: projectName,
+    slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
-    default: { expo: {} },
-  });
-  const appJson = deepMerge(await appFile.readAsync(), config);
-  await appFile.writeAsync(appJson);
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
+  const appJson = deepMerge(
+    appContent,
+    'expo' in appContent ? { expo: defaultConfig } : defaultConfig
+  );
 
+  await appFile.writeAsync(appJson);
   debug(`Created app.json:\n%O`, appJson);
 
   const packageFile = new JsonFile(path.join(projectRoot, 'package.json'));
   const packageJson = await packageFile.readAsync();
   // name and version are required for yarn workspaces (monorepos)
-  const inputName = 'name' in config ? config.name : config.expo.name;
+  const inputName = 'name' in appJson ? appJson.name : appJson.expo.name;
   packageJson.name = applyKnownNpmPackageNameRules(inputName) || 'app';
   // These are metadata fields related to the template package, let's remove them from the package.json.
   // A good place to start

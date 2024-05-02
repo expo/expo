@@ -1,12 +1,13 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.launcher.Launcher
@@ -32,11 +33,16 @@ class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
-  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference(context.reactNativeHost)
-  } else {
-    null
-  }
+  override var appContext: WeakReference<AppContext>? = null
+
+  /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   private val logger = UpdatesLogger(context)
 
   // disabled controller state machine can only be idle or restarting
@@ -46,9 +52,6 @@ class DisabledUpdatesController(
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
-
-  override var isEmergencyLaunch = false
-    private set
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -66,7 +69,15 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
+
+  override val isActiveController = false
 
   @Synchronized
   override fun start() {
@@ -76,7 +87,6 @@ class DisabledUpdatesController(
     isStarted = true
 
     launcher = NoDatabaseLauncher(context, fatalException)
-    isEmergencyLaunch = fatalException != null
     notifyController()
     return
   }
@@ -87,7 +97,7 @@ class DisabledUpdatesController(
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
       embeddedUpdate = null,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = fatalException,
       isEnabled = false,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
@@ -100,7 +110,8 @@ class DisabledUpdatesController(
 
   override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
     val procedure = RecreateReactContextProcedure(
-      reactNativeHost,
+      context,
+      weakActivity,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           callback.onFailure(e.toCodedException())
@@ -155,14 +166,14 @@ class DisabledUpdatesController(
     private val TAG = DisabledUpdatesController::class.java.simpleName
   }
 
-  override fun sendUpdateStateChangeEventToBridge(
+  override fun sendUpdateStateChangeEventToAppContext(
     eventType: UpdatesStateEventType,
     context: UpdatesStateContext
   ) {
-    sendEventToJS(EnabledUpdatesController.UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 }

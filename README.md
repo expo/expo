@@ -34,7 +34,7 @@
 
 <h6 align="center">Follow us on</h6>
 <p align="center">
-  <a aria-label="Follow @expo on X" href="https://twitter.com/intent/follow?screen_name=expo" target="_blank">
+  <a aria-label="Follow @expo on X" href="https://x.com/intent/follow?screen_name=expo" target="_blank">
     <img alt="Expo on X" src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" target="_blank" />
   </a>&nbsp;
   <a aria-label="Follow @expo on GitHub" href="https://github.com/expo" target="_blank">
@@ -112,7 +112,7 @@ If you like Expo and want to help make it better then check out our [contributin
 
 ## ❓ FAQ
 
-If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.dev/versions/latest/introduction/faq/)!
+If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.dev/faq/)!
 
 If you still have questions you can ask them on our [Discord and Forums](https://chat.expo.dev) or on Twitter [@Expo](https://twitter.com/expo).
 

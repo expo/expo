@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 export declare const CODE_FONT: string;
-export declare function ToastWrapper({ children }: {
-    children: React.ReactNode;
-}): JSX.Element;
-export declare function Toast({ children, filename, warning, }: {
-    children: React.ReactNode;
+export declare function ToastWrapper({ children }: React.PropsWithChildren): JSX.Element;
+export declare function Toast({ children, filename, warning, }: PropsWithChildren<{
     filename?: string;
     warning?: boolean;
-}): JSX.Element;
+}>): JSX.Element;
 //# sourceMappingURL=Toast.d.ts.map

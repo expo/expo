@@ -28,12 +28,13 @@ function isServerEnvironment(graph, options) {
     if (!graph.transformOptions.customTransformOptions) {
         if (options.sourceUrl) {
             const env = getTransformEnvironment(options.sourceUrl);
-            return env === 'node';
+            return env === 'node' || env === 'react-server';
         }
         return false;
     }
     // Other requests will use customTransformOptions.environment.
-    return graph.transformOptions.customTransformOptions.environment === 'node';
+    const env = graph.transformOptions.customTransformOptions.environment;
+    return env === 'node' || env === 'react-server';
 }
 /** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
 function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {

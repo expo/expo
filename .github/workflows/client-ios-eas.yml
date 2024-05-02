@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/client-ios-eas.yml
       - apps/eas-expo-go/**
-      - ios/**
+      - apps/expo-go/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
       - secrets/**
@@ -23,6 +23,8 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
+  schedule:
+    - cron: '20 5 * * *' # 5:20 AM UTC time every day
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

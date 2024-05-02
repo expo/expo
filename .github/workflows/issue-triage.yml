@@ -2,6 +2,8 @@ name: Issue Triage
 on:
   issues:
     types: [labeled]
+  pull_request_target:
+    types: [labeled]
 
 jobs:
   needs-repro:
@@ -249,4 +251,30 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               lock_reason: 'resolved'
+            })
+  version-bump:
+    runs-on: ubuntu-22.04
+    if: "${{ github.event.label.name == 'Version bump PR' }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Hi there! We appreciate your desire to contribute to the project!
+
+              We generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. Additionally, the process for pulling in a new version and adequately requires a fair amount of context on how Expo Go works.
+
+              We understand you may be eager to bump this version in your project, and you can do this today without any changes to this repository! You can ignore any warnings related to dependency validation with the [`expo.install.exclude`](https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation) configuration in your **package.json**. You may use any version of a package that you like with [development builds](https://docs.expo.dev/develop/development-builds/create-a-build/), only the Expo Go sandbox environment is limited to pre-packaged native modules.
+
+              If you're interested in contributing to Expo, a good way to find something to help on is the ["Issue accepted" label](https://github.com/expo/expo/issues?q=is%3Aissue+is%3Aopen+label%3A%22Issue+accepted%22). Learn more about contributing in [CONTRIBUTING.md](https://github.com/expo/expo/blob/main/CONTRIBUTING.md). Thank you!
+            `})
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed'
             })

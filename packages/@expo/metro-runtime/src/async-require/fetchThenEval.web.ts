@@ -4,6 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+const currentSrc =
+  typeof document !== 'undefined' && document.currentScript
+    ? ('src' in document.currentScript && document.currentScript.src) || null
+    : null;
+
 // Basically `__webpack_require__.l`.
 export function fetchThenEvalAsync(
   url: string,
@@ -13,7 +19,7 @@ export function fetchThenEvalAsync(
     crossOrigin,
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {
@@ -59,7 +65,15 @@ export function fetchThenEvalAsync(
       script.parentNode && script.parentNode.removeChild(script);
       reject(error);
     };
-    document.head.appendChild(script);
+
+    if (script.src === currentSrc) {
+      // NOTE(kitten): We always prevent `fetchThenEval` from loading the "current script".
+      // This points at our entrypoint bundle, and we should never reload and reevaluate the
+      // entrypoint bundle
+      resolve();
+    } else {
+      document.head.appendChild(script);
+    }
   });
 }
 

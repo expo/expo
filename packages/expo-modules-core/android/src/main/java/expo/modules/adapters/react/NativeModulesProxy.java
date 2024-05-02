@@ -2,13 +2,11 @@ package expo.modules.adapters.react;
 
 import android.util.SparseArray;
 
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableType;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -96,11 +94,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     kotlinModuleRegistry.installJSIInterop();
 
     Map<String, Object> constants = new HashMap<>(3);
-    constants.put(MODULES_CONSTANTS_KEY, mKotlinInteropModuleRegistry.exportedModulesConstants());
-    constants.put(EXPORTED_METHODS_KEY, mKotlinInteropModuleRegistry.exportMethods((name, info) -> {
-      assignExportedMethodsKeys(name, (List<Map<String, Object>>) info);
-      return null;
-    }));
+    constants.put(MODULES_CONSTANTS_KEY, new HashMap<>());
+    constants.put(EXPORTED_METHODS_KEY, new HashMap<>());
     constants.put(VIEW_MANAGERS_METADATA_KEY, mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     CoreLoggerKt.getLogger().info("✅ Constants were exported");
@@ -111,26 +106,16 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   }
 
   /**
-   * The only exported {@link ReactMethod}.
+   * The only exported {@link ReactMethod} for legacy NativeUnimoduleProxy.
+   * This is used only when JSI is not available. i.e. the legacy remote debugging.
    * JavaScript can call native modules' exported methods ({@link ExpoMethod}) using this method as a proxy.
    * For native {@link ExpoMethod} `void put(String key, int value)` in `NativeDictionary` module
-   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", "put", ["key", 42])`
-   * or `NativeModulesProxy.callMethod("NativeDictionary", 2, ["key", 42])`, where the second argument
+   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", 2, ["key", 42])`, where the second argument
    * is a method's constant key.
    */
   @ReactMethod
-  public void callMethod(String moduleName, Dynamic methodKeyOrName, ReadableArray arguments, final Promise promise) {
-    String methodName;
-    if (methodKeyOrName.getType() == ReadableType.String) {
-      methodName = methodKeyOrName.asString();
-    } else if (methodKeyOrName.getType() == ReadableType.Number) {
-      methodName = mExportedMethodsReverseKeys.get(moduleName).get(methodKeyOrName.asInt());
-    } else {
-      promise.reject(UNEXPECTED_ERROR, "Method key is neither a String nor an Integer -- don't know how to map it to method name.");
-      return;
-    }
-
-    callMethod(moduleName, methodName, arguments, promise);
+  public void callMethod(String moduleName, int methodKey, ReadableArray arguments, final Promise promise) {
+    callMethod(moduleName, mExportedMethodsReverseKeys.get(moduleName).get(methodKey), arguments, promise);
   }
 
   public void callMethod(String moduleName, String methodName, ReadableArray arguments, final Promise promise) {
@@ -180,7 +165,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
+    super.invalidate();
     mModuleRegistry.onDestroy();
     mKotlinInteropModuleRegistry.onDestroy();
   }

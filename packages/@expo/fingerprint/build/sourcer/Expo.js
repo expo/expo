@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const semver_1 = __importDefault(require("semver"));
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
@@ -85,7 +86,18 @@ exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
 function normalizeExpoConfig(config) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
-    delete normalizedConfig.runtimeVersion;
+    if (typeof normalizedConfig.runtimeVersion === 'string') {
+        delete normalizedConfig.runtimeVersion;
+    }
+    if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
+        delete normalizedConfig.android.runtimeVersion;
+    }
+    if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
+        delete normalizedConfig.ios.runtimeVersion;
+    }
+    if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
+        delete normalizedConfig.web.runtimeVersion;
+    }
     delete normalizedConfig._internal;
     return (0, Utils_1.stringifyJsonSorted)(normalizedConfig);
 }
@@ -126,6 +138,14 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
                 debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
             }
+            if (module.plugins) {
+                for (const plugin of module.plugins) {
+                    const filePath = path_1.default.relative(projectRoot, plugin.sourceDir);
+                    plugin.sourceDir = filePath; // use relative path for the dir
+                    debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
+                    results.push({ type: 'dir', filePath, reasons });
+                }
+            }
         }
         results.push({
             type: 'contents',
@@ -140,14 +160,27 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
     }
 }
 exports.getExpoAutolinkingAndroidSourcesAsync = getExpoAutolinkingAndroidSourcesAsync;
+/**
+ * Gets the patch sources for the `patch-project`.
+ */
+async function getExpoCNGPatchSourcesAsync(projectRoot, options) {
+    const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, 'cng-patches', 'expoCNGPatches');
+    if (result != null) {
+        debug(`Adding dir - ${chalk_1.default.dim('cng-patches')}`);
+        return [result];
+    }
+    return [];
+}
+exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
 async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
     if (!options.platforms.includes('ios')) {
         return [];
     }
+    const platform = getIosAutolinkingPlatformParam(projectRoot);
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', 'ios', '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
@@ -181,4 +214,22 @@ function sortExpoAutolinkingAndroidConfig(config) {
     return config;
 }
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
+/**
+ * Get the platform parameter for expo-modules-autolinking.
+ *
+ * Older autolinking uses `ios` and newer autolinking uses `apple`.
+ */
+function getIosAutolinkingPlatformParam(projectRoot) {
+    let platformParam = 'apple';
+    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
+    const autolinkingPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, 'expo-modules-autolinking/package.json');
+    if (autolinkingPackageJsonPath) {
+        const autolinkingPackageJson = require(autolinkingPackageJsonPath);
+        // expo-modules-autolinking 1.10.0 added support for apple platform
+        if (semver_1.default.lt(autolinkingPackageJson.version, '1.10.0')) {
+            platformParam = 'ios';
+        }
+    }
+    return platformParam;
+}
 //# sourceMappingURL=Expo.js.map

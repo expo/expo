@@ -147,7 +147,7 @@ class UpdatesLoggingTest {
   }
 
   @Test
-  fun testBridgeMethods() {
+  fun testNativeMethods() {
     val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)

@@ -23,7 +23,7 @@ export const SnippetAction = ({
       className={mergeClasses(
         'focus-visible:-outline-offset-2',
         alwaysDark &&
-          'dark-theme border-transparent bg-[transparent] hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
+          'dark-theme border-transparent bg-transparent hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
         !alwaysDark &&
           'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4 hocus:bg-subtle hocus:shadow-none',
         className

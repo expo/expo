@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 
 // @needsAudit
 /**
- * The different types of assets you can provide to the [`loadAsync()`](#loadAsync) function.
+ * The different types of assets you can provide to the [`loadAsync()`](#loadasyncfontfamilyorfontmap-source) function.
  * A font source can be a URI, a module ID, or an Expo Asset.
  */
 export type FontSource = string | number | Asset | FontResource;
@@ -10,7 +10,7 @@ export type FontSource = string | number | Asset | FontResource;
 // @needsAudit
 /**
  * An object used to dictate the resource that is loaded into the provided font namespace when used
- * with [`loadAsync`](#loadasync).
+ * with [`loadAsync`](#loadasyncfontfamilyorfontmap-source).
  */
 export type FontResource = {
   uri?: string | number;

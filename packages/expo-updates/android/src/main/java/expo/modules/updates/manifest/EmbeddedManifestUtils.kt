@@ -5,6 +5,7 @@ import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 
 /**
  * Helper object for accessing and memoizing the manifest embedded in the application package.
@@ -23,7 +24,7 @@ object EmbeddedManifestUtils {
     if (sEmbeddedUpdate == null) {
       try {
         context.assets.open(MANIFEST_FILENAME).use { stream ->
-          val manifestString = IOUtils.toString(stream, "UTF-8")
+          val manifestString = IOUtils.toString(stream, StandardCharsets.UTF_8)
           val manifestJson = JSONObject(manifestString)
           // automatically verify embedded manifest since it was already codesigned
           manifestJson.put("isVerified", true)

@@ -10,7 +10,7 @@ import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 
 export const ExpoImageModule = {
-  async prefetch(urls: string | string[], _): Promise<boolean> {
+  async prefetch(urls: string | string[], _, __): Promise<boolean> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
 
     return new Promise<boolean>((resolve) => {
@@ -101,9 +101,11 @@ export default function ExpoImage({
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
-  const { containerRef, source: selectedSource } = useSourceSelection(
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
+    containerRef,
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 

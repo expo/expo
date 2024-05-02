@@ -41,7 +41,7 @@ class DeviceModule : Module() {
         "manufacturer" to Build.MANUFACTURER,
         "modelName" to Build.MODEL,
         "designName" to Build.DEVICE,
-        "productName" to Build.DEVICE,
+        "productName" to Build.PRODUCT,
         "deviceYearClass" to deviceYearClass,
         "totalMemory" to run {
           val memoryInfo = ActivityManager.MemoryInfo()
@@ -66,20 +66,20 @@ class DeviceModule : Module() {
       )
     }
 
-    AsyncFunction("getDeviceTypeAsync") {
+    AsyncFunction<Int>("getDeviceTypeAsync") {
       return@AsyncFunction getDeviceType(context).JSValue
     }
 
-    AsyncFunction("getUptimeAsync") {
+    AsyncFunction<Double>("getUptimeAsync") {
       return@AsyncFunction SystemClock.uptimeMillis().toDouble()
     }
 
-    AsyncFunction("getMaxMemoryAsync") {
+    AsyncFunction<Double>("getMaxMemoryAsync") {
       val maxMemory = Runtime.getRuntime().maxMemory()
-      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1
+      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1.0
     }
 
-    AsyncFunction("isRootedExperimentalAsync") {
+    AsyncFunction<Boolean>("isRootedExperimentalAsync") {
       val isRooted: Boolean
       val isDevice = !isRunningOnEmulator
 
@@ -97,8 +97,9 @@ class DeviceModule : Module() {
       return@AsyncFunction isRooted
     }
 
-    AsyncFunction("isSideLoadingEnabledAsync") {
+    AsyncFunction<Boolean>("isSideLoadingEnabledAsync") {
       return@AsyncFunction if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        @Suppress("DEPRECATION")
         Settings.Global.getInt(
           context.applicationContext.contentResolver,
           Settings.Global.INSTALL_NON_MARKET_APPS,
@@ -109,7 +110,7 @@ class DeviceModule : Module() {
       }
     }
 
-    AsyncFunction("getPlatformFeaturesAsync") {
+    AsyncFunction<List<String>>("getPlatformFeaturesAsync") {
       val allFeatures = context.applicationContext.packageManager.systemAvailableFeatures
       return@AsyncFunction allFeatures.filterNotNull().map { it.name }
     }

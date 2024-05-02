@@ -13,7 +13,7 @@ In this guide, an **update** refers to a single, atomic update, which may consis
 
 If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed, for example, by running: `npx create-expo-app -t bare-minimum`.
 
-To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.mdx#installation).
+To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions](/versions/latest/sdk/updates/#installation).
 
 Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, and so on) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (for example, GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
@@ -165,7 +165,7 @@ It's also possible to turn off these automatic updates, and to instead control u
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
-You can then use the [`expo-updates`](../versions/latest/sdk/updates.mdx) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`expo-updates`](/versions/latest/sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```js
 try {

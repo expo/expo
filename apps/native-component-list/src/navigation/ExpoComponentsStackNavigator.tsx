@@ -51,21 +51,27 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
+    },
+    name: 'Camera (legacy)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNext'));
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcode'));
     },
-    name: 'Camera (next)',
+    name: 'Camera (barcode)',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNextBarcode'));
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcodeFromURL'));
     },
-    name: 'Camera (next barcode)',
+    name: 'Camera (barcode from URL)',
   },
   {
     getComponent() {
@@ -407,6 +413,12 @@ export const Screens = [
       return optionalRequire(() => require('../screens/Screens'));
     },
     name: 'Screens',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/SymbolImageScreen'));
+    },
+    name: 'Symbols',
   },
   {
     getComponent() {

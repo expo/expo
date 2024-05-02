@@ -7,9 +7,40 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- Fixed vulnerability with update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ### 💡 Others
+
+## 1.6.0 — 2024-05-01
+
+### 🎉 New features
+
+- Check if local modules native code is unintentionally gitignored ([#28484](https://github.com/expo/expo/pull/28484) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🐛 Bug fixes
+
+- Fix failed deep dependency checks when using npm@~10.6+ ([#28563](https://github.com/expo/expo/pull/28563) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.5.2 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fix error when fetching schema for unpublished SDK versions ([#28204](https://github.com/expo/expo/pull/28204) by [@leonhh](https://github.com/leonhh))
+
+## 1.5.1 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Skip Cocoapods version check when not on macOS ([#27751](https://github.com/expo/expo/pull/27751) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.5.0 — 2024-03-06
+
+### 🎉 New features
+
+- Warn if using Cocoapods versions 1.15.0 or 1.15.1. ([#26966](https://github.com/expo/expo/pull/26966) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🐛 Bug fixes
+
+- Fixed vulnerability with update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
 
 ## 1.4.0 — 2024-02-05
 

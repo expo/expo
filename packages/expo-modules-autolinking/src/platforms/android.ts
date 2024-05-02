@@ -2,7 +2,10 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ModuleDescriptorAndroid, PackageRevision } from '../types';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+
+const ANDROID_PROPERTIES_FILE = 'gradle.properties';
+const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 
 /**
  * Generates Java file that contains all autolinked packages.
@@ -72,6 +75,21 @@ export async function resolveModuleAsync(
     ...(plugins.length > 0 ? { plugins } : {}),
     modules: revision.config?.androidModules() ?? [],
   };
+}
+
+export async function resolveExtraBuildDependenciesAsync(
+  projectNativeRoot: string
+): Promise<ExtraDependencies | null> {
+  const propsFile = path.join(projectNativeRoot, ANDROID_PROPERTIES_FILE);
+  try {
+    const contents = await fs.readFile(propsFile, 'utf8');
+    const extraMavenReposString = searchGradlePropertyFirst(contents, ANDROID_EXTRA_BUILD_DEPS_KEY);
+    if (extraMavenReposString) {
+      const extraMavenRepos = JSON.parse(extraMavenReposString);
+      return extraMavenRepos;
+    }
+  } catch {}
+  return null;
 }
 
 /**
@@ -187,4 +205,28 @@ export function convertPackageNameToProjectName(
   const name = packageName.replace(/^@/g, '').replace(/\W+/g, '-');
   const baseDir = path.dirname(buildGradleFile).replace(/\//g, '-');
   return baseDir === 'android' ? name : `${name}$${baseDir}`;
+}
+
+/**
+ * Given the contents of a `gradle.properties` file,
+ * searches for a property with the given name.
+ *
+ * This function will return the first property found with the given name.
+ * The implementation follows config-plugins and
+ * tries to align the behavior with the `withGradleProperties` plugin.
+ */
+export function searchGradlePropertyFirst(contents: string, propertyName: string): string | null {
+  const lines = contents.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line && !line.startsWith('#')) {
+      const eok = line.indexOf('=');
+      const key = line.slice(0, eok);
+      if (key === propertyName) {
+        const value = line.slice(eok + 1, line.length);
+        return value;
+      }
+    }
+  }
+  return null;
 }

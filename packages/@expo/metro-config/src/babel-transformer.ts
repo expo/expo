@@ -9,17 +9,10 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import assert from 'node:assert';
-import crypto from 'node:crypto';
-import fs from 'node:fs';
 
-import { TransformOptions } from './babel-core';
+import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-
-const cacheKeyParts = [
-  fs.readFileSync(__filename),
-  require('babel-preset-fbjs/package.json').version,
-];
 
 function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';
@@ -44,7 +37,9 @@ const memoizeWarning = memoize((message: string) => {
 
 function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filename' | 'options'>) {
   const isNodeModule = filename.includes('node_modules');
-  const isServer = options.customTransformOptions?.environment === 'node';
+  const isReactServer = options.customTransformOptions?.environment === 'react-server';
+  const isGenericServer = options.customTransformOptions?.environment === 'node';
+  const isServer = isReactServer || isGenericServer;
 
   const routerRoot =
     typeof options.customTransformOptions?.routerRoot === 'string'
@@ -64,6 +59,9 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     // Empower the babel preset to know the env it's bundling for.
     // Metro automatically updates the cache to account for the custom transform options.
     isServer,
+
+    // Enable React Server Component rules for AST.
+    isReactServer,
 
     // The base url to make requests from, used for hosting from non-standard locations.
     baseUrl:
@@ -164,15 +162,8 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
-function getCacheKey() {
-  const key = crypto.createHash('md5');
-  cacheKeyParts.forEach((part) => key.update(part));
-  return key.digest('hex');
-}
-
 const babelTransformer: BabelTransformer = {
   transform,
-  getCacheKey,
 };
 
 module.exports = babelTransformer;

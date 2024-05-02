@@ -162,7 +162,7 @@ export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: 
 
                         <View bg="secondary" border="default" rounded="medium" padding="medium">
                           <Text type="mono" size="small">
-                            npx expo start --dev-client
+                            npx expo start
                           </Text>
                         </View>
 

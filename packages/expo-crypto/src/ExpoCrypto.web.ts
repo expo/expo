@@ -5,9 +5,6 @@ import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Cr
 const getCrypto = (): Crypto => window.crypto ?? (window as any).msCrypto;
 
 export default {
-  get name(): string {
-    return 'ExpoCrypto';
-  },
   async digestStringAsync(
     algorithm: CryptoDigestAlgorithm,
     data: string,

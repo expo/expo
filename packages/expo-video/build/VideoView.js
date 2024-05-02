@@ -1,11 +1,6 @@
-import { PureComponent, useMemo, createRef } from 'react';
+import { PureComponent, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-export function useVideoPlayer(source = null) {
-    return useMemo(() => {
-        return new NativeVideoModule.VideoPlayer(source);
-    }, []);
-}
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
@@ -17,9 +12,15 @@ export function isPictureInPictureSupported() {
 }
 export class VideoView extends PureComponent {
     nativeRef = createRef();
+    /**
+     * Enters fullscreen mode.
+     */
     enterFullscreen() {
         this.nativeRef.current?.enterFullscreen();
     }
+    /**
+     * Exits fullscreen mode.
+     */
     exitFullscreen() {
         this.nativeRef.current?.exitFullscreen();
     }

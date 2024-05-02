@@ -11,7 +11,7 @@ import EXManifests
 class TestStateChangeDelegate: UpdatesStateChangeDelegate {
   var lastEventType: EXUpdates.UpdatesStateEventType?
   var lastEventBody: [String: Any?]?
-  func sendUpdateStateChangeEventToBridge(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any?]) {
+  func sendUpdateStateChangeEventToAppContext(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any?]) {
     lastEventType = eventType
     lastEventBody = body
   }

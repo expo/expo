@@ -7,9 +7,7 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
      * @example `/(root)` maps to a layout route `/app/(root).tsx`.
      */
     name?: string;
-    initialParams?: {
-        [key: string]: any;
-    };
+    initialParams?: Record<string, any>;
     options?: TOptions;
 };
 /** Component for setting the current screen's options dynamically. */

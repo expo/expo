@@ -92,3 +92,16 @@ export const isRouteActive = (
   const linkUrl = stripVersionFromPath(info?.as || info?.href);
   return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
 };
+
+export function appendSectionToRoute(route?: NavigationRouteWithSection) {
+  if (route?.children) {
+    return route.children.map((entry: NavigationRouteWithSection) =>
+      route.type !== 'page'
+        ? Object.assign(entry, {
+            section: route.section ? `${route.section} - ${route.name}` : route.name,
+          })
+        : route
+    );
+  }
+  return route;
+}

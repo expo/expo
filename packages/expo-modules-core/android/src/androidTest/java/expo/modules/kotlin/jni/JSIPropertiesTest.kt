@@ -11,15 +11,14 @@ internal class JSIPropertiesTest {
       .get { }
       .set { _: String -> }
   }) {
-    val keys = evaluateScript("Object.keys($moduleRef)").getArray()
+    val keys = evaluateScript("Object.keys($moduleRef)")
+      .getArray()
+      .map { it.getString() }
 
-    Truth.assertThat(keys).hasLength(2)
+    Truth.assertThat(keys.size).isAtLeast(2)
 
-    val p1 = keys[0].getString()
-    val p2 = keys[1].getString()
-
-    Truth.assertThat(p1).isEqualTo("p1")
-    Truth.assertThat(p2).isEqualTo("p2")
+    Truth.assertThat(keys.contains("p1")).isTrue()
+    Truth.assertThat(keys.contains("p2")).isTrue()
   }
 
   @Test

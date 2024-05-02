@@ -2,6 +2,13 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
+use_dev_client = false
+begin
+  use_dev_client = !!`node --print "require('expo-dev-client/package.json').version"`
+rescue
+  use_dev_client = false
+end
+
 Pod::Spec.new do |s|
   s.name           = 'EXUpdates'
   s.version        = package['version']
@@ -21,7 +28,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
   s.dependency 'ReachabilitySwift'
-  s.dependency 'sqlite3', '~> 3.42.0'
+  s.dependency 'sqlite3', '~> 3.45.3+1'
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
@@ -30,10 +37,18 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+  other_c_flags = '$(inherited)'
+  other_swift_flags = '$(inherited)'
 
-  other_c_flags = ex_updates_native_debug ? "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" : "$(inherited)"
-  other_swift_flags = ex_updates_native_debug ? "$(inherited) -DEX_UPDATES_NATIVE_DEBUG" : "$(inherited)"
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+  if ex_updates_native_debug
+    other_c_flags << ' -DEX_UPDATES_NATIVE_DEBUG=1'
+    other_swift_flags << ' -DEX_UPDATES_NATIVE_DEBUG'
+  end
+  if use_dev_client
+    other_c_flags << ' -DUSE_DEV_CLIENT=1'
+    other_swift_flags << ' -DUSE_DEV_CLIENT'
+  end
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
@@ -54,16 +69,16 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.{h,m,swift}"
   end
 
-  if $expo_updates_create_manifest != false
+  if $expo_updates_create_updates_resources != false
     force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
     s.script_phase = {
-      :name => 'Generate app.manifest for expo-updates',
-      :script => force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
+      :name => 'Generate updates resources for expo-updates',
+      :script => force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"',
       :execution_position => :before_compile
     }
 
     # Generate EXUpdates.bundle without existing resources
-    # `create-manifest-ios.sh` will generate app.manifest in EXUpdates.bundle
+    # `create-updates-resources-ios.sh` will generate updates resources in EXUpdates.bundle
     s.resource_bundles = {
       'EXUpdates' => []
     }

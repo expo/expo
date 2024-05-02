@@ -8,10 +8,47 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, set `httpMethod` on upload requests. ([#26516](https://github.com/expo/expo/pull/26516) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, fix upload task requests. ([#26880](https://github.com/expo/expo/pull/26880) by [@alanjhughes](https://github.com/alanjhughes))
+### 💡 Others
+
+## 17.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [Android] remove `CookieHandler` as it's no longer in the module registry and not necessary. ([#28145](https://github.com/expo/expo/pull/28145) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 16.0.8 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.7 - 2024-02-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fix downloadAsync for local files. ([#27187](https://github.com/expo/expo/pull/27187) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `iOS`, fix an issue with `copyAsync` where the copy fails if it is a photo library asset. ([#27208](https://github.com/expo/expo/pull/27208) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, resolve the promise manually after copying a PHAsset file. ([#27381](https://github.com/expo/expo/pull/27381) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.6 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix upload task requests. ([#26880](https://github.com/expo/expo/pull/26880) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.5 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- On `iOS`, set `httpMethod` on upload requests. ([#26516](https://github.com/expo/expo/pull/26516) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.4 - 2024-01-18
 

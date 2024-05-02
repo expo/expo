@@ -25,8 +25,8 @@ abstract class UpdateDao {
   @Query("SELECT * FROM updates WHERE id = :id;")
   abstract fun _loadUpdatesWithId(id: UUID): List<UpdateEntity>
 
-  @Query("SELECT assets.* FROM assets INNER JOIN updates ON updates.launch_asset_id = assets.id WHERE updates.id = :id;")
-  abstract fun _loadLaunchAsset(id: UUID): AssetEntity
+  @Query("SELECT assets.* FROM assets INNER JOIN updates ON updates.launch_asset_id = assets.id WHERE updates.id = :updateId;")
+  abstract fun _loadLaunchAssetForUpdate(updateId: UUID): AssetEntity?
 
   @Query("UPDATE updates SET keep = 1 WHERE id = :id;")
   abstract fun _keepUpdate(id: UUID)
@@ -59,15 +59,18 @@ abstract class UpdateDao {
   @Query("SELECT id FROM updates WHERE status = :status;")
   abstract fun loadAllUpdateIdsWithStatus(status: UpdateStatus): List<UUID>
 
+  @Query("SELECT id FROM updates WHERE failed_launch_count > 0 ORDER BY commit_time DESC LIMIT 5;")
+  abstract fun loadRecentUpdateIdsWithFailedLaunch(): List<UUID>
+
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
     val updateEntities = _loadUpdatesWithId(id)
     return if (updateEntities.isNotEmpty()) updateEntities[0] else null
   }
 
-  fun loadLaunchAsset(id: UUID): AssetEntity {
-    val assetEntity = _loadLaunchAsset(id)
-    assetEntity.isLaunchAsset = true
-    return assetEntity
+  fun loadLaunchAssetForUpdate(updateId: UUID): AssetEntity? {
+    return _loadLaunchAssetForUpdate(updateId)?.apply {
+      isLaunchAsset = true
+    }
   }
 
   @Insert

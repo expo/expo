@@ -20,7 +20,8 @@ module.exports = {
         'diff-.+',
         'react-player',
         'dark-theme',
-        'dialog-.+'
+        'dialog-.+',
+        'terminal-snippet'
       ]
     }]
   },
@@ -30,7 +31,7 @@ module.exports = {
         "node_modules/@expo/styleguide/dist/global.css"
       ],
       callees: ["mergeClasses"],
-      classRegex: "^(confirmation)?(c|C)lass(Name)?$",
+      classRegex: "^(confirmation|container)?(c|C)lass(Name)?$",
       config: "tailwind.config.cjs",
     }
   }

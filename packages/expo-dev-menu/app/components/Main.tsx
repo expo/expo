@@ -1,3 +1,4 @@
+import { lightTheme } from '@expo/styleguide-native';
 import {
   View,
   WarningIcon,
@@ -205,7 +206,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                 <View roundedBottom="large" bg="default">
                   <SettingsRowButton
                     label="Go home"
-                    icon={<HomeFilledIcon />}
+                    icon={<HomeFilledIcon tintColor={lightTheme.icon.default} />}
                     onPress={actions.navigateToLauncher}
                   />
                 </View>
@@ -496,10 +497,14 @@ type AppInfoRowProps = {
 
 function AppInfoRow({ title, value }: AppInfoRowProps) {
   return (
-    <Row px="medium" py="small" align="center" bg="default">
+    <Row px="medium" py="small" align="center" bg="default" justify="between" flex="1">
       <Text size="medium">{title}</Text>
-      <Spacer.Horizontal />
-      <Text>{value}</Text>
+      <Spacer.Horizontal size="small" />
+      <View style={{ flex: 1, alignItems: 'flex-end' }}>
+        <Text size="medium" numberOfLines={2}>
+          {value}
+        </Text>
+      </View>
     </Row>
   );
 }

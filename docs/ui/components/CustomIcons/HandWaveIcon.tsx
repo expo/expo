@@ -1,8 +1,14 @@
-export function HandWaveIcon() {
+import { mergeClasses } from '@expo/styleguide';
+
+type Props = {
+  className?: string;
+};
+
+export function HandWaveIcon({ className }: Props) {
   return (
     <svg
       viewBox="0 0 15 16"
-      className="icon-sm stroke-icon-default"
+      className={mergeClasses('icon-sm stroke-icon-default', className)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <path

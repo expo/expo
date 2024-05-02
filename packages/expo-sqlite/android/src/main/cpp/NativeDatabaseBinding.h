@@ -33,6 +33,10 @@ public:
   int sqlite3_prepare_v2(
       const std::string &source,
       jni::alias_ref<NativeStatementBinding::javaobject> statement);
+  jni::local_ref<jni::JArrayByte>
+  sqlite3_serialize(const std::string &databaseName);
+  int sqlite3_deserialize(const std::string &databaseName,
+                          jni::alias_ref<jni::JArrayByte> serializedData);
   void sqlite3_update_hook(bool enabled);
 
   // helpers
@@ -69,6 +73,11 @@ public:
   static jni::local_ref<SQLiteErrorException>
   create(const std::string &message) {
     return SQLiteErrorException::newInstance(jni::make_jstring(message));
+  }
+
+  static jni::local_ref<SQLiteErrorException>
+  create(jni::alias_ref<jni::JString> message) {
+    return SQLiteErrorException::newInstance(message);
   }
 };
 

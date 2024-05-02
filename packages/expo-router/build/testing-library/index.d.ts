@@ -1,26 +1,34 @@
 import './expect';
+import './mocks';
+import { NavigationState, PartialState } from '@react-navigation/native';
 import { render } from '@testing-library/react-native';
-import { FileStub } from './context-stubs';
+import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
+import { ExpoLinkingOptions } from '../getLinkingConfig';
 export * from '@testing-library/react-native';
 type RenderRouterOptions = Parameters<typeof render>[1] & {
     initialUrl?: any;
+    linking?: Partial<ExpoLinkingOptions>;
 };
 type Result = ReturnType<typeof render> & {
     getPathname(): string;
     getPathnameWithParams(): string;
     getSegments(): string[];
     getSearchParams(): Record<string, string | string[]>;
+    getRouterState(): NavigationState<any> | PartialState<any>;
 };
-export type MockContextConfig = string | string[] | Record<string, FileStub> | {
-    appDir: string;
-    overrides: Record<string, FileStub>;
-};
-export declare function getMockConfig(context: MockContextConfig): {
-    initialRouteName?: string | undefined;
-    screens: Record<string, import("../getReactNavigationConfig").Screen>;
-};
-export declare function getMockContext(context: MockContextConfig): import("../types").RequireContext;
-export declare function renderRouter(context?: MockContextConfig, { initialUrl, ...options }?: RenderRouterOptions): Result;
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            toHavePathname(pathname: string): R;
+            toHavePathnameWithParams(pathname: string): R;
+            toHaveSegments(segments: string[]): R;
+            toHaveSearchParams(params: Record<string, string | string[]>): R;
+            toHaveRouterState(state: NavigationState<any> | PartialState<any>): R;
+        }
+    }
+}
+export { MockContextConfig, getMockConfig, getMockContext };
+export declare function renderRouter(context?: MockContextConfig, { initialUrl, linking, ...options }?: RenderRouterOptions): Result;
 export declare const testRouter: {
     /** Navigate to the provided pathname and the pathname */
     navigate(path: string): void;
@@ -29,10 +37,12 @@ export declare const testRouter: {
     /** Replace with provided pathname and assert the pathname */
     replace(path: string): void;
     /** Go back in history and asset the new pathname */
-    back(path: string): void;
+    back(path?: string): void;
     /** If there's history that supports invoking the `back` function. */
     canGoBack(): boolean;
     /** Update the current route query params and assert the new pathname */
-    setParams(params?: Record<string, string>): void;
+    setParams(params?: Record<string, string>, path?: string): void;
+    /** If there's history that supports invoking the `back` function. */
+    dismissAll(): void;
 };
 //# sourceMappingURL=index.d.ts.map

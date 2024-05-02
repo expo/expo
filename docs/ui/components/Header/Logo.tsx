@@ -13,11 +13,11 @@ export const Logo = ({ subgroup }: Props) => (
   <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
       <WordMarkLogo
-        className="w-[72px] mt-[1px] h-5 text-default my-1"
+        className="w-[72px] mt-px h-5 text-default my-1"
         css={hideOnMobile}
         title="Expo"
       />
-      <LogoIcon className="icon-lg mt-[1px] text-default" css={showOnMobile} title="Expo" />
+      <LogoIcon className="icon-lg mt-px text-default" css={showOnMobile} title="Expo" />
     </LinkBase>
     <LinkBase css={linkStyle} href="/">
       <div css={iconContainer}>

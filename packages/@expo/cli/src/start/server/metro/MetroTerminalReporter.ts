@@ -51,9 +51,15 @@ export class MetroTerminalReporter extends TerminalReporter {
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
+
       const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
       // iOS Bundled 150ms
-      return color(platform + status) + time + chalk.reset.dim(' (' + localPath + ')');
+      const plural = progress.totalFileCount === 1 ? '' : 's';
+      return (
+        color(platform + status) +
+        time +
+        chalk.reset.dim(` ${localPath} (${progress.totalFileCount} module${plural})`)
+      );
     }
 
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
@@ -239,6 +245,8 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
     return chalk.bold('λ') + ' ';
+  } else if (env === 'react-server') {
+    return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
   }
 
   return '';

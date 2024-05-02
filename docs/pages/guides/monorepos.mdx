@@ -110,7 +110,7 @@ const path = require('path');
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(workspaceRoot);
+const config = getDefaultConfig(monorepoRoot);
 
 // Only list the packages within your monorepo that your app uses. No need to add anything else.
 // If your monorepo tooling can give you the list of monorepo workspaces linked
@@ -121,7 +121,7 @@ const monorepoPackages = {
 };
 
 // 1. Watch the local app folder, and only the shared packages (limiting the scope and speeding it up)
-// Note how we change this from `workspaceRoot` to `projectRoot`. This is part of the optimization!
+// Note how we change this from `monorepoRoot` to `projectRoot`. This is part of the optimization!
 config.watchFolders = [projectRoot, ...Object.values(monorepoPackages)];
 
 // Add the monorepo workspaces as `extraNodeModules` to Metro.

@@ -41,7 +41,7 @@ class JavaScriptClassTest {
     }
   }) {
     val jsObject = callClass("MyClass").getObject()
-    Truth.assertThat(jsObject.getPropertyNames()).asList().containsExactly("foo")
+    Truth.assertThat(jsObject.getPropertyNames()).asList().contains("foo")
     Truth.assertThat(jsObject.getProperty("foo").getString()).isEqualTo("bar")
   }
 

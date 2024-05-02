@@ -122,7 +122,7 @@ export default function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback((url: string | null | undefined) => {
+  const getStateFromURL = React.useCallback((url?: string | null) => {
     if (!url || (filterRef.current && !filterRef.current(url))) {
       return undefined;
     }
@@ -150,7 +150,7 @@ export default function useLinking(
     // }
 
     const thenable = {
-      then(onfulfilled?: (state: ResultState | undefined) => void) {
+      then(onfulfilled?: (state?: ResultState) => void) {
         onfulfilled?.(state);
         return thenable;
       },

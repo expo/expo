@@ -1,9 +1,9 @@
-import { render } from '@testing-library/react';
 import GithubSlugger from 'github-slugger';
 
 import DocumentationSidebarRight from './DocumentationSidebarRight';
 
 import { HeadingManager, HeadingType } from '~/common/headingManager';
+import { renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
 const prepareHeadingManager = () => {
@@ -22,7 +22,7 @@ describe('DocumentationSidebarRight', () => {
   test('correctly matches snapshot', () => {
     const headingManager = prepareHeadingManager();
 
-    const { container } = render(
+    const { container } = renderWithHeadings(
       <HeadingsContext.Provider value={headingManager}>
         <DocumentationSidebarRight />
       </HeadingsContext.Provider>

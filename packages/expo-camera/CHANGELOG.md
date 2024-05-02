@@ -6,19 +6,106 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.3 — 2024-04-29
+
+### 🎉 New features
+
+- Support scanning barcodes from a provided image URL. ([#28445](https://github.com/expo/expo/pull/28445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.2 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- On `iOS`, fixed regression where recording a video captures dark frames. Reduced frequency of camera initialization. ([#28427](https://github.com/expo/expo/pull/28427) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `pictureSize` prop to `CameraView` component. ([#27664](https://github.com/expo/expo/pull/27664) by [@alanjhughes](https://github.com/alanjhughes))
+- Allow user to remove `NSMicrophoneUsageDescription` and ignore the `mute` prop if they don't intend to use video. ([#28156](https://github.com/expo/expo/pull/28156) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `animateShutter` prop to provide feedback when a picture is taken. Also added shutter sound on android. ([#28211](https://github.com/expo/expo/pull/28211) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Allow users using xcode 14 to still build when including camera. ([#27873](https://github.com/expo/expo/pull/27873) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix an issue where the permission functions were being imported from the wrong file. ([#27988](https://github.com/expo/expo/pull/27988) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix an issue on `iOS` where the barcode types did not match the typescript representation. Also enabled scanning `upc_a` codes on `iOS`. ([#28233](https://github.com/expo/expo/pull/28233) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- On `Android`, requesting audio permissions was meant to be optional in the config plugin. ([#27365](https://github.com/expo/expo/pull/27365) by [@alanjhughes](https://github.com/alanjhughes))
+- Prevent unnecessary configuration changes wherever possible. ([#27919](https://github.com/expo/expo/pull/27919) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, only recreate camera after certain props have changed. ([#27952](https://github.com/expo/expo/pull/27952) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Promote `next` package to stable. ([#28226](https://github.com/expo/expo/pull/28226) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.1.1 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 - 2024-03-13
+
+### 🐛 Bug fixes
+
+- On `Android`, fix empty qualities being passed to QualitySelector ([#27126](https://github.com/expo/expo/pull/27126) by [@leonhh](https://github.com/leonhh))
+- On `web`, prevent creating a webworker when rendering on the server ([#27222](https://github.com/expo/expo/pull/27222) by [@marklawlor](https://github.com/marklawlor))
+- On `iOS`, fix method call on an optional variable. ([#27235](https://github.com/expo/expo/pull/27235) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix scanned frame bounds when scanning a barcode. ([#27207](https://github.com/expo/expo/pull/27207) by [@tamagokun](https://github.com/tamagokun))
+- Fix incorrect prop name `flash` being passed to native. ([#27394](https://github.com/expo/expo/pull/27394) by [@alanjhughes](https://github.com/alanjhughes))
+- Ensure `mute` prop is passed to native so it is correctly initialiased even when not provided from JS. ([#27546](https://github.com/expo/expo/pull/27546) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix camera orientation on initial render. ([#27545](https://github.com/expo/expo/pull/27545) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix an issue where the configuration can be interuppted when the dev menu is presented on intial launch. ([#27572](https://github.com/expo/expo/pull/27572) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix `getAvailablePictureSizes` in the legacy package. ([#27642](https://github.com/expo/expo/pull/27642) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.6 - 2024-03-07
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix the orientation value in `onResponsiveOrientationChanged` when `exif` is set to true. ([#27314](https://github.com/expo/expo/pull/27314) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.5 - 2024-02-16
+
+### 🎉 New features
+
 - `BarCodeAnalyzer` now passes an additional `raw` field to its `onComplete` callback, corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
 
 ### 🐛 Bug fixes
 
-- Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
-- Set a higher resolution for barcode scans to allow scanning of high resolution barcodes. ([#26886](https://github.com/expo/expo/pull/26886)) by [@byudaniel](https://github.com/byudaniel))
+- Set a higher resolution for barcode scans to allow scanning of high resolution barcodes. ([#26886](https://github.com/expo/expo/pull/26886)) by [@byudaniel](https://github.com/byudaniel)) ([#26886](https://github.com/expo/expo/pull/26886) by [@byudaniel](https://github.com/byudaniel))
 - Fix barcode types casing errors. ([#26888](https://github.com/expo/expo/pull/26888) by [@byudaniel](https://github.com/byudaniel))
-- On `iOS`, fix `maxDuration` timescale on videos. ([#26882](https://github.com/expo/expo/pull/26882) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, fix the camera not being released when the view is destroyed. ([#27086](https://github.com/expo/expo/pull/27086) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - Make the casing of `Barcode` consistent. ([#26900](https://github.com/expo/expo/pull/26900) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.4 - 2024-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.3 - 2024-01-26
+
+### 🐛 Bug fixes
+
+- On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix `maxDuration` timescale on videos. ([#26882](https://github.com/expo/expo/pull/26882) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.2 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.0.1 - 2023-12-19
 

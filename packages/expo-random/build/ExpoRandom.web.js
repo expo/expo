@@ -1,7 +1,4 @@
 export default {
-    get name() {
-        return 'ExpoRandom';
-    },
     getRandomBytes(length) {
         const array = new Uint8Array(length);
         // @ts-ignore

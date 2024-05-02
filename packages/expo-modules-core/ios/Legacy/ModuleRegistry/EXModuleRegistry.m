@@ -4,6 +4,7 @@
 
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistry ()
 

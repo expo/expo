@@ -1,14 +1,8 @@
-import { ReactNode, PureComponent, useMemo, createRef } from 'react';
+import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
-
-export function useVideoPlayer(source: string | null = null): VideoPlayer {
-  return useMemo(() => {
-    return new NativeVideoModule.VideoPlayer(source);
-  }, []);
-}
+import type { VideoPlayer, VideoViewProps } from './VideoView.types';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
@@ -16,17 +10,23 @@ export function useVideoPlayer(source: string | null = null): VideoPlayer {
  * @platform android
  * @platform ios
  */
-export function isPictureInPictureSupported(): Promise<boolean> {
+export function isPictureInPictureSupported(): boolean {
   return NativeVideoModule.isPictureInPictureSupported();
 }
 
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 
+  /**
+   * Enters fullscreen mode.
+   */
   enterFullscreen() {
     this.nativeRef.current?.enterFullscreen();
   }
 
+  /**
+   * Exits fullscreen mode.
+   */
   exitFullscreen() {
     this.nativeRef.current?.exitFullscreen();
   }
@@ -37,7 +37,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  startPictureInPicture() {
+  startPictureInPicture(): void {
     return this.nativeRef.current?.startPictureInPicture();
   }
 
@@ -46,7 +46,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  stopPictureInPicture() {
+  stopPictureInPicture(): void {
     return this.nativeRef.current?.stopPictureInPicture();
   }
 

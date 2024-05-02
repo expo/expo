@@ -1,14 +1,14 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -23,8 +23,8 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
@@ -41,11 +41,10 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
-  private val reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference(context.reactNativeHost)
-  } else {
-    null
-  }
+  override var appContext: WeakReference<AppContext>? = null
+
+  /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context)
   private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -66,10 +65,17 @@ class EnabledUpdatesController(
 
   private var isStartupFinished = false
 
+  override var shouldEmitJsEvents = false
+    set(value) {
+      field = value
+      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
+    }
+
   @Synchronized
   private fun onStartupProcedureFinished() {
     isStartupFinished = true
     (this@EnabledUpdatesController as java.lang.Object).notify()
+    UpdatesUtils.sendQueuedEventsToAppContext(shouldEmitJsEvents, appContext, logger)
   }
 
   private val startupProcedure = StartupProcedure(
@@ -85,24 +91,6 @@ class EnabledUpdatesController(
         onStartupProcedureFinished()
       }
 
-      override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {
-        when (event) {
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.Error -> sendLegacyUpdateEventToJS(
-            UPDATE_ERROR_EVENT,
-            Arguments.createMap().apply {
-              putString("message", event.exception.message)
-            }
-          )
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable -> sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
-          is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.UpdateAvailable -> sendLegacyUpdateEventToJS(
-            UPDATE_AVAILABLE_EVENT,
-            Arguments.createMap().apply {
-              putString("manifestString", event.manifest.toString())
-            }
-          )
-        }
-      }
-
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
         relaunchReactApplication(shouldRunReaper, callback)
       }
@@ -115,8 +103,6 @@ class EnabledUpdatesController(
     get() = startupProcedure.isUsingEmbeddedAssets
   private val localAssetFiles
     get() = startupProcedure.localAssetFiles
-  override val isEmergencyLaunch: Boolean
-    get() = startupProcedure.isEmergencyLaunch
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -133,9 +119,19 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    startupProcedure.onDidCreateReactInstanceManager(reactInstanceManager)
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    startupProcedure.onDidCreateDevSupportManager(devSupportManager)
   }
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: Exception) {
+    startupProcedure.onReactInstanceException(exception)
+  }
+
+  override val isActiveController = true
 
   @Synchronized
   override fun start() {
@@ -155,12 +151,12 @@ class EnabledUpdatesController(
   private fun relaunchReactApplication(shouldRunReaper: Boolean, callback: LauncherCallback) {
     val procedure = RelaunchProcedure(
       context,
+      weakActivity,
       updatesConfiguration,
       databaseHolder,
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      reactNativeHost,
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
@@ -169,23 +165,19 @@ class EnabledUpdatesController(
     stateMachine.queueExecution(procedure)
   }
 
-  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
+  override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
     sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
-  private fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {
-    sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
-  }
-
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
   }
 
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = startupProcedure.emergencyLaunchException,
       isEnabled = true,
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration.runtimeVersionRaw,
@@ -280,12 +272,5 @@ class EnabledUpdatesController(
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
-
-    private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
-    private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
-    private const val UPDATE_ERROR_EVENT = "error"
-
-    const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
-    const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
   }
 }

@@ -14,6 +14,7 @@ import {
   CodeSquare01Icon,
   Phone01Icon,
   CheckIcon,
+  StoplightIcon,
 } from '@expo/styleguide-icons';
 
 import { SidebarNodeProps } from './Sidebar';
@@ -123,7 +124,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
     // then we shouldn't show the title twice. You might want to organize your group like
-    // so it is collapsable
+    // so it is collapsible
     return true;
   } else if (
     info.children &&
@@ -141,6 +142,8 @@ function getIconElement(iconName?: string) {
   switch (iconName) {
     case 'Develop':
       return TerminalBrowserIcon;
+    case 'Review':
+      return StoplightIcon;
     case 'Deploy':
       return Rocket01Icon;
     case 'Development process':

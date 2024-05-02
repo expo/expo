@@ -8,30 +8,34 @@ import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
 
+export type MetroEnvironment = 'node' | 'react-server' | 'client';
+
 export type ExpoMetroOptions = {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
-  environment?: string;
+  environment?: MetroEnvironment;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
   bytecode: boolean;
+  /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
-
-  baseUrl?: string;
-  isExporting: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot: string;
+  baseUrl?: string;
+  isExporting: boolean;
   inlineSourceMap?: boolean;
+  splitChunks?: boolean;
 };
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
+  splitChunks?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -48,6 +52,10 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   // If it is installed, the user MUST import it somewhere in their project.
   // Expo Router automatically pulls this in, so we can check for it.
   return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
+export function isServerEnvironment(environment?: any): boolean {
+  return environment === 'node' || environment === 'react-server';
 }
 
 function withDefaults({
@@ -126,6 +134,7 @@ export function getMetroDirectBundleOptions(
     routerRoot,
     isExporting,
     inlineSourceMap,
+    splitChunks,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -175,6 +184,7 @@ export function getMetroDirectBundleOptions(
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
+      splitChunks,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -213,6 +223,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     routerRoot,
     inlineSourceMap,
     isExporting,
+    splitChunks,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -264,6 +275,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.environment', environment);
   }
 
+  if (splitChunks) {
+    queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
   }

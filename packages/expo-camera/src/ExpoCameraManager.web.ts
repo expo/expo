@@ -6,13 +6,13 @@ import {
   CameraType,
   PermissionResponse,
   PermissionStatus,
-} from './Camera.types';
-import { ExponentCameraRef } from './ExpoCamera.web';
+} from './legacy/Camera.types';
+import { ExponentCameraRef } from './legacy/ExpoCamera.web';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,
   isFrontCameraAvailableAsync,
-} from './WebUserMediaManager';
+} from './web/WebUserMediaManager';
 
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -126,9 +126,6 @@ async function handlePermissionsQueryAsync(
 }
 
 export default {
-  get name(): string {
-    return 'ExponentCameraManager';
-  },
   get Type() {
     return {
       back: 'back',

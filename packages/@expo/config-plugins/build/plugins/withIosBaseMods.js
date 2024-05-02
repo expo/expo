@@ -375,6 +375,27 @@ const defaultProviders = {
       await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(config.modResults)));
     }
   }),
+  podfile: (0, _createBaseMod().provider)({
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
+      return _ios().Paths.getPodfilePath(projectRoot);
+    },
+    // @ts-expect-error
+    async read(filePath) {
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
+      return _ios().Paths.getFileInfo(filePath);
+    },
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
+      await writeFile(filePath, contents);
+    }
+  }),
   // Append a rule to supply Podfile.properties.json data to mods on `mods.ios.podfileProperties`
   podfileProperties: (0, _createBaseMod().provider)({
     isIntrospective: true,

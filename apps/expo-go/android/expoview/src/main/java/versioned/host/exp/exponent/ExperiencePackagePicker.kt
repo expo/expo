@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationModule
+import expo.modules.asset.AssetModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
@@ -12,7 +13,7 @@ import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.camera.next.CameraViewNextModule
+import expo.modules.camera.legacy.CameraViewLegacyModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
@@ -124,6 +125,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ApplicationModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
+    AssetModule::class.java,
     BarometerModule::class.java,
     GyroscopeModule::class.java,
     LightSensorModule::class.java,
@@ -146,7 +148,7 @@ object ExperiencePackagePicker : ModulesProvider {
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
-    CameraViewNextModule::class.java,
+    CameraViewLegacyModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,

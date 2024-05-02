@@ -10,7 +10,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 private class AVManagerModuleNotFound : CodedException(message = "AVManagerInterface not found")
 
 private typealias KotlinPromise = expo.modules.kotlin.Promise
-private typealias LegacyPromise = expo.modules.core.Promise
+private typealias LegacyPromise =
+  @Suppress("DEPRECATION")
+  expo.modules.core.Promise
 
 class AVModule : Module() {
   private val _avManager by lazy { appContext.legacyModule<AVManagerInterface>() }
@@ -120,6 +122,7 @@ class AVModule : Module() {
   }
 }
 
+@Suppress("TYPEALIAS_EXPANSION_DEPRECATION")
 private fun KotlinPromise.toLegacyPromise(): LegacyPromise {
   val newPromise = this
   return object : LegacyPromise {

@@ -158,7 +158,7 @@ export declare enum UIImagePickerPresentationStyle {
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
      *
-     * @platform ios 13+
+     * @platform ios
      */
     AUTOMATIC = "automatic"
 }
@@ -445,6 +445,12 @@ export type ImagePickerOptions = {
      * @platform ios 14+
      */
     preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
+    /**
+     * Uses the legacy image picker on Android. This will allow media to be selected from outside the users photo library.
+     * @platform android
+     * @default false
+     */
+    legacy?: boolean;
 };
 export type OpenFileBrowserOptions = {
     /**

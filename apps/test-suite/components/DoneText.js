@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   finalResults: {
-    // Hide text for Detox to read
+    // Hide text for e2e tests to read
     position: 'absolute',
     opacity: 0,
   },
