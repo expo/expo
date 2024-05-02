@@ -6,6 +6,55 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.6 — 2024-05-01
+
+### 🎉 New features
+
+- Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
+- Add `linking` prop to `<ExpoRoot />` ([#27757](https://github.com/expo/expo/pull/27757) by [@marklawlor](https://github.com/marklawlor))
+- Add `+native-intent` file support. ([#28113](https://github.com/expo/expo/pull/28113) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Fix missing types for Link when using Typed Routes ([#28467](https://github.com/expo/expo/pull/28467) by [@marklawlor](https://github.com/marklawlor))
+- Prevent crash when `EXPO_ROUTER_APP_ROOT` directory does not exist ([#28466](https://github.com/expo/expo/pull/28466) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.5 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- Fix `useLocalSearchParams` not passing all parameters to nested navigators. ([#28468](https://github.com/expo/expo/pull/28468) by [@marklawlor](https://github.com/marklawlor))
+- Fix incorrect require.context regex for Android ([#28490](https://github.com/expo/expo/pull/28490) by [@marklawlor](https://github.com/marklawlor))
+- Switch to react-native-helmet-async (fork of react-helmet-async) in order remove react-dom peer dependency. ([#28532](https://github.com/expo/expo/pull/28532) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.5.4 — 2024-04-26
+
+### 🎉 New features
+
+- Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.3 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.2 — 2024-04-23
+
+### 🐛 Bug fixes
+
+- Fix support loading abstract Expo Go URLs with multiple segments. ([#28376](https://github.com/expo/expo/pull/28376) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.5.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
 - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add URL hash support ([#27105](https://github.com/expo/expo/pull/27105) by [@marklawlor](https://github.com/marklawlor))
 - Type `Href` is no longer generic ([#27690](https://github.com/expo/expo/pull/27690) by [@marklawlor](https://github.com/marklawlor))

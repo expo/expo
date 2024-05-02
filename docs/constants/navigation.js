@@ -124,6 +124,7 @@ const general = [
     makePage('workflow/configuration.mdx'),
     makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
+    makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
     makePage('guides/linking.mdx'),
@@ -191,15 +192,17 @@ const general = [
     makePage('router/layouts.mdx'),
     makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
-    makeGroup('Advanced', [
+    makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
-      makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+    ]),
+    makeGroup('Advanced', [
+      makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
@@ -343,6 +346,7 @@ const general = [
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/continuous-deployment.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
@@ -424,7 +428,6 @@ const general = [
         makePage('accounts/account-types.mdx'),
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
-        makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
       makeSection('Billing', [
@@ -516,6 +519,7 @@ const archive = [
     makePage('archive/notification-channels.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
+    makePage('archive/using-expo-client.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

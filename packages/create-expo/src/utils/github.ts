@@ -13,7 +13,7 @@ type GitHubRepoInfo = {
 };
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L60-L84
-async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo | undefined> {
+async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
   const [, owner, name, t, branch, ...file] = url.pathname.split('/');
   const filePath = file.join('/');
 
@@ -22,7 +22,13 @@ async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo | undefined>
   if (t === undefined) {
     const response = await fetch(`https://api.github.com/repos/${owner}/${name}`);
     if (!response.ok) {
-      return;
+      // Private or doesn't exist
+      if (response.status === 404) {
+        throw new Error(`GitHub repository not found for url: ${url}`);
+      }
+      throw new Error(
+        `[${response.status}] Failed to fetch GitHub repository information for url: ${url}`
+      );
     }
 
     const info = await response.json();
@@ -33,7 +39,7 @@ async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo | undefined>
     return { owner, name, branch, filePath };
   }
 
-  return undefined;
+  throw new Error('Malformed GitHub repository response for URL: ' + url.toString());
 }
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L86-L91
@@ -87,9 +93,6 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   debug('Looking for GitHub repository');
 
   const info = await getGitHubRepoAsync(repoUrl);
-  if (!info) {
-    throw new Error(`Invalid URL: "${repoUrl}". Only GitHub repositories are supported.`);
-  }
 
   const isValid = await isValidGitHubRepoAsync(info);
   if (!isValid) {

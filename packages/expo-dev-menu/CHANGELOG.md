@@ -4,9 +4,73 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed some dev menu items like "Reload" that are not functional. ([#28578](https://github.com/expo/expo/pull/28578) by [@kudo](https://github.com/kudo))
+- Fixed DevMenu showing up before the app is loaded when using the new architecture. ([#28589](https://github.com/expo/expo/pull/28589) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update Menu background color in dark mode. ([#28549](https://github.com/expo/expo/pull/28549) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.9 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.7 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing header that causes an error when using `JSC`. ([#28492](https://github.com/expo/expo/pull/28492) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.0.6 — 2024-04-25
+
+### 🐛 Bug fixes
+
+- Fix DevMenu Home icon color in dark mode. ([#28442](https://github.com/expo/expo/pull/28442) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.5 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fixed "Missing transform.routerRoot option in Metro bundling request" error when loading the bundle. ([#28428](https://github.com/expo/expo/pull/28428) by [@kudo](https://github.com/kudo))
+
+## 5.0.4 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- [iOS] Fix JS Debugger not using the correct app target. ([#28373](https://github.com/expo/expo/pull/28373) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 5.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Removed configurable `enableAutoSetup` support. ([#28031](https://github.com/expo/expo/pull/28031) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
+
+- [iOS] Add Add bridgeless support for React-Native 0.74. ([#28174](https://github.com/expo/expo/pull/28174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

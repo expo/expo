@@ -2,11 +2,11 @@ package expo.modules.devmenu
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.ReactHostWrapper
 
 object DevMenuAppInfo {
-  fun getAppInfo(instanceManager: ReactInstanceManager, reactContext: ReactContext): Bundle {
+  fun getAppInfo(reactHost: ReactHostWrapper, reactContext: ReactContext): Bundle {
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -36,7 +36,7 @@ object DevMenuAppInfo {
       hostUrl = DevMenuManager.currentManifestURL
     }
 
-    val jsExecutorName = instanceManager.jsExecutorName
+    val jsExecutorName = reactHost.jsExecutorName
     val engine = when {
       jsExecutorName.contains("Hermes") -> "Hermes"
       jsExecutorName.contains("V8") -> "V8"
@@ -61,15 +61,11 @@ object DevMenuAppInfo {
   }
 
   private fun getApplicationIconUri(reactContext: ReactContext): String {
-    var appIcon = ""
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
 
-    if (applicationInfo.icon != null) {
-      appIcon = "" + applicationInfo.icon
-    }
     //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
+    return applicationInfo.icon.toString()
   }
 }

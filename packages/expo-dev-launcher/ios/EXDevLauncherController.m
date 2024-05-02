@@ -598,8 +598,6 @@
 
     [self setDevMenuAppBridge];
 
-    [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
-
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
@@ -641,18 +639,6 @@
     }
     #undef EXPECTED_ROOT_VIEW
   });
-}
-
-/**
- * We need that function to sync the dev-menu user interface with the main application.
- */
-- (void)_ensureUserInterfaceStyleIsInSyncWithTraitEnv:(id<UITraitEnvironment>)env
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
-                                                      object:env
-                                                    userInfo:@{
-                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : env.traitCollection
-                                                    }];
 }
 
 - (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle API_AVAILABLE(ios(12.0))

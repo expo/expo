@@ -39,6 +39,10 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     return self.deferredRootView
   }
 
+  public override func bundleURL(reactDelegate: ExpoReactDelegate) -> URL? {
+    AppController.sharedInstance.launchAssetUrl()
+  }
+
   // MARK: AppControllerDelegate implementations
 
   public func appController(_ appController: AppControllerInterface, didStartWithSuccess success: Bool) {

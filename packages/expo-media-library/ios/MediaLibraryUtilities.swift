@@ -471,7 +471,9 @@ func prepareSortDescriptors(sortBy: [String]) throws -> [NSSortDescriptor] {
 
 private func sortDescriptor(from config: String) throws -> NSSortDescriptor? {
   let parts = config.components(separatedBy: " ")
-  let key = try convertSortByKey(parts[0])
+  guard let key = try convertSortByKey(parts[0]) else {
+    return nil
+  }
 
   var ascending = false
   if parts.count > 1 && parts[1] == "ASC" {

@@ -1,5 +1,10 @@
 package expo.modules.kotlin.defaultmodules
 
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactDelegate
+import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.devsupport.DisabledDevSupportManager
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -49,6 +54,31 @@ class CoreModule : Module() {
         "validAttributes" to validAttributes,
         "directEventTypes" to directEventTypes
       )
+    }
+
+    AsyncFunction("reloadAppAsync") { _: String ->
+      val reactActivity = appContext.currentActivity as? ReactActivity ?: return@AsyncFunction
+
+      // TODO(kudo): Use ReactActivity.getReactDelegate() after react-native 0.74.1
+      // reactActivity.getReactDelegate()
+      val reactActivityDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
+        .apply { isAccessible = true }
+      val reactActivityDelegate = reactActivityDelegateField[reactActivity]
+      val getReactDelegateMethod = reactActivityDelegate.javaClass.getDeclaredMethod("getReactDelegate")
+        .apply { isAccessible = true }
+      val reactDelegate = getReactDelegateMethod.invoke(reactActivityDelegate) as? ReactDelegate
+        ?: return@AsyncFunction
+      if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+        val reactInstanceManager = reactDelegate.reactInstanceManager
+        if (reactInstanceManager.devSupportManager is DisabledDevSupportManager) {
+          UiThreadUtil.runOnUiThread {
+            reactInstanceManager.recreateReactContextInBackground()
+          }
+          return@AsyncFunction
+        }
+      }
+
+      reactDelegate.reload()
     }
   }
 }

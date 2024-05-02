@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
-exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+exports.withXcodeProject = exports.withPodfileProperties = exports.withPodfile = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -173,12 +173,27 @@ const withXcodeProject = (config, action) => {
 };
 
 /**
- * Provides the Podfile.properties.json for modification.
+ * Provides the Podfile for modification.
  *
  * @param config
  * @param action
  */
 exports.withXcodeProject = withXcodeProject;
+const withPodfile = (config, action) => {
+  return (0, _withMod().withMod)(config, {
+    platform: 'ios',
+    mod: 'podfile',
+    action
+  });
+};
+
+/**
+ * Provides the Podfile.properties.json for modification.
+ *
+ * @param config
+ * @param action
+ */
+exports.withPodfile = withPodfile;
 const withPodfileProperties = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',

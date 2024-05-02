@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -192,7 +193,11 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
+  SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
+  SpeechSynthesisUtterance:
+    'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -553,15 +558,14 @@ export const renderTypeOrSignatureType = ({
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
-        {signatures?.map(
-          ({ parameters }) =>
-            parameters?.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}
-                <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-              </span>
-            ))
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}
+              <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+            </span>
+          ))
         )}
         <span className="text-quaternary">{') =>'}</span>{' '}
         {signatures[0].type ? resolveTypeName(signatures[0].type, sdkVersion) : 'void'}
@@ -659,7 +663,12 @@ const getParamTags = (shortText?: string) => {
 
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
-    .map(entry => entry.text)
+    .map(entry => {
+      if (entry.tag === '@link' && !entry.text.includes('/')) {
+        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+      }
+      return entry.text;
+    })
     .join('')
     .trim();
 };

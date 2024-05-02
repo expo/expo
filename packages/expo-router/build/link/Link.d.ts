@@ -5,6 +5,7 @@ import { ExpoRouter } from '../../types/expo-router';
 export declare function Redirect({ href }: {
     href: ExpoRouter.Href;
 }): null;
+export type LinkProps = ExpoRouter.LinkProps;
 export interface LinkComponent {
     (props: React.PropsWithChildren<ExpoRouter.LinkProps>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */

@@ -40,6 +40,15 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     .setIconResId(R.drawable.seek_backwards_10s)
     .build()
 
+  fun setShowNotification(showNotification: Boolean, player: ExoPlayer) {
+    val sessionExtras = mediaSessions[player]?.sessionExtras?.deepCopy() ?: Bundle()
+    sessionExtras.putBoolean(SESSION_SHOW_NOTIFICATION, showNotification)
+    mediaSessions[player]?.let {
+      it.sessionExtras = sessionExtras
+      onUpdateNotification(it, showNotification)
+    }
+  }
+
   fun registerPlayer(player: ExoPlayer) {
     if (mediaSessions[player] != null) {
       return
@@ -71,7 +80,13 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
-    createNotification(session)
+    if (session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, true)) {
+      createNotification(session)
+    } else {
+      (session.player as? ExoPlayer)?.let {
+        hidePlayerNotification(it)
+      }
+    }
   }
 
   override fun onTaskRemoved(rootIntent: Intent?) {
@@ -135,6 +150,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     const val SEEK_FORWARD_COMMAND = "SEEK_FORWARD"
     const val SEEK_BACKWARD_COMMAND = "SEEK_REWIND"
     const val CHANNEL_ID = "PlaybackService"
+    const val SESSION_SHOW_NOTIFICATION = "showNotification"
     const val SEEK_INTERVAL_MS = 10000L
   }
 }

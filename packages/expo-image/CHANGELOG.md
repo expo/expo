@@ -6,21 +6,58 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.12.5 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.4 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531))
+- Fixed SVG assets without viewbox attribute not being rendered on Android. ([#28369](https://github.com/expo/expo/pull/28369) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.2 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed an issue where certain images would not animate at certain sizes on `iOS`. ([#28335](https://github.com/expo/expo/pull/28335) by [@fobos531](https://github.com/fobos531), [#28371](https://github.com/expo/expo/pull/28371) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.12.1 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.0 — 2024-04-18
+
+### 🎉 New features
+
 - On `iOS`, support loading assets in the native project. This already worked on android. ([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 - Support prefetching images with HTTP headers. ([#28133](https://github.com/expo/expo/pull/28133) by [@toy0605](https://github.com/toy0605))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an issue where data URIs caused crashes on iOS16+. ([#28320](https://github.com/expo/expo/pull/28320) by [@aleqsio](https://github.com/aleqsio))
 - Refactor web implementations of `useSourceSelection` to avoid unnecessary rerenders. ([#27569](https://github.com/expo/expo/pull/27569) by [@aleqsio](https://github.com/aleqsio))
 - Fixed an issue where `isBlurhashString` always returned `true` .([#27251](https://github.com/expo/expo/pull/27251) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix #available check to account for tvOS. ([#27272](https://github.com/expo/expo/pull/27272) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed jest may cause `RangeError: Invalid string length` error when generating a snapshot. ([#27354](https://github.com/expo/expo/pull/27354) by [@lukmccall](https://github.com/lukmccall))
+- Fixed placeholders weren't correctly scaled down on the Android. ([#28255](https://github.com/expo/expo/pull/28255) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - [iOS] Bump SDWebImage to `5.19.1` to include the 3rd-party privacy manifest. ([#27874](https://github.com/expo/expo/pull/27874) by [@aparedes](https://github.com/aparedes), []() by [@tsapeta](https://github.com/tsapeta))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- [iOS] Bump SDWebImageWebPCoder to `0.14.6`. ([#28273](https://github.com/expo/expo/pull/28273) by [@alanjhughes](https://github.com/alanjhughes))
+- Automatically clean blurhash cache when the app's memory is running low. ([#28276](https://github.com/expo/expo/pull/28276) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.11.0 — 2024-02-05
 

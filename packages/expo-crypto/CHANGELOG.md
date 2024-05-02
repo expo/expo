@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
-- Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.2 — 2024-04-24
+
+### 💡 Others
+
+- Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

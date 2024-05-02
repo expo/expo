@@ -18,6 +18,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoCoreModuleScreen'));
+    },
+    name: 'ExpoCoreModule',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/StatusBarScreen'));
     },
     name: 'StatusBar',
@@ -318,12 +324,6 @@ export const Screens = [
     },
     name: 'Recording',
     options: { title: 'Audio Recording' },
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/RandomScreen'));
-    },
-    name: 'Random',
   },
   {
     getComponent() {

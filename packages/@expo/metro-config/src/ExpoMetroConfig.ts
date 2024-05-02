@@ -188,7 +188,9 @@ export function getDefaultConfig(
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.
-          ['heic', 'avif']
+          ['heic', 'avif'],
+          // Add default support for `expo-sqlite` file types.
+          ['db']
         )
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,

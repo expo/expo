@@ -1,22 +1,31 @@
 'use client';
 
-import { NavigationAction } from '@react-navigation/native';
+import { LinkingOptions, NavigationAction } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
-import React, { type PropsWithChildren, Fragment, type ComponentType } from 'react';
+import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
-import { ServerLocationContext } from './global-state/serverLocationContext';
+import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
 import { SplashScreen } from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
-  location?: URL;
+  location?: URL | string;
   wrapper?: ComponentType<PropsWithChildren>;
+  linking?: Partial<ExpoLinkingOptions>;
+};
+
+export type NativeIntent = {
+  redirectSystemPath?: (event: {
+    path: string | null;
+    initial: boolean;
+  }) => Promise<string | null | undefined> | string | null | undefined;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -65,8 +74,47 @@ function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
+  linking = {},
 }: ExpoRootProps) {
-  const store = useInitializeExpoRouter(context, initialLocation);
+  // location and linking.getInitialURL are both used to initialize the router state
+  //  - location is used on web and during static rendering
+  //  - linking.getInitialURL is used on native
+  const serverContext = useMemo(() => {
+    let contextType: ServerContextType = {};
+
+    if (initialLocation instanceof URL) {
+      contextType = {
+        location: {
+          pathname: initialLocation.pathname,
+          search: initialLocation.search,
+        },
+      };
+    } else if (typeof initialLocation === 'string') {
+      // The initial location is a string, so we need to parse it into a URL.
+      const url = new URL(initialLocation, 'http://placeholder.base');
+      contextType = {
+        location: {
+          pathname: url.pathname,
+          search: url.search,
+        },
+      };
+    }
+
+    return contextType;
+  }, []);
+
+  /*
+   * The serverUrl is an initial URL used in server rendering environments.
+   * e.g Static renders, units tests, etc
+   */
+  const serverUrl = serverContext.location
+    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    : undefined;
+
+  const store = useInitializeExpoRouter(context, {
+    ...linking,
+    serverUrl,
+  });
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
@@ -89,16 +137,16 @@ function ContextNavigator({
     <UpstreamNavigationContainer
       ref={store.navigationRef}
       initialState={store.initialState}
-      linking={store.linking}
+      linking={store.linking as LinkingOptions<any>}
       onUnhandledAction={onUnhandledAction}
       documentTitle={{
         enabled: false,
       }}>
-      <ServerLocationContext.Provider value={initialLocation}>
+      <ServerContext.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </ServerLocationContext.Provider>
+      </ServerContext.Provider>
     </UpstreamNavigationContainer>
   );
 }

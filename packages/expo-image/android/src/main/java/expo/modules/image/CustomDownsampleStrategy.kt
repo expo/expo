@@ -44,6 +44,25 @@ object NoopDownsampleStrategy : DownsampleStrategy() {
   ): SampleSizeRounding = SampleSizeRounding.QUALITY
 }
 
+class PlaceholderDownsampleStrategy(
+  private val target: ImageViewWrapperTarget
+) : CustomDownsampleStrategy() {
+  private var wasTriggered = false
+
+  override fun getScaleFactor(sourceWidth: Int, sourceHeight: Int, requestedWidth: Int, requestedHeight: Int): Float {
+    if (!wasTriggered) {
+      target.placeholderWidth = sourceWidth
+      target.placeholderHeight = sourceHeight
+      wasTriggered = true
+    }
+    return 1f
+  }
+
+  override fun getSampleSizeRounding(sourceWidth: Int, sourceHeight: Int, requestedWidth: Int, requestedHeight: Int): SampleSizeRounding {
+    return SampleSizeRounding.QUALITY
+  }
+}
+
 class ContentFitDownsampleStrategy(
   private val target: ImageViewWrapperTarget,
   private val contentFit: ContentFit

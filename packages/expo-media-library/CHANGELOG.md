@@ -6,10 +6,34 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.0.3 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed promise resolved twice on denied permission. ([#28323](https://github.com/expo/expo/pull/28323) by [@mathieupost](https://github.com/mathieupost))
+
+## 16.0.1 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- [Android] Add support for allowing access permissions to only selected photos. ([#27749](https://github.com/expo/expo/pull/27749) by [@behenate](https://github.com/behenate))
 - [Android] Add support for granular permissions. ([#27729](https://github.com/expo/expo/pull/27729) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash when passing `default` as sorting key. ([#28328](https://github.com/expo/expo/pull/28328) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fixed crash on denied permission to modify assets. ([#28212](https://github.com/expo/expo/pull/28212) by [@mathieupost](https://github.com/mathieupost))
 
 ### 💡 Others
@@ -19,6 +43,7 @@
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Migrate to expo modules. ([#25587](https://github.com/expo/expo/pull/25587) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- The `ACCESS_MEDIA_LOCATION` Android permission should not pulled into by default and should be pulled through Config Plugins. ([#28230](https://github.com/expo/expo/pull/28230) by [@kudo](https://github.com/kudo))
 
 ## 15.9.1 - 2023-12-19
 

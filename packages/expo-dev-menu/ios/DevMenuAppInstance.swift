@@ -13,13 +13,14 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     self.manager = manager
 
     super.init()
-    self.createBridgeAndSetAdapter(launchOptions: nil)
+    super.initRootViewFactory()
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
     self.manager = manager
 
     super.init()
+    super.initRootViewFactory()
     self.rootViewFactory.bridge = bridge
   }
 

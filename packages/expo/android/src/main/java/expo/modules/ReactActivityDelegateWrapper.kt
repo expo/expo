@@ -61,6 +61,10 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("createRootView")
   }
 
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
+  }
+
   override fun getReactNativeHost(): ReactNativeHost {
     return _reactNativeHost
   }
@@ -90,7 +94,9 @@ class ReactActivityDelegateWrapper(
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
       reactDelegate.loadApp(appKey)
-      rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      val reactRootView = reactDelegate.reactRootView
+      (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
+      rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onContentChanged(activity)

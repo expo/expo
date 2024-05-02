@@ -50,8 +50,8 @@ export default [
     enum: ['app-bundle', 'apk'],
     description: [
       'Type of the artifact you want to build. It controls which Gradle task will be used to build the project. It can be overridden by `gradleCommand` or `developmentClient: true` option.',
-      ' - `app-bundle` - `:app:bundleRelease`',
-      ' - `apk` - `:app:assembleRelease`',
+      ' - `app-bundle` - `:app:bundleRelease` (creates **.aab** artifact)',
+      ' - `apk` - `:app:assembleRelease` (creates **.apk** artifact)',
     ],
   },
   {

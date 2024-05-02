@@ -61,6 +61,9 @@ export interface ExpoUpdatesModule
     | UpdateFetchResultFailure
     | UpdateFetchResultRollBackToEmbedded
   >;
+  /**
+   * @hidden
+   */
   getNativeStateMachineContextAsync: () => Promise<
     UpdatesNativeStateMachineContext & {
       latestManifestString?: string;

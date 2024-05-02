@@ -19,12 +19,18 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Boolean value whether the player is currently muted.
+   * Setting this property to `true`/`false` will mute/unmute the player.
    * @default false
    */
   muted: boolean;
 
   /**
-   * Integer value representing the current position in seconds.
+   * Float value indicating the current playback time in seconds.
+   *
+   * If the player is not yet playing, this value indicates the time position
+   * at which playback will begin once the `play()` method is called.
+   *
+   * Setting `currentTime` to a new value seeks the player to the given time.
    */
   currentTime: number;
 
@@ -58,12 +64,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   status: VideoPlayerStatus;
 
   /**
+   * Boolean value determining whether the player should show the now playing notification.
+   */
+  showNowPlayingNotification: boolean;
+
+  /**
    * Determines whether the player should continue playing after the app enters the background.
    * @default false
    * @platform ios
    * @platform android
    */
   staysActiveInBackground: boolean;
+
+  /**
+   * Initializes a new video player instance with the given source.
+   * @hidden
+   */
+  constructor(source: VideoSource);
 
   /**
    * Resumes the player.
@@ -188,7 +205,7 @@ export interface VideoViewProps extends ViewProps {
 
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
- * */
+ */
 export type DRMType = 'clearkey' | 'fairplay' | 'playready' | 'widevine';
 
 /**
@@ -229,7 +246,24 @@ export type DRMOptions = {
   certificateUrl?: string;
 };
 
-export type VideoSource = string | { uri: string; drm?: DRMOptions } | null;
+export type VideoSource =
+  | string
+  | {
+      /**
+       * The URI of the video.
+       */
+      uri: string;
+      /**
+       * Specifies the DRM options which will be used by the player while loading the video.
+       */
+      drm?: DRMOptions;
+      /**
+       * Specifies information which will be displayed in the now playing notification.
+       * When undefined the player will display information contained in the video metadata.
+       */
+      metadata?: VideoMetadata;
+    }
+  | null;
 
 /**
  * Handlers for events which can be emitted by the player.
@@ -238,31 +272,31 @@ export type VideoPlayerEvents = {
   /**
    * Handler for an event emitted when the status of the player changes.
    */
-  statusChange: (
+  statusChange(
     newStatus: VideoPlayerStatus,
     oldStatus: VideoPlayerStatus,
     error: PlayerError
-  ) => void;
+  ): void;
   /**
    * Handler for an event emitted when the player starts or stops playback.
    */
-  playingChange: (newIsPlaying: boolean, oldIsPlaying: boolean) => void;
+  playingChange(newIsPlaying: boolean, oldIsPlaying: boolean): void;
   /**
    * Handler for an event emitted when the `playbackRate` property of the player changes.
    */
-  playbackRateChange: (newPlaybackRate: number, oldPlaybackRate: number) => void;
+  playbackRateChange(newPlaybackRate: number, oldPlaybackRate: number): void;
   /**
    * Handler for an event emitted when the `volume` property of the player changes.
    */
-  volumeChange: (newVolume: VolumeEvent, oldVolume: VolumeEvent) => void;
+  volumeChange(newVolume: VolumeEvent, oldVolume: VolumeEvent): void;
   /**
    * Handler for an event emitted when the player plays to the end of the current source.
    */
-  playToEnd: () => void;
+  playToEnd(): void;
   /**
    * Handler for an event emitted when the current media source of the player changes.
    */
-  sourceChange: (newSource: VideoSource, previousSource: VideoSource) => void;
+  sourceChange(newSource: VideoSource, previousSource: VideoSource): void;
 };
 
 /**
@@ -278,4 +312,18 @@ export type PlayerError = {
 export type VolumeEvent = {
   volume: number;
   isMuted: boolean;
+};
+
+/**
+ * Contains information that will be displayed in the now playing notification when the video is playing.
+ */
+export type VideoMetadata = {
+  /**
+   * The title of the video.
+   */
+  title?: string;
+  /**
+   * Secondary text that will be displayed under the title.
+   */
+  artist?: string;
 };

@@ -18,7 +18,7 @@ struct WebBrowserOptions: Record {
 
   @Field
   var controlsColor: UIColor?
-  
+
   // Defaults to .overFullScreen to keep backwards compatibility
   @Field
   var presentationStyle: PresentationStyle = .overFullScreen

@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26048](https://github.com/expo/expo/pull/26048) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.14.1 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Remove classic updates. ([#26036](https://github.com/expo/expo/pull/26036), [#26048](https://github.com/expo/expo/pull/26048) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

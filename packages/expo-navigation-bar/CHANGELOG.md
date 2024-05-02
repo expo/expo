@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 3.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fix event listeners on Android. ([#28260](https://github.com/expo/expo/pull/28260) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
 - Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 

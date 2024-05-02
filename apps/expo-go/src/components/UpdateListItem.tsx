@@ -2,13 +2,14 @@ import { UpdateIcon, iconSize, ChevronDownIcon } from '@expo/styleguide-native';
 import format from 'date-fns/format';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
-import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BranchDetailsQuery } from 'src/graphql/types';
+import {
+  isUpdateCompatibleWithThisExpoGo,
+  openUpdateManifestPermalink,
+} from 'src/utils/UpdateUtils';
 
 import { DateFormats } from '../constants/DateFormats';
-import * as Kernel from '../kernel/Kernel';
-import * as UrlUtils from '../utils/UrlUtils';
 
 type Props = {
   update: NonNullable<BranchDetailsQuery['app']['byId']['updateBranchByName']>['updates'][0];
@@ -17,15 +18,14 @@ type Props = {
 };
 
 export function UpdateListItem({ update, first, last }: Props) {
-  const { id, message, createdAt, manifestPermalink, expoGoSDKVersion } = update;
+  const { id, message, createdAt } = update;
 
-  const isCompatibleWithThisExpoGo =
-    !!expoGoSDKVersion && Kernel.sdkVersionsArray.includes(expoGoSDKVersion);
+  const isCompatibleWithThisExpoGo = isUpdateCompatibleWithThisExpoGo(update);
 
   const theme = useExpoTheme();
 
   const handlePress = () => {
-    Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(manifestPermalink)));
+    openUpdateManifestPermalink(update);
   };
 
   return (

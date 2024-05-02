@@ -118,13 +118,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         const clientId = config[propertyName] ?? config.clientId;
         invariantClientId(propertyName, clientId, 'Google');
         return clientId;
-    }, [
-        config.expoClientId,
-        config.iosClientId,
-        config.androidClientId,
-        config.webClientId,
-        config.clientId,
-    ]);
+    }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
     const responseType = useMemo(() => {
         // Allow overrides.
         if (typeof config.responseType !== 'undefined') {

@@ -4,6 +4,53 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.12.6 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- [Android] Fix `field operation on NULL object` when reloading the app. ([#28555](https://github.com/expo/expo/pull/28555) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.5 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.4 — 2024-04-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed gziped payload does not correctly shown in network inspector. ([#28486](https://github.com/expo/expo/pull/28486) by [@kudo](https://github.com/kudo))
+- [Android] Fixed crashes during the deallocation of shared objects. ([#28491](https://github.com/expo/expo/pull/28491) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix accessing the view registry to avoid infinite loop crash. ([#28531](https://github.com/expo/expo/pull/28531) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.12.3 — 2024-04-26
+
+### 🐛 Bug fixes
+
+- [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.1 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed `AppContext.onHostResume()` sometimes getting null `currentActivity` on Android. ([#28338](https://github.com/expo/expo/pull/28338) by [@kudo](https://github.com/kudo))
+- Fixed backward compatibility in the **build.gradle** from third party Expo modules. ([#28359](https://github.com/expo/expo/pull/28359) by [@kudo](https://github.com/kudo))
+
+## 1.12.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Removed `ReactNativeHostHandler.onRegisterJSIModules` interface. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
 - Dropped supports for React Native 0.73 and lower. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689), [#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
 
@@ -40,6 +87,8 @@
 - Fixed `ExpoBridgeModule.installModules()` is broken on Android and bridgeless mode. ([#28065](https://github.com/expo/expo/pull/28065) by [@kudo](https://github.com/kudo))
 - [Android] Fixed segfaults in `expo::MethodMetadata::convertJSIArgsToJNI`. ([#28163](https://github.com/expo/expo/pull/28163) by [@lukmccall](https://github.com/lukmccall))
 - Fixed random `TypeError: Cannot read property 'NativeModule' of undefined` exceptions on Android. ([#28200](https://github.com/expo/expo/pull/28200) by [@kudo](https://github.com/kudo))
+- Fixed white screen flickering when using expo-updates with longer `fallbackToCacheTimeout`. ([#28227](https://github.com/expo/expo/pull/28227) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed random crashes when reloads and `EXJavaScriptObject` accesses to dangling pointers. ([#28262](https://github.com/expo/expo/pull/28262) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -61,6 +110,8 @@
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
 - Introduced `onDidCreateDevSupportManager` handler to support error recovery from expo-updates. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+- Dropped support for custom type converters on Android. ([#28252](https://github.com/expo/expo/pull/28252) by [@lukmccall](https://github.com/lukmccall))
+- Introduced `ExpoReactDelegateHandler.bundleURL` for clients to override newer bundleURL. ([#28256](https://github.com/expo/expo/pull/28256) by [@kudo](https://github.com/kudo))
 
 ## 1.11.11 - 2024-03-11
 

@@ -36,6 +36,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       { name: 'quality', type: 'number', values: [0, 0.2, 0.7, 1.0] },
       { name: 'exif', type: 'boolean', initial: false },
       { name: 'base64', type: 'boolean', initial: false },
+      { name: 'legacy', type: 'boolean', initial: false },
       {
         name: 'videoExportPreset',
         type: 'enum',

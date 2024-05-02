@@ -587,7 +587,7 @@ describe('serializes', () => {
   async function serializeSplitAsync(fs: Record<string, string>) {
     return await serializeTo({
       fs,
-      options: { platform: 'web', dev: false, output: 'static' },
+      options: { platform: 'web', dev: false, output: 'static', splitChunks: true },
     });
   }
 

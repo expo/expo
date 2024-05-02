@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 9.0.1 — 2024-04-24
+
+### 🎉 New features
+
+- Added warning when extraneous top-level keys are ignored in the final config. ([#28399](https://github.com/expo/expo/pull/28399) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.0-beta.0 — 2024-04-17
+
 ### 📚 3rd party library updates
 
 - update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))

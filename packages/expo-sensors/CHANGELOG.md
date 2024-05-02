@@ -8,7 +8,32 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.3 — 2024-04-24
+
+### 💡 Others
+
+- Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+
+## 13.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - Prevent unnecessary permissions check when moving app to background (Would crash with certain configs). ([#28045](https://github.com/expo/expo/pull/28045) by [@cltnschlosser](https://github.com/cltnschlosser))
+- Fix barometer updates not starting on iOS 17.4. ([#28253](https://github.com/expo/expo/pull/28253) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

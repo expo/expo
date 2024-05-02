@@ -4,6 +4,64 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 51.0.0-preview.10 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.9 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.8 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.7 — 2024-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.6 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.5 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.4 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.0-preview.0 — 2024-04-19
+
+### 💡 Others
+
+- Updated for dev-client bridgeless mode support. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 51.0.0-beta.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
 - Dropped supports for React Native 0.73 and lower. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689), [#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features

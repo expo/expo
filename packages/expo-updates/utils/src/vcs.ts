@@ -10,7 +10,7 @@ export interface Client {
 }
 
 export default async function getVCSClientAsync(projectDir: string): Promise<Client> {
-  if (await isGitInstalledAsync()) {
+  if (await isGitInstalledAndConfiguredAsync()) {
     return new GitClient();
   } else {
     return new NoVCSClient(projectDir);
@@ -48,7 +48,7 @@ class NoVCSClient implements Client {
   }
 }
 
-async function isGitInstalledAsync(): Promise<boolean> {
+async function isGitInstalledAndConfiguredAsync(): Promise<boolean> {
   try {
     await spawnAsync('git', ['--help']);
   } catch (error: any) {
@@ -57,6 +57,13 @@ async function isGitInstalledAsync(): Promise<boolean> {
     }
     throw error;
   }
+
+  try {
+    await spawnAsync('git', ['rev-parse', '--show-toplevel']);
+  } catch {
+    return false;
+  }
+
   return true;
 }
 

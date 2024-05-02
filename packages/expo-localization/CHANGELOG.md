@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 15.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
 

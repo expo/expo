@@ -12,6 +12,8 @@ export const generateFingerprint: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--platform': String,
+      '--workflow': String,
+      '--debug': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -29,6 +31,8 @@ Generate fingerprint for use in expo-updates runtime version
 
   Options
   --platform <string>                  Platform to generate a fingerprint for
+  --workflow <string>                  Workflow to use for fingerprint generation, and auto-detected if not provided
+  --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,
       0
@@ -45,12 +49,21 @@ Generate fingerprint for use in expo-updates runtime version
     throw new CommandError(`Invalid platform argument: ${platform}`);
   }
 
+  const workflowArg = args['--workflow'];
+  if (workflowArg && !['generic', 'managed'].includes(workflowArg)) {
+    throw new CommandError(
+      `Invalid workflow argument: ${workflowArg}. Must be either 'managed' or 'generic'`
+    );
+  }
+
+  const debug = args['--debug'];
+
   const projectRoot = getProjectRoot(args);
 
   let result;
   try {
-    const workflow = await resolveWorkflowAsync(projectRoot, platform);
-    result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true });
+    const workflow = workflowArg ?? (await resolveWorkflowAsync(projectRoot, platform));
+    result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true, debug });
   } catch (e: any) {
     throw new CommandError(e.message);
   }

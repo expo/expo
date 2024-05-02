@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 6.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 💡 Others
+
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 5.7.1 - 2023-12-19

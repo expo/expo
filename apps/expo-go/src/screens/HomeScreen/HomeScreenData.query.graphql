@@ -1,4 +1,4 @@
-query HomeScreenData($accountName: String!) {
+query HomeScreenData($accountName: String!, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id

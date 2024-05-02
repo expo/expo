@@ -29,6 +29,7 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { logEventAsync } from '../../../utils/telemetry';
@@ -180,7 +181,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     // getBuiltTimeServerManifest
+    const { exp } = getConfig(this.projectRoot);
     const manifest = await fetchManifest(this.projectRoot, {
+      ...exp.extra?.router?.platformRoutes,
       asJson: true,
       appDir,
     });
@@ -202,7 +205,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }> {
     const { mode, minify, isExporting } = this.instanceMetroOptions;
     assert(
-      mode != null && minify != null && isExporting != null,
+      mode != null && isExporting != null,
       'The server must be started before calling ssrLoadModule.'
     );
 
@@ -218,10 +221,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       );
 
+    const { exp } = getConfig(this.projectRoot);
+
     return {
       serverManifest: await getBuildTimeServerManifestAsync(),
       // Get routes from Expo Router.
-      manifest: await getManifest({ preserveApiRoutes: false }),
+      manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function
       async renderAsync(path: string) {
         return await getStaticContent(new URL(path, url));
@@ -240,7 +245,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.instanceMetroOptions;
     assert(
       mode != null &&
-        minify != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
@@ -251,6 +255,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const devBundleUrlPathname = createBundleUrlPath({
+      splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
       minify,
@@ -326,11 +331,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
     assert(
       mode != null &&
-        minify != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
@@ -340,6 +343,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const devBundleUrlPathname = createBundleUrlPath({
+      splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
       environment: 'client',
@@ -574,6 +578,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             appDir,
             routerRoot,
             config,
+            ...config.exp.extra?.router,
             bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname);

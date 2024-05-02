@@ -6,6 +6,46 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.6 — 2024-05-01
+
+### 🎉 New features
+
+- [Android] Add support for customizing the now playing notification. ([#28390](https://github.com/expo/expo/pull/28390) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Improve audio focus management. ([#28453](https://github.com/expo/expo/pull/28453) by [@behenate](https://github.com/behenate))
+
+## 1.1.5 — 2024-04-26
+
+### 🎉 New features
+
+- [iOS] Add support for customizing the now playing notification. ([#28386](https://github.com/expo/expo/pull/28386) by [@behenate](https://github.com/behenate))
+
+## 1.1.4 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.2 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2024-04-18
+
+### 🎉 New features
+
 - Create a docs page. ([#27854](https://github.com/expo/expo/pull/27854) by [@behenate](https://github.com/behenate))
 - Add support for events on Android and iOS. ([#27632](https://github.com/expo/expo/pull/27632) by [@behenate](https://github.com/behenate))
 - Add support for `loop`, `playbackRate`, `preservesPitch` and `currentTime` properties. ([#27367](https://github.com/expo/expo/pull/27367) by [@behenate](https://github.com/behenate))

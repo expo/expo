@@ -26,7 +26,6 @@ type Props = {
   packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
 
@@ -105,7 +104,6 @@ const renderAPI = (
   {
     packageName,
     apiName,
-    strictTypes = false,
     testRequire = undefined,
     headersMapping = {},
     ...restProps
@@ -164,8 +162,7 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
@@ -217,16 +214,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 

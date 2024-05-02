@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 0.16.1 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.0 — 2024-04-18
+
+### 💡 Others
+
 - Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
 - Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))

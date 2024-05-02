@@ -6,6 +6,36 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.3 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fix `TypeError: (0, _ExpoAsset.downloadAsync) is not a function` when loading assets using Expo Web. ([#28405](https://github.com/expo/expo/pull/28405) by [@jamiees2](https://github.com/jamiees2))
+
+### 💡 Others
+
+- Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+
+## 10.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2024-04-18
+
+### 🎉 New features
+
 - Added config plugin to allow assets to be linked at build time. ([#27052](https://github.com/expo/expo/pull/27052) by [@alanjhughes](https://github.com/alanjhughes))
 - Add Apple TV support to the new iOS native module. ([#27823](https://github.com/expo/expo/pull/27823) by [@douglowder](https://github.com/douglowder))
 
