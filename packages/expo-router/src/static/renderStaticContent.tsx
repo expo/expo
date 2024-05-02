@@ -110,17 +110,11 @@ export async function getStaticContent(location: URL): Promise<string> {
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const stream = await ReactDOMServer.renderToStaticNodeStream(
+  const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
       <ServerContainer ref={ref}>{element}</ServerContainer>
     </Head.Provider>
   );
-
-  let html = '';
-
-  for await (const chunk of stream) {
-    html += chunk;
-  }
 
   // Eval the CSS after the HTML is rendered so that the CSS is in the same order
   const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
