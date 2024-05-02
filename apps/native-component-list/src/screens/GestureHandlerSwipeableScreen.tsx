@@ -36,6 +36,8 @@ export default function GestureHandlerSwipeableScreen() {
     <FlatList
       data={DATA}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      // @ts-expect-error: regression in RNGH typings?
+      // Type 'ListRenderItemInfo<unknown>' is not assignable to type '{ item: Item; index: number; }'.
       renderItem={({ item, index }: { item: Item; index: number }) => (
         <SwipeableRow item={item} index={index} />
       )}
@@ -43,6 +45,7 @@ export default function GestureHandlerSwipeableScreen() {
     />
   );
 }
+
 
 GestureHandlerSwipeableScreen.navigationOptions = {
   title: 'Swipeable Rows',
