@@ -42,7 +42,7 @@
     "cross-spawn": "^7.0.3",
     "debug": "^4.3.4",
     "download-tarball": "^2.0.0",
-    "ejs": "^3.1.7",
+    "ejs": "^3.1.10",
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
     "getenv": "^1.0.0",
