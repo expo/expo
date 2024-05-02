@@ -69,7 +69,7 @@ internal class InspectorPackagerConnectionWrapper {
 
   fun sendWrappedEventToAllPages(reactInstanceManager: ReactInstanceManager, event: String) {
     val devServerHelper = devServerHelperField[reactInstanceManager.devSupportManager]
-    val inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? InspectorPackagerConnection
+    val inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? InspectorPackagerConnection ?: return
     for (page in Inspector.getPages()) {
       if (!page.title.contains("Reanimated")) {
         sendWrappedEventMethod.invoke(inspectorPackagerConnection, page.id.toString(), event)
