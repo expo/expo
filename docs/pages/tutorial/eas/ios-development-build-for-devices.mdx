@@ -8,8 +8,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 In this chapter, we're going to create our development build for iOS devices with EAS Build.
 
@@ -209,17 +208,11 @@ Start the development server by running the `npx expo start` command from the pr
 
 ## Summary
 
-In this chapter, we:
-
-- Learned about prerequisites for generating a development build for iOS devices and steps to create a provisioning profile with EAS CLI.
-- Created and triggered a cloud build using EAS Build for iOS devices.
-- Explored various approaches for installing and launching development builds on iOS devices.
-
-## Next step
-
-<BoxLink
-  title="Create and run a cloud build for iOS device"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
-  href="/tutorial/eas/ios-development-build-for-devices/"
+<ProgressTracker
+  currentChapterIndex={3}
+  name="EAS_TUTORIAL"
+  summary="We successfully used EAS Build to create and deploy development builds on iOS devices."
+  nextChapterDescription="In the next chapter, learn how to configure our app config to install multiple app variants on a single device."
+  nextChapterTitle="Configure multiple app variants"
+  nextChapterLink="/tutorial/eas/multiple-app-variants/"
 />

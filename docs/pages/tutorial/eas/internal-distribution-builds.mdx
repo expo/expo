@@ -10,8 +10,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 In this chapter, we're going to learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution). Creating an internal build is quite similar to creating a development build. The difference is that you don't need to run the development server locally for it to work.
 
@@ -174,18 +173,11 @@ Since we have set up multiple app variants, we can see both the development and 
 
 ## Summary
 
-In this chapter, we:
-
-- Configured and created internal distribution builds for both Android and iOS.
-- Used ad hoc provisioning profiles for registering multiple iOS devices.
-- Installed preview builds using shareable links.
-- Learned that development and preview builds of the same app can exist simultaneously on one device using multiple variants.
-
-## Next step
-
-<BoxLink
-  title="Manage different app versions"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, learn about developer-facing and user-facing app versions and how to manage them automatically."
-  href="/tutorial/eas/manage-app-versions/"
+<ProgressTracker
+  currentChapterIndex={5}
+  name="EAS_TUTORIAL"
+  summary="We successfully created internal distribution builds for Android and iOS, used ad hoc provisioning for iOS, and installed multiple app variants using shareable links."
+  nextChapterDescription="In the next chapter, learn about developer-facing and user-facing app versions and how to manage them automatically."
+  nextChapterTitle="Manage different app versions"
+  nextChapterLink="/tutorial/eas/manage-app-versions/"
 />

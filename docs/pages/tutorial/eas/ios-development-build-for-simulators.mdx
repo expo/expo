@@ -8,8 +8,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 In this chapter, let's create our development build for iOS Simulators with EAS Build.
 
@@ -136,16 +135,11 @@ Press <kbd>i</kbd> in the terminal window to open the project on the iOS Simulat
 
 ## Summary
 
-In this chapter, we:
-
-- Created and triggered a cloud build using EAS Build for iOS Simulators.
-- Explored various approaches for installing and launching development builds on iOS Simulators.
-
-## Next step
-
-<BoxLink
-  title="Configure multiple app variants"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, learn how to configure our app config to install multiple app variants on a single device."
-  href="/tutorial/eas/multiple-app-variants/"
+<ProgressTracker
+  currentChapterIndex={2}
+  name="EAS_TUTORIAL"
+  summary="We successfully used EAS Build to create and deploy development builds on iOS Simulators."
+  nextChapterDescription="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
+  nextChapterTitle="Create and run a cloud build for iOS device"
+  nextChapterLink="/tutorial/eas/ios-development-build-for-devices/"
 />

@@ -4,8 +4,7 @@ sidebar_title: Manage app versions
 description: Learn about developer-facing and user-facing app versions and how to manage them automatically.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 In this chapter, we're going to configure our app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next few chapters.
 
@@ -70,15 +69,17 @@ When we create a new production build in the next chapter, the `versionCode` or 
 
 ## Summary
 
-In this chapter, we:
-
-- Learned the difference between developer-facing (`android.versionCode` and `ios.buildNumber`) and user-facing (`version`) app version values.
-- Identified the importance of unique app versions to avoid app store rejections.
-- Updated **eas.json** to automatically increment developer-facing versions for production builds, using a remote version source for developer convenience.
-
-<BoxLink
-  title="Create a production build for Android"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, learn about the process of creating a production build for Android."
-  href="/tutorial/eas/android-production-build/"
+<ProgressTracker
+  currentChapterIndex={6}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully explored app versioning differences, addressed the importance of unique
+      versions to prevent store rejections, and enabled automated version updates in{' '}
+      <strong>eas.json</strong> for production.
+    </>
+  }
+  nextChapterDescription="In the next chapter, learn about the process of creating a production build for Android."
+  nextChapterTitle="Create a production build for Android"
+  nextChapterLink="/tutorial/eas/android-production-build/"
 />

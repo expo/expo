@@ -8,8 +8,8 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { CODE } from '~/ui/components/Text';
 
 In this chapter, we're going to create our app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
 
@@ -301,18 +301,18 @@ For future releases, we can streamline the process by combining build creation a
 
 ## Summary
 
-In this chapter, we:
-
-- Created a production-ready Android build for our project.
-- Manually uploaded the app binary (`.aab`).
-- Learned about automating the process of building and submitting to the Google Play Store Console with Google Service Account credentials and `eas submit`.
-- Learned about automating the release process using the `--auto-submit` flag with `eas build`.
-
-## Next step
-
-<BoxLink
-  title="Create a production build for iOS"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, learn about the process of creating a production build for iOS."
-  href="/tutorial/eas/ios-production-build/"
+<ProgressTracker
+  currentChapterIndex={7}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully created a production-ready Android build, discussed manual and automated
+      uploading to Google Play Store using <CODE>eas submit</CODE>, and automated the release
+      process with the <CODE>--auto-submit</CODE> flag.
+    </>
+  }
+  nextChapterDescription="
+In the next chapter, learn about the process of creating a production build for iOS."
+  nextChapterTitle="Create a production build for iOS"
+  nextChapterLink="/tutorial/eas/ios-production-build/"
 />
