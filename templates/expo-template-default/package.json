@@ -1,7 +1,7 @@
 {
   "name": "expo-template-default",
   "main": "expo-router/entry",
-  "version": "51.0.14",
+  "version": "51.0.15",
   "scripts": {
     "start": "expo start",
     "reset-project": "./scripts/reset-project.js",
@@ -17,14 +17,14 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/native": "^6.0.2",
-    "expo": "~51.0.0-preview.10",
+    "expo": "~51.0.0-preview.11",
     "expo-constants": "~16.0.1",
     "expo-font": "~12.0.4",
     "expo-linking": "~6.3.1",
-    "expo-router": "~3.5.6",
+    "expo-router": "~3.5.7",
     "expo-splash-screen": "~0.27.3",
     "expo-status-bar": "~1.12.1",
-    "expo-system-ui": "~3.0.3",
+    "expo-system-ui": "~3.0.4",
     "expo-web-browser": "~13.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
