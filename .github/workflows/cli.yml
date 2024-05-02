@@ -106,8 +106,6 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-      - name: Install Playwright Browsers
-        run: bun playwright install --with-deps
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -116,13 +114,15 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Install Playwright Browsers
+        run: bun playwright install --with-deps
+        working-directory: packages/@expo/cli
       - name: E2E (playwright) Test CLI
         run: yarn test:playwright
         working-directory: packages/@expo/cli
       - uses: actions/upload-artifact@v3
         if: always()
-        working-directory: packages/@expo/cli
         with:
           name: playwright-report
-          path: playwright-report/
+          path: packages/@expo/cli/playwright-report/
           retention-days: 30
