@@ -1401,7 +1401,7 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.5.2):
     - React-Core
-  - react-native-skia (1.2.1):
+  - react-native-skia (1.2.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1705,7 +1705,7 @@ PODS:
     - React-Core
   - RNFlashList (1.6.4):
     - React-Core
-  - RNGestureHandler (2.16.0):
+  - RNGestureHandler (2.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1747,7 +1747,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.31.0-rc.1):
+  - RNScreens (3.31.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1763,6 +1763,7 @@ PODS:
     - React-ImageManager
     - React-NativeModulesApple
     - React-RCTFabric
+    - React-RCTImage
     - React-rendererdebug
     - React-utils
     - ReactCommon/turbomodule/bridging
@@ -2442,7 +2443,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: c1e29e1a6105a02807392ba822ad322447a72f55
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
-  react-native-skia: 4db83b2d44c0869de99b7bd00cf55b1235215224
+  react-native-skia: 80282ed176572d97f6abe128ddcb567e0c33fe93
   react-native-slider: ce295d2bf830a7990af05b0bd70ab28c133e230c
   react-native-webview: 05bae3a03a1e4f59568dfc05286c0ebf8954106c
   React-nativeconfig: b908fa3e3a3b326bc4c32f2455b3cbc0e544ef43
@@ -2473,9 +2474,9 @@ SPEC CHECKSUMS:
   RNCPicker: 3e2c37a8328f368ce14da050cdc8231deb5fc9f9
   RNDateTimePicker: cd42eda5f315fc320f0b359413bd598957f7e601
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
-  RNGestureHandler: 4d271a5d9178403bd8dae0d853e2be21cf53743c
+  RNGestureHandler: 2fb2c561d694d6a884850c8507c180a2cc2ed4e9
   RNReanimated: c90868a27d5b89bbd35a7e3b048fefe4c9706239
-  RNScreens: 52f2565581af64b1b410d49784cf8342ed94ca28
+  RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
   RNSVG: 55bf7e6e90717321191cde721072df87e9f8a024
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
