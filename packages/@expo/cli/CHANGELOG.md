@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bump `experiments.reactCanary` to React 19 beta [commit](https://github.com/facebook/react/commit/4508873393058e86bed308b56e49ec883ece59d1).
+- Bump `experiments.reactCanary` to React 19 beta [commit](https://github.com/facebook/react/commit/4508873393058e86bed308b56e49ec883ece59d1). ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.7 — 2024-04-29
 
