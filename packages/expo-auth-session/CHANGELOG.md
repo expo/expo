@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop deprecated `expoClientId` field from auth proxy.
+- Drop deprecated `expoClientId` field from auth proxy. ([#28590](https://github.com/expo/expo/pull/28590) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
