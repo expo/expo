@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@react-native/assets-registry": "~0.74.82",
+    "@react-native/assets-registry": "~0.74.83",
     "expo-constants": "~16.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3"
