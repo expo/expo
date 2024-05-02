@@ -330,7 +330,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
                           @"• The installed version of Expo Go is for **SDK %@**.\n"
                         @"• The %@ you opened uses **SDK %d**.",
                         [self supportedSdkVersionsConjunctionString:@"and"],
-                        self.isSnackURL ? @"snack" : @"project",
+                        self.isSnackURL ? @"Snack" : @"project",
                         requiredVersionNum
     ];
 
@@ -338,7 +338,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     fixInstructions = [NSString stringWithFormat:@"Either upgrade this %@ to SDK %@ or install a version of Expo Go that is compatible with your project.\n\n"
                        @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
                        @"[%@](Learn how to install Expo Go for SDK %d.)",
-                       self.isSnackURL ? @"snack" : @"project",
+                       self.isSnackURL ? @"Snack" : @"project",
                        [self supportedSdkVersionsConjunctionString:@"or"],
                        [[supportedSDKVersionInts lastObject] intValue],
                        expoDevLink,
@@ -351,14 +351,14 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
                       [self supportedSdkVersionsConjunctionString:@"or"]
       ];
     } else {
-      instructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n",
-                      [self supportedSdkVersionsConjunctionString:@"or"]
+      instructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n"
+                      @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n",
+                      [self supportedSdkVersionsConjunctionString:@"or"],
+                      [[supportedSDKVersionInts lastObject] intValue]
       ];
     }
     
-    fixInstructions = [instructions stringByAppendingFormat:@"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
-                       @"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
-                       [[supportedSDKVersionInts lastObject] intValue],
+    fixInstructions = [instructions stringByAppendingFormat:@"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
                        expoDevLink,
                        requiredVersionNum];
 #endif

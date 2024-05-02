@@ -107,9 +107,9 @@ class ManifestException : ExponentException {
               "Either select SDK ${supportedSdksString("or")} on <a href='https:/snack.expo.dev/'>https:/snack.expo.dev/</a> or install an older version of Expo Go that is compatible with your project." +
                 "<br>If your required SDK version is not listed on Snack, use an emulator or one of the online emulators inside of Snack<br><br>"
             } else {
-              "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with ${if (isSnackURL) "this" else "your"} $projectType.<br><br>"
-            } + "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>" +
-              "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
+              "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with ${if (isSnackURL) "this" else "your"} $projectType.<br><br>" +
+                "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>"
+            } + "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
             canRetry = false
           }
 
