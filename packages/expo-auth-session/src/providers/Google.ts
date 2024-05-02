@@ -51,10 +51,6 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    */
   selectAccount?: boolean;
   /**
-   * Proxy client ID for use in the Expo client on Android and iOS.
-   */
-  expoClientId?: string;
-  /**
    * Expo web client ID for use in the browser.
    */
   webClientId?: string;
@@ -206,13 +202,7 @@ export function useAuthRequest(
     const clientId = config[propertyName as any] ?? config.clientId;
     invariantClientId(propertyName, clientId, 'Google');
     return clientId;
-  }, [
-    config.expoClientId,
-    config.iosClientId,
-    config.androidClientId,
-    config.webClientId,
-    config.clientId,
-  ]);
+  }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
 
   const responseType = useMemo(() => {
     // Allow overrides.
