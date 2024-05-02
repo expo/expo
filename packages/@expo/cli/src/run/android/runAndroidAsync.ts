@@ -42,7 +42,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   }
 
   if (options.reversePort && typeof options.reversePort === 'number') {
-    startAdbReverseAsync([options.reversePort]);
+    await startAdbReverseAsync([options.reversePort]);
   }
     
   const manager = await startBundlerAsync(projectRoot, {
