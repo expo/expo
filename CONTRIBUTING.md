@@ -1,16 +1,22 @@
 # Contributing to the Expo SDK
 
-- [📦 Download and Setup](#-download-and-setup)
-- [✍️ Editing SDK Packages](#%EF%B8%8F-editing-sdk-packages)
-  - [Style](#style)
-  - [Extra Credit](#extra-credit)
-- [⏱ Testing Your Changes](#-testing-your-changes)
-  - [✅ Unit Testing](#-unit-testing)
-  - [🏁 E2E Testing](#-e2e-testing)
-- [📚 Updating Documentation](#-updating-documentation)
-- [📝 Writing a Commit Message](#-writing-a-commit-message)
-- [🔎 Before Submitting](#-before-submitting)
-  - [Extra Credit](#extra-credit-1)
+- [Contributing to the Expo SDK](#contributing-to-the-expo-sdk)
+  - [📦 Download and Setup](#-download-and-setup)
+    - [Set up documentation](#set-up-documentation)
+    - [Set up Android](#set-up-android)
+    - [Set up iOS](#set-up-ios)
+    - [Verify native installation is successful](#verify-native-installation-is-successful)
+  - [✍️ Editing SDK Packages](#️-editing-sdk-packages)
+    - [Finding a task to work on](#finding-a-task-to-work-on)
+    - [Style](#style)
+    - [Extra Credit](#extra-credit)
+  - [⏱ Testing Your Changes](#-testing-your-changes)
+    - [✅ Unit Testing](#-unit-testing)
+    - [🏁 E2E Testing](#-e2e-testing)
+  - [📚 Updating Documentation](#-updating-documentation)
+  - [📝 Writing a Commit Message](#-writing-a-commit-message)
+  - [🔎 Before Submitting](#-before-submitting)
+    - [Extra Credit](#extra-credit-1)
 
 Thanks for the help! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
 
@@ -50,7 +56,7 @@ We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal windo
 
 ```sh
 brew tap homebrew/cask-versions
-brew install --cask zulu17
+brew install --cask zulu@17
 ```
 
 After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use ZSH):
