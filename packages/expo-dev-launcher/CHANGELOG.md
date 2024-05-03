@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `LogBox` isn't working on the new architecture.
+
 ### 💡 Others
 
 ## 4.0.8 — 2024-05-01
