@@ -27,7 +27,8 @@ import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
 
 internal fun defaultAppContextMock(
-  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false),
+  jsiInterop: JSIContext = JSIContext()
 ): AppContext {
   val appContextMock = mockk<AppContext>()
   val coreModule = run {
@@ -39,6 +40,7 @@ internal fun defaultAppContextMock(
   every { appContextMock.classRegistry } answers { ClassRegistry() }
   every { appContextMock.jniDeallocator } answers { jniDeallocator }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
+  every { appContextMock.jsiInterop } answers { jsiInterop }
   return appContextMock
 }
 
