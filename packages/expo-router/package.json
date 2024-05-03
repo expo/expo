@@ -98,7 +98,7 @@
     "@react-navigation/bottom-tabs": "~6.5.7",
     "@react-navigation/native": "~6.1.6",
     "@react-navigation/native-stack": "~6.9.12",
-    "expo-splash-screen": "0.27.3",
+    "expo-splash-screen": "0.27.4",
     "react-native-helmet-async": "2.0.4",
     "schema-utils": "^4.0.1"
   }

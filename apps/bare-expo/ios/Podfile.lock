@@ -509,7 +509,7 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (13.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.27.3):
+  - EXSplashScreen (0.27.4):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -2566,7 +2566,7 @@ SPEC CHECKSUMS:
   ExpoVideo: 0b8d0a9aff88b845d645aba2273a839ee71b779a
   ExpoVideoThumbnails: 40c737b2507a7470b14e9452e286513beb9a7d77
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
-  EXSplashScreen: a8345702b8f39b2688a45a3f5cf0a0e1a78fa2c3
+  EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
   EXUpdates: e0361ee9ac3042eeb5fad07bf170f95d2acb3754
