@@ -12,7 +12,7 @@ class JavaScriptRuntimeTest {
   @Before
   fun before() {
     jsiInterop = JSIContext().apply {
-      installJSIForTests(defaultAppContextMock())
+      installJSIForTests(defaultAppContextMock(jsiInterop = this))
     }
   }
 

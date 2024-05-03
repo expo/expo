@@ -118,6 +118,14 @@ android {
       "**/libyoga.so",
     ]
 
+    // Required or mockk will crash
+    resources {
+      excludes += [
+          "META-INF/LICENSE.md",
+          "META-INF/LICENSE-notice.md"
+      ]
+    }
+
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
     if (isExpoModulesCoreTests) {
@@ -160,7 +168,7 @@ dependencies {
 
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'io.mockk:mockk:1.13.10'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
@@ -169,7 +177,7 @@ dependencies {
   androidTestImplementation 'androidx.test:runner:1.5.2'
   androidTestImplementation 'androidx.test:core:1.5.0'
   androidTestImplementation 'androidx.test:rules:1.5.0'
-  androidTestImplementation "io.mockk:mockk-android:1.12.3"
+  androidTestImplementation "io.mockk:mockk-android:1.13.10"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
