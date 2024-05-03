@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `LogBox` isn't working on the new architecture.
+- [Android] Fixed `LogBox` isn't working on the new architecture. ([#28602](https://github.com/expo/expo/pull/28602) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
