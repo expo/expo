@@ -99,7 +99,7 @@ const app = initializeApp(firebaseConfig);
 
 You do not have to install other plugins or configurations to use Firebase JS SDK.
 
-Firebase version 9 provides a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
+Firebase version 9 and above provide a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
 > Using Firebase Authentication with version 9 or below? See [the guide for setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
 
@@ -110,7 +110,7 @@ Firebase version 9 provides a modular API. You can directly import any service y
 
 > **info** If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
 
-Expo CLI uses [Metro](https://facebook.github.io/metro/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
+Expo CLI uses [Metro](https://metrobundler.dev/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
 
 Start by generating the template file **metro.config.js** in your project's root directory using the following command:
 

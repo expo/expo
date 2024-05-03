@@ -39,10 +39,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
   "private": true,
   "name": "monorepo",
   "version": "1.0.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": ["apps/*", "packages/*"]
 }
 ```
 
@@ -97,9 +94,9 @@ module.exports = config;
 
 <Collapsible summary="1. Why do we need to watch all files with the monorepo?">
 
-Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
+Metro has three separate stages in its bundling process, [documented here](https://metrobundler.dev/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
 
-When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a changed file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
+When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://metrobundler.dev/docs/configuration/#watchfolders). If a changed file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
 
 As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (\*) in your **package.json**. For example:
 
@@ -127,7 +124,7 @@ config.watchFolders = [projectRoot, ...Object.values(monorepoPackages)];
 // Add the monorepo workspaces as `extraNodeModules` to Metro.
 // If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
 // you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
-// See: https://facebook.github.io/metro/docs/configuration/#extranodemodules
+// See: https://metrobundler.dev/docs/configuration/#extranodemodules
 config.resolver.extraNodeModules = monorepoPackages;
 
 // 2. Let Metro know where to resolve packages and in what order
@@ -260,23 +257,24 @@ Expo SDK 50 and higher has improved support for more complete **node_modules** p
 
 You can check if your monorepo has multiple React Native versions and why they are installed through the package manager you use.
 
-<Terminal cmd={[
-  '# Bun does not support `bun why` yet, but you can use `yarn why`',
-  '$ bun install --yarn && yarn why react-native',
-  '',
-  '# npm supports the `npm explain` command, aliased to `npm why`',
-  '# https://docs.npmjs.com/cli/v10/commands/npm-explain',
-  '$ npm why react-native',
-  '',
-  '# pnpm only iterates the full monorepo with the `--recursive` flag',
-  '# https://pnpm.io/cli/why',
-  '$ pnpm why --recursive react-native',
-  '',
-  '# yarn supports the `yarn why` command',
-  '# https://classic.yarnpkg.com/en/docs/cli/why',
-  '$ yarn why react-native',
-]} />
-
+<Terminal
+  cmd={[
+    '# Bun does not support `bun why` yet, but you can use `yarn why`',
+    '$ bun install --yarn && yarn why react-native',
+    '',
+    '# npm supports the `npm explain` command, aliased to `npm why`',
+    '# https://docs.npmjs.com/cli/v10/commands/npm-explain',
+    '$ npm why react-native',
+    '',
+    '# pnpm only iterates the full monorepo with the `--recursive` flag',
+    '# https://pnpm.io/cli/why',
+    '$ pnpm why --recursive react-native',
+    '',
+    '# yarn supports the `yarn why` command',
+    '# https://classic.yarnpkg.com/en/docs/cli/why',
+    '$ yarn why react-native',
+  ]}
+/>
 
 ### Can I use another monorepo tool instead of Yarn workspaces?
 
