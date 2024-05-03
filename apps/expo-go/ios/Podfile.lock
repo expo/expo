@@ -39,7 +39,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.4.1):
     - ExpoModulesCore
-  - ExpoAsset (10.0.5):
+  - ExpoAsset (10.0.6):
     - ExpoModulesCore
   - ExpoAudio (0.1.0):
     - ExpoModulesCore
@@ -111,7 +111,7 @@ PODS:
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
     - React-Core
-  - ExpoModulesCore (1.12.7):
+  - ExpoModulesCore (1.12.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -125,6 +125,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
+    - React-jsinspector
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
@@ -133,7 +134,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.12.7):
+  - ExpoModulesCore/Tests (1.12.8):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -148,6 +149,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
+    - React-jsinspector
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
@@ -2338,7 +2340,7 @@ SPEC CHECKSUMS:
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
   Expo: 92e507fc5619428ae3d4a1c7b7cd4c6d88e3ff80
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
-  ExpoAsset: 3008baf7a1995dea8cb91d07686562361a8779c0
+  ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
   ExpoBackgroundFetch: a06c553ecaf0bade0acd691042d996b9ce926327
   ExpoBattery: 4b21f628f2b70af3af66e83c566949ba9cc65eb1
@@ -2366,7 +2368,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 35ae7dad064bf2d5f99821c2e64cc768f8dd8b62
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
-  ExpoModulesCore: 0b6a622280a431e4174d8cc83c1bef6111687ea5
+  ExpoModulesCore: a67489aac5d81f9bf35ebd163af2388775f16c92
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a

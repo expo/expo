@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.0.11 — 2024-05-03
+
+### 🐛 Bug fixes
+
 - Fixed `java.lang.IllegalStateException: DevMenu isn't available in release builds` when running dev-menu on Android release builds. ([#28607](https://github.com/expo/expo/pull/28607) by [@kudo](https://github.com/kudo))
 - Fixed JS Debugger not detecting correct engine in new arch on iOS. ([#28606](https://github.com/expo/expo/pull/28606) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 5.0.10 — 2024-05-02
 
