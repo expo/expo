@@ -27,6 +27,9 @@ import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
+
+import java.lang.ref.WeakReference;
+
 import javax.annotation.Nullable;
 
 //
@@ -122,6 +125,8 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
 
     private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
         return new ReactInstanceDevHelper() {
+            private WeakReference<ReactSurfaceImpl> logBoxSurface = new WeakReference<>(null);
+
             @Override
             public void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory) {
                 // Not implemented
@@ -160,6 +165,11 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                 if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
                     ReactSurfaceImpl reactSurface =
                             ReactSurfaceImpl.createWithView(currentActivity, appKey, new Bundle());
+
+                    if (appKey.equals("LogBox")) {
+                        logBoxSurface = new WeakReference<>(reactSurface);
+                    }
+
                     reactSurface.attach(reactHost);
                     reactSurface.start();
 
@@ -170,7 +180,15 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
 
             @Override
             public void destroyRootView(View rootView) {
-                // Not implemented
+                // The log box surface is a special case and needs to be detached from the host.
+                // The detachment process should be handled by React Native, but it appears to be malfunctioning.
+                // This is a temporary solution and should be removed
+                // once we identify the root cause of the surface remaining attached after reloads.
+                ReactSurfaceImpl logBox = logBoxSurface.get();
+                if (logBox != null) {
+                  reactHost.detachSurface(logBox);
+                  logBoxSurface.clear();
+                }
             }
         };
     }
