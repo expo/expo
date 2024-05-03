@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for displaying animated AVIF images on Android. ([#28609](https://github.com/expo/expo/pull/28609) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
