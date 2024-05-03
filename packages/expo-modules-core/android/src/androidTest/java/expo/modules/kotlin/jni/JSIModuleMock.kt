@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference
 
 internal fun defaultAppContextMock(
   jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false),
-  jsiInterop: JSIContext = JSIContext(),
+  jsiInterop: JSIContext = JSIContext()
 ): AppContext {
   val appContextMock = mockk<AppContext>()
   val coreModule = run {
