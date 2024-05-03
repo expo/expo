@@ -3,12 +3,13 @@ title: Use ESLint and Prettier
 description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
-import { GithubIcon } from "@expo/styleguide-icons";
+import { GithubIcon } from '@expo/styleguide-icons';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 <TabsGroup>
 
@@ -16,7 +17,17 @@ import { Terminal } from '~/ui/components/Snippet';
 
 This guide provides steps to set up and configure ESLint and Prettier.
 
-## Setup
+## ESLint
+
+### Setup
+
+For SDK 51 and above, run the `npx expo lint` command which installs the `eslint` library and creates a **.eslintrc.js** config file at the root of your project.
+
+<Terminal cmd={['$ npx expo lint']} />
+
+The configuration in **.eslintrc.js** extends [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
+
+<Collapsible summary="Setup instructions for SDK 50 and below">
 
 <Step label="1">
 
@@ -24,12 +35,13 @@ Install ESLint, Prettier, and [`eslint-config-universe`](https://github.com/expo
 
 <Tabs>
     <Tab label="npm">
-        <Terminal cmd={['$ npm install eslint@8 prettier eslint-config-universe --save-dev']} />
+        <Terminal cmd={['$ npm install eslint@8 eslint-config-universe --save-dev']} />
     </Tab>
 
     <Tab label="yarn">
-        <Terminal cmd={['$ yarn add -D eslint@8 prettier eslint-config-universe']} />
+        <Terminal cmd={['$ yarn add -D eslint@8 eslint-config-universe']} />
     </Tab>
+
 </Tabs>
 
 The `eslint-config-universe` library provides shared ESLint configurations for Node.js, web and universal Expo apps.
@@ -73,22 +85,24 @@ You can replace the `.` with specific directories or files to lint. For example,
 
 </Step>
 
+</Collapsible>
+
 ## Usage
 
-You can lint your code manually from the command line with the script:
+> **info** **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
+
+You can lint your code manually from the command line with the `expo lint` script:
 
 <Tabs>
-    <Tab label="npm">
+    <Tab label="For SDK 51 and above">
+        <Terminal cmd={['$ npx expo lint']} />
+    </Tab>
+
+    <Tab label="For SDK 50 and below">
         <Terminal cmd={['$ npm run lint']} />
     </Tab>
 
-    <Tab label="yarn">
-        <Terminal cmd={['$ yarn lint']} />
-    </Tab>
-
 </Tabs>
-
-> **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
 
 ## Environment configuration
 
@@ -110,7 +124,23 @@ module.exports = config;
 
 ## Prettier
 
-To customize its settings, create a **.prettierrc** file at the root of your project and add the configuration.
+### Installation
+
+Install Prettier in your project:
+
+<Tabs>
+<Tab label="npm">
+<Terminal cmd={['$ npm install prettier --save-dev']} />
+</Tab>
+
+<Tab label="yarn">
+<Terminal cmd={['$ yarn add -D prettier']} />
+</Tab>
+</Tabs>
+
+### Setup
+
+To add customize Prettier settings, create a **.prettierrc** file at the root of your project and add your configuration.
 
 <BoxLink
   title="Custom Prettier configuration"
@@ -136,16 +166,3 @@ node_modules
 ```
 
 </TabsGroup>
-
-## Next step
-
-<BoxLink
-  title={
-    <>
-      <CODE>eslint-config-universe</CODE>
-    </>
-  }
-  Icon={GithubIcon}
-  description="Learn more about shared ESLint configurations for Node.js, web and universal Expo apps."
-  href="https://github.com/expo/expo/tree/main/packages/eslint-config-universe"
-/>
