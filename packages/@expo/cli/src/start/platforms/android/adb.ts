@@ -37,6 +37,8 @@ export type Device = {
   isBooted: boolean;
   /** Is device authorized for developing. https://expo.fyi/authorize-android-device */
   isAuthorized: boolean;
+  /** The connection type to ADB, only available when `type: device` */
+  connectionType?: 'USB' | 'Network';
 };
 
 type DeviceContext = Pick<Device, 'pid'>;
@@ -247,6 +249,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
     props: string[];
     type: Device['type'];
     isAuthorized: Device['isAuthorized'];
+    connectionType?: Device['connectionType'];
   }[] = splitItems
     .slice(1, splitItems.length)
     .map((line) => {
@@ -257,7 +260,15 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
 
       const isAuthorized = props[1] !== 'unauthorized';
       const type = line.includes('emulator') ? 'emulator' : 'device';
-      return { props, type, isAuthorized };
+
+      let connectionType = undefined;
+      if (type === 'device' && line.includes('_adb-tls-connect.')) {
+        connectionType = 'Network';
+      } else if (type === 'device' && line.includes('usb:')) {
+        connectionType = 'USB';
+      }
+
+      return { props, type, isAuthorized, connectionType };
     })
     .filter(({ props: [pid] }) => !!pid);
 
@@ -295,6 +306,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       type,
       isAuthorized,
       isBooted: true,
+      connectionType: props.connectionType,
     };
   });
 
