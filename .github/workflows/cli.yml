@@ -63,6 +63,8 @@ jobs:
           bun-version: latest
       - name: 🏗️ Setup Watchman
         run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install watchman
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: true
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
