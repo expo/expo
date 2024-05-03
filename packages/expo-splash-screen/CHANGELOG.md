@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.27.4 — 2024-05-03
+
+### 💡 Others
+
 - No-op when native module is not installed ([#28599](https://github.com/expo/expo/pull/28599) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.27.3 — 2024-05-01
