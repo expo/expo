@@ -35,7 +35,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.0-preview.11):
+  - Expo (51.0.0-preview.12):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.4.1):
     - ExpoModulesCore
@@ -84,7 +84,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (13.0.1):
     - ExpoModulesCore
-  - ExpoHead (3.5.7):
+  - ExpoHead (3.5.8):
     - ExpoModulesCore
   - ExpoImage (1.12.6):
     - ExpoModulesCore
@@ -2336,7 +2336,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 7832a9a6562afc89e57190d5a8702affc0cfe77e
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 0e5153ae2ce3b103bc83356562bacc02bd09e00a
+  Expo: 92e507fc5619428ae3d4a1c7b7cd4c6d88e3ff80
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
   ExpoAsset: 3008baf7a1995dea8cb91d07686562361a8779c0
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
@@ -2356,7 +2356,7 @@ SPEC CHECKSUMS:
   ExpoFont: 331cf28d549edc7b6300d3be19302fc5069d9bb1
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
-  ExpoHead: c552f218dbc64c97185952df491340b60fd67610
+  ExpoHead: e55606db85845d58e818d621499cdffab771c385
   ExpoImage: 42ed3a89130f6bb764f63a37ef3a3b28453e9fad
   ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
