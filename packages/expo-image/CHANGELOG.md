@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `avif` images not rendering.
+
 ### 💡 Others
 
 ## 1.12.6 — 2024-05-02
