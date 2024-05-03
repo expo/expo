@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `avif` images not rendering. ([#28608](https://github.com/expo/expo/pull/28608) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 1.12.6 — 2024-05-02
