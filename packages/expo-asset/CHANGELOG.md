@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `downloadAsync()` does not support Android resources from release builds. ([#28604](https://github.com/expo/expo/pull/28604) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 10.0.5 — 2024-05-02
