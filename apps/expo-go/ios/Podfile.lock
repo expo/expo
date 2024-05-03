@@ -88,6 +88,7 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (1.12.6):
     - ExpoModulesCore
+    - libavif/libdav1d
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
@@ -396,6 +397,10 @@ PODS:
   - hermes-engine/Public (0.74.1)
   - JKBigInteger (0.0.6)
   - libavif/core (0.11.1)
+  - libavif/libdav1d (0.11.1):
+    - libavif/core
+    - libdav1d (>= 0.6.0)
+  - libdav1d (1.2.0)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -2008,6 +2013,7 @@ SPEC REPOS:
     - GoogleMaps
     - GoogleUtilities
     - libavif
+    - libdav1d
     - libwebp
     - lottie-ios
     - MBProgressHUD
@@ -2359,7 +2365,7 @@ SPEC CHECKSUMS:
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoHead: e55606db85845d58e818d621499cdffab771c385
-  ExpoImage: 42ed3a89130f6bb764f63a37ef3a3b28453e9fad
+  ExpoImage: 58d066db3ac8cb4b93e24b967b2dd13c9b446290
   ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
@@ -2406,6 +2412,7 @@ SPEC CHECKSUMS:
   hermes-engine: 543f364ff8a13dad19f62d9d601da0e6c615f2da
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
+  libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
   lottie-react-native: f851c0e235f171d99083c803f728f644be1dcf65
