@@ -50,7 +50,7 @@ We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal windo
 
 ```sh
 brew tap homebrew/cask-versions
-brew install --cask zulu17
+brew install --cask zulu@17
 ```
 
 After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use ZSH):
