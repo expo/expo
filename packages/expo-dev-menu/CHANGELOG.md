@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed JS Debugger not detecting correct engine in new arch on iOS. ([#28606](https://github.com/expo/expo/pull/28606) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 5.0.10 — 2024-05-02
