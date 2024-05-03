@@ -1,12 +1,7 @@
 # Contributing to the Expo SDK
 
 - [📦 Download and Setup](#-download-and-setup)
-  - [Set up documentation](#set-up-documentation)
-  - [Set up Android](#set-up-android)
-  - [Set up iOS](#set-up-ios)
-  - [Verify native installation is successful](#verify-native-installation-is-successful)
-- [✍️ Editing SDK Packages](#️-editing-sdk-packages)
-  - [Finding a task to work on](#finding-a-task-to-work-on)
+- [✍️ Editing SDK Packages](#%EF%B8%8F-editing-sdk-packages)
   - [Style](#style)
   - [Extra Credit](#extra-credit)
 - [⏱ Testing Your Changes](#-testing-your-changes)
