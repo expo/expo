@@ -4,7 +4,7 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 use_dev_client = false
 begin
-  use_dev_client = !!`node --print "require('expo-dev-client/package.json').version"`
+  use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
 rescue
   use_dev_client = false
 end
