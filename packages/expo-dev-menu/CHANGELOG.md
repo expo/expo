@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `java.lang.IllegalStateException: DevMenu isn't available in release builds` when running dev-menu on Android release builds. ([#28607](https://github.com/expo/expo/pull/28607) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 5.0.10 — 2024-05-02
