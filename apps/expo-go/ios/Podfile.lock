@@ -86,7 +86,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHead (3.5.8):
     - ExpoModulesCore
-  - ExpoImage (1.12.6):
+  - ExpoImage (1.12.7):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.19.1)
@@ -251,7 +251,7 @@ PODS:
   - EXTaskManager (11.8.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.25.7):
+  - EXUpdates (0.25.8):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -279,7 +279,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdates/Tests (0.25.7):
+  - EXUpdates/Tests (0.25.8):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2365,7 +2365,7 @@ SPEC CHECKSUMS:
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoHead: e55606db85845d58e818d621499cdffab771c385
-  ExpoImage: 58d066db3ac8cb4b93e24b967b2dd13c9b446290
+  ExpoImage: b458c0ffc2bfd59fb464f9b7606a30bc23767775
   ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
@@ -2397,7 +2397,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: 84e4c599f7d7986336be67bfaf07f2f59241ca21
+  EXUpdates: 2d6a56dab78992e63bf47177e0f9e176b301f08a
   EXUpdatesInterface: e5ec53f49ac304d173471f15e70abf8723f00fe5
   FBLazyVector: 898d14d17bf19e2435cafd9ea2a1033efe445709
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f

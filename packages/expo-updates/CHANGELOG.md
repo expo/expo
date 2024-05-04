@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.25.8 — 2024-05-04
+
+### 💡 Others
+
 - Suppressed `Error: Cannot find module 'expo-dev-client/package.json'` from `pod install` on iOS. ([#28611](https://github.com/expo/expo/pull/28611) by [@kudo](https://github.com/kudo))
 
 ## 0.25.7 — 2024-05-02
