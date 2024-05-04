@@ -17,7 +17,9 @@
     "test": "jest",
     "open": "./scripts/deep-link.sh test-suite",
     "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
-    "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
+    "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/",
+    "install-new-arch-ios": "RCT_NEW_ARCH_ENABLED=1 npx pod-install",
+    "install-old-arch-ios": "RCT_NEW_ARCH_ENABLED=0 npx pod-install"
   },
   "expo": {
     "autolinking": {
