@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.12.7 — 2024-05-04
+
+### 🎉 New features
+
 - Added support for displaying animated AVIF images on Android. ([#28609](https://github.com/expo/expo/pull/28609) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
 - Fix `avif` images not rendering. ([#28608](https://github.com/expo/expo/pull/28608) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 1.12.6 — 2024-05-02
 
