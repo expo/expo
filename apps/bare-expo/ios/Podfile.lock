@@ -32,18 +32,18 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.0-preview.13):
+  - Expo (51.0.0-preview.14):
     - ExpoModulesCore
-  - expo-dev-client (4.0.9):
+  - expo-dev-client (4.0.10):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (4.0.10):
+  - expo-dev-launcher (4.0.11):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 4.0.10)
+    - expo-dev-launcher/Main (= 4.0.11)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -68,7 +68,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (4.0.10):
+  - expo-dev-launcher/Main (4.0.11):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -96,7 +96,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (4.0.10):
+  - expo-dev-launcher/Tests (4.0.11):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -128,7 +128,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (4.0.10):
+  - expo-dev-launcher/Unsafe (4.0.11):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -2519,9 +2519,9 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 7832a9a6562afc89e57190d5a8702affc0cfe77e
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 8fb7903cbd3db2e4abf004e5722620219b25116f
-  expo-dev-client: 25389a7371005d8b8d83b5869253d4bea7bc3a73
-  expo-dev-launcher: 0b4db9cb577d7f62dd1f000387a0871059eb90df
+  Expo: 5c1516e626d56a32ef5a4363d0d8bae15c5f39e4
+  expo-dev-client: 0917e673ab08118c579647bb3dc90e77899ca01f
+  expo-dev-launcher: 1a6ecd7fe14f73daec7fbb25a3300c4f1775872e
   expo-dev-menu: d85ae79126c2886c0f76e0d17a23ef81a7b839bd
   expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
