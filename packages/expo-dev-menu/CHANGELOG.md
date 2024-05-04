@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix reloading app through "r" hotkey on iOS. ([#28617](https://github.com/expo/expo/pull/28617) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 5.0.11 — 2024-05-03
