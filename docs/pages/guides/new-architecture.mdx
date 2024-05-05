@@ -117,8 +117,6 @@ If the build succeeds, you will now be running your app with the New Architectur
 
 Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading [Troubleshooting](#troubleshooting) sections below for more information.
 
-> **warning** If you use Expo Router or React Navigation, your app may be impacted by a [known issue with `useLayoutEffect` in React Native with the New Architecture](#known-issues-in-react-native). This issue is expected to be resolved in a patch release for React Native 0.74.
-
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
 - **Android**: Set `newArchEnabled=true` in the **gradle.properties** file.
@@ -152,7 +150,7 @@ While there are likely incompatibilities we are not aware of, the following are 
 
 <Collapsible summary="Known issues in React Native">
 
-- [facebook/react-native#44111](https://github.com/facebook/react-native/issues/44111) **impacts navigation libraries like Expo Router and React Navigation**, causing navigation properties for a screen to not be applied until after a transition has completed, and potentially other similar issues with navigation ([see an example](https://github.com/facebook/react-native/issues/44111#issuecomment-2076185849)). There is work in progress to fix this and we expect that it will be available soon in a patch release for React Native 0.74.
+- Reloading the app quickly in development may cause the app to crash. A fix is in progress.
 
 </Collapsible>
 
@@ -167,11 +165,14 @@ Refer to the [reactwg/react-native-new-architecture/discussions#167](https://git
 - **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
 - **react-native-geolocation-service**: use `expo-location` instead.
 - **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
+- **@shopify/flash-list**: may have not correctly in some cases. Be sure to test it thoroughly when migrating your app, and consider temporarily moving back to `FlastList` if you encounter issues.
 
 </Collapsible>
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 
-Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team.
+This isn't entirely surprising! Not all libraries are compatible yet. Read the logs to determine which library is incompatible. The first thing to do is to try updating it to the latest version, and if the issue persists, try temporarily removing it from your **package.json** and from your application code. Repeat this until your app runs.
+
+Once you have a running app, you can decide whether to look for alternative libraries that are compatible with the New Architecture, and report any issues you encounter to the library maintainers. Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team if you believe the issue originates in React Native itself.
 
 </Collapsible>
