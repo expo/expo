@@ -49,6 +49,7 @@ class FullscreenPlayerActivity : Activity() {
     if (Build.VERSION.SDK_INT >= 34) {
       overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
     } else {
+      @Suppress("DEPRECATION")
       overridePendingTransition(0, 0)
     }
   }
