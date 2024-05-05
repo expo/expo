@@ -94,13 +94,13 @@ function App() {
 
 There is no guarantee about the availability of images served remotely using a web URL because an internet connection may not be available, or the asset might be removed.
 
-Additionally, loading assets remotely also requires you to pass the metadata. In this example, the bundler cannot retrieve the image's metadata (width and height), and you have to pass it explicitly to the `<Image>` component. If you don't, the image will default to 0x0.
+Additionally, loading assets remotely also requires you to provide metadata about the asset. In this example, the bundler cannot retrieve the image's width and height, so you have to pass that explicitly to the `<Image>` component. If you don't, the image will default to 0px by 0px.
 
 ## Manual optimization methods
 
 ### Images
 
-You can also compress images using any other online service or a tool such as:
+You can compress images using the following:
 
 - [`guetzli`](https://github.com/google/guetzli)
 - [`pngcrush`](https://pmt.sourceforge.io/pngcrush/)
@@ -116,6 +116,6 @@ See [Wait for fonts to load in the Fonts guide](/develop/user-interface/fonts/#w
 
 ### Other assets
 
-For assets like GIFs or movies, or non-code and non-image assets, it's up to the developer to optimize and minify those assets.
+For assets like GIFs or movies, or non-code and non-image assets, it's up to you to optimize and minify those assets.
 
-> **Note**: GIFs are a very inefficient format. Modern video codecs can produce smaller file sizes by over an order of magnitude.
+> **Note**: GIFs are a very inefficient format. Modern video codecs can produce significantly smaller file sizes with better quality.
