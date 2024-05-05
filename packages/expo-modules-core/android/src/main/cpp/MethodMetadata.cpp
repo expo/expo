@@ -104,7 +104,8 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
       auto stringRepresentation = arg.toString(rt).utf8(rt);
       throwNewJavaException(
         UnexpectedException::create(
-          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+          "[" + this->name + "] Cannot convert '" + stringRepresentation +
+          "' to a Kotlin type.").get()
       );
     }
   }
