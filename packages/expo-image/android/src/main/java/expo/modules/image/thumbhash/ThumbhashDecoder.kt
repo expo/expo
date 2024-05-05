@@ -211,7 +211,10 @@ object ThumbhashDecoder {
 
         // Decode A
         if (hasAlpha) {
+          @Suppress("NAME_SHADOWING")
           var cy = 0
+
+          @Suppress("NAME_SHADOWING")
           var j = 0
           while (cy < 5) {
             val fy2 = fy[cy] * 2.0f
@@ -346,6 +349,7 @@ object ThumbhashDecoder {
     }
 
     fun decode(hash: ByteArray, start: Int, index: Int, scale: Float): Int {
+      @Suppress("NAME_SHADOWING")
       var index = index
       for (i in ac.indices) {
         val data = hash[start + (index shr 1)].toInt() shr (index and 1 shl 2)
