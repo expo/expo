@@ -280,15 +280,9 @@ If you [embed your fonts in your native project](#embed-font-in-a-native-project
 
 It's common to prevent rendering an app until the font is ready. You can accomplish this by displaying the Splash Screen of your app until all fonts have loaded (or an error has been returned). See the [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package for more. Additionally, see the [minimal example](#minimal-example) section on how to use it.
 
-### Load fonts on the web
-
-Sometimes, particularly on the web people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called [Flash of Unstyled Text (FOUT), Flash of Invisible Text (FOIT), and Flash of Faux Text (FOFT)](https://css-tricks.com/fout-foit-foft/).
-
-In general, these strategies are not recommended for native apps. If you include your fonts in your project, the fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
-
 ### Handle `@expo/vector-icons` initial load
 
-Before `@expo/vector-icons` icons load for the fist time, they'll appear as invisible icons in your app. Once they load, they'll be cached for all subsequent uses of the app. To avoid showing invisible icons on your app's first load, you can preload fonts during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefontsmap). For example:
+Before `@expo/vector-icons` icons load for the first time, they'll appear as invisible icons in your app. Once they load, they'll be cached for all subsequent uses of the app. To avoid showing invisible icons on your app's first load, you can preload fonts during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefontsmap). For example:
 
 ```jsx App.js
 useFonts([require('./assets/fonts/ComicSans.ttf', FontAwesome.font)]);
