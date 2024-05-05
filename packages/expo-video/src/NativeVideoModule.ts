@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import type { VideoPlayer } from './VideoView.types';
+import type { VideoPlayer } from './VideoPlayer.types';
 
 type ExpoVideoModule = {
   VideoPlayer: typeof VideoPlayer;
