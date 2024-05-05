@@ -8,43 +8,37 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { CODE } from '~/ui/components/Text';
 
-In this chapter, we're going to configure our project to run multiple build types (development, preview, production) so that they can be installed simultaneously on a single device. This setup is useful for testing various stages of our app without the hassle of uninstalling and reinstalling different versions.
+In this chapter, we'll configure our project to run multiple build types (development, preview, production) on a single device simultaneously. This setup will allow us to test various stages of our app development without the need to uninstall and reinstall different versions.
 
-Our [**app.json**](/workflow/configuration/) file already has IDs for both Android and iOS:
+Each variant requires a unique Android Application ID and iOS Bundle Identifier to enable simultaneous installations on one device. Here's how the IDs are set up in our **app.json** file:
 
 ```json app.json
 {
   "ios": {
     /* @info */
-    "bundleIdentifier": "com.amanhimself.stickersmash"
+    "bundleIdentifier": "com.yourname.stickersmash"
     /* @end */
     /* @hide ... */ /* @end */
   },
   "android": {
     /* @info */
-    "package": "com.amanhimself.stickersmash"
+    "package": "com.yourname.stickersmash"
     /* @end */
     /* @hide ... */ /* @end */
   }
-  /* @hide ... */ /* @end */
 }
 ```
-
-Each variant needs a unique Android Application ID and iOS Bundle Identifier to run multiple variants on one device.
-
-> We're also going to use this setup in the next chapter when we learn and create internal distribution builds.
 
 <Step label="1">
 
 ## Convert app.json to app.config.js for dynamic configuration
 
-**app.json** contains app-related configuration in a JSON file. It's static and doesn't suit our use case if we want to use [dynamic values for certain properties](/workflow/configuration/#dynamic-configuration). We're going to add different Android Application IDs and iOS Bundle Identifiers for all build profiles based on [environment variables](/workflow/configuration/#switching-configuration-based-on-the-environment).
+**app.json** contains app-related configuration in a JSON file. It's static and isn't ideal if we want to use [dynamic values for certain properties](/workflow/configuration/#dynamic-configuration). We're going to add different Android Application IDs and iOS Bundle Identifiers for all build profiles based on [environment variables](/workflow/configuration/#switching-configuration-based-on-the-environment).
 
-Let's modify it:
-
-- In our code editor, rename **app.json** to **app.config.js**.
-- In **app.config.js**, add environment variables called `IS_DEV`, which takes `development` as its value and `IS_PREVIEW`, which takes `preview` as its value:
+- In the code editor, rename **app.json** to **app.config.js**.
+- In **app.config.js**, add environment variables called `IS_DEV` and`IS_PREVIEW` for `development` and `preview` build profiles:
 
 ```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
@@ -56,14 +50,14 @@ const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
 ```js app.config.js
 const getUniqueIdentifier = () => {
   if (IS_DEV) {
-    return 'com.amanhimself.stickersmash.dev';
+    return 'com.yourname.stickersmash.dev';
   }
 
   if (IS_PREVIEW) {
-    return 'com.amanhimself.stickersmash.preview';
+    return 'com.yourname.stickersmash.preview';
   }
 
-  return 'com.amanhimself.stickersmash';
+  return 'com.yourname.stickersmash';
 };
 
 const getAppName = () => {
@@ -84,18 +78,18 @@ const getAppName = () => {
 {/* prettier-ignore */}
 ```js app.config.js
 export default {
-  /* @info Using getAppName() for "name" property */
+  /* @info Using <CODE>getAppName()</CODE> for "name" property */
   name: getAppName(),
   /* @end */
   /* @hide ... */ /* @end */
   ios: {
-    /* @info Using getUniqueIdentifier() for "bundleIdentifier" property */
+    /* @info Using <CODE>getUniqueIdentifier()</CODE> for "bundleIdentifier" property */
     bundleIdentifier: getUniqueIdentifier(),
     /* @end */
     /* @hide ... */ /* @end */
   },
   android: {
-    /* @info Using getUniqueIdentifier() for "package" property */
+    /* @info Using <CODE>getUniqueIdentifier()</CODE> for "package" property */
     package: getUniqueIdentifier(),
     /* @end */
     /* @hide ... */ /* @end */
@@ -112,13 +106,13 @@ export default {
 In **eas.json**, add the `APP_VARIANT` environment variable:
 
 {/* prettier-ignore */}
-```json eas.json
+```json eas.json|collapseHeight=440
 {
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      /* @info Add env.APP_VARIANT property to access the environment variable for the build profile*/
+      /* @info Add <CODE>env.APP_VARIANT</CODE> to access the environment variable for the build profile*/
       "env": {
         "APP_VARIANT": "development"
       }
@@ -126,7 +120,7 @@ In **eas.json**, add the `APP_VARIANT` environment variable:
     },
     "preview": {
       "distribution": "internal",
-      /* @info Add env.APP_VARIANT property to access the environment variable for the build profile*/
+      /* @info Add <CODE>env.APP_VARIANT</CODE> to access the environment variable for the build profile*/
       "env": {
         "APP_VARIANT": "preview"
       }
@@ -141,7 +135,7 @@ Running `eas build --profile development` will now set `APP_VARIANT` to `develop
 
 > **Note**: Since we changed the Android Application ID and iOS Bundle Identifier, the EAS CLI will prompt us to generate a new Keystore for Android and a new provisioning profile for iOS. To learn more about what these steps include, see the previous chapter for more information.
 
-Since our `ios-simulator` build profile extends `development`, this configuration is automatically applied.
+Since our `ios-simulator` build profile extends `development`, this configuration is automatically applied for iOS Simulators.
 
 </Step>
 
@@ -172,7 +166,7 @@ Now, our development build will run on both Android and iOS, displaying the modi
 <ImageSpotlight
   alt="Development variant running on Android device."
   src="/static/images/tutorial/eas/ios-dev-variant.png"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 240 }}
 />
 
 </Step>

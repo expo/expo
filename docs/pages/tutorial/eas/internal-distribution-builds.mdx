@@ -12,13 +12,13 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
-In this chapter, we're going to learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution). Creating an internal build is quite similar to creating a development build. The difference is that you don't need to run the development server locally for it to work.
+In this chapter, we'll learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution).
 
 ## Internal distribution build
 
-An internal distribution build is great for sharing an app's progress with our team (technical and non-technical stakeholders) to gather feedback without running a development server. Our team can directly install the build and test the app on their device.
+Internal distribution builds are ideal for sharing updates with team members, allowing both technical and non-technical stakeholders to provide feedback directly. Unlike development builds, these do not require running a development server, simplifying the testing process.
 
-## Ways to distribute an app internally
+### Ways to distribute an app internally
 
 Both Google and Apple provide built-in mechanisms for sharing apps internally:
 
@@ -31,25 +31,23 @@ However, both of these traditional methods have their limitations. For example, 
 
 EAS Build speeds up the process. It creates shareable links for our builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
 
-## Steps to create an internal distribution build
+## Create an internal distribution build
 
-To create and distribute a build with EAS Build, we need to:
-
-- Configure a build profile
-- Add test devices for iOS to a provisioning profile
-- Trigger a build for Android and iOS and install them on devices
+To create and distribute a build with EAS Build, we need to follow these steps:
 
 <Step label="1">
 
-## Configure a build a profile
+### Configure preview build profile
 
-In the previous chapter, we learned that after initializing **eas.json** in our project, it already contains some default configuration. In this configuration, there is a pre-configured build profile called `preview`:
+From our initial setup in **eas.json**, we already have a default configuration that includes a `preview` build profile designed for internal distribution:
 
 ```json eas.json
 {
   "build": {
     "preview": {
+      /* @info The <CODE>distribution</CODE> in <CODE>preview</CODE> profile has its value set to <CODE>internal</CODE>. */
       "distribution": "internal"
+      /* @end */
     }
   }
 }
@@ -63,15 +61,13 @@ As discussed in the previous chapters, for non-app store builds, Android require
 
 <Step label="2">
 
-## Create an internal distribution build
+### Create
 
 <Tabs>
 
 <Tab label="Android">
 
-Creating a preview build for Android is similar to making a development build:
-
-- We use the `preview` profile with the `eas build` command:
+- Use the `preview` profile to initiate an Android build:
 
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
@@ -83,7 +79,7 @@ Creating a preview build for Android is similar to making a development build:
   style={{ maxWidth: 800 }}
 />
 
-<Collapsible summary="Android app signing credentials">
+<Collapsible summary="No Android app signing credentials required for internal distribution">
 
 Android app signing is non-restrictive. A new Android Keystore was generated for development builds, but since Android allows installing any compatible **.apk**, there's no need for a new keystore for preview builds.
 
@@ -129,11 +125,19 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 
 <Step label="3">
 
-## Install an internal distribution build
+### Install
 
-To install the build on a device:
+Once the build finishes, the Build artifact section gets updated, indicating that the build is complete. This section provides the methods available for running the development build on an iOS device: Expo Orbit and Install button.
 
-- Open the build's detail page on the Expo dashboard.
+- Open the build's detail page. If you are sharing the build with someone else, you can send them the link to the build. They'll be able to open the build's detail page or build artifact details which include Expo Orbit.
+- Connect the Android or iOS device to our machine using USB.
+- Open the Orbit menu bar app.
+- Select the **Device** in the Orbit app.
+- Under **Build artifact**, click the **Open with Orbit**.
+
+<Collapsible summary="Alternative: Use Install and QR code">
+
+- Open the build's detail page. If you are sharing the build with someone else, you can send them the link to the build page. They'll be able to open it and see build artifact details which includes Expo Orbit.
 - Click **Install** under the Build artifact section to display the **Install on a test device** popup.
 - Copy the link from **Send a link to a device** section and send it to the test device.
 
@@ -143,20 +147,22 @@ To install the build on a device:
   style={{ maxWidth: 450 }}
 />
 
+</Collapsible>
+
 </Step>
 
 <Step label="4">
 
-## Run internal distribution build
+### Run
 
 Tap the app icon on your device to start the preview build. There is no need for a development server.
 
-Since we have set up multiple app variants, we can see both the development and preview variants installed separately on our devices.
+Since we have already set up multiple app variants, we can see both the development and preview variants installed separately on our devices. For example:
 
-- For example, on Android:
+- On Android:
 
 <ImageSpotlight
-  alt="Internal distribution build details and install link in Expo dashboard"
+  alt="Internal distribution build details and install link in Expo dashboard for Android"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
   style={{ maxWidth: 270 }}
 />
@@ -164,7 +170,7 @@ Since we have set up multiple app variants, we can see both the development and 
 - On iOS:
 
 <ImageSpotlight
-  alt="Internal distribution build details and install link in Expo dashboard"
+  alt="Internal distribution build details and install link in Expo dashboard for iOS"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
   style={{ maxWidth: 250 }}
 />

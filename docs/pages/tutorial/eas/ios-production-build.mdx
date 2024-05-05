@@ -10,25 +10,20 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { CODE } from '~/ui/components/Text';
 
-In this chapter, we're going to our app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
+In this chapter, we'll create our example app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
 
 ## Prerequisites
 
-To submit an app, we need a paid Apple Developer account. To create one, see [Apple Developer Portal](https://developer.apple.com/account/).
+To publish and distribute an app on the Apple Play Store, we need:
 
-## What is a production build
+- **Apple Developer account:** To create one, see [Apple Developer Portal](https://developer.apple.com/account/).
+- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
+
+## Production build for iOS
 
 A [production iOS build](/build/eas-json/#production-builds) is optimized for Apple's App Store Connect, which allows distributing builds to testers with TestFlight and public end users through the App Store. This build type cannot be side-loaded on a simulator or device and can only be distributed through App Store Connect.
 
 <Step label="1">
-
-## Required EAS configuration
-
-The only required configuration to create our production build for iOS is to have a `production` build profile in **eas.json** which is added by default.
-
-</Step>
-
-<Step label="2">
 
 ## Create a distribution provisioning profile
 
@@ -44,21 +39,19 @@ Run the `eas credentials` command in the terminal and then answer the following 
 
 </Step>
 
-<Step label="3">
+<Step label="2">
 
 ## Create a production build
 
-To create an iOS production build, open the terminal and run:
+To create an iOS production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in the EAS configuration, there is no need to specify it explicitly with the `--profile` flag.
 
 <Terminal cmd={['$ eas build --platform ios']} />
-
-The `production` profile in the EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
 
 The command will queue the build. Notice on the Expo dashboard that the **Build Number** is auto-incremented.
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 ## Submit the app binary to the App Store
 
@@ -75,7 +68,7 @@ This will trigger the submission process.
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
 ## Release an internal testing version
 
@@ -100,7 +93,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 <ImageSpotlight
   alt="Email sent to test users for internal testing"
   src="/static/images/tutorial/eas/app-store-02.jpg"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 240 }}
 />
 
 - In the email, click **View in TestFlight,** accept the invite, and then tap **Install**.
@@ -108,7 +101,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 <ImageSpotlight
   alt="TestFlight app showing the app to install"
   src="/static/images/tutorial/eas/app-store-03.jpg"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 240 }}
 />
 
 After that, the app will download on our device so that we can test it.
@@ -117,7 +110,7 @@ After that, the app will download on our device so that we can test it.
 
 </Step>
 
-<Step label="6">
+<Step label="5">
 
 ## Submit the app to the Apple App Store
 
@@ -151,7 +144,7 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 
 </Step>
 
-<Step label="7">
+<Step label="6">
 
 ## Automated submissions
 

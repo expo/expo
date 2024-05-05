@@ -11,42 +11,33 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { CODE } from '~/ui/components/Text';
 
-In this chapter, we're going to create our app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
+In this chapter, we'll create our example app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
 
 ## Prerequisites
 
-To publish and distribute an app on the Google Play Store, we need to:
+To publish and distribute an app on the Google Play Store, we need:
 
-- Have a paid developer account. To create one, follow the instructions on the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
-- Google Service Account email and JSON key to automate the app submission. To create one, follow the instructions from our [expo.fyi](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide. Once you've followed the steps, come back to this guide.
+- **Google Play Developer Account:** Must have a paid developer account. For details on setting one up, visit the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
+- **Google Service Account:** We'll need a Google Service Account email and JSON key to automate the app submission process. Follow the detailed instructions in our guide on [creating a Google Service Account](https://github.com/expo/fyi/blob/main/creating-google-service-account.md), then return to this guide.
+- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
 
-## What is a production build
+## Production build for Android
 
-A [production Android build](/build/eas-json/#production-builds) has a **.aab** format and is optimized for distribution on the Google Play Store. Unlike **.apk** builds, **.aab** builds can only be distributed and installed through the Google Play Store.
+A [production Android build](/build/eas-json/#production-builds) has a **.aab** format which is optimized for distribution on the Google Play Store. Unlike **.apk** builds, **.aab** files can only be distributed and installed through the Google Play Store.
 
 <Step label="1">
 
-## Required EAS configuration
+## Create a production build
 
-The only required configuration to create our production build for Android is to have a `production` build profile in **eas.json** which is added by default.
+To create an Android production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in the EAS configuration, there is no need to specify it explicitly with the `--profile` flag.
+
+<Terminal cmd={['$ eas build --platform android']} />
+
+The above command will queue the build. Notice in the Expo dashboard that the **Version Code** is auto-incremented.
 
 </Step>
 
 <Step label="2">
-
-## Create a production build
-
-To create an Android production build, open the terminal and run:
-
-<Terminal cmd={['$ eas build --platform android']} />
-
-The `production` profile in the EAS configuration is the default profile. We don't have to pass it using the `--profile` flag.
-
-The command will queue the build. Notice in the Expo dashboard that the **Version Code** is auto-incremented.
-
-</Step>
-
-<Step label="3">
 
 ## Create an app on the Google Play Console
 
@@ -71,11 +62,11 @@ To upload the app to the Google Play Store for the first time, we need to:
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 ## Release an internal testing version
 
-After the app is created on Google Play Console, it redirects us to the app's Dashboard screen. To prepare an internal test version of our app:
+After the app is created on Google Play Console, it redirects us to the app's Dashboard screen. We need to prepare an internal test version of our app.
 
 - Click **Start testing now** on the **Dashboard**.
 
@@ -112,7 +103,7 @@ After the app is created on Google Play Console, it redirects us to the app's Da
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
 ## Upload the app binary
 
@@ -137,7 +128,7 @@ After EAS has created a production build:
 
 </Step>
 
-<Step label="6">
+<Step label="5">
 
 ## Share the internal release version
 
@@ -165,7 +156,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 <ImageSpotlight
   alt="Downloading app on the device as an internal tester"
   src="/static/images/tutorial/eas/play-store-15.png"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 240 }}
 />
 
 - The testing email holder needs to accept the invite, and once accepted, the app can be installed on the device.
@@ -173,13 +164,13 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 <ImageSpotlight
   alt="On accepting the invite, the app can be installed on the device"
   src="/static/images/tutorial/eas/play-store-16.png"
-  style={{ maxWidth: 280 }}
+  style={{ maxWidth: 240 }}
 />
 
 <ImageSpotlight
   alt="App installed on the device as an internal tester"
   src="/static/images/tutorial/eas/play-store-17.png"
-  style={{ maxWidth: 300 }}
+  style={{ maxWidth: 260 }}
 />
 
 > **info** **Tip**: To publish an app on the Play Store, in the Google Dashboard, finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. You'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
@@ -197,7 +188,7 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 </Step>
 
-<Step label="7">
+<Step label="6">
 
 ## Add Google Service Account permissions key
 
@@ -210,7 +201,7 @@ After following the Google Service Account guide steps, we can use the downloade
 
 </Step>
 
-<Step label="8">
+<Step label="7">
 
 ## Internal release
 
@@ -224,7 +215,7 @@ Let's add the path to the Google Service Account file path in **eas.json**.
   /* @hide ... */ /* @end */
   "submit": {
     "production": {
-      /* @info Add the path to the Google Service Account file and set track to internal */
+      /* @info Add the path to the Google Service Account file and set <CODE>track</CODE> to <CODE>internal</CODE> */
       "android": {
         "serviceAccountKeyPath": "./service-account-file.json",
         "track": "internal"
@@ -251,7 +242,7 @@ In the above snippet, we're also adding [`track`](/eas/json/#track) property and
 
 </Step>
 
-<Step label="9">
+<Step label="8">
 
 ## Production release
 
@@ -289,11 +280,11 @@ To release the app for production:
 
 </Step>
 
-<Step label="10">
+<Step label="9">
 
 ## Automated release
 
-For future releases, we can streamline the process by combining build creation and Play Store submission into a single step by using the [`--auto-submit`](/build/automate-submissions/) flag with `eas build`:
+For subsequent releases in future, we can streamline the process by combining build creation and Play Store submission into a single step by using the [`--auto-submit`](/build/automate-submissions/) flag with `eas build`:
 
 <Terminal cmd={['$ eas build --platform android --auto-submit']} />
 

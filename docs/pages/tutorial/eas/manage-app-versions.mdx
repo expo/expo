@@ -6,18 +6,18 @@ description: Learn about developer-facing and user-facing app versions and how t
 
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
-In this chapter, we're going to configure our app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next few chapters.
+In this chapter, we'll configure our example app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next two chapters.
 
 ## Understanding developer-facing and user-facing app versions
 
 An app version is composed of two values:
 
 - Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
-- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) in **app.json**.
+- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) **app.config.js**.
 
 Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. Once we upload an app with an app version (combination of developer and user facing values), we cannot submit another build with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
-We can manually manage developer-facing values by setting them as `android.versionCode` and `ios.buildNumber` in **app.config.js** and manually update each value for every new production release:
+We can manually manage developer-facing values by setting them as `android.versionCode` and `ios.buildNumber` in **app.config.js**.
 
 ```json app.config.js
 {
@@ -32,7 +32,7 @@ We can manually manage developer-facing values by setting them as `android.versi
 }
 ```
 
-However, this manual update process can be streamlined to minimize the room for error before submitting a new production build to app stores. We use EAS Build to automate this process in the next section.
+We can manually update each value in the above code snippet for every new production release. However, this manual update process can be streamlined to minimize the room for error before submitting a new production build to app stores. We use EAS Build to automate this process in the next section.
 
 > **Note**: The user-facing version number is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
 
@@ -65,7 +65,7 @@ In **eas.json**:
 }
 ```
 
-When we create a new production build in the next chapter, the `versionCode` or `buildNumber` will increment automatically (we'll see this in practice in the next chapter).
+When we create a new production build in the next two chapters, the `versionCode` for Android or `buildNumber` for iOS will increment automatically.
 
 ## Summary
 

@@ -10,39 +10,29 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
-In this chapter, we're going to create a development build that can run Android devices and [emulators](/workflow/android-studio-emulator/) with EAS Build.
+In this chapter, we'll create a development build that can run on Android with EAS Build.
 
-For Android devices or emulators, the process of creating and running a build remains the same. The only difference comes during the installation of the development build on each.
-
-<Step label="1">
+The process for creating and running a build on Android devices or emulators is identical, with differences only in the installation of the development build.
 
 ## Create a build for the development profile
 
-For Android devices or emulators, the development build must be in the [**.apk** file format](/build-reference/apk/). While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be directly installed on devices or emulators.
+For Android, the development build must be in the **.apk**. While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be installed on devices or emulators.
 
-To create a **.apk**, in **eas.json**, make sure the under `build.development` profile:
+To create a **.apk**:
 
-- The `developmentClient` is set to `true` in **eas.json**.
+- In **eas.json**, make sure that `developmentClient` is set to `true` under `build.development` profile.
 - Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
 
-<Terminal cmd={['$ eas build --platform android --profile development']} />
+  <Terminal cmd={['$ eas build --platform android --profile development']} />
 
-> **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
+  > **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
 
 This command prompts us with the following questions:
 
-- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt.
+- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
 - **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
 
-<Collapsible summary="What is an Android application ID?">
-
-Also known as the package name of our Android app, it stores the value in DNS reverse notation format (`com.owner.app-name`). Each component of this notation should start with a lowercase letter.
-
-For example, our example app has `com.owner-name.stickersmash` where `com.owner-name` is the domain and `stickermsash` is our app name.
-
-</Collapsible>
-
-When we answer these prompts, the EAS CLI updates the [`android.package`](/versions/latest/config/app/#package) property in **app.json**. After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
 
 <ImageSpotlight
   alt="Android development build details and progress in Expo dashboard"
@@ -58,11 +48,19 @@ In the above image, the current status of the **Build artifact** shows that the 
 
 </Collapsible>
 
-</Step>
+<Collapsible summary="What is an Android application ID?">
 
-<Step label="2">
+Also known as the package name of our Android app, it stores the value in DNS reverse notation format (`com.owner.appname`). Each component of this notation should start with a lowercase letter.
 
-## Install development build on Android device
+For example, our example app has `com.owner.stickersmash` where `com.owner` is the domain and `stickermsash` is our app name.
+
+</Collapsible>
+
+## Android device
+
+<Step label="1">
+
+### Install development build
 
 Once the build finishes, the **Build artifact** section gets updated, indicating that the build is complete:
 
@@ -71,12 +69,7 @@ Once the build finishes, the **Build artifact** section gets updated, indicating
   src="/static/images/tutorial/eas/android-build-artifact.png"
 />
 
-This section provides the methods available for running the development build on an Android device:
-
-- Open with Expo Orbit
-- Install button
-
-### Using Expo Orbit
+This section provides the methods available for running the development build on an Android device: Expo Orbit and Install button.
 
 [Expo Orbit](https://expo.dev/orbit) allows for seamless installation of the development build on an Android device. To use this method:
 
@@ -94,7 +87,7 @@ This section provides the methods available for running the development build on
 
 After the build is installed, the Orbit app launches the development build on the device.
 
-### Using the Install button
+<Collapsible summary="Alternative: use the Install button and QR code">
 
 The **Install** button in the **Build artifact** generates a QR code for installation:
 
@@ -117,23 +110,25 @@ The **Install** button in the **Build artifact** generates a QR code for install
   style={{ maxWidth: 300 }}
 />
 
+</Collapsible>
+
 </Step>
 
-<Step label="3">
+<Step label="2">
 
-## Run development build on an Android device
+### Run development build
 
-Start the development server by running `npx expo start` from the project directory:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
 
 <Terminal cmd={['$ npx expo start']} />
 
-Press <kbd>a</kbd> in the terminal window to open the project on the Android device.
-
 </Step>
 
-<Step label="4">
+## Android Emulator
 
-## Install the development build on an Android Emulator
+<Step label="1">
+
+### Install the development build
 
 In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
 
@@ -143,29 +138,21 @@ In the terminal, once the build finishes, EAS CLI prompts us by asking whether w
   style={{ maxWidth: 600 }}
 />
 
-<Collapsible summary="Using Expo Orbit">
+<Collapsible summary="Alternative: use Expo Orbit">
 
 Alternatively, Expo Orbit can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
-
-<ImageSpotlight
-  alt="Using Expo Orbit to install development build on Android Emulator"
-  src="/static/images/tutorial/eas/android-emulator-orbit.png"
-  style={{ maxWidth: 300 }}
-/>
 
 </Collapsible>
 
 </Step>
 
-<Step label="5">
+<Step label="2">
 
-## Run the development build on Android Emulator
+### Run the development build
 
-Start the development server by running `npx expo start` from the project directory:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
 
 <Terminal cmd={['$ npx expo start']} />
-
-Press <kbd>a</kbd> in the terminal window to open the project on the Android Emulator.
 
 </Step>
 
@@ -176,11 +163,11 @@ Press <kbd>a</kbd> in the terminal window to open the project on the Android Emu
   name="EAS_TUTORIAL"
   summary={
     <>
-      We successfully used EAS Build to create and deploy development builds on Android devices and
+      We successfully used EAS Build to create and run development builds on Android devices and
       emulators, and learned about <strong>.apk</strong> and <strong>.aab</strong> file formats.
     </>
   }
-  nextChapterDescription="In the next chapter, Learn how to configure a development build for iOS Simulators using EAS Build."
+  nextChapterDescription="In the next chapter, Learn how to configure a development build for iOS Simulators using EAS Build and get it running."
   nextChapterTitle="Create and run a cloud build for iOS Simulator"
   nextChapterLink="/tutorial/eas/ios-development-build-for-simulators/"
 />
