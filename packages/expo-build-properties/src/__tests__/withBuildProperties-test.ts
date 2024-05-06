@@ -156,4 +156,19 @@ describe(withBuildProperties, () => {
       );
     }).rejects.toThrow();
   });
+
+  it('generates the apple.ccache property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { ccache: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'apple.ccacheEnabled': 'true',
+    });
+  });
 });
