@@ -82,6 +82,6 @@ describe('exports with react native canary', () => {
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatch('SignedSource<<5843fb9d1b07b5f25448ca7aefcb1275>>');
+    expect(bundle).toMatch('SignedSource<<73af5b3fe29d226634ed64bc861634df>>');
   });
 });
