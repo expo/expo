@@ -31,4 +31,26 @@ export default function Layout() {
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
 
-</PaddedAPIBox>
+When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
+
+```tsx other.tsx
+export const unstable_settings = {
+  // Used for `(foo)`
+  initialRouteName: 'first',
+  // Used for `(bar)`
+  bar: {
+    initialRouteName: 'second',
+  },
+};
+```
+
+The `initialRouteName` is typically only used when deep-linking to a route. During app navigation, the route you are navigating to will be the initial route. You can disable this behavior via the `initial` prop on the `<Link />` component or by passing the option to the imperative APIs
+
+```js
+// If this navigates to a new _layout, don't override the initial route
+<Link href="/route" initial={false} />;
+
+router.push('/route', { overrideInitialScreen: false });
+```
+
+</APIBox>

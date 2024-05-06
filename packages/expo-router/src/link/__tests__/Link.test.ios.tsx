@@ -1,7 +1,10 @@
-import { render } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 
+import { router } from '../../imperative-api';
+import Stack from '../../layouts/Stack';
+import { renderRouter, screen } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 
@@ -136,4 +139,66 @@ it('strips web-only href attributes', () => {
       onPress: expect.any(Function),
     })
   );
+});
+
+it('can preserve the initialRoute', () => {
+  renderRouter({
+    index: function MyIndexRoute() {
+      return (
+        <Link testID="link" initial={false} href="/fruit/banana">
+          Press me
+        </Link>
+      );
+    },
+    '/fruit/_layout': {
+      unstable_settings: {
+        initialRouteName: 'apple',
+      },
+      default: () => {
+        return <Stack />;
+      },
+    },
+    '/fruit/apple': () => <Text testID="apple">Apple</Text>,
+    '/fruit/banana': () => <Text testID="banana">Banana</Text>,
+  });
+
+  act(() => fireEvent.press(screen.getByTestId('link')));
+  expect(screen.getByTestId('banana')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('apple')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('link')).toBeDefined();
+});
+
+it('can preserve the initialRoute with shared groups', () => {
+  renderRouter({
+    index: function MyIndexRoute() {
+      return (
+        <Link testID="link" initial={false} href="/(foo)/fruit/banana">
+          Press me
+        </Link>
+      );
+    },
+    '/(foo,bar)/fruit/_layout': {
+      unstable_settings: {
+        initialRouteName: 'apple',
+        foo: {
+          initialRouteName: 'orange',
+        },
+      },
+      default: () => {
+        return <Stack />;
+      },
+    },
+    '/(foo,bar)/fruit/apple': () => <Text testID="apple">Apple</Text>,
+    '/(foo,bar)/fruit/orange': () => <Text testID="orange">Orange</Text>,
+    '/(foo,bar)/fruit/banana': () => <Text testID="banana">Banana</Text>,
+  });
+
+  act(() => fireEvent.press(screen.getByTestId('link')));
+  expect(screen.getByTestId('banana')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('orange')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('link')).toBeDefined();
 });
