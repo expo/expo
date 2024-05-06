@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Load view mocks included in packages.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
