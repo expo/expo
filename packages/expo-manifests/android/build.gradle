@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '0.14.1'
+version = '0.14.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.manifests"
   defaultConfig {
     versionCode 31
-    versionName '0.14.1'
+    versionName '0.14.2'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   testOptions {
