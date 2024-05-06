@@ -165,9 +165,6 @@ function getMockLiterals(tsReturnType) {
         case typescript_1.default.SyntaxKind.TypeLiteral:
             // handles a dictionary, could be improved by creating an object fitting the schema instead of an empty one
             return typescript_1.default.factory.createObjectLiteralExpression([], false);
-        case typescript_1.default.SyntaxKind.TypeReference:
-            // A fallback – we print a comment that these mocks are not fitting the custom type. Could be improved by expanding a set of default mocks.
-            return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createNull(), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsReturnType?.typeName?.escapedText ?? ''}.`);
     }
     return undefined;
 }
@@ -177,6 +174,12 @@ function wrapWithAsync(tsType) {
 function maybeWrapWithReturnStatement(tsType) {
     if (tsType.kind === typescript_1.default.SyntaxKind.AnyKeyword || tsType.kind === typescript_1.default.SyntaxKind.VoidKeyword) {
         return [];
+    }
+    if (tsType.kind === typescript_1.default.SyntaxKind.TypeReference) {
+        // A fallback – we print a comment that these mocks are not fitting the custom type. Could be improved by expanding a set of default mocks.
+        return [
+            typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createNull()), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsType?.typeName?.escapedText ?? ''}.`),
+        ];
     }
     return [typescript_1.default.factory.createReturnStatement(getMockLiterals(tsType))];
 }
