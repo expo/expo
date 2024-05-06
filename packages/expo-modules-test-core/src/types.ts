@@ -55,5 +55,5 @@ export type OutputModuleDefinition = {
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> &
   Record<'props', Prop[]>;
 
-// views and classes are a very simillar structure, same as module but without more nesting levels
+// views and classes are a very similar structure, same as module but without more nesting levels
 export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'view' | 'classes'>;

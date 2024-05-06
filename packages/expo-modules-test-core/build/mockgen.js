@@ -186,14 +186,19 @@ function maybeWrapWithReturnStatement(tsType) {
 /*
 We iterate over a list of functions and we create TS AST for each of them.
 */
-function getMockedFunctions(functions, async = false) {
+function getMockedFunctions(functions, { async = false, classMethod = false } = {}) {
     return functions.map((fnStructure) => {
         const name = typescript_1.default.factory.createIdentifier(fnStructure.name);
         const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
+        const parameters = fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name ?? '_', undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [];
+        const returnBlock = typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true);
+        if (classMethod) {
+            return typescript_1.default.factory.createMethodDeclaration([async ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.AsyncKeyword) : undefined].flatMap((f) => f ? [f] : []), undefined, name, undefined, undefined, parameters, async ? wrapWithAsync(returnType) : returnType, returnBlock);
+        }
         const func = typescript_1.default.factory.createFunctionDeclaration([
             typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword),
             async ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.AsyncKeyword) : undefined,
-        ].flatMap((f) => (f ? [f] : [])), undefined, name, undefined, fnStructure?.types?.parameters.map((p) => typescript_1.default.factory.createParameterDeclaration(undefined, undefined, p.name, undefined, mapSwiftTypeToTsType(p.typename), undefined)) ?? [], async ? wrapWithAsync(returnType) : returnType, typescript_1.default.factory.createBlock(maybeWrapWithReturnStatement(returnType), true));
+        ].flatMap((f) => (f ? [f] : [])), undefined, name, undefined, parameters, async ? wrapWithAsync(returnType) : returnType, returnBlock);
         return func;
     });
 }
@@ -268,9 +273,10 @@ function getMockedView(definition) {
     return [propsType, viewFunction];
 }
 function getMockedClass(def) {
-    const classDecl = typescript_1.default.factory.createClassDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(def.name), undefined, undefined, 
-    // need to fix this before merging, it's not mapping it correctly
-    [...getMockedFunctions(def.functions), ...getMockedFunctions(def.asyncFunctions, true)]);
+    const classDecl = typescript_1.default.factory.createClassDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(def.name), undefined, undefined, [
+        ...getMockedFunctions(def.functions, { classMethod: true }),
+        ...getMockedFunctions(def.asyncFunctions, { async: true, classMethod: true }),
+    ]);
     return classDecl;
 }
 function getMockedClasses(def) {
@@ -287,7 +293,7 @@ function getMockForModule(module, includeTypes) {
             ...getTypesToMock(module),
             ...(module.view ? getTypesToMock(module.view) : []),
         ]))
-        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
+        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, { async: true }), newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {

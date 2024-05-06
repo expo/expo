@@ -197,10 +197,37 @@ function maybeWrapWithReturnStatement(tsType: TSNode) {
 /*
 We iterate over a list of functions and we create TS AST for each of them.
 */
-function getMockedFunctions(functions: Closure[], async = false) {
+function getMockedFunctions(functions: Closure[], { async = false, classMethod = false } = {}) {
   return functions.map((fnStructure) => {
     const name = ts.factory.createIdentifier(fnStructure.name);
     const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
+    const parameters =
+      fnStructure?.types?.parameters.map((p) =>
+        ts.factory.createParameterDeclaration(
+          undefined,
+          undefined,
+          p.name ?? '_',
+          undefined,
+          mapSwiftTypeToTsType(p.typename),
+          undefined
+        )
+      ) ?? [];
+    const returnBlock = ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true);
+
+    if (classMethod) {
+      return ts.factory.createMethodDeclaration(
+        [async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined].flatMap((f) =>
+          f ? [f] : []
+        ),
+        undefined,
+        name,
+        undefined,
+        undefined,
+        parameters,
+        async ? wrapWithAsync(returnType) : returnType,
+        returnBlock
+      );
+    }
     const func = ts.factory.createFunctionDeclaration(
       [
         ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
@@ -209,18 +236,9 @@ function getMockedFunctions(functions: Closure[], async = false) {
       undefined,
       name,
       undefined,
-      fnStructure?.types?.parameters.map((p) =>
-        ts.factory.createParameterDeclaration(
-          undefined,
-          undefined,
-          p.name,
-          undefined,
-          mapSwiftTypeToTsType(p.typename),
-          undefined
-        )
-      ) ?? [],
+      parameters,
       async ? wrapWithAsync(returnType) : returnType,
-      ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true)
+      returnBlock
     );
     return func;
   });
@@ -343,8 +361,10 @@ function getMockedClass(def: OutputNestedClassDefinition) {
     ts.factory.createIdentifier(def.name),
     undefined,
     undefined,
-    // need to fix this before merging, it's not mapping it correctly
-    [...getMockedFunctions(def.functions), ...getMockedFunctions(def.asyncFunctions, true)] as any
+    [
+      ...getMockedFunctions(def.functions, { classMethod: true }),
+      ...getMockedFunctions(def.asyncFunctions, { async: true, classMethod: true }),
+    ] as ts.MethodDeclaration[]
   );
   return classDecl;
 }
@@ -374,8 +394,8 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
           )
         : [],
       newlineIdentifier,
-      getMockedFunctions(module.functions),
-      getMockedFunctions(module.asyncFunctions, true),
+      getMockedFunctions(module.functions) as ts.FunctionDeclaration[],
+      getMockedFunctions(module.asyncFunctions, { async: true }) as ts.FunctionDeclaration[],
       newlineIdentifier,
       getMockedView(module.view),
       getMockedClasses(module.classes)
