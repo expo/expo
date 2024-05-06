@@ -29,7 +29,15 @@
 
   NSString *engine;
   NSString *bridgeDescription = [[[manager currentBridge] batchedBridge] bridgeDescription];
-  if ([bridgeDescription containsString:@"Hermes"]) {
+
+  // In bridgeless mode the bridgeDescription always is "BridgeProxy" instead of actual engine name
+  if ([bridgeDescription containsString:@"BridgeProxy"]) {
+  #if USE_HERMES
+    engine = @"Hermes";
+  #else
+    engine = @"JSC";
+  #endif
+  } else if ([bridgeDescription containsString:@"Hermes"]) {
     engine = @"Hermes";
   } else if ([bridgeDescription containsString:@"V8"]) {
     engine = @"V8";

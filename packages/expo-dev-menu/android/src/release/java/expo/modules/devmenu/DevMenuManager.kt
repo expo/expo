@@ -72,9 +72,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
+  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) = Unit
 
   override fun serializedItems(): List<Bundle> {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)

@@ -5,6 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Choreographer
 import android.view.Surface
@@ -221,8 +222,14 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
   private fun getOrientation(): Int {
     val windowManager = appContext.reactContext?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
-    if (windowManager != null) {
-      when (windowManager.defaultDisplay.rotation) {
+    val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      appContext.reactContext?.applicationContext?.display?.rotation
+    } else {
+      @Suppress("DEPRECATION")
+      windowManager?.defaultDisplay?.rotation
+    }
+    if (rotation != null) {
+      when (rotation) {
         Surface.ROTATION_0 -> return 0
         Surface.ROTATION_90 -> return 90
         Surface.ROTATION_180 -> return 180
