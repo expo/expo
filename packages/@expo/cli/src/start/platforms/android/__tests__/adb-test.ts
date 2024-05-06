@@ -197,6 +197,7 @@ describe(getAttachedDevicesAsync, () => {
         name: 'Device FA8251A00719',
         pid: 'FA8251A00719',
         type: 'device',
+        connectionType: 'USB',
       },
       {
         isAuthorized: true,
@@ -204,6 +205,7 @@ describe(getAttachedDevicesAsync, () => {
         name: 'Pixel_2',
         pid: 'FA8251A00720',
         type: 'device',
+        connectionType: 'USB',
       },
       {
         isAuthorized: true,
