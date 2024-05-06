@@ -47,7 +47,7 @@ The `assets` option takes an array of one or more asset files or directory names
 
 When you [create a new native build](/develop/development-builds/create-a-build/), you can import and use the asset in your project without using a `require` or an `import` statement.
 
-For example, the **example.png** is linked by the above config plugin. You can directly import it into your component:
+For example, the **example.png** is linked by the above config plugin. You can directly import it into your component and use its resource name.
 
 ```jsx App.js
 import { Image } from 'expo-image';
@@ -57,6 +57,8 @@ function App() {
   return <Image source="example" />;
 }
 ```
+
+The above example is quite concise. However, when a native API expects a specific file and its resource name, this method makes it convenient to integrate with that API and use the resource name directly.
 
 > **info** For more information on supported file formats used with the config plugin, see [Assets API reference](/versions/v51.0.0/sdk/asset/#configurable-properties).
 
