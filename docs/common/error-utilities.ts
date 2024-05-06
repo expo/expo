@@ -404,7 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
   '/distribution/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
-  '/tutorial/': '/tutorial/introduction/',
+  '/tutorial/': '/tutorial/overview/',
 
   // EAS Update
   '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',

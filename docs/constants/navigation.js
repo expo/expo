@@ -450,6 +450,7 @@ const general = [
 ];
 
 const learn = [
+  makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
     'Get started',
     [

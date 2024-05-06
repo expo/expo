@@ -101,7 +101,7 @@ const Home = () => {
               </RawH2>
               <HomeButton
                 className="hocus:bg-button-primary hocus:opacity-80"
-                href="/tutorial/introduction/"
+                href="/tutorial/overview/"
                 rightSlot={<ArrowRightIcon className="icon-md" />}>
                 Start Tutorial
               </HomeButton>
