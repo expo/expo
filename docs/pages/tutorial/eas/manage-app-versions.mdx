@@ -5,6 +5,7 @@ description: Learn about developer-facing and user-facing app versions and how t
 ---
 
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { CODE } from '~/ui/components/Text';
 
 In this chapter, we'll configure our example app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next two chapters.
 
@@ -15,7 +16,7 @@ An app version is composed of two values:
 - Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
 - User-facing value: Represented by [`version`](/versions/latest/config/app/#version) **app.config.js**.
 
-Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. Once we upload an app with an app version (combination of developer and user facing values), we cannot submit another build with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
+Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of developer and user facing values), we cannot submit another build to the app stores with the app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
 We can manually manage developer-facing values by setting them as `android.versionCode` and `ios.buildNumber` in **app.config.js**.
 
@@ -50,7 +51,7 @@ In **eas.json**:
 {
   "cli": {
     /* @hide ... */ /* @end */
-    /* @info Add the appVersionSource property and set it to remote*/
+    /* @info Add <CODE>appVersionSource</CODE> and set it to remote. */
     "appVersionSource": "remote"
     /* @end */
   },
