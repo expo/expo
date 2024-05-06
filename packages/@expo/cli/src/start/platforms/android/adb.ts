@@ -300,14 +300,9 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       name = (await getAdbNameForDeviceIdAsync({ pid })) ?? '';
     }
 
-    return {
-      pid,
-      name,
-      type,
-      isAuthorized,
-      isBooted: true,
-      connectionType: props.connectionType,
-    };
+    return props.connectionType
+      ? { pid, name, type, isAuthorized, isBooted: true, connectionType: props.connectionType }
+      : { pid, name, type, isAuthorized, isBooted: true };
   });
 
   return Promise.all(devicePromises);
