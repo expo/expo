@@ -250,7 +250,11 @@ target 'HelloWorld' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false
+      :mac_catalyst_enabled => false,
+      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true'
+      # Temporarily disable privacy file aggregation by default, until React
+      # Native 0.74.2 is released with fixes.
+      :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
     )
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
