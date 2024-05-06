@@ -24,6 +24,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'apple.ccacheEnabled',
         propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
     },
+    {
+        propName: 'apple.privacyManifestAggregationEnabled',
+        propValueGetter: (config) => (config.ios?.privacyManifestAggregationEnabled ?? false).toString(),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;
