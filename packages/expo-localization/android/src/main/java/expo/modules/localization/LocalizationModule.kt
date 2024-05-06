@@ -88,6 +88,9 @@ class LocalizationModule : Module() {
           .edit()
           .also {
             it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
+            if (forcesRTL == "false") {
+              it.putBoolean(KEY_FOR_PREFS_FORCERTL, false)
+            }
             it.apply()
           }
       }
