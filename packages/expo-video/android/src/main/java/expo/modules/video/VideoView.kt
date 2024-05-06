@@ -146,6 +146,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     if (Build.VERSION.SDK_INT >= 34) {
       currentActivity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
     } else {
+      @Suppress("DEPRECATION")
       currentActivity.overridePendingTransition(0, 0)
     }
     isInFullscreen = true
