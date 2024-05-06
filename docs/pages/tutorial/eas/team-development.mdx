@@ -13,7 +13,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
 
-In this chapter, we're going to use [EAS Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/review/overview/) of the change.
+In this chapter, we'll use [EAS Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/review/overview/) of the change.
 
 <Step label="1">
 
@@ -53,7 +53,6 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
     },
     "ios-simulator": {
       /* @hide ... */ /* @end */
-      "channel": "ios-simulator"
     },
     "preview": {
       /* @hide ... */ /* @end */
@@ -68,7 +67,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 }
 ```
 
-> **info** **Tip**: Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
+> **info** Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
 
 <Collapsible summary="What is a channel?">
 
@@ -96,7 +95,9 @@ After the new version of the development build is created, make sure to install 
 
 ## Modify the JavaScript code of the app
 
-Let's update the text of the first button in our app that says **Choose a photo** to **Select a photo**.
+Let's modify our example app's JavaScript code. If you are not using [Sticker Smash app](/tutorial/eas/introduction/#prerequisites), you can modify any piece of your code to see the changes in the app.
+
+We'll modify the text of the first button in our app that says **Choose a photo** to **Select a photo**.
 
 ```jsx App.js
 <Button theme="primary" label="Select a photo" onPress={pickImageAsync} />
@@ -123,7 +124,7 @@ After the update is published, the CLI will prompt us with information about it.
   src="/static/images/tutorial/eas/update-01.png"
 />
 
-Click on the website link to see the Update on the Expo dashboard under **Updates**:
+Click on the **Website link** to see the Update on the Expo dashboard under **Updates**:
 
 <ImageSpotlight
   alt="Expo dashboard shows the latest published update for the development build"
