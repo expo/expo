@@ -54,15 +54,9 @@ To enable triggering builds from a GitHub repository, we need to connect it to o
 
 <Step label="3">
 
-## Configure repository settings in the Expo dashboard
+## Use default repository settings
 
-The Expo GitHub app needs to know where to find the source code of our project. By default, it selects the root directory using `/`. In our example project, the source code is also available in the root repository.
-
-<ImageSpotlight
-  alt="Default settings for configuring a GitHub repository in Expo dashboard"
-  src="/static/images/tutorial/eas/github-03.png"
-  style={{ maxWidth: 800 }}
-/>
+The Expo GitHub app needs to know where to find the source code of our project. By default, it selects the root directory using `/`. In our example project, the source code is also available in the root repository. We can leave this to default in the Expo dashboard.
 
 </Step>
 
@@ -110,12 +104,6 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 
 - Click **Create pull request** button to create the PR. The Expo GitHub app will start the process of creating a development build.
 
-<ImageSpotlight
-  alt="The Expo GitHub app starts the process of creating a development build"
-  src="/static/images/tutorial/eas/github-05.png"
-  style={{ maxWidth: 600 }}
-/>
-
 - In the Expo dashboard, on the **Builds** page, we can verify that the builds for both Android and iOS are triggered.
 
 <ImageSpotlight
@@ -140,7 +128,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
   currentChapterIndex={10}
   name="EAS_TUTORIAL"
   summary="In this chapter, we linked our GitHub account with Expo, connected our repository to our EAS project, and automated build creation using GitHub PR labels."
-  nextChapterDescription="Learn about the next steps in your journey to using EAS."
+  nextChapterDescription="Learn about the next steps in your journey to use EAS."
   nextChapterTitle="Next steps in your journey with EAS"
   nextChapterLink="/tutorial/eas/next-steps/"
 />
