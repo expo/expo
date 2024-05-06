@@ -22,6 +22,10 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propName: 'apple.extraPods',
       propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
     },
+    {
+      propName: 'apple.ccacheEnabled',
+      propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
+    },
   ],
   'withIosBuildProperties'
 );

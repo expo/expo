@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.ccacheEnabled` option to enable the C++ compiler cache for iOS builds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
