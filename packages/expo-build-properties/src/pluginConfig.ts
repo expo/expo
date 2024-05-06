@@ -236,6 +236,16 @@ export interface PluginConfigTypeIos {
    * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
    */
   extraPods?: ExtraIosPodDependency[];
+
+  /**
+   * Enable C++ compiler cache for iOS builds.
+   *
+   * This speeds up compiling C++ code by caching the results of previous compilations.
+   *
+   * @see https://reactnative.dev/docs/build-speed#local-caches
+   * @see https://ccache.dev/
+   */
+  ccacheEnabled?: boolean;
 }
 
 /**
@@ -532,6 +542,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
 
         networkInspector: { type: 'boolean', nullable: true },
+        ccacheEnabled: { type: 'boolean', nullable: true },
 
         extraPods: {
           type: 'array',

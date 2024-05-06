@@ -80,7 +80,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:bundleVersionedRelease"
+        "gradleCommand": ":app:bundleRelease"
       },
       "ios": {
         "autoIncrement": "buildNumber",

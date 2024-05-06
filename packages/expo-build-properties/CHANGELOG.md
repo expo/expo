@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.ccacheEnabled` option to enable the C++ compiler cache for iOS builds. ([#28638](https://github.com/expo/expo/pull/28638) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

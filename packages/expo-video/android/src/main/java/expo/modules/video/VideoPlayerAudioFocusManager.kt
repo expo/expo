@@ -51,6 +51,7 @@ class VideoPlayerAudioFocusManager(val context: Context, private val player: Wea
       this.currentFocusRequest = newFocusRequest
       audioManager.requestAudioFocus(newFocusRequest)
     } else {
+      @Suppress("DEPRECATION")
       audioManager.requestAudioFocus(
         this,
         AudioManager.STREAM_MUSIC,
@@ -64,6 +65,7 @@ class VideoPlayerAudioFocusManager(val context: Context, private val player: Wea
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         audioManager.abandonAudioFocusRequest(it)
       } else {
+        @Suppress("DEPRECATION")
         audioManager.abandonAudioFocus(this)
       }
     }

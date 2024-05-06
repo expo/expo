@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 4.0.11 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `LogBox` isn't working on the new architecture. ([#28602](https://github.com/expo/expo/pull/28602) by [@lukmccall](https://github.com/lukmccall))
+
 ## 4.0.9 — 2024-05-02
 
 _This version does not introduce any user-facing changes._

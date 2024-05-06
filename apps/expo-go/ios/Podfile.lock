@@ -35,11 +35,11 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.0-preview.11):
+  - Expo (51.0.0-preview.14):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.4.1):
     - ExpoModulesCore
-  - ExpoAsset (10.0.5):
+  - ExpoAsset (10.0.6):
     - ExpoModulesCore
   - ExpoAudio (0.1.0):
     - ExpoModulesCore
@@ -84,10 +84,11 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (13.0.1):
     - ExpoModulesCore
-  - ExpoHead (3.5.7):
+  - ExpoHead (3.5.8):
     - ExpoModulesCore
-  - ExpoImage (1.12.6):
+  - ExpoImage (1.12.7):
     - ExpoModulesCore
+    - libavif/libdav1d
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
@@ -111,7 +112,7 @@ PODS:
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
     - React-Core
-  - ExpoModulesCore (1.12.7):
+  - ExpoModulesCore (1.12.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -125,6 +126,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
+    - React-jsinspector
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
@@ -133,7 +135,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.12.7):
+  - ExpoModulesCore/Tests (1.12.8):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -148,6 +150,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
+    - React-jsinspector
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - React-RCTFabric
@@ -221,7 +224,7 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (13.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.27.3):
+  - EXSplashScreen (0.27.4):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -248,7 +251,7 @@ PODS:
   - EXTaskManager (11.8.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.25.7):
+  - EXUpdates (0.25.8):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -276,7 +279,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdates/Tests (0.25.7):
+  - EXUpdates/Tests (0.25.8):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -394,6 +397,10 @@ PODS:
   - hermes-engine/Public (0.74.1)
   - JKBigInteger (0.0.6)
   - libavif/core (0.11.1)
+  - libavif/libdav1d (0.11.1):
+    - libavif/core
+    - libdav1d (>= 0.6.0)
+  - libdav1d (1.2.0)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -2006,6 +2013,7 @@ SPEC REPOS:
     - GoogleMaps
     - GoogleUtilities
     - libavif
+    - libdav1d
     - libwebp
     - lottie-ios
     - MBProgressHUD
@@ -2336,9 +2344,9 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 7832a9a6562afc89e57190d5a8702affc0cfe77e
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 0e5153ae2ce3b103bc83356562bacc02bd09e00a
+  Expo: 5c1516e626d56a32ef5a4363d0d8bae15c5f39e4
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
-  ExpoAsset: 3008baf7a1995dea8cb91d07686562361a8779c0
+  ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
   ExpoBackgroundFetch: a06c553ecaf0bade0acd691042d996b9ce926327
   ExpoBattery: 4b21f628f2b70af3af66e83c566949ba9cc65eb1
@@ -2356,8 +2364,8 @@ SPEC CHECKSUMS:
   ExpoFont: 331cf28d549edc7b6300d3be19302fc5069d9bb1
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
-  ExpoHead: c552f218dbc64c97185952df491340b60fd67610
-  ExpoImage: 42ed3a89130f6bb764f63a37ef3a3b28453e9fad
+  ExpoHead: e55606db85845d58e818d621499cdffab771c385
+  ExpoImage: b458c0ffc2bfd59fb464f9b7606a30bc23767775
   ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
@@ -2366,7 +2374,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 35ae7dad064bf2d5f99821c2e64cc768f8dd8b62
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
-  ExpoModulesCore: 0b6a622280a431e4174d8cc83c1bef6111687ea5
+  ExpoModulesCore: a67489aac5d81f9bf35ebd163af2388775f16c92
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a
@@ -2386,10 +2394,10 @@ SPEC CHECKSUMS:
   ExpoVideo: 0b8d0a9aff88b845d645aba2273a839ee71b779a
   ExpoVideoThumbnails: 40c737b2507a7470b14e9452e286513beb9a7d77
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
-  EXSplashScreen: a8345702b8f39b2688a45a3f5cf0a0e1a78fa2c3
+  EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: 84e4c599f7d7986336be67bfaf07f2f59241ca21
+  EXUpdates: 2d6a56dab78992e63bf47177e0f9e176b301f08a
   EXUpdatesInterface: e5ec53f49ac304d173471f15e70abf8723f00fe5
   FBLazyVector: 898d14d17bf19e2435cafd9ea2a1033efe445709
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
@@ -2404,6 +2412,7 @@ SPEC CHECKSUMS:
   hermes-engine: 543f364ff8a13dad19f62d9d601da0e6c615f2da
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
+  libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
   lottie-react-native: f851c0e235f171d99083c803f728f644be1dcf65

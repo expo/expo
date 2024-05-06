@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.12.8 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- Fixed building error when use_frameworks on new architecture. ([#28451](https://github.com/expo/expo/pull/28451) by [@kudo](https://github.com/kudo))
+
 ## 1.12.7 — 2024-05-02
 
 ### 🎉 New features
