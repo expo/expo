@@ -279,7 +279,12 @@ function separateWithNewlines(arr) {
 }
 function getMockForModule(module, includeTypes) {
     return []
-        .concat(getPrefix(), newlineIdentifier, includeTypes ? getMockedTypes(getTypesToMock(module)) : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [], newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
+        .concat(getPrefix(), newlineIdentifier, includeTypes
+        ? getMockedTypes(new Set([
+            ...getTypesToMock(module),
+            ...(module.view ? getTypesToMock(module.view) : []),
+        ]))
+        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true), newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {
