@@ -207,6 +207,7 @@ export interface PluginConfigTypeIos {
      *
      * This speeds up compiling C++ code by caching the results of previous compilations.
      *
+     * @see https://reactnative.dev/docs/build-speed#local-caches
      * @see https://ccache.dev/
      */
     ccacheEnabled?: boolean;
