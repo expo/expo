@@ -68,6 +68,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
+  var autoFocus = AVCaptureDevice.FocusMode.continuousAutoFocus {
+    didSet {
+      setFocusMode()
+    }
+  }
+
   var pictureSize = PictureSize.high {
     didSet {
       updatePictureSize()
@@ -192,8 +198,25 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
+    }
+    device.unlockForConfiguration()
+  }
+
+  private func setFocusMode() {
+    guard let device = captureDeviceInput?.device else {
       return
     }
+
+    do {
+      try device.lockForConfiguration()
+      if device.isFocusModeSupported(autoFocus), device.focusMode != autoFocus {
+        device.focusMode = autoFocus
+      }
+    } catch {
+      log.info("\(#function): \(error.localizedDescription)")
+      return
+    }
+    device.unlockForConfiguration()
   }
 
   private func setCameraMode() {
