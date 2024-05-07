@@ -33,7 +33,7 @@ Use a package manager such as [Homebrew](https://brew.sh/) to install the follow
 
 <Step label="1">
 
-Install the LTS release of Node.js using a [version management tool](https://nodejs.org/en/download/package-manager) such as `nvm` or `volta`. If you have already installed Node.js on your system, make sure the version is 16 or above.
+Install the LTS release of Node.js using a [version management tool](https://nodejs.org/en/download/package-manager) such as `nvm` or `volta`.
 
 </Step>
 
@@ -55,10 +55,7 @@ Install OpenJDK distribution called Azul Zulu using Homebrew. This distribution 
 
 We recommend JDK 17. Run the following commands in a terminal window to install it:
 
-<Terminal
-  cmd={['$ brew tap homebrew/cask-versions', '$ brew install --cask zulu@17']}
-  cmdCopy="brew tap homebrew/cask-versions && brew install --cask zulu@17"
-/>
+<Terminal cmd={['$ brew install --cask zulu@17']} />
 
 After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash_profile** (or **~/.zshrc** if you use Zsh):
 
@@ -72,10 +69,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 
 We recommend JDK 11 (you may encounter problems with higher JDK versions). Run the following commands in a terminal window to install it:
 
-<Terminal
-  cmd={['$ brew tap homebrew/cask-versions', '$ brew install --cask zulu@11']}
-  cmdCopy="brew tap homebrew/cask-versions && brew install --cask zulu@11"
-/>
+<Terminal cmd={['$ brew install --cask zulu@11']} />
 
 After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash_profile** (or **~/.zshrc** if you use Zsh):
 
@@ -107,11 +101,9 @@ Use a package manager such as [Chocolatey](https://chocolatey.org/) to install t
 
 <Step label="1">
 
-Install the LTS version of Node.js using Chocolatey:
+Install the LTS version of Node.js using Chocolatey. If you want to be able to switch between different versions, use a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows) to install Node.js
 
 <Terminal cmd={['$ choco install -y nodejs']} />
-
-If you have already installed Node.js on your system, make sure the version is 18 or above. If you want to be able to switch between different versions, you might want to install Node.js using a version manager such as [`nvm-windows`](https://github.com/coreybutler/nvm-windows).
 
 </Step>
 
@@ -155,13 +147,13 @@ To set up your development environment on Linux for Android, you will install No
 
 <Step label="1">
 
-Install Node.js 18 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
+Install Node.js LTS by following [instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
 
 </Step>
 
 <Step label="2">
 
-Follow [installation instructions from the Watchman installation guide](https://facebook.github.io/watchman/docs/install#linux) to compile and install it from the source.
+Follow instructions from [Watchman documentation](https://facebook.github.io/watchman/docs/install#linux) to compile and install it from the source.
 
 </Step>
 
@@ -211,7 +203,7 @@ Use a package manager such as [Homebrew](https://brew.sh/) to install the follow
 
 <Step label="1">
 
-Install the LTS release of Node.js using a [version management tool](https://nodejs.org/en/download/package-manager) such as `nvm` or `volta`. If you have already installed Node.js on your system, make sure the version is 16 or above.
+Install the LTS release of Node.js using a [version management tool](https://nodejs.org/en/download/package-manager) such as `nvm` or `volta`.
 
 </Step>
 
