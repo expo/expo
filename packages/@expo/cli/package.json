@@ -18,6 +18,7 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js --runInBand",
+    "test:playwright": "playwright test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
@@ -127,6 +128,7 @@
     "@graphql-codegen/cli": "2.16.3",
     "@graphql-codegen/typescript": "2.8.7",
     "@graphql-codegen/typescript-operations": "2.5.12",
+    "@playwright/test": "^1.40.1",
     "@swc/core": "~1.2.249",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
@@ -164,6 +166,7 @@
     "nock": "~13.2.2",
     "node-html-parser": "^6.1.5",
     "nullthrows": "^1.1.1",
+    "playwright": "^1.40.1",
     "taskr": "1.1.0",
     "tree-kill": "^1.2.2",
     "tsd": "^0.28.1"
