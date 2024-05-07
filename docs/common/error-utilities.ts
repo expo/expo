@@ -144,7 +144,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/faq/': '/faq/',
   '/next-steps/community/': '/',
   '/introduction/managed-vs-bare/': '/archive/managed-vs-bare/',
-  '/workflow/expo-go/': '/get-started/expo-go/',
+  '/workflow/expo-go/': '/get-started/set-up-your-environment/',
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
@@ -209,7 +209,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
-  '/guides/up-and-running/': '/get-started/installation/',
+  '/guides/up-and-running/': '/get-started/create-a-project/',
   '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
@@ -218,14 +218,14 @@ const RENAMED_PAGES: Record<string, string> = {
     'https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36',
 
   // Changes from redoing the getting started workflow, SDK35+
-  '/workflow/up-and-running/': '/get-started/installation/',
+  '/workflow/up-and-running/': '/get-started/create-a-project/',
   '/introduction/additional-resources/': '/next-steps/additional-resources/',
   '/introduction/already-used-react-native/':
     '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
-  '/introduction/installation/': '/get-started/installation/',
+  '/introduction/installation/': '/get-started/create-a-project/',
   '/versions/latest/overview/': '/versions/latest/',
-  '/versions/latest/introduction/installation/': '/get-started/installation/',
+  '/versions/latest/introduction/installation/': '/get-started/create-a-project/',
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
@@ -249,13 +249,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/account-permissions/': '/accounts/personal/',
 
   // Redirects based on Sentry reports
-  '/next-steps/installation/': '/get-started/installation/',
+  '/next-steps/installation/': '/get-started/create-a-project/',
   '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/push-notifications/': '/push-notifications/overview/',
   '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
-  '/get-started/': '/get-started/installation/',
+  '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
   '/eas/submit/': '/submit/introduction/',
@@ -454,8 +454,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-expo-client/': '/archive/using-expo-client/',
 
   // May 2024 home / get started section
-  '/overview': '/get-started/introduction',
-  '/get-started/installation': '/get-started/create-a-project',
-  '/get-started/expo-go': '/get-started/set-up-your-environment',
-  '/get-started/create-a-project': '/get-started/create-a-project',
+  '/overview/': '/get-started/introduction/',
+  '/get-started/installation/': '/get-started/create-a-project/',
+  '/get-started/expo-go/': '/get-started/set-up-your-environment/',
 };
