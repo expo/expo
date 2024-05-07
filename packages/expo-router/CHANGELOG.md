@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `useMemo` crash when adding new routes.
-
 ### 💡 Others
+
+## 3.5.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useMemo` crash when adding new routes.
 
 ## 3.5.9 — 2024-05-06
 
