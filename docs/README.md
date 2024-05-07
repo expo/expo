@@ -129,7 +129,7 @@ We use Algolia as a main search results provider for our docs. Besides the query
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
 - all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (for example, `v50.0.0` or `v49.0.0`),
+- all versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
@@ -315,8 +315,8 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 #### Supported additional params
 
-| Param            | Type   | Description                                                                                                                                                            |
-| ---------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Param            | Type   | Description                                                                                                                                                           |
+| ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `collapseHeight` | number | The custom height that the code block uses to collapse automatically. The default value is `408` and is applied unless the `collapseHeight` param has been specified. |
 
 ### Add inline Snack examples
@@ -402,15 +402,15 @@ Whenever shell commands are used or referred, use `Terminal` component to make t
 import { Terminal } from '~/ui/components/Snippet';
 
 {/* for single command and one prop: */}
-<Terminal cmd={["$ npx expo install package"]} />
+
+<Terminal cmd={['$ npx expo install package']} />
 
 {/* for multiple commands: */}
 
-<Terminal cmd={[
-  "# Create a new Expo project",
-  "$ npx create-expo-app --template bare-minimum",
-  "",
-]} cmdCopy="npx create-expo-app --template bare-minimum" />
+<Terminal
+  cmd={['# Create a new Expo project', '$ npx create-expo-app --template bare-minimum', '']}
+  cmdCopy="npx create-expo-app --template bare-minimum"
+/>
 ```
 
 ### Use callouts
