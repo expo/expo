@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { VideoPlayerWeb, getSourceUri } from './VideoPlayer.web';
+import VideoPlayer, { getSourceUri } from './VideoPlayer.web';
 import type { VideoViewProps } from './VideoView.types';
 
 function createAudioContext(): AudioContext | null {
@@ -24,7 +24,7 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
   return flattenedStyles as React.CSSProperties;
 }
 
-export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
+export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoViewProps, ref) => {
   const videoRef = useRef<null | HTMLVideoElement>(null);
   const mediaNodeRef = useRef<null | MediaElementAudioSourceNode>(null);
 

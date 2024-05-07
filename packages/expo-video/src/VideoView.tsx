@@ -2,7 +2,8 @@ import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import type { VideoPlayer, VideoViewProps } from './VideoView.types';
+import type { VideoPlayer } from './VideoPlayer.types';
+import type { VideoViewProps } from './VideoView.types';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
