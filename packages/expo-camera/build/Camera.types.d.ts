@@ -6,6 +6,13 @@ export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
 /**
+ * This option specifies the mode of focus on the device.
+ * - `on` - Indicates that the device should autofocus once and then lock the focus.
+ * - `off` - Indicates that the device should automatically focus when needed.
+ * @default off
+ */
+export type FocusMode = 'on' | 'off';
+/**
  * This option specifies what codec to use when recording a video.
  * @platform ios
  */
@@ -269,6 +276,12 @@ export type CameraProps = ViewProps & {
      */
     mute?: boolean;
     /**
+     * Indicates the focus mode to use.
+     * @default off
+     * @platform ios
+     */
+    autofocus?: FocusMode;
+    /**
      * Specify the quality of the recorded video. Use one of `VideoQuality` possible values:
      * for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
      * If the chosen quality is not available for a device, the highest available is chosen.
@@ -372,6 +385,7 @@ export type CameraNativeProps = {
     flashMode?: string;
     enableTorch?: boolean;
     animateShutter?: boolean;
+    autoFocus?: FocusMode;
     mute?: boolean;
     zoom?: number;
     barcodeScannerSettings?: BarcodeSettings;

@@ -36,3 +36,19 @@ enum CameraMode: String, Enumerable {
   case picture
   case video
 }
+
+enum FocusMode: String, Enumerable {
+  case on
+  case off
+
+  func toAVCaptureFocusMode() -> AVCaptureDevice.FocusMode {
+    switch self {
+    case .on:
+      return .autoFocus
+    case .off:
+      return .continuousAutoFocus
+    default:
+      return .continuousAutoFocus
+    }
+  }
+}
