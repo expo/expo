@@ -185,6 +185,11 @@ class Env {
     return string('EXPO_ADB_USER', '0');
   }
 
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
+
   /** Unstable: Force single-bundle exports in production. */
   get EXPO_NO_BUNDLE_SPLITTING(): boolean {
     return boolish('EXPO_NO_BUNDLE_SPLITTING', false);

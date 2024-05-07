@@ -174,7 +174,11 @@ async function metroFetchAsync(
   // TODO: Improve error handling
   if (res.status === 500) {
     const text = await res.text();
-    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
+    if (
+      text.startsWith('{"originModulePath"') ||
+      text.startsWith('{"type":"TransformError"') ||
+      text.startsWith('{"type":"InternalError"')
+    ) {
       const errorObject = JSON.parse(text);
 
       throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);

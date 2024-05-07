@@ -52,6 +52,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
@@ -86,3 +89,40 @@ jobs:
       #     status: ${{ job.status }}
       #     fields: job,message,ref,eventName,author,took
       #     author_name: Check packages
+  web:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Install Playwright Browsers
+        run: bun playwright install --with-deps
+        working-directory: packages/@expo/cli
+      - name: E2E (playwright) Test CLI
+        run: yarn test:playwright
+        working-directory: packages/@expo/cli
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: packages/@expo/cli/playwright-report/
+          retention-days: 30
