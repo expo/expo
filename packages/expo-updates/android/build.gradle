@@ -90,7 +90,7 @@ dependencies {
   def room_version = "2.4.2"
 
   implementation "androidx.room:room-runtime:$room_version"
-  kapt "androidx.room:room-compiler:$room_version"
+  annotationProcessor "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
