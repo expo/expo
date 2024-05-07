@@ -407,13 +407,10 @@ import { Terminal } from '~/ui/components/Snippet';
 {/* for multiple commands: */}
 
 <Terminal cmd={[
-  "# Create a new native project",
+  "# Create a new Expo project",
   "$ npx create-expo-app --template bare-minimum",
   "",
-  "# If you don’t have expo-cli yet, get it",
-  "$ npm i -g expo-cli",
-  "",
-]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
+]} cmdCopy="npx create-expo-app --template bare-minimum" />
 ```
 
 ### Use callouts
