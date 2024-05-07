@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Filter out unavailable connected devices when running `npx expo run:ios -d`. ([#28642](https://github.com/expo/expo/pull/28642) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.18.9 — 2024-05-06
