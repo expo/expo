@@ -1,27 +1,45 @@
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index eaf07ca4c2..40971e1cd1 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -25,13 +25,17 @@ target 'HelloWorld' do
+     :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+     # An absolute path to your application root.
+     :app_path => "#{Pod::Config.instance.installation_root}/..",
++    # Temporarily disable privacy file aggregation by default, until React
++    # Native 0.74.2 is released with fixes.
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
+   )
+ 
+   post_install do |installer|
+     react_native_post_install(
+       installer,
+       config[:reactNativePath],
+-      :mac_catalyst_enabled => false
++      :mac_catalyst_enabled => false,
++      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+     )
+ 
+     # This is necessary for Xcode 14, because it signs resource bundles by default
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 2434177766..cc051d1e40 100644
+index c1ae9be917..a2f539b476 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "51.0.2",
-+  "version": "51.0.12",
+-  "version": "51.0.16",
++  "version": "51.0.20",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,10 +10,10 @@
+@@ -10,7 +10,7 @@
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~51.0.0-preview.0",
--    "expo-status-bar": "~1.12.0",
-+    "expo": "~51.0.0-preview.10",
-+    "expo-status-bar": "~1.12.1",
+-    "expo": "~51.0.0-preview.14",
++    "expo": "~51.0.0",
+     "expo-status-bar": "~1.12.1",
      "react": "18.2.0",
--    "react-native": "0.74.0"
-+    "react-native": "0.74.1-rc.0"
-   },
-   "devDependencies": {
-     "@babel/core": "^7.20.0"
+     "react-native": "0.74.1"

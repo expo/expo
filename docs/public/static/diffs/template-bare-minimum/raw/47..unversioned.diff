@@ -2177,7 +2177,7 @@ index a6e13e11ab..b27f83286d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2340,10 +2340,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 474455b90d..eaf07ca4c2 100644
+index 474455b90d..40971e1cd1 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,43 +1,38 @@
+@@ -1,43 +1,42 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2382,6 +2382,9 @@ index 474455b90d..eaf07ca4c2 100644
 -    # Uncomment to opt-in to using Flipper
 -    # Note that if you have use_frameworks! enabled, Flipper will not work
 -    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
++    # Temporarily disable privacy file aggregation by default, until React
++    # Native 0.74.2 is released with fixes.
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
    )
  
    post_install do |installer|
@@ -2389,8 +2392,10 @@ index 474455b90d..eaf07ca4c2 100644
        installer,
 -      # Set `mac_catalyst_enabled` to `true` in order to apply patches
 -      # necessary for Mac Catalyst builds
+-      :mac_catalyst_enabled => false
 +      config[:reactNativePath],
-       :mac_catalyst_enabled => false
++      :mac_catalyst_enabled => false,
++      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
      )
 -    __apply_Xcode_12_5_M1_post_install_workaround(installer)
  
@@ -2420,7 +2425,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..cc051d1e40 100644
+index a41fdc0d8d..a2f539b476 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2428,7 +2433,7 @@ index a41fdc0d8d..cc051d1e40 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "47.0.26",
-+  "version": "51.0.12",
++  "version": "51.0.20",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2441,10 +2446,10 @@ index a41fdc0d8d..cc051d1e40 100644
 -    "expo-status-bar": "~1.4.2",
 -    "react": "18.1.0",
 -    "react-native": "0.70.8"
-+    "expo": "~51.0.0-preview.10",
++    "expo": "~51.0.0",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.2.0",
-+    "react-native": "0.74.1-rc.0"
++    "react-native": "0.74.1"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

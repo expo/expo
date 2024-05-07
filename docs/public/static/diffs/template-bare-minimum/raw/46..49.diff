@@ -1944,7 +1944,7 @@ index a6e13e11ab..f8e88bbe0c 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +54,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+@@ -124,43 +54,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
