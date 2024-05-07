@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `autoFocus` prop to allow setting the device focus mode.
+- Add `autoFocus` prop to allow setting the device focus mode. ([#28650](https://github.com/expo/expo/pull/28650) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
