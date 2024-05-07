@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
+exports.getPathFromState = exports.getStateFromPath = exports.isDeepLinksIgnoredForUrl = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
@@ -100,6 +101,8 @@ function addEventListener(nativeLinking) {
         }
         else {
             callback = async ({ url }) => {
+                if (isDeepLinksIgnoredForUrl(url))
+                    return;
                 if (url && nativeLinking?.redirectSystemPath) {
                     url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
                 }
@@ -114,4 +117,9 @@ function addEventListener(nativeLinking) {
     };
 }
 exports.addEventListener = addEventListener;
+function isDeepLinksIgnoredForUrl(url) {
+    const urlsToIgnore = expo_constants_1.default.expoConfig?.experiments?.ignoredDeepLinks || [];
+    return urlsToIgnore.some((ignoredUrl) => url.startsWith(ignoredUrl));
+}
+exports.isDeepLinksIgnoredForUrl = isDeepLinksIgnoredForUrl;
 //# sourceMappingURL=linking.js.map

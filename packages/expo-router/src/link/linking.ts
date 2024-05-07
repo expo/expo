@@ -1,4 +1,5 @@
 import { LinkingOptions } from '@react-navigation/native';
+import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
@@ -85,6 +86,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
       };
     } else {
       callback = async ({ url }) => {
+        if (isDeepLinksIgnoredForUrl(url)) return;
         if (url && nativeLinking?.redirectSystemPath) {
           url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
         }
@@ -99,6 +101,11 @@ export function addEventListener(nativeLinking?: NativeIntent) {
       subscription?.remove?.();
     };
   };
+}
+
+export function isDeepLinksIgnoredForUrl(url: string): boolean {
+  const urlsToIgnore = Constants.expoConfig?.experiments?.ignoredDeepLinks || [];
+  return urlsToIgnore.some((ignoredUrl) => url.startsWith(ignoredUrl));
 }
 
 export { getStateFromPath, getPathFromState };
