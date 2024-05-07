@@ -221,6 +221,7 @@ exceptions:
   - '.*Update.*'
   - '.*Watchman.*'
   - '.*UI.*'
+  - '.*USB.*'
   - '.*URI.*'
   - '.*URL.*'
   - '.*URLs.*'
