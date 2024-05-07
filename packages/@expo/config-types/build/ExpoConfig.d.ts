@@ -262,6 +262,10 @@ export interface ExpoConfig {
          * Experimentally use a vendored canary build of React for testing upcoming features.
          */
         reactCanary?: boolean;
+        /**
+         * Ignore deeplinks auto handled by expo router for specific urls
+         */
+        ignoredDeepLinks?: string[];
     };
     /**
      * Internal properties for developer tools
