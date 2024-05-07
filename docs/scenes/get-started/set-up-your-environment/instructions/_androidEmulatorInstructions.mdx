@@ -1,0 +1,60 @@
+import { Collapsible } from '~/ui/components/Collapsible';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
+
+## Set up an emulator
+
+<Step label="1">
+On the Android Studio main screen, click **More Actions**, then **Virtual Device Manager** in the dropdown.
+
+<ImageSpotlight
+  alt="Android Studio configure."
+  src="/static/images/android-studio/virtual-device.png"
+  style={{ maxWidth: 640 }}
+/>
+
+</Step>
+
+<Step label="2">
+
+Click the **Create device** button.
+
+<ImageSpotlight
+  alt="Android Studio create virtual device."
+  src="/static/images/android-studio/create-device.png"
+  style={{ maxWidth: 640 }}
+/>
+
+</Step>
+
+<Step label="3">
+
+Under **Select Hardware**, choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
+
+<ImageSpotlight
+  alt="Android Studio create virtual device hardware selection."
+  src="/static/images/android-studio/select-hardware.png"
+  style={{ maxWidth: 640 }}
+/>
+
+</Step>
+
+<Step label="4">
+
+Select an OS version to load on the emulator (probably one of the system images in the **Recommended** tab), and download the image.
+
+<ImageSpotlight
+  alt="Android Studio create virtual device os selection."
+  src="/static/images/android-studio/select-os.png"
+  style={{ maxWidth: 640 }}
+/>
+
+</Step>
+
+<Step label="5">
+
+Change any other settings you'd like, and press **Finish** to create the emulator. You can now run this emulator anytime by pressing the Play button in the AVD Manager window.
+
+</Step>

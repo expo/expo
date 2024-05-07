@@ -452,4 +452,10 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Stop encouraging usage of Expo Go when using native modules
   '/bare/using-expo-client/': '/archive/using-expo-client/',
+
+  // May 2024 home / get started section
+  '/overview': '/get-started/introduction',
+  '/get-started/installation': '/get-started/create-a-project',
+  '/get-started/expo-go': '/get-started/set-up-your-environment',
+  '/get-started/create-a-project': '/get-started/create-a-project',
 };

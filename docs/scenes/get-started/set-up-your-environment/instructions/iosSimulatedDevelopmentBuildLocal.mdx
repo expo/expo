@@ -1,0 +1,36 @@
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+import XcodeInstructions from './_xcodeInstructions.mdx';
+
+## Set up an iOS Simulator with a development build
+
+<BuildEnvironmentSwitch />
+
+## Set up Xcode
+
+<XcodeInstructions />
+
+## Running your app on an iOS Simulator
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+Run the following from your terminal:
+
+<Terminal cmd={['$ npx expo run:ios']} />
+
+> This command runs a development server after building your app. You can skip running `npx expo start` on the next page.
+
+</Step>
