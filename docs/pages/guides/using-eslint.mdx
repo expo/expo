@@ -209,6 +209,8 @@ module.exports = {
 };
 ```
 
+You can continue using your existing ESLint configuration with the new library and the `lint` script in your **package.json**. If your project uses SDK 51 and above, you can switch to using `npx expo lint` by following the next step.
+
 </Step>
 
 <Step label="3">
@@ -224,6 +226,10 @@ To use `npx expo lint` command to lint your code, update the `lint` script in yo
   }
 }
 ```
+
+> **Note:** The above configuration will work only for SDK 51 and above.
+
+Now you can run `npx expo lint` to lint your code.
 
 </Step>
 
