@@ -336,7 +336,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (13.0.3):
     - ExpoModulesCore
-  - ExpoCamera (15.0.3):
+  - ExpoCamera (15.0.4):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -506,7 +506,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (4.0.2):
     - ExpoModulesCore
-  - ExpoVideo (1.1.7):
+  - ExpoVideo (1.1.8):
     - ExpoModulesCore
   - ExpoVideoThumbnails (8.0.0):
     - ExpoModulesCore
@@ -539,7 +539,7 @@ PODS:
   - EXTaskManager (11.8.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.25.8):
+  - EXUpdates (0.25.9):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -567,7 +567,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdates/Tests (0.25.8):
+  - EXUpdates/Tests (0.25.9):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2532,7 +2532,7 @@ SPEC CHECKSUMS:
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
   ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
   ExpoCalendar: 9793356dffe2e33d945309a30944b9a9c534e34d
-  ExpoCamera: 61ab6839230b0b8a9634f371fc377ddcb73fb4c5
+  ExpoCamera: 9ba1b9f2dc0b49f7fb100deec5bf07d1562297e9
   ExpoCellular: c903c51bb54cc7d3fa9f5c572d77e302b73203f1
   ExpoClipboard: 23d203f5d4843699fbc45be1cc4fe1fbd811a6fa
   ExpoContacts: 605d517d1e7a8a3f12f736db67cc502c0dd22b53
@@ -2571,13 +2571,13 @@ SPEC CHECKSUMS:
   ExpoSymbols: 5adb1166f2929fc8d2497b98d5c48c4b94effe33
   ExpoSystemUI: b5ecc4b6781b6369fb8b3a0903bea36fae3dd090
   ExpoTrackingTransparency: 005340638bbd48449066a6c1a54ee44ae65ed7b4
-  ExpoVideo: 34be4862c39cab7554aec2339c1d791c749fb91e
+  ExpoVideo: 3935150c11aafd54e9694c3bffdc04d23676c1c7
   ExpoVideoThumbnails: 40c737b2507a7470b14e9452e286513beb9a7d77
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: 937d9fcd67148143b303db647dee4bd6d7648b70
+  EXUpdates: b130ec55b6d9f36d4addc3dfba42dfb3eb5c9443
   EXUpdatesInterface: e5ec53f49ac304d173471f15e70abf8723f00fe5
   FBLazyVector: 898d14d17bf19e2435cafd9ea2a1033efe445709
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
