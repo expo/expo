@@ -53,7 +53,7 @@ enum AutoFocus: Int, Enumerable {
     case .on:
       return .autoFocus
     case .off:
-      return .locked
+      return .continuousAutoFocus
     default:
       return .autoFocus
     }

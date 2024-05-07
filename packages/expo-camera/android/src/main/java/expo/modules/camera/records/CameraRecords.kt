@@ -57,6 +57,11 @@ enum class CameraMode(val value: String) : Enumerable {
   VIDEO("video")
 }
 
+enum class FocusMode(val value: String) : Enumerable {
+  ON("on"),
+  OFF("off")
+}
+
 data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>,
   @Field val interval: Double?

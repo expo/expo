@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `autoFocus` prop to allow setting the device focus mode.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
