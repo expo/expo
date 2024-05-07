@@ -197,9 +197,10 @@ This scope's lifecycle is bound to the module's lifecycle - all unfinished suspe
 
 ```kotlin Kotlin
 AsyncFunction("suspendFunction") Coroutine { message: String ->
-  launch {
-    return@Coroutine message
-  }
+  // You can execute other suspendable functions here.
+  // For example, you can use `kotlinx.coroutines.delay` to delay resolving the underlying promise.
+  delay(5000)
+  return@Coroutine message
 }
 ```
 
