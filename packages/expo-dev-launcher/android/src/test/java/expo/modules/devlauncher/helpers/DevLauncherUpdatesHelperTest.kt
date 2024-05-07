@@ -48,6 +48,11 @@ internal class DevLauncherUpdatesHelperTest {
     val updatesInterface = mockk<UpdatesInterface>()
     val slot = slot<UpdatesInterface.UpdateCallback>()
     every {
+      updatesInterface.validateUpdateWithConfiguration(any(), any())
+    } answers {
+      true
+    }
+    every {
       updatesInterface.fetchUpdateWithConfiguration(any(), any(), capture(slot))
     } answers {
       val callback = slot.captured
