@@ -57,7 +57,7 @@ export function ProgressTracker({
 
   return (
     <>
-      <div className="w-full border border-solid border-default rounded-md p-3 mx-auto mt-6 max-h-96 bg-screen">
+      <div className="w-full border border-solid border-default rounded-md p-3 mx-auto mt-6 max-h-96 bg-subtle">
         <div className="flex items-center justify-center pt-2">
           <SuccessCheckmark />
         </div>

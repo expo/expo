@@ -20,7 +20,7 @@ export function CircularProgressBar({ progress }: CircularProgressBarProps) {
           cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke="#eee"
+          className="stroke-bg-element"
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
         />
@@ -29,7 +29,7 @@ export function CircularProgressBar({ progress }: CircularProgressBarProps) {
           cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke="#0081F1"
+          className="stroke-palette-blue9"
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}

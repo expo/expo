@@ -59,9 +59,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     return (
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center py-0">
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
               <p className="ml-2 text-secondary text-sm">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
