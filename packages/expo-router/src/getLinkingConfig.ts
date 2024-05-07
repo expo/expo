@@ -9,6 +9,7 @@ import {
   getInitialURL,
   getPathFromState,
   getStateFromPath,
+  isDeepLinksIgnoredForUrl,
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
@@ -60,11 +61,13 @@ export function getLinkingConfig(
           initialUrl = serverUrl ?? getInitialURL();
 
           if (typeof initialUrl === 'string') {
+            if (isDeepLinksIgnoredForUrl(initialUrl)) return null;
             if (typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
+              if (url && isDeepLinksIgnoredForUrl(url)) return null;
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }

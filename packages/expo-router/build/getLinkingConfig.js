@@ -37,12 +37,16 @@ function getLinkingConfig(routes, context, { metaOnly = true, serverUrl } = {}) 
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
+                        if ((0, linking_1.isDeepLinksIgnoredForUrl)(initialUrl))
+                            return null;
                         if (typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
+                            if (url && (0, linking_1.isDeepLinksIgnoredForUrl)(url))
+                                return null;
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }
