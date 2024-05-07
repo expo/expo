@@ -64,7 +64,7 @@ Yes! We think EAS is a great fit for any React Native project.
 
 <Collapsible summary={`Expo Go: an optional tool for learning, experimenting, and prototyping`}>
 
-There's no faster way to spin up a React Native project and run it on your device or emulator than [Expo Go](/get-started/expo-go/), especially when combined with [Snack](https://snack.expo.dev/).
+There's no faster way to spin up a React Native project and run it on your device or emulator than [Expo Go](https://expo.dev/go), especially when combined with [Snack](https://snack.expo.dev/).
 
 However, **Expo Go and Snack are not intended for building production apps**. They are great when you're getting started on a project or for prototypes. **If you plan on deploying your app to the store, then [development builds](#development-builds) will provide a more flexible, reliable, and complete development environment.** This guide does not go into any detail about Expo Go, and this is the only section that mentions it.
 
@@ -157,7 +157,7 @@ Learn more about [cloud-based workflows with EAS Build](/build/introduction/) an
 
 ## Initialize and run a project
 
-The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
+The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
 
 In most cases, you will create and use a development build of your project. You will install the [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library. Development builds can be created with EAS Build or locally on your machine:
 
@@ -201,8 +201,9 @@ The core development loop described in the diagram above is a cycle of four main
   config file.
 
 - <Highlight isBlue>**Write native code or modify native project configuration**</Highlight>: This
-  includes writing native code directly or modifying native code configuration. You either need access to
-  the native code project directories to make these changes, or you can write native code with a [local Expo Module](/modules/get-started/#adding-a-new-module-to-an-existing-application).
+  includes writing native code directly or modifying native code configuration. You either need
+  access to the native code project directories to make these changes, or you can write native code
+  with a [local Expo Module](/modules/get-started/#adding-a-new-module-to-an-existing-application).
 
 - <Highlight isBlue>**Install a library that requires native code modifications**</Highlight>: This
   includes that a library requires making changes to the native code project configuration. Either

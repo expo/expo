@@ -10,7 +10,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { BookOpen02Icon, VideoRecorderIcon } from '@expo/styleguide-icons';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-A **development build** is a debug build of your app that contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. By using development builds instead of [Expo Go](/get-started/expo-go/), you gain full control over the native runtime, so you can [install any native libraries](/workflow/using-libraries/#determining-third-party-library-compatibility), [modify any project configuration](/config-plugins/introduction/), or [write your own native code](/modules/get-started/). With Expo development builds, you are building your own native app, while with Expo Go you are running your project in a sandboxed native app environment.
+A **development build** is a debug build of your app that contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. By using development builds instead of [Expo Go](/get-started/set-up-your-environment/), you gain full control over the native runtime, so you can [install any native libraries](/workflow/using-libraries/#determining-third-party-library-compatibility), [modify any project configuration](/config-plugins/introduction/), or [write your own native code](/modules/get-started/). With Expo development builds, you are building your own native app, while with Expo Go you are running your project in a sandboxed native app environment.
 
 <ImageSpotlight
   alt="expo-dev-client launcher and menu UIs on Android and iOS"
@@ -60,7 +60,7 @@ The launcher UI makes it possible to switch between development servers without 
 
 <Collapsible summary="How are development builds different from Expo Go?">
 
-When you start a new project with Expo, the fastest and easiest way to get to "Hello, world!" is with [Expo Go](/get-started/expo-go/) on your device because you don't need to compile any native code or install any native tooling.
+When you start a new project with Expo, the fastest and easiest way to get to "Hello, world!" is with [Expo Go](/get-started/set-up-your-environment/) on your device because you don't need to compile any native code or install any native tooling.
 
 Beyond "Hello, world!" and prototypes, you'll quickly encounter limitations and need to build a development build of your app. For example, the Expo Go sandbox environment is limited to only the native packages included in the [Expo SDK](/versions/latest/), while you can include any library in a development build because it's just a normal native app.
 

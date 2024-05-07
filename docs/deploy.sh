@@ -357,7 +357,6 @@ redirects[bare/using-expo-client]=archive/using-expo-client
 redirects[/overview]=get-started/introduction
 redirects[/get-started/installation]=get-started/create-a-project
 redirects[/get-started/expo-go]=get-started/set-up-your-environment
-redirects[/get-started/create-a-project]=get-started/create-a-project
 
 
 echo "::group::[5/6] Add custom redirects"
