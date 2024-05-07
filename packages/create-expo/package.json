@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "bin": "./build/index.js",
   "main": "build",
   "description": "Create universal Expo apps",
