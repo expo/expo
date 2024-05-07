@@ -114,26 +114,8 @@ class UpdatesDevLauncherController(
     context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
-    if (updatesDirectory == null) {
-      callback.onFailure(updatesDirectoryException!!)
-      return
-    }
-
-    val newUpdatesConfiguration = when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
-      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
-      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object is not enabled"))
-        return
-      }
-      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-        return
-      }
-      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version"))
-        return
-      }
-    }
+    val newUpdatesConfiguration = validateConfig(configuration, context)
+    check(updatesDirectory != null)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
     previousUpdatesConfiguration = updatesConfiguration
@@ -192,6 +174,35 @@ class UpdatesDevLauncherController(
         return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
+  }
+
+  override fun validateUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+    return try {
+      validateConfig(configuration, context)
+      true
+    } catch (_: Exception) {
+      false
+    }
+  }
+
+  @Throws(Exception::class)
+  private fun validateConfig(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+    if (updatesDirectory == null) {
+      throw updatesDirectoryException!!
+    }
+
+    return when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object is not enabled")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version")
+      }
+    }
   }
 
   private fun setDevelopmentSelectionPolicy() {
