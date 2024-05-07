@@ -1,4 +1,4 @@
-import type { VideoPlayer } from './VideoView.types';
+import type { VideoPlayer } from './VideoPlayer.types';
 type ExpoVideoModule = {
     VideoPlayer: typeof VideoPlayer;
     isPictureInPictureSupported(): boolean;
