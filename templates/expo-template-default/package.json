@@ -1,7 +1,7 @@
 {
   "name": "expo-template-default",
   "main": "expo-router/entry",
-  "version": "51.0.21",
+  "version": "51.0.22",
   "scripts": {
     "start": "expo start",
     "reset-project": "./scripts/reset-project.js",
@@ -21,7 +21,7 @@
     "expo-constants": "~16.0.1",
     "expo-font": "~12.0.4",
     "expo-linking": "~6.3.1",
-    "expo-router": "~3.5.9",
+    "expo-router": "~3.5.10",
     "expo-splash-screen": "~0.27.4",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.4",
