@@ -21,9 +21,9 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 ### Setup
 
-To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies.
+To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **.eslintrc.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
-<Terminal cmd={['$ npx expo lint']} />
+<Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
 
 <Collapsible summary="Setup instructions for SDK 50 and below">
 
@@ -33,8 +33,10 @@ Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/mai
 
 <Terminal
   cmd={[
+    '# Install required ESLint configuration manually',
+    '',
     '# For other package managers',
-    '$ npx expo install -- --save-dev eslint eslint-config-expo',
+    '$ npx expo install -- --save-dev eslint@8 eslint-config-expo',
     '',
     '# For yarn only',
     '$ yarn add -D eslint eslint-config-expo',
@@ -80,13 +82,36 @@ You can replace the `.` with specific directories or files to lint. For example,
 You can lint your code manually from the command line with the `expo lint` script:
 
 <Tabs>
-    <Tab label="For SDK 51 and above">
-        <Terminal cmd={['$ npx expo lint']} />
-    </Tab>
 
-    <Tab label="For SDK 50 and below">
-        <Terminal cmd={['$ npm run lint']} />
-    </Tab>
+<Tab label="For SDK 51 and above">
+
+<Terminal
+  cmd={[
+    '# After ESLint has been configured, run the command again to lint your code.',
+    '$ npx expo lint',
+  ]}
+/>
+
+Running the above command will run the `lint` script from **package.json**.
+
+```sh
+# Example output for npx expo lint command
+> npm run eslint .
+$ /app/node_modules/.bin/eslint .
+
+/app/components/HelloWave.tsx
+  22:6 warning React Hook useEffect has a missing dependency: 'rotateAnimation'. Either include it or remove the dependency array react-hooks/exhaustive-deps
+
+✖ 1 problem (0 errors, 1 warning)
+```
+
+</Tab>
+
+<Tab label="For SDK 50 and below">
+
+<Terminal cmd={['$ npm run lint']} />
+
+</Tab>
 
 </Tabs>
 
@@ -150,5 +175,56 @@ ESLint can be slow to run on large projects. The easiest way to speed up the pro
 # @end #
 node_modules
 ```
+
+## Migration to `eslint-config-expo`
+
+If you're migrating from an older version of Expo SDK that has `eslint-config-universe` installed, install `eslint-config-expo` library and update your ESLint configuration to extend it from the new library.
+
+<Step label="1">
+
+Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
+
+<Terminal
+  cmd={[
+    '# For other package managers',
+    '$ npx expo install -- --save-dev eslint-config-expo',
+    '',
+    '# For yarn only',
+    '$ yarn add -D eslint-config-expo',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+Update your ESLint configuration to extend the `eslint-config-expo`:
+
+```js .eslintrc.js
+module.exports = {
+  /* @info Replace the extends key with the new configuration. */
+  extends: 'expo',
+  /* @end */
+  /* @hide ...*/ /* @end */
+};
+```
+
+</Step>
+
+<Step label="3">
+
+To use `npx expo lint` command to lint your code, update the `lint` script in your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    /* @info */
+    "lint": "expo lint"
+    /* @end */
+  }
+}
+```
+
+</Step>
 
 </TabsGroup>
