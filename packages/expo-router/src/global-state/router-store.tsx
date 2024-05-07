@@ -262,7 +262,7 @@ export function useStoreRouteInfo() {
 
 export function useInitializeExpoRouter(context: RequireContext, options: LinkingConfigOptions) {
   const navigationRef = useNavigationContainerRef();
-  useMemo(() => store.initialize(context, navigationRef, options), context.keys());
+  useMemo(() => store.initialize(context, navigationRef, options), [context]);
   useExpoRouter();
   return store;
 }

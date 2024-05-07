@@ -231,7 +231,7 @@ function useStoreRouteInfo() {
 exports.useStoreRouteInfo = useStoreRouteInfo;
 function useInitializeExpoRouter(context, options) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
-    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, options), context.keys());
+    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, options), [context]);
     useExpoRouter();
     return exports.store;
 }
