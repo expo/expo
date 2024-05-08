@@ -8,6 +8,8 @@ import requireContext, {
   RequireContextPonyFill,
 } from '../testing-library/require-context-ponyfill';
 
+const defaultCtx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE);
+
 export type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
 
 /**
@@ -15,8 +17,7 @@ export type { RequireContextPonyFill } from '../testing-library/require-context-
  */
 export function getWatchHandler(
   outputDir: string,
-  ctx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_ROUTER_CTX_IGNORE),
-  regenerateFn = regenerateDeclarations
+  { ctx = defaultCtx, regenerateFn = regenerateDeclarations } = {} // Exposed for testing
 ) {
   const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoute(key)));
 

@@ -10,10 +10,12 @@ const node_path_1 = __importDefault(require("node:path"));
 const generate_1 = require("./generate");
 const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
+const defaultCtx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
 /**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
-function getWatchHandler(outputDir, ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE), regenerateFn = exports.regenerateDeclarations) {
+function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.regenerateDeclarations } = {} // Exposed for testing
+) {
     const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoute)(key)));
     return async function callback({ filePath, type }) {
         // Sanity check that we are in an Expo Router project

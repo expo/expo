@@ -160,8 +160,11 @@ describe(getWatchHandler, () => {
     const ctx = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
       './index.ts': true,
     });
-    handler = getWatchHandler('/User/expo/project/app', ctx, () => {
-      fn(getTypedRoutesDeclarationFile(ctx));
+    handler = getWatchHandler('/User/expo/project/app', {
+      ctx,
+      regenerateFn: () => {
+        fn(getTypedRoutesDeclarationFile(ctx));
+      },
     });
   });
 
