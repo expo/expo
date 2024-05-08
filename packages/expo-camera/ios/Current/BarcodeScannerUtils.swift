@@ -41,7 +41,7 @@ class BarcodeScannerUtils {
         result["data"] = value.dropFirst()
       }
     }
-    
+
     if !barcodeScannerResult.corners.isEmpty {
       var cornerPointsResult = [[String: Any]]()
       for point in barcodeScannerResult.corners {
