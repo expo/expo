@@ -238,7 +238,7 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm 
 index 37d415b57d..b27f83286d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-@@ -18,10 +18,10 @@
+@@ -18,10 +18,10 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
  
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
  {
@@ -323,7 +323,7 @@ index b3978b9515..eaf07ca4c2 100644
  
    post_install do |installer|
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f8f8993585..2434177766 100644
+index f8f8993585..c1ae9be917 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -331,7 +331,7 @@ index f8f8993585..2434177766 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "50.0.43",
-+  "version": "51.0.2",
++  "version": "51.0.16",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -341,11 +341,11 @@ index f8f8993585..2434177766 100644
    "dependencies": {
 -    "expo": "~50.0.17",
 -    "expo-status-bar": "~1.11.1",
-+    "expo": "~51.0.0-preview.0",
-+    "expo-status-bar": "~1.12.0",
++    "expo": "~51.0.0-preview.14",
++    "expo-status-bar": "~1.12.1",
      "react": "18.2.0",
 -    "react-native": "0.73.6"
-+    "react-native": "0.74.0"
++    "react-native": "0.74.1"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
