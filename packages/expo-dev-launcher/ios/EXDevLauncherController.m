@@ -503,7 +503,7 @@
       return;
     }
 
-    if (!self->_updatesInterface) {
+    if ([self->_updatesInterface isValidUpdatesConfiguration:updatesConfiguration] != YES) {
       [manifestParser tryToParseManifest:^(EXManifestsManifest *manifest) {
         if (!manifest.isUsingDeveloperTool) {
           onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);
