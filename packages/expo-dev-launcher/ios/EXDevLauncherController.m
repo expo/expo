@@ -672,6 +672,8 @@
     // expo-dev-menu registers its commands here: https://github.com/expo/expo/blob/6da15324ff0b4a9cb24055e9815b8aa11f0ac3af/packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift#L27-L29
     [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
                                                      modifierFlags:UIKeyModifierCommand];
+    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"r"
+                                                    modifierFlags:UIKeyModifierCommand];
   }
 }
 
@@ -722,7 +724,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge;
+  manager.currentBridge = self.appBridge.parentBridge;
 
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;

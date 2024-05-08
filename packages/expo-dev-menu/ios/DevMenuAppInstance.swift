@@ -45,12 +45,6 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     return jsSourceUrl()
   }
 
-  override func extraModules(for bridge: RCTBridge) -> [RCTBridgeModule] {
-    var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
-    modules.append(DevMenuRCTDevSettings.init())
-    return modules
-  }
-
   override func bridge(_ bridge: RCTBridge, didNotFindModule moduleName: String) -> Bool {
     return moduleName == "DevMenu"
   }

@@ -2,6 +2,8 @@
 
 #import "DevClientRootViewFactory.h"
 #import <EXDevMenu/DevMenuRCTBridge.h>
+#import <EXDevMenu/DevMenuLoadingView.h>
+#import <EXDevMenu/DevMenuRCTDevSettings.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -32,6 +34,15 @@
   }
 
   self.bridge = [[DevMenuRCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
+  [modules addObject:[[DevMenuLoadingView alloc] init]];
+  [modules addObject:[[DevMenuRCTDevSettings alloc] init]];
+
+  return modules;
 }
 
 #pragma mark - RCTCxxBridgeDelegate
