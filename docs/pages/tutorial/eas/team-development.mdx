@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import Video from '~/components/plugins/Video';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
-Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our app, such as JavaScript code, styling, and images.
+Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our example app, such as JavaScript code, styling, and images.
 
 In this chapter, we'll use [EAS Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/review/overview/) of the change.
 
@@ -49,18 +49,24 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
   "build": {
     "development": {
       /* @hide ... */ /* @end */
+      /* @info */
       "channel": "development"
+      /* @end */
     },
     "ios-simulator": {
       /* @hide ... */ /* @end */
     },
     "preview": {
       /* @hide ... */ /* @end */
+      /* @info */
       "channel": "preview"
+      /* @end */
     },
     "production": {
       /* @hide ... */ /* @end */
+      /* @info */
       "channel": "production"
+      /* @end */
     }
   }
   /* @hide ... */ /* @end */
@@ -97,7 +103,7 @@ After the new version of the development build is created, make sure to install 
 
 Let's modify our example app's JavaScript code. If you are not using [Sticker Smash app](/tutorial/eas/introduction/#prerequisites), you can modify any piece of your code to see the changes in the app.
 
-We'll modify the text of the first button in our app that says **Choose a photo** to **Select a photo**.
+We'll modify the text of the first button in our example app that says **Choose a photo** to **Select a photo**.
 
 ```jsx App.js
 <Button theme="primary" label="Select a photo" onPress={pickImageAsync} />

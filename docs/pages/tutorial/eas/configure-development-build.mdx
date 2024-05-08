@@ -17,7 +17,7 @@ In this chapter, we'll set up and configure a development build with EAS for our
 
 Let's start by learning about what are development builds and why we need them.
 
-A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app.IT contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
+A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. It contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
 
 ### Key highlights
 
@@ -41,7 +41,7 @@ To initialize our project for a development build, let's [`cd`](https://develope
 
 ### Start the development server
 
-Run the `npx expo start` to start the [development server](/get-started/create-a-project/#start-the-development-server):
+Run the `npx expo start` to start the [development server](/get-started/start-developing/#start-a-development-server):
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -80,7 +80,7 @@ To log in, run the following command:
 
 <Terminal cmd={['$ eas login']} />
 
-This command asks for our EAS email or username and password to complete the login.
+This command asks for our Expo account email or username and password to complete the login.
 
 ### Initialize and link the project to EAS
 
@@ -192,7 +192,7 @@ Currently, our focus is on the `development` profile, which includes the followi
   currentChapterIndex={0}
   name="EAS_TUTORIAL"
   summary="
-We successfully the EAS CLI to install, initialize, and configure our project, linking the project to EAS servers and preparing a development build."
+We successfully used the EAS CLI to initialize, and configure our project, link it to EAS servers, and prepare a development build."
   nextChapterDescription="In the next chapter, let's create a development build for Android, install it on a device and an emulator, and get it running with the development server."
   nextChapterTitle="Create and run a cloud build for Android"
   nextChapterLink="/tutorial/eas/android-development-build/"

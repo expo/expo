@@ -23,11 +23,15 @@ We can manually manage developer-facing values by setting them as `android.versi
 ```json app.config.js
 {
   "ios": {
+    /* @info */
     "buildNumber": "1"
+    /* @end */
     /* @hide ... */ /* @end */
   },
   "android": {
+    /* @info */
     "versionCode": "1"
+    /* @end */
   }
   /* @hide ... */ /* @end */
 }
@@ -51,13 +55,13 @@ In **eas.json**:
 {
   "cli": {
     /* @hide ... */ /* @end */
-    /* @info Add <CODE>appVersionSource</CODE> and set it to remote. */
+    /* @info Add <CODE>appVersionSource</CODE> and set it to <CODE>remote</CODE>. */
     "appVersionSource": "remote"
     /* @end */
   },
   "build": {
     "production": {
-      /* @info Set the autoIncrement property to true to automatically increment the versionCode or buildNumber */
+      /* @info Set the <CODE>autoIncrement</CODE> property to true to automatically increment the <CODE>versionCode</CODE> or <CODE>buildNumber</CODE>. */
       "autoIncrement": true
       /* @end */
     }
@@ -66,7 +70,7 @@ In **eas.json**:
 }
 ```
 
-When we create a new production build in the next two chapters, the `versionCode` for Android or `buildNumber` for iOS will increment automatically.
+When we create a new production build in the next two chapters, the `versionCode` for Android and `buildNumber` for iOS will increment automatically.
 
 ## Summary
 
@@ -75,9 +79,9 @@ When we create a new production build in the next two chapters, the `versionCode
   name="EAS_TUTORIAL"
   summary={
     <>
-      We successfully explored app versioning differences, addressed the importance of unique
+      We successfully explored app versioning differences, addressed the importance of unique app
       versions to prevent store rejections, and enabled automated version updates in{' '}
-      <strong>eas.json</strong> for production.
+      <strong>eas.json</strong> for production builds.
     </>
   }
   nextChapterDescription="In the next chapter, learn about the process of creating a production build for Android."
