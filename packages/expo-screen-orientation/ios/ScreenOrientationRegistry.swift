@@ -18,7 +18,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   @objc
-  public weak var currentTraitCollection: UITraitCollection?
+  public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
     let keyWindow = UIApplication
