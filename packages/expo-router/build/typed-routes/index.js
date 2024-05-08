@@ -55,7 +55,7 @@ exports.getWatchHandler = getWatchHandler;
 /**
  * A throttled function that regenerates the typed routes declaration file
  */
-exports.regenerateDeclarations = throttle((outputDir, ctx) => {
+exports.regenerateDeclarations = throttle((outputDir, ctx = defaultCtx) => {
     const file = (0, generate_1.getTypedRoutesDeclarationFile)(ctx);
     if (!file)
         return;

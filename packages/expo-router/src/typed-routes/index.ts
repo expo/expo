@@ -60,11 +60,14 @@ export function getWatchHandler(
 /**
  * A throttled function that regenerates the typed routes declaration file
  */
-export const regenerateDeclarations = throttle((outputDir: string, ctx: RequireContextPonyFill) => {
-  const file = getTypedRoutesDeclarationFile(ctx);
-  if (!file) return;
-  fs.writeFileSync(path.resolve(outputDir, './router.d.ts'), file);
-}, 100);
+export const regenerateDeclarations = throttle(
+  (outputDir: string, ctx: RequireContextPonyFill = defaultCtx) => {
+    const file = getTypedRoutesDeclarationFile(ctx);
+    if (!file) return;
+    fs.writeFileSync(path.resolve(outputDir, './router.d.ts'), file);
+  },
+  100
+);
 
 /**
  * Throttles a function to only run once every `internal` milliseconds.

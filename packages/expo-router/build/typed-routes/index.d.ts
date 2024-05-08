@@ -5,7 +5,7 @@ export type { RequireContextPonyFill } from '../testing-library/require-context-
  */
 export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }?: {
     ctx?: RequireContextPonyFill | undefined;
-    regenerateFn?: ((outputDir: string, ctx: RequireContextPonyFill) => void) | undefined;
+    regenerateFn?: ((outputDir: string, ctx?: RequireContextPonyFill | undefined) => void) | undefined;
 }): ({ filePath, type }: {
     filePath: string;
     type: string;
@@ -13,5 +13,5 @@ export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }
 /**
  * A throttled function that regenerates the typed routes declaration file
  */
-export declare const regenerateDeclarations: (outputDir: string, ctx: RequireContextPonyFill) => void;
+export declare const regenerateDeclarations: (outputDir: string, ctx?: RequireContextPonyFill | undefined) => void;
 //# sourceMappingURL=index.d.ts.map
