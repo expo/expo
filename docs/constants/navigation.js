@@ -450,6 +450,7 @@ const general = [
 ];
 
 const learn = [
+  makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
     'Get started',
     [
@@ -463,6 +464,25 @@ const learn = [
       makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'EAS tutorial',
+    [
+      makePage('tutorial/eas/introduction.mdx'),
+      makePage('tutorial/eas/configure-development-build.mdx'),
+      makePage('tutorial/eas/android-development-build.mdx'),
+      makePage('tutorial/eas/ios-development-build-for-simulators.mdx'),
+      makePage('tutorial/eas/ios-development-build-for-devices.mdx'),
+      makePage('tutorial/eas/multiple-app-variants.mdx'),
+      makePage('tutorial/eas/internal-distribution-builds.mdx'),
+      makePage('tutorial/eas/manage-app-versions.mdx'),
+      makePage('tutorial/eas/android-production-build.mdx'),
+      makePage('tutorial/eas/ios-production-build.mdx'),
+      makePage('tutorial/eas/team-development.mdx'),
+      makePage('tutorial/eas/using-github.mdx'),
+      makePage('tutorial/eas/next-steps.mdx'),
     ],
     { expanded: true }
   ),
