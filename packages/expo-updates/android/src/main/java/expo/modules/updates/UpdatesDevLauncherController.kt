@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
@@ -114,26 +115,14 @@ class UpdatesDevLauncherController(
     context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
-    if (updatesDirectory == null) {
-      callback.onFailure(updatesDirectoryException!!)
+    val newUpdatesConfiguration: UpdatesConfiguration
+    try {
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration, context)
+    } catch (e: Exception) {
+      callback.onFailure(e)
       return
     }
-
-    val newUpdatesConfiguration = when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
-      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
-      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object is not enabled"))
-        return
-      }
-      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-        return
-      }
-      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version"))
-        return
-      }
-    }
+    check(updatesDirectory != null)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
     previousUpdatesConfiguration = updatesConfiguration
@@ -192,6 +181,36 @@ class UpdatesDevLauncherController(
         return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
+  }
+
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+    return try {
+      createUpdatesConfiguration(configuration, context)
+      true
+    } catch (e: Exception) {
+      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
+      false
+    }
+  }
+
+  @Throws(Exception::class)
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+    if (updatesDirectory == null) {
+      throw updatesDirectoryException!!
+    }
+
+    return when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object is not enabled")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version")
+      }
+    }
   }
 
   private fun setDevelopmentSelectionPolicy() {
@@ -331,5 +350,9 @@ class UpdatesDevLauncherController(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+  }
+
+  companion object {
+    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

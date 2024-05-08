@@ -102,65 +102,11 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     success successBlock: @escaping UpdatesUpdateSuccessBlock,
     error errorBlock: @escaping UpdatesErrorBlock
   ) {
-    if let directoryDatabaseException = directoryDatabaseException {
-      errorBlock(directoryDatabaseException)
-      return
-    }
-
-    // swiftlint:disable:next identifier_name
-    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
-    switch updatesConfigurationValidationResult {
-    case .Valid:
-      break
-    case .InvalidNotEnabled:
-      errorBlock(NSError(
-        domain: DevLauncherAppController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object is not enabled"
-        ]
-      ))
-      return
-    case .InvalidPlistError:
-      errorBlock(NSError(
-        domain: DevLauncherAppController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: invalid Expo.plist"
-        ]
-      ))
-      return
-    case .InvalidMissingURL:
-      errorBlock(NSError(
-        domain: DevLauncherAppController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
-        ]
-      ))
-      return
-    case .InvalidMissingRuntimeVersion:
-      errorBlock(NSError(
-        domain: DevLauncherAppController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid runtime version"
-        ]
-      ))
-      return
-    }
-
-    var updatesConfiguration: UpdatesConfig
+    let updatesConfiguration: UpdatesConfig
     do {
-      updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
-    } catch {
-      errorBlock(NSError(
-        domain: DevLauncherAppController.ErrorDomain,
-        code: ErrorCode.configFailed.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        ]
-      ))
+      updatesConfiguration = try createUpdatesConfiguration(configuration)
+    } catch let error {
+      errorBlock(error)
       return
     }
 
@@ -213,6 +159,16 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     }
   }
 
+  public func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool {
+    do {
+      try createUpdatesConfiguration(configuration)
+      return true
+    } catch let error {
+      NSLog("Invalid updates configuration: %@", error.localizedDescription)
+    }
+    return false
+  }
+
   public func selectionPolicy() -> SelectionPolicy {
     if _selectionPolicy == nil {
       _selectionPolicy = defaultSelectionPolicy
@@ -224,6 +180,65 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
   public func resetSelectionPolicyToDefault() {
     _selectionPolicy = nil
+  }
+
+  private func createUpdatesConfiguration(_ configuration: [String: Any]) throws -> UpdatesConfig {
+    if let directoryDatabaseException = directoryDatabaseException {
+      throw directoryDatabaseException
+    }
+
+    // swiftlint:disable:next identifier_name
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    switch updatesConfigurationValidationResult {
+    case .Valid:
+      break
+    case .InvalidNotEnabled:
+      throw NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object is not enabled"
+        ]
+      )
+    case .InvalidPlistError:
+      throw NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: invalid Expo.plist"
+        ]
+      )
+    case .InvalidMissingURL:
+      throw NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
+        ]
+      )
+    case .InvalidMissingRuntimeVersion:
+      throw NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid runtime version"
+        ]
+      )
+    }
+
+    let updatesConfiguration: UpdatesConfig
+    do {
+      updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
+    } catch {
+      throw NSError(
+        domain: DevLauncherAppController.ErrorDomain,
+        code: ErrorCode.configFailed.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+        ]
+      )
+    }
+    return updatesConfiguration
   }
 
   private func setDevelopmentSelectionPolicy() {

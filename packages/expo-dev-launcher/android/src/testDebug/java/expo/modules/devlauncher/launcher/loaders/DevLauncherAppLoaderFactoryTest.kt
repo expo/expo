@@ -13,6 +13,7 @@ import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
@@ -94,6 +95,8 @@ internal class DevLauncherAppLoaderFactoryTest {
   fun `loads app locally if manifest indicates developer tool and updatesInterface exists`() = runBlocking<Unit> {
     mockUpdatesInterface(developmentManifestJSONString) {
       Truth.assertThat(it).isFalse()
+    }.let { updatesInterface ->
+      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns true
     }
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
@@ -109,6 +112,8 @@ internal class DevLauncherAppLoaderFactoryTest {
   fun `loads published app if manifest is published and updatesInterface exists`() = runBlocking<Unit> {
     mockUpdatesInterface(publishedManifestJSONString) {
       Truth.assertThat(it).isTrue()
+    }.let { updatesInterface ->
+      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns true
     }
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
@@ -120,7 +125,26 @@ internal class DevLauncherAppLoaderFactoryTest {
     Truth.assertThat(appLoaderFactory.shouldUseDeveloperSupport()).isFalse()
   }
 
-  private fun mockUpdatesInterface(manifestJSONString: String, verifyShouldContinue: (Boolean) -> Unit) {
+  @Test
+  fun `loads app locally if manifest indicates developer tool but updates is mis-configured`() = runBlocking<Unit> {
+    mockUpdatesInterface(developmentManifestJSONString) {
+      Truth.assertThat(it).isTrue()
+    }.let { updatesInterface ->
+      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns false
+    }
+    val appLoaderFactory = DevLauncherAppLoaderFactory()
+
+    val manifestParser = mockk<DevLauncherManifestParser>()
+    val manifest = Manifest.fromManifestJson(JSONObject(developmentManifestJSONString))
+    coEvery { manifestParser.isManifestUrl() } returns true
+    coEvery { manifestParser.parseManifest() } returns manifest
+
+    val appLoader = appLoaderFactory.createAppLoader(developmentManifestURL, developmentManifestURL, manifestParser)
+    Truth.assertThat(appLoader).isInstanceOf(DevLauncherLocalAppLoader::class.java)
+    Truth.assertThat(appLoaderFactory.shouldUseDeveloperSupport()).isTrue()
+  }
+
+  private fun mockUpdatesInterface(manifestJSONString: String, verifyShouldContinue: (Boolean) -> Unit): UpdatesInterface {
     val updatesInterface = mockk<UpdatesInterface>()
     val manifest = JSONObject(manifestJSONString)
     val slot = slot<(JSONObject) -> Boolean>()
@@ -151,5 +175,7 @@ internal class DevLauncherAppLoaderFactoryTest {
         }
       )
     )
+
+    return updatesInterface
   }
 }
