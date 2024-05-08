@@ -215,7 +215,9 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
  */
 async function getLocalSdkMajorVersion(): Promise<string | null> {
   const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
-  if (!path) return null;
+  if (!path) {
+    return null;
+  }
   const { version } = require(path) ?? {};
   return version?.split('.')[0] ?? null;
 }
