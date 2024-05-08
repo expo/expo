@@ -93,6 +93,14 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
+  - ExpoImage/Tests (1.12.8):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - libavif/libdav1d
+    - SDWebImage (~> 5.19.1)
+    - SDWebImageAVIFCoder (~> 0.11.0)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (12.0.3):
     - EXImageLoader
     - ExpoModulesCore
@@ -1884,6 +1892,7 @@ DEPENDENCIES:
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoHead (from `../../../packages/expo-router/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
+  - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
@@ -2365,7 +2374,7 @@ SPEC CHECKSUMS:
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoHead: f27f34fd61e2a55b2facd0bba0fe85bc7958fbe0
-  ExpoImage: 716f3ad80d6b9bdfa0af6ed08bda2d9600d6c4fa
+  ExpoImage: 1370b3f235f24bb4da490f5a67403a2b9179d830
   ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
