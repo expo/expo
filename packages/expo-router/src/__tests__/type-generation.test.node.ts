@@ -257,12 +257,6 @@ describe(getWatchHandler, () => {
   it('will ignore files outside the app dir', () => {
     handler({ filePath: `/other-directory/apple.ts`, type: 'add' });
 
-    const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
-
-    expect(sections).toEqual({
-      staticRoutes: ['/', '/_sitemap'],
-      dynamicRoutes: ['never'],
-      dynamicRouteTemplates: ['never'],
-    });
+    expect(fn).not.toHaveBeenCalled();
   });
 });
