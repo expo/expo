@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
+
+## 3.5.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useMemo` crash when adding new routes.
+
+## 3.5.9 — 2024-05-06
+
+### 💡 Others
+
+- Use `ReactDOMServer.renderToString` to support React 19 beta. ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.5.8 — 2024-05-03
 

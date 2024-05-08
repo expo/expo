@@ -24,6 +24,8 @@ import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraState
+import androidx.camera.core.DisplayOrientedMeteringPointFactory
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -53,6 +55,7 @@ import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
+import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.utils.FileSystemUtils
@@ -111,6 +114,18 @@ class ExpoCameraView(
     set(value) {
       field = value
       shouldCreateCamera = true
+    }
+
+  var autoFocus: FocusMode = FocusMode.OFF
+    set(value) {
+      field = value
+      camera?.cameraControl?.let {
+        if (field == FocusMode.OFF) {
+          it.cancelFocusAndMetering()
+        } else {
+          startFocusMetering()
+        }
+      }
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
@@ -365,6 +380,20 @@ class ExpoCameraView(
     return VideoCapture.Builder(recorder)
       .setVideoStabilizationEnabled(true)
       .build()
+  }
+
+  private fun startFocusMetering() {
+    camera?.let {
+      val meteringPointFactory = DisplayOrientedMeteringPointFactory(
+        previewView.display,
+        it.cameraInfo,
+        previewView.width.toFloat(),
+        previewView.height.toFloat()
+      )
+      val action = FocusMeteringAction.Builder(meteringPointFactory.createPoint(1f, 1f), FocusMeteringAction.FLAG_AF)
+        .build()
+      it.cameraControl.startFocusAndMetering(action)
+    }
   }
 
   private fun observeCameraState(cameraInfo: CameraInfo) {

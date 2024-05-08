@@ -1,0 +1,46 @@
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+
+import XcodeInstructions from './_xcodeInstructions.mdx';
+
+## Set up an iOS device with a development build
+
+<BuildEnvironmentSwitch />
+
+## Set up Xcode
+
+<XcodeInstructions />
+
+## Configure your project
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+### Plug in your device via USB
+
+Connect your iOS device to your Mac using a USB to Lightning cable. Unlock the device and tap "Trust" if prompted.
+
+</Step>
+
+<Step label="3">
+
+### Run the project on your device
+
+Run the following command in your project's root directory and select your plugged in device from the list:
+
+<Terminal cmd={['$ npx expo run:ios --device']} />
+
+> This command runs a development server after building your app. You can skip running `npx expo start` on the next page.
+
+</Step>

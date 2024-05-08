@@ -110,7 +110,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
 
-  const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-blank');
+  const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
   if (type === 'repository') {
     await downloadAndExtractGitHubRepositoryAsync(uri, {

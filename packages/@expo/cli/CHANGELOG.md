@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.18.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Filter out unavailable connected devices when running `npx expo run:ios -d`. ([#28642](https://github.com/expo/expo/pull/28642) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.18.9 — 2024-05-06
+
+### 💡 Others
+
+- Bump `experiments.reactCanary` to React 19 beta [commit](https://github.com/facebook/react/commit/4508873393058e86bed308b56e49ec883ece59d1). ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.18.8 — 2024-05-02
 
 _This version does not introduce any user-facing changes._

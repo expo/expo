@@ -2275,7 +2275,7 @@ index a6e13e11ab..b27f83286d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2438,10 +2438,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 91612acca9..eaf07ca4c2 100644
+index 91612acca9..40971e1cd1 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,41 +1,38 @@
+@@ -1,41 +1,42 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2477,6 +2477,9 @@ index 91612acca9..eaf07ca4c2 100644
      # An absolute path to your application root.
 -    :app_path => "#{Dir.pwd}/.."
 +    :app_path => "#{Pod::Config.instance.installation_root}/..",
++    # Temporarily disable privacy file aggregation by default, until React
++    # Native 0.74.2 is released with fixes.
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
    )
  
 -  # Uncomment to opt-in to using Flipper
@@ -2492,7 +2495,8 @@ index 91612acca9..eaf07ca4c2 100644
 +    react_native_post_install(
 +      installer,
 +      config[:reactNativePath],
-+      :mac_catalyst_enabled => false
++      :mac_catalyst_enabled => false,
++      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
 +    )
  
      # This is necessary for Xcode 14, because it signs resource bundles by default
@@ -2521,7 +2525,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..cc051d1e40 100644
+index d5ca09a584..a2f539b476 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2529,7 +2533,7 @@ index d5ca09a584..cc051d1e40 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "51.0.12",
++  "version": "51.0.20",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2544,10 +2548,10 @@ index d5ca09a584..cc051d1e40 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~51.0.0-preview.10",
++    "expo": "~51.0.0",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.2.0",
-+    "react-native": "0.74.1-rc.0"
++    "react-native": "0.74.1"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

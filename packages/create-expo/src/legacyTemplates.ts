@@ -39,17 +39,11 @@ export async function promptTemplateAsync() {
     throw new Error('Cannot prompt for template in CI');
   }
 
-  // Temporarily filter out the "expo-template-default" from the list of templates
-  // that we display in the prompt. Wwe can remove this filter once we release SDK 51.
-  const publicTemplates = LEGACY_TEMPLATES.filter(
-    (template) => template.value !== 'expo-template-default'
-  );
-
   const { answer } = await prompts({
     type: 'select',
     name: 'answer',
     message: 'Choose a template:',
-    choices: publicTemplates,
+    choices: LEGACY_TEMPLATES,
   });
 
   if (!answer) {

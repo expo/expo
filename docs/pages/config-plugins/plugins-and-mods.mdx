@@ -68,7 +68,7 @@ You may want to create a plugin in a different file, here's how:
 - The root file can be any JS file or a file named **app.plugin.js** in the root of a Node module.
 - The file should export a function that satisfies the [`ConfigPlugin`](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76) type.
 - Plugins should be transpiled for Node environments ahead of time!
-  - They should support the versions of Node that [Expo supports](/get-started/installation/#requirements) (LTS).
+  - They should support the versions of Node that [Expo supports](/get-started/create-a-project/) (LTS).
   - No `import/export` keywords, use `module.exports` in the shipped plugin file.
   - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
 

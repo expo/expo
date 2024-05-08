@@ -1,0 +1,189 @@
+---
+title: Create and share internal distribution build
+sidebar_title: Internal distribution build
+description: Learn about what are internal distribution builds, why we need them, and how to create them.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+
+In this chapter, we'll learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution).
+
+## Internal distribution build
+
+Internal distribution builds are ideal for sharing updates with team members, allowing both technical and non-technical stakeholders to provide feedback directly. Unlike development builds, these do not require running a development server, simplifying the testing process.
+
+### Ways to distribute an app internally
+
+Both Google and Apple provide built-in mechanisms for sharing apps internally:
+
+- **Android**: Using Google Play beta
+- **iOS**: Using TestFlight
+
+However, both of these traditional methods have their limitations. For example, TestFlight limits to one active build at a time.
+
+### EAS Build for faster distribution
+
+EAS Build speeds up the process. It creates shareable links for our builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
+
+## Create an internal distribution build
+
+To create and distribute a build with EAS Build, we need to follow these steps:
+
+<Step label="1">
+
+### Configure preview build profile
+
+From our initial setup in **eas.json**, we already have a default configuration that includes a `preview` build profile designed for internal distribution:
+
+```json eas.json
+{
+  "build": {
+    "preview": {
+      /* @info The <CODE>distribution</CODE> in <CODE>preview</CODE> profile has its value set to <CODE>internal</CODE>. */
+      "distribution": "internal"
+      /* @end */
+    }
+  }
+}
+```
+
+This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has a `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they to install it on their device and do not require a development server to run the app.
+
+As discussed in the previous chapters, for non-app store builds, Android requires **.apk** and iOS needs **.ipa** formats. This applies to internal distribution builds as well. The `distribution` when set to `internal`, automatically creates the app binary in these file formats for devices.
+
+</Step>
+
+<Step label="2">
+
+### Create
+
+<Tabs>
+
+<Tab label="Android">
+
+- Use the `preview` profile to initiate an Android build:
+
+<Terminal cmd={['$ eas build --platform android --profile preview']} />
+
+- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
+
+<ImageSpotlight
+  alt="Android preview build details and progress in Expo dashboard"
+  src="/static/images/tutorial/eas/android-preview-build.png"
+  style={{ maxWidth: 800 }}
+/>
+
+<Collapsible summary="No Android app signing credentials required for internal distribution">
+
+Android app signing is non-restrictive. A new Android Keystore was generated for development builds, but since Android allows installing any compatible **.apk**, there's no need for a new keystore for preview builds.
+
+</Collapsible>
+
+</Tab>
+
+<Tab label="iOS">
+
+Apple has stricter rules for app distribution on iOS devices. We need an ad hoc provisioning profile, which allows explicitly listing the devices allowed to run the app.
+
+- To add more devices, use `eas device:create`. This command registers an iOS device and gives us a URL or QR code to share for device registration:
+
+<Terminal cmd={['$ eas device:create']} />
+
+- This command registers an iOS device for app installation, generating a shareable URL (or QR code) for device registration.
+
+  > **info** **Tip**: This command enables device registration at any time. However, only builds created post-registration will work on the newly added device.
+
+- To create the preview build, we need to use the `preview` profile with the `eas build` command:
+
+<Terminal cmd={['$ eas build --platform ios --profile preview']} />
+
+- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
+
+<ImageSpotlight
+  alt="iOS preview build details and progress in Expo dashboard"
+  src="/static/images/tutorial/eas/ios-preview-build.png"
+  style={{ maxWidth: 800 }}
+/>
+
+<Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE></>}>
+
+[`eas build:resign`](/app-signing/app-credentials/#re-signing-new-credentials) command can be used to re-sign an existing iOS **.ipa** with a new ad hoc provisioning profile, eliminating the need for a full rebuild.
+
+</Collapsible>
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### Install
+
+Once the build finishes, the Build artifact section gets updated, indicating that the build is complete. This section provides the methods available for running the development build on an iOS device: Expo Orbit and Install button.
+
+- Open the build's detail page. If you are sharing the build with someone else, you can send them the link to the build. They'll be able to open the build's detail page or build artifact details which include Expo Orbit.
+- Connect the Android or iOS device to our machine using USB.
+- Open the Orbit menu bar app.
+- Select the **Device** in the Orbit app.
+- Under **Build artifact**, click the **Open with Orbit**.
+
+<Collapsible summary="Alternate: Use Install and QR code">
+
+- Open the build's detail page. If you are sharing the build with someone else, you can send them the link to the build page. They'll be able to open it and see build artifact details which includes Expo Orbit.
+- Click **Install** under the Build artifact section to display the **Install on a test device** popup.
+- Copy the link from **Send a link to a device** section and send it to the test device.
+
+<ImageSpotlight
+  alt="Internal distribution build details and install link in Expo dashboard"
+  src="/static/images/tutorial/eas/distribution-link.png"
+  style={{ maxWidth: 450 }}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+### Run
+
+Tap the app icon on your device to start the preview build. There is no need for a development server.
+
+Since we have already set up multiple app variants, we can see both the development and preview variants installed separately on our devices. For example:
+
+- On Android:
+
+<ImageSpotlight
+  alt="Internal distribution build details and install link in Expo dashboard for Android"
+  src="/static/images/tutorial/eas/android-multi-variants-installed.png"
+  style={{ maxWidth: 270 }}
+/>
+
+- On iOS:
+
+<ImageSpotlight
+  alt="Internal distribution build details and install link in Expo dashboard for iOS"
+  src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
+  style={{ maxWidth: 250 }}
+/>
+
+</Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={5}
+  name="EAS_TUTORIAL"
+  summary="We successfully created internal distribution builds for Android and iOS, used ad hoc provisioning for iOS, and installed multiple app variants on the same device."
+  nextChapterDescription="In the next chapter, learn about developer-facing and user-facing app versions and how to manage them automatically."
+  nextChapterTitle="Manage different app versions"
+  nextChapterLink="/tutorial/eas/manage-app-versions/"
+/>

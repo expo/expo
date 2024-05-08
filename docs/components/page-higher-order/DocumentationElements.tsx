@@ -21,6 +21,10 @@ export default function DocumentationElements(props: DocumentationElementsProps)
     headings: props.headings,
   });
 
+  if (!props.meta) {
+    return props.children;
+  }
+
   return (
     <AnchorContext.Provider value={slugger}>
       <HeadingsContext.Provider value={manager}>

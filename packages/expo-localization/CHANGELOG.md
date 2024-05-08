@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.0.3 — 2024-05-06
+
+### 🎉 New features
+
+- Added a `forcesRTL` manifest flag for forcing RTL to be on. ([#28129](https://github.com/expo/expo/pull/28129) by [@aleqsio](https://github.com/aleqsio))
+
 ## 15.0.2 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

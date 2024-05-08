@@ -236,6 +236,26 @@ export interface PluginConfigTypeIos {
    * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
    */
   extraPods?: ExtraIosPodDependency[];
+
+  /**
+   * Enable C++ compiler cache for iOS builds.
+   *
+   * This speeds up compiling C++ code by caching the results of previous compilations.
+   *
+   * @see https://reactnative.dev/docs/build-speed#local-caches
+   * @see https://ccache.dev/
+   */
+  ccacheEnabled?: boolean;
+
+  /**
+   * Enable aggregation of Privacy Manifests (`PrivacyInfo.xcprivacy`) from
+   * CocoaPods resource bundles. If enabled, the manifests will be merged into a
+   * single file. If not enabled, developers will need to manually aggregate them.
+   *
+   * @see https://docs.expo.dev/guides/apple-privacy/
+   * @see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+   */
+  privacyManifestAggregationEnabled?: boolean;
 }
 
 /**
@@ -532,6 +552,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
 
         networkInspector: { type: 'boolean', nullable: true },
+        ccacheEnabled: { type: 'boolean', nullable: true },
+        privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
 
         extraPods: {
           type: 'array',

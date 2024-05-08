@@ -169,32 +169,11 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
- * Gets expo SDK version major from the local package.json.
- */
-async function getLocalSdkMajorVersion() {
-    const { version } = require('expo/package.json') ?? {};
-    return version?.split('.')[0] ?? null;
-}
-/**
- * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
- */
-async function getTemplateVersion(targetDir, isLocal) {
-    if (EXPO_BETA) {
-        return 'next';
-    }
-    if (!isLocal) {
-        return 'latest';
-    }
-    const sdkVersionMajor = await getLocalSdkMajorVersion();
-    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
-}
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir, isLocal = false) {
     return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const templateVersion = await getTemplateVersion(targetDir, isLocal);
-        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', templateVersion);
+        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', EXPO_BETA ? 'next' : 'latest');
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,

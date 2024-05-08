@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 1.1.8 — 2024-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.7 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 1.1.6 — 2024-05-01
 
 ### 🎉 New features
