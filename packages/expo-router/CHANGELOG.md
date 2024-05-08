@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Typed Routes generating incorrect routes and crashing when moving files
+
 ### 💡 Others
 
 ## 3.5.10 — 2024-05-07
