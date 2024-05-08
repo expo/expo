@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix `ean13` barcodes not returning data.
+
 ### 💡 Others
 
 ## 15.0.3 — 2024-04-29
