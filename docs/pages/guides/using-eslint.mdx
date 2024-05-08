@@ -142,14 +142,28 @@ To install Prettier in your project:
 <Terminal
   cmd={[
     '# For other package managers',
-    '$ npx expo install -- --save-dev prettier',
+    '$ npx expo install -- --save-dev prettier eslint-config-prettier eslint-plugin-prettier',
     '',
     '# For yarn only',
-    '$ yarn add -D prettier',
+    '$ yarn add -D prettier eslint-config-prettier eslint-plugin-prettier',
   ]}
 />
 
 ### Setup
+
+To integrate with ESlint, update your `.eslintrc.js`:
+
+```js .eslintrc.js
+module.exports = {
+  extends: ["expo", "prettier"],
+  plugins: ["prettier"],
+  rules: {
+    "prettier/prettier": "error",
+  },
+};
+```
+
+Now when you running `npx expo lint`, anything not alighned with prettier formatting will be caught as an error. Side note: you may want to do `"prettier/prettier": "warn"` instead if you prefer these to be warnings instead of errors.
 
 To customize Prettier settings, create a **.prettierrc** file at the root of your project and add your configuration.
 
