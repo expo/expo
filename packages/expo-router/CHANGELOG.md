@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ignoredDeepLinks` as experiment to expo config `experiments.ignoredDeepLinks` to ignore urls for deeplink by expo-router ([#28689](https://github.com/expo/expo/pull/28689) by [@Omerrj](https://github.com/Omerrj))
+
 ### 🐛 Bug fixes
 
 - Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
