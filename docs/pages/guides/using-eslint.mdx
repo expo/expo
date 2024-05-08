@@ -151,7 +151,7 @@ To install Prettier in your project:
 
 ### Setup
 
-To integrate with ESlint, update your `.eslintrc.js`:
+To integrate Prettier with ESlint, update your **.eslintrc.js**:
 
 ```js .eslintrc.js
 module.exports = {
@@ -163,7 +163,9 @@ module.exports = {
 };
 ```
 
-Now when you running `npx expo lint`, anything not alighned with prettier formatting will be caught as an error. Side note: you may want to do `"prettier/prettier": "warn"` instead if you prefer these to be warnings instead of errors.
+Now, when you run `npx expo lint`, anything that is not aligned with Prettier formatting will be caught as an error.
+
+> **Note:** In the above configuration, you can use `"prettier/prettier": "warn"` if you prefer these formatting issues as warnings instead of errors.
 
 To customize Prettier settings, create a **.prettierrc** file at the root of your project and add your configuration.
 
