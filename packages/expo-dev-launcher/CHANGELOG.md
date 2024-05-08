@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 4.0.12 — 2024-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.0.11 — 2024-05-04
 
