@@ -457,4 +457,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/overview/': '/get-started/introduction/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
+
+  // Redirect for /learn URL
+  '/learn/': '/tutorial/introduction/',
 };
