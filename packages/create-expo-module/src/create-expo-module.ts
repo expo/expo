@@ -225,7 +225,7 @@ async function getLocalSdkMajorVersion(): Promise<string | null> {
 /**
  * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
  */
-async function getTemplateVersion(targetDir: string, isLocal) {
+async function getTemplateVersion(isLocal: boolean) {
   if (EXPO_BETA) {
     return 'next';
   }
