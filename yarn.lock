@@ -16900,7 +16900,7 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha512-haw7VtcK0Vg1p7CTE8vzhltICPhfuzLUNR1m9Rh55VYEGkD3o765Y5YTu88iA32uV/hMhJUopP5Tex/SvNidoA==
 
-react-native-svg@^15.2.0:
+react-native-svg@15.2.0:
   version "15.2.0"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.2.0.tgz#9561a6b3bd6b44689f437ba13182afee33bd5557"
   integrity sha512-R0E6IhcJfVLsL0lRmnUSm72QO+mTqcAOM5Jb8FVGxJqX3NfJMlMP0YyvcajZiaRR8CqQUpEoqrY25eyZb006kw==
