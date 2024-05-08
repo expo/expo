@@ -31,5 +31,5 @@ interface UpdatesInterface {
 
   fun reset()
   fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdateCallback)
-  fun validateUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean
+  fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean
 }

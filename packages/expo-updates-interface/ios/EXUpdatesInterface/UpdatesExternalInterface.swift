@@ -34,7 +34,7 @@ public protocol UpdatesExternalInterface {
     error errorBlock: @escaping UpdatesErrorBlock
   )
 
-  @objc func validateUpdate(withConfiguration configuration: [String: Any]) -> Bool
+  @objc func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool
 }
 
 /**

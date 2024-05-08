@@ -41,7 +41,7 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
       val runtimeVersion = getRuntimeVersion(context)
       val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
 
-      if (updatesInterface == null || updatesInterface?.validateUpdateWithConfiguration(configuration, context) == false) {
+      if (updatesInterface?.isValidUpdatesConfiguration(configuration, context) != true) {
         manifest = manifestParser.parseManifest()
         if (!manifest!!.isUsingDeveloperTool()) {
           throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")

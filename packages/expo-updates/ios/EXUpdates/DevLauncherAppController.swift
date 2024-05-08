@@ -104,7 +104,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   ) {
     let updatesConfiguration: UpdatesConfig
     do {
-      updatesConfiguration = try validateConfig(configuration)
+      updatesConfiguration = try createUpdatesConfiguration(configuration)
     } catch let error {
       errorBlock(error)
       return
@@ -159,8 +159,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     }
   }
 
-  public func validateUpdate(withConfiguration configuration: [String: Any]) -> Bool {
-    return (try? validateConfig(configuration)) != nil
+  public func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool {
+    return (try? createUpdatesConfiguration(configuration)) != nil
   }
 
   public func selectionPolicy() -> SelectionPolicy {
@@ -176,7 +176,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     _selectionPolicy = nil
   }
 
-  private func validateConfig(_ configuration: [String: Any]) throws -> UpdatesConfig {
+  private func createUpdatesConfiguration(_ configuration: [String: Any]) throws -> UpdatesConfig {
     if let directoryDatabaseException = directoryDatabaseException {
       throw directoryDatabaseException
     }

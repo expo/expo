@@ -114,7 +114,13 @@ class UpdatesDevLauncherController(
     context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
-    val newUpdatesConfiguration = validateConfig(configuration, context)
+    val newUpdatesConfiguration: UpdatesConfiguration
+    try {
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration, context)
+    } catch (e: Exception) {
+      callback.onFailure(e)
+      return
+    }
     check(updatesDirectory != null)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
@@ -176,9 +182,9 @@ class UpdatesDevLauncherController(
     })
   }
 
-  override fun validateUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
     return try {
-      validateConfig(configuration, context)
+      createUpdatesConfiguration(configuration, context)
       true
     } catch (_: Exception) {
       false
@@ -186,7 +192,7 @@ class UpdatesDevLauncherController(
   }
 
   @Throws(Exception::class)
-  private fun validateConfig(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
     if (updatesDirectory == null) {
       throw updatesDirectoryException!!
     }
