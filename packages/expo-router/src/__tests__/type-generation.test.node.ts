@@ -1,4 +1,6 @@
 import { inMemoryContext } from '../testing-library/context-stubs';
+import requireContext from '../testing-library/require-context-ponyfill';
+import { getWatchHandler } from '../typed-routes';
 import { getTypedRoutesDeclarationFile } from '../typed-routes/generate';
 
 /**
@@ -7,7 +9,10 @@ import { getTypedRoutesDeclarationFile } from '../typed-routes/generate';
  */
 export function getGeneratedRoutes(context: ReturnType<typeof inMemoryContext>) {
   const output = getTypedRoutesDeclarationFile(context);
+  return splitDeclarationFileIntoSections(output);
+}
 
+function splitDeclarationFileIntoSections(output: string) {
   function toArray(regex: RegExp) {
     const match = output.match(regex)?.[1];
     if (!match) return [];
@@ -70,9 +75,9 @@ it('allows spaces in the filename', () => {
   );
 
   expect(generated).toEqual({
-    staticRoutes: ['/hello world', '/_sitemap'],
-    dynamicRoutes: ['/${SingleRoutePart<T>}', '/${CatchAllRoutePart<T>}'],
-    dynamicRouteTemplates: ['/[hello world]', '/[...hello world]'],
+    staticRoutes: ['/_sitemap', '/hello world'],
+    dynamicRoutes: ['/${CatchAllRoutePart<T>}', '/${SingleRoutePart<T>}'],
+    dynamicRouteTemplates: ['/[...hello world]', '/[hello world]'],
   });
 });
 
@@ -80,7 +85,7 @@ it('expands groups', () => {
   const generated = getGeneratedRoutes(inMemoryContext({ '(a,b,c)/test': () => null }));
 
   expect(generated).toEqual({
-    staticRoutes: ['/_sitemap', '/test', '/(a)/test', '/(b)/test', '/(c)/test'],
+    staticRoutes: ['/(a)/test', '/(b)/test', '/(c)/test', '/_sitemap', '/test'],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
@@ -96,20 +101,20 @@ it('expands groups', () => {
 
   expect(generated).toEqual({
     staticRoutes: [
-      '/_sitemap',
-      '/apple',
-      '/(a)/apple',
-      '/banana',
-      '/(e)/banana',
-      '/(a)/banana',
       '/(a)/(e)/banana',
-      '/(f)/banana',
       '/(a)/(f)/banana',
-      '/(b)/apple',
-      '/(b)/banana',
+      '/(a)/apple',
+      '/(a)/banana',
       '/(b)/(e)/banana',
       '/(b)/(f)/banana',
+      '/(b)/apple',
+      '/(b)/banana',
       '/(c)/apple',
+      '/(e)/banana',
+      '/(f)/banana',
+      '/_sitemap',
+      '/apple',
+      '/banana',
     ],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
@@ -136,5 +141,125 @@ it.each(routes)('dynamic route: ./%s', (route, dynamicRoute, dynamicRouteTemplat
     staticRoutes: ['/_sitemap'],
     dynamicRoutes: [dynamicRoute],
     dynamicRouteTemplates: [dynamicRouteTemplates],
+  });
+});
+
+describe(getWatchHandler, () => {
+  const originalAppRoot = process.env.EXPO_ROUTER_APP_ROOT;
+  let handler: ReturnType<typeof getWatchHandler>;
+  const fn = jest.fn();
+
+  beforeAll(() => {
+    process.env.EXPO_ROUTER_APP_ROOT = '/User/expo/project/app';
+  });
+  afterAll(() => {
+    process.env.EXPO_ROUTER_APP_ROOT = originalAppRoot;
+  });
+
+  beforeEach(() => {
+    const ctx = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
+      './index.ts': true,
+    });
+    handler = getWatchHandler('/User/expo/project/app', {
+      ctx,
+      regenerateFn: () => {
+        fn(getTypedRoutesDeclarationFile(ctx));
+      },
+    });
+  });
+
+  it('can add files', () => {
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, type: 'add' });
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, type: 'add' });
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(group)/foo.ts`, type: 'add' });
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/bar.ts`, type: 'add' });
+    handler({
+      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/route.ts`,
+      type: 'add',
+    });
+
+    handler({
+      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a)/[slug]`,
+      type: 'add',
+    });
+
+    handler({
+      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/[...catchall]`,
+      type: 'add',
+    });
+
+    const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
+
+    expect(sections).toEqual({
+      staticRoutes: [
+        '/',
+        '/(a)/bar',
+        '/(a)/directory/(c)/route',
+        '/(a)/directory/(d)/route',
+        '/(a)/directory/route',
+        '/(b)/bar',
+        '/(b)/directory/(c)/route',
+        '/(b)/directory/(d)/route',
+        '/(b)/directory/route',
+        '/(group)/foo',
+        '/_sitemap',
+        '/apple',
+        '/bar',
+        '/directory/(c)/route',
+        '/directory/(d)/route',
+        '/directory/route',
+        '/foo',
+        '/fruit/banana',
+      ],
+      dynamicRouteTemplates: [
+        '/(a)/[slug]',
+        '/(a)/directory/(c)/[...catchall]',
+        '/(a)/directory/(d)/[...catchall]',
+        '/(a)/directory/[...catchall]',
+        '/(b)/directory/(c)/[...catchall]',
+        '/(b)/directory/(d)/[...catchall]',
+        '/(b)/directory/[...catchall]',
+        '/[slug]',
+        '/directory/(c)/[...catchall]',
+        '/directory/(d)/[...catchall]',
+        '/directory/[...catchall]',
+      ],
+      dynamicRoutes: [
+        '/${SingleRoutePart<T>}',
+        '/(a)/${SingleRoutePart<T>}',
+        '/(a)/directory/${CatchAllRoutePart<T>}',
+        '/(a)/directory/(c)/${CatchAllRoutePart<T>}',
+        '/(a)/directory/(d)/${CatchAllRoutePart<T>}',
+        '/(b)/directory/${CatchAllRoutePart<T>}',
+        '/(b)/directory/(c)/${CatchAllRoutePart<T>}',
+        '/(b)/directory/(d)/${CatchAllRoutePart<T>}',
+        '/directory/${CatchAllRoutePart<T>}',
+        '/directory/(c)/${CatchAllRoutePart<T>}',
+        '/directory/(d)/${CatchAllRoutePart<T>}',
+      ],
+    });
+  });
+
+  it('can delete files', () => {
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, type: 'add' });
+    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, type: 'add' });
+    handler({
+      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`,
+      type: 'delete',
+    });
+
+    const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
+
+    expect(sections).toEqual({
+      staticRoutes: ['/', '/_sitemap', '/fruit/banana'],
+      dynamicRoutes: ['never'],
+      dynamicRouteTemplates: ['never'],
+    });
+  });
+
+  it('will ignore files outside the app dir', () => {
+    handler({ filePath: `/other-directory/apple.ts`, type: 'add' });
+
+    expect(fn).not.toHaveBeenCalled();
   });
 });

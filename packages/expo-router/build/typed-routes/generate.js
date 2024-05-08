@@ -75,7 +75,12 @@ function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContex
  * Converts a Set to a TypeScript union type
  */
 const setToUnionType = (set) => {
-    return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
+    return set.size > 0
+        ? [...set]
+            .sort()
+            .map((s) => `\`${s}\``)
+            .join(' | ')
+        : 'never';
 };
 function generateCombinations(pathname) {
     const groups = pathname.split('/').filter((part) => part.startsWith('(') && part.endsWith(')'));

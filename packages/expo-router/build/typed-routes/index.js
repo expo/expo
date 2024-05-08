@@ -10,30 +10,44 @@ const node_path_1 = __importDefault(require("node:path"));
 const generate_1 = require("./generate");
 const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
-const ctx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
+const defaultCtx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
 /**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
-function getWatchHandler(outputDir) {
+function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.regenerateDeclarations } = {} // Exposed for testing
+) {
     const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoute)(key)));
     return async function callback({ filePath, type }) {
+        // Sanity check that we are in an Expo Router project
+        if (!process.env.EXPO_ROUTER_APP_ROOT)
+            return;
         let shouldRegenerate = false;
+        let relativePath = node_path_1.default.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
+        const isInsideAppRoot = !relativePath.startsWith('../');
+        const basename = node_path_1.default.basename(relativePath);
+        if (!isInsideAppRoot)
+            return;
+        // require.context paths always start with './' when relative to the root
+        relativePath = `./${relativePath}`;
         if (type === 'delete') {
-            ctx.__delete(filePath);
-            if (routeFiles.has(filePath)) {
-                routeFiles.delete(filePath);
+            ctx.__delete(relativePath);
+            if (routeFiles.has(relativePath)) {
+                routeFiles.delete(relativePath);
                 shouldRegenerate = true;
             }
         }
         else if (type === 'add') {
-            ctx.__add(filePath);
-            shouldRegenerate = (0, matchers_1.isTypedRoute)(filePath);
+            ctx.__add(relativePath);
+            if ((0, matchers_1.isTypedRoute)(basename)) {
+                routeFiles.add(relativePath);
+                shouldRegenerate = true;
+            }
         }
         else {
-            shouldRegenerate = routeFiles.has(filePath);
+            shouldRegenerate = routeFiles.has(relativePath);
         }
         if (shouldRegenerate) {
-            (0, exports.regenerateDeclarations)(outputDir);
+            regenerateFn(outputDir, ctx);
         }
     };
 }
@@ -41,7 +55,7 @@ exports.getWatchHandler = getWatchHandler;
 /**
  * A throttled function that regenerates the typed routes declaration file
  */
-exports.regenerateDeclarations = throttle((outputDir) => {
+exports.regenerateDeclarations = throttle((outputDir, ctx = defaultCtx) => {
     const file = (0, generate_1.getTypedRoutesDeclarationFile)(ctx);
     if (!file)
         return;
