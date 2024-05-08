@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
@@ -186,7 +187,8 @@ class UpdatesDevLauncherController(
     return try {
       createUpdatesConfiguration(configuration, context)
       true
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
       false
     }
   }
@@ -348,5 +350,9 @@ class UpdatesDevLauncherController(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+  }
+
+  companion object {
+    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

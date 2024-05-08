@@ -160,7 +160,13 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   }
 
   public func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool {
-    return (try? createUpdatesConfiguration(configuration)) != nil
+    do {
+      try createUpdatesConfiguration(configuration)
+      return true
+    } catch let error {
+      NSLog("Invalid updates configuration: %@", error.localizedDescription)
+    }
+    return false
   }
 
   public func selectionPolicy() -> SelectionPolicy {
