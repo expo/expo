@@ -58,7 +58,7 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
-func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, contentFit: ContentFit) -> CGSize {
+func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
