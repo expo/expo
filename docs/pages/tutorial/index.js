@@ -1,3 +1,3 @@
 import redirect from '~/common/redirect';
 
-export default redirect('/tutorial/introduction/');
+export default redirect('/tutorial/overview/');

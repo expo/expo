@@ -1,0 +1,111 @@
+---
+title: Next steps
+description: Learn about the next steps in your journey with EAS.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import {
+  BookOpen02Icon,
+  BuildIcon,
+  EasSubmitIcon,
+  EasMetadataIcon,
+  LayersTwo02Icon,
+  DataIcon,
+} from '@expo/styleguide-icons';
+import { CODE } from '~/ui/components/Text';
+
+Congratulations! You've completed the EAS tutorial and learned about the main features. Now, you have a working [EAS project](https://expo.dev/eas).
+
+## EAS
+
+But this is just the beginning. Here are some next steps to continue your journey with EAS:
+
+<BoxLink
+  title="EAS Build"
+  Icon={BuildIcon}
+  description="See EAS Build documentation to learn more about compiling and signing Android and iOS apps."
+  href="/build/introduction/"
+/>
+
+<BoxLink
+  title="EAS Submit"
+  Icon={EasSubmitIcon}
+  description="See EAS Submit documentation to learn more about uploading app to Google Play Store and Apple App Store with on CLI command."
+  href="/submit/introduction/"
+/>
+
+<BoxLink
+  title="EAS Update"
+  Icon={LayersTwo02Icon}
+  description="See EAS Update documentation to learn more about publishing updates and applying customizable strategies."
+  href="/eas-update/introduction/"
+/>
+
+<BoxLink
+  title="EAS Metadata"
+  Icon={EasMetadataIcon}
+  description="See EAS Metadata documentation to automate and maintain your app store presence from the command line."
+  href="/eas/metadata/"
+/>
+
+<BoxLink
+  title="EAS Insights"
+  Icon={DataIcon}
+  description={
+    <>
+      See EAS Insights documentation to learn more about how to use <CODE>expo-insights</CODE>{' '}
+      library and get precise usage metrics.
+    </>
+  }
+  href="/eas-insights/introduction/"
+/>
+
+## eas.json reference
+
+<BoxLink
+  title="eas.json schema"
+  Icon={BookOpen02Icon}
+  description="See the complete schema reference to learn more about available properties for EAS Build and EAS Submit, and to configure and override their default behavior from within your project."
+  href="/eas/json/"
+/>
+
+## Custom builds
+
+<BoxLink
+  title="Custom builds"
+  Icon={BookOpen02Icon}
+  description="See custom builds documentation to extend EAS Build and use your own configuration to create build workflows."
+  href="/custom-builds/get-started/"
+/>
+
+## Relevant guides
+
+<BoxLink
+  title="Automate submissions"
+  Icon={BookOpen02Icon}
+  description="See automate submissions guide on how to enable automatic submissions with EAS Build on app stores."
+  href="/build/automate-submissions/"
+/>
+
+<BoxLink
+  title="GitHub Actions with EAS Update"
+  Icon={BookOpen02Icon}
+  description="See Use GitHub Actions guide on how to automate publishing updates with EAS Update."
+  href="/eas-update/github-actions/"
+/>
+
+<BoxLink
+  title="App credentials"
+  Icon={BookOpen02Icon}
+  description="See App credentials guide to learn more about credentials requirement for Android and iOS."
+  href="/app-signing/app-credentials/"
+/>
+
+<BoxLink
+  title="Develop an app with Expo"
+  Icon={BookOpen02Icon}
+  description="An overview of the development process of building an Expo app to help build a mental model of the core development loop."
+  href="/workflow/overview/"
+/>
+
+We hope you enjoyed this course. If you have any questions or feedback, don't hesitate to reach out to us on [Discord](https://chat.expo.dev/), or share your experience on [X](https://twitter.com/expo).
