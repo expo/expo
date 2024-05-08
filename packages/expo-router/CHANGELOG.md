@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Typed Routes generating incorrect routes and crashing when moving files
+- Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
