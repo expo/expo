@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added setup for native unit tests. ([#28678](https://github.com/expo/expo/pull/28678) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.12.8 — 2024-05-06
 
 _This version does not introduce any user-facing changes._
