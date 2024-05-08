@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug with weak var type causing dropped events.
+
 ### 💡 Others
 
 ## 7.0.3 — 2024-05-01
