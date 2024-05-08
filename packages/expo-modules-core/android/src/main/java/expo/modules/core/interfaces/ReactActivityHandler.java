@@ -18,6 +18,7 @@ public interface ReactActivityHandler {
   /**
    * Gives modules a chance to create a ViewGroup that is used as a container for the ReactRootView,
    * which is added as a child to the container if non-null.
+   *
    * @return a ViewGroup to be used as a container, or null if no container is needed
    */
   @Nullable
@@ -61,10 +62,11 @@ public interface ReactActivityHandler {
     return false;
   }
 
-    /**
-     * Gives modules a chance to override the wrapped ReactActivityDelegate instance.
-     * @return a new ReactActivityDelegate instance, or null if not to override
-     */
+  /**
+   * Gives modules a chance to override the wrapped ReactActivityDelegate instance.
+   *
+   * @return a new ReactActivityDelegate instance, or null if not to override
+   */
   @Nullable
   default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
     return null;
@@ -79,6 +81,7 @@ public interface ReactActivityHandler {
   default DelayLoadAppHandler getDelayLoadAppHandler(ReactActivity activity, ReactNativeHost reactNativeHost) {
     return null;
   }
+
   interface DelayLoadAppHandler {
     void whenReady(Runnable runnable);
   }
