@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `onKeyDown` and `onKeyLongPress` to `ReactActivityHandler` on Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

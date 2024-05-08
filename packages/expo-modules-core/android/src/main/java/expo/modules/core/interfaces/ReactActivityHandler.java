@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
 
@@ -39,9 +38,33 @@ public interface ReactActivityHandler {
   }
 
   /**
-   * Gives modules a chance to override the wrapped ReactActivityDelegate instance.
-   * @return a new ReactActivityDelegate instance, or null if not to override
+   * Gives modules a chance to respond to `onKeyDown` events. Every listener will receive this
+   * callback, but the delegate will not receive the event unless if any of the listeners consume it
+   * (i.e. return `true` from this method).
+   * `ReactActivityDelegateWrapper.onKeyDown` will return `true` if any module returns `true`.
+   *
+   * @return true if this module wants to return `true` from `ReactActivityDelegateWrapper.onKeyDown`
    */
+  default boolean onKeyDown(int keyCode, @Nullable KeyEvent event) {
+    return false;
+  }
+
+  /**
+   * Gives modules a chance to respond to `onKeyLongPress` events. Every listener will receive this
+   * callback, but the delegate will not receive the event unless if any of the listeners consume it
+   * (i.e. return `true` from this method).
+   * `ReactActivityDelegateWrapper.onKeyLongPress` will return `true` if any module returns `true`.
+   *
+   * @return true if this module wants to return `true` from `ReactActivityDelegateWrapper.onKeyLongPress`
+   */
+  default boolean onKeyLongPress(int keyCode, @Nullable KeyEvent event) {
+    return false;
+  }
+
+    /**
+     * Gives modules a chance to override the wrapped ReactActivityDelegate instance.
+     * @return a new ReactActivityDelegate instance, or null if not to override
+     */
   @Nullable
   default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
     return null;
