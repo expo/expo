@@ -78,6 +78,30 @@ describe(persistMetroAssetsAsync, () => {
       ]);
     });
 
+    // Should have no effect
+    it(`adds files with absolute base URL`, async () => {
+      const files = new Map();
+
+      await persistMetroAssetsAsync(assets, {
+        outputDirectory: '/output',
+        platform: 'web',
+        files,
+        baseUrl: 'http://acme.dev/custom/spot',
+      });
+
+      expect([...files.keys()]).toEqual([
+        'assets/input/asset.png',
+        'assets/input/asset@2x.png',
+        'assets/input/asset@3x.png',
+      ]);
+
+      expect(Object.keys(vol.toJSON())).toEqual([
+        '/input/a.png',
+        '/input/a@2x.png',
+        '/input/a@3x.png',
+      ]);
+    });
+
     it(`writes files that match virtual output`, async () => {
       await persistMetroAssetsAsync(assets, {
         outputDirectory: '/output',

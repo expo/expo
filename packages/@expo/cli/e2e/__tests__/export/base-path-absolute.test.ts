@@ -9,16 +9,16 @@ import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../util
 
 runExportSideEffects();
 
-describe('static-rendering with a custom base path', () => {
+describe('static-rendering with an absolute base path', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-rendering-asset-prefix';
+  const outputName = 'dist-static-rendering-absolute-base-path';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(
     async () => {
       await ensurePortFreeAsync(8081);
 
-      const baseUrl = '/one/two';
+      const baseUrl = 'https://acme.com';
       process.env.EXPO_E2E_BASE_PATH = baseUrl;
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
         cwd: projectRoot,
@@ -31,6 +31,8 @@ describe('static-rendering with a custom base path', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
+
+      // NODE_ENV=production EXPO_E2E_BASE_PATH=https://acme.com EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=development EXPO_USE_FAST_RESOLVER=true nexpo export -p web
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
@@ -84,7 +86,7 @@ describe('static-rendering with a custom base path', () => {
 
       const jsFiles = indexHtml.querySelectorAll('script').map((script) => script.attributes.src);
       expect(jsFiles).toEqual([
-        expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/index-.*\.js/),
+        expect.stringMatching(/https:\/\/acme\.com\/_expo\/static\/js\/web\/index-.*\.js/),
       ]);
 
       const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
@@ -96,17 +98,18 @@ describe('static-rendering with a custom base path', () => {
 
       cssFiles.forEach((src) => {
         // Linked to the expected static location
-        expect(src).toMatch(/^\/one\/two\/_expo\/static\/css\/.*\.css$/);
+        expect(src).toMatch(/^https:\/\/acme\.com\/_expo\/static\/css\/.*\.css$/);
       });
 
       const fontLinks = indexHtml.querySelectorAll('html > head > link[as="font"]');
 
       const fontFiles = fontLinks.map((link) => link.attributes.href);
 
-      fontFiles.forEach((src) => {
-        // Linked to the expected static location
-        expect(src).toMatch(/^\/one\/two\/assets\/.*\.ttf/);
-      });
+      // TODO: Support fonts hosted at abstract asset paths
+      //   fontFiles.forEach((src) => {
+      //     // Linked to the expected static location
+      //     expect(src).toMatch(/^https:\/\/acme\.com\/assets\/.*\.ttf/);
+      //   });
 
       for (const file of [...cssFiles, ...jsFiles]) {
         expect(
@@ -114,7 +117,7 @@ describe('static-rendering with a custom base path', () => {
             path.join(
               outputDir,
               // If we strip the asset prefix, the file should exist.
-              file.replace(/^\/one\/two/, '')
+              file.replace(/^https:\/\/acme\.com/, '')
             )
           )
         ).toBe(true);
@@ -161,7 +164,7 @@ describe('static-rendering with a custom base path', () => {
         (await getPageHtml(outputDir, 'links.html')).querySelector(
           'body > #root a[data-testid="links-one"]'
         )?.attributes.href
-      ).toBe('/one/two/about');
+      ).toBe('https://acme.com/about');
     },
     5 * 1000
   );

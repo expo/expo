@@ -108,27 +108,15 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  if (
-    // Requires SDK 50 for expo-assets hashAssetPlugin change.
-    !exp.sdkVersion ||
-    gteSdkVersion(exp, '50.0.0')
-  ) {
-    if (isExporting) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.baseUrl ?? '') + '/assets'
-      }`;
-    } else {
-      // @ts-expect-error: typed as readonly
-      config.transformer.publicPath = '/assets/?unstable_path=.';
-    }
+  if (isExporting) {
+    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+    // @ts-expect-error: typed as readonly.
+    config.transformer.publicPath = `/assets?export_path=${
+      (exp.experiments?.baseUrl ?? '').replace(/^\/+/, '') + '/assets'
+    }`;
   } else {
-    if (isExporting && exp.experiments?.baseUrl) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.baseUrl;
-    }
+    // @ts-expect-error: typed as readonly
+    config.transformer.publicPath = '/assets/?unstable_path=.';
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);

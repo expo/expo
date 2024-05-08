@@ -20,7 +20,14 @@ function assertHashedAssetData(data) {
     (0, node_assert_1.default)('fileHashes' in data, 'Assets must have hashed files. Ensure the expo-asset plugin is installed.');
 }
 async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath) {
+    // If publicPath is an absolute URL, then Metro will break it. We need to remove it, then add it back later.
     const data = await (0, Assets_1.getAssetData)(assetPath, localPath, assetDataPlugins, platform, publicPath);
+    // HACK: Metro breaks http:// (only if the asset is located in the project root) so we need to add the extra slash back.
+    const parts = data.httpServerLocation.match(/^(https?:\/)[^/]+/);
+    if (parts) {
+        // @ts-expect-error: httpServerLocation is typed as "readonly".
+        data.httpServerLocation = data.httpServerLocation.replace(parts[1], parts[1] + '/');
+    }
     assertHashedAssetData(data);
     // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
     if (platform === 'web' && publicPath.includes('?export_path=')) {

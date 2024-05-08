@@ -5,6 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Link } from '../Link';
 
+beforeEach(() => {
+  delete process.env.EXPO_BASE_URL;
+});
+afterAll(() => {
+  delete process.env.EXPO_BASE_URL;
+});
+
 it('renders a Link', () => {
   const { getByTestId } = render(
     <Link testID="link" href="/foo">
@@ -24,6 +31,29 @@ it('renders a Link', () => {
     </a>
   `);
   expect(node.getAttribute('href')).toBe('/foo');
+});
+
+it('renders a Link with baseUrl', () => {
+  process.env.EXPO_BASE_URL = 'https://example.com';
+
+  const { getByTestId } = render(
+    <Link testID="link" href="/foo">
+      Foo
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node).toMatchInlineSnapshot(`
+    <a
+      class="css-text-146c3p1 r-cursor-1loqt21"
+      data-testid="link"
+      dir="auto"
+      href="https://example.com/foo"
+      role="link"
+    >
+      Foo
+    </a>
+  `);
+  expect(node.getAttribute('href')).toBe('https://example.com/foo');
 });
 
 it('renders a Link with a slot', () => {

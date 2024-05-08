@@ -457,7 +457,12 @@ const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.
 function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
-            return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+            let adjustedBaseUrl = baseUrl.replace(/\/$/, '');
+            // If the base URL is not absolute, ensure a single starting slash is appended to the start of the path.
+            if (!/https?:\/\//.test(baseUrl)) {
+                adjustedBaseUrl = '/' + adjustedBaseUrl.replace(/^\/+/, '');
+            }
+            return adjustedBaseUrl + path;
         }
     }
     return path;

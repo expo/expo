@@ -226,6 +226,36 @@ it('appends baseUrl', () => {
   expect(getPathFromState<object>(state, config)).toBe(path);
 });
 
+it('appends absolute baseUrl', () => {
+  process.env.EXPO_BASE_URL = 'http://acme.dev/expo-prefix';
+
+  const path = 'http://acme.dev/expo-prefix/bar';
+  const config = {
+    screens: {
+      Foo: {
+        path: '',
+        screens: {
+          Foe: 'foe',
+        },
+      },
+      Bar: 'bar',
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        state: {
+          routes: [{ name: 'Bar' }],
+        },
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state, config)).toBe(path);
+});
+
 it('appends multi-level baseUrl', () => {
   process.env.EXPO_BASE_URL = '/expo/prefix/';
 

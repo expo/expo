@@ -1,4 +1,4 @@
-import { serializeHtmlWithAssets } from '../serializeHtml';
+import { serializeHtmlWithAssets, combineUrlPath } from '../serializeHtml';
 
 it('serializes development static html', () => {
   const res = serializeHtmlWithAssets({
@@ -85,5 +85,29 @@ it('serializes development export static html with correct baseUrl and script sr
   expect(res).toMatch(
     // Note the explicit `/Users` part, not adding a double `//` by accident
     /<script src="\/custom\/base\/url\/Users\/path\/to\/expo\/app\/node_modules\/expo\/AppEntry.js" defer>/
+  );
+});
+
+it('serializes development export static html with correct absolute baseUrl and script src', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: '/Users/path/to/expo/app/node_modules/expo/AppEntry.js',
+        originFilename: 'node_modules/expo/AppEntry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+    ],
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    // Note, when `isExporting` is true, we combine `baseUrl` with the filename
+    // Wehn empty, this caused an additional `/` to be added at the beginning of the `<script src="" />` tag
+    baseUrl: 'https://acme.dev/custom/base/url/',
+    isExporting: true,
+  });
+  expect(res).toMatchSnapshot();
+  expect(res).toMatch(
+    // Note the explicit `/Users` part, not adding a double `//` by accident
+    /<script src="https:\/\/acme.dev\/custom\/base\/url\/Users\/path\/to\/expo\/app\/node_modules\/expo\/AppEntry.js" defer>/
   );
 });
