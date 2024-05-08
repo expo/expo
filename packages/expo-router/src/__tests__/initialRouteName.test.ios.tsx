@@ -7,14 +7,14 @@ import Stack from '../layouts/Stack';
 import { act, renderRouter, screen } from '../testing-library';
 
 /**
- * initialRouteName sets the "default" screen for a navigator, with the functionality changing per navigator
+ * anchor sets the "default" screen for a navigator, with the functionality changing per navigator
  */
 
-it('will default to the initialRouteName', async () => {
+it('will default to the anchor', async () => {
   renderRouter(
     {
       _layout: {
-        unstable_settings: { initialRouteName: 'apple' },
+        unstable_settings: { anchor: 'apple' },
         default: () => <Stack />,
       },
       index: function Index() {
@@ -30,11 +30,11 @@ it('will default to the initialRouteName', async () => {
   expect(screen).toHavePathname('/apple');
 });
 
-it('initialURL overrides initialRouteName', async () => {
+it('initialURL overrides anchor', async () => {
   renderRouter(
     {
       _layout: {
-        unstable_settings: { initialRouteName: 'index' },
+        unstable_settings: { anchor: 'index' },
         default: () => <Stack />,
       },
       index: function Index() {
@@ -50,6 +50,7 @@ it('initialURL overrides initialRouteName', async () => {
   expect(screen).toHavePathname('/apple');
 });
 
+<<<<<<< HEAD
 it('render the initial route with local params', async () => {
   // Issue #26908
   // Expo Router matches the behavior of React Navigation, but this behavior is slightly not correct
@@ -84,4 +85,120 @@ it('render the initial route with local params', async () => {
   expect(screen).toHavePathname('/apple');
   expect(screen).toHaveSearchParams({ fruit: 'apple', id: '1' });
   expect(screen.getByTestId('first')).toHaveTextContent('{"fruit":"apple","id":"1"}');
+=======
+it('push should ignore (group)/index as an initial route if not specified', () => {
+  renderRouter({
+    index: () => null,
+    '(group)/_layout': {
+      unstable_settings: {
+        anchor: 'test',
+      },
+      default: () => <Stack />,
+    },
+    '(group)/orange': () => null,
+    '(group)/test': () => null,
+  });
+
+  // Initial stale state
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    routes: [{ name: 'index', path: '/' }],
+    stale: true,
+  });
+
+  act(() => router.push('/orange'));
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 1,
+    key: expect.any(String),
+    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          initial: false,
+          params: {
+            initial: false,
+          },
+          screen: 'orange',
+        },
+        path: undefined,
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['test', 'orange'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'orange',
+              params: {
+                initial: false,
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+});
+
+it('push should ignore (group)/index as an initial route if no anchor is specified', () => {
+  renderRouter({
+    index: () => null,
+    '(group)/_layout': {
+      default: () => <Stack />,
+    },
+    '(group)/orange': () => null,
+    '(group)/test': () => null,
+  });
+
+  // Initial stale state
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    routes: [{ name: 'index', path: '/' }],
+    stale: true,
+  });
+
+  act(() => router.push('/orange'));
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 1,
+    key: expect.any(String),
+    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          params: {},
+          screen: 'orange',
+        },
+        path: undefined,
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+>>>>>>> 8b5ef16ce4 (rename to anchor)
 });

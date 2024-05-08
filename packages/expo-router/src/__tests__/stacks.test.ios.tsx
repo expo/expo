@@ -463,7 +463,7 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
     index: () => <Text testID="link">Index</Text>,
     '/fruit/_layout': {
       unstable_settings: {
-        initialRouteName: 'apple',
+        anchor: 'apple',
       },
       default: () => {
         return <Stack />;
@@ -473,7 +473,7 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
     '/fruit/banana': () => <Text testID="banana">Banana</Text>,
   });
 
-  act(() => router.push('/fruit/banana', { initialScreen: false }));
+  act(() => router.push('/fruit/banana', { unstable_ignoreAnchor: false }));
   expect(screen.getByTestId('banana')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('apple')).toBeDefined();

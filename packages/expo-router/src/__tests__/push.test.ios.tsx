@@ -448,3 +448,76 @@ it('targets the correct Stack when pushing to a nested layout', () => {
     type: 'stack',
   });
 });
+
+it('push should also add anchor routes', () => {
+  renderRouter({
+    index: () => null,
+    '(group)/_layout': {
+      default: () => <Stack />,
+      unstable_settings: {
+        anchor: 'apple',
+      },
+    },
+    '(group)/index': () => null,
+    '(group)/apple': () => null,
+    '(group)/orange': () => null,
+  });
+
+  // Initial stale state
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    routes: [{ name: 'index', path: '/' }],
+    stale: true,
+  });
+
+  act(() => router.push('/orange'));
+
+  expect(store.rootStateSnapshot()).toStrictEqual({
+    index: 1,
+    key: expect.any(String),
+    routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.any(String),
+        name: '(group)',
+        params: {
+          initial: false,
+          params: {
+            initial: false,
+          },
+          screen: 'orange',
+        },
+        path: undefined,
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['apple', 'index', 'orange'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'apple',
+              params: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'orange',
+              params: {
+                initial: false,
+              },
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
+});

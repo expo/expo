@@ -145,14 +145,14 @@ it('can preserve the initialRoute', () => {
   renderRouter({
     index: function MyIndexRoute() {
       return (
-        <Link testID="link" initial={false} href="/fruit/banana">
+        <Link testID="link" unstable_ignoreAnchor={false} href="/fruit/banana">
           Press me
         </Link>
       );
     },
     '/fruit/_layout': {
       unstable_settings: {
-        initialRouteName: 'apple',
+        anchor: 'apple',
       },
       default: () => {
         return <Stack />;
@@ -174,16 +174,16 @@ it('can preserve the initialRoute with shared groups', () => {
   renderRouter({
     index: function MyIndexRoute() {
       return (
-        <Link testID="link" initial={false} href="/(foo)/fruit/banana">
+        <Link testID="link" unstable_ignoreAnchor={false} href="/(foo)/fruit/banana">
           Press me
         </Link>
       );
     },
     '/(foo,bar)/fruit/_layout': {
       unstable_settings: {
-        initialRouteName: 'apple',
+        anchor: 'apple',
         foo: {
-          initialRouteName: 'orange',
+          anchor: 'orange',
         },
       },
       default: () => {

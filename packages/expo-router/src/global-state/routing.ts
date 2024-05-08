@@ -211,7 +211,7 @@ function getNavigateAction(
 
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
 
-    const childState = actionStateRoute.state;
+    const childState: any = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
 
     const dynamicName = matchDynamicName(actionStateRoute.name);
