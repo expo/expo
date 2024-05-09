@@ -10,7 +10,7 @@ android {
   namespace "expo.modules.devclient"
   defaultConfig {
     versionCode 1
-    versionName "4.0.12"
+    versionName "4.0.13"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
