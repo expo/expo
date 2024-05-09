@@ -63,7 +63,9 @@ export default function WebBrowserScreen() {
   };
 
   const packageSelected = (value: string | number) => {
-    if (typeof value === 'string') setSelectedPackage(value);
+    if (typeof value === 'string') {
+      setSelectedPackage(value);
+    }
   };
 
   const renderAndroidChoices = () =>

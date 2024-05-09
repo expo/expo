@@ -96,7 +96,9 @@ function ContactDetailView({
   };
 
   const jobTitle = React.useMemo<string | null>(() => {
-    if (!contact) return null;
+    if (!contact) {
+      return null;
+    }
     const { jobTitle, department } = contact;
     if (!jobTitle || !department) {
       return jobTitle ?? department ?? null;
@@ -105,7 +107,9 @@ function ContactDetailView({
   }, [contact]);
 
   const subtitles = React.useMemo<string[]>(() => {
-    if (!contact) return [];
+    if (!contact) {
+      return [];
+    }
 
     return [
       contact.phoneticFirstName,
@@ -117,7 +121,9 @@ function ContactDetailView({
   }, [jobTitle, contact]);
 
   const links = React.useMemo<any[]>(() => {
-    if (!contact) return [];
+    if (!contact) {
+      return [];
+    }
 
     const phone = ContactUtils.getPrimary<Contacts.PhoneNumber>(contact.phoneNumbers ?? []);
     const email = ContactUtils.getPrimary<Contacts.Email>(contact.emails ?? []);
@@ -137,7 +143,9 @@ function ContactDetailView({
       data: DetailListItem[];
     }[]
   >(() => {
-    if (!contact) return [];
+    if (!contact) {
+      return [];
+    }
 
     const items = [];
     for (const key of Object.keys(contact)) {

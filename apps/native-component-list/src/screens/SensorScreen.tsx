@@ -148,7 +148,9 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
   getName = () => 'DeviceMotion';
   getSensor = () => Sensors.DeviceMotion;
   renderXYZBlock = (name: string, event: null | { x?: number; y?: number; z?: number } = {}) => {
-    if (!event) return null;
+    if (!event) {
+      return null;
+    }
     const { x, y, z } = event;
     return (
       <Text>
@@ -160,7 +162,9 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
     name: string,
     event: null | { alpha?: number; beta?: number; gamma?: number } = {}
   ) => {
-    if (!event) return null;
+    if (!event) {
+      return null;
+    }
 
     const { alpha, beta, gamma } = event;
     return (

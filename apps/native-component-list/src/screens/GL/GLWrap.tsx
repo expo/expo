@@ -48,7 +48,9 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
       this._gl = gl;
       const { onTick = () => {}, onLayout } = (await onContextCreate(this._gl)) || {};
 
-      if (onLayout) this.onLayout = onLayout;
+      if (onLayout) {
+        this.onLayout = onLayout;
+      }
 
       const animate = () => {
         if (this._gl) {

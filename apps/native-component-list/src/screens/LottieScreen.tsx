@@ -143,7 +143,9 @@ export default class LottieScreen extends React.Component<{}, State> {
         useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
-        if (finished) this.forceUpdate();
+        if (finished) {
+          this.forceUpdate();
+        }
       });
     }
   };

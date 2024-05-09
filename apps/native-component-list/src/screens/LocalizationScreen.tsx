@@ -82,7 +82,9 @@ export default function LocalizationScreen() {
     let currentColumn = 0;
     while (true) {
       while (true) {
-        if (seenCount === sample.length) return buffer;
+        if (seenCount === sample.length) {
+          return buffer;
+        }
         if (currentColumn === grouped.length) {
           currentColumn = 0;
           buffer += '\n';

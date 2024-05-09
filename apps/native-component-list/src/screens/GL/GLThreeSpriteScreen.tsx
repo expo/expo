@@ -22,8 +22,9 @@ export default function GLThreeSprite() {
   const animate = React.useCallback(() => {
     animationFrameId.current = requestAnimationFrame(animate);
 
-    if (renderer.current && scene.current && camera.current)
+    if (renderer.current && scene.current && camera.current) {
       renderer.current.render(scene.current, camera.current);
+    }
 
     if (gl.current) {
       gl.current.endFrameEXP();

@@ -204,7 +204,9 @@ export default function Player(props: Props) {
 
       <View style={[styles.container, styles.buttonsContainer]}>
         {(props.extraButtons ?? []).map((button) => {
-          if (typeof button === 'function') return button();
+          if (typeof button === 'function') {
+            return button();
+          }
           return _renderAuxiliaryButton(button);
         })}
       </View>

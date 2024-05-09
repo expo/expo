@@ -46,10 +46,14 @@ function event(name: string, logCallback?: LogCallback): ImageTestEventHandler {
       firstTimeStamp = firstTimeStamp || timeStamp;
       const msec = (timeStamp - firstTimeStamp) % 60000;
       const message = `${msec} ${name}: ${JSON.stringify(nativeEvent)}`;
-      if (logCallback) logCallback(message);
+      if (logCallback) {
+        logCallback(message);
+      }
     } catch (err) {
       const message = `${name}: ${err.message}`;
-      if (logCallback) logCallback(message);
+      if (logCallback) {
+        logCallback(message);
+      }
     }
   };
 }

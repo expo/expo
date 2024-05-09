@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `curly` rule being overridden by `prettier` config. ([#28713](https://github.com/expo/expo/pull/28713) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 12.1.0 — 2024-04-18

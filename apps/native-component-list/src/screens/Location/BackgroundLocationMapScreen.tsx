@@ -119,14 +119,18 @@ function BackgroundLocationMapView() {
       const savedLocations = await getSavedLocations();
 
       subscription = locationEventsEmitter.addListener('update', (savedLocations: any) => {
-        if (isMounted) dispatch({ savedLocations });
+        if (isMounted) {
+          dispatch({ savedLocations });
+        }
       });
 
       if (!isTracking) {
         alert('Click `Start tracking` to start getting location updates.');
       }
 
-      if (!isMounted) return;
+      if (!isMounted) {
+        return;
+      }
 
       dispatch({
         isTracking,

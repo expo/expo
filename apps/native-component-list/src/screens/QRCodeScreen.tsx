@@ -56,7 +56,9 @@ function useToggleCameraType(preferredInitialType: CameraType): {
   const types = useCameraTypes();
 
   React.useEffect(() => {
-    if (!types) return;
+    if (!types) {
+      return;
+    }
     if (types.includes(preferredInitialType)) {
       setType(preferredInitialType);
     } else {
@@ -343,12 +345,16 @@ function QRFooterButton({
   const iconColor = isActive ? Colors.tintColor : '#ffffff';
 
   const onPressIn = React.useCallback(() => {
-    if (shouldUseHaptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (shouldUseHaptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
   }, []);
 
   const onPressButton = React.useCallback(() => {
     onPress?.();
-    if (shouldUseHaptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (shouldUseHaptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
   }, [onPress]);
 
   return (

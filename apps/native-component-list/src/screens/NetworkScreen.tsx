@@ -12,7 +12,9 @@ export default function NetworkScreen() {
   const [ip, ipError] = useResolvedValue(Network.getIpAddressAsync);
 
   React.useEffect(() => {
-    if (ipError) alert(ipError.message);
+    if (ipError) {
+      alert(ipError.message);
+    }
   }, [ipError]);
 
   React.useEffect(() => {

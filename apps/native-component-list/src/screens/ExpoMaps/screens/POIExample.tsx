@@ -66,8 +66,11 @@ export default function POIExample() {
             value={enablePOIFilter}
             onValueChange={() => {
               setEnablePOIFilter(!enablePOIFilter);
-              if (enablePOIFilter) setPoiType([]);
-              else setPoiType(['cafe']);
+              if (enablePOIFilter) {
+                setPoiType([]);
+              } else {
+                setPoiType(['cafe']);
+              }
             }}
           />
         )}

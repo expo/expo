@@ -13,7 +13,9 @@ export function AuthResult({ result }: any) {
     <View>
       {Object.keys(result).map((key) => {
         const value = result[key];
-        if (['_', '#', ''].includes(key)) return null;
+        if (['_', '#', ''].includes(key)) {
+          return null;
+        }
 
         return <KVText key={key} k={key} v={value} />;
       })}

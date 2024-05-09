@@ -48,7 +48,9 @@ export default function ConstantsScreen() {
         .filter((value) => !IGNORED_CONSTANTS.includes(value))
         .sort()
         .map((key) => {
-          if (typeof Constants[key] === 'function') return null;
+          if (typeof Constants[key] === 'function') {
+            return null;
+          }
           return <ExpoConstant name={key} key={key} />;
         })}
       <ExpoConstant name="getWebViewUserAgentAsync" />

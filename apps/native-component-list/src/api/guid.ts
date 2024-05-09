@@ -26,12 +26,13 @@ const GUID = Platform.select<string>(managedMap);
 
 export function getGUID(): string {
   if (['storeClient', 'standalone'].includes(Constants.executionEnvironment)) {
-    if (!GUID)
+    if (!GUID) {
       throw new Error(
         `No valid GUID for Expo Go on platform: ${
           Platform.OS
         }. Supported native platforms are currently: ${Object.keys(managedMap).join(', ')}`
       );
+    }
     return GUID;
   } else if (Constants.executionEnvironment === 'bare') {
     if (!BARE_GUIDs) {

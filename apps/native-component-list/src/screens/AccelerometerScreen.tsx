@@ -63,7 +63,9 @@ export default function AccelerometerScreen() {
   }, []);
 
   React.useEffect(() => {
-    if (!isSetup) return;
+    if (!isSetup) {
+      return;
+    }
 
     const sub = Accelerometer.addListener(({ x, y }) => {
       setPosition({ x, y });

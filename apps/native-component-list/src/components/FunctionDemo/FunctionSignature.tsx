@@ -81,7 +81,9 @@ function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectP
 
       if (property.type === 'enum') {
         const stringArgument = convertEnumArgumentToString(value, property);
-        if (!stringArgument) return;
+        if (!stringArgument) {
+          return;
+        }
         return `${property.name}: ${stringArgument}`;
       }
 

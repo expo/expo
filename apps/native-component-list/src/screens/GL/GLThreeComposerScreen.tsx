@@ -30,7 +30,9 @@ export default function GLThreeComposer() {
   }, []);
 
   React.useEffect(() => {
-    if (glitchPass.current) glitchPass.current.enabled = isComposerEnabled;
+    if (glitchPass.current) {
+      glitchPass.current.enabled = isComposerEnabled;
+    }
   }, [isComposerEnabled, glitchPass.current]);
 
   React.useEffect(() => {
@@ -86,7 +88,9 @@ export default function GLThreeComposer() {
         mesh.rotation.y += angularVelocity.y;
       });
 
-      if (composer.current) composer.current.render();
+      if (composer.current) {
+        composer.current.render();
+      }
       if (gl.current) {
         gl.current.endFrameEXP();
       }
