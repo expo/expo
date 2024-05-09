@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Remove usage of deprecated internal modules API.
 
 ## 13.0.7 — 2024-05-15
 

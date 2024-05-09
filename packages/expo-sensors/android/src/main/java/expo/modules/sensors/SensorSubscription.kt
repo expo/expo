@@ -1,31 +1,48 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-package expo.modules.sensors.services
+package expo.modules.sensors
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
+import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
 import android.os.Build
 
-abstract class BaseSensorService internal constructor(reactContext: Context?) : BaseService(reactContext!!), SensorEventListener2 {
+class SensorSubscription(
+  private val context: Context,
+  private val sensorType: Int,
+  private val listener: SensorEventListener2,
+  var updateInterval: Long = 100L
+) : SensorEventListener2 by listener {
   private var mSensor: Sensor? = null
   private val mSensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
   private val samplingPeriodUs: Int
-    get() = if (hasHighSamplingRateSensorsPermission()) SensorManager.SENSOR_DELAY_FASTEST else SensorManager.SENSOR_DELAY_NORMAL
+    get() = if (hasHighSamplingRateSensorsPermission()) {
+      SensorManager.SENSOR_DELAY_FASTEST
+    } else {
+      SensorManager.SENSOR_DELAY_NORMAL
+    }
 
-  // Abstract methods that subclasses should implement
-  abstract val sensorType: Int
+  private var lastUpdate = 0L
+
+  override fun onSensorChanged(sensorEvent: SensorEvent) {
+    val currentTime = System.currentTimeMillis()
+    if (currentTime - lastUpdate > updateInterval) {
+      listener.onSensorChanged(sensorEvent)
+      lastUpdate = currentTime
+    }
+  }
 
   // Public API
-  protected fun startObserving() {
+  fun startObserving() {
     if (mSensorManager.getDefaultSensor(sensorType).also { mSensor = it } != null) {
       mSensorManager.registerListener(this, mSensor, samplingPeriodUs)
     }
   }
 
-  protected fun stopObserving() {
+  fun stopObserving() {
     mSensorManager.unregisterListener(this)
   }
 
