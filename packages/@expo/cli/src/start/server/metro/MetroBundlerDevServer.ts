@@ -73,16 +73,6 @@ export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
 
-export class ForwardHtmlError extends CommandError {
-  constructor(
-    message: string,
-    public html: string,
-    public statusCode: number
-  ) {
-    super(message);
-  }
-}
-
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
@@ -119,7 +109,7 @@ type MetroServerType = import('metro').Server & {
     }
   ): Promise<string>;
 
-  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<>): boolean;
+  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<any>): boolean;
 };
 
 export class MetroBundlerDevServer extends BundlerDevServer {
@@ -477,7 +467,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         inlineSourceMap: expoBundleOptions.inlineSourceMap ?? false,
         modulesOnly: expoBundleOptions.modulesOnly ?? false,
         runModule: expoBundleOptions.runModule ?? true,
+        // @ts-expect-error
         sourceUrl: expoBundleOptions.sourceUrl,
+        // @ts-expect-error
         sourceMapUrl: expoBundleOptions.sourceMapUrl,
       },
       transformOptions,

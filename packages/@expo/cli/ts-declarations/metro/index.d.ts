@@ -211,6 +211,11 @@ declare module 'metro/src/lib/createWebsocketServer' {
 declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
   import type { Module } from 'metro';
 
+  export function sourceMapGeneratorNonBlocking(
+    modules: readonly Module<any>[],
+    options: SourceMapGeneratorOptions
+  ): Promise<any>;
+
   export type SourceMapGeneratorOptions = {
     excludeSource: boolean;
     processModuleFilter: (module: Module) => boolean;
