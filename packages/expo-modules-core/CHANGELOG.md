@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `onKeyDown` and `onKeyLongPress` to `ReactActivityHandler` on Android. ([#28684](https://github.com/expo/expo/pull/28684) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.12.10 — 2024-05-09
+
+### 🎉 New features
+
+- Added `onKeyDown` and `onKeyLongPress` to `ReactActivityHandler` on Android. ([#28684](https://github.com/expo/expo/pull/28684) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.12.9 — 2024-05-06
 
