@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix crash on `listenerCount` accessor.
+
 ### 💡 Others
 
 ## 12.0.1 — 2024-04-23
