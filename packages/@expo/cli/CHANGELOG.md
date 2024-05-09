@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Use Metro instance directly for server rendering.
+
 ## 0.18.10 — 2024-05-07
 
 ### 🐛 Bug fixes
