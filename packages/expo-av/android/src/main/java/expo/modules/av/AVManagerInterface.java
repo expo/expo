@@ -1,12 +1,18 @@
 package expo.modules.av;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.av.video.VideoView;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
+
+@FunctionalInterface
+interface EmitEventWrapper {
+  void emit(String name, Bundle body);
+}
 
 public interface AVManagerInterface {
   void registerVideoViewForAudioLifecycle(final VideoView videoView);
@@ -24,6 +30,8 @@ public interface AVManagerInterface {
   void setAudioIsEnabled(final Boolean value);
 
   void setAudioMode(final ReadableArguments map);
+
+  void setEmitEventWrapper(EmitEventWrapper emitEventWrapper);
 
   void loadForSound(final ReadableArguments source, final ReadableArguments status, final Promise promise);
 

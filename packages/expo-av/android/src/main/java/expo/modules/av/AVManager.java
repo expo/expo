@@ -14,19 +14,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.View;
 
 import com.facebook.jni.HybridData;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
-import expo.modules.core.arguments.MapArguments;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
-import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
@@ -44,12 +41,9 @@ import java.util.UUID;
 
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
-import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -89,6 +83,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   private final Context mContext;
+
+  private EmitEventWrapper mEmitEventWrapper;
 
   private boolean mEnabled = true;
 
@@ -204,11 +200,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   private void sendEvent(String eventName, Bundle params) {
-    if (mModuleRegistry != null) {
-      EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-      if (eventEmitter != null) {
-        eventEmitter.emit(eventName, params);
-      }
+    if (mEmitEventWrapper != null) {
+      mEmitEventWrapper.emit(eventName, params);
     }
   }
 
@@ -412,6 +405,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     }
 
     mStaysActiveInBackground = map.getBoolean(AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND);
+  }
+
+  @Override
+  public void setEmitEventWrapper(EmitEventWrapper emitEventWrapper) {
+    mEmitEventWrapper = emitEventWrapper;
   }
 
   // Unified playback API - Audio
@@ -657,12 +655,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     switch (what) {
       case MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
         removeAudioRecorder();
-        if (mModuleRegistry != null) {
-          EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-          if (eventEmitter != null) {
-            eventEmitter.emit("Expo.Recording.recorderUnloaded", new Bundle());
-          }
-        }
+        sendEvent("Expo.Recording.recorderUnloaded", new Bundle());
       default:
         // Do nothing
     }
