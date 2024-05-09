@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix bug with weak var type causing dropped events. ([#28677](https://github.com/expo/expo/pull/28677) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 7.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fix bug with weak var type causing dropped events. ([#28677](https://github.com/expo/expo/pull/28677) by [@aleqsio](https://github.com/aleqsio))
 
 ## 7.0.3 — 2024-05-01
 

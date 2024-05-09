@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "51.0.0",
+  "version": "51.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -71,7 +71,7 @@
     "expo-font": "~12.0.4",
     "expo-keep-awake": "~13.0.1",
     "expo-modules-autolinking": "1.11.1",
-    "expo-modules-core": "1.12.9",
+    "expo-modules-core": "1.12.10",
     "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
