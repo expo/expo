@@ -10,6 +10,46 @@
 
 ### 💡 Others
 
+## 5.0.14 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed build errors with use_frameworks on iOS. ([#28702](https://github.com/expo/expo/pull/28702) by [@kudo](https://github.com/kudo))
+
+## 5.0.13 — 2024-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.12 — 2024-05-04
+
+### 🐛 Bug fixes
+
+- Fix reloading app through "r" hotkey on iOS. ([#28617](https://github.com/expo/expo/pull/28617) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.11 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- Fixed `java.lang.IllegalStateException: DevMenu isn't available in release builds` when running dev-menu on Android release builds. ([#28607](https://github.com/expo/expo/pull/28607) by [@kudo](https://github.com/kudo))
+- Fixed JS Debugger not detecting correct engine in new arch on iOS. ([#28606](https://github.com/expo/expo/pull/28606) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.10 — 2024-05-02
+
+### 🐛 Bug fixes
+
+- Fixed some dev menu items like "Reload" that are not functional. ([#28578](https://github.com/expo/expo/pull/28578) by [@kudo](https://github.com/kudo))
+- Fixed DevMenu showing up before the app is loaded when using the new architecture. ([#28589](https://github.com/expo/expo/pull/28589) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update Menu background color in dark mode. ([#28549](https://github.com/expo/expo/pull/28549) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.9 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.8 — 2024-04-29
 
 _This version does not introduce any user-facing changes._

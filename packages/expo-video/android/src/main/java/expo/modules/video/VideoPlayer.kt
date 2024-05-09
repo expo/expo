@@ -24,16 +24,18 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
+class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext) {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
-
+  val audioFocusManager = VideoPlayerAudioFocusManager(context, WeakReference(this))
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
@@ -48,27 +50,30 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       field = value
     }
 
-  var status: PlayerStatus = IDLE
-
-  var currentMediaItem: MediaItem? = null
-    set(newMediaItem) {
-      if (field != newMediaItem) {
-        val oldVideoSource = VideoManager.getVideoSourceFromMediaItem(field)
-        val newVideoSource = VideoManager.getVideoSourceFromMediaItem(newMediaItem)
-
-        sendEventOnJSThread("sourceChange", newVideoSource, oldVideoSource)
+  // This is used only for sending events and keeping the reference to the video source for the
+  // VideoManager, which holds weak references. Changing this will not affect the player.
+  var videoSource: VideoSource? = source
+    set(videoSource) {
+      if (field != videoSource) {
+        sendEventOnJSThread("sourceChange", videoSource, field)
       }
-      field = newMediaItem
+      field = videoSource
     }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
+  var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
   var preservesPitch = false
     set(preservesPitch) {
       playbackParameters = applyPitchCorrection(playbackParameters)
       field = preservesPitch
+    }
+  var showNowPlayingNotification = true
+    set(value) {
+      field = value
+      playbackServiceBinder?.service?.setShowNotification(value, this.player)
     }
 
   private var serviceConnection: ServiceConnection
@@ -89,6 +94,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(volume, field))
       player.volume = if (muted) 0f else userVolume
       field = muted
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
@@ -107,6 +113,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -114,7 +121,8 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      this@VideoPlayer.currentMediaItem = mediaItem
+      val newVideoSource = VideoManager.getVideoSourceFromMediaItem(mediaItem)
+      this@VideoPlayer.videoSource = newVideoSource
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEventOnJSThread("playToEnd")
       }
@@ -131,6 +139,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
 
     override fun onVolumeChanged(volume: Float) {
       this@VideoPlayer.volume = volume
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
@@ -194,6 +203,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   override fun close() {
+    audioFocusManager.onPlayerDestroyed()
     appContext?.reactContext?.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
@@ -202,6 +212,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       player.removeListener(playerListener)
       player.release()
     }
+    videoSource = null
   }
 
   override fun deallocate() {
@@ -216,8 +227,15 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   fun prepare() {
-    player.setMediaItem(mediaItem)
-    player.prepare()
+    videoSource?.let { videoSource ->
+      val mediaItem = videoSource.toMediaItem()
+      VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
+      player.setMediaItem(mediaItem)
+      player.prepare()
+    } ?: run {
+      player.removeMediaItem(0)
+      player.prepare()
+    }
   }
 
   private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {

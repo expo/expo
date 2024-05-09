@@ -38,15 +38,16 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
       // It's (maybe) a raw React Native bundle
       DevLauncherReactNativeAppLoader(url, appHost, context, controller)
     } else {
-      if (updatesInterface == null) {
+      val runtimeVersion = getRuntimeVersion(context)
+      val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
+
+      if (updatesInterface?.isValidUpdatesConfiguration(configuration, context) != true) {
         manifest = manifestParser.parseManifest()
         if (!manifest!!.isUsingDeveloperTool()) {
           throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
         }
         DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
       } else {
-        val runtimeVersion = getRuntimeVersion(context)
-        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
         val update = updatesInterface!!.loadUpdate(configuration, context) {
           manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
           return@loadUpdate !manifest!!.isUsingDeveloperTool()

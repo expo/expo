@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 15.0.5 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix `ean13` barcodes not returning data. ([#28674](https://github.com/expo/expo/pull/28674) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.4 — 2024-05-07
+
+### 🎉 New features
+
+- Add `autoFocus` prop to allow setting the device focus mode. ([#28650](https://github.com/expo/expo/pull/28650) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.0.3 — 2024-04-29
 
 ### 🎉 New features

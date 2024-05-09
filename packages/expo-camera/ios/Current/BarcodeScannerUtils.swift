@@ -32,6 +32,7 @@ class BarcodeScannerUtils {
   static func avMetadataCodeObjectToDictionary(_ barcodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = barcodeScannerResult.type
+    result["data"] = barcodeScannerResult.stringValue
 
     // iOS converts upc_a to ean13 and appends a leading 0
     if barcodeScannerResult.type == AVMetadataObject.ObjectType.ean13 {
@@ -39,8 +40,6 @@ class BarcodeScannerUtils {
       if !value.isEmpty && value.hasPrefix("0") {
         result["data"] = value.dropFirst()
       }
-    } else {
-      result["data"] = barcodeScannerResult.stringValue
     }
 
     if !barcodeScannerResult.corners.isEmpty {

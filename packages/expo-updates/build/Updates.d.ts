@@ -80,6 +80,8 @@ export declare const createdAt: Date | null;
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
  * app.
+ * Unlike `Expo.reloadAppAsync()` provided by the `expo` package,
+ * this function not only reloads the app but also changes the loaded JavaScript bundle to that of the most recently downloaded update.
  *
  * It is not recommended to place any meaningful logic after a call to `await
  * Updates.reloadAsync()`. This is because the promise is resolved after verifying that the app can

@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 0.12.1 — 2024-05-06
+
+### 🎉 New features
+
+- Add `ios.ccacheEnabled` option to enable the C++ compiler cache for iOS builds. ([#28638](https://github.com/expo/expo/pull/28638) by [@byCedric](https://github.com/byCedric))
+- Add `ios.privacyManifestAggregationEnabled` option to enable/disable privacy manifest aggregation. ([#28646](https://github.com/expo/expo/pull/28646) by [@brentvatne](https://github.com/brentvatne)).
+
 ## 0.12.0 — 2024-04-18
 
 ### 🛠 Breaking changes

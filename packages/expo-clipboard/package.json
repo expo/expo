@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "ExpoClipboard standalone module",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",

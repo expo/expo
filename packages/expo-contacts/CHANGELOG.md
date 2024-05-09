@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 13.0.2 — 2024-04-26
 
 _This version does not introduce any user-facing changes._

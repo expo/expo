@@ -126,10 +126,9 @@ export class Asset {
                 width: meta.width,
                 height: meta.height,
             });
-            // TODO: FileSystem should probably support 'downloading' from drawable
-            // resources But for now it doesn't (it only supports raw resources) and
-            // React Native's Image works fine with drawable resource names for
-            // images.
+            // For images backward compatibility,
+            // keeps localUri the same as uri for React Native's Image that
+            // works fine with drawable resource names.
             if (Platform.OS === 'android' && !uri.includes(':') && (meta.width || meta.height)) {
                 asset.localUri = asset.uri;
                 asset.downloaded = true;

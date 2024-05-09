@@ -10,6 +10,38 @@
 
 ### 💡 Others
 
+## 1.12.10 — 2024-05-09
+
+### 🎉 New features
+
+- Added `onKeyDown` and `onKeyLongPress` to `ReactActivityHandler` on Android. ([#28684](https://github.com/expo/expo/pull/28684) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.9 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.8 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- Fixed building error when use_frameworks on new architecture. ([#28451](https://github.com/expo/expo/pull/28451) by [@kudo](https://github.com/kudo))
+
+## 1.12.7 — 2024-05-02
+
+### 🎉 New features
+
+- Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
+
+## 1.12.6 — 2024-05-01
+
+### 🐛 Bug fixes
+
+- [Android] Fix `field operation on NULL object` when reloading the app. ([#28555](https://github.com/expo/expo/pull/28555) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.5 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 1.12.4 — 2024-04-29
 
 ### 🐛 Bug fixes

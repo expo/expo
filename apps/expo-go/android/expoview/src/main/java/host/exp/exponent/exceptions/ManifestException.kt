@@ -10,18 +10,27 @@ import java.lang.Exception
 import java.lang.NumberFormatException
 import expo.modules.core.utilities.EmulatorUtilities.isRunningOnEmulator
 
+private const val SNACK_STAGING = "2dce2748-c51f-4865-bae0-392af794d60a"
+private const val SNACK_PROD = "933fd9c0-1666-11e7-afca-d980795c5824"
+
 class ManifestException : ExponentException {
   private val manifestUrl: String
   private var errorJSON: JSONObject? = null
   private lateinit var errorMessage: String
   private var fixInstructions: String? = null
+  private val isSnackURL: Boolean
+    get() =
+      manifestUrl.contains(SNACK_STAGING) || manifestUrl.contains(SNACK_PROD)
 
   var canRetry: Boolean = true
   val errorHeader: String?
     get() = errorJSON?.let {
       try {
         when (it.getString("errorCode")) {
-          "EXPERIENCE_SDK_VERSION_OUTDATED" -> "Project is incompatible with this version of Expo Go"
+          "EXPERIENCE_SDK_VERSION_OUTDATED" -> {
+            val projectType = if (isSnackURL) "This Snack" else "Project"
+            "$projectType is incompatible with this version of Expo Go"
+          }
           "EXPERIENCE_SDK_VERSION_TOO_NEW" -> "Project is incompatible with this version of Expo Go"
           "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> "This Snack is incompatible with this version of Expo Go"
           else -> null
@@ -85,17 +94,22 @@ class ManifestException : ExponentException {
             val expoDevLink =
               "https://expo.dev/go?sdkVersion=$sdkVersionRequired&platform=android&device=${!isRunningOnEmulator()}"
 
+            val projectType = if (isSnackURL) "snack" else "project"
+
             formattedMessage =
               "• The installed version of Expo Go is for <b>$maybePluralSDKsString ${
                 supportedSdksString(
                   "and"
                 )
               }</b>.<br>" +
-              "• The project you opened uses <b>SDK $sdkVersionRequired</b>."
-            fixInstructions =
-              "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with your project.<br><br>" +
-              "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>" +
-              "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
+              "• The $projectType you opened uses <b>SDK $sdkVersionRequired</b>."
+            fixInstructions = if (isSnackURL) {
+              "Either select SDK ${supportedSdksString("or")} on <a href='https:/snack.expo.dev/'>https:/snack.expo.dev/</a> or install an older version of Expo Go that is compatible with your project." +
+                "<br>If your required SDK version is not listed on Snack, use an emulator or one of the online emulators inside of Snack<br><br>"
+            } else {
+              "Either upgrade this project to SDK ${supportedSdksString("or")} or install an older version of Expo Go that is compatible with ${if (isSnackURL) "this" else "your"} $projectType.<br><br>" +
+                "<a href='https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/'>Learn how to upgrade to SDK ${supportedSdks.last()}.</a><br><br>"
+            } + "<a href='$expoDevLink'>Learn how to install Expo Go for SDK $sdkVersionRequired</a>."
             canRetry = false
           }
 

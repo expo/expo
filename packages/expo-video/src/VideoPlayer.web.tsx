@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 
-import { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoView.types';
+import type {
+  VideoPlayer,
+  VideoPlayerEvents,
+  VideoPlayerStatus,
+  VideoSource,
+} from './VideoPlayer.types';
 
 export function useVideoPlayer(
   source: VideoSource,
@@ -22,7 +27,7 @@ export function getSourceUri(source: VideoSource): string | null {
   return source?.uri ?? null;
 }
 
-export class VideoPlayerWeb
+export default class VideoPlayerWeb
   extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
 {

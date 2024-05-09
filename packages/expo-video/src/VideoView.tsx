@@ -2,7 +2,8 @@ import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer, VideoViewProps } from './VideoView.types';
+import type { VideoPlayer } from './VideoPlayer.types';
+import type { VideoViewProps } from './VideoView.types';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
@@ -10,7 +11,7 @@ import { VideoPlayer, VideoViewProps } from './VideoView.types';
  * @platform android
  * @platform ios
  */
-export function isPictureInPictureSupported(): Promise<boolean> {
+export function isPictureInPictureSupported(): boolean {
   return NativeVideoModule.isPictureInPictureSupported();
 }
 

@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.ReactHostWrapper
@@ -70,6 +71,8 @@ object DevMenuManager : DevMenuManagerInterface {
   override fun dispatchCallable(actionId: String, args: ReadableMap?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
+  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) = Unit
 
   override fun serializedItems(): List<Bundle> {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)

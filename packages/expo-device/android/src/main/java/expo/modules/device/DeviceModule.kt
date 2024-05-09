@@ -99,6 +99,7 @@ class DeviceModule : Module() {
 
     AsyncFunction<Boolean>("isSideLoadingEnabledAsync") {
       return@AsyncFunction if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        @Suppress("DEPRECATION")
         Settings.Global.getInt(
           context.applicationContext.contentResolver,
           Settings.Global.INSTALL_NON_MARKET_APPS,

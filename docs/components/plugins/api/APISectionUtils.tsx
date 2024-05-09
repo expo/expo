@@ -208,9 +208,6 @@ const hardcodedTypeLinks: Record<string, string> = {
 };
 
 const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {
-  'v48.0.0': {
-    Manifest: '/versions/v48.0.0/sdk/constants/#manifest',
-  },
   'v49.0.0': {
     Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
   },

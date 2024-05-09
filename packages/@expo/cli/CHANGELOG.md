@@ -8,7 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- Fix HTTPS tunneling for accounts with dots in their username. ([#28692](https://github.com/expo/expo/pull/28692) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+## 0.18.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Filter out unavailable connected devices when running `npx expo run:ios -d`. ([#28642](https://github.com/expo/expo/pull/28642) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.18.9 — 2024-05-06
+
+### 💡 Others
+
+- Bump `experiments.reactCanary` to React 19 beta [commit](https://github.com/facebook/react/commit/4508873393058e86bed308b56e49ec883ece59d1). ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.8 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
 
 ## 0.18.7 — 2024-04-29
 
@@ -16,6 +34,7 @@
 
 - Prevent overwriting exported Atlas data when exporting web with static renderer. ([#28502](https://github.com/expo/expo/pull/28502) by [@byCedric](https://github.com/byCedric))
 - Improve login info message for other login options. ([#28523](https://github.com/expo/expo/pull/28523) by [@wschurman](https://github.com/wschurman))
+- Filter out invalid architectures before passing `-PreactNativeArchitectures` to `gradle`. ([#28548](https://github.com/expo/expo/pull/28548) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.18.6 — 2024-04-26
 

@@ -123,7 +123,6 @@ function Google({ prompt, language, usePKCE }: any) {
   const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
     {
       language,
-      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
       clientId: `${getGUID()}.apps.googleusercontent.com`,
       selectAccount: !!prompt,
       usePKCE,
@@ -147,7 +146,6 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
   const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
     {
       language,
-      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
       clientId: `${getGUID()}.apps.googleusercontent.com`,
       selectAccount: !!prompt,
       usePKCE,

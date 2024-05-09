@@ -10,6 +10,46 @@
 
 ### 💡 Others
 
+## 4.0.14 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.13 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+- Fixed loading error from a https dev-server on Android. ([#28691](https://github.com/expo/expo/pull/28691) by [@kudo](https://github.com/kudo))
+- Fixed build errors with use_frameworks on iOS. ([#28702](https://github.com/expo/expo/pull/28702) by [@kudo](https://github.com/kudo))
+
+## 4.0.12 — 2024-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.11 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `LogBox` isn't working on the new architecture. ([#28602](https://github.com/expo/expo/pull/28602) by [@lukmccall](https://github.com/lukmccall))
+
+## 4.0.9 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.6 — 2024-04-25
 
 _This version does not introduce any user-facing changes._

@@ -22,6 +22,15 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propName: 'apple.extraPods',
       propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
     },
+    {
+      propName: 'apple.ccacheEnabled',
+      propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
+    },
+    {
+      propName: 'apple.privacyManifestAggregationEnabled',
+      propValueGetter: (config) =>
+        (config.ios?.privacyManifestAggregationEnabled ?? false).toString(),
+    },
   ],
   'withIosBuildProperties'
 );

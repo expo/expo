@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 5.5.2 — 2024-05-02
+
+### 🛠 Breaking changes
+
+- Drop deprecated `expoClientId` field from auth proxy. ([#28590](https://github.com/expo/expo/pull/28590) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 5.5.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

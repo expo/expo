@@ -6,6 +6,41 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.11 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
+- Fix _layout files with platform extensions incorrectly registering as a route ([#28699](https://github.com/expo/expo/pull/28699) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useMemo` crash when adding new routes.
+
+## 3.5.9 — 2024-05-06
+
+### 💡 Others
+
+- Use `ReactDOMServer.renderToString` to support React 19 beta. ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.5.8 — 2024-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.7 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.6 — 2024-05-01
+
+### 🎉 New features
+
 - Allow platform extensions for layout and route files ([#27408](https://github.com/expo/expo/pull/27408) by [@marklawlor](https://github.com/marklawlor))
 - Add `linking` prop to `<ExpoRoot />` ([#27757](https://github.com/expo/expo/pull/27757) by [@marklawlor](https://github.com/marklawlor))
 - Add `+native-intent` file support. ([#28113](https://github.com/expo/expo/pull/28113) by [@marklawlor](https://github.com/marklawlor))
@@ -14,8 +49,6 @@
 
 - Fix missing types for Link when using Typed Routes ([#28467](https://github.com/expo/expo/pull/28467) by [@marklawlor](https://github.com/marklawlor))
 - Prevent crash when `EXPO_ROUTER_APP_ROOT` directory does not exist ([#28466](https://github.com/expo/expo/pull/28466) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
 
 ## 3.5.5 — 2024-04-29
 

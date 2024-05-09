@@ -65,4 +65,9 @@ class Exceptions {
   ) : CodedException(
     message = "Expected to run on $expectedThreadName thread, but was run on $currentThreadName"
   )
+
+  /**
+   * An exception to throw when the root view is missing.
+   */
+  class MissingRootView : CodedException(message = "The root view is missing")
 }

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.0.2 — 2024-05-01
+
+### 💡 Others
+
 - Changed type of `colors` and `locations` array to readonly ([#28450](https://github.com/expo/expo/pull/28450) by [@kowczarz](https://github.com/kowczarz))
 
 ## 13.0.1 — 2024-04-23

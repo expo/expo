@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 1.12.9 — 2024-05-09
+
+### 💡 Others
+
+- Added setup for native unit tests. ([#28678](https://github.com/expo/expo/pull/28678) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.12.8 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.7 — 2024-05-04
+
+### 🎉 New features
+
+- Added support for displaying animated AVIF images on Android. ([#28609](https://github.com/expo/expo/pull/28609) by [@fobos531](https://github.com/fobos531))
+
+### 🐛 Bug fixes
+
+- Fix `avif` images not rendering. ([#28608](https://github.com/expo/expo/pull/28608) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.12.6 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.5 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 1.12.4 — 2024-04-24
 
 ### 🐛 Bug fixes
