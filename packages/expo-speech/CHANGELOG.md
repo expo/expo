@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fix crash on `listenerCount` accessor. ([#28721](https://github.com/expo/expo/pull/28721) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 12.0.2 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- [Web] Fix crash on `listenerCount` accessor. ([#28721](https://github.com/expo/expo/pull/28721) by [@aleqsio](https://github.com/aleqsio))
 
 ## 12.0.1 — 2024-04-23
 
