@@ -123,7 +123,7 @@ func recurrenceToString(frequency: EKRecurrenceFrequency) -> String {
   }
 }
 
-func calendarTypeToString(type: EKCalendarType) -> String {
+func calendarTypeToString(type: EKCalendarType, source: EKSourceType) -> String {
   switch type {
   case .local:
     return "local"
@@ -135,5 +135,7 @@ func calendarTypeToString(type: EKCalendarType) -> String {
     return "subscribed"
   case .birthday:
     return "birthdays"
+  default:
+    return sourceToString(type: source)
   }
 }

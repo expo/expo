@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, workaround a bug in iOS 15 where an invalid `EKCalendarType` is returned in the calendar object when siri suggestions are enabled. ([#28714](https://github.com/expo/expo/pull/28714) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 13.0.3 — 2024-05-01
