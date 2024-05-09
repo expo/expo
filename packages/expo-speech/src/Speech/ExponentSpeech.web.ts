@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, CodedError } from 'expo-modules-core';
+import { DeviceEventEmitter, CodedError, createWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -23,7 +23,7 @@ async function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
-export default {
+export default createWebModule({
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     if (text.length > MAX_SPEECH_INPUT_LENGTH) {
       throw new CodedError(
@@ -114,4 +114,4 @@ export default {
     return window.speechSynthesis.resume();
   },
   maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-};
+});
