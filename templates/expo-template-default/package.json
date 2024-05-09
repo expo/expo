@@ -1,7 +1,7 @@
 {
   "name": "expo-template-default",
   "main": "expo-router/entry",
-  "version": "51.0.24",
+  "version": "51.0.25",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/native": "^6.0.2",
-    "expo": "~51.0.1",
+    "expo": "~51.0.2",
     "expo-constants": "~16.0.1",
     "expo-font": "~12.0.4",
     "expo-linking": "~6.3.1",

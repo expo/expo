@@ -2,7 +2,7 @@
   "name": "expo-template-tabs",
   "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "51.0.23",
+  "version": "51.0.24",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/native": "^6.0.2",
-    "expo": "~51.0.1",
+    "expo": "~51.0.2",
     "expo-font": "~12.0.4",
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.11",
