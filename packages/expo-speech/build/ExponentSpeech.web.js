@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, CodedError } from 'expo-modules-core';
+import { DeviceEventEmitter, CodedError, createWebModule } from 'expo-modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
@@ -17,7 +17,7 @@ async function getVoices() {
         };
     });
 }
-export default {
+export default createWebModule({
     async speak(id, text, options) {
         if (text.length > MAX_SPEECH_INPUT_LENGTH) {
             throw new CodedError('ERR_SPEECH_INPUT_LENGTH', 'Speech input text is too long! Limit of input length is: ' + MAX_SPEECH_INPUT_LENGTH);
@@ -94,5 +94,5 @@ export default {
         return window.speechSynthesis.resume();
     },
     maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-};
+});
 //# sourceMappingURL=ExponentSpeech.web.js.map
