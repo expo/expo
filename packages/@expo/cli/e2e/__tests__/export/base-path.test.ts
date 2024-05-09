@@ -20,7 +20,7 @@ describe('static-rendering with a custom base path', () => {
 
       const baseUrl = '/one/two';
       process.env.EXPO_E2E_BASE_PATH = baseUrl;
-      await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
+      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
