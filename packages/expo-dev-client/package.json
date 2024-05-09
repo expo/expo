@@ -36,7 +36,7 @@
     "expo-dev-menu": "5.0.14",
     "expo-dev-menu-interface": "1.8.3",
     "expo-manifests": "~0.14.0",
-    "expo-updates-interface": "~0.16.0"
+    "expo-updates-interface": "~0.16.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0",
