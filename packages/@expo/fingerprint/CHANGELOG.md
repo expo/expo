@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Skips fingerprinting the `version` value from app config. ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 - Added `fingerprint.config.js` support for a project to customize some options. ([#28860](https://github.com/expo/expo/pull/28860) by [@kudo](https://github.com/kudo))
