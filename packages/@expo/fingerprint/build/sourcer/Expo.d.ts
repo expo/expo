@@ -1,4 +1,4 @@
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { type HashSource, type NormalizedOptions } from '../Fingerprint.types';
 export declare function getExpoConfigSourcesAsync(projectRoot: string, options: NormalizedOptions): Promise<HashSource[]>;
 export declare function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions): Promise<HashSource[]>;
 export declare function getExpoAutolinkingAndroidSourcesAsync(projectRoot: string, options: NormalizedOptions): Promise<HashSource[]>;

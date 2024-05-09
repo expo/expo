@@ -50,11 +50,11 @@ describe(diffFingerprintChangesAsync, () => {
     expect(normalizedDiff).toMatchInlineSnapshot(`
       [
         {
-          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","web":{"favicon":"./assets/favicon.png"}}",
           "debugInfo": {
-            "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+            "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
           },
-          "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+          "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
           "id": "expoConfig",
           "reasons": [
             "expoConfig",
@@ -129,11 +129,11 @@ describe(diffFingerprintChangesAsync, () => {
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","web":{"favicon":"./assets/favicon.png"}}",
           "debugInfo": {
-            "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+            "hash": "cc27a213ab986a73f89f13c92a7870bb9aee5769",
           },
-          "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+          "hash": "cc27a213ab986a73f89f13c92a7870bb9aee5769",
           "id": "expoConfig",
           "reasons": [
             "expoConfig",

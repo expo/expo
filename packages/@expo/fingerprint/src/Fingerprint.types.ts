@@ -25,6 +25,32 @@ export interface Fingerprint {
 
 export type Platform = 'android' | 'ios';
 
+export enum SourceSkips {
+  // Skip nothing
+  None = 1 << 0,
+
+  // Skip version in app.json
+  AppConfigVersion = 1 << 1,
+
+  // Skip runtimeVersion in app.json
+  AppConfigRuntimeVersion = 1 << 2,
+
+  // Skip app name in app.json
+  AppConfigName = 1 << 3,
+
+  // Skip appId in app.json
+  AppConfigAppId = 1 << 4,
+
+  // Skip schemes in app.json
+  AppConfigSchemes = 1 << 5,
+
+  // Skip EAS project information in app.json
+  AppConfigEASProject = 1 << 6,
+
+  // Skip assets in app.json
+  AppConfigAssets = 1 << 7,
+}
+
 export interface Options {
   /**
    * Only get native files from the given platforms. Default is `['android', 'ios']`.
@@ -65,6 +91,12 @@ export interface Options {
   extraSources?: HashSource[];
 
   /**
+   * Skips some sources from fingerprint.
+   * @see `DEFAULT_SOURCE_SKIPS` for the default value.
+   */
+  sourceSkips?: SourceSkips;
+
+  /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
    * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
    */
@@ -91,6 +123,7 @@ export interface NormalizedOptions extends Options {
   concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
   ignorePaths: NonNullable<Options['ignorePaths']>;
+  sourceSkips: NonNullable<Options['sourceSkips']>;
 }
 
 export interface HashSourceFile {
