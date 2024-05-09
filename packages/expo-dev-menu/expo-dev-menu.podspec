@@ -46,16 +46,10 @@ Pod::Spec.new do |s|
   }
 
   header_search_paths = [
-    '"$(PODS_ROOT)/boost"',
     '"${PODS_ROOT}/Headers/Private/React-Core"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ExpoModulesCore/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/expo-dev-menu-interface/Swift Compatibility Header"',
   ]
-  if ENV['USE_FRAMEWORKS']
-    header_search_paths.concat([
-      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
-    ])
-  end
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
@@ -98,7 +92,12 @@ Pod::Spec.new do |s|
     s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*', 'vendored/**/*'
     s.compiler_flags = compiler_flags
 
+    # add_dependency() requires to be defined
+    main.pod_target_xcconfig = {}
+
     main.dependency 'React-Core'
+    add_dependency(main, "React-jsinspector", :framework_name => 'jsinspector_modern')
+    add_dependency(main, "React-runtimescheduler")
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
