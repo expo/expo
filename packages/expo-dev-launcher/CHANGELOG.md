@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+- Fixed loading error from a https dev-server on Android. ([#28691](https://github.com/expo/expo/pull/28691) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
