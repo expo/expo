@@ -3,5 +3,6 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': ['warn'],
+    curly: ['warn', 'all'],
   },
 };
