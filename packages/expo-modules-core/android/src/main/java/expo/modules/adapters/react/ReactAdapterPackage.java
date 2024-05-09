@@ -29,7 +29,6 @@ public class ReactAdapterPackage extends BasePackage {
         new UIManagerModuleWrapper(reactContext),
         new EventEmitterModule(reactContext),
         new FontManagerModule(),
-        new RuntimeEnvironmentModule(),
         new PermissionsService(reactContext)
     );
   }
