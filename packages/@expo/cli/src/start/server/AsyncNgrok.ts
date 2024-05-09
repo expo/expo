@@ -51,7 +51,8 @@ export class AsyncNgrok {
     return [
       // NOTE: https://github.com/expo/expo/pull/16556#discussion_r822944286
       await this.getProjectRandomnessAsync(),
-      slugify(username),
+      // Strip out periods from the username to avoid subdomain issues with SSL certificates.
+      slugify(username, { remove: /\./ }),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
       String(this.port),
     ];

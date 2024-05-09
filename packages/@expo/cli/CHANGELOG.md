@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix HTTPS tunneling for accounts with dots in their username. ([#28692](https://github.com/expo/expo/pull/28692) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.18.10 — 2024-05-07
