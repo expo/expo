@@ -26,6 +26,7 @@ import com.facebook.react.devsupport.WebsocketJavaScriptExecutor
 import com.facebook.react.devsupport.WebsocketJavaScriptExecutor.JSExecutorConnectCallback
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devlauncher.DevLauncherController
@@ -40,9 +41,19 @@ import java.io.IOException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+
+private const val PACKAGER_OK_STATUS = "packager-status:running"
+private const val HTTP_CONNECT_TIMEOUT_MS = 5000L
+private const val PACKAGER_STATUS_ENDPOINT = "status"
+
 
 class DevLauncherDevSupportManager(
-  applicationContext: Context?,
+  applicationContext: Context,
   val reactInstanceManagerHelper: ReactInstanceDevHelper?,
   packagerPathForJSBundleName: String?,
   enableOnCreate: Boolean,
@@ -69,6 +80,14 @@ class DevLauncherDevSupportManager(
   private var mIsSamplingProfilerEnabled = false
   private val devSettings: DevLauncherInternalSettingsWrapper =
     DevLauncherInternalSettingsWrapper(getDevSettings())
+
+  private val httpClient: OkHttpClient by lazy {
+    OkHttpClient.Builder()
+      .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+      .readTimeout(0, TimeUnit.MILLISECONDS)
+      .writeTimeout(0, TimeUnit.MILLISECONDS)
+      .build()
+  }
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L88-L128
   init {
@@ -256,6 +275,37 @@ class DevLauncherDevSupportManager(
       "$key=$value"
     }
     return "$defaultValue&$customOptionsString"
+  }
+
+  /**
+   * Re-implement [PackagerStatusCheck](https://github.com/facebook/react-native/blob/958f8e2bb55ba3a2ac/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/devsupport/PackagerStatusCheck.java)
+   * to support https.
+   */
+  override fun isPackagerRunning(callback: PackagerStatusCallback) {
+    val bundleURL = controller?.manifest?.getBundleURL() ?: return super.isPackagerRunning(callback)
+    val bundleUri = Uri.parse(bundleURL)
+    val statusUrl = bundleUri.buildUpon()
+      .path(PACKAGER_STATUS_ENDPOINT)
+      .clearQuery()
+      .build()
+      .toString()
+    val request = Request.Builder().url(statusUrl).build()
+    httpClient
+      .newCall(request)
+      .enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+          callback.onPackagerStatusFetched(false)
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+          if (!response.isSuccessful) {
+            callback.onPackagerStatusFetched(false)
+            return
+          }
+          val body = response.body?.string() ?: ""
+          callback.onPackagerStatusFetched(body == PACKAGER_OK_STATUS)
+        }
+      })
   }
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L233-L277
