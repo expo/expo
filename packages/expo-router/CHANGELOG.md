@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Sitemap crashing when `UIViewControllerBasedStatusBarAppearance` is set to `YES` ([#28724](https://github.com/expo/expo/pull/28665) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
 
 ## 3.5.11 — 2024-05-09
