@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fix crash on `listenerCount` accessor.
+- [Web] Fix crash on `listenerCount` accessor. ([#28721](https://github.com/expo/expo/pull/28721) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
