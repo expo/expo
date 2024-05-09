@@ -6,7 +6,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
 import android.os.Bundle
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -131,8 +130,4 @@ internal inline fun Module.createSensorProxy(
     weakModule.get()?.sendEvent(eventName, eventMapper(sensorEvent))
   }
   return SensorProxy(sensorType, appContext, onNewEvent)
-}
-
-internal inline fun <reified T : SensorServiceInterface> AppContext?.getServiceInterface(): T {
-  return this?.legacyModule<T>() ?: throw ServiceNotFoundException(T::class)
 }

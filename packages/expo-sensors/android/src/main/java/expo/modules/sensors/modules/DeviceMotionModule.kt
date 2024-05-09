@@ -11,20 +11,11 @@ import android.view.Choreographer
 import android.view.Surface
 import android.view.WindowManager
 import expo.modules.core.interfaces.services.UIManager
-import expo.modules.interfaces.sensors.SensorServiceInterface
-import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
-import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface
-import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
-import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface
-import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface
-import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.SensorSubscription
-import expo.modules.sensors.getServiceInterface
 import java.lang.ref.WeakReference
 
 private val sensorTypes = arrayListOf(
@@ -45,7 +36,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private var rotationEvent: SensorEvent? = null
   private var rotationRateEvent: SensorEvent? = null
   private var gravityEvent: SensorEvent? = null
-  private lateinit var serviceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
   private lateinit var uiManager: UIManager
 
   private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
@@ -116,16 +106,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
       return@AsyncFunction true
     }
-  }
-
-  private fun getSensorKernelServices(appContext: AppContext): List<SensorServiceInterface> {
-    return arrayListOf(
-      appContext.getServiceInterface<GyroscopeServiceInterface>(),
-      appContext.getServiceInterface<LinearAccelerationSensorServiceInterface>(),
-      appContext.getServiceInterface<AccelerometerServiceInterface>(),
-      appContext.getServiceInterface<RotationVectorSensorServiceInterface>(),
-      appContext.getServiceInterface<GravitySensorServiceInterface>()
-    )
   }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {
