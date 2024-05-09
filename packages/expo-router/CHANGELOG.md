@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Typed Routes sometimes having a trailing slash
+
 ### 💡 Others
 
 ## 3.5.15 - 2024-06-03
