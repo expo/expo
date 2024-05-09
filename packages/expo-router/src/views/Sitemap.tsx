@@ -21,6 +21,7 @@ import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
+import { hasViewControllerBasedStatusBarAppearance } from '../utils/statusbar';
 
 const INDENT = 24;
 
@@ -51,7 +52,7 @@ export function Sitemap() {
   const { width } = useWindowDimensions();
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      {!hasViewControllerBasedStatusBarAppearance && <StatusBar barStyle="light-content" />}
       <View
         style={[
           styles.main,

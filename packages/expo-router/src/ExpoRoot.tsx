@@ -1,7 +1,6 @@
 'use client';
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
-import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -12,6 +11,7 @@ import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
+import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
 
 export type ExpoRootProps = {
@@ -37,10 +37,6 @@ const INITIAL_METRICS =
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
       }
     : undefined;
-
-const hasViewControllerBasedStatusBarAppearance =
-  Platform.OS === 'ios' &&
-  !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
