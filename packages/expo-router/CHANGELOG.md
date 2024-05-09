@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Typed Routes sometimes having a trailing slash
+- Fix Typed Routes sometimes having a trailing slash ([#28707](https://github.com/expo/expo/pull/28707) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
