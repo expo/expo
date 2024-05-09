@@ -232,9 +232,18 @@ async function getTemplateVersion(isLocal: boolean) {
   if (!isLocal) {
     return 'latest';
   }
-  const sdkVersionMajor = await getLocalSdkMajorVersion();
-
-  return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+  try {
+    const sdkVersionMajor = await getLocalSdkMajorVersion();
+    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+  } catch {
+    console.log();
+    console.warn(
+      chalk.yellow(
+        "Couldn't determine the SDK version from the local project, using `latest` as the template version."
+      )
+    );
+    return 'latest';
+  }
 }
 
 /**
@@ -242,12 +251,25 @@ async function getTemplateVersion(isLocal: boolean) {
  */
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const templateVersion = await getTemplateVersion(targetDir, isLocal);
-
-    const tarballUrl = await getNpmTarballUrl(
-      isLocal ? 'expo-module-template-local' : 'expo-module-template',
-      templateVersion
-    );
+    const templateVersion = await getTemplateVersion(isLocal);
+    let tarballUrl: string | null = null;
+    try {
+      tarballUrl = await getNpmTarballUrl(
+        isLocal ? 'expo-module-template-local' : 'expo-module-template',
+        templateVersion
+      );
+    } catch {
+      console.log();
+      console.warn(
+        chalk.yellow(
+          "Couldn't download the versioned template from npm, falling back to the latest version."
+        )
+      );
+      tarballUrl = await getNpmTarballUrl(
+        isLocal ? 'expo-module-template-local' : 'expo-module-template',
+        'latest'
+      );
+    }
 
     await downloadTarball({
       url: tarballUrl,
