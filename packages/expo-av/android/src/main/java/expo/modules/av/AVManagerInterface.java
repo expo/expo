@@ -9,6 +9,7 @@ import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.av.video.VideoView;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
+@FunctionalInterface
 interface EmitEventWrapper {
   void emit(String name, Bundle body);
 }
