@@ -71,3 +71,45 @@ it(`should only load android and native routes`, () => {
     type: 'layout',
   });
 });
+
+it(`should work with layout routes`, () => {
+  expect(
+    getRoutes(
+      inMemoryContext({
+        './(app)/index.tsx': () => null,
+        './(app)/_layout.tsx': () => null,
+        './(app)/_layout.ios.tsx': () => null,
+      }),
+      { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
+    )
+  ).toEqual({
+    children: [
+      {
+        children: [
+          {
+            children: [],
+            contextKey: './(app)/index.tsx',
+            dynamic: null,
+            entryPoints: [
+              'expo-router/build/views/Navigator.js',
+              './(app)/_layout.ios.tsx',
+              './(app)/index.tsx',
+            ],
+            route: 'index',
+            type: 'route',
+          },
+        ],
+        contextKey: './(app)/_layout.ios.tsx',
+        dynamic: null,
+        initialRouteName: undefined,
+        route: '(app)',
+        type: 'layout',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+});

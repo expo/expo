@@ -335,7 +335,8 @@ function getFileMeta(key: string, options: Options) {
   const parts = key.split('/');
   let route = removeSupportedExtensions(key);
   const filename = parts[parts.length - 1];
-  const filenameWithoutExtensions = removeSupportedExtensions(filename);
+  const [filenameWithoutExtensions, platformExtension] =
+    removeSupportedExtensions(filename).split('.');
   const isLayout = filenameWithoutExtensions === '_layout';
   const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
 
@@ -352,7 +353,6 @@ function getFileMeta(key: string, options: Options) {
   }
   let specificity = 0;
 
-  const platformExtension = filenameWithoutExtensions.split('.')[1];
   const hasPlatformExtension = validPlatforms.has(platformExtension);
   const usePlatformRoutes = options.platformRoutes ?? true;
 

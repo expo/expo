@@ -261,7 +261,7 @@ function getFileMeta(key, options) {
     const parts = key.split('/');
     let route = (0, matchers_1.removeSupportedExtensions)(key);
     const filename = parts[parts.length - 1];
-    const filenameWithoutExtensions = (0, matchers_1.removeSupportedExtensions)(filename);
+    const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -273,7 +273,6 @@ function getFileMeta(key, options) {
         throw new Error(`Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
     let specificity = 0;
-    const platformExtension = filenameWithoutExtensions.split('.')[1];
     const hasPlatformExtension = validPlatforms.has(platformExtension);
     const usePlatformRoutes = options.platformRoutes ?? true;
     if (hasPlatformExtension) {
