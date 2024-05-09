@@ -46,13 +46,17 @@ Pod::Spec.new do |s|
   }
 
   header_search_paths = [
-    '"$(PODS_ROOT)/boost"',
     '"${PODS_ROOT}/Headers/Private/React-Core"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ExpoModulesCore/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/expo-dev-menu-interface/Swift Compatibility Header"',
   ]
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-nativeconfig/React_nativeconfig.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
     ])
   end
@@ -112,7 +116,11 @@ Pod::Spec.new do |s|
     s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*', 'vendored/**/*'
     s.compiler_flags = compiler_flags
 
+    # add_dependency() requires to be defined
+    main.pod_target_xcconfig = {}
+
     main.dependency 'React-Core'
+    add_dependency(main, "React-jsinspector", :framework_name => 'jsinspector_modern')
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
