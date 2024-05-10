@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix documention for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.5 — 2024-05-09
