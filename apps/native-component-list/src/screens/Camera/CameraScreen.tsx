@@ -181,6 +181,7 @@ export default class CameraScreen extends React.Component<object, State> {
 
   takeVideo = async () => {
     const result = await this.recordVideo();
+    this.setState((state) => ({ recording: !state.recording }));
     if (result?.uri) {
       await FileSystem.moveAsync({
         from: result.uri,

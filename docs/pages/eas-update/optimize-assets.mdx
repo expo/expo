@@ -39,21 +39,7 @@ After running the command, all image assets are compressed except the ones that 
 
 ### Other manual optimization methods
 
-You can also compress images using any other online service or a tool such as:
-
-- [`guetzli`](https://github.com/google/guetzli)
-- [`pngcrush`](https://pmt.sourceforge.io/pngcrush/)
-- [`optipng`](http://optipng.sourceforge.net/)
-
-Some image optimizers are lossless. They re-encode your image to be smaller without any change or loss in the pixels displayed. When you need each pixel to be untouched from the original image, a lossless optimizer and a lossless image format like PNG are a good choice.
-
-Other image optimizers are lossy. The optimized image differs from the original image. Often, lossy optimizers are more efficient because they discard visual information that reduces file size while making the image look nearly identical to humans. Tools like `imagemagick` can use comparison algorithms like [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) to show how similar two images look. It's quite common for an optimized image that is over 95% similar to the original image to be far less than 95% of the original file size.
-
-## Other assets
-
-For assets like GIFs or movies, or non-code and non-image assets, it's up to the developer to optimize and minify those assets.
-
-> **Note**: GIFs are a very inefficient format. Modern video codecs can produce smaller file sizes by over an order of magnitude.
+To optimize images and videos manually, see [Assets](/develop/user-interface/assets/#manual-optimization-methods) for more information.
 
 ## Ensuring assets are included in updates
 
