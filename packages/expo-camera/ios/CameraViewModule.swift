@@ -119,7 +119,9 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("mute") { (view, muted: Bool?) in
-        view.isMuted = muted ?? false
+        if let muted, view.isMuted != muted {
+          view.isMuted = muted
+        }
       }
 
       Prop("animateShutter") { (view, animate: Bool?) in

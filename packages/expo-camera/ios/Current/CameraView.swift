@@ -88,7 +88,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   var isMuted = false {
     didSet {
-      updateSessionAudioIsMuted()
+      setIsMuted()
     }
   }
 
@@ -218,16 +218,29 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
     device.unlockForConfiguration()
   }
+  
+  private func setIsMuted() {
+    if (self.mode == .video) {
+      sessionQueue.async {
+        self.session.beginConfiguration()
+        self.updateSessionAudioIsMuted()
+        self.session.commitConfiguration()
+      }
+    }
+  }
 
   private func setCameraMode() {
     sessionQueue.async {
+      self.session.beginConfiguration()
       if self.mode == .video {
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
         }
+        self.updateSessionAudioIsMuted()
       } else {
         self.cleanupMovieFileCapture()
       }
+      self.session.commitConfiguration()
     }
   }
 
@@ -298,7 +311,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       if error.code == .mediaServicesWereReset {
         if !self.session.isRunning {
           self.session.startRunning()
-          self.updateSessionAudioIsMuted()
+          self.setIsMuted()
           self.onCameraReady()
         }
       }
@@ -596,7 +609,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       } else {
         promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
 
+        self.session.beginConfiguration()
         self.cleanupMovieFileCapture()
+        self.session.commitConfiguration()
+        
         self.videoRecordedPromise = nil
         self.isValidVideoOptions = false
       }
@@ -605,33 +621,29 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   // Must be called on the sessionQueue
   func updateSessionAudioIsMuted() {
-    sessionQueue.async {
-      self.session.beginConfiguration()
-      if self.isMuted {
-        for input in self.session.inputs {
-          if let deviceInput = input as? AVCaptureDeviceInput {
-            if deviceInput.device.hasMediaType(.audio) {
-              self.session.removeInput(input)
-              return
-            }
-          }
-        }
-      }
-
-      if !self.isMuted && self.mode == .video {
-        if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
-          do {
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
-            if self.session.canAddInput(audioDeviceInput) {
-              self.session.addInput(audioDeviceInput)
-            }
-          } catch {
-            log.info("\(#function): \(error.localizedDescription)")
+    if self.isMuted {
+      for input in self.session.inputs {
+        if let deviceInput = input as? AVCaptureDeviceInput {
+          if deviceInput.device.hasMediaType(.audio) {
+            self.session.removeInput(input)
             return
           }
         }
       }
-      self.session.commitConfiguration()
+    }
+
+    if !self.isMuted && self.mode == .video {
+      if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
+        do {
+          let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
+          if self.session.canAddInput(audioDeviceInput) {
+            self.session.addInput(audioDeviceInput)
+          }
+        } catch {
+          log.info("\(#function): \(error.localizedDescription)")
+          return
+        }
+      }
     }
   }
 
@@ -639,10 +651,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   func setupMovieFileCapture() {
     let output = AVCaptureMovieFileOutput()
     if self.session.canAddOutput(output) {
-      self.session.beginConfiguration()
       self.session.addOutput(output)
       self.videoFileOutput = output
-      self.session.commitConfiguration()
     }
   }
 
@@ -650,10 +660,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   func cleanupMovieFileCapture() {
     if let videoFileOutput {
       if session.outputs.contains(videoFileOutput) {
-        self.session.beginConfiguration()
         session.removeOutput(videoFileOutput)
         self.videoFileOutput = nil
-        self.session.commitConfiguration()
       }
     }
   }
