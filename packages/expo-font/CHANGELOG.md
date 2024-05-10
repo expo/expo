@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed some vector icons not rendering correctly. ([#28747](https://github.com/expo/expo/pull/28747) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 12.0.4 — 2024-04-24
