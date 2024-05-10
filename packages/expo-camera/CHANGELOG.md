@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix documention for `maxDuration` in `CameraRecordingOptions`.
+
 ### 💡 Others
 
 ## 15.0.5 — 2024-05-09
