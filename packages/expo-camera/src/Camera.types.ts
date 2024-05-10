@@ -167,7 +167,7 @@ export type CameraPictureOptions = {
 // @needsAudit
 export type CameraRecordingOptions = {
   /**
-   * Maximum video duration in milliseconds.
+   * Maximum video duration in seconds.
    */
   maxDuration?: number;
   /**

@@ -239,7 +239,7 @@ class ExpoCameraView(
     val file = FileSystemUtils.generateOutputFile(cacheDirectory, "Camera", ".mp4")
     val fileOutputOptions = FileOutputOptions.Builder(file)
       .setFileSizeLimit(options.maxFileSize.toLong())
-      .setDurationLimitMillis(options.maxDuration.toLong())
+      .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
     recorder?.let {
       if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
