@@ -5,11 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
+import Metro from 'metro';
 import Server from 'metro/src/Server';
+import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
+import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { Options } from './resolveOptions';
@@ -22,7 +26,6 @@ import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
-import { getAssets } from '../fork-bundleAsync';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 const debug = require('debug')('expo:export:embed');
@@ -227,4 +230,29 @@ export async function exportEmbedAssetsAsync(
 
 function isError(error: any): error is Error {
   return error instanceof Error;
+}
+
+// Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
+// behavior.
+async function getAssets(metro: Metro.Server, options: BundleOptions) {
+  const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
+
+  // @ts-expect-error: _bundler isn't exposed on the type.
+  const dependencies = await metro._bundler.getDependencies(
+    [entryFile],
+    transformOptions,
+    resolverOptions,
+    { onProgress, shallow: false, lazy: false }
+  );
+
+  // @ts-expect-error
+  const _config = metro._config as ConfigT;
+
+  return getMetroAssets(dependencies, {
+    processModuleFilter: _config.serializer.processModuleFilter,
+    assetPlugins: _config.transformer.assetPlugins,
+    platform: transformOptions.platform!,
+    projectRoot: _config.projectRoot, // this._getServerRootDir(),
+    publicPath: _config.transformer.publicPath,
+  });
 }

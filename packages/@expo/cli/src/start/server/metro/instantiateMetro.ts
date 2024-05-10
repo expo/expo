@@ -222,7 +222,15 @@ export async function instantiateMetroAsync(
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
+  const atlas = await attachAtlasAsync({
+    isExporting,
+    exp,
+    projectRoot,
+    middleware,
+    metroConfig,
+    // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
+    resetAtlasFile: isExporting,
+  });
 
   const { server, metro } = await runServer(
     metroBundler,

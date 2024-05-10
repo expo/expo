@@ -15,7 +15,6 @@ describe('server-output', () => {
   beforeAll(
     async () => {
       console.time('export-server');
-      await ensurePortFreeAsync(8081);
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
         env: {
