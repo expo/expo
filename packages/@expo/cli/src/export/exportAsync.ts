@@ -22,4 +22,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   // Final notes
   Log.log(`App exported to: ${options.outputDir}`);
+
+  // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
+  process.exit(0);
 }
