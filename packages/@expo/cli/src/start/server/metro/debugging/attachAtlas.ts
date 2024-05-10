@@ -107,7 +107,7 @@ export async function waitUntilAtlasExportIsReadyAsync(projectRoot: string) {
     return debug('Atlas is not loaded, cannot wait for export to finish');
   }
   if (typeof atlas.waitUntilAtlasFileReady !== 'function') {
-    return debug('Atlas is not loaded, cannot wait for export to finish');
+    return debug('Atlas is outdated, cannot wait for export to finish');
   }
 
   debug('Waiting for Atlas to finish exporting...');
