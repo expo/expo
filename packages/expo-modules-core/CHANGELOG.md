@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix expo-modules-core is broken on the server side.
+- Fix expo-modules-core is broken on the server side. ([#28764](https://github.com/expo/expo/pull/28764) by [@alantoa](https://github.com/alantoa))
 
 ### 💡 Others
 
