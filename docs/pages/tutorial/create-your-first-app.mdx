@@ -32,15 +32,17 @@ It will create a new project directory and install all the necessary dependencie
 <Terminal
   cmd={[
     '# Create a project named StickerSmash',
-    '$ npx create-expo-app StickerSmash',
+    '$ npx create-expo-app --template blank StickerSmash',
     '',
     '# Navigate to the project directory',
     '$ cd StickerSmash',
   ]}
-  cmdCopy="npx create-expo-app StickerSmash && cd StickerSmash"
+  cmdCopy="npx create-expo-app --template blank StickerSmash && cd StickerSmash"
 />
 
 This command will create a new directory for the project with the name: **StickerSmash**.
+
+> With the release of SDK 51, we updated the default template to use [Expo Router](/router/introduction/). This tutorial only has a single screen, so we create the app with the `blank` template instead. After you complete the tutorial, check out the [Expo Router guide](/router/introduction/) to see how to create an app with many screens.
 
 </Step>
 
