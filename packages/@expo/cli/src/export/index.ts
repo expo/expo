@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { exportAsync } from './exportAsync.js';
-import { resolveOptionsAsync } from './resolveOptions.js';
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
@@ -63,12 +61,9 @@ export const expoExport: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
+  const { resolveOptionsAsync } = await import('./resolveOptions.js');
+  const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
-  try {
-    const options = await resolveOptionsAsync(projectRoot, args);
-
-    await exportAsync(projectRoot, options);
-  } catch (error) {
-    logCmdError(error);
-  }
+  const { exportAsync } = await import('./exportAsync.js');
+  return exportAsync(projectRoot, options).catch(logCmdError);
 };
