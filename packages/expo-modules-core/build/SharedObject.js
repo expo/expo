@@ -1,4 +1,12 @@
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 ensureNativeModulesAreInstalled();
-export default globalThis.expo.SharedObject;
+function getSharedObject() {
+    if (typeof window !== 'undefined' && globalThis.expo?.SharedObject) {
+        return globalThis.expo.SharedObject;
+    }
+    else {
+        return {};
+    }
+}
+export default getSharedObject();
 //# sourceMappingURL=SharedObject.js.map

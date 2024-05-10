@@ -1,4 +1,12 @@
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 ensureNativeModulesAreInstalled();
-export default globalThis.expo.NativeModule;
+function getNativeModule() {
+    if (typeof window !== 'undefined' && globalThis.expo?.NativeModule) {
+        return globalThis.expo.NativeModule;
+    }
+    else {
+        return {};
+    }
+}
+export default getNativeModule();
 //# sourceMappingURL=NativeModule.js.map
