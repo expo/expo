@@ -32,7 +32,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.2):
+  - Expo (51.0.3):
     - ExpoModulesCore
   - expo-dev-client (4.0.13):
     - EXManifests
@@ -341,7 +341,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (13.0.4):
     - ExpoModulesCore
-  - ExpoCamera (15.0.5):
+  - ExpoCamera (15.0.6):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -365,7 +365,7 @@ PODS:
   - ExpoFileSystem/Tests (17.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoFont (12.0.4):
+  - ExpoFont (12.0.5):
     - ExpoModulesCore
   - ExpoGL (14.0.2):
     - ExpoModulesCore
@@ -2533,7 +2533,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: a615f2b4d9412683c7c63ce20b376a3ab0c8af83
+  Expo: 355c270dc37b2c432fa9232a1d07064869f05c24
   expo-dev-client: a4fbaa4a68a09abc4dabf25038b77f8f845b8433
   expo-dev-launcher: 3ac0313ccef6edf71ae24a22dbee1e2a0eedcf25
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
@@ -2546,7 +2546,7 @@ SPEC CHECKSUMS:
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
   ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
   ExpoCalendar: 74175c0350967329df09408fb235369dc03d2de9
-  ExpoCamera: 6a10eec44d02199ef60f98db26ee0c3f7765c56d
+  ExpoCamera: a11ef6b2fd5d9ab8dbb7cea6b197654346933df4
   ExpoCellular: c903c51bb54cc7d3fa9f5c572d77e302b73203f1
   ExpoClipboard: 23d203f5d4843699fbc45be1cc4fe1fbd811a6fa
   ExpoContacts: 605d517d1e7a8a3f12f736db67cc502c0dd22b53
@@ -2554,7 +2554,7 @@ SPEC CHECKSUMS:
   ExpoDevice: fc94f0e42ecdfd897e7590f2874fc64dfa7e9b1c
   ExpoDocumentPicker: 326d1d098a574d621ed2cc05296c9895f10eea44
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
-  ExpoFont: 331cf28d549edc7b6300d3be19302fc5069d9bb1
+  ExpoFont: 690b76008be824e47907f200cb0764870108dfd1
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
