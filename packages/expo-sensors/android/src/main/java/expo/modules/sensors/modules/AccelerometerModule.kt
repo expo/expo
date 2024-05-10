@@ -19,6 +19,7 @@ class AccelerometerModule : Module() {
         putDouble("x", (sensorEvent.values[0] / SensorManager.GRAVITY_EARTH).toDouble())
         putDouble("y", (sensorEvent.values[1] / SensorManager.GRAVITY_EARTH).toDouble())
         putDouble("z", (sensorEvent.values[2] / SensorManager.GRAVITY_EARTH).toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }

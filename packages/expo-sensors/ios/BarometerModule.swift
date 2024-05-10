@@ -34,7 +34,8 @@ public final class BarometerModule: Module {
         self?.sendEvent(EVENT_BAROMETER_DID_UPDATE, [
           // Given pressure needs to be converted from kPa to hPa
           "pressure": data.pressure.doubleValue * 10.0,
-          "relativeAltitude": data.relativeAltitude.doubleValue
+          "relativeAltitude": data.relativeAltitude.doubleValue,
+          "timestamp": data.timestamp
         ])
       }
     }
