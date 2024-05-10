@@ -218,9 +218,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
     device.unlockForConfiguration()
   }
-  
+
   private func setIsMuted() {
-    if (self.mode == .video) {
+    if self.mode == .video {
       sessionQueue.async {
         self.session.beginConfiguration()
         self.updateSessionAudioIsMuted()
@@ -612,7 +612,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.session.beginConfiguration()
         self.cleanupMovieFileCapture()
         self.session.commitConfiguration()
-        
         self.videoRecordedPromise = nil
         self.isValidVideoOptions = false
       }
