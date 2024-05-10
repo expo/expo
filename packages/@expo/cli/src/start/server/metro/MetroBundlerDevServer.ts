@@ -10,7 +10,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { AssetData, TransformInputOptions } from 'metro';
+import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
