@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix `mute` prop not working when switching from `picture` to `video` mode. ([#28740](https://github.com/expo/expo/pull/28740) by [@lodev09](https://github.com/lodev09))
+
 ### 💡 Others
 
 ## 15.0.5 — 2024-05-09
