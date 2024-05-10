@@ -16,9 +16,9 @@ An app version is composed of two values:
 - Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
 - User-facing value: Represented by [`version`](/versions/latest/config/app/#version) **app.config.js**.
 
-Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of developer and user facing values), we cannot submit another build to the app stores with the app version. Submitting builds with duplicate app version numbers results in a failed submission.
+Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of developer and user facing values), we cannot submit another build to the app stores with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
-We can manually manage developer-facing values by setting them as `android.versionCode` and `ios.buildNumber` in **app.config.js**.
+We can manually manage developer-facing values by adding `android.versionCode` and `ios.buildNumber` in **app.config.js**.
 
 ```json app.config.js
 {
@@ -37,7 +37,7 @@ We can manually manage developer-facing values by setting them as `android.versi
 }
 ```
 
-We can manually update each value in the above code snippet for every new production release. However, this manual update process can be streamlined to minimize the room for error before submitting a new production build to app stores. We use EAS Build to automate this process in the next section.
+After manually adding these values, we need to update them every time before creating a new production build otherwise we will run into a failed submission error. However, to eliminate the chances of running into the error, we can automate this process using EAS Build in the next section
 
 > **Note**: The user-facing version number is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
 
