@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused property `interval` from `BarcodeSettings`.
+
 ## 15.0.6 — 2024-05-10
 
 ### 🐛 Bug fixes

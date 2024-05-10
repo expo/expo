@@ -64,7 +64,6 @@ enum class FocusMode(val value: String) : Enumerable {
 
 data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>,
-  @Field val interval: Double?
 ) : Record
 
 enum class BarcodeType(val value: String) : Enumerable {
