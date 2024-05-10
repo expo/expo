@@ -170,6 +170,7 @@ redirects[get-started/errors]=debugging/errors-and-warnings
 redirects[develop/development-builds/parallel-installation]=build-reference/variants
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas
 redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction
+redirects[guides/assets]=develop/user-interface/assets
 
 # Redirects after Guides organization
 redirects[guides]=guides/overview
