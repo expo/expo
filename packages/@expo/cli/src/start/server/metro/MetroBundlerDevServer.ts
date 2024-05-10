@@ -412,7 +412,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     throw new CommandError('Invalid bundler results: ' + results);
   }
 
-  private async metroLoadModuleContents(filePath: string, specificOptions: ExpoMetroOptions) {
+  private async metroLoadModuleContents(
+    filePath: string,
+    specificOptions: ExpoMetroOptions,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: string;
+    } = {}
+  ) {
     const { baseUrl } = this.instanceMetroOptions;
     assert(baseUrl != null, 'The server must be started before calling ssrLoadModuleContents.');
 
@@ -449,7 +456,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       hot: true,
       minify: expoBundleOptions.minify ?? false,
       type: 'module',
-      unstable_transformProfile: expoBundleOptions.unstable_transformProfile ?? 'default',
+      unstable_transformProfile:
+        extraOptions.unstable_transformProfile ??
+        expoBundleOptions.unstable_transformProfile ??
+        'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
@@ -482,7 +492,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // @ts-expect-error
         sourceUrl: expoBundleOptions.sourceUrl,
         // @ts-expect-error
-        sourceMapUrl: expoBundleOptions.sourceMapUrl,
+        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl,
       },
       transformOptions,
     });
@@ -539,6 +549,44 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       src: scriptContents,
       filename,
       map,
+    };
+  }
+
+  async legacySinglePageExportBundleAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: string;
+    } = {}
+  ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
+    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(
+      baseUrl != null && routerRoot != null && isExporting != null,
+      'The server must be started before calling ssrLoadModuleContents.'
+    );
+
+    const opts: ExpoMetroOptions = {
+      ...this.instanceMetroOptions,
+      baseUrl,
+      routerRoot,
+      isExporting,
+      ...options,
+      environment: 'client',
+      serializerOutput: 'static',
+    };
+
+    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    const output = await this.metroLoadModuleContents(
+      './' + opts.mainModuleName,
+      opts,
+      extraOptions
+    );
+    return {
+      artifacts: output.artifacts!,
+      assets: output.assets!,
     };
   }
 

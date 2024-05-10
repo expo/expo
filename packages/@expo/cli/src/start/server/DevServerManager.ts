@@ -35,6 +35,18 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
+  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+    const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    await devServerManager.startAsync([
+      {
+        type: 'metro',
+        options: startOptions,
+      },
+    ]);
+    return devServerManager;
+  }
+
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
   public readonly devtoolsPluginManager: DevToolsPluginManager;
 

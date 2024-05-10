@@ -91,34 +91,15 @@ export async function exportAppAsync(
 
   const files: ExportAssetMap = new Map();
 
-  // Useful for running parallel e2e tests in CI.
-  const port = 8081;
-
-  // TODO: Prevent starting the watcher.
-  const devServerManager = new DevServerManager(projectRoot, {
+  const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
     minify,
     mode,
-    port,
+    port: 8081,
     isExporting: true,
     location: {},
     resetDevServer: clear,
     maxWorkers,
   });
-
-  await devServerManager.startAsync([
-    {
-      type: 'metro',
-      options: {
-        port,
-        mode,
-        location: {},
-        isExporting: true,
-        minify,
-        resetDevServer: clear,
-        maxWorkers,
-      },
-    },
-  ]);
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
