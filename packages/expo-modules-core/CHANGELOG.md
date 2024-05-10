@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix expo-modules-core is broken on the server side.
+
 ### 💡 Others
 
 ## 1.12.10 — 2024-05-09
