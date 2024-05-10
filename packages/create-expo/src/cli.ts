@@ -38,7 +38,7 @@ async function run() {
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
-        chalk`-t, --template {gray [pkg]}  NPM template to use: blank, tabs, bare-minimum. Default: tabs`,
+        chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, tabs, bare-minimum.`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
         `-h, --help            Usage info`,

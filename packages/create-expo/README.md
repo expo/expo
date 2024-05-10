@@ -46,7 +46,7 @@ Once you're up and running with Create Expo App, visit [this tutorial](https://d
 
 ## Templates
 
-Create Expo App prepares the app with the `tabs` template by default. You can choose to use a project with more prepared functionality. For that, you can start Create Expo App with the `--template` flag. Use the `--help` flag to see available template options.
+Create Expo App prepares the app with the `default` template. You can run Create Expo App with the `--template` flag to choose from other templates, or with the `--example` flag to choose from [example projects](https://github.com/expo/examples). Use the `--help` flag to see available template options.
 
 ```sh
 # Pick from Expo's templates
