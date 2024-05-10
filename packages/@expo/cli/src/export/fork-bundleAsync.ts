@@ -81,10 +81,7 @@ export async function createBundlesAsync(
       engine: isHermes ? 'hermes' : undefined,
       serializerIncludeMaps: bundle.sourcemaps,
       bytecode: bundle.bytecode && isHermes,
-      // Bundle splitting on web-only for now.
-      // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
       serializerOutput: 'static',
-      // isExporting: true,
     });
   };
 
@@ -97,6 +94,10 @@ export async function createBundlesAsync(
     dev: bundleOptions.dev,
   }));
 
+  // const outputBundles: BundleOutput[] = [];
+  // for (const bundle of bundles) {
+  //   outputBundles.push(await buildAsync(bundle));
+  // }
   const outputBundles = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
 
   // { ios: bundle, android: bundle }
