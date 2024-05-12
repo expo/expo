@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused property `interval` from `BarcodeSettings`. ([#28760](https://github.com/expo/expo/pull/28760) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.0.6 — 2024-05-10
 
 ### 🐛 Bug fixes

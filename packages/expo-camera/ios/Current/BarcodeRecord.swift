@@ -2,7 +2,6 @@ import ExpoModulesCore
 import Vision
 
 struct BarcodeSettings: Record {
-  @Field var interval: Double?
   @Field var barcodeTypes: [BarcodeType]
 
   func toMetadataObjectType() -> [AVMetadataObject.ObjectType] {
