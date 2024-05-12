@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS` correctly handle urls coming from the users photo library.
+- On `iOS` correctly handle urls coming from the users photo library. ([#28777](https://github.com/expo/expo/pull/28777) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
