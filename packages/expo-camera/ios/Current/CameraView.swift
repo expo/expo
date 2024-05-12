@@ -218,20 +218,15 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
     device.unlockForConfiguration()
   }
-
+  
   private func setIsMuted() {
-    if self.mode == .video {
-      sessionQueue.async {
-        self.session.beginConfiguration()
-        self.updateSessionAudioIsMuted()
-        self.session.commitConfiguration()
-      }
+    sessionQueue.async {
+      self.updateSessionAudioIsMuted()
     }
   }
 
   private func setCameraMode() {
     sessionQueue.async {
-      self.session.beginConfiguration()
       if self.mode == .video {
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
@@ -240,7 +235,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       } else {
         self.cleanupMovieFileCapture()
       }
-      self.session.commitConfiguration()
     }
   }
 
@@ -609,9 +603,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       } else {
         promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
 
-        self.session.beginConfiguration()
         self.cleanupMovieFileCapture()
-        self.session.commitConfiguration()
         self.videoRecordedPromise = nil
         self.isValidVideoOptions = false
       }
@@ -620,6 +612,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   // Must be called on the sessionQueue
   func updateSessionAudioIsMuted() {
+    self.session.beginConfiguration()
     if self.isMuted {
       for input in self.session.inputs {
         if let deviceInput = input as? AVCaptureDeviceInput {
@@ -644,14 +637,17 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         }
       }
     }
+    self.session.commitConfiguration()
   }
 
   // Must be called on the sessionQueue
   func setupMovieFileCapture() {
     let output = AVCaptureMovieFileOutput()
     if self.session.canAddOutput(output) {
+      self.session.beginConfiguration()
       self.session.addOutput(output)
       self.videoFileOutput = output
+      self.session.commitConfiguration()
     }
   }
 
@@ -659,8 +655,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   func cleanupMovieFileCapture() {
     if let videoFileOutput {
       if session.outputs.contains(videoFileOutput) {
+        self.session.beginConfiguration()
         session.removeOutput(videoFileOutput)
         self.videoFileOutput = nil
+        self.session.commitConfiguration()
       }
     }
   }
