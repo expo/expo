@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS` correctly handle urls coming from the users photo library.
+
 ### 💡 Others
 
 ## 12.0.3 — 2024-05-01

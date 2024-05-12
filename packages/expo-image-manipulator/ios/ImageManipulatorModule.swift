@@ -51,8 +51,7 @@ public class ImageManipulatorModule: Module {
       }
       return callback(.success(image))
     }
-    if url.scheme == "assets-library" {
-      // TODO: ALAsset URLs are deprecated as of iOS 11, we should migrate to `ph://` soon.
+    if url.scheme == "ph" || url.scheme == "assets-library" {
       return loadImageFromPhotoLibrary(url: url, callback: callback)
     }
 
@@ -75,7 +74,7 @@ public class ImageManipulatorModule: Module {
    Loads the image from user's photo library.
    */
   internal func loadImageFromPhotoLibrary(url: URL, callback: @escaping LoadImageCallback) {
-    guard let asset = PHAsset.fetchAssets(withALAssetURLs: [url], options: nil).firstObject else {
+    guard let asset = retreiveAsset(from: url) else {
       return callback(.failure(ImageNotFoundException()))
     }
     let size = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
@@ -117,19 +116,5 @@ public class ImageManipulatorModule: Module {
       throw ImageWriteFailedException(error.localizedDescription)
     }
     return (url: fileUrl, data: data)
-  }
-}
-
-/**
- Returns pixel data representation of the image.
- */
-func imageData(from image: UIImage, format: ImageFormat, compression: Double) -> Data? {
-  switch format {
-  case .jpeg, .jpg:
-    return image.jpegData(compressionQuality: compression)
-  case .png:
-    return image.pngData()
-  case .webp:
-    return SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeCompressionQuality: compression])
   }
 }
