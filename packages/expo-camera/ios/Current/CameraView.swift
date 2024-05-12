@@ -218,7 +218,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
     device.unlockForConfiguration()
   }
-  
+
   private func setIsMuted() {
     sessionQueue.async {
       self.updateSessionAudioIsMuted()
