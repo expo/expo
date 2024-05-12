@@ -433,7 +433,6 @@ export type CameraNativeProps = {
 // @docsMissing
 export type BarcodeSettings = {
   barcodeTypes: BarcodeType[];
-  interval?: number;
 };
 
 /**
