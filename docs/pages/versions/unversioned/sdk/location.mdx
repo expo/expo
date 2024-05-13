@@ -125,9 +125,6 @@ If you're using the Android Emulator or iOS Simulator, ensure that [Location is 
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
-/* @hide */
-import Device from 'expo-device';
-/* @end */
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -136,14 +133,6 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      /* @hide */
-      if (Platform.OS === 'android' && !Device.isDevice) {
-        setErrorMsg(
-          'Oops, this will not work on Snack in an Android Emulator. Try it on your device!'
-        );
-        return;
-      }
-      /* @end */
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
