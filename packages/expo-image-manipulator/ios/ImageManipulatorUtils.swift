@@ -18,7 +18,7 @@ func imageData(from image: UIImage, format: ImageFormat, compression: Double) ->
 /**
  Checks if we are dealing with a ph asset URL and uses the correct method to fetch it.
  */
-func retreiveAsset(from url: URL) -> PHAsset? {
+func retrieveAsset(from url: URL) -> PHAsset? {
   if url.scheme == "ph" {
     let identifier = String(url.absoluteString.dropFirst(5)) // removes ph://
     return PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject
