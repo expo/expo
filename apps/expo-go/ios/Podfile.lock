@@ -53,7 +53,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (13.0.4):
     - ExpoModulesCore
-  - ExpoCamera (15.0.6):
+  - ExpoCamera (15.0.7):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -84,7 +84,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (13.0.1):
     - ExpoModulesCore
-  - ExpoHead (3.5.11):
+  - ExpoHead (3.5.12):
     - ExpoModulesCore
   - ExpoImage (1.12.9):
     - ExpoModulesCore
@@ -101,7 +101,7 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (12.0.3):
+  - ExpoImageManipulator (12.0.4):
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
@@ -2362,7 +2362,7 @@ SPEC CHECKSUMS:
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
   ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
   ExpoCalendar: 74175c0350967329df09408fb235369dc03d2de9
-  ExpoCamera: a11ef6b2fd5d9ab8dbb7cea6b197654346933df4
+  ExpoCamera: fba16df0c1b7cc542c461f107089fbf06515b9a2
   ExpoCellular: c903c51bb54cc7d3fa9f5c572d77e302b73203f1
   ExpoClipboard: 23d203f5d4843699fbc45be1cc4fe1fbd811a6fa
   ExpoContacts: 605d517d1e7a8a3f12f736db67cc502c0dd22b53
@@ -2373,9 +2373,9 @@ SPEC CHECKSUMS:
   ExpoFont: 690b76008be824e47907f200cb0764870108dfd1
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
-  ExpoHead: 0c169e19f59dc46d6c7d2617866532589d225c72
+  ExpoHead: 1403ab1219f4f95f0a288f27312a9ef2863eebc7
   ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
-  ExpoImageManipulator: bdfe12d8a570075fa433fa03e6c8abb05092a90f
+  ExpoImageManipulator: ec96bcdeab717c220abe707b45079a4001be7b79
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
@@ -2418,7 +2418,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: d7cfbbfba7f9d25e6289c71bb975933b47528087
+  hermes-engine: 543f364ff8a13dad19f62d9d601da0e6c615f2da
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
