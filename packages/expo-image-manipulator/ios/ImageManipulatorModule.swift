@@ -74,7 +74,7 @@ public class ImageManipulatorModule: Module {
    Loads the image from user's photo library.
    */
   internal func loadImageFromPhotoLibrary(url: URL, callback: @escaping LoadImageCallback) {
-    guard let asset = retreiveAsset(from: url) else {
+    guard let asset = retrieveAsset(from: url) else {
       return callback(.failure(ImageNotFoundException()))
     }
     let size = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
