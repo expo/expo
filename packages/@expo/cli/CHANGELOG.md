@@ -16,6 +16,7 @@
 
 - Force exit the export command to prevent hanging processes. ([#28735](https://github.com/expo/expo/pull/28735) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix HTTPS tunneling for accounts with dots in their username. ([#28692](https://github.com/expo/expo/pull/28692) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix missing usbmux platform for platform to os conversion. ([#28802](https://github.com/expo/expo/pull/28802) by [@byCedric](https://github.com/byCedric))
 
 ## 0.18.10 — 2024-05-07
 
