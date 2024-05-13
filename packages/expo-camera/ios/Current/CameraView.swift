@@ -225,6 +225,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
         }
+        self.updateSessionAudioIsMuted()
       } else {
         self.cleanupMovieFileCapture()
       }
@@ -252,6 +253,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.photoOutput = photoOutput
       }
 
+      self.session.sessionPreset = self.mode == .video ? self.pictureSize.toCapturePreset() : .photo
       self.addErrorNotification()
       self.changePreviewOrientation()
     }
@@ -692,10 +694,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     videoRecordedPromise = nil
     videoCodecType = nil
-
-    if session.sessionPreset != pictureSize.toCapturePreset() {
-      updateSessionPreset(preset: pictureSize.toCapturePreset())
-    }
   }
 
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {
