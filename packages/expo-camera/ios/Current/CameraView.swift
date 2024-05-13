@@ -179,7 +179,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.session.beginConfiguration()
       let preset = self.pictureSize.toCapturePreset()
       if self.session.canSetSessionPreset(preset) {
-        self.session.sessionPreset = self.mode == .video ? preset : .photo
+        self.session.sessionPreset = preset
       }
       self.session.commitConfiguration()
     }
@@ -654,7 +654,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       if session.outputs.contains(videoFileOutput) {
         self.session.beginConfiguration()
         session.removeOutput(videoFileOutput)
-        self.session.sessionPreset = .photo
         self.videoFileOutput = nil
         self.session.commitConfiguration()
       }
