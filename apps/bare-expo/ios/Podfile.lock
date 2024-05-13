@@ -32,7 +32,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.3):
+  - Expo (51.0.4):
     - ExpoModulesCore
   - expo-dev-client (4.0.13):
     - EXManifests
@@ -2533,7 +2533,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 355c270dc37b2c432fa9232a1d07064869f05c24
+  Expo: ce2265cc694f9f71c2eb572c8fe05edbc75137a8
   expo-dev-client: a4fbaa4a68a09abc4dabf25038b77f8f845b8433
   expo-dev-launcher: 3ac0313ccef6edf71ae24a22dbee1e2a0eedcf25
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
