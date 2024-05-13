@@ -170,6 +170,7 @@ redirects[get-started/errors]=debugging/errors-and-warnings
 redirects[develop/development-builds/parallel-installation]=build-reference/variants
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas
 redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction
+redirects[guides/assets]=develop/user-interface/assets
 
 # Redirects after Guides organization
 redirects[guides]=guides/overview
@@ -358,6 +359,8 @@ redirects[/overview]=get-started/introduction
 redirects[/get-started/installation]=get-started/create-a-project
 redirects[/get-started/expo-go]=get-started/set-up-your-environment
 
+# Redirect for /learn URL
+redirects[/learn]=tutorial/introduction
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

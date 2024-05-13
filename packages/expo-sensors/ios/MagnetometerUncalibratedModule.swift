@@ -27,13 +27,14 @@ public final class MagnetometerUncalibratedModule: Module {
         return
       }
       motionManager.startMagnetometerUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let magneticField = data?.magneticField else {
+        guard let magneticField = data?.magneticField, let timestamp = data?.timestamp else {
           return
         }
         self?.sendEvent(EVENT_MAGNETOMETER_DID_UPDATE, [
           "x": magneticField.x,
           "y": magneticField.y,
-          "z": magneticField.z
+          "z": magneticField.z,
+          "timestamp": timestamp
         ])
       }
     }

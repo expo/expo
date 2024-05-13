@@ -356,6 +356,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
+  '/guides/assets/': '/develop/user-interface/assets/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -404,7 +405,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
   '/distribution/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
-  '/tutorial/': '/tutorial/introduction/',
+  '/tutorial/': '/tutorial/overview/',
 
   // EAS Update
   '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
@@ -457,4 +458,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/overview/': '/get-started/introduction/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
+
+  // Redirect for /learn URL
+  '/learn/': '/tutorial/introduction/',
 };

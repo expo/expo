@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 14.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- [Android] Fix events being sent using a wrong event emitter. ([#28716](https://github.com/expo/expo/pull/28716) by [@behenate](https://github.com/behenate))
+
 ## 14.0.3 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

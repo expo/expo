@@ -8,7 +8,27 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix dead frames when switching from picture to video. ([#28783](https://github.com/expo/expo/pull/28783) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 15.0.7 — 2024-05-13
+
+### 💡 Others
+
+- Remove unused property `interval` from `BarcodeSettings`. ([#28760](https://github.com/expo/expo/pull/28760) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.6 — 2024-05-10
+
+### 🐛 Bug fixes
+
+- Fix documention for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.5 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix `ean13` barcodes not returning data. ([#28674](https://github.com/expo/expo/pull/28674) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.4 — 2024-05-07
 

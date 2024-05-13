@@ -1,0 +1,173 @@
+---
+title: Create and run a cloud build for Android
+sidebar_title: Android development build
+description: Learn how to configure a development build for Android devices and emulators using EAS Build.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+
+In this chapter, we'll create a development build that can run on Android with EAS Build.
+
+The process for creating and running a build on Android devices or emulators is identical, with differences only in the installation of the development build.
+
+## Create a build for the development profile
+
+For Android, the development build must be in the **.apk**. While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be installed on devices or emulators.
+
+To create a **.apk**:
+
+- In **eas.json**, make sure that `developmentClient` is set to `true` under `build.development` profile.
+- Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
+
+  <Terminal cmd={['$ eas build --platform android --profile development']} />
+
+  > **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
+
+This command prompts us with the following questions:
+
+- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
+- **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
+
+After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
+
+<ImageSpotlight
+  alt="Android development build details and progress in Expo dashboard"
+  src="/static/images/tutorial/eas/android-build-details.png"
+  style={{ maxWidth: 800 }}
+/>
+
+<Collapsible summary="What information does a build details page contain?">
+
+The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
+
+In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
+
+</Collapsible>
+
+<Collapsible summary="What is an Android application ID?">
+
+Also known as the package name of our Android app, it stores the value in DNS reverse notation format (`com.owner.appname`). Each component of this notation should start with a lowercase letter.
+
+For example, our example app has `com.owner.stickersmash` where `com.owner` is the domain and `stickermsash` is our app name.
+
+</Collapsible>
+
+## Android device
+
+<Step label="1">
+
+### Install development build
+
+Once the build finishes, the **Build artifact** section gets updated, indicating that the build is complete:
+
+<ImageSpotlight
+  alt="Build artifact gives the option to download development build for Android devices and emulators"
+  src="/static/images/tutorial/eas/android-build-artifact.png"
+/>
+
+This section provides the methods available for running the development build on an Android device: Expo Orbit and Install button.
+
+[Expo Orbit](https://expo.dev/orbit) allows for seamless installation of the development build on an Android device. To use this method:
+
+- Connect our Android device to our local machine using USB.
+- Open the Orbit menu bar app.
+- Select the **Device** in the Orbit app.
+
+<ImageSpotlight
+  alt="Expo Orbit app interface when connected to an Android device"
+  src="/static/images/tutorial/eas/android-orbit.png"
+  style={{ maxWidth: 300 }}
+/>
+
+- On the Expo dashboard, under **Build artifact**, click the **Open with Orbit**.
+
+After the build is installed, the Orbit app launches the development build on the device.
+
+<Collapsible summary="Alternate: Use the Install button and QR code">
+
+The **Install** button in the **Build artifact** generates a QR code for installation:
+
+- Click **Install** to display a popup with the QR code.
+
+<ImageSpotlight
+  alt="Install button generates a QR code for easy installation on Android devices and emulators"
+  src="/static/images/tutorial/eas/android-qr-code.png"
+  style={{ maxWidth: 480 }}
+/>
+
+- Scan the QR code with our Android device's camera to open the build link in the default web browser.
+- Tap the **Install** button on the webpage to download the **.apk** file.
+- Once downloaded, open the **.apk** to start the installation process.
+- If an **Unsafe app blocked message** appears, select **Install anyway**. This warning can safely be ignored as the source of the **.apk** (which we generated) is trusted.
+
+<ImageSpotlight
+  alt="Unsafe app message dialog on Android device when installing development build"
+  src="/static/images/tutorial/eas/android-unsafe-dialog.png"
+  style={{ maxWidth: 300 }}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Run development build
+
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+## Android Emulator
+
+<Step label="1">
+
+### Install the development build
+
+In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
+
+<ImageSpotlight
+  alt="EAS CLI automatically gives to run build on Android Emulator"
+  src="/static/images/tutorial/eas/android-emulator-cli.png"
+  style={{ maxWidth: 600 }}
+/>
+
+<Collapsible summary="Alternate: Use Expo Orbit">
+
+Alternatively, Expo Orbit can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Run the development build
+
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={1}
+  name="EAS_TUTORIAL"
+  summary={
+    <>
+      We successfully used EAS Build to create and run development builds on Android devices and
+      emulators, and learned about <strong>.apk</strong> and <strong>.aab</strong> file formats.
+    </>
+  }
+  nextChapterDescription="In the next chapter, Learn how to configure a development build for iOS Simulators using EAS Build and get it running."
+  nextChapterTitle="Create and run a cloud build for iOS Simulator"
+  nextChapterLink="/tutorial/eas/ios-development-build-for-simulators/"
+/>

@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 3.5.12 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- Fix Sitemap crashing when `UIViewControllerBasedStatusBarAppearance` is set to `YES` ([#28724](https://github.com/expo/expo/pull/28665) by [@hirbod](https://github.com/hirbod))
+
+## 3.5.11 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
+- Fix _layout files with platform extensions incorrectly registering as a route ([#28699](https://github.com/expo/expo/pull/28699) by [@marklawlor](https://github.com/marklawlor))
+
 ## 3.5.10 — 2024-05-07
 
 ### 🐛 Bug fixes
