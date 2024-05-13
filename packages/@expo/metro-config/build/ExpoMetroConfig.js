@@ -227,11 +227,13 @@ exports.getDefaultConfig = getDefaultConfig;
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
 function getPkgVersion(projectRoot, pkgName) {
     const targetPkg = resolve_from_1.default.silent(projectRoot, pkgName);
-    if (!targetPkg)
+    if (!targetPkg) {
         return null;
+    }
     const targetPkgJson = findUpPackageJson(targetPkg);
-    if (!targetPkgJson)
+    if (!targetPkgJson) {
         return null;
+    }
     const pkg = json_file_1.default.read(targetPkgJson);
     debug(`${pkgName} package.json:`, targetPkgJson);
     const pkgVersion = pkg.version;
@@ -241,8 +243,9 @@ function getPkgVersion(projectRoot, pkgName) {
     return null;
 }
 function findUpPackageJson(cwd) {
-    if (['.', path_1.default.sep].includes(cwd))
+    if (['.', path_1.default.sep].includes(cwd)) {
         return null;
+    }
     const found = resolve_from_1.default.silent(cwd, './package.json');
     if (found) {
         return found;

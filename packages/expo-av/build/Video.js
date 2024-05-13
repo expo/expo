@@ -44,8 +44,9 @@ class Video extends React.Component {
      */
     setNativeProps(nativeProps) {
         const nativeVideo = this._nativeRef.current;
-        if (!nativeVideo)
+        if (!nativeVideo) {
             throw new Error(`native video reference is not defined.`);
+        }
         nativeVideo.setNativeProps(nativeProps);
     }
     // Internal methods

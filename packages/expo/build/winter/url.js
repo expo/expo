@@ -10,8 +10,9 @@ import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
 let isSetup = false;
 let BLOB_URL_PREFIX = null;
 function getBlobUrlPrefix() {
-    if (isSetup)
+    if (isSetup) {
         return BLOB_URL_PREFIX;
+    }
     isSetup = true;
     // if iOS: let BLOB_URL_PREFIX = 'blob:'
     // Pull the blob module without importing React Native.

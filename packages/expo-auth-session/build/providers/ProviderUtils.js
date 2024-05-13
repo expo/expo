@@ -4,8 +4,9 @@ export function applyRequiredScopes(scopes = [], requiredScopes) {
     return [...new Set([...scopes, ...requiredScopes])];
 }
 export function invariantClientId(idName, value, providerName) {
-    if (typeof value === 'undefined')
+    if (typeof value === 'undefined') {
         // TODO(Bacon): Add learn more
         throw new Error(`Client Id property \`${idName}\` must be defined to use ${providerName} auth on this platform.`);
+    }
 }
 //# sourceMappingURL=ProviderUtils.js.map

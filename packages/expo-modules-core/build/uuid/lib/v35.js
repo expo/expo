@@ -19,14 +19,18 @@ function stringToBytes(str) {
 export default function (name, version, hashfunc) {
     const generateUUID = function (value, namespace, buf, offset) {
         const off = (buf && offset) || 0;
-        if (typeof value == 'string')
+        if (typeof value == 'string') {
             value = stringToBytes(value);
-        if (typeof namespace == 'string')
+        }
+        if (typeof namespace == 'string') {
             namespace = uuidToBytes(namespace);
-        if (!Array.isArray(value))
+        }
+        if (!Array.isArray(value)) {
             throw TypeError('value must be an array of bytes');
-        if (!Array.isArray(namespace) || namespace.length !== 16)
+        }
+        if (!Array.isArray(namespace) || namespace.length !== 16) {
             throw TypeError('namespace must be uuid string or an Array of 16 byte values');
+        }
         // Per 4.3
         const bytes = hashfunc(namespace.concat(value));
         bytes[6] = (bytes[6] & 0x0f) | version;

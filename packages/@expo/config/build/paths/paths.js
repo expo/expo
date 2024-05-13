@@ -84,7 +84,9 @@ function resolveEntryPoint(projectRoot, {
     if (!entry) {
       // Allow for paths like: `{ "main": "expo/AppEntry" }`
       entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
-      if (!entry) throw new (_Errors().ConfigError)(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`, 'ENTRY_NOT_FOUND');
+      if (!entry) {
+        throw new (_Errors().ConfigError)(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`, 'ENTRY_NOT_FOUND');
+      }
     }
     return entry;
   }

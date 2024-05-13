@@ -154,8 +154,9 @@ export default {
         return await camera.resumePreview();
     },
     async getAvailableCameraTypesAsync() {
-        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices)
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) {
             return [];
+        }
         const devices = await navigator.mediaDevices.enumerateDevices();
         const types = await Promise.all([
             (await isFrontCameraAvailableAsync(devices)) && CameraType.front,

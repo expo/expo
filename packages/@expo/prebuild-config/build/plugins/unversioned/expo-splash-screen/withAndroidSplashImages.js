@@ -148,7 +148,9 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
   }));
 }
 async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot) {
-  if (!config) return;
+  if (!config) {
+    return;
+  }
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
   await Promise.all(['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async imageKey => {
     // @ts-ignore

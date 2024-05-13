@@ -93,8 +93,9 @@ export function isHexColor(color) {
 }
 export function mapColorToHexColor(color, defaultColor) {
     let defColor = defaultColor;
-    if (defColor === undefined)
+    if (defColor === undefined) {
         defColor = '#000000';
+    }
     const colors = {
         red: '#ff0000',
         blue: '#0000ff',

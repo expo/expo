@@ -1,8 +1,9 @@
 import { DeviceEventEmitter, PermissionStatus } from 'expo-modules-core';
 import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(name) {
-    if (!navigator || !navigator.permissions || !navigator.permissions.query)
+    if (!navigator || !navigator.permissions || !navigator.permissions.query) {
         return null;
+    }
     try {
         const { state } = await navigator.permissions.query({ name });
         switch (state) {

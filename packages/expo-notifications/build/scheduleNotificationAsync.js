@@ -160,8 +160,9 @@ function toTimestamp(date) {
     return date;
 }
 function isDailyTriggerInput(trigger) {
-    if (typeof trigger !== 'object')
+    if (typeof trigger !== 'object') {
         return false;
+    }
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
@@ -170,8 +171,9 @@ function isDailyTriggerInput(trigger) {
         triggerWithoutChannelId.repeats === true);
 }
 function isWeeklyTriggerInput(trigger) {
-    if (typeof trigger !== 'object')
+    if (typeof trigger !== 'object') {
         return false;
+    }
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
@@ -180,8 +182,9 @@ function isWeeklyTriggerInput(trigger) {
         triggerWithoutChannelId.repeats === true);
 }
 function isYearlyTriggerInput(trigger) {
-    if (typeof trigger !== 'object')
+    if (typeof trigger !== 'object') {
         return false;
+    }
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&

@@ -58,15 +58,17 @@ function getRawPath(event) {
     const paramKeys = Object.keys(event.multiValueQueryStringParameters);
     for (const key of paramKeys) {
         const values = event.multiValueQueryStringParameters[key];
-        if (!values)
+        if (!values) {
             continue;
+        }
         for (const val of values) {
             searchParams.append(key, val);
         }
     }
     const rawParams = searchParams.toString();
-    if (rawParams)
+    if (rawParams) {
         rawPath += `?${rawParams}`;
+    }
     return rawPath;
 }
 function convertRequest(event) {
@@ -166,8 +168,9 @@ const binaryTypes = [
     'application/zip',
 ];
 function isBinaryType(contentType) {
-    if (!contentType)
+    if (!contentType) {
         return false;
+    }
     const [test] = contentType.split(';');
     return binaryTypes.includes(test);
 }

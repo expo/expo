@@ -58,8 +58,9 @@ function getHeadElements() {
 }
 export default {
     async unloadAllAsync() {
-        if (!Platform.isDOMAvailable)
+        if (!Platform.isDOMAvailable) {
             return;
+        }
         const element = document.getElementById(ID);
         if (element && element instanceof HTMLStyleElement) {
             document.removeChild(element);
@@ -67,8 +68,9 @@ export default {
     },
     async unloadAsync(fontFamilyName, options) {
         const sheet = getFontFaceStyleSheet();
-        if (!sheet)
+        if (!sheet) {
             return;
+        }
         const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
         for (const item of items) {
             sheet.deleteRule(item.index);

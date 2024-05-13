@@ -37,8 +37,9 @@ exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
  * Walks a RouteNode tree and adds the routes to the provided sets
  */
 function walkRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
-    if (!routeNode)
+    if (!routeNode) {
         return;
+    }
     addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     for (const child of routeNode.children) {
         walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
@@ -49,10 +50,12 @@ function walkRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteConte
  * Modifies the RouteNode.route to be a typed-route string
  */
 function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
-    if (!routeNode?.route)
+    if (!routeNode?.route) {
         return;
-    if (!(0, matchers_1.isTypedRoute)(routeNode.route))
+    }
+    if (!(0, matchers_1.isTypedRoute)(routeNode.route)) {
         return;
+    }
     let routePath = `${(0, matchers_1.removeSupportedExtensions)(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
     if (!routePath.startsWith('/')) {
         routePath = `/${routePath}`;

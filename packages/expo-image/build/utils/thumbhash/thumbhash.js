@@ -9,8 +9,9 @@
  */
 export function rgbaToThumbHash(w, h, rgba) {
     // Encoding an image larger than 100x100 is slow with no benefit
-    if (w > 100 || h > 100)
+    if (w > 100 || h > 100) {
         throw new Error(`${w}x${h} doesn't fit in 100x100`);
+    }
     const { PI, round, max, cos, abs } = Math;
     // Determine the average color
     let avg_r = 0, avg_g = 0, avg_b = 0, avg_a = 0;
@@ -54,11 +55,14 @@ export function rgbaToThumbHash(w, h, rgba) {
         for (let cy = 0; cy < ny; cy++) {
             for (let cx = 0; cx * ny < nx * (ny - cy); cx++) {
                 let f = 0;
-                for (let x = 0; x < w; x++)
+                for (let x = 0; x < w; x++) {
                     fx[x] = cos((PI / w) * cx * (x + 0.5));
-                for (let y = 0; y < h; y++)
-                    for (let x = 0, fy = cos((PI / h) * cy * (y + 0.5)); x < w; x++)
+                }
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0, fy = cos((PI / h) * cy * (y + 0.5)); x < w; x++) {
                         f += channel[x + y * w] * fx[x] * fy;
+                    }
+                }
                 f /= w * h;
                 if (cx || cy) {
                     ac.push(f);
@@ -69,9 +73,11 @@ export function rgbaToThumbHash(w, h, rgba) {
                 }
             }
         }
-        if (scale)
-            for (let i = 0; i < ac.length; i++)
+        if (scale) {
+            for (let i = 0; i < ac.length; i++) {
                 ac[i] = 0.5 + (0.5 / scale) * ac[i];
+            }
+        }
         return [dc, ac, scale];
     };
     const [l_dc, l_ac, l_scale] = encodeChannel(l, max(3, lx), max(3, ly));
@@ -98,12 +104,15 @@ export function rgbaToThumbHash(w, h, rgba) {
     ];
     const ac_start = hasAlpha ? 6 : 5;
     let ac_index = 0;
-    if (hasAlpha)
+    if (hasAlpha) {
         hash.push(round(15 * a_dc) | (round(15 * a_scale) << 4));
+    }
     // Write the varying factors
-    for (const ac of hasAlpha ? [l_ac, p_ac, q_ac, a_ac] : [l_ac, p_ac, q_ac])
-        for (const f of ac)
+    for (const ac of hasAlpha ? [l_ac, p_ac, q_ac, a_ac] : [l_ac, p_ac, q_ac]) {
+        for (const f of ac) {
             hash[ac_start + (ac_index >> 1)] |= round(15 * f) << ((ac_index++ & 1) << 2);
+        }
+    }
     return new Uint8Array(hash);
 }
 /**
@@ -134,9 +143,11 @@ export function thumbHashToRGBA(hash) {
     let ac_index = 0;
     const decodeChannel = (nx, ny, scale) => {
         const ac = [];
-        for (let cy = 0; cy < ny; cy++)
-            for (let cx = cy ? 0 : 1; cx * ny < nx * (ny - cy); cx++)
+        for (let cy = 0; cy < ny; cy++) {
+            for (let cx = cy ? 0 : 1; cx * ny < nx * (ny - cy); cx++) {
                 ac.push((((hash[ac_start + (ac_index >> 1)] >> ((ac_index++ & 1) << 2)) & 15) / 7.5 - 1) * scale);
+            }
+        }
         return ac;
     };
     const l_ac = decodeChannel(lx, ly, l_scale);
@@ -152,14 +163,18 @@ export function thumbHashToRGBA(hash) {
         for (let x = 0; x < w; x++, i += 4) {
             let l = l_dc, p = p_dc, q = q_dc, a = a_dc;
             // Precompute the coefficients
-            for (let cx = 0, n = max(lx, hasAlpha ? 5 : 3); cx < n; cx++)
+            for (let cx = 0, n = max(lx, hasAlpha ? 5 : 3); cx < n; cx++) {
                 fx[cx] = cos((PI / w) * (x + 0.5) * cx);
-            for (let cy = 0, n = max(ly, hasAlpha ? 5 : 3); cy < n; cy++)
+            }
+            for (let cy = 0, n = max(ly, hasAlpha ? 5 : 3); cy < n; cy++) {
                 fy[cy] = cos((PI / h) * (y + 0.5) * cy);
+            }
             // Decode L
-            for (let cy = 0, j = 0; cy < ly; cy++)
-                for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx * ly < lx * (ly - cy); cx++, j++)
+            for (let cy = 0, j = 0; cy < ly; cy++) {
+                for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx * ly < lx * (ly - cy); cx++, j++) {
                     l += l_ac[j] * fx[cx] * fy2;
+                }
+            }
             // Decode P and Q
             for (let cy = 0, j = 0; cy < 3; cy++) {
                 for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx < 3 - cy; cx++, j++) {
@@ -169,10 +184,13 @@ export function thumbHashToRGBA(hash) {
                 }
             }
             // Decode A
-            if (hasAlpha)
-                for (let cy = 0, j = 0; cy < 5; cy++)
-                    for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx < 5 - cy; cx++, j++)
+            if (hasAlpha) {
+                for (let cy = 0, j = 0; cy < 5; cy++) {
+                    for (let cx = cy ? 0 : 1, fy2 = fy[cy] * 2; cx < 5 - cy; cx++, j++) {
                         a += a_ac[j] * fx[cx] * fy2;
+                    }
+                }
+            }
             // Convert to RGB
             const b = l - (2 / 3) * p;
             const r = (3 * l - b + q) / 2;

@@ -107,8 +107,9 @@ async function resizeAsync(imageOptions) {
 }
 async function getSharpAsync() {
     let sharp;
-    if (await Sharp.isAvailableAsync())
+    if (await Sharp.isAvailableAsync()) {
         sharp = await Sharp.findSharpInstanceAsync();
+    }
     return sharp;
 }
 function getDimensionsId(imageOptions) {
@@ -138,8 +139,9 @@ const inverseMimeTypes = {
     'image/gif': 'gif',
 };
 function getMimeType(srcPath) {
-    if (typeof srcPath !== 'string')
+    if (typeof srcPath !== 'string') {
         return null;
+    }
     try {
         // If the path is a URL, use the pathname
         const url = new URL(srcPath);

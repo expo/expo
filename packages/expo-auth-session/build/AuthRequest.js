@@ -184,8 +184,9 @@ export class AuthRequest {
      */
     async makeAuthUrlAsync(discovery) {
         const request = await this.getAuthRequestConfigAsync();
-        if (!request.state)
+        if (!request.state) {
             throw new Error('Cannot make request URL without a valid `state` loaded');
+        }
         // Create a query string
         const params = {};
         if (request.codeChallenge) {

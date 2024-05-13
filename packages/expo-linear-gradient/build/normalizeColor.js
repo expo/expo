@@ -11,8 +11,9 @@ const isWebColor = (color) => color === 'currentcolor' ||
     color === 'inherit' ||
     color.indexOf('var(') === 0;
 export function normalizeColor(color, opacity = 1) {
-    if (color == null)
+    if (color == null) {
         return;
+    }
     if (typeof color === 'string' && isWebColor(color)) {
         return color;
     }

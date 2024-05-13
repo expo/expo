@@ -35,14 +35,17 @@ class CocoaPodsPackageManager {
     options;
     silent;
     static getPodProjectRoot(projectRoot) {
-        if (CocoaPodsPackageManager.isUsingPods(projectRoot))
+        if (CocoaPodsPackageManager.isUsingPods(projectRoot)) {
             return projectRoot;
+        }
         const iosProject = path_1.default.join(projectRoot, 'ios');
-        if (CocoaPodsPackageManager.isUsingPods(iosProject))
+        if (CocoaPodsPackageManager.isUsingPods(iosProject)) {
             return iosProject;
+        }
         const macOsProject = path_1.default.join(projectRoot, 'macos');
-        if (CocoaPodsPackageManager.isUsingPods(macOsProject))
+        if (CocoaPodsPackageManager.isUsingPods(macOsProject)) {
             return macOsProject;
+        }
         return null;
     }
     static isUsingPods(projectRoot) {

@@ -19,10 +19,12 @@ function hasModule(name) {
 exports.hasModule = hasModule;
 /** Determine which bundler is being used. */
 function getBundler(caller) {
-    if (!caller)
+    if (!caller) {
         return null;
-    if (caller.bundler)
+    }
+    if (caller.bundler) {
         return caller.bundler;
+    }
     if (
     // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
     caller.name === 'babel-loader' ||
@@ -35,10 +37,12 @@ function getBundler(caller) {
 }
 exports.getBundler = getBundler;
 function getPlatform(caller) {
-    if (!caller)
+    if (!caller) {
         return null;
-    if (caller.platform)
+    }
+    if (caller.platform) {
         return caller.platform;
+    }
     const bundler = getBundler(caller);
     if (bundler === 'webpack') {
         return 'web';
@@ -48,10 +52,12 @@ function getPlatform(caller) {
 }
 exports.getPlatform = getPlatform;
 function getPossibleProjectRoot(caller) {
-    if (!caller)
+    if (!caller) {
         return null;
-    if (caller.projectRoot)
+    }
+    if (caller.projectRoot) {
         return caller.projectRoot;
+    }
     // unknown
     return process.env.EXPO_PROJECT_ROOT;
 }
@@ -62,21 +68,24 @@ function getIsReactServer(caller) {
 }
 exports.getIsReactServer = getIsReactServer;
 function getIsDev(caller) {
-    if (caller?.isDev != null)
+    if (caller?.isDev != null) {
         return caller.isDev;
+    }
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 exports.getIsDev = getIsDev;
 function getIsFastRefreshEnabled(caller) {
-    if (!caller)
+    if (!caller) {
         return false;
+    }
     return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
 function getIsProd(caller) {
-    if (caller?.isDev != null)
+    if (caller?.isDev != null) {
         return caller.isDev === false;
+    }
     // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }

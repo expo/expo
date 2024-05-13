@@ -265,12 +265,14 @@ function getStateFromEmptyPathWithConfigs(path, hash, configs, initialRoutes) {
 }
 function getStateFromPathWithConfigs(path, configs, initialRoutes, baseUrl = process.env.EXPO_BASE_URL) {
     const formattedPaths = getUrlWithReactNavigationConcessions(path);
-    if (!formattedPaths.url)
+    if (!formattedPaths.url) {
         return;
+    }
     let cleanPath = stripBaseUrl((0, matchers_1.stripGroupSegmentsFromPath)(formattedPaths.url.pathname), baseUrl) +
         formattedPaths.url.search;
-    if (!path.startsWith('/'))
+    if (!path.startsWith('/')) {
         cleanPath = cleanPath.slice(1);
+    }
     if (formattedPaths.nonstandardPathname === '/') {
         return getStateFromEmptyPathWithConfigs(cleanPath, formattedPaths.url.hash.slice(1), configs, initialRoutes);
     }

@@ -42,8 +42,9 @@ async function resizeBufferAsync(buffer, sizes) {
 }
 exports.resizeBufferAsync = resizeBufferAsync;
 function convertFormat(format) {
-    if (typeof format === 'undefined')
+    if (typeof format === 'undefined') {
         return format;
+    }
     const input = format?.toLowerCase();
     switch (input) {
         case 'png':
@@ -128,8 +129,9 @@ async function createSquareAsync({ size, color = '#FFFFFF', mime = jimp_compact_
 exports.createSquareAsync = createSquareAsync;
 async function getJimpImageAsync(input) {
     // @ts-ignore: Jimp types are broken
-    if (typeof input === 'string' || input instanceof Buffer)
+    if (typeof input === 'string' || input instanceof Buffer) {
         return await jimp_compact_1.default.read(input);
+    }
     return input;
 }
 exports.getJimpImageAsync = getJimpImageAsync;
@@ -177,8 +179,9 @@ async function flatten({ input, quality = 100 }, { background }) {
  * @param position
  */
 function convertPosition(position) {
-    if (!position)
+    if (!position) {
         return convertPosition('center');
+    }
     switch (position) {
         case 'center':
         case 'centre':

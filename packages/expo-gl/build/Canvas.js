@@ -11,8 +11,9 @@ function getElement(component) {
     }
 }
 function setRef(refProp, ref) {
-    if (!refProp)
+    if (!refProp) {
         return;
+    }
     if (typeof refProp === 'function') {
         refProp(ref);
     }

@@ -692,8 +692,9 @@ function stringifyIfDate(date) {
     return date instanceof Date ? date.toISOString() : date;
 }
 function stringifyDateValues(obj) {
-    if (typeof obj !== 'object' || obj === null)
+    if (typeof obj !== 'object' || obj === null) {
         return obj;
+    }
     return Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
         if (value != null && typeof value === 'object' && !(value instanceof Date)) {

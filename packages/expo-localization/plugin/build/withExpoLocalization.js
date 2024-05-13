@@ -4,12 +4,15 @@ const Manifest_1 = require("@expo/config-plugins/build/android/Manifest");
 const config_plugins_1 = require("expo/config-plugins");
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
-    if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null)
+    if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null) {
         return config;
-    if (!config.ios)
+    }
+    if (!config.ios) {
         config.ios = {};
-    if (!config.ios.infoPlist)
+    }
+    if (!config.ios.infoPlist) {
         config.ios.infoPlist = {};
+    }
     if (mergedConfig?.supportsRTL != null) {
         config.ios.infoPlist.ExpoLocalization_supportsRTL = mergedConfig?.supportsRTL;
     }

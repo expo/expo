@@ -43,8 +43,9 @@ export default {
         return { type: WebBrowserResultType.OPENED };
     },
     dismissAuthSession() {
-        if (typeof window === 'undefined')
+        if (typeof window === 'undefined') {
             return;
+        }
         dismissPopup();
     },
     maybeCompleteAuthSession({ skipRedirectCheck }) {
@@ -84,8 +85,9 @@ export default {
     },
     // This method should be invoked from user input.
     async openAuthSessionAsync(url, redirectUrl, openOptions) {
-        if (typeof window === 'undefined')
+        if (typeof window === 'undefined') {
             return { type: WebBrowserResultType.CANCEL };
+        }
         redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
         if (popupWindow == null || popupWindow?.closed) {
             const features = getPopupFeaturesString(openOptions?.windowFeatures);
@@ -104,8 +106,9 @@ export default {
         // Save handle for session
         window.localStorage.setItem(getHandle(), state);
         const normalizedRedirectUrl = (() => {
-            if (!redirectUrl)
+            if (!redirectUrl) {
                 return redirectUrl;
+            }
             try {
                 return normalizeUrl(new URL(redirectUrl));
             }
@@ -118,8 +121,9 @@ export default {
         return new Promise(async (resolve) => {
             // Create a listener for messages sent from the popup
             const listener = (event) => {
-                if (!event.isTrusted)
+                if (!event.isTrusted) {
                     return;
+                }
                 // Ensure we trust the sender.
                 if (event.origin !== window.location.origin) {
                     return;
@@ -153,8 +157,9 @@ export default {
             // Check if the window has been closed every second.
             const interval = setInterval(() => {
                 if (popupWindow?.closed) {
-                    if (resolve)
+                    if (resolve) {
                         resolve({ type: WebBrowserResultType.DISMISS });
+                    }
                     clearInterval(interval);
                     dismissPopup();
                 }
@@ -170,13 +175,15 @@ export default {
 };
 // Crypto
 function isCryptoAvailable() {
-    if (typeof window === 'undefined')
+    if (typeof window === 'undefined') {
         return false;
+    }
     return !!window?.crypto;
 }
 function isSubtleCryptoAvailable() {
-    if (!isCryptoAvailable())
+    if (!isCryptoAvailable()) {
         return false;
+    }
     return !!window.crypto.subtle;
 }
 async function getStateFromUrlOrGenerateAsync(inputUrl) {
@@ -287,8 +294,9 @@ export function featureObjectToString(features) {
             value = value ? 'yes' : 'no';
         }
         if (current && value) {
-            if (prev)
+            if (prev) {
                 prev += ',';
+            }
             return `${prev}${current}=${value}`;
         }
         return prev;

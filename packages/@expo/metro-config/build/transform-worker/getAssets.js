@@ -10,8 +10,9 @@ const node_assert_1 = __importDefault(require("node:assert"));
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_path_1 = __importDefault(require("node:path"));
 function md5Hash(data) {
-    if (data.length === 1)
+    if (data.length === 1) {
         return data[0];
+    }
     const hash = node_crypto_1.default.createHash('md5');
     hash.update(data.join(''));
     return hash.digest('hex');

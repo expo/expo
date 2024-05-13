@@ -117,10 +117,12 @@ asChild, rel, target, download, ...rest }, ref) {
         return (0, href_1.resolveHref)(href);
     }, [href]);
     let event;
-    if (push)
+    if (push) {
         event = 'PUSH';
-    if (replace)
+    }
+    if (replace) {
         event = 'REPLACE';
+    }
     const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, event });
     const onPress = (e) => {
         if ('onPress' in rest) {

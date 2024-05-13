@@ -26,8 +26,9 @@ async function askSensorPermissionAsync() {
     const requestPermission = getRequestPermission();
     // Technically this is incorrect because it doesn't account for iOS 12.2 Safari.
     // But unfortunately we can only abstract so much.
-    if (!requestPermission)
+    if (!requestPermission) {
         return PermissionStatus.GRANTED;
+    }
     // If this isn't invoked in a touch-event then it never resolves.
     // Safari probably should throw an error but because it doesn't we have no way of informing the developer.
     const status = await requestPermission();

@@ -16,8 +16,9 @@ function _unregisterListenersIfNeeded() {
     }
 }
 function _registerListenersIfNeeded() {
-    if (_didSetListeners)
+    if (_didSetListeners) {
         return;
+    }
     _didSetListeners = true;
     setSpeakingListener('Exponent.speakingStarted', ({ id }) => {
         const options = _CALLBACKS[id];

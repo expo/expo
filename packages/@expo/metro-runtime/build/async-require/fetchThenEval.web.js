@@ -17,10 +17,12 @@ function fetchThenEvalAsync(url, { scriptType, nonce, crossOrigin, } = {}) {
     }
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        if (scriptType)
+        if (scriptType) {
             script.type = scriptType;
-        if (nonce)
+        }
+        if (nonce) {
             script.setAttribute('nonce', nonce);
+        }
         // script.setAttribute('data-expo-metro', ...);
         script.src = url;
         if (crossOrigin && script.src.indexOf(window.location.origin + '/') !== 0) {

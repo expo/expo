@@ -48,8 +48,9 @@ let currentCompileErrorMessage = null;
 let didConnect = false;
 const pendingLogs = [];
 function assert(foo, msg) {
-    if (!foo)
+    if (!foo) {
         throw new Error(msg);
+    }
 }
 /**
  * HMR Client that receives from the server HMR updates and propagates them

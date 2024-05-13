@@ -33,8 +33,9 @@ export default {
         return true;
     },
     async getInitialURL() {
-        if (typeof window === 'undefined')
+        if (typeof window === 'undefined') {
             return '';
+        }
         return window.location.href;
     },
     async openURL(url) {

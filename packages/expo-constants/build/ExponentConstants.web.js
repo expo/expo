@@ -38,8 +38,9 @@ export default {
         return _sessionId;
     },
     get isHeadless() {
-        if (typeof navigator === 'undefined')
+        if (typeof navigator === 'undefined') {
             return true;
+        }
         return /\bHeadlessChrome\//.test(navigator.userAgent);
     },
     get expoVersion() {

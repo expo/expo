@@ -4,11 +4,13 @@ const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 function getRandomValues(input) {
     const output = input;
     // Get access to the underlying raw bytes
-    if (input.byteLength !== input.length)
+    if (input.byteLength !== input.length) {
         input = new Uint8Array(input.buffer);
+    }
     const bytes = Crypto.getRandomBytes(input.length);
-    for (let i = 0; i < bytes.length; i++)
+    for (let i = 0; i < bytes.length; i++) {
         input[i] = bytes[i];
+    }
     return output;
 }
 function convertBufferToString(buffer) {

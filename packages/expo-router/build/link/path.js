@@ -78,18 +78,22 @@ function normalizeStringPosix(path, allowAboveRoot) {
                     }
                 }
                 if (allowAboveRoot) {
-                    if (res.length > 0)
+                    if (res.length > 0) {
                         res += '/..';
-                    else
+                    }
+                    else {
                         res = '..';
+                    }
                     lastSegmentLength = 2;
                 }
             }
             else {
-                if (res.length > 0)
+                if (res.length > 0) {
                     res += '/' + path.slice(lastSlash + 1, i);
-                else
+                }
+                else {
                     res = path.slice(lastSlash + 1, i);
+                }
                 lastSegmentLength = i - lastSlash - 1;
             }
             lastSlash = i;

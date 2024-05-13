@@ -33,8 +33,9 @@ export function getAssetForSource(source) {
 }
 function throwInvalidSourceError(source) {
     let type = typeof source;
-    if (type === 'object')
+    if (type === 'object') {
         type = JSON.stringify(source, null, 2);
+    }
     throw new CodedError(`ERR_FONT_SOURCE`, `Expected font asset of type \`string | FontResource | Asset\` instead got: ${type}`);
 }
 // NOTE(EvanBacon): No async keyword!

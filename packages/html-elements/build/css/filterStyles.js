@@ -63,8 +63,9 @@ export function filterStyles(styleProp) {
     return processNativeStyles(filteredStyle);
 }
 function processNativeStyles(style) {
-    if (!style)
+    if (!style) {
         return style;
+    }
     if (style.visibility) {
         if (style.visibility === 'hidden') {
             // style.display = "none";

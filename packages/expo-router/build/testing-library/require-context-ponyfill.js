@@ -13,12 +13,14 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
             const fullPath = node_path_1.default.resolve(directory, file);
             const relativePath = `./${node_path_1.default.relative(base, fullPath).split(node_path_1.default.sep).join('/')}`;
             if (node_fs_1.default.statSync(fullPath).isDirectory()) {
-                if (scanSubDirectories)
+                if (scanSubDirectories) {
                     readDirectory(fullPath);
+                }
                 return;
             }
-            if (!regularExpression.test(relativePath))
+            if (!regularExpression.test(relativePath)) {
                 return;
+            }
             files[relativePath] = true;
         });
     }

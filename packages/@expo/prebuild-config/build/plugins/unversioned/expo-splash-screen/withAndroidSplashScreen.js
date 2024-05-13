@@ -86,7 +86,9 @@ const withAndroidSplashScreen = config => {
       _configPlugins().WarningAggregator.addWarningAndroid('androidStatusBar.backgroundColor', 'Color conflicts with the splash.backgroundColor');
     }
   } else {
-    if (!config.androidStatusBar) config.androidStatusBar = {};
+    if (!config.androidStatusBar) {
+      config.androidStatusBar = {};
+    }
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
   return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);

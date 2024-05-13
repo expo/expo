@@ -112,7 +112,9 @@ function extractLocationFromSyntaxError(error) {
 function extractImportantStackFromNodeError(error) {
   if (isSyntaxError(error)) {
     const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
-    if (!traces) return null;
+    if (!traces) {
+      return null;
+    }
 
     // Remove redundant line
     if (traces[traces.length - 1].startsWith('SyntaxError:')) {

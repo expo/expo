@@ -29,12 +29,15 @@ class GoogleAuthRequest extends AuthRequest {
         const inputParams = {
             ...extraParams,
         };
-        if (language)
+        if (language) {
             inputParams.hl = language;
-        if (loginHint)
+        }
+        if (loginHint) {
             inputParams.login_hint = loginHint;
-        if (selectAccount)
+        }
+        if (selectAccount) {
             inputParams.prompt = Prompt.SelectAccount;
+        }
         // Apply the default scopes
         const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
         const isImplicit = config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;

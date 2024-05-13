@@ -136,7 +136,9 @@ function applyImageToSplashScreenXML(xml, {
  * This method will add an item by first removing any existing item with the same `$.id`.
  */
 function ensureUniquePush(array, item) {
-  if (!array) return array;
+  if (!array) {
+    return array;
+  }
   removeExisting(array, item);
   array.push(item);
   return array;

@@ -237,8 +237,9 @@ pathToRemove = '') {
         layout.dynamic = generateDynamic(layout.route);
     }
     // This should never occur as there will always be a root layout, but it makes the type system happy
-    if (!layout)
+    if (!layout) {
         throw new Error('Expo Router Internal Error: No nearest layout');
+    }
     for (const routes of directory.files.values()) {
         const routeNode = getMostSpecific(routes);
         // `route` is the absolute pathname. We need to make this relative to the nearest layout
@@ -357,8 +358,9 @@ function generateDynamic(path) {
         }
         const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
         const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
-        if (!dynamicName)
+        if (!dynamicName) {
             return null;
+        }
         return { name: dynamicName, deep: !!deepDynamicName };
     })
         .filter((part) => !!part);

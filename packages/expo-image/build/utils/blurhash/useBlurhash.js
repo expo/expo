@@ -15,8 +15,9 @@ export function useBlurhash(blurhash, punch = 1) {
     const [uri, setUri] = useState(null);
     useEffect(() => {
         let isCanceled = false;
-        if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri))
+        if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri)) {
             return;
+        }
         const pixels = decode(blurhash.uri, blurhash?.width ?? DEFAULT_SIZE.width, blurhash?.height ?? DEFAULT_SIZE.height, punch);
         const canvas = document.createElement('canvas');
         const upscaledCanvas = document.createElement('canvas');

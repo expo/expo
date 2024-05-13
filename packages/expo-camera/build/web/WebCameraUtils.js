@@ -229,8 +229,9 @@ async function onCapabilitiesReady(cameraType, track, settings = {}) {
         await track.applyConstraints({ advanced: [constraints] });
     }
     catch (error) {
-        if (__DEV__)
+        if (__DEV__) {
             console.warn('Failed to apply constraints', error);
+        }
     }
 }
 export function stopMediaStream(stream) {

@@ -19,8 +19,9 @@ export default function DevLoadingView() {
         }
     }, []);
     useEffect(() => {
-        if (!emitter)
+        if (!emitter) {
             return;
+        }
         function handleShowMessage(event) {
             setMessage(event.message);
             // TODO: if we show the refreshing banner and don't get a hide message

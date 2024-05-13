@@ -1,6 +1,7 @@
 export function createURL(path, { queryParams = {} } = {}) {
-    if (typeof window === 'undefined')
+    if (typeof window === 'undefined') {
         return '';
+    }
     const url = new URL(path, window.location.origin);
     Object.entries(queryParams).forEach(([key, value]) => {
         if (typeof value === 'string') {

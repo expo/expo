@@ -98,8 +98,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this._mountedVideos.delete(video);
     }
     mountAudioNode(audioContext, zeroGainNode, audioSourceNode) {
-        if (!audioContext || !zeroGainNode)
+        if (!audioContext || !zeroGainNode) {
             return;
+        }
         this._audioNodes.add(audioSourceNode);
         // First mounted video should be connected to the audio context. All other videos have to be muted.
         if (this._audioNodes.size === 1) {
@@ -162,8 +163,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     }
     _synchronizeWithFirstVideo(video) {
         const firstVideo = [...this._mountedVideos][0];
-        if (!firstVideo)
+        if (!firstVideo) {
             return;
+        }
         if (firstVideo.paused) {
             video.pause();
         }
@@ -194,22 +196,25 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         };
         video.onseeking = () => {
             this._mountedVideos.forEach((mountedVideo) => {
-                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
+                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) {
                     return;
+                }
                 mountedVideo.currentTime = video.currentTime;
             });
         };
         video.onseeked = () => {
             this._mountedVideos.forEach((mountedVideo) => {
-                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime)
+                if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) {
                     return;
+                }
                 mountedVideo.currentTime = video.currentTime;
             });
         };
         video.onratechange = () => {
             this._mountedVideos.forEach((mountedVideo) => {
-                if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate)
+                if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) {
                     return;
+                }
                 this._playbackRate = video.playbackRate;
                 mountedVideo.playbackRate = video.playbackRate;
             });

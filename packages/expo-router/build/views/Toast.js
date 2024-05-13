@@ -35,8 +35,9 @@ function ToastWrapper({ children }) {
 exports.ToastWrapper = ToastWrapper;
 function Toast({ children, filename, warning, }) {
     const filenamePretty = react_1.default.useMemo(() => {
-        if (!filename)
+        if (!filename) {
             return undefined;
+        }
         return 'app' + filename.replace(/^\./, '');
     }, [filename]);
     const value = useFadeIn();

@@ -128,7 +128,9 @@ const withIosExpoPlugins = (config, {
   bundleIdentifier
 }) => {
   // Set the bundle ID ahead of time.
-  if (!config.ios) config.ios = {};
+  if (!config.ios) {
+    config.ios = {};
+  }
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
@@ -148,7 +150,9 @@ const withIosExpoPlugins = (config, {
 exports.withIosExpoPlugins = withIosExpoPlugins;
 const withAndroidExpoPlugins = (config, props) => {
   // Set the package name ahead of time.
-  if (!config.android) config.android = {};
+  if (!config.android) {
+    config.android = {};
+  }
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties

@@ -61,8 +61,9 @@ function environmentRestrictedReactAPIsPlugin(api) {
                                 }
                                 else {
                                     const forbiddenImports = path.scope.getData('forbiddenImports') ?? new Map();
-                                    if (!forbiddenImports.has(sourceValue))
+                                    if (!forbiddenImports.has(sourceValue)) {
                                         forbiddenImports.set(sourceValue, new Set());
+                                    }
                                     forbiddenImports.get(sourceValue).add(importName);
                                     path.scope.setData('forbiddenImports', forbiddenImports);
                                 }
@@ -81,8 +82,9 @@ function environmentRestrictedReactAPIsPlugin(api) {
             // Match against `var _useState = useState(0),`
             VariableDeclarator(path) {
                 const importedSpecifiers = path.scope.getData('forbiddenImports');
-                if (!importedSpecifiers)
+                if (!importedSpecifiers) {
                     return;
+                }
                 importedSpecifiers.forEach((forbiddenApis, importName) => {
                     if (t.isCallExpression(path.node.init) && t.isIdentifier(path.node.init.callee)) {
                         if (forbiddenApis.has(path.node.init.callee.name)) {
