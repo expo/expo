@@ -39,15 +39,9 @@ internal struct FontFamilyAliasManager {
 }
 
 /**
- Swizzles ``UIFont.fontNames(forFamilyName:)`` and ``UIFont(name:size:)`` to support font family aliases.
+ Swizzles ``UIFont.fontNames(forFamilyName:)`` to support font family aliases.
  This is necessary because the user provides a custom family name that is then used in stylesheets,
  however the font usually has a different name encoded in the binary, thus the system may use a different name.
-
- ``UIFont(name:size:)`` covers cases where there the font family has variants. For example, the ``CGFont fullName``
- value for "Helvetica-Light-Oblique.ttf" would be something like "Helvetica Light Oblique", which
- ``UIFont.fullNames`` won't recognize, because that is a font name rather than a font family name. We have to use
- ``UIFont(name:size:)`` instead, because it accepts a font name. React Native does this looking up / falling back
- for us, we just need to ensure both methods are swizzled so they both support aliasing.
  */
 private func maybeSwizzleUIFont() {
   if hasSwizzled {
@@ -60,14 +54,6 @@ private func maybeSwizzleUIFont() {
     method_exchangeImplementations(originalFontNamesMethod, newFontNamesMethod)
   } else {
     log.error("expo-font is unable to swizzle `UIFont.fontNames(forFamilyName:)`")
-  }
-  let originalInitMethod = class_getClassMethod(UIFont.self, #selector(UIFont.init(name:size:)))
-  let newInitMethod = class_getClassMethod(UIFont.self, #selector(UIFont._expo_init(name:size:)))
-
-  if let originalInitMethod, let newInitMethod {
-    method_exchangeImplementations(originalInitMethod, newInitMethod)
-  } else {
-    log.error("expo-font is unable to swizzle `UIFont.init(name:size:)`")
   }
   hasSwizzled = true
 }

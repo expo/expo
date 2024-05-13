@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 12.0.5 — 2024-05-10
+
+### 🐛 Bug fixes
+
+- Fixed some vector icons not rendering correctly. ([#28747](https://github.com/expo/expo/pull/28747) by [@tsapeta](https://github.com/tsapeta))
+
 ## 12.0.4 — 2024-04-24
 
 _This version does not introduce any user-facing changes._

@@ -7,21 +7,20 @@ public extension UIFont {
    */
   @objc
   static dynamic func _expo_fontNames(forFamilyName familyName: String) -> [String] {
+    // Get font names from the original function.
     let fontNames = UIFont._expo_fontNames(forFamilyName: familyName)
 
+    // If no font names were found, let's try with the alias.
     if fontNames.isEmpty, let aliasedFamilyName = FontFamilyAliasManager.familyName(forAlias: familyName) {
-      // Note that this actually calls the original method implementation (if swizzled).
-      return UIFont._expo_fontNames(forFamilyName: aliasedFamilyName)
+      let fontNames = UIFont._expo_fontNames(forFamilyName: aliasedFamilyName)
+
+      // If we still don't find any font names, we can assume it was not a family name but a font name.
+      // In that case we can safely return the original font name.
+      if fontNames.isEmpty {
+        return [aliasedFamilyName]
+      }
+      return fontNames
     }
     return fontNames
-  }
-  @objc
-  static dynamic func _expo_init(name fontName: String, size fontSize: CGFloat) -> UIFont? {
-    let font = UIFont._expo_init(name: fontName, size: fontSize)
-
-    if let aliasedFamilyName = FontFamilyAliasManager.familyName(forAlias: fontName) {
-      return UIFont._expo_init(name: aliasedFamilyName, size: fontSize)
-    }
-    return font
   }
 }

@@ -356,6 +356,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
+  '/guides/assets/': '/develop/user-interface/assets/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
