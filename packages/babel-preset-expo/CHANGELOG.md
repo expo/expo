@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix replacement of `__DEV__` in export statement.
+- Fix replacement of `__DEV__` in export statement. ([#28786](https://github.com/expo/expo/pull/28786) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
