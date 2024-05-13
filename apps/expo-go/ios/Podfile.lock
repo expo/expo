@@ -35,7 +35,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.1):
     - ExpoModulesCore
-  - Expo (51.0.3):
+  - Expo (51.0.4):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.4.1):
     - ExpoModulesCore
@@ -2353,7 +2353,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
   EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: 355c270dc37b2c432fa9232a1d07064869f05c24
+  Expo: ce2265cc694f9f71c2eb572c8fe05edbc75137a8
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
   ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
