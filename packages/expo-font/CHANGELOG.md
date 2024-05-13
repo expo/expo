@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Stopped scoping font family names in Expo Go on Android.
+
 ## 12.0.5 — 2024-05-10
 
 ### 🐛 Bug fixes
