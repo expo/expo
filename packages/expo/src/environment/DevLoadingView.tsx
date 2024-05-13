@@ -23,7 +23,9 @@ export default function DevLoadingView() {
   }, []);
 
   useEffect(() => {
-    if (!emitter) return;
+    if (!emitter) {
+      return;
+    }
 
     function handleShowMessage(event: { message: string }) {
       setMessage(event.message);

@@ -90,9 +90,13 @@ function logCommandsTable(
       .filter(Boolean)
       // @ts-ignore: filter doesn't work
       .map(({ key, msg, status, disabled }) => {
-        if (!key) return '';
+        if (!key) {
+          return '';
+        }
         let view = `${BLT} `;
-        if (key.length === 1) view += 'Press ';
+        if (key.length === 1) {
+          view += 'Press ';
+        }
         view += chalk`{bold ${key}} {dim │} `;
         view += msg;
         if (status) {

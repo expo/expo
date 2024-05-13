@@ -9,8 +9,12 @@ const USES_PERMISSION = 'uses-permission';
 export const withPermissions: ConfigPlugin<string[] | void> = (config, permissions) => {
   if (Array.isArray(permissions)) {
     permissions = permissions.filter(Boolean);
-    if (!config.android) config.android = {};
-    if (!config.android.permissions) config.android.permissions = [];
+    if (!config.android) {
+      config.android = {};
+    }
+    if (!config.android.permissions) {
+      config.android.permissions = [];
+    }
     config.android.permissions = [
       // @ts-ignore
       ...new Set(config.android.permissions.concat(permissions)),

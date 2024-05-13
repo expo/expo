@@ -22,7 +22,9 @@ export class DetachedClient implements TelemetryClient {
   }
 
   async identify(actor?: Actor) {
-    if (!actor) return;
+    if (!actor) {
+      return;
+    }
     debug('Actor received');
     this.actor = actor;
   }

@@ -206,7 +206,9 @@ function resetPlistBundleIdentifier(plistPath: string): void {
   const plistObject = plist.parse(rawPlist) as PlistObject;
 
   if (plistObject.CFBundleIdentifier) {
-    if (plistObject.CFBundleIdentifier === defaultBundleId) return;
+    if (plistObject.CFBundleIdentifier === defaultBundleId) {
+      return;
+    }
 
     // attempt to match default Info.plist format
     const format = { pretty: true, indent: `\t` };

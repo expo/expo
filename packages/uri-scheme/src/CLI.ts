@@ -19,7 +19,9 @@ function buildCommand(name: string, examples: string[] = []): Command {
     .option('-a, --android', 'Apply action to Android')
     .option('-i, --ios', 'Apply action to iOS ')
     .on('--help', () => {
-      if (!examples.length) return;
+      if (!examples.length) {
+        return;
+      }
       console.log();
       console.log('Examples:');
       console.log();
@@ -108,8 +110,12 @@ buildCommand('list')
 async function parseArgsAsync(uri: string, options: Options): Promise<Options> {
   const projectRoot = resolve(process.cwd());
   options.projectRoot = projectRoot;
-  if (options.manifestPath) options.manifestPath = resolve(options.manifestPath);
-  if (options.infoPath) options.infoPath = resolve(options.infoPath);
+  if (options.manifestPath) {
+    options.manifestPath = resolve(options.manifestPath);
+  }
+  if (options.infoPath) {
+    options.infoPath = resolve(options.infoPath);
+  }
 
   const platforms = URIScheme.getAvailablePlatforms(options);
 

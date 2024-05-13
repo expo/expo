@@ -57,7 +57,9 @@ let analyticsIdentity: AnalyticsIdentity | null = null;
 
 // jest does not clear global variables inbetween tests so we need this helper
 export function _resetGlobals() {
-  if (env.EXPO_NO_TELEMETRY) return;
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
 
   analyticsIdentity = null;
   messageBatch.splice(0, messageBatch.length);
@@ -66,7 +68,9 @@ export function _resetGlobals() {
 // call before tracking any analytics events.
 // if track/identify are called before this method they will be dropped
 export async function initializeAnalyticsIdentityAsync() {
-  if (env.EXPO_NO_TELEMETRY) return;
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
 
   if (analyticsIdentity) {
     return;
@@ -75,7 +79,9 @@ export async function initializeAnalyticsIdentityAsync() {
 }
 
 export function identify() {
-  if (env.EXPO_NO_TELEMETRY) return;
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
   enqueue('identify', {});
 }
 
@@ -84,7 +90,9 @@ export function track(
     event: string;
   }
 ) {
-  if (env.EXPO_NO_TELEMETRY) return;
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
   enqueue('track', { ...message, context: getAnalyticsContext() });
 }
 
@@ -136,7 +144,9 @@ function enqueue(type: 'identify' | 'track', message: any) {
 // very barebones implemention...
 // does not support multiple concurrent flushes or large numbers of messages
 export async function flushAsync() {
-  if (env.EXPO_NO_TELEMETRY) return;
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
 
   if (!messageBatch.length) {
     return;

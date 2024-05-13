@@ -234,7 +234,9 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   async makeAuthUrlAsync(discovery: AuthDiscoveryDocument): Promise<string> {
     const request = await this.getAuthRequestConfigAsync();
-    if (!request.state) throw new Error('Cannot make request URL without a valid `state` loaded');
+    if (!request.state) {
+      throw new Error('Cannot make request URL without a valid `state` loaded');
+    }
 
     // Create a query string
     const params: Record<string, string> = {};

@@ -28,7 +28,9 @@ function sha1(bytes: number[] | string) {
   if (typeof bytes == 'string') {
     const msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
     bytes = new Array(msg.length);
-    for (let i = 0; i < msg.length; i++) bytes[i] = msg.charCodeAt(i);
+    for (let i = 0; i < msg.length; i++) {
+      bytes[i] = msg.charCodeAt(i);
+    }
   }
 
   bytes.push(0x80);
@@ -55,7 +57,9 @@ function sha1(bytes: number[] | string) {
   for (let i = 0; i < N; i++) {
     const W = new Array(80);
 
-    for (let t = 0; t < 16; t++) W[t] = M[i][t];
+    for (let t = 0; t < 16; t++) {
+      W[t] = M[i][t];
+    }
     for (let t = 16; t < 80; t++) {
       W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
     }

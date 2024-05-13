@@ -95,7 +95,9 @@ async function getRootPathAsync(): Promise<string> {
 
 async function areAnyMatchingPathsIgnoredAsync(filePath: string): Promise<boolean> {
   const matchingNativeFiles = await glob(filePath);
-  if (!matchingNativeFiles.length) return false;
+  if (!matchingNativeFiles.length) {
+    return false;
+  }
   // multiple matches may occur if there are multiple modules
   return (
     (await Promise.all(matchingNativeFiles.map(isFileIgnoredAsync))).find((result) => result) ||

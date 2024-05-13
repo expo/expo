@@ -63,7 +63,9 @@ export default {
     return { type: WebBrowserResultType.OPENED };
   },
   dismissAuthSession() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     dismissPopup();
   },
   maybeCompleteAuthSession({ skipRedirectCheck }: { skipRedirectCheck?: boolean }): {
@@ -119,7 +121,9 @@ export default {
     redirectUrl?: string,
     openOptions?: WebBrowserOpenOptions
   ): Promise<WebBrowserAuthSessionResult> {
-    if (typeof window === 'undefined') return { type: WebBrowserResultType.CANCEL };
+    if (typeof window === 'undefined') {
+      return { type: WebBrowserResultType.CANCEL };
+    }
 
     redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
 
@@ -145,7 +149,9 @@ export default {
     window.localStorage.setItem(getHandle(), state);
 
     const normalizedRedirectUrl = (() => {
-      if (!redirectUrl) return redirectUrl;
+      if (!redirectUrl) {
+        return redirectUrl;
+      }
       try {
         return normalizeUrl(new URL(redirectUrl));
       } catch {
@@ -159,7 +165,9 @@ export default {
     return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup
       const listener = (event: MessageEvent) => {
-        if (!event.isTrusted) return;
+        if (!event.isTrusted) {
+          return;
+        }
         // Ensure we trust the sender.
         if (event.origin !== window.location.origin) {
           return;
@@ -197,7 +205,9 @@ export default {
       // Check if the window has been closed every second.
       const interval = setInterval(() => {
         if (popupWindow?.closed) {
-          if (resolve) resolve({ type: WebBrowserResultType.DISMISS });
+          if (resolve) {
+            resolve({ type: WebBrowserResultType.DISMISS });
+          }
           clearInterval(interval);
           dismissPopup();
         }
@@ -215,12 +225,16 @@ export default {
 
 // Crypto
 function isCryptoAvailable(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return !!(window?.crypto as any);
 }
 
 function isSubtleCryptoAvailable(): boolean {
-  if (!isCryptoAvailable()) return false;
+  if (!isCryptoAvailable()) {
+    return false;
+  }
   return !!(window.crypto.subtle as any);
 }
 
@@ -350,7 +364,9 @@ export function featureObjectToString(features: Record<string, any>): string {
       value = value ? 'yes' : 'no';
     }
     if (current && value) {
-      if (prev) prev += ',';
+      if (prev) {
+        prev += ',';
+      }
       return `${prev}${current}=${value}`;
     }
     return prev;

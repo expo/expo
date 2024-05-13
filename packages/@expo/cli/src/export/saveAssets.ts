@@ -50,9 +50,13 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   let hasServerOutput = false;
   for (const asset of files.entries()) {
     hasServerOutput = hasServerOutput || asset[1].targetDomain === 'server';
-    if (asset[1].assetId) assetEntries.push(asset);
-    else if (asset[1].routeId != null) routeEntries.push(asset);
-    else remainingEntries.push(asset);
+    if (asset[1].assetId) {
+      assetEntries.push(asset);
+    } else if (asset[1].routeId != null) {
+      routeEntries.push(asset);
+    } else {
+      remainingEntries.push(asset);
+    }
   }
 
   const groups = groupBy(assetEntries, ([, { assetId }]) => assetId!);
@@ -118,7 +122,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       other.push([filepath, asset]);
     } else {
       const platform = filepath.match(/_expo\/static\/js\/([^/]+)\//)?.[1] ?? 'web';
-      if (!bundles.has(platform)) bundles.set(platform, []);
+      if (!bundles.has(platform)) {
+        bundles.set(platform, []);
+      }
 
       bundles.get(platform)!.push([filepath, asset]);
     }

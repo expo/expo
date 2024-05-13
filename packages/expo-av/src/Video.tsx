@@ -70,7 +70,9 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
    */
   setNativeProps(nativeProps: VideoNativeProps) {
     const nativeVideo = this._nativeRef.current;
-    if (!nativeVideo) throw new Error(`native video reference is not defined.`);
+    if (!nativeVideo) {
+      throw new Error(`native video reference is not defined.`);
+    }
     nativeVideo.setNativeProps(nativeProps);
   }
 

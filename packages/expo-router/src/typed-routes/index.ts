@@ -41,7 +41,9 @@ export function getWatchHandler(outputDir: string) {
  */
 export const regenerateDeclarations = throttle((outputDir: string) => {
   const file = getTypedRoutesDeclarationFile(ctx);
-  if (!file) return;
+  if (!file) {
+    return;
+  }
   fs.writeFileSync(path.resolve(outputDir, './router.d.ts'), file);
 }, 100);
 

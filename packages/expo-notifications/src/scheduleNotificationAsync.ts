@@ -205,7 +205,9 @@ function toTimestamp(date: number | Date) {
 function isDailyTriggerInput(
   trigger: SchedulableNotificationTriggerInput
 ): trigger is DailyTriggerInput {
-  if (typeof trigger !== 'object') return false;
+  if (typeof trigger !== 'object') {
+    return false;
+  }
   const { channelId, ...triggerWithoutChannelId } = trigger as DailyTriggerInput;
   return (
     Object.keys(triggerWithoutChannelId).length ===
@@ -221,7 +223,9 @@ function isDailyTriggerInput(
 function isWeeklyTriggerInput(
   trigger: SchedulableNotificationTriggerInput
 ): trigger is WeeklyTriggerInput {
-  if (typeof trigger !== 'object') return false;
+  if (typeof trigger !== 'object') {
+    return false;
+  }
   const { channelId, ...triggerWithoutChannelId } = trigger as WeeklyTriggerInput;
   return (
     Object.keys(triggerWithoutChannelId).length ===
@@ -237,7 +241,9 @@ function isWeeklyTriggerInput(
 function isYearlyTriggerInput(
   trigger: SchedulableNotificationTriggerInput
 ): trigger is YearlyTriggerInput {
-  if (typeof trigger !== 'object') return false;
+  if (typeof trigger !== 'object') {
+    return false;
+  }
   const { channelId, ...triggerWithoutChannelId } = trigger as YearlyTriggerInput;
   return (
     Object.keys(triggerWithoutChannelId).length ===

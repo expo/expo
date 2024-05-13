@@ -30,7 +30,9 @@ export async function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promis
 }
 
 export function convertFormat(format?: string): string | undefined {
-  if (typeof format === 'undefined') return format;
+  if (typeof format === 'undefined') {
+    return format;
+  }
 
   const input = format?.toLowerCase();
   switch (input) {
@@ -137,7 +139,9 @@ export async function createSquareAsync({
 
 export async function getJimpImageAsync(input: string | Buffer | Jimp): Promise<Jimp> {
   // @ts-ignore: Jimp types are broken
-  if (typeof input === 'string' || input instanceof Buffer) return await Jimp.read(input);
+  if (typeof input === 'string' || input instanceof Buffer) {
+    return await Jimp.read(input);
+  }
 
   return input;
 }
@@ -194,7 +198,9 @@ async function flatten(
  * @param position
  */
 function convertPosition(position?: Position): number {
-  if (!position) return convertPosition('center');
+  if (!position) {
+    return convertPosition('center');
+  }
 
   switch (position) {
     case 'center':

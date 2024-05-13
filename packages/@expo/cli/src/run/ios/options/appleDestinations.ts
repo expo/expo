@@ -68,7 +68,9 @@ function parseXcodeDestinationString(str: string): Destination[] {
   ).map((line) => {
     const inner = line.match(/{(.*)}/)?.[1];
 
-    if (!inner) return null;
+    if (!inner) {
+      return null;
+    }
 
     return Object.fromEntries(
       filterBoolean(

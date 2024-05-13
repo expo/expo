@@ -77,7 +77,9 @@ function matchPatternOrExact(
 ): string | Pattern | undefined {
   const patterns: Pattern[] = [];
   for (const patternString of patternStrings) {
-    if (!hasZeroOrOneAsteriskCharacter(patternString)) continue;
+    if (!hasZeroOrOneAsteriskCharacter(patternString)) {
+      continue;
+    }
     const pattern = tryParsePattern(patternString);
     if (pattern) {
       patterns.push(pattern);

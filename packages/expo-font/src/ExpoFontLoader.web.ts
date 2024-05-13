@@ -84,7 +84,9 @@ function getHeadElements(): {
 
 export default {
   async unloadAllAsync(): Promise<void> {
-    if (!Platform.isDOMAvailable) return;
+    if (!Platform.isDOMAvailable) {
+      return;
+    }
 
     const element = document.getElementById(ID);
     if (element && element instanceof HTMLStyleElement) {
@@ -94,7 +96,9 @@ export default {
 
   async unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void> {
     const sheet = getFontFaceStyleSheet();
-    if (!sheet) return;
+    if (!sheet) {
+      return;
+    }
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
     for (const item of items) {
       sheet.deleteRule(item.index);

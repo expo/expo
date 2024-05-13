@@ -18,7 +18,9 @@ export async function findFile(dir: string, ext: string): Promise<boolean> {
     .access(dir, constants.F_OK)
     .then(async () => {
       for await (const file of walk(dir)) {
-        if (path.extname(file) === ext) return true;
+        if (path.extname(file) === ext) {
+          return true;
+        }
       }
       return false;
     })

@@ -136,7 +136,9 @@ export default class VideoPlayerWeb
     zeroGainNode: GainNode,
     audioSourceNode: MediaElementAudioSourceNode
   ): void {
-    if (!audioContext || !zeroGainNode) return;
+    if (!audioContext || !zeroGainNode) {
+      return;
+    }
 
     this._audioNodes.add(audioSourceNode);
     // First mounted video should be connected to the audio context. All other videos have to be muted.
@@ -210,7 +212,9 @@ export default class VideoPlayerWeb
 
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
     const firstVideo = [...this._mountedVideos][0];
-    if (!firstVideo) return;
+    if (!firstVideo) {
+      return;
+    }
 
     if (firstVideo.paused) {
       video.pause();
@@ -245,21 +249,27 @@ export default class VideoPlayerWeb
 
     video.onseeking = () => {
       this._mountedVideos.forEach((mountedVideo) => {
-        if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
+        if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) {
+          return;
+        }
         mountedVideo.currentTime = video.currentTime;
       });
     };
 
     video.onseeked = () => {
       this._mountedVideos.forEach((mountedVideo) => {
-        if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) return;
+        if (mountedVideo === video || mountedVideo.currentTime === video.currentTime) {
+          return;
+        }
         mountedVideo.currentTime = video.currentTime;
       });
     };
 
     video.onratechange = () => {
       this._mountedVideos.forEach((mountedVideo) => {
-        if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) return;
+        if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate) {
+          return;
+        }
         this._playbackRate = video.playbackRate;
         mountedVideo.playbackRate = video.playbackRate;
       });

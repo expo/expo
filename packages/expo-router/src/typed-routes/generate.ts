@@ -59,7 +59,9 @@ function walkRouteNode(
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
-  if (!routeNode) return;
+  if (!routeNode) {
+    return;
+  }
 
   addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
 
@@ -78,8 +80,12 @@ function addRouteNode(
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
-  if (!routeNode?.route) return;
-  if (!isTypedRoute(routeNode.route)) return;
+  if (!routeNode?.route) {
+    return;
+  }
+  if (!isTypedRoute(routeNode.route)) {
+    return;
+  }
 
   let routePath = `${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
 

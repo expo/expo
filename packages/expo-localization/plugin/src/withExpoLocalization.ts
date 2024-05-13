@@ -15,9 +15,15 @@ type ConfigPluginProps = {
 
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const mergedConfig = { ...config.extra, ...data };
-  if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null) return config;
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null) {
+    return config;
+  }
+  if (!config.ios) {
+    config.ios = {};
+  }
+  if (!config.ios.infoPlist) {
+    config.ios.infoPlist = {};
+  }
   if (mergedConfig?.supportsRTL != null) {
     config.ios.infoPlist.ExpoLocalization_supportsRTL = mergedConfig?.supportsRTL;
   }

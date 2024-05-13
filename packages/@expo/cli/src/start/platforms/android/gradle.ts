@@ -73,10 +73,14 @@ export async function assembleAsync(
     '--configure-on-demand',
   ];
 
-  if (buildCache) args.push('--build-cache');
+  if (buildCache) {
+    args.push('--build-cache');
+  }
 
   // Generate a profile under `/android/app/build/reports/profile`
-  if (env.EXPO_PROFILE) args.push('--profile');
+  if (env.EXPO_PROFILE) {
+    args.push('--profile');
+  }
 
   return await spawnGradleAsync(androidProjectPath, { port, architectures, args });
 }
@@ -111,8 +115,12 @@ export async function spawnGradleAsync(
   { port, architectures, args }: { port?: number; architectures?: string; args: string[] }
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
-  if (port != null) args.push(getPortArg(port));
-  if (architectures) args.push(getActiveArchArg(architectures));
+  if (port != null) {
+    args.push(getPortArg(port));
+  }
+  if (architectures) {
+    args.push(getActiveArchArg(architectures));
+  }
   debug(`  ${gradlew} ${args.join(' ')}`);
   try {
     return await spawnAsync(gradlew, args, {

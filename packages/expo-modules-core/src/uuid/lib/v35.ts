@@ -33,12 +33,19 @@ export default function (
   ): string {
     const off = (buf && offset) || 0;
 
-    if (typeof value == 'string') value = stringToBytes(value);
-    if (typeof namespace == 'string') namespace = uuidToBytes(namespace);
+    if (typeof value == 'string') {
+      value = stringToBytes(value);
+    }
+    if (typeof namespace == 'string') {
+      namespace = uuidToBytes(namespace);
+    }
 
-    if (!Array.isArray(value)) throw TypeError('value must be an array of bytes');
-    if (!Array.isArray(namespace) || namespace.length !== 16)
+    if (!Array.isArray(value)) {
+      throw TypeError('value must be an array of bytes');
+    }
+    if (!Array.isArray(namespace) || namespace.length !== 16) {
       throw TypeError('namespace must be uuid string or an Array of 16 byte values');
+    }
 
     // Per 4.3
     const bytes = hashfunc(namespace.concat(value));

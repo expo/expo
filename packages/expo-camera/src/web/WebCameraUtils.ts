@@ -354,7 +354,9 @@ async function onCapabilitiesReady(
   try {
     await track.applyConstraints({ advanced: [constraints] });
   } catch (error) {
-    if (__DEV__) console.warn('Failed to apply constraints', error);
+    if (__DEV__) {
+      console.warn('Failed to apply constraints', error);
+    }
   }
 }
 

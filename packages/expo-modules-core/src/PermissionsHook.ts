@@ -43,7 +43,9 @@ function usePermission<Permission extends PermissionResponse, Options extends ob
     const response = await methods.getMethod(
       Object.keys(permissionOptions).length > 0 ? (permissionOptions as Options) : undefined
     );
-    if (isMounted.current) setStatus(response);
+    if (isMounted.current) {
+      setStatus(response);
+    }
     return response;
   }, [methods.getMethod]);
 
@@ -51,14 +53,20 @@ function usePermission<Permission extends PermissionResponse, Options extends ob
     const response = await methods.requestMethod(
       Object.keys(permissionOptions).length > 0 ? (permissionOptions as Options) : undefined
     );
-    if (isMounted.current) setStatus(response);
+    if (isMounted.current) {
+      setStatus(response);
+    }
     return response;
   }, [methods.requestMethod]);
 
   useEffect(
     function runMethods() {
-      if (request) requestPermission();
-      if (!request && get) getPermission();
+      if (request) {
+        requestPermission();
+      }
+      if (!request && get) {
+        getPermission();
+      }
     },
     [get, request, requestPermission, getPermission]
   );

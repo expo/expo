@@ -118,7 +118,9 @@ export function isHexColor(color: any): color is Color {
 
 export function mapColorToHexColor(color: Color, defaultColor?: string): string {
   let defColor = defaultColor;
-  if (defColor === undefined) defColor = '#000000';
+  if (defColor === undefined) {
+    defColor = '#000000';
+  }
 
   const colors: Record<Color | 'default', string> = {
     red: '#ff0000',

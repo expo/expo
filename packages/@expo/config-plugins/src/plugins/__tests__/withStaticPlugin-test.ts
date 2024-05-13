@@ -5,7 +5,9 @@ import { join } from 'path';
 import { withStaticPlugin } from '../withStaticPlugin';
 
 function withInternal(config: ExpoConfig, projectRoot: string) {
-  if (!config._internal) config._internal = {};
+  if (!config._internal) {
+    config._internal = {};
+  }
   config._internal.projectRoot = projectRoot;
   return config;
 }

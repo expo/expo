@@ -185,7 +185,9 @@ export async function exportAssetsAsync(
 
       asset.files.forEach((fp: string, index: number) => {
         const hash = asset.fileHashes[index];
-        if (hashes.has(hash)) return;
+        if (hashes.has(hash)) {
+          return;
+        }
         hashes.add(hash);
         files.set(path.join('assets', hash), {
           originFilename: path.relative(projectRoot, fp),

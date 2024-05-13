@@ -24,8 +24,12 @@ export function fetchThenEvalAsync(
   }
   return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
-    if (scriptType) script.type = scriptType;
-    if (nonce) script.setAttribute('nonce', nonce);
+    if (scriptType) {
+      script.type = scriptType;
+    }
+    if (nonce) {
+      script.setAttribute('nonce', nonce);
+    }
     // script.setAttribute('data-expo-metro', ...);
     script.src = url;
 

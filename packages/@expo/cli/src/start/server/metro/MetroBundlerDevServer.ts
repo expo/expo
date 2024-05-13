@@ -786,7 +786,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
   return async ({ runtime }) => {
-    if (runtime === 'expo') return;
+    if (runtime === 'expo') {
+      return;
+    }
     const { exp } = getConfig(projectRoot);
     await logEventAsync('dev client start command', {
       status: 'started',

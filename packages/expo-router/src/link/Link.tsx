@@ -119,8 +119,12 @@ function ExpoRouterLink(
   }, [href]);
 
   let event;
-  if (push) event = 'PUSH';
-  if (replace) event = 'REPLACE';
+  if (push) {
+    event = 'PUSH';
+  }
+  if (replace) {
+    event = 'REPLACE';
+  }
 
   const props = useLinkToPathProps({ href: resolvedHref, event });
 

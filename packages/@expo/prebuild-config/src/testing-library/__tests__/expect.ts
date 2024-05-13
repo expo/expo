@@ -32,7 +32,9 @@ expect.extend({
   },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
     const filePath = IOSConfig.Entitlements.getEntitlementsPath(getProjectRootLikePrebuild(config));
-    if (!filePath) throw new Error('iOS entitlements path not found');
+    if (!filePath) {
+      throw new Error('iOS entitlements path not found');
+    }
     const data = plist.parse(fs.readFileSync(filePath, 'utf8'));
     return matchers.toEqual(data, expected);
   },

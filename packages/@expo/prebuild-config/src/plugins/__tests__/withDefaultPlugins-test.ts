@@ -422,7 +422,9 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/Info.plist',
     ]) {
       const isValid = await isValidXMLAsync(path.join(projectRoot, xmlPath));
-      if (!isValid) throw new Error(`Invalid XML file format at: "${xmlPath}"`);
+      if (!isValid) {
+        throw new Error(`Invalid XML file format at: "${xmlPath}"`);
+      }
     }
 
     // Ensure the infoPlist object is merged correctly
@@ -443,7 +445,9 @@ describe('built-in plugins', () => {
       'android/app/google-services.json',
     ]) {
       const isValid = await isValidJSONAsync(path.join(projectRoot, xmlPath));
-      if (!isValid) throw new Error(`Invalid JSON file format at: "${xmlPath}"`);
+      if (!isValid) {
+        throw new Error(`Invalid JSON file format at: "${xmlPath}"`);
+      }
     }
 
     // Ensure the Xcode project file can be read and parsed.

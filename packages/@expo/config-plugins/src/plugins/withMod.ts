@@ -136,9 +136,15 @@ function saveToInternalObject(
   modName: string,
   results: JSONObject
 ) {
-  if (!config._internal) config._internal = {};
-  if (!config._internal.modResults) config._internal.modResults = {};
-  if (!config._internal.modResults[platformName]) config._internal.modResults[platformName] = {};
+  if (!config._internal) {
+    config._internal = {};
+  }
+  if (!config._internal.modResults) {
+    config._internal.modResults = {};
+  }
+  if (!config._internal.modResults[platformName]) {
+    config._internal.modResults[platformName] = {};
+  }
   config._internal.modResults[platformName][modName] = results;
 }
 

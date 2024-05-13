@@ -35,7 +35,9 @@ let hasWarnedAboutRootConfig = false;
  * @param config Input config object to reduce
  */
 function reduceExpoObject(config?: any): SplitConfigs {
-  if (!config) return config === undefined ? null : config;
+  if (!config) {
+    return config === undefined ? null : config;
+  }
 
   if (config.expo && !hasWarnedAboutRootConfig) {
     const keys = Object.keys(config).filter((key) => key !== 'expo');
@@ -368,7 +370,9 @@ function ensureConfigHasDefaultValues({
   try {
     sdkVersion = getExpoSDKVersion(projectRoot, expWithDefaults);
   } catch (error) {
-    if (!skipSDKVersionRequirement) throw error;
+    if (!skipSDKVersionRequirement) {
+      throw error;
+    }
   }
 
   let platforms = exp.platforms;

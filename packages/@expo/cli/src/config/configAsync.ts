@@ -21,8 +21,12 @@ export function logConfig(config: ExpoConfig | ProjectConfig) {
       compact: false,
       // Sort objects to the end so that smaller values aren't hidden between large objects.
       sorted(a: string, b: string) {
-        if (isObjStr(a)) return 1;
-        if (isObjStr(b)) return -1;
+        if (isObjStr(a)) {
+          return 1;
+        }
+        if (isObjStr(b)) {
+          return -1;
+        }
         return 0;
       },
       showHidden: false,

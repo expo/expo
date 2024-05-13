@@ -395,7 +395,9 @@ export function applyImageToSplashScreenXML(
  * This method will add an item by first removing any existing item with the same `$.id`.
  */
 export function ensureUniquePush<TItem extends { $: { id: string } }>(array: TItem[], item: TItem) {
-  if (!array) return array;
+  if (!array) {
+    return array;
+  }
   removeExisting(array, item);
   array.push(item);
   return array;

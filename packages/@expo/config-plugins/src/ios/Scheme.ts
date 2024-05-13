@@ -95,7 +95,9 @@ export function removeScheme(scheme: string | null, infoPlist: InfoPlist): InfoP
 export function hasScheme(scheme: string, infoPlist: InfoPlist): boolean {
   const existingSchemes = infoPlist.CFBundleURLTypes;
 
-  if (!Array.isArray(existingSchemes)) return false;
+  if (!Array.isArray(existingSchemes)) {
+    return false;
+  }
 
   return existingSchemes?.some(({ CFBundleURLSchemes: schemes }: any) =>
     Array.isArray(schemes) ? schemes.includes(scheme) : false

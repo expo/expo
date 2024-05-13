@@ -28,7 +28,9 @@ export function log(...message: string[]): void {
 
 /** @deprecated use `debug` package with the `expo:` prefix instead.  */
 export function debug(...message: any[]): void {
-  if (require('./utils/env').env.EXPO_DEBUG) console.log(...message);
+  if (require('./utils/env').env.EXPO_DEBUG) {
+    console.log(...message);
+  }
 }
 
 /** Clear the terminal of all text. */

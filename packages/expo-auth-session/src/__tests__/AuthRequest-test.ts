@@ -95,7 +95,9 @@ it(`returns an error when the state doesn't match`, () => {
   const results = request.parseReturnUrl(
     'https://demo.identityserver.io/connect/authorize?code_challenge=qOMOVEqLn0PTVkRFSSD4H5T-AQyZeZaFcr3fmu5gRKU&code_challenge_method=S256&client_secret=foobar&redirect_uri=bareexpo%3A%2F%2Foauthredirect&client_id=native.code&response_type=code&state=testvalue&scope=openid%20profile%20email%20offline_access'
   );
-  if (results.type !== 'error' || !results.error) throw new Error('Invalid type for test');
+  if (results.type !== 'error' || !results.error) {
+    throw new Error('Invalid type for test');
+  }
   expect(results.error.code).toBe('state_mismatch');
 });
 
@@ -110,7 +112,9 @@ it(`parses the server error into an AuthError`, () => {
 
   const queryString = new URLSearchParams({ state: 'somn', error: 'invalid_request' }).toString();
   const results = request.parseReturnUrl(`https://demo.io?${queryString}`);
-  if (results.type !== 'error' || !results.error) throw new Error('Invalid type for test');
+  if (results.type !== 'error' || !results.error) {
+    throw new Error('Invalid type for test');
+  }
 
   expect(results.error.code).toBe('invalid_request');
   // Ensure the extra message is added

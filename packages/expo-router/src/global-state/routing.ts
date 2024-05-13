@@ -63,7 +63,9 @@ export function canDismiss(this: RouterStore): boolean {
     if (state.type === 'stack' && state.routes.length > 1) {
       return true;
     }
-    if (state.index === undefined) return false;
+    if (state.index === undefined) {
+      return false;
+    }
 
     state = state.routes?.[state.index]?.state as any;
   }
@@ -107,7 +109,9 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     let base =
       this.routeInfo?.segments
         ?.map((segment) => {
-          if (!segment.startsWith('[')) return segment;
+          if (!segment.startsWith('[')) {
+            return segment;
+          }
 
           if (segment.startsWith('[...')) {
             segment = segment.slice(4, -1);

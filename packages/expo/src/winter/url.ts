@@ -14,7 +14,9 @@ let isSetup = false;
 let BLOB_URL_PREFIX: string | null = null;
 
 function getBlobUrlPrefix() {
-  if (isSetup) return BLOB_URL_PREFIX;
+  if (isSetup) {
+    return BLOB_URL_PREFIX;
+  }
   isSetup = true;
   // if iOS: let BLOB_URL_PREFIX = 'blob:'
 

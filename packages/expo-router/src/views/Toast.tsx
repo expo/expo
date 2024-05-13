@@ -42,7 +42,9 @@ export function Toast({
   warning?: boolean;
 }>) {
   const filenamePretty = React.useMemo(() => {
-    if (!filename) return undefined;
+    if (!filename) {
+      return undefined;
+    }
     return 'app' + filename.replace(/^\./, '');
   }, [filename]);
   const value = useFadeIn();

@@ -10,7 +10,9 @@ export async function minifyLikeMetroAsync({
   code?: string | null;
   map?: any;
 }): Promise<{ code?: string; map?: any }> {
-  if (code == null) throw new Error('code is required for minifying');
+  if (code == null) {
+    throw new Error('code is required for minifying');
+  }
   // @ts-expect-error: untyped function
   const terserConfig = (await getDefaultConfig('/')).transformer.minifierConfig;
   return metroMinify({

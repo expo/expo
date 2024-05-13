@@ -44,7 +44,9 @@ export function installGlobals() {
 
   if (typeof Response.redirect !== 'function') {
     Response.redirect = function redirect(url: string | URL, status?: number) {
-      if (!status) status = 302;
+      if (!status) {
+        status = 302;
+      }
       switch (status) {
         case 301:
         case 302:

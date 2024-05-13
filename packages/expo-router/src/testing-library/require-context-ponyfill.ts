@@ -23,12 +23,16 @@ export default function requireContext(
       const relativePath = `./${path.relative(base, fullPath).split(path.sep).join('/')}`;
 
       if (fs.statSync(fullPath).isDirectory()) {
-        if (scanSubDirectories) readDirectory(fullPath);
+        if (scanSubDirectories) {
+          readDirectory(fullPath);
+        }
 
         return;
       }
 
-      if (!regularExpression.test(relativePath)) return;
+      if (!regularExpression.test(relativePath)) {
+        return;
+      }
 
       files[relativePath] = true;
     });

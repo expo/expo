@@ -7,7 +7,9 @@ import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(
   name: PermissionNameWithAdditionalValues
 ): Promise<PermissionStatus | null> {
-  if (!navigator || !navigator.permissions || !navigator.permissions.query) return null;
+  if (!navigator || !navigator.permissions || !navigator.permissions.query) {
+    return null;
+  }
 
   try {
     const { state } = await navigator.permissions.query({ name });

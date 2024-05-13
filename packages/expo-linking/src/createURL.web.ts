@@ -1,7 +1,9 @@
 import { CreateURLOptions, ParsedURL } from './Linking.types';
 
 export function createURL(path: string, { queryParams = {} }: CreateURLOptions = {}): string {
-  if (typeof window === 'undefined') return '';
+  if (typeof window === 'undefined') {
+    return '';
+  }
   const url = new URL(path, window.location.origin);
   Object.entries(queryParams).forEach(([key, value]) => {
     if (typeof value === 'string') {

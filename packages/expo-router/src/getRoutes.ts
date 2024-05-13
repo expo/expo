@@ -304,7 +304,9 @@ function flattenDirectoryTreeToRoutes(
   }
 
   // This should never occur as there will always be a root layout, but it makes the type system happy
-  if (!layout) throw new Error('Expo Router Internal Error: No nearest layout');
+  if (!layout) {
+    throw new Error('Expo Router Internal Error: No nearest layout');
+  }
 
   for (const routes of directory.files.values()) {
     const routeNode = getMostSpecific(routes);
@@ -447,7 +449,9 @@ export function generateDynamic(path: string): DynamicConvention[] | null {
       const deepDynamicName = matchDeepDynamicRouteName(part);
       const dynamicName = deepDynamicName ?? matchDynamicName(part);
 
-      if (!dynamicName) return null;
+      if (!dynamicName) {
+        return null;
+      }
       return { name: dynamicName, deep: !!deepDynamicName };
     })
     .filter((part): part is DynamicConvention => !!part);

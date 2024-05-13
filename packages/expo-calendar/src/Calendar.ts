@@ -1346,7 +1346,9 @@ function stringifyIfDate(date: any): any {
 }
 
 function stringifyDateValues(obj: object): object {
-  if (typeof obj !== 'object' || obj === null) return obj;
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
   return Object.keys(obj).reduce((acc, key) => {
     const value = obj[key];
     if (value != null && typeof value === 'object' && !(value instanceof Date)) {

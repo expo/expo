@@ -39,7 +39,9 @@ export function resolveWithTsConfigPaths(
     for (const alias of config.paths[matched.text]) {
       const nextModuleName = matched.star ? alias.replace('*', matched.star) : alias;
 
-      if (/\.d\.ts$/.test(nextModuleName)) continue;
+      if (/\.d\.ts$/.test(nextModuleName)) {
+        continue;
+      }
 
       const possibleResult = path.join(config.baseUrl, nextModuleName);
 

@@ -222,7 +222,9 @@ function resetPlistBundleIdentifier(plistPath) {
   const rawPlist = _fs().default.readFileSync(plistPath, 'utf8');
   const plistObject = _plist().default.parse(rawPlist);
   if (plistObject.CFBundleIdentifier) {
-    if (plistObject.CFBundleIdentifier === defaultBundleId) return;
+    if (plistObject.CFBundleIdentifier === defaultBundleId) {
+      return;
+    }
 
     // attempt to match default Info.plist format
     const format = {

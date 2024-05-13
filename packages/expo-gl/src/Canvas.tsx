@@ -12,7 +12,9 @@ function getElement(component) {
 }
 
 function setRef<T>(refProp: React.Ref<T>, ref: T | null) {
-  if (!refProp) return;
+  if (!refProp) {
+    return;
+  }
 
   if (typeof refProp === 'function') {
     refProp(ref);

@@ -75,13 +75,19 @@ function normalizeStringPosix(path: string, allowAboveRoot?: boolean) {
           }
         }
         if (allowAboveRoot) {
-          if (res.length > 0) res += '/..';
-          else res = '..';
+          if (res.length > 0) {
+            res += '/..';
+          } else {
+            res = '..';
+          }
           lastSegmentLength = 2;
         }
       } else {
-        if (res.length > 0) res += '/' + path.slice(lastSlash + 1, i);
-        else res = path.slice(lastSlash + 1, i);
+        if (res.length > 0) {
+          res += '/' + path.slice(lastSlash + 1, i);
+        } else {
+          res = path.slice(lastSlash + 1, i);
+        }
         lastSegmentLength = i - lastSlash - 1;
       }
       lastSlash = i;

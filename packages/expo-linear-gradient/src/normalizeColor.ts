@@ -14,7 +14,9 @@ const isWebColor = (color: string): boolean =>
   color.indexOf('var(') === 0;
 
 export function normalizeColor(color?: number | string, opacity: number = 1): void | string {
-  if (color == null) return;
+  if (color == null) {
+    return;
+  }
 
   if (typeof color === 'string' && isWebColor(color)) {
     return color;

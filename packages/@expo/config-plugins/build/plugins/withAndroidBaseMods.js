@@ -112,8 +112,12 @@ function sortAndroidManifest(obj) {
     if (Array.isArray(obj.manifest['uses-permission'])) {
       // Sort permissions alphabetically
       obj.manifest['uses-permission'].sort((a, b) => {
-        if (a.$['android:name'] < b.$['android:name']) return -1;
-        if (a.$['android:name'] > b.$['android:name']) return 1;
+        if (a.$['android:name'] < b.$['android:name']) {
+          return -1;
+        }
+        if (a.$['android:name'] > b.$['android:name']) {
+          return 1;
+        }
         return 0;
       });
     }
@@ -124,8 +128,12 @@ function sortAndroidManifest(obj) {
         if (Array.isArray(application['meta-data'])) {
           // Sort metadata alphabetically
           application['meta-data'].sort((a, b) => {
-            if (a.$['android:name'] < b.$['android:name']) return -1;
-            if (a.$['android:name'] > b.$['android:name']) return 1;
+            if (a.$['android:name'] < b.$['android:name']) {
+              return -1;
+            }
+            if (a.$['android:name'] > b.$['android:name']) {
+              return 1;
+            }
             return 0;
           });
         }
@@ -186,7 +194,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await _android().Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
     }
   }),
@@ -216,7 +226,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeFile(filePath, _android().Properties.propertiesListToString(modResults));
     }
   }),
@@ -258,7 +270,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await (0, _XML().writeXMLAsync)({
         path: filePath,
         xml: modResults
@@ -306,7 +320,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await (0, _XML().writeXMLAsync)({
         path: filePath,
         xml: modResults
@@ -352,7 +368,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await (0, _XML().writeXMLAsync)({
         path: filePath,
         xml: modResults
@@ -407,7 +425,9 @@ const defaultProviders = {
         introspect
       }
     }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await (0, _XML().writeXMLAsync)({
         path: filePath,
         xml: modResults

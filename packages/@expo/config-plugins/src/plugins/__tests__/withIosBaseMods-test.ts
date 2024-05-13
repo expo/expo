@@ -73,8 +73,12 @@ describe('entitlements', () => {
 
     // Mock glob response to "find" the memfs files
     jest.mocked(glob.sync).mockImplementation((pattern) => {
-      if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
-      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return ['/ios/HelloWorld/AppDelegate.mm'];
+      if (pattern === 'ios/**/*.xcodeproj') {
+        return ['/ios/HelloWorld.xcodeproj'];
+      }
+      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') {
+        return ['/ios/HelloWorld/AppDelegate.mm'];
+      }
       throw new Error('Unexpected glob pattern used in test');
     });
 
@@ -143,8 +147,12 @@ describe('entitlements', () => {
 
     // Mock glob response to "find" the memfs files
     jest.mocked(glob.sync).mockImplementation((pattern) => {
-      if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
-      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return ['/ios/HelloWorld/AppDelegate.mm'];
+      if (pattern === 'ios/**/*.xcodeproj') {
+        return ['/ios/HelloWorld.xcodeproj'];
+      }
+      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') {
+        return ['/ios/HelloWorld/AppDelegate.mm'];
+      }
       throw new Error('Unexpected glob pattern used in test');
     });
 

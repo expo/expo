@@ -150,7 +150,9 @@ function modifyRouteNodeInRuntimeManifest(
   const iterateScreens = (screens: ExpoRouterRuntimeManifest['screens']) => {
     Object.values(screens).map((value) => {
       if (typeof value !== 'string') {
-        if (value._route) callback(value._route);
+        if (value._route) {
+          callback(value._route);
+        }
         iterateScreens(value.screens);
       }
     });
@@ -379,7 +381,9 @@ export function getPathVariations(routePath: string): string[] {
 
   function generateVariations(segments: string[], current = ''): void {
     if (segments.length === 0) {
-      if (current) variations.add(current);
+      if (current) {
+        variations.add(current);
+      }
       return;
     }
 

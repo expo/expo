@@ -312,7 +312,9 @@ function getDeviceCtlErrorCodes(log: string): string[] {
 let hasEverBeenInstalled: boolean | undefined;
 
 export function hasDevicectlEverBeenInstalled() {
-  if (hasEverBeenInstalled) return hasEverBeenInstalled;
+  if (hasEverBeenInstalled) {
+    return hasEverBeenInstalled;
+  }
   // It doesn't appear possible for devicectl to ever be uninstalled. We can just check once and store this result forever
   // to prevent cold boots of devicectl from slowing down all invocations of `expo run ios`
   if (fs.existsSync(DEVICE_CTL_EXISTS_PATH)) {

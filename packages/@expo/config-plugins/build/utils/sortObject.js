@@ -34,8 +34,12 @@ function sortWithOrder(obj, order) {
   return sorted;
 }
 const reverseSortString = (a, b) => {
-  if (a < b) return 1;
-  if (a > b) return -1;
+  if (a < b) {
+    return 1;
+  }
+  if (a > b) {
+    return -1;
+  }
   return 0;
 };
 exports.reverseSortString = reverseSortString;

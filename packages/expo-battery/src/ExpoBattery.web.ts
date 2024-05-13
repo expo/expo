@@ -40,27 +40,35 @@ export default {
 
   async getBatteryLevelAsync(): Promise<number> {
     const batteryManager = await getBatteryManagerAsync();
-    if (!batteryManager) return -1;
+    if (!batteryManager) {
+      return -1;
+    }
 
     return batteryManager.level;
   },
 
   async getBatteryStateAsync(): Promise<BatteryState> {
     const batteryManager = await getBatteryManagerAsync();
-    if (!batteryManager) return BatteryState.UNKNOWN;
+    if (!batteryManager) {
+      return BatteryState.UNKNOWN;
+    }
     return getBatteryState(batteryManager.charging, batteryManager.level);
   },
 
   async startObserving() {
     const batteryManager = await getBatteryManagerAsync();
-    if (!batteryManager) return;
+    if (!batteryManager) {
+      return;
+    }
     batteryManager.addEventListener('chargingchange', onChargingChange);
     batteryManager.addEventListener('levelchange', onLevelChange);
   },
 
   async stopObserving() {
     const batteryManager = await getBatteryManagerAsync();
-    if (!batteryManager) return;
+    if (!batteryManager) {
+      return;
+    }
     batteryManager.removeEventListener('chargingchange', onChargingChange);
     batteryManager.removeEventListener('levelchange', onLevelChange);
   },
@@ -79,7 +87,9 @@ function getBatteryState(isCharging: boolean, level: number): BatteryState {
 function emitStateChange(isCharging: boolean, level: number) {
   const batteryState = getBatteryState(isCharging, level);
   // prevent sending the same state change twice.
-  if (batteryState === lastReportedState) return;
+  if (batteryState === lastReportedState) {
+    return;
+  }
   lastReportedState = batteryState;
   emitter.emit('Expo.batteryStateDidChange', { batteryState });
 }
@@ -96,7 +106,9 @@ function onLevelChange(this: BatteryManager): void {
 }
 
 async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
-  if (Platform.isDOMAvailable === false) return null;
+  if (Platform.isDOMAvailable === false) {
+    return null;
+  }
   if ('getBattery' in navigator) {
     // @ts-ignore
     return await navigator.getBattery();

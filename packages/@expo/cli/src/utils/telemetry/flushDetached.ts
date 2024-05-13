@@ -11,7 +11,9 @@ flush()
   .finally(() => process.exit(0));
 
 async function flush() {
-  if (!telemetryFile) return;
+  if (!telemetryFile) {
+    return;
+  }
 
   let json: string;
   let data: DetachedTelemetry;
@@ -20,7 +22,9 @@ async function flush() {
     json = await fs.promises.readFile(telemetryFile, 'utf8');
     data = JSON.parse(json) as DetachedTelemetry;
   } catch (error: any) {
-    if (error.code === 'ENOENT') return;
+    if (error.code === 'ENOENT') {
+      return;
+    }
     throw error;
   }
 

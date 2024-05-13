@@ -70,7 +70,9 @@ export function filterStyles(styleProp) {
 }
 
 function processNativeStyles(style) {
-  if (!style) return style;
+  if (!style) {
+    return style;
+  }
 
   if (style.visibility) {
     if (style.visibility === 'hidden') {

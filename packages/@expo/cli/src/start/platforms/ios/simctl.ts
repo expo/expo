@@ -47,7 +47,9 @@ type DeviceContext = Pick<Device, 'udid'>;
 
 /** Returns true if the given value is an `OSType`, if we don't recognize the value we continue anyways but warn. */
 export function isOSType(value: any): value is OSType {
-  if (!value || typeof value !== 'string') return false;
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
 
   const knownTypes = ['iOS', 'tvOS', 'watchOS', 'macOS'];
   if (!knownTypes.includes(value)) {

@@ -9,8 +9,12 @@ export function appendLinkToHtml(
       .map((link) => {
         let linkTag = `<link rel="${link.rel}"`;
 
-        if (link.href) linkTag += ` href="${link.href}"`;
-        if (link.as) linkTag += ` as="${link.as}"`;
+        if (link.href) {
+          linkTag += ` href="${link.href}"`;
+        }
+        if (link.as) {
+          linkTag += ` as="${link.as}"`;
+        }
 
         linkTag += '>';
 

@@ -6,10 +6,15 @@ export function everyMatchAsync(pattern: string, options: G.IOptions) {
     const g = new Glob(pattern, options);
     let called = false;
     const callback = (er: Error | null, matched: string[]) => {
-      if (called) return;
+      if (called) {
+        return;
+      }
       called = true;
-      if (er) reject(er);
-      else resolve(matched);
+      if (er) {
+        reject(er);
+      } else {
+        resolve(matched);
+      }
     };
     g.on('error', callback);
     g.on('end', (matches) => callback(null, matches));
@@ -22,10 +27,15 @@ export function anyMatchAsync(pattern: string, options: G.IOptions) {
     const g = new Glob(pattern, options);
     let called = false;
     const callback = (er: Error | null, matched: string[]) => {
-      if (called) return;
+      if (called) {
+        return;
+      }
       called = true;
-      if (er) reject(er);
-      else resolve(matched);
+      if (er) {
+        reject(er);
+      } else {
+        resolve(matched);
+      }
     };
     g.on('error', callback);
     g.on('match', (matched) => {

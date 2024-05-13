@@ -75,8 +75,12 @@ export function sortAndroidManifest(obj: AndroidManifest) {
     if (Array.isArray(obj.manifest['uses-permission'])) {
       // Sort permissions alphabetically
       obj.manifest['uses-permission'].sort((a, b) => {
-        if (a.$['android:name'] < b.$['android:name']) return -1;
-        if (a.$['android:name'] > b.$['android:name']) return 1;
+        if (a.$['android:name'] < b.$['android:name']) {
+          return -1;
+        }
+        if (a.$['android:name'] > b.$['android:name']) {
+          return 1;
+        }
         return 0;
       });
     }
@@ -89,8 +93,12 @@ export function sortAndroidManifest(obj: AndroidManifest) {
         if (Array.isArray(application['meta-data'])) {
           // Sort metadata alphabetically
           application['meta-data'].sort((a, b) => {
-            if (a.$['android:name'] < b.$['android:name']) return -1;
-            if (a.$['android:name'] > b.$['android:name']) return 1;
+            if (a.$['android:name'] < b.$['android:name']) {
+              return -1;
+            }
+            if (a.$['android:name'] > b.$['android:name']) {
+              return 1;
+            }
             return 0;
           });
         }
@@ -137,7 +145,9 @@ const defaultProviders = {
       return await getAndroidManifestTemplate(config);
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
     },
   }),
@@ -160,7 +170,9 @@ const defaultProviders = {
       return [];
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeFile(filePath, Properties.propertiesListToString(modResults));
     },
   }),
@@ -191,7 +203,9 @@ const defaultProviders = {
       return { resources: {} };
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeXMLAsync({ path: filePath, xml: modResults });
     },
   }),
@@ -221,7 +235,9 @@ const defaultProviders = {
       return { resources: {} };
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeXMLAsync({ path: filePath, xml: modResults });
     },
   }),
@@ -250,7 +266,9 @@ const defaultProviders = {
       return { resources: {} };
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeXMLAsync({ path: filePath, xml: modResults });
     },
   }),
@@ -293,7 +311,9 @@ const defaultProviders = {
       return styles;
     },
     async write(filePath, { modResults, modRequest: { introspect } }) {
-      if (introspect) return;
+      if (introspect) {
+        return;
+      }
       await writeXMLAsync({ path: filePath, xml: modResults });
     },
   }),

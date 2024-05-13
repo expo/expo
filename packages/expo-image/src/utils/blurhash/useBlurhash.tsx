@@ -26,7 +26,9 @@ export function useBlurhash(
   useEffect(() => {
     let isCanceled = false;
 
-    if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri)) return;
+    if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri)) {
+      return;
+    }
 
     const pixels = decode(
       blurhash.uri,

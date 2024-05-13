@@ -31,7 +31,9 @@ export function createMetadataJson({
     bundler: 'metro',
     fileMetadata: Object.entries(bundles).reduce<Record<string, Partial<PlatformMetadata>>>(
       (metadata, [platform, bundle]) => {
-        if (platform === 'web') return metadata;
+        if (platform === 'web') {
+          return metadata;
+        }
 
         return {
           ...metadata,

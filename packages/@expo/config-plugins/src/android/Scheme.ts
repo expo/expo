@@ -59,7 +59,9 @@ export function setScheme(
   const currentSchemes = getSchemesFromManifest(androidManifest);
   for (const uri of currentSchemes) {
     const index = schemes.indexOf(uri);
-    if (index > -1) schemes.splice(index, 1);
+    if (index > -1) {
+      schemes.splice(index, 1);
+    }
   }
 
   // Now add all of the remaining schemes.
@@ -95,7 +97,9 @@ function propertiesFromIntentFilter(intentFilter: any): IntentFilterProps {
 }
 
 function getSingleTaskIntentFilters(androidManifest: AndroidManifest): any[] {
-  if (!Array.isArray(androidManifest.manifest.application)) return [];
+  if (!Array.isArray(androidManifest.manifest.application)) {
+    return [];
+  }
 
   let outputSchemes: any[] = [];
   for (const application of androidManifest.manifest.application) {
@@ -183,7 +187,9 @@ export function appendScheme(scheme: string, androidManifest: AndroidManifest): 
         for (const intentFilter of activity['intent-filter'] || []) {
           const properties = propertiesFromIntentFilter(intentFilter);
           if (isValidRedirectIntentFilter(properties)) {
-            if (!intentFilter.data) intentFilter.data = [];
+            if (!intentFilter.data) {
+              intentFilter.data = [];
+            }
             intentFilter.data.push({
               $: { 'android:scheme': scheme },
             });

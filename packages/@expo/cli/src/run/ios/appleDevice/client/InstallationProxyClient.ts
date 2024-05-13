@@ -141,7 +141,9 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
         ...options,
       },
     });
-    if (resp && !Array.isArray(resp)) resp = [resp];
+    if (resp && !Array.isArray(resp)) {
+      resp = [resp];
+    }
     if (isIPLookupResponse(resp)) {
       return resp[0].LookupResult;
     } else {
@@ -170,7 +172,9 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
         },
       },
       (resp, resolve, reject) => {
-        if (resp && !Array.isArray(resp)) resp = [resp];
+        if (resp && !Array.isArray(resp)) {
+          resp = [resp];
+        }
 
         if (isIPInstallCompleteResponse(resp)) {
           onProgress({

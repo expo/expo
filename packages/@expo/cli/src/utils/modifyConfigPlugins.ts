@@ -8,7 +8,9 @@ export async function attemptAddingPluginsAsync(
   exp: Pick<ExpoConfig, 'plugins'>,
   plugins: string[]
 ): Promise<void> {
-  if (!plugins.length) return;
+  if (!plugins.length) {
+    return;
+  }
 
   const edits = {
     plugins: [...new Set((exp.plugins || []).concat(plugins))],

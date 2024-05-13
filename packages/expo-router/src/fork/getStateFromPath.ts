@@ -365,13 +365,17 @@ function getStateFromPathWithConfigs(
 ): ResultState | undefined {
   const formattedPaths = getUrlWithReactNavigationConcessions(path);
 
-  if (!formattedPaths.url) return;
+  if (!formattedPaths.url) {
+    return;
+  }
 
   let cleanPath =
     stripBaseUrl(stripGroupSegmentsFromPath(formattedPaths.url.pathname), baseUrl) +
     formattedPaths.url.search;
 
-  if (!path.startsWith('/')) cleanPath = cleanPath.slice(1);
+  if (!path.startsWith('/')) {
+    cleanPath = cleanPath.slice(1);
+  }
 
   if (formattedPaths.nonstandardPathname === '/') {
     return getStateFromEmptyPathWithConfigs(

@@ -277,9 +277,13 @@ export const EXPO_DEBUG = env.EXPO_DEBUG;
 
 function getPkgVersion(projectRoot: string, pkgName: string): string | null {
   const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
+  if (!targetPkg) {
+    return null;
+  }
   const targetPkgJson = findUpPackageJson(targetPkg);
-  if (!targetPkgJson) return null;
+  if (!targetPkgJson) {
+    return null;
+  }
   const pkg = JsonFile.read(targetPkgJson);
 
   debug(`${pkgName} package.json:`, targetPkgJson);
@@ -292,7 +296,9 @@ function getPkgVersion(projectRoot: string, pkgName: string): string | null {
 }
 
 function findUpPackageJson(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
+  if (['.', path.sep].includes(cwd)) {
+    return null;
+  }
 
   const found = resolveFrom.silent(cwd, './package.json');
   if (found) {

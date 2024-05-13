@@ -92,9 +92,15 @@ class GoogleAuthRequest extends AuthRequest {
     const inputParams = {
       ...extraParams,
     };
-    if (language) inputParams.hl = language;
-    if (loginHint) inputParams.login_hint = loginHint;
-    if (selectAccount) inputParams.prompt = Prompt.SelectAccount;
+    if (language) {
+      inputParams.hl = language;
+    }
+    if (loginHint) {
+      inputParams.login_hint = loginHint;
+    }
+    if (selectAccount) {
+      inputParams.prompt = Prompt.SelectAccount;
+    }
 
     // Apply the default scopes
     const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);

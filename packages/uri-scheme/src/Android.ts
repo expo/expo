@@ -159,10 +159,11 @@ export async function getProjectIdAsync({
   const resolvedManifestPath = manifestPath ?? getConfigPath(projectRoot);
   const manifest = await readConfigAsync(resolvedManifestPath);
   const androidPackage = getPackage(manifest);
-  if (!androidPackage)
+  if (!androidPackage) {
     throw new CommandError(
       `Android: Failed to resolve android package for Manifest at path: ${resolvedManifestPath}`
     );
+  }
   return androidPackage;
 }
 

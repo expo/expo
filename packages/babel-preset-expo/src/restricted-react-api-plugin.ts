@@ -77,8 +77,9 @@ export function environmentRestrictedReactAPIsPlugin(
                     'forbiddenImports'
                   ) ?? new Map();
 
-                  if (!forbiddenImports.has(sourceValue))
+                  if (!forbiddenImports.has(sourceValue)) {
                     forbiddenImports.set(sourceValue, new Set());
+                  }
                   forbiddenImports.get(sourceValue)!.add(importName);
 
                   path.scope.setData('forbiddenImports', forbiddenImports);
@@ -100,7 +101,9 @@ export function environmentRestrictedReactAPIsPlugin(
       VariableDeclarator(path) {
         const importedSpecifiers: undefined | Map<string, Set<string>> =
           path.scope.getData('forbiddenImports');
-        if (!importedSpecifiers) return;
+        if (!importedSpecifiers) {
+          return;
+        }
         importedSpecifiers.forEach((forbiddenApis, importName) => {
           if (t.isCallExpression(path.node.init) && t.isIdentifier(path.node.init.callee)) {
             if (forbiddenApis.has(path.node.init.callee.name)) {

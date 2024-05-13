@@ -117,7 +117,9 @@ const withStaticPlugin = (config, props) => {
       // If the static module failed to resolve, attempt to use a fallback.
       // This enables support for built-in plugins with versioned variations living in other packages.
       if (props.fallback) {
-        if (!pluginProps) pluginProps = {};
+        if (!pluginProps) {
+          pluginProps = {};
+        }
         // Pass this to the fallback plugin for potential warnings about needing to install a versioned package.
         pluginProps._resolverError = error;
         withPlugin = props.fallback;

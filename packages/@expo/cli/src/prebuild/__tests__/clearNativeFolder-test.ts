@@ -38,7 +38,9 @@ describe(getMalformedNativeProjectsAsync, () => {
       {
         ...Object.entries(rnFixture).reduce((prev, [key, value]) => {
           // Skip ios project files
-          if (key.startsWith('ios')) return prev;
+          if (key.startsWith('ios')) {
+            return prev;
+          }
           return {
             ...prev,
             [key]: value,
@@ -57,7 +59,9 @@ describe(getMalformedNativeProjectsAsync, () => {
       {
         ...Object.entries(rnFixture).reduce((prev, [key, value]) => {
           // Skip ios project files
-          if (key.startsWith('ios')) return prev;
+          if (key.startsWith('ios')) {
+            return prev;
+          }
           return {
             ...prev,
             [key]: value,

@@ -55,7 +55,9 @@ describe(useSegments, () => {
   it(`allows abstract union types`, () => {
     const segments = renderHookOnce(() => useSegments<['a'] | ['b'] | ['b', 'c']>());
     expectType<'a' | 'b'>(segments[0]);
-    if (segments[0] === 'b') expectType<'c' | undefined>(segments[1]);
+    if (segments[0] === 'b') {
+      expectType<'c' | undefined>(segments[1]);
+    }
   });
 });
 

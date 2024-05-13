@@ -124,9 +124,15 @@ function withBaseMod(config, {
   return config;
 }
 function saveToInternalObject(config, platformName, modName, results) {
-  if (!config._internal) config._internal = {};
-  if (!config._internal.modResults) config._internal.modResults = {};
-  if (!config._internal.modResults[platformName]) config._internal.modResults[platformName] = {};
+  if (!config._internal) {
+    config._internal = {};
+  }
+  if (!config._internal.modResults) {
+    config._internal.modResults = {};
+  }
+  if (!config._internal.modResults[platformName]) {
+    config._internal.modResults[platformName] = {};
+  }
   config._internal.modResults[platformName][modName] = results;
 }
 function getDebugPluginStackFromStackTrace(stacktrace) {

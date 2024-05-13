@@ -7,8 +7,12 @@ import { env } from '../env';
 let telemetry: TelemetryClient | null = null;
 
 export function getTelemetry(): TelemetryClient | null {
-  if (env.EXPO_NO_TELEMETRY || env.EXPO_OFFLINE) return null;
-  if (telemetry) return telemetry;
+  if (env.EXPO_NO_TELEMETRY || env.EXPO_OFFLINE) {
+    return null;
+  }
+  if (telemetry) {
+    return telemetry;
+  }
 
   const client = env.EXPO_NO_TELEMETRY_DETACH
     ? new RudderClient() // Block the CLI process when sending telemetry, useful for testing

@@ -251,7 +251,9 @@ export function withExtendedResolver(
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       // This resolution is dev-only to prevent bundling the production React packages in development.
       // @ts-expect-error: dev is not on type.
-      if (!context.dev) return null;
+      if (!context.dev) {
+        return null;
+      }
 
       if (
         // Match react-native renderers.

@@ -176,8 +176,12 @@ export async function installPackagesAsync(
     const postInstallCommand = packages.filter((pkg) => pkg !== expoPackage);
 
     // Pipe options to the next command
-    if (fix) postInstallCommand.push('--fix');
-    if (check) postInstallCommand.push('--check');
+    if (fix) {
+      postInstallCommand.push('--fix');
+    }
+    if (check) {
+      postInstallCommand.push('--check');
+    }
 
     // Abort after installing `expo`, follow up command is spawn in a new process
     return await installExpoPackageAsync(projectRoot, {

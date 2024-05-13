@@ -64,8 +64,12 @@ async function extractRemoteGitHubTarballAsync(
 ): Promise<void> {
   const response = await fetch(url);
 
-  if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
-  if (!response.body) throw new Error(`Unexpected response: no response body (${url})`);
+  if (!response.ok) {
+    throw new Error(`Unexpected response: ${response.statusText} (${url})`);
+  }
+  if (!response.body) {
+    throw new Error(`Unexpected response: no response body (${url})`);
+  }
 
   // Extract the (sub)directory into non-empty path segments
   const directory = repo.filePath.replace(/^\//, '').split('/').filter(Boolean);

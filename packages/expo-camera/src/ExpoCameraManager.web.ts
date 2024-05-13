@@ -177,7 +177,9 @@ export default {
     return await camera.resumePreview();
   },
   async getAvailableCameraTypesAsync(): Promise<string[]> {
-    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) return [];
+    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) {
+      return [];
+    }
 
     const devices = await navigator.mediaDevices.enumerateDevices();
 

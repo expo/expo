@@ -27,7 +27,9 @@ export const withAndroidSplashScreen: ConfigPlugin = (config) => {
       );
     }
   } else {
-    if (!config.androidStatusBar) config.androidStatusBar = {};
+    if (!config.androidStatusBar) {
+      config.androidStatusBar = {};
+    }
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
 

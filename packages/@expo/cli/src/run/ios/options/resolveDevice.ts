@@ -63,8 +63,12 @@ async function getDevicesAsync({
     ...physical.sort((a, b) => {
       const aPhone = isPhone(a);
       const bPhone = isPhone(b);
-      if (aPhone && !bPhone) return -1;
-      if (!aPhone && bPhone) return 1;
+      if (aPhone && !bPhone) {
+        return -1;
+      }
+      if (!aPhone && bPhone) {
+        return 1;
+      }
 
       return 0;
     }),

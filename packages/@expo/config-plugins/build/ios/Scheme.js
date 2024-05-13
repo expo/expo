@@ -90,7 +90,9 @@ function removeScheme(scheme, infoPlist) {
 }
 function hasScheme(scheme, infoPlist) {
   const existingSchemes = infoPlist.CFBundleURLTypes;
-  if (!Array.isArray(existingSchemes)) return false;
+  if (!Array.isArray(existingSchemes)) {
+    return false;
+  }
   return existingSchemes?.some(({
     CFBundleURLSchemes: schemes
   }) => Array.isArray(schemes) ? schemes.includes(scheme) : false);

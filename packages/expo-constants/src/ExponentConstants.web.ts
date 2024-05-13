@@ -41,7 +41,9 @@ export default {
     return _sessionId;
   },
   get isHeadless(): boolean {
-    if (typeof navigator === 'undefined') return true;
+    if (typeof navigator === 'undefined') {
+      return true;
+    }
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },

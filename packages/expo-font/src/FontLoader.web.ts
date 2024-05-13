@@ -39,7 +39,9 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
 
 function throwInvalidSourceError(source: any): never {
   let type: string = typeof source;
-  if (type === 'object') type = JSON.stringify(source, null, 2);
+  if (type === 'object') {
+    type = JSON.stringify(source, null, 2);
+  }
   throw new CodedError(
     `ERR_FONT_SOURCE`,
     `Expected font asset of type \`string | FontResource | Asset\` instead got: ${type}`

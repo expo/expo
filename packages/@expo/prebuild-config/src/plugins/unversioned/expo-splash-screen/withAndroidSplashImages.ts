@@ -146,7 +146,9 @@ export async function setSplashImageDrawablesForThemeAsync(
   theme: 'dark' | 'light',
   projectRoot: string
 ) {
-  if (!config) return;
+  if (!config) {
+    return;
+  }
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
   await Promise.all(

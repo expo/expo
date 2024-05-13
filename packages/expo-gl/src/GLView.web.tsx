@@ -223,7 +223,9 @@ export class GLView extends React.Component<GLViewWebProps> {
   };
 
   private getGLContext(): WebGLRenderingContext | null {
-    if (this.gl) return this.gl;
+    if (this.gl) {
+      return this.gl;
+    }
 
     if (this.canvas) {
       this.gl = ensureContext(this.canvas, this.props.webglContextAttributes);

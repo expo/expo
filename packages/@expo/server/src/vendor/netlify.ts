@@ -66,7 +66,9 @@ function getRawPath(event: HandlerEvent): string {
   const paramKeys = Object.keys(event.multiValueQueryStringParameters);
   for (const key of paramKeys) {
     const values = event.multiValueQueryStringParameters[key];
-    if (!values) continue;
+    if (!values) {
+      continue;
+    }
     for (const val of values) {
       searchParams.append(key, val);
     }
@@ -74,7 +76,9 @@ function getRawPath(event: HandlerEvent): string {
 
   const rawParams = searchParams.toString();
 
-  if (rawParams) rawPath += `?${rawParams}`;
+  if (rawParams) {
+    rawPath += `?${rawParams}`;
+  }
 
   return rawPath;
 }
@@ -181,7 +185,9 @@ const binaryTypes = [
 ];
 
 export function isBinaryType(contentType: string | null | undefined) {
-  if (!contentType) return false;
+  if (!contentType) {
+    return false;
+  }
   const [test] = contentType.split(';');
   return binaryTypes.includes(test);
 }

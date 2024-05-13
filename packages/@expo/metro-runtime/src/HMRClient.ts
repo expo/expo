@@ -51,7 +51,9 @@ export type HMRClientNativeInterface = {
 };
 
 function assert(foo: any, msg: string): asserts foo {
-  if (!foo) throw new Error(msg);
+  if (!foo) {
+    throw new Error(msg);
+  }
 }
 
 /**

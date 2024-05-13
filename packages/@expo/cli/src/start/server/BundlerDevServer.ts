@@ -183,8 +183,9 @@ export abstract class BundlerDevServer {
    * This is used for the run commands where you can reuse the server from a previous run.
    */
   private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    if (!options.port)
+    if (!options.port) {
       throw new CommandError('HEADLESS_SERVER', 'headless dev server requires a port option');
+    }
     this.urlCreator = this.getUrlCreator(options);
 
     return {
@@ -242,7 +243,9 @@ export abstract class BundlerDevServer {
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
   public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
     const port = this.getInstance()?.location.port;
-    if (!port) return null;
+    if (!port) {
+      return null;
+    }
     debug('[ngrok] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();

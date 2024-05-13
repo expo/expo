@@ -79,7 +79,9 @@ async function normalizeUriProtocolAsync(uri: any): Promise<string> {
         message: `Would you like to use "${normalizedUri}" instead?`,
         initial: true,
       });
-      if (answer) return normalizedUri;
+      if (answer) {
+        return normalizedUri;
+      }
     } else {
       throw new CommandError(
         `Supplied URI protocol "${trimmedUri}" does not appear to be spec compliant: http://www.ietf.org/rfc/rfc2396.txt`
@@ -201,6 +203,8 @@ function logPlatformMessage(platform: string, message: string): void {
   console.log(chalk.magenta(`\u203A ${chalk.bold(platform)}: ${message}`));
 }
 function logSchemes(schemes: string[]): void {
-  for (const scheme of schemes) console.log(`${chalk.dim('\u203A ')}${scheme}${chalk.dim('://')}`);
+  for (const scheme of schemes) {
+    console.log(`${chalk.dim('\u203A ')}${scheme}${chalk.dim('://')}`);
+  }
   console.log('');
 }

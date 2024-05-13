@@ -94,7 +94,9 @@ async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
 
 async function getSharpAsync(): Promise<any> {
   let sharp: any;
-  if (await Sharp.isAvailableAsync()) sharp = await Sharp.findSharpInstanceAsync();
+  if (await Sharp.isAvailableAsync()) {
+    sharp = await Sharp.findSharpInstanceAsync();
+  }
   return sharp;
 }
 
@@ -133,7 +135,9 @@ const inverseMimeTypes: Record<string, string> = {
 };
 
 export function getMimeType(srcPath: string): string | null {
-  if (typeof srcPath !== 'string') return null;
+  if (typeof srcPath !== 'string') {
+    return null;
+  }
 
   try {
     // If the path is a URL, use the pathname

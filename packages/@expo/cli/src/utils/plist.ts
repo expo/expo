@@ -19,12 +19,16 @@ export async function parsePlistAsync(plistPath: string) {
 export function parsePlistBuffer(contents: Buffer) {
   if (contents[0] === CHAR_CHEVRON_OPEN) {
     const info = plist.parse(contents.toString());
-    if (Array.isArray(info)) return info[0];
+    if (Array.isArray(info)) {
+      return info[0];
+    }
     return info;
   } else if (contents[0] === CHAR_B_LOWER) {
     // @ts-expect-error
     const info = binaryPlist.parseBuffer(contents);
-    if (Array.isArray(info)) return info[0];
+    if (Array.isArray(info)) {
+      return info[0];
+    }
     return info;
   } else {
     throw new CommandError(

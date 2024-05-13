@@ -23,7 +23,9 @@ type Options = {
 };
 
 function md5Hash(data: string[]) {
-  if (data.length === 1) return data[0];
+  if (data.length === 1) {
+    return data[0];
+  }
   const hash = crypto.createHash('md5');
   hash.update(data.join(''));
   return hash.digest('hex');

@@ -49,7 +49,9 @@ export function getRouterDirectoryModuleIdWithManifest(
 
 let hasWarnedAboutSrcDir = false;
 const logSrcDir = () => {
-  if (hasWarnedAboutSrcDir) return;
+  if (hasWarnedAboutSrcDir) {
+    return;
+  }
   hasWarnedAboutSrcDir = true;
   Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
 };

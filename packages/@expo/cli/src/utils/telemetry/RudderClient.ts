@@ -56,7 +56,9 @@ export class RudderClient implements TelemetryClient {
   }
 
   async identify(actor?: Actor) {
-    if (!actor) return;
+    if (!actor) {
+      return;
+    }
 
     debug('Actor received');
 

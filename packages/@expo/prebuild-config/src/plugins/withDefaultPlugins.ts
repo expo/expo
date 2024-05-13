@@ -36,7 +36,9 @@ export const withIosExpoPlugins: ConfigPlugin<{
   bundleIdentifier: string;
 }> = (config, { bundleIdentifier }) => {
   // Set the bundle ID ahead of time.
-  if (!config.ios) config.ios = {};
+  if (!config.ios) {
+    config.ios = {};
+  }
   config.ios.bundleIdentifier = bundleIdentifier;
 
   return withPlugins(config, [
@@ -74,7 +76,9 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
   package: string;
 }> = (config, props) => {
   // Set the package name ahead of time.
-  if (!config.android) config.android = {};
+  if (!config.android) {
+    config.android = {};
+  }
   config.android.package = props.package;
 
   return withPlugins(config, [
