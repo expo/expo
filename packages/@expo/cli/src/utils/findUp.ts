@@ -19,7 +19,7 @@ function findUpProjectRoot(cwd: string): string | null {
   const parent = path.dirname(cwd);
   if (parent === cwd) return null;
 
-  return findUpProjectRoot(path.dirname(cwd));
+  return findUpProjectRoot(parent);
 }
 
 /**
