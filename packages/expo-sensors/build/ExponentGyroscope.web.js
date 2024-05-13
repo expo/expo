@@ -13,6 +13,7 @@ export default {
             x: accelerationIncludingGravity.x,
             y: accelerationIncludingGravity.y,
             z: accelerationIncludingGravity.z,
+            timestamp: accelerationIncludingGravity.timeStamp / 1000,
         });
     },
     getPermissionsAsync,

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add timestamps to relevant sensor events. ([#28761](https://github.com/expo/expo/pull/28761) by [@jkaufman](https://github.com/jkaufman))
+
 ## 13.0.5 — 2024-05-06
 
 _This version does not introduce any user-facing changes._

@@ -28,7 +28,7 @@ function declareMagnetometerSpecs(Magnetometer, eventNames) {
         const mockListener = jest.fn();
         Magnetometer.addListener(mockListener);
 
-        const mockEvent = { x: 0.2, y: 0.1, z: 0.3 };
+        const mockEvent = { x: 0.2, y: 0.1, z: 0.3, timestamp: 123456 };
         Magnetometer._nativeModule.emit(eventNames.magnetometerDidUpdate, mockEvent);
         expect(mockListener).toHaveBeenCalledWith(mockEvent);
       });
