@@ -591,68 +591,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async legacySinglePageBundleAsync(
-    options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting'>
-  ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
-    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
-    assert(
-      baseUrl != null && routerRoot != null && isExporting != null,
-      'The server must be started before calling ssrLoadModuleContents.'
-    );
-
-    const opts: ExpoMetroOptions = {
-      ...this.instanceMetroOptions,
-      baseUrl,
-      routerRoot,
-      isExporting,
-      environment: 'client',
-      ...options,
-      serializerOutput: 'static',
-    };
-
-    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    const output = await this.metroLoadModuleContents('./' + opts.mainModuleName, opts);
-    return {
-      artifacts: output.artifacts!,
-      assets: output.assets!,
-    };
-  }
-
-  // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
-  // behavior.
-  private async getMetroAssets({
-    entryFile,
-    onProgress,
-    resolverOptions,
-    transformOptions,
-  }: {
-    entryFile: string;
-    onProgress: MetroOnProgress;
-    transformOptions: TransformInputOptions;
-    resolverOptions: import('metro/src/shared/types').ResolverInputOptions;
-  }) {
-    assert(this.metro, 'Metro server must be running to bundle directly.');
-    const config = this.metro._config;
-    assert(config, 'Metro server is missing private _config member.');
-
-    const dependencies = await this.metro
-      .getBundler()
-      .getDependencies([entryFile], transformOptions, resolverOptions, {
-        onProgress,
-        shallow: false,
-        // @ts-expect-error: typed incorrectly
-        lazy: false,
-      });
-
-    return getMetroAssets(dependencies, {
-      processModuleFilter: config.serializer.processModuleFilter,
-      assetPlugins: config.transformer.assetPlugins,
-      platform: transformOptions.platform!,
-      projectRoot: config.projectRoot, // this._getServerRootDir(),
-      publicPath: config.transformer.publicPath,
-    });
-  }
-
   async watchEnvironmentVariables() {
     if (!this.instance) {
       throw new Error(

@@ -72,7 +72,7 @@ export async function createBundlesAsync(
       await assertEngineMismatchAsync(projectRoot, exp, bundle.platform);
     }
 
-    return metroDevServer.legacySinglePageBundleAsync({
+    return metroDevServer.legacySinglePageExportBundleAsync({
       splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && bundle.platform === 'web',
       minify: bundle.minify,
       mainModuleName: bundle.entryPoint,
@@ -81,7 +81,6 @@ export async function createBundlesAsync(
       engine: isHermes ? 'hermes' : undefined,
       serializerIncludeMaps: bundle.sourcemaps,
       bytecode: bundle.bytecode && isHermes,
-      serializerOutput: 'static',
     });
   };
 
@@ -94,10 +93,6 @@ export async function createBundlesAsync(
     dev: bundleOptions.dev,
   }));
 
-  // const outputBundles: BundleOutput[] = [];
-  // for (const bundle of bundles) {
-  //   outputBundles.push(await buildAsync(bundle));
-  // }
   const outputBundles = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
 
   // { ios: bundle, android: bundle }
