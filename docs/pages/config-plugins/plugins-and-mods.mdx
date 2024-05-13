@@ -209,6 +209,7 @@ The following default mods are provided by the mod compiler for common file mani
 | `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
 | `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
 | `mods.ios.xcodeproj`         |        -        | Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)). |
+| `mods.ios.podfile`           |        -        | Modify the **ios/Podfile** as a string.                                                                                             |
 | `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
 | `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
 
@@ -246,6 +247,7 @@ Instead you should use the helper mods provided by `expo/config-plugins`:
 | `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
 | `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
 | `mods.ios.xcodeproj`         | `withXcodeProject`      |        -        |
+| `mods.ios.podfile`           | `withPodfile`           |        -        |
 | `mods.ios.podfileProperties` | `withPodfileProperties` |        -        |
 | `mods.ios.appDelegate`       | `withAppDelegate`       | <WarningIcon /> |
 
