@@ -75,6 +75,7 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
       field = value
       playbackServiceBinder?.service?.setShowNotification(value, this.player)
     }
+  var duration = 0f
 
   private var serviceConnection: ServiceConnection
   internal var playbackServiceBinder: PlaybackServiceBinder? = null
@@ -123,6 +124,7 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
       val newVideoSource = VideoManager.getVideoSourceFromMediaItem(mediaItem)
       this@VideoPlayer.videoSource = newVideoSource
+      this@VideoPlayer.duration = 0f
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEventOnJSThread("playToEnd")
       }
@@ -132,6 +134,9 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
     override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
       if (playbackState == Player.STATE_IDLE && player.playerError != null) {
         return
+      }
+      if (playbackState == Player.STATE_READY) {
+        this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
       }
       setStatus(playerStateToPlayerStatus(playbackState), null)
       super.onPlaybackStateChanged(playbackState)
@@ -150,6 +155,7 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
     override fun onPlayerErrorChanged(error: PlaybackException?) {
       error?.let {
         setStatus(ERROR, error)
+        this@VideoPlayer.duration = 0f
       } ?: run {
         setStatus(playerStateToPlayerStatus(player.playbackState), null)
       }

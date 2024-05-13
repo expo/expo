@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix dead frames when switching from picture to video. ([#28783](https://github.com/expo/expo/pull/28783) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 15.0.8 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix dead frames when switching from picture to video. ([#28783](https://github.com/expo/expo/pull/28783) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.7 — 2024-05-13
 

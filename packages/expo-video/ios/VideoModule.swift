@@ -125,6 +125,10 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("duration") { player -> Double in
+        return player.pointer.currentItem?.duration.seconds ?? 0
+      }
+
       Property("playbackRate") { player -> Float in
         return player.playbackRate
       }

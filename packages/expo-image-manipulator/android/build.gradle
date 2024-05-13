@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '12.0.4'
+version = '12.0.5'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.imagemanipulator"
   defaultConfig {
     versionCode 23
-    versionName "12.0.4"
+    versionName "12.0.5"
   }
 }
 
