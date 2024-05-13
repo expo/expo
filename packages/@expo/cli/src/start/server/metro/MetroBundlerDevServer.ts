@@ -17,6 +17,7 @@ import {
   type SourceMapGeneratorOptions,
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { TransformProfile } from 'metro-babel-transformer';
 import { ConfigT } from 'metro-config';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
@@ -417,7 +418,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     specificOptions: ExpoMetroOptions,
     extraOptions: {
       sourceMapUrl?: string;
-      unstable_transformProfile?: string;
+      unstable_transformProfile?: TransformProfile;
     } = {}
   ) {
     const { baseUrl } = this.instanceMetroOptions;
@@ -559,7 +560,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     >,
     extraOptions: {
       sourceMapUrl?: string;
-      unstable_transformProfile?: string;
+      unstable_transformProfile?: TransformProfile;
     } = {}
   ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
