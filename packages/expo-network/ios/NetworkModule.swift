@@ -1,6 +1,7 @@
 import ExpoModulesCore
-import SystemConfiguration
 import Network
+
+let onNetworkStateChanged = "onNetworkStateChanged"
 
 public final class NetworkModule: Module {
   private let monitor = NWPathMonitor()
@@ -9,8 +10,10 @@ public final class NetworkModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNetwork")
 
+    Events(onNetworkStateChanged)
+
     OnCreate {
-      monitor.start(queue: monitorQueue)
+      setupNetworkMonitoring()
     }
 
     AsyncFunction("getIpAddressAsync") { () -> String? in
@@ -24,6 +27,21 @@ public final class NetworkModule: Module {
     OnDestroy {
       monitor.cancel()
     }
+  }
+
+  private func setupNetworkMonitoring() {
+    monitor.pathUpdateHandler = { [weak self] path in
+      guard let strongSelf = self else {
+        return
+      }
+      strongSelf.emitNetworkStateChange(path: path)
+    }
+    monitor.start(queue: monitorQueue)
+  }
+
+  private func emitNetworkStateChange(path: NWPath) {
+    let networkState = getNetworkStateAsync(path: path)
+      sendEvent(onNetworkStateChanged, networkState)
   }
 
   private func getIPAddress() throws -> String {
@@ -65,9 +83,9 @@ public final class NetworkModule: Module {
     return address
   }
 
-  private func getNetworkStateAsync() -> [String: Any] {
-    let path = monitor.currentPath
-    let isConnected = path.status == .satisfied
+  private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
+    let currentPath = path ?? monitor.currentPath
+    let isConnected = currentPath.status == .satisfied
     var currentNetworkType = NetworkType.unknown
 
     if !isConnected {
@@ -81,7 +99,7 @@ public final class NetworkModule: Module {
     let connectionType = NWInterface
       .InterfaceType
       .allCases
-      .filter { path.usesInterfaceType($0) }
+      .filter { currentPath.usesInterfaceType($0) }
       .first
 
     switch connectionType {

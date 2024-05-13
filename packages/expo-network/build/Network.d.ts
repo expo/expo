@@ -1,5 +1,6 @@
-import { NetworkState, NetworkStateType } from './Network.types';
-export { NetworkState, NetworkStateType };
+import { type Subscription } from 'expo-modules-core';
+import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
+export { NetworkState, NetworkStateEvent, NetworkStateType };
 /**
  * Gets the device's current network connection state.
  *
@@ -47,4 +48,47 @@ export declare function getIpAddressAsync(): Promise<string>;
  * ```
  */
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
+/**
+ * Adds a listener that will fire whenever the network state changes.
+ *
+ * @param listener Callback to execute when the network state changes. The callback is provided with
+ * a single argument that is an object containing information about the network state.
+ *
+ * @example
+ * ```typescript
+ * const subscription = addNetworkStateListener(({ type, isConnected, isInternetReachable }) => {
+ *   console.log(`Network type: ${type}, Connected: ${isConnected}, Internet Reachable: ${isInternetReachable}`);
+ * });
+ * ```
+ *
+ * @returns A subscription object with a remove function to unregister the listener.
+ */
+export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): Subscription;
+/**
+ * Removes the network state listener added by addNetworkStateListener.
+ *
+ * @param subscription The subscription to remove (created by addNetworkStateListener).
+ *
+ * @example
+ * ```typescript
+ * const subscription = addNetworkStateListener(({ isConnected }) => {
+ *   console.log('Network connectivity changed:', isConnected);
+ * });
+ * removeNetworkStateListener(subscription);
+ * ```
+ */
+export declare function removeNetworkStateListener(subscription: Subscription): void;
+/**
+ * Returns the current network state of the device using a React hook. This method
+ * initiates a listener for network state changes and cleans up before unmounting.
+ *
+ * @example
+ * ```typescript
+ * const networkState = useNetworkState();
+ * console.log(`Current network type: ${networkState.type}`);
+ * ```
+ *
+ * @return The current network state of the device, including connectivity and type.
+ */
+export declare function useNetworkState(): NetworkState;
 //# sourceMappingURL=Network.d.ts.map
