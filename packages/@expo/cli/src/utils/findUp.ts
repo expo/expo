@@ -13,12 +13,12 @@ export function findUpProjectRootOrAssert(cwd: string): string {
 }
 
 function findUpProjectRoot(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
   const found = resolveFrom.silent(cwd, './package.json');
-  if (found) {
-    return path.dirname(found);
-  }
+  if (found) return path.dirname(found);
+
+  const parent = path.dirname(cwd);
+  if (parent === cwd) return null;
+
   return findUpProjectRoot(path.dirname(cwd));
 }
 
