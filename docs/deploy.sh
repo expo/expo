@@ -364,6 +364,7 @@ redirects[/learn]=tutorial/introduction
 
 # May 2024 home / develop section
 redirects[/develop/user-interface/app-icons]=develop/user-interface/splash-screen-and-app-icon
+redirects[/develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
