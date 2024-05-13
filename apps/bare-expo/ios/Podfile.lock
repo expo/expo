@@ -341,7 +341,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (13.0.4):
     - ExpoModulesCore
-  - ExpoCamera (15.0.7):
+  - ExpoCamera (15.0.8):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -387,7 +387,7 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (12.0.4):
+  - ExpoImageManipulator (12.0.5):
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
@@ -2546,7 +2546,7 @@ SPEC CHECKSUMS:
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
   ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
   ExpoCalendar: 74175c0350967329df09408fb235369dc03d2de9
-  ExpoCamera: fba16df0c1b7cc542c461f107089fbf06515b9a2
+  ExpoCamera: 304f53e32faf8ed18b2199abba346f85ca395aff
   ExpoCellular: c903c51bb54cc7d3fa9f5c572d77e302b73203f1
   ExpoClipboard: 23d203f5d4843699fbc45be1cc4fe1fbd811a6fa
   ExpoContacts: 605d517d1e7a8a3f12f736db67cc502c0dd22b53
@@ -2558,7 +2558,7 @@ SPEC CHECKSUMS:
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
-  ExpoImageManipulator: ec96bcdeab717c220abe707b45079a4001be7b79
+  ExpoImageManipulator: aea99205c66043a00a0af90e345395637b9902fa
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
   ExpoInsights: e88a27cb4ba1b644f8f6bbb2473a5a8204767948
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
