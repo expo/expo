@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '51.0.4'
+version = '51.0.5'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -46,7 +46,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "51.0.4"
+    versionName "51.0.5"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {

@@ -66,7 +66,7 @@
   "expo-screen-capture": "~6.0.1",
   "expo-screen-orientation": "~7.0.4",
   "expo-secure-store": "~13.0.1",
-  "expo-sensors": "~13.0.5",
+  "expo-sensors": "~13.0.6",
   "expo-sharing": "~12.0.1",
   "expo-sms": "~12.0.1",
   "expo-speech": "~12.0.2",
