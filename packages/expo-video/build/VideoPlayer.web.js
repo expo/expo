@@ -77,6 +77,10 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             video.currentTime = value;
         });
     }
+    get duration() {
+        // All videos should have the same duration, so we return the duration of the first video.
+        return [...this._mountedVideos][0].duration;
+    }
     get preservesPitch() {
         return this._preservesPitch;
     }

@@ -34,6 +34,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   currentTime: number;
 
   /**
+   * Float value indicating the duration of the current video in seconds.
+   * > This property is get-only
+   */
+  duration: number;
+
+  /**
    * Float value between 0 and 1 representing the current volume.
    * Muting the player doesn't affect the volume. In other words, when the player is muted, the volume is the same as
    * when unmuted. Similarly, setting the volume doesn't unmute the player.

@@ -183,6 +183,11 @@ class VideoModule : Module() {
           }
         }
 
+      Property("duration")
+        .get { ref: VideoPlayer ->
+          ref.duration
+        }
+
       Property("playbackRate")
         .get { ref: VideoPlayer ->
           ref.playbackParameters.speed

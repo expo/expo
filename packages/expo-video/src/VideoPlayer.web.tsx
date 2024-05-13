@@ -106,6 +106,11 @@ export default class VideoPlayerWeb
     });
   }
 
+  get duration(): number {
+    // All videos should have the same duration, so we return the duration of the first video.
+    return [...this._mountedVideos][0].duration;
+  }
+
   get preservesPitch(): boolean {
     return this._preservesPitch;
   }

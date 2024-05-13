@@ -25,6 +25,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get loop(): boolean;
     get currentTime(): number;
     set currentTime(value: number);
+    get duration(): number;
     get preservesPitch(): boolean;
     set preservesPitch(value: boolean);
     get status(): VideoPlayerStatus;
