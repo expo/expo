@@ -87,7 +87,7 @@ dependencies {
   implementation project(':expo-eas-client')
   implementation "com.facebook.react:react-android"
 
-  def room_version = "2.4.2"
+  def room_version = "2.6.1"
 
   implementation "androidx.room:room-runtime:$room_version"
   kapt "androidx.room:room-compiler:$room_version"
