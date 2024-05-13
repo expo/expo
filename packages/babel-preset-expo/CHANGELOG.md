@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix replacement of `__DEV__` in export statement.
+
 ### 💡 Others
 
 ## 11.0.5 — 2024-05-02
