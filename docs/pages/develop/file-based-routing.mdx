@@ -9,11 +9,11 @@ This guide walks you through some basic conventions of Expo Router and navigatio
 
 ## What is Expo Router?
 
-Expo Router is a routing library for React Native and web applications. It allows you to manage navigation between screens in your app and use the same components on multiple platforms (Android, iOS and web). It uses a file-based method to determine routes inside your app. It provides native navigation and is built on top of [React Navigation](https://reactnavigation.org/)
+Expo Router is a navigation library for React Native and web applications. It allows you to manage navigation between screens in your app and use the same components on multiple platforms (Android, iOS and web). It uses a file-based method to determine routes inside your app. It also provides native navigation and is built on top of [React Navigation](https://reactnavigation.org/).
 
 ## app directory
 
-The **app** is a special directory where any file you add to this directory becomes a route inside the native app and reflects the same URL for that route on web.
+The **app** is a special directory. Any file you add to this directory becomes a route inside the native app and reflects the same URL for that route on the web.
 
 ## Create a route
 
@@ -21,7 +21,7 @@ In the **app** directory, a route is created by adding a file or a nested direct
 
 For example, to create an initial route of your app, you can add **index.tsx** to the **app** directory with the following code:
 
-```tsx app/index.tsx
+```tsx app/index.tsx|collapseHeight=300
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -47,7 +47,7 @@ The **app/index.tsx** file will match the `/` route and after creating this file
 
 ### File name conventions
 
-Files named **index** match the parent directory and do not add a path segment. For example, if you expand the app's file structure by adding **app/settings/index.js**, it will match `/settings` route.
+Files named **index** match the parent directory and do not add a path segment. For example, if you expand the app's file structure by adding **app/settings/index.js**, it will match the `/settings` route.
 
 <FileTree
   files={[
@@ -58,22 +58,22 @@ Files named **index** match the parent directory and do not add a path segment. 
 
 > **Note:** A route file is defined by exporting a React component as the default value. The file must use either `.js`, `.jsx`, `.ts`, or `.tsx` extension.
 
-## \_layout route file
+## \_layout file
 
-Layout routes in a directory are used to define shared UI elements such as headers, tab bars so that they persist between different routes.
+Layout files in a directory are used to define shared UI elements such as headers, tab bars so that they persist between different routes.
 
 Any time you create a new project, by default the **app** directory will contain a **root layout** file (**app/\_layout**).
 
 <FileTree
   files={[
     ['app/index.tsx', "matches '/'"],
-    ['app/_layout', 'Root Layout'],
+    ['app/_layout', 'Root layout'],
   ]}
 />
 
 ### Root layout
 
-Traditionally, React Native projects are structured with a single root component (defined as **App.js** or **index.js**). Similarly, the first layout file (**\_layout.tsx**) inside the **app** directory can be considered to be a single root component.
+Traditionally, React Native projects are structured with a single root component (defined as **App.js** or **index.js**). Similarly, the first layout file (**\_layout.tsx**) inside the **app** directory is considered to be a single root component.
 
 Between multiple routes, a Root layout file in Expo Router is used to share UI between multiple routes such as injecting global providers, themes, styles, delay splash screen rendering until assets and fonts are loaded, or defining your app's root navigation structure.
 
@@ -82,7 +82,7 @@ For example, the following code exports a default React component called `RootLa
 ```tsx app/_layout.tsx
 export default function RootLayout() {
   return (
-	  /* @hide Some JSX component */ /* @end */
+	  /* @hide ... */ /* @end */
   )
 }
 ```
@@ -95,7 +95,7 @@ A stack navigator is a foundational pattern to navigate between different routes
 
 For example, if you want to add a new route `/details`, create **details.tsx** file. This will allow the app user to navigate from the `/` route to `/details`:
 
-```tsx app/details.tsx
+```tsx app/details.tsx|collapseHeight=300
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function DetailsScreen() {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-After creating this route file, the current file structure will look like:
+After creating this route file, the current file structure looks like:
 
 <FileTree
   files={[
@@ -125,7 +125,7 @@ After creating this route file, the current file structure will look like:
   ]}
 />
 
-To allow navigation between two routes, you need to update the Root Layout file and a `Stack` component to it:
+To allow navigation between two routes (`/` and `/details`), update the Root Layout file and a `Stack` component to it:
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -157,9 +157,9 @@ export default function RootLayout() {
 
 Expo Router uses a built-in component called `Link` to move between routes in an app. This is conceptually similar to how web works with the `<a>` tag and the `href` attribute.
 
-You can use it by importing it from Expo Router library and then passing the `href` prop with the route to navigate as its value. For example, to navigate from `/` to `/details`, add a `Link` component in the **index.tsx** file:
+You can use it by importing it from Expo Router library and then passing the `href` prop with the route to navigate as the value of the prop. For example, to navigate from `/` to `/details`, add a `Link` component in the **index.tsx** file:
 
-```tsx app/index.tsx
+```tsx app/index.tsx|collapseHeight=300
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -188,9 +188,9 @@ Use the `Link` component to wrap the custom button component and the `asChild` p
 
 ## Groups
 
-A group is created to organize similar routes or a section of the app. Each group has its own layout file and the grouped directory requires a name inside parenthesis `(group)`.
+A group is created to organize similar routes or a section of the app. Each group has its own layout file and the grouped directory requires a name inside parentheses `(group)`.
 
-For example, you have the `/` and `/details` routes which can be grouped inside **app/(home)** directory. This will update the file structure to:
+For example, you have the `/` and `/details` routes which can be grouped inside **app/(home)** directory. This updates the file structure to:
 
 <FileTree
   files={[

@@ -68,7 +68,7 @@ Open the app config and add the local path as the value of [`splash.image`](/ver
 }
 ```
 
-You can test your new splash image by starting the development sever with `npx expo start` and using a development build or Expo Go to preview it.
+You can test your new splash image by starting the development server with `npx expo start` and using a development build or Expo Go to preview it.
 
 > **Note:** In development mode, when you test your new splash screen, you will notice an information bar at the bottom of the screen. It displays the information about how much of the JavaScript code is downloaded on the device when preparing your app. It doesn't appear in production apps.
 
@@ -80,7 +80,7 @@ You can test your new splash image by starting the development sever with `npx e
 
 If you set a background color other than white for your splash image, you may see a white border around it. This is due to the [`splash.backgroundColor`](/versions/latest/config/app/#backgroundcolor-3) property that has a default value of `#ffffff`.
 
-You can update the value of this property to be the same as your splash image background color. For example:
+You can update this property's value to match your splash image's background color. For example:
 
 ```json app.json
 {
@@ -134,7 +134,7 @@ Applying this to an example:
   src="/static/images/splash-screen/resizeMode-noodles.png"
 />
 
-In the above example, the image is stretched to fill the entire width while maintaining the aspect ratio. This is why the logo on the splash image ends up being larger than when `resizeMode` is set to `contain`.
+In the above example, the image is stretched to fill the entire width while maintaining the aspect ratio. This is why the logo on the splash image is larger when `resizeMode` is set to `contain`.
 
 > **info** To learn more about the difference between `contain` and `cover`, see [this blog post](http://blog.vjeux.com/2013/image/css-container-and-cover.html).
 
@@ -197,7 +197,7 @@ For an in-detail walkthrough, see the video below:
 
 ### Export the icon image as a .png
 
-After creating an app icon, export it as **.png** and save it in the **assets/images** directory. By default, Expo uses **icon.png** as the file name. If you decide to its file name, make sure to use that in the next step.
+After creating an app icon, export it as **.png** and save it in the **assets/images** directory. By default, Expo uses **icon.png** as the file name. If you decide to use its file name, make sure to use that in the next step.
 
 After creating a splash screen, export it as a **.png** and save it in the **assets/images** directory. By default, Expo uses **splash.png** as the file name. If you decide to change the name of your splash screen file, make sure to use that in the next step.
 
