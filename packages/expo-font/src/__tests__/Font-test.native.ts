@@ -1,5 +1,3 @@
-import { Platform } from 'expo-modules-core';
-
 import { loaded, loadPromises } from '../memory';
 
 let Font;
@@ -47,25 +45,8 @@ afterEach(async () => {
 // We should rewrite them once we stop scoping font names in Expo Go on Android.
 // Then it is no longer necessary to have separate tests cases for Expo Go/standalone/bare workflow.
 xdescribe('within Expo Go', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        appOwnership: Constants.AppOwnership.Expo,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-      };
-    });
-  });
-
   afterEach(async () => {
     clearMemory();
-  });
-
-  afterAll(() => {
-    jest.unmock('expo-constants');
   });
 
   describe('loadAsync', () => {
@@ -272,22 +253,6 @@ xdescribe('within Expo Go', () => {
 });
 
 describe('in standalone app', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-        appOwnership: null,
-      };
-    });
-  });
-
-  afterAll(() => {
-    jest.unmock('expo-constants');
-  });
   afterEach(() => {
     clearMemory();
   });
@@ -306,17 +271,6 @@ describe('in standalone app', () => {
 });
 
 describe('in bare workflow', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-      };
-    });
-  });
   afterEach(() => {
     clearMemory();
   });
