@@ -211,14 +211,65 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
+ * Gets expo SDK version major from the local package.json.
+ */
+async function getLocalSdkMajorVersion(): Promise<string | null> {
+  const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
+  if (!path) {
+    return null;
+  }
+  const { version } = require(path) ?? {};
+  return version?.split('.')[0] ?? null;
+}
+
+/**
+ * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ */
+async function getTemplateVersion(isLocal: boolean) {
+  if (EXPO_BETA) {
+    return 'next';
+  }
+  if (!isLocal) {
+    return 'latest';
+  }
+  try {
+    const sdkVersionMajor = await getLocalSdkMajorVersion();
+    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+  } catch {
+    console.log();
+    console.warn(
+      chalk.yellow(
+        "Couldn't determine the SDK version from the local project, using `latest` as the template version."
+      )
+    );
+    return 'latest';
+  }
+}
+
+/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const tarballUrl = await getNpmTarballUrl(
-      isLocal ? 'expo-module-template-local' : 'expo-module-template',
-      EXPO_BETA ? 'next' : 'latest'
-    );
+    const templateVersion = await getTemplateVersion(isLocal);
+    let tarballUrl: string | null = null;
+    try {
+      tarballUrl = await getNpmTarballUrl(
+        isLocal ? 'expo-module-template-local' : 'expo-module-template',
+        templateVersion
+      );
+    } catch {
+      console.log();
+      console.warn(
+        chalk.yellow(
+          "Couldn't download the versioned template from npm, falling back to the latest version."
+        )
+      );
+      tarballUrl = await getNpmTarballUrl(
+        isLocal ? 'expo-module-template-local' : 'expo-module-template',
+        'latest'
+      );
+    }
 
     await downloadTarball({
       url: tarballUrl,
