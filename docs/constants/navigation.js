@@ -58,11 +58,16 @@ const home = [
     makePage('get-started/next-steps.mdx'),
   ]),
   makeSection('Develop', [
+    makePage('develop/tools.mdx'),
+    makeGroup(
+      'Navigation',
+      [makePage('develop/file-based-routing.mdx'), makePage('develop/dynamic-routes.mdx')],
+      { expanded: false }
+    ),
     makeGroup(
       'User interface',
       [
-        makePage('develop/user-interface/splash-screen.mdx'),
-        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),

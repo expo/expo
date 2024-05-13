@@ -461,4 +461,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect for /learn URL
   '/learn/': '/tutorial/introduction/',
+
+  // May 2024 home / develop section
+  '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
 };
