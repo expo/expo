@@ -1,13 +1,8 @@
-import fs from 'node:fs';
-import path from 'path';
-
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import { isTypedRoute, removeSupportedExtensions } from '../matchers';
 import { RequireContext } from '../types';
 
-// /[...param1]/ - Match [...param1]
-const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 const SLUG = /\[.+?\]/g;
 
@@ -28,26 +23,23 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
     dynamicRouteContextKeys
   );
 
-  // If the user has expo-router v3+ installed, we can use the types from the package
-  return (
-    fs
-      .readFileSync(path.join(__dirname, '../../types/expo-router.d.ts'), 'utf-8')
-      // Swap from being a namespace to a module
-      .replace('declare namespace ExpoRouter {', `declare module "expo-router" {`)
-      // Add the route values
-      .replace(
-        'type StaticRoutes = string;',
-        `type StaticRoutes = ${setToUnionType(staticRoutes)};`
-      )
-      .replace(
-        'type DynamicRoutes<T extends string> = string;',
-        `type DynamicRoutes<T extends string> = ${setToUnionType(dynamicRoutes)};`
-      )
-      .replace(
-        'type DynamicRouteTemplate = never;',
-        `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`
-      )
-  );
+  return `import * as Router from 'expo-router';
+
+export * from 'expo-router';
+
+declare module 'expo-router' {
+  export namespace ExpoRouter {
+    export interface __routes<T extends string = string> {
+      StaticRoutes:
+        | ${setToUnionType(staticRoutes)};
+      DynamicRoutes:
+        | ${setToUnionType(dynamicRoutes)};
+      DynamicRouteTemplate:
+        | ${setToUnionType(dynamicRouteContextKeys)};
+    }
+  }
+}
+`;
 }
 
 /**
@@ -90,11 +82,7 @@ function addRouteNode(
   if (routeNode.dynamic) {
     for (const path of generateCombinations(routePath)) {
       dynamicRouteContextKeys.add(path);
-      dynamicRoutes.add(
-        `${path
-          .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
-          .replaceAll(SLUG, '${SingleRoutePart<T>}')}`
-      );
+      dynamicRoutes.add(`${path.replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`);
     }
   } else {
     for (const combination of generateCombinations(routePath)) {
@@ -111,7 +99,7 @@ const setToUnionType = <T>(set: Set<T>) => {
     ? [...set]
         .sort()
         .map((s) => `\`${s}\``)
-        .join(' | ')
+        .join('\n        | ')
     : 'never';
 };
 

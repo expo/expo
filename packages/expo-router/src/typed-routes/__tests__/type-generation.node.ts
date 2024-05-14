@@ -1,7 +1,7 @@
-import { inMemoryContext } from '../testing-library/context-stubs';
-import requireContext from '../testing-library/require-context-ponyfill';
-import { getWatchHandler } from '../typed-routes';
-import { getTypedRoutesDeclarationFile } from '../typed-routes/generate';
+import { inMemoryContext } from '../../testing-library/context-stubs';
+import requireContext from '../../testing-library/require-context-ponyfill';
+import { getTypedRoutesDeclarationFile } from '../generate';
+import { getWatchHandler } from '../index';
 
 /**
  * Parsed the generated TypeScript definitions and returns the values of the
@@ -17,16 +17,14 @@ function splitDeclarationFileIntoSections(output: string) {
     const match = output.match(regex)?.[1];
     if (!match) return [];
     if (match === 'never') return ['never'];
-    return match.slice(1, -1).split('` | `');
+    return match.slice(1, -1).split("' | '");
   }
 
-  const staticRoutes = toArray(/type StaticRoutes = (.+);/);
-  const dynamicRoutes = toArray(/type DynamicRoutes<T extends string> = (.+);/);
-  const dynamicRouteTemplates = toArray(/type DynamicRouteTemplate = (.+);/);
+  const staticRoutes = toArray(/StaticRoutes:\s(.+);/);
+  const dynamicRouteTemplates = toArray(/DynamicRouteTemplate:\s(.+);/);
 
   return {
     staticRoutes,
-    dynamicRoutes,
     dynamicRouteTemplates,
   };
 }
@@ -40,7 +38,6 @@ it('basic single static route', () => {
 
   expect(generated).toEqual({
     staticRoutes: ['/', '/_sitemap'],
-    dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
 });
@@ -50,7 +47,6 @@ it('works with no routes', () => {
 
   expect(generated).toEqual({
     staticRoutes: ['never'],
-    dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
 });
@@ -60,7 +56,6 @@ it('works with only layouts', () => {
 
   expect(generated).toEqual({
     staticRoutes: ['never'],
-    dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
 });
@@ -76,7 +71,6 @@ it('allows spaces in the filename', () => {
 
   expect(generated).toEqual({
     staticRoutes: ['/_sitemap', '/hello world'],
-    dynamicRoutes: ['/${CatchAllRoutePart<T>}', '/${SingleRoutePart<T>}'],
     dynamicRouteTemplates: ['/[...hello world]', '/[hello world]'],
   });
 });
@@ -86,7 +80,6 @@ it('expands groups', () => {
 
   expect(generated).toEqual({
     staticRoutes: ['/(a)/test', '/(b)/test', '/(c)/test', '/_sitemap', '/test'],
-    dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
 });
@@ -116,7 +109,6 @@ it('expands groups', () => {
       '/apple',
       '/banana',
     ],
-    dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
   });
 });
@@ -139,7 +131,6 @@ it.each(routes)('dynamic route: ./%s', (route, dynamicRoute, dynamicRouteTemplat
   const generated = getGeneratedRoutes(inMemoryContext({ [route]: () => null }));
   expect(generated).toEqual({
     staticRoutes: ['/_sitemap'],
-    dynamicRoutes: [dynamicRoute],
     dynamicRouteTemplates: [dynamicRouteTemplates],
   });
 });
@@ -224,19 +215,6 @@ describe(getWatchHandler, () => {
         '/directory/(d)/[...catchall]',
         '/directory/[...catchall]',
       ],
-      dynamicRoutes: [
-        '/${SingleRoutePart<T>}',
-        '/(a)/${SingleRoutePart<T>}',
-        '/(a)/directory/${CatchAllRoutePart<T>}',
-        '/(a)/directory/(c)/${CatchAllRoutePart<T>}',
-        '/(a)/directory/(d)/${CatchAllRoutePart<T>}',
-        '/(b)/directory/${CatchAllRoutePart<T>}',
-        '/(b)/directory/(c)/${CatchAllRoutePart<T>}',
-        '/(b)/directory/(d)/${CatchAllRoutePart<T>}',
-        '/directory/${CatchAllRoutePart<T>}',
-        '/directory/(c)/${CatchAllRoutePart<T>}',
-        '/directory/(d)/${CatchAllRoutePart<T>}',
-      ],
     });
   });
 
@@ -252,7 +230,6 @@ describe(getWatchHandler, () => {
 
     expect(sections).toEqual({
       staticRoutes: ['/', '/_sitemap', '/fruit/banana'],
-      dynamicRoutes: ['never'],
       dynamicRouteTemplates: ['never'],
     });
   });
@@ -261,5 +238,28 @@ describe(getWatchHandler, () => {
     handler({ filePath: `/other-directory/apple.ts`, type: 'add' });
 
     expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe(getTypedRoutesDeclarationFile, () => {
+  it('can generate a file with the correct template', () => {
+    const context = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
+      './index.ts': true,
+      './apple.ts': true,
+    });
+
+    const output = getTypedRoutesDeclarationFile(context);
+
+    expect(output).toEqual(`import "expo-router";
+
+declare module "expo-router" {
+  export namespace ExpoRouter {
+    export interface __routes {
+      StaticRoutes: '/' | '/_sitemap' | '/apple';
+      DynamicRouteTemplate: never;
+    }
+  }
+}
+`);
   });
 });

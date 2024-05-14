@@ -16,7 +16,7 @@ function getMockContext(context: string[]) {
 }
 
 const fixtures: Record<string, string[]> = {
-  basic: [
+  types: [
     '/apple',
     '/banana',
     '/colors/[color]',
@@ -34,7 +34,7 @@ export default async function () {
     Object.entries(fixtures).map(async ([key, value]) => {
       const template = getTypedRoutesDeclarationFile(getMockContext(value));
 
-      return writeFile(join(__dirname, './fixtures/', key + '.ts'), template);
+      return writeFile(join(__dirname, './fixtures/', key + '.d.ts'), template);
     })
   );
 
