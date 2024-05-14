@@ -24,7 +24,18 @@ function extractExactPathFromURL(url) {
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
     url.match(/^https?:\/\//)) {
-        const { origin, href } = new URL(url);
+        const { origin, href, hostname, pathname } = new URL(url);
+        if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
+            // drop the first two segments from pathname:
+            const segments = pathname.split('/');
+            if (segments[2] === 'group') {
+                // Is this u.expo.dev/{uuid}/group/{uuid}
+                return segments.slice(4).join('/');
+            }
+            else {
+                return segments.slice(2).join('/');
+            }
+        }
         return href.replace(origin, '');
     }
     const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
