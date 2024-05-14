@@ -73,11 +73,14 @@ exports.DEFAULT_IGNORE_PATHS = [
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     return {
-        platforms: options?.platforms ?? ['android', 'ios'],
-        concurrentIoLimit: options?.concurrentIoLimit ?? os_1.default.cpus().length,
-        hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+        // Defaults
+        platforms: ['android', 'ios'],
+        concurrentIoLimit: os_1.default.cpus().length,
+        hashAlgorithm: 'sha1',
         ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+        // Options from config
         ...config,
+        // Explicit options
         ...options,
     };
 }

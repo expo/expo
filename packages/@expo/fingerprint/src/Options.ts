@@ -81,11 +81,14 @@ export async function normalizeOptionsAsync(
 ): Promise<NormalizedOptions> {
   const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
   return {
-    platforms: options?.platforms ?? ['android', 'ios'],
-    concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
-    hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+    // Defaults
+    platforms: ['android', 'ios'],
+    concurrentIoLimit: os.cpus().length,
+    hashAlgorithm: 'sha1',
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+    // Options from config
     ...config,
+    // Explicit options
     ...options,
   };
 }
