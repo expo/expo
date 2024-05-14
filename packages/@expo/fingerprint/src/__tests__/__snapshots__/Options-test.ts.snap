@@ -2,7 +2,7 @@
 
 exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
 {
-  "concurrentIoLimit": 8,
+  "concurrentIoLimit": 1,
   "hashAlgorithm": "sha1",
   "ignorePaths": [
     ".fingerprintignore",

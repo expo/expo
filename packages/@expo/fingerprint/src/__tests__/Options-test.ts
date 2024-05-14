@@ -3,6 +3,8 @@ import fs from 'fs/promises';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs/promises');
+// Mock cpus to return a single core for consistent snapshot testing
+jest.mock('os', () => ({ cpus: jest.fn().mockReturnValue([0]) }));
 
 describe(normalizeOptionsAsync, () => {
   it('should return the default options if no options are provided', async () => {
