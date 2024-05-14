@@ -22,7 +22,7 @@ Before you go further, you need to be sure that you have located the error messa
 
 ### Runtime errors
 
-Common questions that fall under this category are: "my app runs well locally by crashes immediately when I run a build" or "my app works in Expo Go but hangs on the splash screen in my build". When your app builds successfully but crashes or hangs when you run it, this is considered a runtime error.
+Common questions that fall under this category are: "my app runs well locally but crashes immediately when I run a build" or "my app works in Expo Go but hangs on the splash screen in my build". When your app builds successfully but crashes or hangs when you run it, this is considered a runtime error.
 
 Refer to the ["Production errors" section of the debugging guide](/debugging/runtime-issues/#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
 
@@ -83,6 +83,22 @@ This can often be a sign that your app bundle is extremely large, which will mak
 To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
 
 To increase memory limits on your EAS Build builders, you can use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+
+</Collapsible>
+
+<Collapsible summary="None of the files exist error">
+
+When you run `eas build`, your project's files are uploaded to Expo's build servers. However, any file or directory mentioned in the **.gitignore** is **not uploaded**. This is international to prevent sensitive information, such as API keys, from being exposed in your app's code.
+
+If your project imports a file listed in **.gitignore**, the build will fail with a `None of these files exist` error. There are different ways you can resolve this error:
+
+- Remove the import statement for the ignored file and test your project. If your project functions as expected, that import statement may have been outdated or unused.
+
+- Remove any files or directories Metro was unable to resolve from your **.gitignore**. However, this poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
+
+- Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See [How can I upload files to EAS Build if they are gitignored?](https://expo.fyi/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
+
+- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/build-reference/variables/#using-secrets-in-environment-variables) for more information.
 
 </Collapsible>
 
