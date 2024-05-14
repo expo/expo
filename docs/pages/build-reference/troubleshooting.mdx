@@ -86,21 +86,19 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 </Collapsible>
 
-<Collapsible summary="Necessary files in .gitignore">
+<Collapsible summary="None of the files exist error">
 
-When you run `eas build`, your project's files are uploaded to Expo's build servers, but any files or directories in your **.gitignore** are **not** uploaded. This is intentional since files in the **.gitignore** may contain sensitive information, such as API keys, that should not leave your device.
+When you run `eas build`, your project's files are uploaded to Expo's build servers. However, any file or directory mentioned in the **.gitignore** is **not uploaded**. This is international to prevent sensitive information, such as API keys, from being exposed in your app's code.
 
-If one of your files imports a file listed in your **.gitignore**, the build will fail with a `None of these files exist` error.
+If your project imports a file listed in **.gitignore**, the build will fail with a `None of these files exist` error. There are different ways you can resolve this error:
 
-There are multiple ways to solve this error.
+- Remove the import statement for the ignored file and test your project. If your project functions as expected, that import statement may have been outdated or unused.
 
-- Remove the import statement and test your project. If your project functions as expected, that import statement may have been outdated or unused.
+- Remove any files or directories Metro was unable to resolve from your **.gitignore**. However, this poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
 
-- Remove any files or directories Metro was unable to resolve from your **.gitignore**. This is the easiest solution, but it poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
+- Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See [How can I upload files to EAS Build if they are gitignored?](https://expo.fyi/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
 
-- Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See ["How can I upload files to EAS Build if they are gitignored?"](https://github.com/expo/fyi/blob/main/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
-
-- Refactor your source code to not import sensitive files client-side. If your project uses auto-generated code from a third-party provider and the provider automatically listed files in your **.gitignore**, those files probably contain sensitive information you should not include in client-side code. During app development, make sure you are following secure practices, such as using environment variables and server-side programming.
+- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/build-reference/variables/#using-secrets-in-environment-variables) for more information.
 
 </Collapsible>
 
