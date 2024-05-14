@@ -65,6 +65,10 @@ export interface Options {
      */
     debug?: boolean;
 }
+/**
+ * Supported options from fingerprint.config.js
+ */
+export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'debug'>;
 export interface NormalizedOptions extends Options {
     platforms: NonNullable<Options['platforms']>;
     concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
