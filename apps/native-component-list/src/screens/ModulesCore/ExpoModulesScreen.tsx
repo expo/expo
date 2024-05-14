@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import HeadingText from '../components/HeadingText';
-import MonoText from '../components/MonoText';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
 
 // Custom JSON replacer that can stringify functions.
 const customJsonReplacer = (_: string, value: any) => {

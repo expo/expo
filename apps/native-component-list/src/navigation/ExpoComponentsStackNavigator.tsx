@@ -8,10 +8,11 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens = [
+export const Screens: ScreenConfig[] = [
   {
     getComponent() {
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));

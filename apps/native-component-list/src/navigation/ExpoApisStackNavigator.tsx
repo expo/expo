@@ -6,21 +6,18 @@ import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
 import ExpoApis from '../screens/ExpoApisScreen';
+import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
+import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens = [
+export const Screens: ScreenConfig[] = [
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+      return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
     },
-    name: 'ExpoModules',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ExpoCoreModuleScreen'));
-    },
-    name: 'ExpoCoreModule',
+    name: 'ModulesCore',
+    options: { title: 'Expo Modules Core' },
   },
   {
     getComponent() {
@@ -424,6 +421,7 @@ export const Screens = [
     },
     name: 'ViewShot',
   },
+  ...ModulesCoreScreens,
 ];
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
@@ -432,7 +430,7 @@ function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
 
       {Screens.map(({ name, options, getComponent }) => (
-        <Stack.Screen name={name} key={name} getComponent={getComponent} options={options || {}} />
+        <Stack.Screen name={name} key={name} getComponent={getComponent} options={options ?? {}} />
       ))}
     </Stack.Navigator>
   );
