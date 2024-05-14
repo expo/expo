@@ -1,4 +1,4 @@
-import { EventEmitter, type Subscription, UnavailabilityError } from 'expo-modules-core';
+import { type Subscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';
@@ -6,7 +6,6 @@ import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.typ
 
 export { NetworkState, NetworkStateEvent, NetworkStateType };
 
-const emitter = new EventEmitter(ExpoNetwork);
 const onNetworkStateEventName = 'onNetworkStateChanged';
 
 // @needsAudit
@@ -95,7 +94,7 @@ export async function isAirplaneModeEnabledAsync(): Promise<boolean> {
 export function addNetworkStateListener(
   listener: (event: NetworkStateEvent) => void
 ): Subscription {
-  return emitter.addListener<NetworkStateEvent>(onNetworkStateEventName, listener);
+  return ExpoNetwork.addListener(onNetworkStateEventName, listener);
 }
 
 // @needsAudit

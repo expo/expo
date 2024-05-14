@@ -34,7 +34,7 @@ public final class NetworkModule: Module {
       guard let self else {
         return
       }
-      strongSelf.emitNetworkStateChange(path: path)
+      self.emitNetworkStateChange(path: path)
     }
     monitor.start(queue: monitorQueue)
   }
