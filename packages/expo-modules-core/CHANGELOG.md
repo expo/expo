@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix expo-modules-core is broken on the server side. ([#28764](https://github.com/expo/expo/pull/28764) by [@alantoa](https://github.com/alantoa))
-
 ### 💡 Others
+
+## 1.12.11 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- Fix expo-modules-core is broken on the server side. ([#28764](https://github.com/expo/expo/pull/28764) by [@alantoa](https://github.com/alantoa))
 
 ## 1.12.10 — 2024-05-09
 
