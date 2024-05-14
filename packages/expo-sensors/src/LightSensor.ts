@@ -7,6 +7,10 @@ export type LightSensorMeasurement = {
    * Ambient light level registered by the device measured in lux (lx).
    */
   illuminance: number;
+  /**
+   * Timestamp of the measurement in seconds.
+   */
+  timestamp: number;
 };
 
 /**

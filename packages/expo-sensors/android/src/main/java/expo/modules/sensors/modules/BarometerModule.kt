@@ -17,6 +17,7 @@ class BarometerModule : Module() {
       Bundle().apply {
         // TODO: Bacon: Can we get relative altitude?
         putDouble("pressure", sensorEvent.values[0].toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }
