@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix deep links from expo.dev QR codes
+
 ### 💡 Others
 
 ## 3.5.11 — 2024-05-09
