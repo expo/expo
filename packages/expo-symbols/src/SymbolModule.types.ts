@@ -1,20 +1,24 @@
 import { ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { symbolName, symbolType } from './androidSymbols';
+
 export type SymbolViewProps = {
   /**
-   * The name of the symbol. Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
+   * The name of the symbol on iOS. Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
+   * @platform ios
    */
-  name: SFSymbol;
+  iosName?: SFSymbol;
   /**
-   * Fallback to render on Android where `SF Symbols` are not available.
+   * The name of the symbol on Android. Symbols can be viewed in the [Material Design Icons app](https://fonts.google.com/icons).
+   * @platform android
    */
-  fallback?: React.ReactNode;
+  androidName?: AndroidSymbol;
   /**
    * Determines the symbol variant to use.
    * @default 'monochrome'
    */
-  type?: SymbolType;
+  type?: IosSymbolType;
   /**
    * The scale of the symbol to render.
    * @default 'unspecified'
@@ -56,7 +60,7 @@ export type SymbolViewProps = {
  */
 export interface NativeSymbolViewProps extends ViewProps {
   name: string;
-  type: SymbolType;
+  type: IosSymbolType;
   scale?: SymbolScale;
   weight?: SymbolWeight;
   animated: boolean;
@@ -198,4 +202,9 @@ export type VariableAnimationSpec = {
  *
  * - `'multicolor'` - Creates a color configuration that specifies that the symbol image uses its multicolor variant, if one exists.
  */
-export type SymbolType = 'monochrome' | 'hierarchical' | 'palette' | 'multicolor';
+export type IosSymbolType = 'monochrome' | 'hierarchical' | 'palette' | 'multicolor';
+
+/**
+ * The symbol name for Android.
+ */
+export type AndroidSymbol = `${(typeof symbolType)[number]}.${(typeof symbolName)[number]}`;

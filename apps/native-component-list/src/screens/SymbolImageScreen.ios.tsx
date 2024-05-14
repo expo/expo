@@ -20,7 +20,7 @@ function SymbolRow({ title, ...props }: RowProps) {
         {getRandomRow(Symbols).map((symbol, index) => (
           <SymbolView
             {...props}
-            name={symbol as SFSymbol}
+            iosName={symbol as SFSymbol}
             key={index}
             style={styles.symbol}
             resizeMode="scaleAspectFit"
@@ -53,7 +53,7 @@ function SymbolWeights({ title, ...props }: RowProps) {
             <View key={index} style={{ alignItems: 'center' }}>
               <SymbolView
                 {...props}
-                name={symbol as SFSymbol}
+                iosName={symbol as SFSymbol}
                 style={styles.symbol}
                 type="hierarchical"
                 weight={weight}
@@ -80,7 +80,7 @@ function SymbolScales({ title, ...props }: RowProps) {
             <View key={index} style={{ alignItems: 'center' }}>
               <SymbolView
                 {...props}
-                name={symbol as SFSymbol}
+                iosName={symbol as SFSymbol}
                 style={styles.symbol}
                 scale={scale}
               />
@@ -97,7 +97,11 @@ export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
-      <SymbolView name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
+      <SymbolView
+        iosName="pencil.tip.crop.circle.badge.plus"
+        androidName="filled.AccessibleForward"
+        style={styles.symbol}
+      />
       <SymbolRow title="Monochrome (default)" type="monochrome" />
       <SymbolRow title="Hierarchical" type="hierarchical" tintColor="magenta" />
       <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />

@@ -2,8 +2,8 @@ import ExpoModulesCore
 
 public class SymbolModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("SymbolModule")
-
+    Name("ExpoSymbols")
+    
     View(SymbolView.self) {
       Prop("name") { (view, name: String) in
         view.name = name

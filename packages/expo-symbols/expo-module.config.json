@@ -1,4 +1,5 @@
 {
+  "name": "expo-symbols",
   "platforms": ["ios", "android"],
   "ios": {
     "modules": ["SymbolModule"]
