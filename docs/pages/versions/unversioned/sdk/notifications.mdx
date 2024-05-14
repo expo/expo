@@ -429,9 +429,11 @@ Learn how to configure the native projects in the [installation instructions in 
 - On Android, this module requires permission to subscribe to the device boot. It's used to setup scheduled notifications when the device (re)starts.
   The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
-- Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add
-  `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
-  You can read more about the [exact alarm permission](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
+- Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, the `SCHEDULE_EXACT_ALARM` permission has to be granted.
+  Since Android 14 (API level 34) this permission is denied by default and requieres an explicit opt-in from the user. You should use the
+  [`requestScheduleExactPermissionsAsync`](#requestscheduleexactpermissionsasync) method to request this permission. If the permission isn't granted the
+  notification will be delivered, but the time will be approximate.
+  You can read more about the exact alarm permission in the [official documentation](https://developer.android.com/about/versions/14/changes/schedule-exact-alarms).
 
 - On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system.
   This prompt will not appear until at least one notification channel is created. The `setNotificationChannelAsync` must be called before

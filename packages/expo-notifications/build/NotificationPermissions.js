@@ -62,6 +62,32 @@ export async function requestPermissionsAsync(permissions) {
     const requestedPlatformPermissions = requestedPermissions[Platform.OS];
     return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions);
 }
+/**
+ * @header permissions
+ */
+export async function requestScheduleExactPermissionsAsync() {
+    const basicPermissions = await getPermissionsAsync();
+    if (Platform.OS !== 'android' || !basicPermissions.granted) {
+        return basicPermissions;
+    }
+    if (!NotificationPermissionsModule.requestScheduleExactPermissionsAsync) {
+        throw new UnavailabilityError('Notifications', 'requestScheduleExactPermissionsAsync');
+    }
+    return await NotificationPermissionsModule.requestScheduleExactPermissionsAsync();
+}
+/**
+ * @header permissions
+ */
+export async function getScheduleExactPermissionsAsync() {
+    const basicPermissions = await getPermissionsAsync();
+    if (Platform.OS !== 'android' || !basicPermissions.granted) {
+        return basicPermissions;
+    }
+    if (!NotificationPermissionsModule.getScheduleExactPermissionsAsync) {
+        throw new UnavailabilityError('Notifications', 'getScheduleExactPermissionsAsync');
+    }
+    return await NotificationPermissionsModule.getScheduleExactPermissionsAsync();
+}
 // @needsAudit
 /**
  * Check or request permissions to send and receive push notifications.
@@ -76,4 +102,10 @@ export const usePermissions = createPermissionHook({
     requestMethod: requestPermissionsAsync,
     getMethod: getPermissionsAsync,
 });
+const grantedPermission = {
+    canAskAgain: true,
+    expires: 'never',
+    granted: true,
+    status: 'granted',
+};
 //# sourceMappingURL=NotificationPermissions.js.map
