@@ -12,6 +12,8 @@ exports[`extractExpoPathFromURL Bare parses "custom:///test/path?foo=bar" 1`] = 
 
 exports[`extractExpoPathFromURL Bare parses "custom://?hello=bar" 1`] = `"?hello=bar"`;
 
+exports[`extractExpoPathFromURL Bare parses "exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/group/e52d7d41-3b5f-4e77-bcc8-11f95462d53c" 1`] = `""`;
+
 exports[`extractExpoPathFromURL Bare parses "exp://127.0.0.1:19000/" 1`] = `"127.0.0.1:19000/"`;
 
 exports[`extractExpoPathFromURL Bare parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `"127.0.0.1:19000/--/test/path?query=param"`;
@@ -75,6 +77,8 @@ exports[`extractExpoPathFromURL Expo Go parses "custom:///?shouldBeEscaped=x%252
 exports[`extractExpoPathFromURL Expo Go parses "custom:///test/path?foo=bar" 1`] = `"test/path?foo=bar"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "custom://?hello=bar" 1`] = `"?hello=bar"`;
+
+exports[`extractExpoPathFromURL Expo Go parses "exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/group/e52d7d41-3b5f-4e77-bcc8-11f95462d53c" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Expo Go parses "exp://127.0.0.1:19000/" 1`] = `""`;
 
