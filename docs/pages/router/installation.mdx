@@ -14,9 +14,9 @@ Find the steps below to create a new project with Expo Router library or add it 
 
 <Step label="1">
 
-We recommend creating a new Expo app using `create-expo-app`. This will create a minimal project with the Expo Router library already installed. To create a project, run the command:
+We recommend creating a new Expo app using `create-expo-app` to create a project with Expo Router library already installed and configured:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template tabs@50']} />
+<Terminal cmd={['$ npx create-expo-app@latest']} />
 
 </Step>
 
@@ -33,29 +33,13 @@ Now, you can start your project by running:
 
 ## Manual installation
 
-Ensure the version of Expo Router is compatible with the Expo SDK version your project is using.
-
-| Expo SDK | Expo Router |
-| -------- | ----------- |
-| 51.0.0   | 3.5.0       |
-| 50.0.0   | 3.0.0       |
-| 49.0.0   | 2.0.0       |
+Follow the steps below if you have a project that was previously created with Expo but does not have Expo Router library installed.
 
 ### Prerequisites
 
 Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
 
 <Step label="1">
-
-### Create an Expo project
-
-To create a new project, run the following command:
-
-<Terminal cmd={['$ npx create-expo-app']} />
-
-</Step>
-
-<Step label="2">
 
 ### Install dependencies
 
@@ -78,7 +62,7 @@ You'll need to install the following dependencies:
 
 </Step>
 
-<Step label="3">
+<Step label="2">
 
 ### Setup entry point
 
@@ -118,7 +102,7 @@ You'll need to install the following dependencies:
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 ### Modify project configuration
 
@@ -146,7 +130,7 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
 ### Modify babel.config.js
 
@@ -192,7 +176,7 @@ module.exports = function (api) {
 
 </Step>
 
-<Step label="6">
+<Step label="5">
 
 ### Clear bundler cache
 
@@ -202,7 +186,7 @@ After updating the Babel config file, run the following command to clear the bun
 
 </Step>
 
-<Step label="7">
+<Step label="6">
 
 ### Update resolutions
 
