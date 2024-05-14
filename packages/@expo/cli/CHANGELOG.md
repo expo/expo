@@ -19,6 +19,7 @@
 - Avoid `<root>/node_modules` as extraneous `watchFolder`. ([#28778](https://github.com/expo/expo/pull/28778) by [@byCedric](https://github.com/byCedric))
 - Fix `findUp` utilities for Windows by aborting when `path.dirname(cwd)` returns `cwd`. ([#28801](https://github.com/expo/expo/pull/28801) by [@byCedric](https://github.com/byCedric))
 - Fix missing usbmux platform for platform to os conversion. ([#28802](https://github.com/expo/expo/pull/28802) by [@byCedric](https://github.com/byCedric))
+- Prevent exit the export command until Atlas is ready. ([#28759](https://github.com/expo/expo/pull/28759) by [@byCedric](https://github.com/byCedric))
 
 ## 0.18.10 — 2024-05-07
 

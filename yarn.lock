@@ -1596,16 +1596,6 @@
   resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
-"@expo/server@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@expo/server/-/server-0.3.1.tgz#dbdb23af31877aeb35e8ea31a4962e128c8fa920"
-  integrity sha512-cCKyVA2IR9J4hDFPXzj3L08+Ngd/7z2F+JtdW0NLy03qShXBI5NSEEcaiHtjrgsLXPDe9PBw5Xgsfmxuduyggg==
-  dependencies:
-    "@remix-run/node" "^1.19.3"
-    abort-controller "^3.0.0"
-    debug "^4.3.4"
-    source-map-support "~0.5.21"
-
 "@expo/spawn-async@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.5.0.tgz#799827edd8c10ef07eb1a2ff9dcfe081d596a395"
@@ -3634,21 +3624,6 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@remix-run/node@^1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-1.19.3.tgz#d27e2f742fc45379525cb3fca466a883ca06d6c9"
-  integrity sha512-z5qrVL65xLXIUpU4mkR4MKlMeKARLepgHAk4W5YY3IBXOreRqOGUC70POViYmY7x38c2Ia1NwqL80H+0h7jbMw==
-  dependencies:
-    "@remix-run/server-runtime" "1.19.3"
-    "@remix-run/web-fetch" "^4.3.6"
-    "@remix-run/web-file" "^3.0.3"
-    "@remix-run/web-stream" "^1.0.4"
-    "@web3-storage/multipart-parser" "^1.0.0"
-    abort-controller "^3.0.0"
-    cookie-signature "^1.1.0"
-    source-map-support "^0.5.21"
-    stream-slice "^0.1.2"
-
 "@remix-run/node@^2.7.2":
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.7.2.tgz#5efbc3c2015d0d36fea265afa9be413eb35e2c32"
@@ -3667,23 +3642,6 @@
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.15.1.tgz#221fd31a65186b9bc027b74573485fb3226dff7f"
   integrity sha512-zcU0gM3z+3iqj8UX45AmWY810l3oUmXM7uH4dt5xtzvMhRtYVhKGOmgOd1877dOPPepfCjUv57w+syamWIYe7w==
-
-"@remix-run/router@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.7.2.tgz#cba1cf0a04bc04cb66027c51fa600e9cbc388bc8"
-  integrity sha512-7Lcn7IqGMV+vizMPoEl5F0XDshcdDYtMI6uJLQdQz5CfZAwy3vvGKYSUk789qndt5dEC4HfSjviSYlSoHGL2+A==
-
-"@remix-run/server-runtime@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-1.19.3.tgz#206b55337c266c5bc254878f8ff3cd5677cc60fb"
-  integrity sha512-KzQ+htUsKqpBgKE2tWo7kIIGy3MyHP58Io/itUPvV+weDjApwr9tQr9PZDPA3yAY6rAzLax7BU0NMSYCXWFY5A==
-  dependencies:
-    "@remix-run/router" "1.7.2"
-    "@types/cookie" "^0.4.1"
-    "@web3-storage/multipart-parser" "^1.0.0"
-    cookie "^0.4.1"
-    set-cookie-parser "^2.4.8"
-    source-map "^0.7.3"
 
 "@remix-run/server-runtime@2.7.2":
   version "2.7.2"
@@ -3705,7 +3663,7 @@
     "@remix-run/web-stream" "^1.1.0"
     web-encoding "1.1.5"
 
-"@remix-run/web-fetch@^4.3.6", "@remix-run/web-fetch@^4.4.2":
+"@remix-run/web-fetch@^4.4.2":
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/@remix-run/web-fetch/-/web-fetch-4.4.2.tgz#ce7aedef72cc26e15060e8cf84674029f92809b6"
   integrity sha512-jgKfzA713/4kAW/oZ4bC3MoLWyjModOVDjFPNseVqcJKSafgIscrYL9G50SurEYLswPuoU3HzSbO0jQCMYWHhA==
@@ -3719,7 +3677,7 @@
     data-uri-to-buffer "^3.0.1"
     mrmime "^1.0.0"
 
-"@remix-run/web-file@^3.0.3", "@remix-run/web-file@^3.1.0":
+"@remix-run/web-file@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@remix-run/web-file/-/web-file-3.1.0.tgz#07219021a2910e90231bc30ca1ce693d0e9d3825"
   integrity sha512-dW2MNGwoiEYhlspOAXFBasmLeYshyAyhIdrlXBi06Duex5tDr3ut2LFKVj7tyHLmn8nnNwFf1BjNbkQpygC2aQ==
@@ -3733,7 +3691,7 @@
   dependencies:
     web-encoding "1.1.5"
 
-"@remix-run/web-stream@^1.0.4", "@remix-run/web-stream@^1.1.0":
+"@remix-run/web-stream@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@remix-run/web-stream/-/web-stream-1.1.0.tgz#b93a8f806c2c22204930837c44d81fdedfde079f"
   integrity sha512-KRJtwrjRV5Bb+pM7zxcTJkhIqWWSy+MYsIxHK+0m5atcznsf15YwUBWHWulZerV2+vvHH1Lp1DD7pw6qKW8SgA==
@@ -4264,11 +4222,6 @@
   integrity sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==
   dependencies:
     "@types/node" "*"
-
-"@types/cookie@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.4.1.tgz#bfd02c1f2224567676c1545199f87c3a861d878d"
-  integrity sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==
 
 "@types/cookie@^0.6.0":
   version "0.6.0"
@@ -7857,11 +7810,6 @@ cookie@0.6.0, cookie@^0.6.0:
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.6.0.tgz#2798b04b071b0ecbff0dbb62a505a8efa4e19051"
   integrity sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==
 
-cookie@^0.4.1:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.2.tgz#0e41f24de5ecf317947c82fc789e06a884824432"
-  integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
-
 copy-concurrently@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/copy-concurrently/-/copy-concurrently-1.0.5.tgz#92297398cae34937fcafd6ec8139c18051f0b5e0"
@@ -9931,12 +9879,12 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.2.0.tgz#b69b5475d6b46fce5dc8b86d6b18d9ecb717b2a4"
-  integrity sha512-1ygW6ouTC/twYBWXJpw4LsPCCDdBt5KYQQos2y1fTxUyF4VeYq6nMc1dfR0AwFGRo0NyI0YFMDPn3HRWjshzVQ==
+expo-atlas@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.3.0.tgz#297b9d0ba1d5b1341636822c2137ea408f0bbf05"
+  integrity sha512-EfG0RYdHyeMp5exuOw2p0VtbJfxKZiuMFmuZCnkkN2Qg751TKc3rPY8eom95JC9mNSH8DRS0Ia2hAMgPx9333Q==
   dependencies:
-    "@expo/server" "^0.3.1"
+    "@expo/server" "^0.4.2"
     arg "^5.0.2"
     chalk "^4.1.2"
     compression "^1.7.4"
