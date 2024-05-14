@@ -1,1 +1,1 @@
-import './CoreModule';
+export * from './CoreModule';
