@@ -114,7 +114,7 @@ If you like Expo and want to help make it better then check out our [contributin
 
 If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.dev/faq/)!
 
-If you still have questions you can ask them on our [Discord and [Forums](https://chat.expo.dev) or X [@expo](https://x.com/expo)](https://x.com/expo).
+If you still have questions you can ask them on our [Discord and [Forums](https://chat.expo.dev) or X [@expo](https://x.com/expo).
 
 ## 💙 The Team
 
