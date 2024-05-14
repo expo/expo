@@ -202,14 +202,6 @@ export async function supportsOrientationLockAsync(
 
   return await ExpoScreenOrientation.supportsOrientationLockAsync(orientationLock);
 }
-
-// Determine the event name lazily so Jest can set up mocks in advance
-function getEventName(): string {
-  return Platform.OS === 'ios' || Platform.OS === 'web'
-    ? 'expoDidUpdateDimensions'
-    : 'didUpdateDimensions';
-}
-
 // We rely on RN to emit `didUpdateDimensions`
 // If this method no longer works, it's possible that the underlying RN implementation has changed
 // see https://github.com/facebook/react-native/blob/c31f79fe478b882540d7fd31ee37b53ddbd60a17/ReactAndroid/src/main/java/com/facebook/react/modules/deviceinfo/DeviceInfoModule.java#L90
