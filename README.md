@@ -87,7 +87,7 @@ Read the [Expo Community Guidelines](https://expo.dev/guidelines) before interac
 - [`templates`](/templates) The template projects you get when you run `npx create-expo-app`
 - [`react-native-lab`](/react-native-lab) This is our fork of `react-native` used to build Expo Go.
 - [`guides`](/guides) In-depth tutorials for advanced topics like contributing to the client.
-- [`tools`](/tools) contains build and configuration tools.
+- [`tools`](/tools) contain build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
 
