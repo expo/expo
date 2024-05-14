@@ -58,7 +58,7 @@ For example, to save a 'FullHD' picture of `1080x1080`, you would do something l
 ```js
 const targetPixelCount = 1080; // If you want full HD pictures
 const pixelRatio = PixelRatio.get(); // The pixel ratio of the device
-// pixels * pixelratio = targetPixelCount, so pixels = targetPixelCount / pixelRatio
+// pixels * pixelRatio = targetPixelCount, so pixels = targetPixelCount / pixelRatio
 const pixels = targetPixelCount / pixelRatio;
 
 const result = await captureRef(this.imageContainer, {
