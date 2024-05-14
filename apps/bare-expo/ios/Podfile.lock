@@ -413,7 +413,7 @@ PODS:
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
     - React-Core
-  - ExpoModulesCore (1.12.10):
+  - ExpoModulesCore (1.12.11):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -436,7 +436,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.12.10):
+  - ExpoModulesCore/Tests (1.12.11):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -2568,7 +2568,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMaps: ae5f30377143632c3e18368c7e0b73409dce975b
   ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
-  ExpoModulesCore: 4c5576eec261d09549d78b751ccd62d94d4506ac
+  ExpoModulesCore: 4eb2165cde325c8c121d495bb8beb0da9b30c92e
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a
