@@ -204,13 +204,11 @@ async function unloadFontInNamespaceAsync(
   // promise in the program, we need to create the promise synchronously without yielding the event
   // loop from this point.
 
-  const nativeFontName = fontFamily;
-
-  if (!nativeFontName) {
+  if (!fontFamily) {
     throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
   }
 
-  await ExpoFontLoader.unloadAsync(nativeFontName, options);
+  await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
