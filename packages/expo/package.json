@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "51.0.5",
+  "version": "51.0.6",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -60,7 +60,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.18.11",
+    "@expo/cli": "0.18.12",
     "@expo/config": "9.0.1",
     "@expo/config-plugins": "8.0.4",
     "@expo/metro-config": "0.18.3",

@@ -1,6 +1,6 @@
 {
   "name": "expo-calendar",
-  "version": "13.0.4",
+  "version": "13.0.5",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "main": "build/Calendar.js",
   "types": "build/Calendar.d.ts",
