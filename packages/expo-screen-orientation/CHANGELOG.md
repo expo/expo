@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed screen orientation change listener not firing.
+
 ### 💡 Others
 
 ## 7.0.4 — 2024-05-09

@@ -1,4 +1,5 @@
 import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { Dimensions } from 'react-native';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {
@@ -225,27 +226,8 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
   if (typeof listener !== 'function') {
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
-  const subscription = _orientationChangeEmitter.addListener(
-    getEventName(),
-    async (update: OrientationChangeEvent) => {
-      let orientationInfo, orientationLock;
-      if (Platform.OS === 'ios' || Platform.OS === 'web') {
-        // For iOS, RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions`
-        // event, so we emit our own `expoDidUpdateDimensions` event instead
-        orientationLock = update.orientationLock;
-        orientationInfo = update.orientationInfo;
-      } else {
-        // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
-        let orientation;
-        [orientationLock, orientation] = await Promise.all([
-          getOrientationLockAsync(),
-          getOrientationAsync(),
-        ]);
-        orientationInfo = { orientation };
-      }
-      listener({ orientationInfo, orientationLock });
-    }
-  );
+
+  const subscription = createDidUpdateDimensionsSubscription(listener);
   _orientationChangeSubscribers.push(subscription);
   return subscription;
 }
@@ -284,4 +266,24 @@ export function removeOrientationChangeListener(subscription: Subscription): voi
   _orientationChangeSubscribers = _orientationChangeSubscribers.filter(
     (sub) => sub !== subscription
   );
+}
+
+function createDidUpdateDimensionsSubscription(listener: OrientationChangeListener): Subscription {
+  if (Platform.OS === 'web' || Platform.OS === 'ios') {
+    return _orientationChangeEmitter.addListener(
+      'expoDidUpdateDimensions',
+      async (update: OrientationChangeEvent) => {
+        listener(update);
+      }
+    );
+  }
+
+  // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
+  return Dimensions.addEventListener('change', async () => {
+    const [orientationLock, orientation] = await Promise.all([
+      getOrientationLockAsync(),
+      getOrientationAsync(),
+    ]);
+    listener({ orientationInfo: { orientation }, orientationLock });
+  });
 }
