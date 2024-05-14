@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.1.9 — 2024-05-13
+
+### 🎉 New features
+
+- Add `duration` property on all platforms. ([#28576](https://github.com/expo/expo/pull/28576) by [@justjoostnl](https://github.com/justjoostnl))
+
 ## 1.1.8 — 2024-05-07
 
 _This version does not introduce any user-facing changes._

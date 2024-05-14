@@ -93,7 +93,8 @@ const plugin = ({ types }) => {
                 processNode(replacements, nodePath, memberExpressionComparator);
             },
             // const x = { version: VERSION };
-            Identifier(nodePath, state) {
+            // @ts-expect-error: Virtual type `ReferencedIdentifier` is not on types.
+            ReferencedIdentifier(nodePath, state) {
                 const binding = nodePath.scope?.getBinding(nodePath.node.name);
                 if (binding ||
                     // Don't transform import identifiers. This is meant to mimic webpack's

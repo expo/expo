@@ -168,7 +168,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
   private fun eventsToMap(): Bundle {
     val map = Bundle()
-    var interval = 0.0
     if (accelerationEvent != null) {
       map.putBundle(
         "acceleration",
@@ -176,9 +175,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("x", accelerationEvent!!.values[0].toDouble())
           putDouble("y", accelerationEvent!!.values[1].toDouble())
           putDouble("z", accelerationEvent!!.values[2].toDouble())
+          putDouble("timestamp", accelerationEvent!!.timestamp / 1_000_000_000.0)
         }
       )
-      interval = accelerationEvent!!.timestamp.toDouble()
     }
     if (accelerationIncludingGravityEvent != null && gravityEvent != null) {
       map.putBundle(
@@ -187,9 +186,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("x", (accelerationIncludingGravityEvent!!.values[0] - 2 * gravityEvent!!.values[0]).toDouble())
           putDouble("y", (accelerationIncludingGravityEvent!!.values[1] - 2 * gravityEvent!!.values[1]).toDouble())
           putDouble("z", (accelerationIncludingGravityEvent!!.values[2] - 2 * gravityEvent!!.values[2]).toDouble())
+          putDouble("timestamp", accelerationIncludingGravityEvent!!.timestamp / 1_000_000_000.0)
         }
       )
-      interval = accelerationIncludingGravityEvent!!.timestamp.toDouble()
     }
     if (rotationRateEvent != null) {
       map.putBundle(
@@ -198,9 +197,9 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("alpha", Math.toDegrees(rotationRateEvent!!.values[0].toDouble()))
           putDouble("beta", Math.toDegrees(rotationRateEvent!!.values[1].toDouble()))
           putDouble("gamma", Math.toDegrees(rotationRateEvent!!.values[2].toDouble()))
+          putDouble("timestamp", rotationEvent!!.timestamp / 1_000_000_000.0)
         }
       )
-      interval = rotationRateEvent!!.timestamp.toDouble()
     }
     if (rotationEvent != null) {
       SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationEvent!!.values)
@@ -211,11 +210,11 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("alpha", (-rotationResult[0]).toDouble())
           putDouble("beta", (-rotationResult[1]).toDouble())
           putDouble("gamma", rotationResult[2].toDouble())
+          putDouble("timestamp", rotationEvent!!.timestamp / 1_000_000_000.0)
         }
       )
-      interval = rotationEvent!!.timestamp.toDouble()
     }
-    map.putDouble("interval", interval)
+    map.putDouble("interval", updateInterval.toDouble())
     map.putInt("orientation", getOrientation())
     return map
   }

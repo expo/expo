@@ -395,7 +395,6 @@ export type CameraNativeProps = {
 };
 export type BarcodeSettings = {
     barcodeTypes: BarcodeType[];
-    interval?: number;
 };
 /**
  * @platform ios

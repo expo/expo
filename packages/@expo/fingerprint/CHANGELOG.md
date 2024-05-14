@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed missing community CLI autolinking source when it returns null values. ([#28835](https://github.com/expo/expo/pull/28835) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.7.1 — 2024-04-23

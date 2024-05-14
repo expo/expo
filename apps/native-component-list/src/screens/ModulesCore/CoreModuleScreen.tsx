@@ -1,7 +1,7 @@
 import { reloadAppAsync } from 'expo';
 import { ScrollView, StyleSheet } from 'react-native';
 
-import ListButton from '../components/ListButton';
+import ListButton from '../../components/ListButton';
 
 export default function ExpoCoreModuleScreen() {
   return (
