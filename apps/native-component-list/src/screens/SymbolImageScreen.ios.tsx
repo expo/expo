@@ -97,11 +97,7 @@ export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
-      <SymbolView
-        iosName="pencil.tip.crop.circle.badge.plus"
-        androidName="filled.AccessibleForward"
-        style={styles.symbol}
-      />
+      <SymbolView iosName="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
       <SymbolRow title="Monochrome (default)" type="monochrome" />
       <SymbolRow title="Hierarchical" type="hierarchical" tintColor="magenta" />
       <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />

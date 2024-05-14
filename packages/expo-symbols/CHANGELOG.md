@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for material symbols on `Android`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

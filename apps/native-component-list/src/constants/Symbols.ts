@@ -93,7 +93,6 @@ const androidSymbols = [
   'outlined.BakeryDining',
   'outlined.Storefront',
   'outlined.PlaylistAddCircle',
-
   'filled.RingVolume',
   'filled.AlternateEmail',
   'filled.Receipt',
@@ -110,7 +109,6 @@ const androidSymbols = [
   'filled.BakeryDining',
   'filled.Storefront',
   'filled.PlaylistAddCircle',
-
   'sharp.RingVolume',
   'sharp.AlternateEmail',
   'sharp.Receipt',
@@ -127,7 +125,6 @@ const androidSymbols = [
   'sharp.BakeryDining',
   'sharp.Storefront',
   'sharp.PlaylistAddCircle',
-
   'rounded.RingVolume',
   'rounded.AlternateEmail',
   'rounded.Receipt',
@@ -144,7 +141,6 @@ const androidSymbols = [
   'rounded.BakeryDining',
   'rounded.Storefront',
   'rounded.PlaylistAddCircle',
-
   'twotone.RingVolume',
   'twotone.AlternateEmail',
   'twotone.Receipt',
