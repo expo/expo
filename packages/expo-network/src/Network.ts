@@ -98,26 +98,9 @@ export function addNetworkStateListener(
   return emitter.addListener<NetworkStateEvent>(onNetworkStateEventName, listener);
 }
 
-/**
- * Removes the network state listener added by addNetworkStateListener.
- *
- * @param subscription The subscription to remove (created by addNetworkStateListener).
- *
- * @example
- * ```typescript
- * const subscription = addNetworkStateListener(({ isConnected }) => {
- *   console.log('Network connectivity changed:', isConnected);
- * });
- * removeNetworkStateListener(subscription);
- * ```
- */
-export function removeNetworkStateListener(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
-}
-
 // @needsAudit
 /**
- * Returns the current network state of the device using a React hook. This method
+ * Returns the current network state of the device. This method
  * initiates a listener for network state changes and cleans up before unmounting.
  *
  * @example

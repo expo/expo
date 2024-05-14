@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -27,6 +26,8 @@ internal const val NETWORK_STATE_EVENT_NAME = "onNetworkStateChanged"
 class NetworkModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val connectivityManager: ConnectivityManager
+    get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNetwork")
@@ -34,7 +35,6 @@ class NetworkModule : Module() {
     Events(NETWORK_STATE_EVENT_NAME)
 
     OnCreate {
-      val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
       val networkRequest = NetworkRequest.Builder().build()
       connectivityManager.registerNetworkCallback(
         networkRequest,
@@ -51,12 +51,11 @@ class NetworkModule : Module() {
     }
 
     OnDestroy {
-      val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
       connectivityManager.unregisterNetworkCallback(ConnectivityManager.NetworkCallback())
     }
 
-    AsyncFunction("getNetworkStateAsync") { promise: Promise ->
-      promise.resolve(fetchNetworkState())
+    AsyncFunction("getNetworkStateAsync") {
+      return@AsyncFunction fetchNetworkState()
     }
 
     AsyncFunction<String>("getIpAddressAsync") {
@@ -90,10 +89,9 @@ class NetworkModule : Module() {
 
   private fun fetchNetworkState(): Bundle {
     val result = Bundle()
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     try {
-      if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) { // use getActiveNetworkInfo before api level 29
         val netInfo = connectivityManager.activeNetworkInfo
         val connectionType = getConnectionType(netInfo)
 

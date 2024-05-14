@@ -12,7 +12,7 @@ public final class NetworkModule: Module {
 
     Events(onNetworkStateChanged)
 
-    OnCreate {
+    OnStartObserving {
       setupNetworkMonitoring()
     }
 
@@ -24,14 +24,14 @@ public final class NetworkModule: Module {
       return getNetworkStateAsync()
     }
 
-    OnDestroy {
+    OnStopObserving {
       monitor.cancel()
     }
   }
 
   private func setupNetworkMonitoring() {
     monitor.pathUpdateHandler = { [weak self] path in
-      guard let strongSelf = self else {
+      guard let self else {
         return
       }
       strongSelf.emitNetworkStateChange(path: path)
@@ -41,7 +41,7 @@ public final class NetworkModule: Module {
 
   private func emitNetworkStateChange(path: NWPath) {
     let networkState = getNetworkStateAsync(path: path)
-      sendEvent(onNetworkStateChanged, networkState)
+    sendEvent(onNetworkStateChanged, networkState)
   }
 
   private func getIPAddress() throws -> String {

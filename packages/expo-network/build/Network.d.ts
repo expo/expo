@@ -65,21 +65,7 @@ export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
  */
 export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): Subscription;
 /**
- * Removes the network state listener added by addNetworkStateListener.
- *
- * @param subscription The subscription to remove (created by addNetworkStateListener).
- *
- * @example
- * ```typescript
- * const subscription = addNetworkStateListener(({ isConnected }) => {
- *   console.log('Network connectivity changed:', isConnected);
- * });
- * removeNetworkStateListener(subscription);
- * ```
- */
-export declare function removeNetworkStateListener(subscription: Subscription): void;
-/**
- * Returns the current network state of the device using a React hook. This method
+ * Returns the current network state of the device. This method
  * initiates a listener for network state changes and cleans up before unmounting.
  *
  * @example
