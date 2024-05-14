@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed screen orientation change listener not firing.
+- [Android] Fixed screen orientation change listener not firing. ([#28832](https://github.com/expo/expo/pull/28832) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
