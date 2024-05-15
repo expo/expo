@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] fix response handling when app in background or not running. ([#28883](https://github.com/expo/expo/pull/28883) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.28.2 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] fix response handling when app in background or not running. ([#28883](https://github.com/expo/expo/pull/28883) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.1 — 2024-04-23
 

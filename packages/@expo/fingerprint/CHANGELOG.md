@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2024-05-15
+
+### 🎉 New features
+
 - Added `fingerprint.config.js` support for a project to customize some options. ([#28860](https://github.com/expo/expo/pull/28860) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fixed missing community CLI autolinking source when it returns null values. ([#28835](https://github.com/expo/expo/pull/28835) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.7.1 — 2024-04-23
 

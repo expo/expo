@@ -8,7 +8,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (5.9.1):
     - ExpoModulesCore
-  - EXAV (14.0.4):
+  - EXAV (14.0.5):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBarCodeScanner (13.0.1):
@@ -30,9 +30,9 @@ PODS:
   - EXManifests/Tests (0.14.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.28.1):
+  - EXNotifications (0.28.2):
     - ExpoModulesCore
-  - Expo (51.0.6):
+  - Expo (51.0.7):
     - ExpoModulesCore
   - expo-dev-client (4.0.13):
     - EXManifests
@@ -40,10 +40,10 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (4.0.14):
+  - expo-dev-launcher (4.0.15):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 4.0.14)
+    - expo-dev-launcher/Main (= 4.0.15)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -69,7 +69,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (4.0.14):
+  - expo-dev-launcher/Main (4.0.15):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -98,7 +98,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (4.0.14):
+  - expo-dev-launcher/Tests (4.0.15):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (4.0.14):
+  - expo-dev-launcher/Unsafe (4.0.15):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -391,12 +391,12 @@ PODS:
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (15.0.4):
+  - ExpoImagePicker (15.0.5):
     - ExpoModulesCore
   - ExpoInsights (0.7.0):
     - EASClient
     - ExpoModulesCore
-  - ExpoKeepAwake (13.0.1):
+  - ExpoKeepAwake (13.0.2):
     - ExpoModulesCore
   - ExpoLinearGradient (13.0.2):
     - ExpoModulesCore
@@ -497,7 +497,7 @@ PODS:
     - Yoga
   - ExpoSecureStore (13.0.1):
     - ExpoModulesCore
-  - ExpoSensors (13.0.6):
+  - ExpoSensors (13.0.7):
     - ExpoModulesCore
   - ExpoSharing (12.0.1):
     - ExpoModulesCore
@@ -2525,17 +2525,17 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
-  EXAV: 774288fbb6d1f5e51c22a79401faa5b622af68b3
+  EXAV: cb6e8dbcc40873d8a386af357e6c2eb55d6d739e
   EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
   EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
-  EXNotifications: e99df3245625defab97f05b8cf333cdcbda2045d
-  Expo: c6b1655cc45b8529e4a6f18417814502c5613b1a
+  EXNotifications: b18edf36fe53da366b1bde32565d107307d37ca3
+  Expo: ad3c10d4a7723961d4796d73e07eddcd9fd9cf66
   expo-dev-client: a4fbaa4a68a09abc4dabf25038b77f8f845b8433
-  expo-dev-launcher: 3ac0313ccef6edf71ae24a22dbee1e2a0eedcf25
+  expo-dev-launcher: 752312abcf346045aac32cf1bde006f45faf4a04
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
   expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
@@ -2559,9 +2559,9 @@ SPEC CHECKSUMS:
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
   ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
   ExpoImageManipulator: aea99205c66043a00a0af90e345395637b9902fa
-  ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
+  ExpoImagePicker: dc3e6f221ce5717e6e0a771780e6e7d50a790189
   ExpoInsights: e88a27cb4ba1b644f8f6bbb2473a5a8204767948
-  ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
+  ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
   ExpoLocalAuthentication: 9e02a56a4cf9868f0052656a93d4c94101a42ed7
   ExpoLocalization: f04eeec2e35bed01ab61c72ee1768ec04d093d01
@@ -2576,7 +2576,7 @@ SPEC CHECKSUMS:
   ExpoScreenCapture: ece7593264d1384aff2481eea29f9a238b484090
   ExpoScreenOrientation: 5d6a977177dc2f904cc072b51a0d37d0983c0d6a
   ExpoSecureStore: 5f6b712785986b54d95a92bd365aabb82a52088e
-  ExpoSensors: 9ac53300f3b9f788446b46ed0be6962f5b414095
+  ExpoSensors: 017b194af3c77db4dd552bc2763bddc24f1f6ae8
   ExpoSharing: 8db05dd85081219f75989a3db2c92fe5e9741033
   ExpoSMS: a5184fc4d4b33071b2dd9d43bb9ac8ef952b1dd7
   ExpoSpeech: 258ea713923eb70ef63d3bdb14f47a462d0b6f0e

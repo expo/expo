@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fix `shouldCorrectPitch` being ignored on web. ([#28837](https://github.com/expo/expo/pull/28837) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 14.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Web] Fix `shouldCorrectPitch` being ignored on web. ([#28837](https://github.com/expo/expo/pull/28837) by [@behenate](https://github.com/behenate))
 
 ## 14.0.4 — 2024-05-09
 
