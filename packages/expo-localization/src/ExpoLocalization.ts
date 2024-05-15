@@ -147,14 +147,14 @@ export default {
         decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
 
         if (typeof Intl !== 'undefined') {
-          locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale
+          locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale;
         }
       } catch {}
 
       const { region, textInfo, language } = locale;
 
       if (region) {
-        temperatureUnit = regionToTemperatureUnit(region)
+        temperatureUnit = regionToTemperatureUnit(region);
       }
 
       return {
