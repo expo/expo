@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
