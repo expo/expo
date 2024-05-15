@@ -121,6 +121,9 @@ async function setStatusForMedia(
   if (status.rate !== undefined) {
     media.playbackRate = status.rate;
   }
+  if (status.shouldCorrectPitch !== undefined) {
+    media.preservesPitch = status.shouldCorrectPitch;
+  }
   if (status.volume !== undefined) {
     media.volume = status.volume;
   }
