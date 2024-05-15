@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Additional fixes for deep links from expo.dev QR codes
+
 ### 💡 Others
 
 ## 3.5.13 — 2024-05-14
