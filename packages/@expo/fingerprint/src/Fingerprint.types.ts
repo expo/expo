@@ -68,7 +68,7 @@ export interface Options {
 
   /**
    * Skips some sources from fingerprint.
-   * @see `DEFAULT_SOURCE_SKIPS` for the default value.
+   * @default SourceSkips.None
    */
   sourceSkips?: SourceSkips;
 
