@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix deep links from expo.dev QR codes ([#28881](https://github.com/expo/expo/pull/28881) by [@marklawlor](https://github.com/marklawlor))
+- Additional fixes for deep links from expo.dev QR codes
 
 ### 💡 Others
 

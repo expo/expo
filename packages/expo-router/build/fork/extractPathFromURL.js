@@ -28,12 +28,13 @@ function extractExactPathFromURL(url) {
         if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
             // drop the first two segments from pathname:
             const segments = pathname.split('/');
-            if (segments[2] === 'group') {
-                // Is this u.expo.dev/{uuid}/group/{uuid}
+            if (segments[2] === 'group' || segments[2] === 'update') {
+                // Is this u.expo.dev/{uuid}/group/{uuid} or u.expo.dev/{uuid}/update/{uuid}
                 return segments.slice(4).join('/');
             }
             else {
-                return segments.slice(2).join('/');
+                // Is this u.expo.dev/update/{uuid}
+                return segments.slice(3).join('/');
             }
         }
         return href.replace(origin, '');
