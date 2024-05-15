@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Removes the unnecessary reload when opening the backgrounded app from the icon.
+
 ### 💡 Others
 
 ## 4.0.14 — 2024-05-09
