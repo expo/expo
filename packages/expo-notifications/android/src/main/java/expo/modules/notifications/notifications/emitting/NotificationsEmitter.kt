@@ -1,7 +1,6 @@
 package expo.modules.notifications.notifications.emitting
 
 import android.os.Bundle
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.notifications.NotificationSerializer
@@ -16,8 +15,7 @@ private const val MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted"
 
 open class NotificationsEmitter : Module(), NotificationListener {
   private lateinit var notificationManager: NotificationManager
-  private var lastNotificationResponse: NotificationResponse? = null
-  private var eventEmitter: EventEmitter? = null
+  private var lastNotificationResponseBundle: Bundle? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationsEmitter")
@@ -40,7 +38,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
     }
 
     AsyncFunction<Bundle?>("getLastNotificationResponseAsync") {
-      lastNotificationResponse?.let(NotificationSerializer::toBundle)
+      lastNotificationResponseBundle
     }
   }
 
@@ -62,9 +60,14 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @return Whether notification has been handled
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
-    lastNotificationResponse = response
-    sendEvent(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response))
+    lastNotificationResponseBundle = NotificationSerializer.toBundle(response)
+    sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
     return true
+  }
+
+  override fun onNotificationResponseIntentReceived(extras: Bundle?) {
+    lastNotificationResponseBundle = NotificationSerializer.toResponseBundleFromExtras(extras)
+    sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
   }
 
   /**

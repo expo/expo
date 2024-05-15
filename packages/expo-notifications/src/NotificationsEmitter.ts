@@ -86,7 +86,22 @@ export function addNotificationResponseReceivedListener(
 ): Subscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
-    listener
+    (response: NotificationResponse) => {
+      const mappedResponse: NotificationResponse & {
+        notification: { request: { content: { dataString?: string } } };
+      } = { ...response };
+      try {
+        const dataString = mappedResponse?.notification?.request?.content['dataString'];
+        if (typeof dataString === 'string') {
+          mappedResponse.notification.request.content.data = JSON.parse(dataString);
+          delete mappedResponse.notification.request.content.dataString;
+        }
+      } catch (e: any) {
+        console.log(`Error in response: ${e}`);
+      }
+      console.log(`response received: ${JSON.stringify(mappedResponse, null, 2)}`);
+      listener(mappedResponse);
+    }
   );
 }
 
