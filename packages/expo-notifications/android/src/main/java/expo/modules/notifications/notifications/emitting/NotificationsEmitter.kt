@@ -1,8 +1,6 @@
 package expo.modules.notifications.notifications.emitting
 
 import android.os.Bundle
-import android.util.Log
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.notifications.NotificationSerializer
