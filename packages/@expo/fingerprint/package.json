@@ -1,6 +1,6 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",

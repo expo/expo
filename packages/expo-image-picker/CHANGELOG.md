@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Add support for granular permissions. ([#28897](https://github.com/expo/expo/pull/28897) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 15.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Add support for granular permissions. ([#28897](https://github.com/expo/expo/pull/28897) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.0.4 — 2024-05-01
 

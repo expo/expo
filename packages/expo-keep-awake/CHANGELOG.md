@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Stop useKeepAwake calls deactivating each other by default. ([#28884](https://github.com/expo/expo/pull/28884) by [@macksal](https://github.com/macksal))
-
 ### 💡 Others
+
+## 13.0.2 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- Stop useKeepAwake calls deactivating each other by default. ([#28884](https://github.com/expo/expo/pull/28884) by [@macksal](https://github.com/macksal))
 
 ## 13.0.1 — 2024-04-23
 
