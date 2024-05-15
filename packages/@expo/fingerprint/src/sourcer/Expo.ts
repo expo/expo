@@ -8,8 +8,9 @@ import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
+import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
-import { SourceSkips, type HashSource, type NormalizedOptions } from '../Fingerprint.types';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -111,13 +112,13 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
   const { sourceSkips } = options;
   delete normalizedConfig._internal;
 
-  if (sourceSkips & SourceSkips.AppConfigVersion) {
+  if (sourceSkips & SourceSkips.ExpoConfigVersions) {
     delete normalizedConfig.version;
     delete normalizedConfig.android?.versionCode;
     delete normalizedConfig.ios?.buildNumber;
   }
 
-  if (sourceSkips & SourceSkips.AppConfigRuntimeVersion) {
+  if (sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString) {
     if (typeof normalizedConfig.runtimeVersion === 'string') {
       delete normalizedConfig.runtimeVersion;
     }
@@ -132,7 +133,7 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
     }
   }
 
-  if (sourceSkips & SourceSkips.AppConfigName) {
+  if (sourceSkips & SourceSkips.ExpoConfigNames) {
     normalizedConfig.name = '';
     delete normalizedConfig.description;
     delete normalizedConfig.web?.name;
@@ -140,23 +141,26 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
     delete normalizedConfig.web?.description;
   }
 
-  if (sourceSkips & SourceSkips.AppConfigAppId) {
+  if (sourceSkips & SourceSkips.ExpoConfigAndroidPackage) {
     delete normalizedConfig.android?.package;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigIosBundleIdentifier) {
     delete normalizedConfig.ios?.bundleIdentifier;
   }
 
-  if (sourceSkips & SourceSkips.AppConfigSchemes) {
+  if (sourceSkips & SourceSkips.ExpoConfigSchemes) {
     delete normalizedConfig.scheme;
     normalizedConfig.slug = '';
   }
 
-  if (sourceSkips & SourceSkips.AppConfigEASProject) {
+  if (sourceSkips & SourceSkips.ExpoConfigEASProject) {
     delete normalizedConfig.owner;
     delete normalizedConfig?.extra?.eas;
     delete normalizedConfig?.updates?.url;
   }
 
-  if (sourceSkips & SourceSkips.AppConfigAssets) {
+  if (sourceSkips & SourceSkips.ExpoConfigAssets) {
     delete normalizedConfig.icon;
     delete normalizedConfig.splash;
     delete normalizedConfig.android?.adaptiveIcon;

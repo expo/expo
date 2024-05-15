@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import type { SourceSkips } from './sourcer/SourceSkips';
 export type FingerprintSource = HashSource & {
     /**
      * Hash value of the `source`.
@@ -22,16 +23,6 @@ export interface Fingerprint {
     hash: string;
 }
 export type Platform = 'android' | 'ios';
-export declare enum SourceSkips {
-    None = 1,
-    AppConfigVersion = 2,
-    AppConfigRuntimeVersion = 4,
-    AppConfigName = 8,
-    AppConfigAppId = 16,
-    AppConfigSchemes = 32,
-    AppConfigEASProject = 64,
-    AppConfigAssets = 128
-}
 export interface Options {
     /**
      * Only get native files from the given platforms. Default is `['android', 'ios']`.
@@ -83,7 +74,7 @@ export interface Options {
 /**
  * Supported options from fingerprint.config.js
  */
-export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'debug'>;
+export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'debug'>;
 export interface NormalizedOptions extends Options {
     platforms: NonNullable<Options['platforms']>;
     concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;

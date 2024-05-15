@@ -1,3 +1,5 @@
+import type { SourceSkips } from './sourcer/SourceSkips';
+
 export type FingerprintSource = HashSource & {
   /**
    * Hash value of the `source`.
@@ -24,32 +26,6 @@ export interface Fingerprint {
 }
 
 export type Platform = 'android' | 'ios';
-
-export enum SourceSkips {
-  // Skip nothing
-  None = 1 << 0,
-
-  // Skip version in app.json
-  AppConfigVersion = 1 << 1,
-
-  // Skip runtimeVersion in app.json
-  AppConfigRuntimeVersion = 1 << 2,
-
-  // Skip app name in app.json
-  AppConfigName = 1 << 3,
-
-  // Skip appId in app.json
-  AppConfigAppId = 1 << 4,
-
-  // Skip schemes in app.json
-  AppConfigSchemes = 1 << 5,
-
-  // Skip EAS project information in app.json
-  AppConfigEASProject = 1 << 6,
-
-  // Skip assets in app.json
-  AppConfigAssets = 1 << 7,
-}
 
 export interface Options {
   /**
@@ -113,7 +89,7 @@ export interface Options {
  */
 export type Config = Pick<
   Options,
-  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'debug'
+  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'debug'
 >;
 
 //#region internal types

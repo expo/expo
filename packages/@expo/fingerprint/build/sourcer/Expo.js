@@ -12,8 +12,8 @@ const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
+const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
-const Fingerprint_types_1 = require("../Fingerprint.types");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     if (!resolve_from_1.default.silent(path_1.default.resolve(projectRoot), 'expo/config')) {
@@ -91,12 +91,12 @@ function normalizeExpoConfig(config, options) {
     const normalizedConfig = JSON.parse(JSON.stringify(config));
     const { sourceSkips } = options;
     delete normalizedConfig._internal;
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigVersion) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigVersions) {
         delete normalizedConfig.version;
         delete normalizedConfig.android?.versionCode;
         delete normalizedConfig.ios?.buildNumber;
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigRuntimeVersion) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigRuntimeVersionIfString) {
         if (typeof normalizedConfig.runtimeVersion === 'string') {
             delete normalizedConfig.runtimeVersion;
         }
@@ -110,27 +110,29 @@ function normalizeExpoConfig(config, options) {
             delete normalizedConfig.web.runtimeVersion;
         }
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigName) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigNames) {
         normalizedConfig.name = '';
         delete normalizedConfig.description;
         delete normalizedConfig.web?.name;
         delete normalizedConfig.web?.shortName;
         delete normalizedConfig.web?.description;
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigAppId) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAndroidPackage) {
         delete normalizedConfig.android?.package;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigIosBundleIdentifier) {
         delete normalizedConfig.ios?.bundleIdentifier;
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigSchemes) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigSchemes) {
         delete normalizedConfig.scheme;
         normalizedConfig.slug = '';
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigEASProject) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigEASProject) {
         delete normalizedConfig.owner;
         delete normalizedConfig?.extra?.eas;
         delete normalizedConfig?.updates?.url;
     }
-    if (sourceSkips & Fingerprint_types_1.SourceSkips.AppConfigAssets) {
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAssets) {
         delete normalizedConfig.icon;
         delete normalizedConfig.splash;
         delete normalizedConfig.android?.adaptiveIcon;

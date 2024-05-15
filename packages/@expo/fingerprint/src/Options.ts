@@ -3,7 +3,8 @@ import os from 'os';
 import path from 'path';
 
 import { loadConfigAsync } from './Config';
-import { SourceSkips, type NormalizedOptions, type Options } from './Fingerprint.types';
+import type { NormalizedOptions, Options } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -75,8 +76,6 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
-const DEFAULT_SOURCE_SKIPS = SourceSkips.AppConfigVersion | SourceSkips.AppConfigRuntimeVersion;
-
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
@@ -88,7 +87,7 @@ export async function normalizeOptionsAsync(
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
-    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    sourceSkips: SourceSkips.None,
     // Options from config
     ...config,
     // Explicit options

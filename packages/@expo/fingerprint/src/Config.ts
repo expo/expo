@@ -37,6 +37,7 @@ export async function loadConfigAsync(
     'concurrentIoLimit',
     'hashAlgorithm',
     'extraSources',
+    'sourceSkips',
     'debug',
   ];
   const config: Config = {};
