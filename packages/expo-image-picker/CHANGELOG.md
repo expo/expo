@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add support for granular permissions.
+
 ### 💡 Others
 
 ## 15.0.4 — 2024-05-01
