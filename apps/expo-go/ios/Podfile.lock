@@ -84,7 +84,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (13.0.1):
     - ExpoModulesCore
-  - ExpoHead (3.5.13):
+  - ExpoHead (3.5.14):
     - ExpoModulesCore
   - ExpoImage (1.12.9):
     - ExpoModulesCore
@@ -2373,7 +2373,7 @@ SPEC CHECKSUMS:
   ExpoFont: 690b76008be824e47907f200cb0764870108dfd1
   ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
-  ExpoHead: 8ffa9b2cd875f3113e2dc160a84555bd3087a9b5
+  ExpoHead: 28ccee5977648d15f6a62b9a680a4bd169a1515b
   ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
   ExpoImageManipulator: aea99205c66043a00a0af90e345395637b9902fa
   ExpoImagePicker: f6d9da49201ce201645366afc6be12cef47f24d7
