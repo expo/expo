@@ -26,18 +26,12 @@ function extractExactPathFromURL(url: string): string {
     // from the URL, while stripping the origin.
     url.match(/^https?:\/\//)
   ) {
-    const { origin, href, hostname, pathname } = new URL(url);
+    const { origin, href, hostname } = new URL(url);
 
     if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
-      // drop the first two segments from pathname:
-      const segments = pathname.split('/');
-
-      if (segments[2] === 'group') {
-        // Is this u.expo.dev/{uuid}/group/{uuid}
-        return segments.slice(4).join('/');
-      } else {
-        return segments.slice(2).join('/');
-      }
+      // These are QR code generate deep-link that always like to the '/' path
+      // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+      return '';
     }
 
     return href.replace(origin, '');

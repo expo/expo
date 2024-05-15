@@ -31,7 +31,12 @@ describe(extractExpoPathFromURL, () => {
         'exp://127.0.0.1:19000?query=param',
         'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb',
         'exp://u.expo.dev/5a5f4a9a-6167-465b-acd0-eb8def468bf2/group/d54f9fba-95ed-4804-91ed-359626042bb/--/foobar',
+        // Possible QR codes https://github.com/expo/universe/blob/79a04cd44ab1b2b63ca27e5f2e061145d67913b6/functions/generate-qr-code/README.MD
         'exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/group/e52d7d41-3b5f-4e77-bcc8-11f95462d53c',
+        'exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/update/e52d7d41-3b5f-4e77-bcc8-11f95462d53c',
+        'exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/channel/e52d7d41-3b5f-4e77-bcc8-11f95462d53c',
+        'exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/66251e1b-0290-4ef8-87a4-e533cac914dd/branch/e52d7d41-3b5f-4e77-bcc8-11f95462d53c',
+        'exp+custom-scheme://expo-development-client/?url=https://u.expo.dev/update/e52d7d41-3b5f-4e77-bcc8-11f95462d53c',
         'exp://evanbacon.dev/',
         'exp://evanbacon.dev/hello/--/',
         'exp://u.expo.dev/update/123abc',
