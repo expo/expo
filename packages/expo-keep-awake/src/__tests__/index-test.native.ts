@@ -32,4 +32,16 @@ describe(useKeepAwake, () => {
     expect(mockDeactivate.mock.calls.length).toBe(1);
     expect(mockDeactivate.mock.calls[0][0]).toEqual('tag');
   });
+
+  it('test calls in different components default to using unique tags', async () => {
+    renderHook(() => {
+      useKeepAwake();
+    });
+    const firstComponentTag = mockActivate.mock.lastCall[0];
+    renderHook(() => {
+      useKeepAwake();
+    });
+    const secondComponentTag = mockActivate.mock.lastCall[0];
+    expect(firstComponentTag).not.toEqual(secondComponentTag);
+  });
 });
