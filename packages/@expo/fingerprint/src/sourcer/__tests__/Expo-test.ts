@@ -314,8 +314,6 @@ module.exports = config;
       expect(expoConfig.android.package).toBeUndefined();
       expect(expoConfig.ios.buildNumber).toBeUndefined();
       expect(expoConfig.ios.bundleIdentifier).toBeUndefined();
-
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 

@@ -52,8 +52,6 @@ module.exports = config;
 
       const { hashAlgorithm } = await normalizeOptionsAsync('/app', { hashAlgorithm: 'md5' });
       expect(hashAlgorithm).toBe('md5');
-
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 });
