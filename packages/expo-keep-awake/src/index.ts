@@ -27,8 +27,11 @@ export async function isAvailableAsync(): Promise<boolean> {
 export function useKeepAwake(tag?: string, options?: KeepAwakeOptions): void {
   const defaultTag = useId();
   const tagOrDefault = tag ?? defaultTag;
+  const disabled = options?.enabled === false;
 
   useEffect(() => {
+    if (disabled) return;
+
     let isMounted = true;
     activateKeepAwakeAsync(tagOrDefault).then(() => {
       if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
@@ -43,7 +46,7 @@ export function useKeepAwake(tag?: string, options?: KeepAwakeOptions): void {
         deactivateKeepAwake(tagOrDefault);
       }
     };
-  }, [tagOrDefault]);
+  }, [tagOrDefault, disabled]);
 }
 
 // @needsAudit

@@ -22,7 +22,10 @@ export async function isAvailableAsync() {
 export function useKeepAwake(tag, options) {
     const defaultTag = useId();
     const tagOrDefault = tag ?? defaultTag;
+    const disabled = options?.enabled === false;
     useEffect(() => {
+        if (disabled)
+            return;
         let isMounted = true;
         activateKeepAwakeAsync(tagOrDefault).then(() => {
             if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
@@ -38,7 +41,7 @@ export function useKeepAwake(tag, options) {
                 deactivateKeepAwake(tagOrDefault);
             }
         };
-    }, [tagOrDefault]);
+    }, [tagOrDefault, disabled]);
 }
 // @needsAudit
 /**

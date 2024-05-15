@@ -13,6 +13,9 @@ export enum KeepAwakeEventState {
 export type KeepAwakeListener = (event: KeepAwakeEvent) => void;
 
 export type KeepAwakeOptions = {
+  /** When `false`, the screen will no longer be kept awake. */
+  enabled?: boolean;
+
   /**
    * The call will throw an unhandled promise rejection on Android when the original Activity is dead or deactivated.
    * Set the value to `true` for suppressing the uncaught exception.
