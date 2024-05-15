@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Removes the unnecessary reload when opening the backgrounded app from the icon. ([#28893](https://github.com/expo/expo/pull/28893) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 4.0.14 — 2024-05-09

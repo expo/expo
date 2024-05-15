@@ -253,9 +253,14 @@ class DevLauncherController private constructor() :
       }
 
     intent?.let {
+      // If the app is already open or the intent is not a main intent, we don't want to handle it.
+      if (mode == Mode.APP || intent.action != Intent.ACTION_MAIN) {
+        return@let
+      }
+
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
-      if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null && intent.action == Intent.ACTION_MAIN) {
+      if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
         coroutineScope.launch {
           try {
             loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
