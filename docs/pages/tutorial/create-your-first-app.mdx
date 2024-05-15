@@ -16,8 +16,8 @@ In this chapter, let's learn how to create a new Expo project and how to get it 
 
 We'll need the following tools to get started:
 
-- Install [Expo Go](https://expo.dev/client) on a physical device.
-- Prepare for development by [installing the required tools](/get-started/create-a-project/).
+- Install [Expo Go](https://expo.dev/go) on a physical device.
+- Prepare for development by installing the required tools listed under [system requirements](/get-started/create-a-project/).
 
 This tutorial also assumes that you have a basic knowledge of JavaScript and React. If you have never written React code, go through [the official React tutorial](https://react.dev/learn).
 
@@ -25,9 +25,7 @@ This tutorial also assumes that you have a basic knowledge of JavaScript and Rea
 
 ## Initialize a new Expo app
 
-We will use <A href="/more/glossary-of-terms/#create-expo-app">`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project with the `expo` package installed.
-
-It will create a new project directory and install all the necessary dependencies to get the project up and running locally. Run the following command in your terminal:
+We will use <A href="/more/glossary-of-terms/#create-expo-app">`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project with the `expo` package installed. Run the following command in your terminal:
 
 <Terminal
   cmd={[
@@ -40,7 +38,7 @@ It will create a new project directory and install all the necessary dependencie
   cmdCopy="npx create-expo-app StickerSmash --template blank && cd StickerSmash"
 />
 
-This command will create a new directory for the project with the name: **StickerSmash**. It will use the blank project template, so we can focus on the content of this tutorial.
+This command will create a new directory for the project with the name **StickerSmash**. The `create-expo-app` has a `--template` option, which we use to create a new project with different pre-installed libraries and set it up. In this case, we're using the `blank` which installs the minimum required libraries. We'll continue to add more dependencies throughout this tutorial when we need them.
 
 </Step>
 
