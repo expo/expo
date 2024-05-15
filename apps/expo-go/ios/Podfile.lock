@@ -259,7 +259,7 @@ PODS:
   - EXTaskManager (11.8.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.25.12):
+  - EXUpdates (0.25.13):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -287,7 +287,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - "sqlite3 (~> 3.45.3+1)"
     - Yoga
-  - EXUpdates/Tests (0.25.12):
+  - EXUpdates/Tests (0.25.13):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2406,7 +2406,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: cfaa9778a37c3d66bf46c964c5af584ae8d54201
+  EXUpdates: 5c5dd116dabfe006f29cf1a25881b36f727a862c
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 898d14d17bf19e2435cafd9ea2a1033efe445709
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
