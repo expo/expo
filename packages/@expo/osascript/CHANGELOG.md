@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix util.isArray is deprecated
+- Fix util.isArray is deprecated ([#28927](https://github.com/expo/expo/pull/28927) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 
