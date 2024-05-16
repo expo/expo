@@ -236,7 +236,7 @@ function isError(error: any): error is Error {
  * See: https://github.com/expo/expo/issues/28890
  */
 function resolveRealEntryFilePath(projectRoot: string, entryFile: string): string {
-  if (projectRoot.startsWith('/private') && entryFile.startsWith('/var')) {
+  if (projectRoot.startsWith('/private/var') && entryFile.startsWith('/var')) {
     return fs.realpathSync(entryFile);
   }
 
