@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '0.28.2'
+version = '0.28.3'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.notifications"
   defaultConfig {
     versionCode 21
-    versionName '0.28.2'
+    versionName '0.28.3'
   }
 
   buildFeatures {

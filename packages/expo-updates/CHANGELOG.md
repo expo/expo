@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed launch crash when using fingerprint runtime version policy on Android with expo-dev-client. ([#28912](https://github.com/expo/expo/pull/28912) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.25.14 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- Fixed launch crash when using fingerprint runtime version policy on Android with expo-dev-client. ([#28912](https://github.com/expo/expo/pull/28912) by [@kudo](https://github.com/kudo))
 
 ## 0.25.13 — 2024-05-15
 
