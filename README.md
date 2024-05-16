@@ -27,7 +27,7 @@
 &ensp;•&ensp;
   <a aria-label="expo documentation" href="https://docs.expo.dev">Read the Documentation</a>
 &ensp;•&ensp;
-  <a aria-label="expo documentation" href="https://blog.expo.dev">Learn more on our blog</a>
+  <a aria-label="expo documentation" href="https://expo.dev/blog">Learn more on our blog</a>
 &ensp;•&ensp;
   <a aria-label="expo documentation" href="https://expo.canny.io/feature-requests">Request a feature</a>
 </p>
