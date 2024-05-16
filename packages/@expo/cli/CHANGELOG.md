@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Parse full tarball object instead of quoted string with `npm view` for Linux. ([#28919](https://github.com/expo/expo/pull/28919) by [@byCedric](https://github.com/byCedric))
+- Parse full tarball object instead of quoted string with `npm view` for `npm@10.8.0+`. ([#28919](https://github.com/expo/expo/pull/28919) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
