@@ -29,6 +29,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     return mm
   }()
   private var cameraShouldInit = true
+  private var isSessionRunning = false
 
   // MARK: Property Observers
 
@@ -158,7 +159,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func onAppForegrounded() {
-    if !session.isRunning {
+    if !session.isRunning && isSessionRunning {
+      isSessionRunning = false
       sessionQueue.async {
         self.session.startRunning()
       }
@@ -166,7 +168,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func onAppBackgrounded() {
-    if session.isRunning {
+    if session.isRunning && !isSessionRunning {
+      isSessionRunning = true
       sessionQueue.async {
         self.session.stopRunning()
       }
@@ -298,8 +301,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
 
       if error.code == .mediaServicesWereReset {
-        if !self.session.isRunning {
+        if self.isSessionRunning {
           self.session.startRunning()
+          self.isSessionRunning = self.session.isRunning
           self.updateSessionAudioIsMuted()
           self.onCameraReady()
         }

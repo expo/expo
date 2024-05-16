@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, prevent a crash when rendering the view on a simulator.
+
 ### 💡 Others
 
 ## 15.0.8 — 2024-05-13
