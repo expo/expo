@@ -30,7 +30,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
 
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
-      setTooltipVisible(isOverflowing(event.currentTarget));
+      setTooltipVisible(isOverflowing(event.currentTarget) || Boolean(tags?.length));
     };
 
     const onMouseOut = () => {
@@ -38,6 +38,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     };
 
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
+    const tagsToDisplay = tags && tags.length > 0 ? tags.filter(tag => tag === 'deprecated') : [];
 
     return (
       <Tooltip.Root open={tooltipVisible}>
@@ -55,27 +56,35 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             )}>
             <TitleElement
               className={mergeClasses(
-                '!text-secondary hocus:!text-link',
+                'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
                 isActive && '!text-link'
               )}>
               {displayTitle}
             </TitleElement>
-            {tags && tags.length ? (
+            {tagsToDisplay.length > 0 && (
               <div className="inline-flex">
-                {tags.map(tag => (
+                {tagsToDisplay.map(tag => (
                   <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
                 ))}
               </div>
-            ) : undefined}
+            )}
           </Link>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"
+          className="min-w-[232px]"
           collisionPadding={{
             right: 22,
           }}>
-          <FOOTNOTE tag="code">{displayTitle}</FOOTNOTE>
+          <FOOTNOTE tag={isCode ? 'code' : undefined}>{displayTitle}</FOOTNOTE>
+          {tags && tags.length > 0 && (
+            <div className="flex flex-row my-1 gap-2">
+              {tags.map(tag => (
+                <Tag name={tag} className="!m-0" type="toc" key={`${displayTitle}-${tag}`} />
+              ))}
+            </div>
+          )}
         </Tooltip.Content>
       </Tooltip.Root>
     );
@@ -106,7 +115,7 @@ const isOverflowing = (el: HTMLElement) => {
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
-  return childrenWidth >= el.scrollWidth - indent;
+  return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
 };
 
 export default DocumentationSidebarRightLink;
