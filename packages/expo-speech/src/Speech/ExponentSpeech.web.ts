@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, createWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
