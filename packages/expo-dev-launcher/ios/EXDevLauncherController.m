@@ -330,14 +330,26 @@
   [self _removeInitModuleObserver];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-  UIView *rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
-                                                     initialProperties:nil
-                                                     launchOptions:_launchOptions];
 
+#if RCT_DEV
+  NSURL *url = [self devLauncherURL];
+  if (url != nil) {
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  }
+
+  [self _addInitModuleObserver];
+#endif
+
+  UIView *rootView;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
+
+  rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
+                                                     initialProperties:nil
+                                                     launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -345,15 +357,6 @@
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
-#if RCT_DEV
-  NSURL *url = [self devLauncherURL];
-  if (url != nil) {
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
-  } else {
-    [self _addInitModuleObserver];
-  }
-#endif
 
   [_window makeKeyAndVisible];
 }
