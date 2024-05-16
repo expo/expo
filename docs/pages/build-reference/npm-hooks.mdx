@@ -3,6 +3,8 @@ title: Build lifecycle hooks
 description: Learn how to use the EAS Build lifecycle hooks with npm to customize your build process.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.mdx) and [iOS build process](ios-builds.mdx) docs to get a better understanding about the internals of the build process.
 
 - `eas-build-pre-install` - executed before EAS Build runs `npm install`.
@@ -68,6 +70,24 @@ elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
   echo "Run commands for iOS builds here"
 fi
 ```
+
+<Collapsible summary="Example pre-install script that installs git-lfs on macOS workers">
+
+The following script will install [git-lfs](https://git-lfs.com/) if it is not yet installed. This is useful in some cases where git-lfs is required to install certain CocoaPods.
+
+```bash pre-install
+if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  if brew list git-lfs > /dev/null 2>&1; then
+    echo "=====> git-lfs is already installed."
+  else
+    echo "=====> Installing git-lfs"
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install git-lfs
+    git lfs install
+  fi
+fi
+```
+
+</Collapsible>
 
 ### `package.json` and Node script
 
