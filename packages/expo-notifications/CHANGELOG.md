@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Add support for `interruptionLevel`.
+
 ## 0.28.2 — 2024-05-15
 
 ### 🐛 Bug fixes
