@@ -26,6 +26,26 @@ struct ExpoCameraUtils {
     return orientation
   }
 
+  // .landscapeRight and .landscapeLeft of UIInterfaceOrientation are reversed when mapped to UIDeviceOrientation
+  static func physicalOrientation(
+    for orientation: UIInterfaceOrientation
+  ) -> UIDeviceOrientation {
+    switch orientation {
+    case .portrait:
+      return .portrait
+    case .landscapeLeft:
+      return .landscapeRight
+    case .landscapeRight:
+      return .landscapeLeft
+    case .portraitUpsideDown:
+      return .portraitUpsideDown
+    case .unknown:
+      return .unknown
+    default:
+      return .unknown
+    }
+  }
+
   static func videoOrientation(for interfaceOrientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
     switch interfaceOrientation {
     case .portrait:
@@ -41,6 +61,7 @@ struct ExpoCameraUtils {
     }
   }
 
+  // .landscapeRight and .landscapeLeft need to be reversed when mapped back to AVCaptureVideoOrientation
   static func videoOrientation(for deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
     switch deviceOrientation {
     case .portrait:
@@ -48,9 +69,9 @@ struct ExpoCameraUtils {
     case .portraitUpsideDown:
       return .portraitUpsideDown
     case .landscapeLeft:
-      return .landscapeLeft
-    case .landscapeRight:
       return .landscapeRight
+    case .landscapeRight:
+      return .landscapeLeft
     default:
       return .portrait
     }
