@@ -25,7 +25,7 @@ struct ExpoCameraUtils {
 
     return orientation
   }
-  
+
   // .landscapeRight and .landscapeLeft of UIInterfaceOrientation are reversed when mapped to UIDeviceOrientation
   static func physicalOrientation(
     for orientation: UIInterfaceOrientation
