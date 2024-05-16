@@ -4191,10 +4191,10 @@
   resolved "https://registry.yarnpkg.com/@types/braces/-/braces-3.0.1.tgz#5a284d193cfc61abb2e5a50d36ebbc50d942a32b"
   integrity sha512-+euflG6ygo4bn0JHtn4pYqcXwRtLvElQ7/nnjDu7iYG56H0+OhCd7d6Ug0IE3WcFpZozBKW2+80FUbv5QGk5AQ==
 
-"@types/cacache@^15.0.1":
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/@types/cacache/-/cacache-15.0.1.tgz#3d1943cc80ade160c9ae98bd5c1ebcc538f9cd57"
-  integrity sha512-JhL2GFJuHMx4RMg4z0XfXB4ZkKdyiOaOLpjoYMXcyKfrkF3IBXNZBj6/Peo9zX/7PPHyfI63NWVD589cI2YTzg==
+"@types/cacache@^17.0.2":
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/@types/cacache/-/cacache-17.0.2.tgz#1b4b45d0d39a21248459e8d7e39f0ae66a2a1c14"
+  integrity sha512-IrqHzVX2VRMDQQKa7CtKRnuoCLdRJiLW6hWU+w7i7+AaQ0Ii5bKwJxd5uRK4zBCyrHd3tG6G8zOm2LplxbSfQg==
   dependencies:
     "@types/node" "*"
 
@@ -6939,7 +6939,7 @@ cacache@^12.0.2:
     unique-filename "^1.1.1"
     y18n "^4.0.0"
 
-cacache@^15.0.5, cacache@^15.3.0:
+cacache@^15.0.5:
   version "15.3.0"
   resolved "https://registry.yarnpkg.com/cacache/-/cacache-15.3.0.tgz#dc85380fb2f556fe3dda4c719bfa0ec875a7f1eb"
   integrity sha512-VVdYzXEn+cnbXpFgWs5hTT7OScegHVmLhJIR8Ufqk3iFD6A6j5iSX1KuBTfNEv4tdJWE2PzA6IVFtcLC7fN9wQ==
@@ -6974,6 +6974,24 @@ cacache@^18.0.0:
     lru-cache "^10.0.1"
     minipass "^7.0.3"
     minipass-collect "^1.0.2"
+    minipass-flush "^1.0.5"
+    minipass-pipeline "^1.2.4"
+    p-map "^4.0.0"
+    ssri "^10.0.0"
+    tar "^6.1.11"
+    unique-filename "^3.0.0"
+
+cacache@^18.0.2:
+  version "18.0.2"
+  resolved "https://registry.yarnpkg.com/cacache/-/cacache-18.0.2.tgz#fd527ea0f03a603be5c0da5805635f8eef00c60c"
+  integrity sha512-r3NU8h/P+4lVUHfeRw1dtgQYar3DZMm4/cm2bZgOvrFC/su7budSOeqh52VJIC4U4iG1WWwV6vRW0znqBvxNuw==
+  dependencies:
+    "@npmcli/fs" "^3.1.0"
+    fs-minipass "^3.0.0"
+    glob "^10.2.2"
+    lru-cache "^10.0.1"
+    minipass "^7.0.3"
+    minipass-collect "^2.0.1"
     minipass-flush "^1.0.5"
     minipass-pipeline "^1.2.4"
     p-map "^4.0.0"
@@ -14374,6 +14392,13 @@ minipass-collect@^1.0.2:
   integrity sha512-6T6lH0H8OG9kITm/Jm6tdooIbogG9e0tLgpY6mphXSm/A9u8Nq1ryBG+Qspiub9LjWlBPsPS3tWQ/Botq4FdxA==
   dependencies:
     minipass "^3.0.0"
+
+minipass-collect@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/minipass-collect/-/minipass-collect-2.0.1.tgz#1621bc77e12258a12c60d34e2276ec5c20680863"
+  integrity sha512-D7V8PO9oaz7PWGLbCACuI1qEOsq7UKfLotx/C0Aet43fCUB/wfQ7DYeq2oR/svFJGYDHPr38SHATeaj/ZoKHKw==
+  dependencies:
+    minipass "^7.0.3"
 
 minipass-fetch@^3.0.0:
   version "3.0.4"
