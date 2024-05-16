@@ -52,7 +52,6 @@ class PersistentFileLogSpec: ExpoSpec {
     log.clearEntries { _ in
       didClear.value = true
     }
-    // the awaiter reads on another thread such that didClear is set on another queue
     expect(didClear.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
@@ -73,10 +72,14 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 }
 
+/// Since the boolean value is written to in the closure supplied to `log.appendEntry`,
+/// while concurrenlty being read in `expect`, i.e., via the autoclosure, synchronization
+/// is needed to avoid data races. This class allows for simple synchronization of a boolean value.
 private final class SynchronizedBool {
   private var _storage: Bool
   private var lock = NSLock()
 
+  /// Thread safe access here.
   var value: Bool {
     get {
       return lockAround {
