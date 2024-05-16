@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Resolve real path of entry file for `expo export:embed`.
+- Resolve real path of entry file for `expo export:embed`. ([#28926](https://github.com/expo/expo/pull/28926) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
