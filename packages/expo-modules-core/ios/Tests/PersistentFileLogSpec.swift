@@ -48,26 +48,56 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 
   static func clearEntriesSync(log: PersistentFileLog) {
-    var didClear = false
+    let didClear = SynchronizedBool(false)
     log.clearEntries { _ in
-      didClear = true
+      didClear.value = true
     }
-    expect(didClear).toEventually(beTrue(), timeout: .milliseconds(500))
+    // the awaiter reads on another thread such that didClear is set on another queue
+    expect(didClear.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
   static func filterEntriesSync(log: PersistentFileLog, filter: @escaping PersistentFileLogFilter) {
-    var didPurge = false
+    let didPurge = SynchronizedBool(false)
     log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
-      didPurge = true
+      didPurge.value = true
     }
-    expect(didPurge).toEventually(beTrue(), timeout: .milliseconds(500))
+    expect(didPurge.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
   static func appendEntrySync(log: PersistentFileLog, entry: String) {
-    var didAppend = false
+    let didAppend = SynchronizedBool(false)
     log.appendEntry(entry: entry) { _ in
-      didAppend = true
+      didAppend.value = true
     }
-    expect(didAppend).toEventually(beTrue(), timeout: .milliseconds(500))
+    expect(didAppend.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
+}
+
+private final class SynchronizedBool {
+  private var _storage: Bool
+  private var lock = NSLock()
+
+  var value: Bool {
+    get {
+      return lockAround {
+        _storage
+      }
+    }
+    set {
+      lockAround {
+        _storage = newValue
+      }
+    }
+  }
+
+  init(_ storage: Bool) {
+    self._storage = storage
+  }
+
+  private func lockAround<T>(_ closure: () -> T) -> T {
+    lock.lock()
+    defer { lock.unlock() }
+    return closure()
+  }
+
 }
