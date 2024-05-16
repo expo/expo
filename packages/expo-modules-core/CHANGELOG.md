@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
 
 ## 1.12.11 — 2024-05-14
