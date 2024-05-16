@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Add support for `interruptionLevel`. ([#28921](https://github.com/expo/expo/pull/28921) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.28.2 — 2024-05-15
 
 ### 🐛 Bug fixes

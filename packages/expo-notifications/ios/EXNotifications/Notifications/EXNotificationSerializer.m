@@ -64,8 +64,25 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   if (@available(iOS 13.0, *)) {
     serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
   }
+  if (@available(iOS 15.0, *)) {
+    serializedContent[@"interruptionLevel"] = [EXNotificationSerializer serializedInterruptionLevel:content.interruptionLevel];
+  }
 
   return serializedContent;
+}
+
++ (NSString *)serializedInterruptionLevel:(UNNotificationInterruptionLevel)interruptionLevel API_AVAILABLE(ios(15.0)) {
+  static NSDictionary<NSNumber *, NSString *> *interruptionLevelMap;
+  if (!interruptionLevelMap) {
+    interruptionLevelMap = @{
+      @(UNNotificationInterruptionLevelPassive): @"passive",
+      @(UNNotificationInterruptionLevelActive): @"active",
+      @(UNNotificationInterruptionLevelTimeSensitive): @"timeSensitive",
+      @(UNNotificationInterruptionLevelCritical): @"critical"
+    };
+  }
+  
+  return [interruptionLevelMap objectForKey:@(interruptionLevel)];
 }
 
 + (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
