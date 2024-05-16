@@ -784,6 +784,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       // We shouldn't access the device orientation anywhere but on the main thread
       let videoOrientation = ExpoCameraUtils.videoOrientation(for: self.deviceOrientation)
       if (self.previewLayer.videoPreviewLayer.connection?.isVideoOrientationSupported) == true {
+        self.physicalOrientation = ExpoCameraUtils.physicalOrientation(for: self.deviceOrientation)
         self.previewLayer.videoPreviewLayer.connection?.videoOrientation = videoOrientation
       }
     }
