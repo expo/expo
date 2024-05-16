@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve real path of entry file for `expo export:embed`.
+
 ### 💡 Others
 
 ## 0.18.12 — 2024-05-14
