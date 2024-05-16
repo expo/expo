@@ -40,6 +40,15 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   /**
    The view creator expected to be called for derived ExpoFabricView, the `viewDefinition` and event dispatchers will be setup from here.
+
+   NOTE: We swizzle the initializers, e.g. `ViewManagerAdapter_ExpoImage.new()` to `ImageView.init(appContext:)`
+   and we also need viewDefintion (or moduleName) for the `installEventDispatchers()`.
+   Swizzling ExpoFabricView doesn't give us chance to inject iMethod or iVar of ImageView and pass the moduleName.
+   Alternatively, we try to add a dedicated `ExpoFabricView.create()` and passing viewDefinition into the class.
+   That's not a perfect implementation but turns out to be the only way to get the viewDefinition (or moduleName).
+   The example call flow would be:
+   `ViewManagerAdapter_ExpoImage.new()` -> `ViewDefinition.createView()` -> `ExpoFabricView.create()` ->
+   `ImageView.init(appContext:)` -> `ExpoFabricView.init(appContext:)` -> `view.viewDefinition = viewDefinition` here
    */
   internal static func create(viewType: ExpoFabricView.Type, viewDefinition: AnyViewDefinition, appContext: AppContext) -> ExpoFabricView {
     let view = viewType.init(appContext: appContext)
@@ -75,7 +84,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
   public override func viewDidUpdateProps() {
-    guard let viewDefinition = viewDefinition else {
+    guard let viewDefinition else {
       return
     }
     viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: self)
@@ -146,7 +155,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   internal static func injectInitializer(appContext: AppContext, moduleName: String, toViewClass viewClass: AnyClass) {
     // The default initializer for native views. It will be called by Fabric.
     let newBlock: @convention(block) () -> Any = {[weak appContext] in
-      guard let appContext = appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
+      guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
       guard let view = moduleHolder.definition.view?.createView(appContext: appContext) else {
