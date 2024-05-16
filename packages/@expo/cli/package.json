@@ -40,9 +40,9 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~9.0.0-beta.0",
-    "@expo/config-plugins": "~8.0.0-beta.0",
-    "@expo/devcert": "^1.0.0",
+    "@expo/config": "~9.0.0",
+    "@expo/config-plugins": "~8.0.0",
+    "@expo/devcert": "^1.1.2",
     "@expo/env": "~0.3.0",
     "@expo/image-utils": "^0.5.0",
     "@expo/json-file": "^8.3.0",
