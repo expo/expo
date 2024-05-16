@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `.load(_, { strict: true })`. As expected, now it overwrites env variables after second call. ([#28935](https://github.com/expo/expo/pull/28935) by [@XantreDev](https://github.com/XantreDev))
+
 ### 💡 Others
 
 ## 0.3.0 — 2024-04-18
