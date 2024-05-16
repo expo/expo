@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix util.isArray is deprecated
+
 ### 💡 Others
 
 ## 2.1.2 — 2024-04-23
