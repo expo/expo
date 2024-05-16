@@ -31,7 +31,7 @@
     "preset": "jest-expo/universal"
   },
   "dependencies": {
-    "@expo/config": "~9.0.0-beta.0",
+    "@expo/config": "~9.0.0",
     "@expo/json-file": "^8.3.0",
     "@jest/create-cache-key-function": "^29.2.1",
     "babel-jest": "^29.2.1",

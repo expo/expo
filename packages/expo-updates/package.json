@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~9.0.0-beta.0",
-    "@expo/config-plugins": "~8.0.0-beta.0",
+    "@expo/config": "~9.0.0",
+    "@expo/config-plugins": "~8.0.0",
     "@expo/fingerprint": "^0.8.0",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
