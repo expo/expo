@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Removed unneeded in-between function call when resolving promise without arguments.
+
 ## 1.12.11 — 2024-05-14
 
 ### 🐛 Bug fixes
