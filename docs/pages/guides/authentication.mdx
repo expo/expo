@@ -326,7 +326,7 @@ export default function App() {
                 {
                   clientId,
                   code: codeResponse.params.code,
-                  /* @info Reuse the codeVerifier for PCKE */
+                  /* @info Reuse the codeVerifier for PKCE */
                   extraParams: request.codeVerifier
                     ? { code_verifier: request.codeVerifier }
                     : undefined,
