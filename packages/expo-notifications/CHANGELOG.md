@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.3 — 2024-05-16
