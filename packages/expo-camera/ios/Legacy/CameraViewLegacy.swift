@@ -335,7 +335,7 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
 
   private func addErrorNotification() {
     if self.errorNotification != nil {
-      NotificationCenter.default.removeObserver(self.errorNotification)
+      NotificationCenter.default.removeObserver(self.errorNotification as Any)
     }
 
     self.errorNotification = NotificationCenter.default.addObserver(

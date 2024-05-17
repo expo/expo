@@ -206,7 +206,6 @@ public final class FileSystemModule: Module {
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let resumeData = resumeDataString != nil ? Data(base64Encoded: resumeDataString ?? "") : nil
       let onWrite: EXDownloadDelegateOnWriteCallback = { [weak self] _, _, totalBytesWritten, totalBytesExpectedToWrite in
         self?.sendEvent(EVENT_DOWNLOAD_PROGRESS, [
           "uuid": uuid,

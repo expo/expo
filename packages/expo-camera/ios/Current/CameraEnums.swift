@@ -47,8 +47,6 @@ enum FocusMode: String, Enumerable {
       return .autoFocus
     case .off:
       return .continuousAutoFocus
-    default:
-      return .continuousAutoFocus
     }
   }
 }

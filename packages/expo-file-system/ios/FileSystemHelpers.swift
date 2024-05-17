@@ -89,8 +89,9 @@ internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAsse
     let firstResource = PHAssetResource.assetResources(for: asset).first
     if let firstResource {
       resourceManager.writeData(for: firstResource, toFile: toUrl, options: nil) { error in
-        if let error {
+        if error != nil {
           promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
+          return
         }
         promise.resolve()
       }
