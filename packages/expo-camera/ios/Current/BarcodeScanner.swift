@@ -20,7 +20,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     AVMetadataObject.ObjectType.pdf417: ZXPDF417Reader(),
     AVMetadataObject.ObjectType.code39: ZXCode39Reader()
   ]
-
+  private var previewLayer: AVCaptureVideoPreviewLayer?
   private var zxingFPSProcessed = 6.0
   private var zxingEnabled = true
 
@@ -46,6 +46,10 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         }
       }
     }
+  }
+
+  func setPreviewLayer(layer: AVCaptureVideoPreviewLayer) {
+    self.previewLayer = layer
   }
 
   func setIsEnabled(_ enabled: Bool) {
@@ -182,7 +186,11 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
 
     for metadata in metadataObjects {
-      let codeMetadata = metadata as? AVMetadataMachineReadableCodeObject
+      var codeMetadata = metadata as? AVMetadataMachineReadableCodeObject
+      if let previewLayer {
+        codeMetadata = previewLayer.transformedMetadataObject(for: metadata) as? AVMetadataMachineReadableCodeObject
+      }
+
       for barcodeType in settings {
         if zxingBarcodeReaders[barcodeType] != nil {
           continue
