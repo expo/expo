@@ -11,7 +11,7 @@ internal func queryCustomNativeFonts() -> [String] {
 
   // [1] Get font family names for each font file
   let fontFamilies: [[String]] = fontFilePaths.compactMap { fontFilePath in
-    guard let fontUrl = Bundle.main.url(forResource: fontFilePath, withExtension: nil) as? URL else {
+    guard let fontUrl = Bundle.main.url(forResource: fontFilePath, withExtension: nil) else {
       return []
     }
     guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(fontUrl as CFURL) as? [CTFontDescriptor] else {
