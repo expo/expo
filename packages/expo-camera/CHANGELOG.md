@@ -16,6 +16,7 @@
 
 - On `iOS`, prevent a crash when rendering the view on a simulator. ([#28911](https://github.com/expo/expo/pull/28911) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix incorrect orientation when taking pictures in landscape. ([#28917](https://github.com/expo/expo/pull/28917) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, set previewLayer on scanner to get correct dimensions. ([#28931](https://github.com/expo/expo/pull/28931) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.8 — 2024-05-13
 
