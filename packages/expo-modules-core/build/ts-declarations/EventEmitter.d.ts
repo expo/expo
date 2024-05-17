@@ -46,5 +46,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
      * Returns a number of listeners added to the given event.
      */
     listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
+    startObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
+    stopObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
 }
 //# sourceMappingURL=EventEmitter.d.ts.map
