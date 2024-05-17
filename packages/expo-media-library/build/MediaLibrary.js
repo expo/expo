@@ -1,7 +1,6 @@
-import { PermissionStatus, createPermissionHook, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExpoMediaLibrary';
-const eventEmitter = new EventEmitter(MediaLibrary);
 export { PermissionStatus, };
 function arrayize(item) {
     if (Array.isArray(item)) {
@@ -401,7 +400,7 @@ export async function getAssetsAsync(assetsOptions = {}) {
  * like to unsubscribe the listener.
  */
 export function addListener(listener) {
-    return eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
+    return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
 // @docsMissing
 export function removeSubscription(subscription) {
@@ -412,7 +411,7 @@ export function removeSubscription(subscription) {
  * Removes all listeners.
  */
 export function removeAllListeners() {
-    eventEmitter.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
+    MediaLibrary.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
 }
 // @needsAudit
 /**
