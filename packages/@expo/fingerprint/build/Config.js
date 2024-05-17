@@ -34,6 +34,7 @@ async function loadConfigAsync(projectRoot, silent = false) {
         'concurrentIoLimit',
         'hashAlgorithm',
         'extraSources',
+        'sourceSkips',
         'debug',
     ];
     const config = {};

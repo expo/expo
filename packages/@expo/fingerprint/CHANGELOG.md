@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior.  ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -15,6 +17,7 @@
 ### 🎉 New features
 
 - Added `fingerprint.config.js` support for a project to customize some options. ([#28860](https://github.com/expo/expo/pull/28860) by [@kudo](https://github.com/kudo))
+- Added `sourceSkips` support to skip specific sourcers from fingerprint. ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

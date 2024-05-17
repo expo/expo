@@ -4,6 +4,7 @@ import path from 'path';
 
 import { loadConfigAsync } from './Config';
 import type { NormalizedOptions, Options } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -86,6 +87,7 @@ export async function normalizeOptionsAsync(
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+    sourceSkips: SourceSkips.None,
     // Options from config
     ...config,
     // Explicit options
