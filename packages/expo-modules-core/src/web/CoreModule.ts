@@ -20,7 +20,14 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
     if (!this.listeners?.has(eventName)) {
       this.listeners?.set(eventName, new Set());
     }
+
+    const previousListenerCount = this.listenerCount(eventName);
+
     this.listeners?.get(eventName)?.add(listener);
+
+    if (previousListenerCount === 0 && this.listenerCount(eventName) === 1) {
+      this.startObserving(eventName);
+    }
 
     return {
       remove: () => {
@@ -33,23 +40,36 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
     eventName: EventName,
     listener: TEventsMap[EventName]
   ): void {
-    this.listeners?.get(eventName)?.delete(listener);
+    const hasRemovedListener = this.listeners?.get(eventName)?.delete(listener);
+    if (this.listenerCount(eventName) === 0 && hasRemovedListener) {
+      this.stopObserving(eventName);
+    }
   }
 
   removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
+    const listenerCount = this.listenerCount(eventName);
+
     this.listeners?.get(eventName)?.clear();
+    if (listenerCount > 0) {
+      this.stopObserving(eventName);
+    }
   }
 
   emit<EventName extends keyof TEventsMap>(
     eventName: EventName,
     ...args: Parameters<TEventsMap[EventName]>
   ): void {
-    this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
+    const listeners = new Set(this.listeners?.get(eventName));
+    listeners.forEach((listener) => listener(...args));
   }
 
   listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number {
     return this.listeners?.get(eventName)?.size ?? 0;
   }
+
+  startObserving<EventName extends keyof TEventsMap>(eventName: EventName): void {}
+
+  stopObserving<EventName extends keyof TEventsMap>(eventName: EventName): void {}
 }
 
 export class NativeModule<TEventsMap extends Record<never, never>>
