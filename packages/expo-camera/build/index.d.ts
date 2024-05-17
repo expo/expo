@@ -1,5 +1,5 @@
+import { PermissionResponse } from 'expo-modules-core';
 import { BarcodeScanningResult, BarcodeType } from './Camera.types';
-import { PermissionResponse } from './legacy/Camera.types';
 export { default as CameraView } from './CameraView';
 /**
  * Checks user's permissions for accessing camera.
