@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoTaskManager from './ExpoTaskManager';
 
@@ -235,7 +235,7 @@ export async function unregisterAllTasksAsync(): Promise<void> {
 }
 
 if (ExpoTaskManager) {
-  const eventEmitter = new EventEmitter(ExpoTaskManager);
+  const eventEmitter = new LegacyEventEmitter(ExpoTaskManager);
   eventEmitter.addListener<TaskManagerTaskBody>(
     ExpoTaskManager.EVENT_NAME,
     async ({ data, error, executionInfo }) => {
