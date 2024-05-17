@@ -3,6 +3,7 @@ import {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
+  Subscription,
 } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
@@ -331,8 +332,8 @@ export type CameraProps = ViewProps & {
    */
   animateShutter?: boolean;
   /**
-   * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
-   * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
+   * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+   * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
    */
   pictureSize?: string;
   /**
@@ -478,4 +479,10 @@ export type BarcodeType =
   | 'code128'
   | 'upc_a';
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionHookOptions,
+  Subscription,
+};
