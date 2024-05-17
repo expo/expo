@@ -1,10 +1,15 @@
-import fs from 'fs/promises';
+import { vol } from 'memfs';
+import requireString from 'require-from-string';
 
 import { loadConfigAsync } from '../Config';
 
 jest.mock('fs/promises');
 
 describe(loadConfigAsync, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
   it('should return null if no config file is found', async () => {
     const config = await loadConfigAsync('/app', true);
     expect(config).toBeNull();
@@ -12,75 +17,100 @@ describe(loadConfigAsync, () => {
 
   it('should return the config file if it exists', async () => {
     await jest.isolateModulesAsync(async () => {
-      jest.doMock(
-        '/app/fingerprint.config.js',
-        () => ({
-          hashAlgorithm: 'sha256',
-        }),
-        { virtual: true }
-      );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
       const config = await loadConfigAsync('/app', true);
       expect(config).toEqual({ hashAlgorithm: 'sha256' });
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 
   it('should mute console logs when mute=true', async () => {
     await jest.isolateModulesAsync(async () => {
-      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
       jest.doMock(
         '/app/fingerprint.config.js',
         () => {
-          console.log('test log');
-          return { hashAlgorithm: 'sha256' };
+          // Since requireString() evaluates code in a new context, console.log will not be mocked there,
+          // we just call console.log here alternatively.
+          // This is actually in the `require(configFile)` call in the `loadConfigAsync()` function.
+          console.log('echo from fingerprint.config.js');
+          return requireString(configContents);
         },
-        { virtual: true }
+        {
+          virtual: true,
+        }
       );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
       const config = await loadConfigAsync('/app', true);
       expect(config).toEqual({ hashAlgorithm: 'sha256' });
-      jest.dontMock('/app/fingerprint.config.js');
       expect(logSpy).not.toHaveBeenCalled();
     });
   });
 
   it('should not mute console logs when mute=false', async () => {
     await jest.isolateModulesAsync(async () => {
-      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
       jest.doMock(
         '/app/fingerprint.config.js',
         () => {
+          // Since requireString() evaluates code in a new context, console.log will not be mocked there,
+          // we just call console.log here alternatively.
+          // This is actually in the `require(configFile)` call in the `loadConfigAsync()` function.
           console.log('echo from fingerprint.config.js');
-          return { hashAlgorithm: 'sha256' };
+          return requireString(configContents);
         },
-        { virtual: true }
+        {
+          virtual: true,
+        }
       );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
       const config = await loadConfigAsync('/app');
       expect(config).toEqual({ hashAlgorithm: 'sha256' });
-      jest.dontMock('/app/fingerprint.config.js');
       expect(logSpy).toHaveBeenCalled();
     });
   });
 
   it('should strip unsupported config', async () => {
     await jest.isolateModulesAsync(async () => {
-      jest.doMock(
-        '/app/fingerprint.config.js',
-        () => ({
-          debug: true,
-          otherKey: 'value1',
-          otherNestedKey: {
-            foo: 'bar',
-          },
-        }),
-        { virtual: true }
-      );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const configContents = `\
+const config = {
+  debug: true,
+  otherKey: 'value1',
+  otherNestedKey: {
+    foo: 'bar',
+  },
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
       const config = await loadConfigAsync('/app', true);
       expect(config).toEqual({ debug: true });
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 });

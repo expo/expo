@@ -43,5 +43,6 @@ exports[`normalizeOptionsAsync should return the default options if no options a
     "android",
     "ios",
   ],
+  "sourceSkips": 0,
 }
 `;

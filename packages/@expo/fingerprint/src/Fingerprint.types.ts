@@ -1,3 +1,5 @@
+import type { SourceSkips } from './sourcer/SourceSkips';
+
 export type FingerprintSource = HashSource & {
   /**
    * Hash value of the `source`.
@@ -65,6 +67,12 @@ export interface Options {
   extraSources?: HashSource[];
 
   /**
+   * Skips some sources from fingerprint.
+   * @default SourceSkips.None
+   */
+  sourceSkips?: SourceSkips;
+
+  /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
    * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
    */
@@ -81,7 +89,7 @@ export interface Options {
  */
 export type Config = Pick<
   Options,
-  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'debug'
+  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'debug'
 >;
 
 //#region internal types
@@ -91,6 +99,7 @@ export interface NormalizedOptions extends Options {
   concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
   ignorePaths: NonNullable<Options['ignorePaths']>;
+  sourceSkips: NonNullable<Options['sourceSkips']>;
 }
 
 export interface HashSourceFile {

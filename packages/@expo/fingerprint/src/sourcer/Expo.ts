@@ -8,6 +8,7 @@ import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
+import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
@@ -23,6 +24,7 @@ export async function getExpoConfigSourcesAsync(
 
   const results: HashSource[] = [];
   let config: ProjectConfig;
+  let expoConfig: ExpoConfig;
   let loadedModules: string[] = [];
   const ignoredFile = await createTempIgnoredFileAsync(options);
   try {
@@ -33,11 +35,12 @@ export async function getExpoConfigSourcesAsync(
     );
     const stdoutJson = JSON.parse(stdout);
     config = stdoutJson.config;
+    expoConfig = normalizeExpoConfig(config.exp, options);
     loadedModules = stdoutJson.loadedModules;
     results.push({
       type: 'contents',
       id: 'expoConfig',
-      contents: normalizeExpoConfig(config.exp),
+      contents: stringifyJsonSorted(expoConfig),
       reasons: ['expoConfig'],
     });
   } catch (e: unknown) {
@@ -52,27 +55,27 @@ export async function getExpoConfigSourcesAsync(
   const isIos = options.platforms.includes('ios');
   const externalFiles = [
     // icons
-    config.exp.icon,
-    isAndroid ? config.exp.android?.icon : undefined,
-    isIos ? config.exp.ios?.icon : undefined,
-    isAndroid ? config.exp.android?.adaptiveIcon?.foregroundImage : undefined,
-    isAndroid ? config.exp.android?.adaptiveIcon?.backgroundImage : undefined,
-    config.exp.notification?.icon,
+    expoConfig.icon,
+    isAndroid ? expoConfig.android?.icon : undefined,
+    isIos ? expoConfig.ios?.icon : undefined,
+    isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
+    isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
+    expoConfig.notification?.icon,
 
     // splash images
-    config.exp.splash?.image,
-    isAndroid ? config.exp.android?.splash?.image : undefined,
-    isAndroid ? config.exp.android?.splash?.mdpi : undefined,
-    isAndroid ? config.exp.android?.splash?.hdpi : undefined,
-    isAndroid ? config.exp.android?.splash?.xhdpi : undefined,
-    isAndroid ? config.exp.android?.splash?.xxhdpi : undefined,
-    isAndroid ? config.exp.android?.splash?.xxxhdpi : undefined,
-    isIos ? config.exp.ios?.splash?.image : undefined,
-    isIos ? config.exp.ios?.splash?.tabletImage : undefined,
+    expoConfig.splash?.image,
+    isAndroid ? expoConfig.android?.splash?.image : undefined,
+    isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
+    isAndroid ? expoConfig.android?.splash?.hdpi : undefined,
+    isAndroid ? expoConfig.android?.splash?.xhdpi : undefined,
+    isAndroid ? expoConfig.android?.splash?.xxhdpi : undefined,
+    isAndroid ? expoConfig.android?.splash?.xxxhdpi : undefined,
+    isIos ? expoConfig.ios?.splash?.image : undefined,
+    isIos ? expoConfig.ios?.splash?.tabletImage : undefined,
 
     // google service files
-    isAndroid ? config.exp.android?.googleServicesFile : undefined,
-    isIos ? config.exp.ios?.googleServicesFile : undefined,
+    isAndroid ? expoConfig.android?.googleServicesFile : undefined,
+    isIos ? expoConfig.ios?.googleServicesFile : undefined,
   ].filter(Boolean) as string[];
   const externalFileSources = (
     await Promise.all(
@@ -102,23 +105,74 @@ export async function getExpoConfigSourcesAsync(
   return results;
 }
 
-function normalizeExpoConfig(config: ExpoConfig): string {
+function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): ExpoConfig {
   // Deep clone by JSON.parse/stringify that assumes the config is serializable.
   const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
-  if (typeof normalizedConfig.runtimeVersion === 'string') {
-    delete normalizedConfig.runtimeVersion;
-  }
-  if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
-    delete normalizedConfig.android.runtimeVersion;
-  }
-  if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
-    delete normalizedConfig.ios.runtimeVersion;
-  }
-  if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
-    delete normalizedConfig.web.runtimeVersion;
-  }
+
+  const { sourceSkips } = options;
   delete normalizedConfig._internal;
-  return stringifyJsonSorted(normalizedConfig);
+
+  if (sourceSkips & SourceSkips.ExpoConfigVersions) {
+    delete normalizedConfig.version;
+    delete normalizedConfig.android?.versionCode;
+    delete normalizedConfig.ios?.buildNumber;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString) {
+    if (typeof normalizedConfig.runtimeVersion === 'string') {
+      delete normalizedConfig.runtimeVersion;
+    }
+    if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
+      delete normalizedConfig.android.runtimeVersion;
+    }
+    if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
+      delete normalizedConfig.ios.runtimeVersion;
+    }
+    if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
+      delete normalizedConfig.web.runtimeVersion;
+    }
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigNames) {
+    normalizedConfig.name = '';
+    delete normalizedConfig.description;
+    delete normalizedConfig.web?.name;
+    delete normalizedConfig.web?.shortName;
+    delete normalizedConfig.web?.description;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigAndroidPackage) {
+    delete normalizedConfig.android?.package;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigIosBundleIdentifier) {
+    delete normalizedConfig.ios?.bundleIdentifier;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigSchemes) {
+    delete normalizedConfig.scheme;
+    normalizedConfig.slug = '';
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigEASProject) {
+    delete normalizedConfig.owner;
+    delete normalizedConfig?.extra?.eas;
+    delete normalizedConfig?.updates?.url;
+  }
+
+  if (sourceSkips & SourceSkips.ExpoConfigAssets) {
+    delete normalizedConfig.icon;
+    delete normalizedConfig.splash;
+    delete normalizedConfig.android?.adaptiveIcon;
+    delete normalizedConfig.android?.icon;
+    delete normalizedConfig.android?.splash;
+    delete normalizedConfig.ios?.icon;
+    delete normalizedConfig.ios?.splash;
+    delete normalizedConfig.web?.favicon;
+    delete normalizedConfig.web?.splash;
+  }
+
+  return normalizedConfig;
 }
 
 /**
