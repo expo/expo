@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { Tag } from '~/ui/components/Tag';
 import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -29,8 +28,9 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
     const [tooltipVisible, setTooltipVisible] = useState(false);
+
     const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
-      setTooltipVisible(isOverflowing(event.currentTarget) || Boolean(tags?.length));
+      setTooltipVisible(isOverflowing(event.currentTarget));
     };
 
     const onMouseOut = () => {
@@ -38,7 +38,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     };
 
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
-    const tagsToDisplay = tags && tags.length > 0 ? tags.filter(tag => tag === 'deprecated') : [];
+    const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
 
     return (
       <Tooltip.Root open={tooltipVisible}>
@@ -58,33 +58,20 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
               className={mergeClasses(
                 'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
-                isActive && '!text-link'
+                isActive && '!text-link',
+                isDeprecated && 'opacity-80 line-through'
               )}>
               {displayTitle}
             </TitleElement>
-            {tagsToDisplay.length > 0 && (
-              <div className="inline-flex">
-                {tagsToDisplay.map(tag => (
-                  <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
-                ))}
-              </div>
-            )}
           </Link>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"
-          className="min-w-[232px]"
+          align="start"
           collisionPadding={{
             right: 22,
           }}>
           <FOOTNOTE tag={isCode ? 'code' : undefined}>{displayTitle}</FOOTNOTE>
-          {tags && tags.length > 0 && (
-            <div className="flex flex-row my-1 gap-2">
-              {tags.map(tag => (
-                <Tag name={tag} className="!m-0" type="toc" key={`${displayTitle}-${tag}`} />
-              ))}
-            </div>
-          )}
         </Tooltip.Content>
       </Tooltip.Root>
     );
