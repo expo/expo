@@ -16,7 +16,7 @@ extension BaseCameraRequester {
     var systemStatus: AVAuthorizationStatus
     let description = Bundle.main.infoDictionary?[key] as? String
 
-    if let description {
+    if description != nil {
       systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
       EXFatal(EXErrorWithMessage("""
@@ -80,7 +80,6 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraReq
 
   func getPermissions() -> [AnyHashable: Any] {
     var systemStatus: AVAuthorizationStatus
-    var status: EXPermissionStatus
 
     let cameraUsuageDescription = Bundle.main.infoDictionary?[cameraKey] as? String
     let microphoneUsuageDescription = Bundle.main.infoDictionary?[microphoneKey] as? String
