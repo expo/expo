@@ -14,7 +14,6 @@ import { AppRegistry, Platform } from 'react-native';
  * - Adds the Fast Refresh and bundle splitting indicator to the app.
  * - Asserts if the `expo-updates` package is misconfigured.
  * - Asserts if `react-native` is not aliased to `react-native-web` when running in the browser.
- * - Polyfills `console.log` to send logs to the dev server via `/logs`.
  * @param component The React component class that renders the rest of your app.
  */
 export default function registerRootComponent(component) {

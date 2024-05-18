@@ -9,31 +9,10 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 ## Installation
 
 <APIInstallSection hideBareInstructions />
-
-<Collapsible summary="Manual installation">
-  > This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the native directories.
-
-  #### Manual Android setup
-
-  Update the **android/app/src/main/&lt;MyAppProject&gt;/MainActivity.java** file to use the name `main` in the `getMainComponentName` function.
-
-  ```diff
-  @Override
-  protected String getMainComponentName() {
-  +    return "main";
-  }
-  ```
-
-  #### Manual iOS setup
-
-  Update the iOS **ios/&lt;MyAppProject&gt;/AppDelegate.(m|mm|swift)** file to use the **moduleName** `main` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
-
-</Collapsible>
 
 ## API
 
@@ -47,23 +26,21 @@ import * as Expo from 'expo';
 
 ### What if I want to name my main app file something other than App.js?
 
-{/* NOTE: This is only accurate if we land https://github.com/expo/expo/pull/18381 */}
-
 You can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`,
 `export default` will not make this component the root for the app if you are using a custom entry file.
 
-For example, let's say you want to make `"src/main.js"` the entry file for your app - maybe you don't like having JavaScript files in the
+For example, let's say you want to make **src/main.js** the entry file for your app - maybe you don't like having JavaScript files in the
 project root. First, set this in **package.json**:
 
-```json
+```json package.json
 {
   "main": "src/main.js"
 }
 ```
 
-Then in `"src/main.js"`, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app.
+Then in **src/main.js**, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app.
 
-```jsx
+```tsx src/main.js
 import { registerRootComponent } from 'expo';
 import { View } from 'react-native';
 
