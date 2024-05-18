@@ -26,7 +26,7 @@ export default function VideoThumbnailsScreen() {
       />
       <Button
         onPress={() =>
-          generateThumbnail('http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny2.mp4')
+          generateThumbnail('https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny2.mp4')
         }
         title="Check Invalid Source"
       />
