@@ -21,7 +21,7 @@ export default function VideoThumbnailsScreen() {
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <Text>{image}</Text>
       <Button
-        onPress={() => generateThumbnail('http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4')}
+        onPress={() => generateThumbnail('https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4')}
         title="Check Valid Source"
       />
       <Button
