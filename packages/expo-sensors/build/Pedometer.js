@@ -1,7 +1,6 @@
-import { PermissionStatus, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import invariant from 'invariant';
 import ExponentPedometer from './ExponentPedometer';
-const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 // @needsAudit
 /**
  * Subscribe to pedometer updates.
@@ -11,7 +10,7 @@ const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
  * `remove()` when you would like to unsubscribe the listener.
  */
 export function watchStepCount(callback) {
-    return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
+    return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
 }
 // @needsAudit
 /**
@@ -68,5 +67,5 @@ const defaultPermissionsResponse = {
     canAskAgain: true,
     status: PermissionStatus.GRANTED,
 };
-export { PermissionStatus };
+export { PermissionStatus, };
 //# sourceMappingURL=Pedometer.js.map
