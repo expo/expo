@@ -46,7 +46,6 @@ const screens = [
   'Touchables',
   'Video (expo-av)',
   'Video (expo-video)',
-  'Video Thumbnails',
   'PagerView',
   'WebView',
 ];
