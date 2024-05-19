@@ -9,6 +9,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+- Add a standard main package entry point (`index.ts`).
+- Prefer using `type` for describing the shape of objects.
 
 ## 5.5.2 — 2024-05-02
 
