@@ -9,7 +9,7 @@ const exec_async_1 = __importDefault(require("exec-async"));
 const path_1 = __importDefault(require("path"));
 const util_1 = __importDefault(require("util"));
 function osascriptArgs(script) {
-    if (!util_1.default.isArray(script)) {
+    if (!Array.isArray(script)) {
         script = [script];
     }
     const args = [];
