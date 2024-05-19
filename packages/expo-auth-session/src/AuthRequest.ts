@@ -18,7 +18,7 @@ import { TokenResponse } from './TokenRequest';
 
 let _authLock: boolean = false;
 
-type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
+export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
 // @needsAudit @docsMissing
 /**
