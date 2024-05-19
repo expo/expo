@@ -98,12 +98,7 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
         launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1")) { error, success in
           successValue.value = success
         }
-
-        while successValue.value == nil {
-          Thread.sleep(forTimeInterval: 0.1)
-        }
-
-        expect(successValue.value) == true
+        expect(successValue.value).toEventually(beTrue(), timeout: .milliseconds(10_000))
 
         db.databaseQueue.sync {
           let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
