@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix data race in `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
 
 ## 0.25.13 — 2024-05-15

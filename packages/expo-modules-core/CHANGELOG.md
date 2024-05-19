@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix data race in `PersistentFileLogSpec.swift` and `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+- Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
 
 ### 💡 Others
 
