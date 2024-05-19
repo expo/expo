@@ -3,7 +3,7 @@ import { CodeChallengeMethod } from './AuthRequest.types';
  * URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
  */
 export type Issuer = string;
-type ProviderMetadataEndpoints = {
+export type ProviderMetadataEndpoints = {
     issuer?: Issuer;
     /**
      * URL of the OP's OAuth 2.0 Authorization Endpoint.
@@ -198,5 +198,4 @@ export declare function fetchDiscoveryAsync(issuer: Issuer): Promise<DiscoveryDo
  * @param issuerOrDiscovery
  */
 export declare function resolveDiscoveryAsync(issuerOrDiscovery: IssuerOrDiscovery): Promise<DiscoveryDocument>;
-export {};
 //# sourceMappingURL=Discovery.d.ts.map

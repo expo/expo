@@ -10,7 +10,7 @@ import { requestAsync } from './Fetch';
 export type Issuer = string;
 
 // @needsAudit @docsMissing
-type ProviderMetadataEndpoints = {
+export type ProviderMetadataEndpoints = {
   issuer?: Issuer;
   /**
    * URL of the OP's OAuth 2.0 Authorization Endpoint.
