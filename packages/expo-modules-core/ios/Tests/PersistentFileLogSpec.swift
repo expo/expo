@@ -48,7 +48,7 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 
   static func clearEntriesSync(log: PersistentFileLog) {
-    let didClear = SynchronizedBool(false)
+    let didClear = Synchronized(false)
     log.clearEntries { _ in
       didClear.value = true
     }
@@ -56,7 +56,7 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 
   static func filterEntriesSync(log: PersistentFileLog, filter: @escaping PersistentFileLogFilter) {
-    let didPurge = SynchronizedBool(false)
+    let didPurge = Synchronized(false)
     log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
       didPurge.value = true
     }
@@ -64,7 +64,7 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 
   static func appendEntrySync(log: PersistentFileLog, entry: String) {
-    let didAppend = SynchronizedBool(false)
+    let didAppend = Synchronized(false)
     log.appendEntry(entry: entry) { _ in
       didAppend.value = true
     }
@@ -72,15 +72,13 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 }
 
-/// Since the boolean value is written to in the closure supplied to `log.appendEntry`,
-/// while concurrenlty being read in `expect`, i.e., via the autoclosure, synchronization
-/// is needed to avoid data races. This class allows for simple synchronization of a boolean value.
-private final class SynchronizedBool {
-  private var _storage: Bool
+/// Allows for synchronization pertaining to the file scope.
+private final class Synchronized<T> {
+  private var _storage: T
   private var lock = NSLock()
 
   /// Thread safe access here.
-  var value: Bool {
+  var value: T {
     get {
       return lockAround {
         _storage
@@ -93,11 +91,11 @@ private final class SynchronizedBool {
     }
   }
 
-  init(_ storage: Bool) {
+  init(_ storage: T) {
     self._storage = storage
   }
 
-  private func lockAround<T>(_ closure: () -> T) -> T {
+  private func lockAround<U>(_ closure: () -> U) -> U {
     lock.lock()
     defer { lock.unlock() }
     return closure()
