@@ -236,7 +236,7 @@ func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throw
     contact[ContactsKey.jobTitle] = person.jobTitle
   }
   if fieldHasValue(field: person.departmentName) {
-    contact[ContactsKey.department] = person.dates
+    contact[ContactsKey.department] = person.departmentName
   }
 
   if keysToFetch.contains(CNContactNamePrefixKey) && fieldHasValue(field: person.namePrefix) {
