@@ -38,7 +38,6 @@
     "expo-media-library": "~16.0.0",
     "expo-network": "~6.0.0",
     "expo-notifications": "~0.28.0",
-    "expo-random": "~14.0.0",
     "expo-secure-store": "~13.0.0",
     "expo-speech": "~12.0.0",
     "expo-sqlite": "~14.0.0",
