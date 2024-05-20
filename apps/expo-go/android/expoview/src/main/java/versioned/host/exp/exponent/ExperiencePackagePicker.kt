@@ -58,7 +58,6 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
-import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.SensorsPackage
@@ -176,7 +175,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NavigationBarModule::class.java,
     NetworkModule::class.java,
-    RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
