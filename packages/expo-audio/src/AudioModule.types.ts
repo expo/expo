@@ -1,4 +1,4 @@
-import { EventEmitter, PermissionResponse, SharedObject } from 'expo-modules-core';
+import { PermissionResponse, SharedObject } from 'expo-modules-core';
 
 import {
   AudioMode,
@@ -11,7 +11,7 @@ import {
   RecordingStatus,
 } from './Audio.types';
 
-export interface AudioModule extends EventEmitter {
+export interface AudioModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: AudioMode): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;

@@ -8,12 +8,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, Identifiable, RecordingResultHa
   private lazy var resultHandler = {
     RecordingDelegate(resultHandler: self)
   }()
-  
+
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
     pointer.delegate = resultHandler
   }
-  
+
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
     emit(event: recordingStatus, arguments: [
       "isFinished": true,

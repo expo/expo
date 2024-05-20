@@ -39,7 +39,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
     }
     return true
   }
-  
+
   func updateStatus(with dict: [String: Any]) {
     var body: [String: Any] = [
       "id": id,

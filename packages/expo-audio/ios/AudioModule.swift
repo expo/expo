@@ -1,8 +1,6 @@
 import ExpoModulesCore
 import Combine
 
-
-
 public class AudioModule: Module {
   private var timeTokens = [String: Any?]()
   private var players = [String: AudioPlayer]()
@@ -12,7 +10,6 @@ public class AudioModule: Module {
   // MARK: Properties
   private var allowsRecording = false
   private var recordingSettings = [String: Any]()
-
 
   // MARK: Observers
   private var cancellables = Set<AnyCancellable>()
@@ -470,7 +467,7 @@ public class AudioModule: Module {
 
   private func registerTimeObserver(player: AudioPlayer) {
     let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    timeTokens[player.id] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
+    timeTokens[player.id] = player.pointer.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
       player.updateStatus(with: [
         "currentPosition": time.seconds * 1000
       ])
