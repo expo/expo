@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `onDone` not firing listeners.
+
 ### 💡 Others
 
 ## 12.0.2 — 2024-05-09
