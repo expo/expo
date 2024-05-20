@@ -7,8 +7,6 @@ import { A, FOOTNOTE, CALLOUT } from '~/ui/components/Text';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
-// TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
-
 export function ApiVersionSelect() {
   const { version, hasVersion, setVersion } = usePageApiVersion();
 
