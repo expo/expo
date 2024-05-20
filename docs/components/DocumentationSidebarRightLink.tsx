@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { Tag } from '~/ui/components/Tag';
 import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -29,6 +28,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
     const [tooltipVisible, setTooltipVisible] = useState(false);
+
     const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
       setTooltipVisible(isOverflowing(event.currentTarget));
     };
@@ -38,6 +38,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     };
 
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
+    const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
 
     return (
       <Tooltip.Root open={tooltipVisible}>
@@ -55,27 +56,22 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             )}>
             <TitleElement
               className={mergeClasses(
-                '!text-secondary hocus:!text-link',
+                'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
-                isActive && '!text-link'
+                isActive && '!text-link',
+                isDeprecated && 'opacity-80 line-through'
               )}>
               {displayTitle}
             </TitleElement>
-            {tags && tags.length ? (
-              <div className="inline-flex">
-                {tags.map(tag => (
-                  <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
-                ))}
-              </div>
-            ) : undefined}
           </Link>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"
+          align="start"
           collisionPadding={{
             right: 22,
           }}>
-          <FOOTNOTE tag="code">{displayTitle}</FOOTNOTE>
+          <FOOTNOTE tag={isCode ? 'code' : undefined}>{displayTitle}</FOOTNOTE>
         </Tooltip.Content>
       </Tooltip.Root>
     );
@@ -106,7 +102,7 @@ const isOverflowing = (el: HTMLElement) => {
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
-  return childrenWidth >= el.scrollWidth - indent;
+  return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
 };
 
 export default DocumentationSidebarRightLink;
