@@ -29,7 +29,13 @@ export default function Route() {
     useCallback(() => {
     /* @end */
       /* @info Invoked whenever the route is focused */
-      console.log('Hello')
+      console.log('Hello, I am focused!');
+      /* @end */
+
+      /* @info Return function is invoked whenever the route gets out of focus */
+      return () => {
+        console.log('This route is now unfocused.');
+      }
       /* @end */
     }, []);
   );
