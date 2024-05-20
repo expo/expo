@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix font registration failing when font was in use.
+
 ### 💡 Others
 
 ## 12.0.5 — 2024-05-10
