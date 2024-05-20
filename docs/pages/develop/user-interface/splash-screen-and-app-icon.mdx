@@ -10,7 +10,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-A splash screen and an app icon are fundamental elements of a mobile app. They play an important role in the user experience and branding of the app. This guide provides instructions on how to create and add both to your app.
+A splash screen and an app icon are fundamental elements of a mobile app. They play an important role in the user experience and branding of the app. This guide provides steps on how to create and add them to your app.
 
 ## Splash screen
 
@@ -32,7 +32,7 @@ For an in-detail walkthrough, see the video below:
 
 #### Android
 
-Android screen sizes vary greatly with the massive variety of devices on the market. To deal with this, take a look at [Material Design blog post](https://material.io/blog/device-metrics) for more information on how to find the right device metrics for any screen.
+Android screen sizes vary greatly with the massive variety of devices. See [Material Design blog post](https://material.io/blog/device-metrics) for more information on how to find the right device metrics for any screen.
 
 #### iOS
 
@@ -232,14 +232,14 @@ The design you provide should follow the [Android Adaptive Icon Guidelines](http
 
 You may also want to provide a separate icon for older Android devices that do not support Adaptive Icons. You can do so with the `android.icon` property. This single icon would be a combination of your foreground and background layers.
 
-> You may still want to follow some of the [Apple best practices](https://developer.apple.com/design/human-interface-guidelines/app-icons/#Best-practices) to ensure your icon looks professional, such as testing your icon on different wallpapers and avoiding text beside your product's wordmark. Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS.
+> See [Apple best practices](https://developer.apple.com/design/human-interface-guidelines/app-icons/#Best-practices) to ensure your icon looks professional, such as testing your icon on different wallpapers and avoiding text beside your product's wordmark. Provide something that's at least 512x512 pixels.
 
 #### iOS
 
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You should also:
 
 - Use a **.png** file.
-- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup) will generate the other sizes for you. If you are using a bare workflow, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. If you are using a bare workflow, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 

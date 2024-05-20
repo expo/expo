@@ -61,7 +61,11 @@ const home = [
     makePage('develop/tools.mdx'),
     makeGroup(
       'Navigation',
-      [makePage('develop/file-based-routing.mdx'), makePage('develop/dynamic-routes.mdx')],
+      [
+        makePage('develop/file-based-routing.mdx'),
+        makePage('develop/dynamic-routes.mdx'),
+        makePage('develop/next-steps.mdx'),
+      ],
       { expanded: false }
     ),
     makeGroup(

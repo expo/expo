@@ -1,15 +1,15 @@
 ---
 title: File-based routing
-description: Learn about Expo Router library which is a file-based routing system and how to use it in your project.
+description: Learn about Expo Router which is a file-based routing system and how to use it in your project.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
 
-This guide walks you through some basic conventions of Expo Router and navigation patterns (Stack and Tabs). To follow along, you can [create a project by using the default template](/get-started/create-a-project/) or install [Expo Router library manually](/router/installation/#manual-installation).
+This guide walks you through some basic conventions of Expo Router and navigation patterns (stack and tabs). To follow along, you can [create a project by using the default template](/get-started/create-a-project/) or install [Expo Router library manually](/router/installation/#manual-installation).
 
 ## What is Expo Router?
 
-Expo Router is a navigation library for React Native and web applications. It allows you to manage navigation between screens in your app and use the same components on multiple platforms (Android, iOS and web). It uses a file-based method to determine routes inside your app. It also provides native navigation and is built on top of [React Navigation](https://reactnavigation.org/).
+Expo Router is a routing framework for React Native and web applications. It allows you to manage navigation between screens in your app and use the same components on multiple platforms (Android, iOS and web). It uses a file-based method to determine routes inside your app. It also provides native navigation and is built on top of [React Navigation](https://reactnavigation.org/).
 
 ## app directory
 
@@ -21,7 +21,7 @@ In the **app** directory, a route is created by adding a file or a nested direct
 
 For example, to create an initial route of your app, you can add **index.tsx** to the **app** directory with the following code:
 
-```tsx app/index.tsx|collapseHeight=300
+```tsx app/index.tsx|collapseHeight=280
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -47,7 +47,7 @@ The **app/index.tsx** file will match the `/` route and after creating this file
 
 ### File name conventions
 
-Files named **index** match the parent directory and do not add a path segment. For example, if you expand the app's file structure by adding **app/settings/index.js**, it will match the `/settings` route.
+Files named **index** match the parent directory and do not add a path segment. For example, if you expand the app's file structure by adding **app/settings/index.tsx**, it will match the `/settings` route.
 
 <FileTree
   files={[
@@ -73,7 +73,7 @@ Any time you create a new project, by default the **app** directory will contain
 
 ### Root layout
 
-Traditionally, React Native projects are structured with a single root component (defined as **App.js** or **index.js**). Similarly, the first layout file (**\_layout.tsx**) inside the **app** directory is considered to be a single root component.
+Traditionally, React Native projects are structured with a single root component (defined as **App.js** or **index.js**). Similarly, the first layout file (**\_layout.tsx**) inside the **app** directory is considered to be the single root component.
 
 Between multiple routes, a Root layout file in Expo Router is used to share UI between multiple routes such as injecting global providers, themes, styles, delay splash screen rendering until assets and fonts are loaded, or defining your app's root navigation structure.
 
@@ -91,7 +91,7 @@ export default function RootLayout() {
 
 ## Stack navigator
 
-A stack navigator is a foundational pattern to navigate between different routes in an app. It allows transitioning between screens and managing the navigation history. It is conceptually similar to how a web browser handles the navigation state.
+A stack navigator is a pattern to navigate between different routes in an app. It allows transitioning between screens and managing the navigation history. It is conceptually similar to how a web browser handles the navigation state.
 
 For example, if you want to add a new route `/details`, create **details.tsx** file. This will allow the app user to navigate from the `/` route to `/details`:
 
@@ -121,13 +121,13 @@ After creating this route file, the current file structure looks like:
   files={[
     ['app/index.tsx', "matches '/'"],
     ['app/details.tsx', "matches '/details'"],
-    ['app/_layout', 'Root Layout'],
+    ['app/_layout', 'Root layout'],
   ]}
 />
 
-To allow navigation between two routes (`/` and `/details`), update the Root Layout file and a `Stack` component to it:
+To allow navigation between two routes (`/` and `/details`), update the Root layout file and add a `Stack` component to it:
 
-```tsx app/_layout.tsx
+```tsx app/_layout.tsx|collapseHeight=440
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
@@ -203,7 +203,7 @@ For example, you have the `/` and `/details` routes which can be grouped inside 
 
 You also need to add **(home)/\_layout.tsx** which is used to define the `Stack` navigator for `/` and `/details` routes.
 
-```tsx app/(home)/_layout.tsx
+```tsx app/(home)/_layout.tsx|collapseHeight=440
 import { Stack } from 'expo-router';
 
 export default function HomeLayout() {
@@ -295,7 +295,7 @@ Expo Router provides a special file **+not-found.tsx** which is used to handle r
 
 Create this file in the **app** directory:
 
-```tsx +not-found.tsx
+```tsx +not-found.tsx|collapseHeight=320
 import { Link, Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 
