@@ -1,5 +1,5 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
-import { useMemo, useEffect, useState } from 'react';
+import { useReleasingSharedObject } from 'expo-modules-core';
+import { useEffect, useState } from 'react';
 
 import {
   AudioMode,
@@ -13,19 +13,18 @@ import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { resolveSource } from './utils/resolveSource';
 
-const audioModuleEmitter = new EventEmitter(AudioModule);
-
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
   statusListener?: (status: AudioStatus) => void
 ): AudioPlayer {
-  const player = useMemo(() => new AudioModule.AudioPlayer(resolveSource(source)), [source]);
+  const parsedSource = resolveSource(source);
+  const player = useReleasingSharedObject(() => {
+    return new AudioModule.AudioPlayer(parsedSource);
+  }, [JSON.stringify(parsedSource)]);
 
   useEffect(() => {
-    const subscription = addStatusUpdateListener((status) => {
-      if (status.id === player.id) {
-        statusListener?.(status);
-      }
+    const subscription = player.addListener('onPlaybackStatusUpdate', (status) => {
+      statusListener?.(status);
     });
     return () => subscription.remove();
   }, [player.id]);
@@ -37,14 +36,14 @@ export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (status: RecordingStatus) => void
 ): [AudioRecorder, RecorderState] {
-  const recorder = useMemo(() => new AudioModule.AudioRecorder(options), []);
+  const recorder = useReleasingSharedObject(() => {
+    return new AudioModule.AudioRecorder(options);
+  }, [options]);
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
-    const subscription = addRecordingStatusListener((status) => {
-      if (status.id === recorder.id) {
-        statusListener?.(status);
-      }
+    const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
+      statusListener?.(status);
     });
     return () => subscription.remove();
   }, [recorder.id]);
@@ -60,16 +59,6 @@ export function useAudioRecorder(
   return [recorder, state];
 }
 
-export function addStatusUpdateListener(listener: (event: AudioStatus) => void): Subscription {
-  return audioModuleEmitter.addListener<AudioStatus>('onPlaybackStatusUpdate', listener);
-}
-
-export function addRecordingStatusListener(
-  listener: (event: RecordingStatus) => void
-): Subscription {
-  return audioModuleEmitter.addListener<RecordingStatus>('onRecordingStatusUpdate', listener);
-}
-
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
@@ -78,5 +67,5 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioStatus as ChangeEventPayload, AudioModule, AudioPlayer, AudioRecorder };
+export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';

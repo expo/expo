@@ -1,17 +1,20 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { NativeModule } from 'react-native';
-import { AudioMode, AudioSource, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions } from './Audio.types';
-export interface AudioModule extends NativeModule {
+import { EventEmitter, PermissionResponse, SharedObject } from 'expo-modules-core';
+import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
+export interface AudioModule extends EventEmitter {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
     setAudioModeAsync(category: AudioMode): Promise<void>;
     requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
     getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
-    readonly AudioPlayer: AudioPlayer;
-    readonly AudioRecorder: AudioRecorder;
+    readonly AudioPlayer: typeof AudioPlayer;
+    readonly AudioRecorder: typeof AudioRecorder;
 }
 export type RecordingPermissionResponse = PermissionResponse;
-export interface AudioPlayer {
-    new (source: AudioSource | string | number | null): AudioPlayer;
+export declare class AudioPlayer extends SharedObject<AudioEvents> {
+    /**
+     * Initializes a new audio player instance with the given source.
+     * @hidden
+     */
+    constructor(source: AudioSource | string | number | null);
     /**
      * Unique identifier for the player object.
      */
@@ -84,8 +87,15 @@ export interface AudioPlayer {
      */
     release(): void;
 }
-export interface AudioRecorder {
-    new (options: RecordingOptions): AudioRecorder;
+type AudioEvents = {
+    onPlaybackStatusUpdate(status: AudioStatus): void;
+};
+export declare class AudioRecorder extends SharedObject<RecordingEvents> {
+    /**
+     * Initializes a new audio recorder instance with the given source.
+     * @hidden
+     */
+    constructor(options: RecordingOptions);
     /**
      * Unique identifier for the recorder object.
      */
@@ -114,8 +124,21 @@ export interface AudioRecorder {
      * Pause the recording.
      */
     pause(): void;
+    /**
+     * Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
+     * @return A `Promise` that is fulfilled with an array of `RecordingInput` objects.
+     */
     getAvailableInputs(): RecordingInput[];
+    /**
+     * Returns the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
+     * @return A `Promise` that is fulfilled with a `RecordingInput` object.
+     */
     getCurrentInput(): RecordingInput;
+    /**
+     * Sets the current recording input.
+     * @param inputUid The uid of a `RecordingInput`.
+     * @return A `Promise` that is resolved if successful or rejected if not.
+     */
     setInput(input: string): void;
     /**
      * Status of the current recording.
@@ -136,4 +159,8 @@ export interface AudioRecorder {
      */
     release(): void;
 }
+export type RecordingEvents = {
+    onRecordingStatusUpdate: (status: RecordingStatus) => void;
+};
+export {};
 //# sourceMappingURL=AudioModule.types.d.ts.map
