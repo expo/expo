@@ -67,7 +67,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#base-level-heading"
     >
       <p
-        class="!text-secondary hocus:!text-link css-1yjys1n-TextComponent"
+        class="w-full !text-secondary hocus:!text-link css-1yjys1n-TextComponent"
         data-text="true"
       >
         Base level heading
@@ -80,7 +80,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       style="padding-left: 12px;"
     >
       <p
-        class="!text-secondary hocus:!text-link css-1yjys1n-TextComponent"
+        class="w-full !text-secondary hocus:!text-link css-1yjys1n-TextComponent"
         data-text="true"
       >
         Level 3 subheading
@@ -93,7 +93,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       style="padding-left: 12px;"
     >
       <code
-        class="!text-secondary hocus:!text-link truncate !text-2xs css-yszm2s-TextComponent"
+        class="w-full !text-secondary hocus:!text-link truncate !text-2xs css-yszm2s-TextComponent"
         data-text="true"
       >
         Code heading depth 1
