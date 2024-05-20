@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a flag to enable or disable useKeepAwake. ([#28908](https://github.com/expo/expo/pull/28908) by [@macksal](https://github.com/macksal))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

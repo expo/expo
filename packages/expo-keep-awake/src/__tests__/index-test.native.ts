@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import ExpoKeepAwake from '../ExpoKeepAwake';
-import { useKeepAwake } from '../index';
+import { KeepAwakeOptions, useKeepAwake } from '../index';
 
 describe(useKeepAwake, () => {
   const mockActivate = jest.fn();
@@ -43,5 +43,36 @@ describe(useKeepAwake, () => {
     });
     const secondComponentTag = mockActivate.mock.lastCall[0];
     expect(firstComponentTag).not.toEqual(secondComponentTag);
+  });
+
+  it("doesn't activate when enabled is false", async () => {
+    renderHook(() => useKeepAwake('tag', { enabled: false }));
+    expect(mockActivate).not.toHaveBeenCalled();
+  });
+
+  it('activates when enabled is true', async () => {
+    renderHook(() => useKeepAwake('tag', { enabled: true }));
+    expect(mockActivate).toHaveBeenCalledTimes(1);
+  });
+
+  it('activates when enabled is undefined', async () => {
+    renderHook(() => useKeepAwake('tag', { enabled: undefined }));
+    expect(mockActivate).toHaveBeenCalledTimes(1);
+  });
+
+  it('toggles when enabled is changed between renders', async () => {
+    const hook = renderHook((options: KeepAwakeOptions) => useKeepAwake('tag', options), {
+      initialProps: { enabled: false },
+    });
+    expect(mockActivate).not.toHaveBeenCalled();
+    expect(mockDeactivate).not.toHaveBeenCalled();
+
+    hook.rerender({ enabled: true });
+    expect(mockActivate).toHaveBeenCalledTimes(1);
+    expect(mockDeactivate).not.toHaveBeenCalled();
+
+    hook.rerender({ enabled: false });
+    expect(mockActivate).toHaveBeenCalledTimes(1);
+    expect(mockDeactivate).toHaveBeenCalledTimes(1);
   });
 });
