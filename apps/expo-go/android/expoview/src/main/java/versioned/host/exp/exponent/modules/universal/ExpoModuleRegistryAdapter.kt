@@ -5,7 +5,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
@@ -87,11 +86,7 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         register(
           ExpoGoModule(manifest),
           ExpoGoUpdatesModule(experienceProperties),
-          ScopedSecureStoreModule(scopedContext),
-          object : FontLoaderModule() {
-            override val prefix: String
-              get() = "ExpoFont-"
-          }
+          ScopedSecureStoreModule(scopedContext)
         )
 
         // Notifications

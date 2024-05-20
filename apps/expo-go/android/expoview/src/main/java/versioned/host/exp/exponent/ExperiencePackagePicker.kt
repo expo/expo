@@ -28,6 +28,7 @@ import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
+import expo.modules.font.FontLoaderModule
 import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -158,6 +159,7 @@ object ExperiencePackagePicker : ModulesProvider {
     EASClientModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
+    FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
