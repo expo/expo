@@ -1,7 +1,7 @@
 import {
   PermissionResponse,
   PermissionStatus,
-  Subscription,
+  type EventSubscription,
   Platform,
   PermissionExpiration,
 } from 'expo-modules-core';
@@ -26,7 +26,7 @@ export default class DeviceSensor<Measurement> {
     this._nativeEventName = nativeEventName;
   }
 
-  addListener(listener: Listener<Measurement>): Subscription {
+  addListener(listener: Listener<Measurement>): EventSubscription {
     return this._nativeModule.addListener(this._nativeEventName, listener);
   }
 
@@ -55,7 +55,7 @@ export default class DeviceSensor<Measurement> {
    * Removes the given subscription.
    * @param subscription A subscription to remove.
    */
-  removeSubscription(subscription: Subscription): void {
+  removeSubscription(subscription: EventSubscription): void {
     subscription.remove();
   }
 
@@ -120,4 +120,4 @@ const defaultPermissionsResponse: PermissionResponse = {
 };
 
 export { PermissionStatus };
-export type { Subscription, PermissionResponse, PermissionExpiration };
+export type { EventSubscription as Subscription, PermissionResponse, PermissionExpiration };

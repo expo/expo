@@ -1,4 +1,4 @@
-import { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
@@ -49,7 +49,7 @@ export declare function usePreventScreenCapture(key?: string): void;
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeScreenshotListener`.
  */
-export declare function addScreenshotListener(listener: () => void): Subscription;
+export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
  *
@@ -67,7 +67,7 @@ export declare function addScreenshotListener(listener: () => void): Subscriptio
  *
  * @param subscription Subscription returned by `addScreenshotListener`.
  */
-export declare function removeScreenshotListener(subscription: Subscription): void;
+export declare function removeScreenshotListener(subscription: EventSubscription): void;
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
@@ -90,5 +90,5 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };
+export { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions, };
 //# sourceMappingURL=ScreenCapture.d.ts.map

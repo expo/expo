@@ -3,7 +3,7 @@ import {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
-  Subscription,
+  EventSubscription,
 } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
@@ -484,5 +484,5 @@ export {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
-  Subscription,
+  EventSubscription as Subscription,
 };

@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
 /** Default tag, used when no tag has been specified in keep awake method calls. */
 export declare const ExpoKeepAwakeTag = "ExpoKeepAwakeDefaultTag";
@@ -59,6 +59,6 @@ export declare function deactivateKeepAwake(tag?: string): Promise<void>;
  * });
  * ```
  */
-export declare function addListener(tagOrListener: string | KeepAwakeListener, listener?: KeepAwakeListener): Subscription;
+export declare function addListener(tagOrListener: string | KeepAwakeListener, listener?: KeepAwakeListener): EventSubscription;
 export * from './KeepAwake.types';
 //# sourceMappingURL=index.d.ts.map

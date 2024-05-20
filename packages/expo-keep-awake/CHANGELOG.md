@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `EventSubscription` type instead of `Subscription`. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
 ## 13.0.2 — 2024-05-15
 
 ### 🐛 Bug fixes
