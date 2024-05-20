@@ -1,4 +1,4 @@
-import { DeviceEventEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 import { assertSensorEventEnabledAsync, getPermissionsAsync, isSensorEnabledAsync, requestPermissionsAsync, } from './utils/isSensorEnabledAsync.web';
 const eventName = 'devicemotion';
 export default {

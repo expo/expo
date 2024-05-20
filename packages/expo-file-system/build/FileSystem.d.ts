@@ -170,7 +170,6 @@ export declare function createUploadTask(url: string, fileUri: string, options?:
 export declare abstract class FileSystemCancellableNetworkTask<T extends DownloadProgressData | UploadProgressData> {
     private _uuid;
     protected taskWasCanceled: boolean;
-    private emitter;
     private subscription?;
     cancelAsync(): Promise<void>;
     protected isTaskCancelled(): boolean;

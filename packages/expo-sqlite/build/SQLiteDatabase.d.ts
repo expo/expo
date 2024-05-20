@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
 export { SQLiteOpenOptions };
@@ -285,7 +285,7 @@ export type DatabaseChangeEvent = {
  * @param listener A function that receives the `databaseName`, `databaseFilePath`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
-export declare function addDatabaseChangeListener(listener: (event: DatabaseChangeEvent) => void): Subscription;
+export declare function addDatabaseChangeListener(listener: (event: DatabaseChangeEvent) => void): EventSubscription;
 /**
  * A new connection specific used for [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask).
  * @hidden not going to pull all the database methods to the document.

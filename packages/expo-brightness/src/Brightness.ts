@@ -1,18 +1,15 @@
 import {
   createPermissionHook,
+  type EventSubscription,
   PermissionExpiration,
   PermissionHookOptions,
   PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
-  Subscription,
-  EventEmitter,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';
-
-const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 
 // @needsAudit
 export enum BrightnessMode {
@@ -231,6 +228,8 @@ export const usePermissions = createPermissionHook({
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  * @platform ios
  */
-export function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription {
-  return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+export function addBrightnessListener(
+  listener: (event: BrightnessEvent) => void
+): EventSubscription {
+  return ExpoBrightness.addListener('Expo.brightnessDidChange', listener);
 }

@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import ExpoTaskManager from './ExpoTaskManager';
 const tasks = new Map();
 function _validateTaskName(taskName) {
@@ -129,7 +129,7 @@ export async function unregisterAllTasksAsync() {
     await ExpoTaskManager.unregisterAllTasksAsync();
 }
 if (ExpoTaskManager) {
-    const eventEmitter = new EventEmitter(ExpoTaskManager);
+    const eventEmitter = new LegacyEventEmitter(ExpoTaskManager);
     eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
         const { eventId, taskName } = executionInfo;
         const taskExecutor = tasks.get(taskName);

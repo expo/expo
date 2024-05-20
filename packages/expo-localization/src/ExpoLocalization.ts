@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform, Subscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -38,21 +38,21 @@ const USES_FAHRENHEIT = [
   'KY',
 ];
 
-export function addLocaleListener(listener: (event) => void): Subscription {
+export function addLocaleListener(listener: (event) => void): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
-export function addCalendarListener(listener: (event) => void): Subscription {
+export function addCalendarListener(listener: (event) => void): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
-export function removeSubscription(subscription: Subscription) {
+export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
 }
 

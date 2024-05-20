@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
 import {
   AppleAuthenticationCredential,
@@ -138,11 +138,9 @@ export async function getCredentialStateAsync(
   return ExpoAppleAuthentication.getCredentialStateAsync(user);
 }
 
-const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentication);
-
 // @docsMissing
-export function addRevokeListener(listener: () => void): Subscription {
-  return ExpoAppleAuthenticationEventEmitter.addListener('Expo.appleIdCredentialRevoked', listener);
+export function addRevokeListener(listener: () => void): EventSubscription {
+  return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
 }
 
-export { Subscription };
+export { EventSubscription as Subscription };

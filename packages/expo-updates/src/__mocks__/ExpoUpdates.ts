@@ -5,6 +5,7 @@ const checkForUpdateAsync = jest.fn();
 const fetchUpdateAsync = jest.fn();
 const reload = jest.fn();
 const getNativeStateMachineContextAsync = jest.fn();
+const addListener = jest.fn();
 
 getNativeStateMachineContextAsync.mockImplementation(async () => ({
   isChecking: false,
@@ -23,4 +24,5 @@ export default {
   fetchUpdateAsync,
   reload,
   getNativeStateMachineContextAsync,
+  addListener,
 };

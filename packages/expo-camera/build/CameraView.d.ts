@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
@@ -74,7 +74,7 @@ export default class CameraView extends React.Component<CameraProps> {
      *
      * @platform ios
      */
-    static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription;
+    static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.

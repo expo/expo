@@ -1,4 +1,4 @@
-import { Subscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useId } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';
@@ -107,7 +107,7 @@ export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promi
 export function addListener(
   tagOrListener: string | KeepAwakeListener,
   listener?: KeepAwakeListener
-): Subscription {
+): EventSubscription {
   // Assert so the type is non-nullable.
   if (!ExpoKeepAwake.addListenerForTag) {
     throw new UnavailabilityError('ExpoKeepAwake', 'addListenerForTag');

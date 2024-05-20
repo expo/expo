@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
@@ -31,8 +31,8 @@ export default class NotificationScreen extends React.Component<
     title: 'Notifications',
   };
 
-  private _onReceivedListener: Subscription | undefined;
-  private _onResponseReceivedListener: Subscription | undefined;
+  private _onReceivedListener: EventSubscription | undefined;
+  private _onResponseReceivedListener: EventSubscription | undefined;
 
   // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
   // eslint-disable-next-line @typescript-eslint/ban-types

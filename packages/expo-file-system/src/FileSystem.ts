@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError, uuid } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentFileSystem from './ExponentFileSystem';
@@ -30,8 +30,6 @@ if (!ExponentFileSystem) {
     "No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?"
   );
 }
-// Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 function normalizeEndingSlash(p: string | null): string | null {
   if (p != null) {
@@ -350,8 +348,7 @@ export abstract class FileSystemCancellableNetworkTask<
 > {
   private _uuid = uuid.v4();
   protected taskWasCanceled = false;
-  private emitter = new EventEmitter(ExponentFileSystem);
-  private subscription?: Subscription | null;
+  private subscription?: EventSubscription | null;
 
   // @docsMissing
   public async cancelAsync(): Promise<void> {
@@ -386,21 +383,24 @@ export abstract class FileSystemCancellableNetworkTask<
       return;
     }
 
-    this.subscription = this.emitter.addListener(this.getEventName(), (event: ProgressEvent<T>) => {
-      if (event.uuid === this.uuid) {
-        const callback = this.getCallback();
-        if (callback) {
-          callback(event.data);
+    this.subscription = ExponentFileSystem.addListener(
+      this.getEventName(),
+      (event: ProgressEvent<T>) => {
+        if (event.uuid === this.uuid) {
+          const callback = this.getCallback();
+          if (callback) {
+            callback(event.data as T);
+          }
         }
       }
-    });
+    );
   }
 
   protected removeSubscription() {
     if (!this.subscription) {
       return;
     }
-    this.emitter.removeSubscription(this.subscription);
+    this.subscription.remove();
     this.subscription = null;
   }
 }

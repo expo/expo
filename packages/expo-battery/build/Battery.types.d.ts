@@ -48,4 +48,12 @@ export type PowerModeEvent = {
      */
     lowPowerMode: boolean;
 };
+/**
+ * @hidden
+ */
+export type BatteryEvents = {
+    'Expo.batteryLevelDidChange'(event: BatteryLevelEvent): any;
+    'Expo.batteryStateDidChange'(event: BatteryStateEvent): any;
+    'Expo.powerModeDidChange'(event: PowerModeEvent): any;
+};
 //# sourceMappingURL=Battery.types.d.ts.map

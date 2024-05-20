@@ -1,9 +1,8 @@
-import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { Dimensions } from 'react-native';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, } from './ScreenOrientation.types';
 export { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, };
-const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
 let _orientationChangeSubscribers = [];
 let _lastOrientationLock = OrientationLock.UNKNOWN;
 // @needsAudit
@@ -211,7 +210,7 @@ export function removeOrientationChangeListener(subscription) {
 }
 function createDidUpdateDimensionsSubscription(listener) {
     if (Platform.OS === 'web' || Platform.OS === 'ios') {
-        return _orientationChangeEmitter.addListener('expoDidUpdateDimensions', async (update) => {
+        return ExpoScreenOrientation.addListener('expoDidUpdateDimensions', async (update) => {
             listener(update);
         });
     }

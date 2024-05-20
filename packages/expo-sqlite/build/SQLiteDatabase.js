@@ -1,7 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
 import ExpoSQLite from './ExpoSQLiteNext';
 import { SQLiteStatement, } from './SQLiteStatement';
-const emitter = new EventEmitter(ExpoSQLite);
 /**
  * A SQLite database.
  */
@@ -360,7 +358,7 @@ export function deleteDatabaseSync(databaseName) {
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(listener) {
-    return emitter.addListener('onDatabaseChange', listener);
+    return ExpoSQLite.addListener('onDatabaseChange', listener);
 }
 /**
  * A new connection specific used for [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask).

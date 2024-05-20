@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError, EventEmitter, Subscription } from 'expo-modules-core';
+import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
 
@@ -16,8 +16,6 @@ import {
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
-
-const emitter = new EventEmitter(CameraManager);
 
 const EventThrottleMs = 500;
 
@@ -178,8 +176,8 @@ export default class CameraView extends React.Component<CameraProps> {
    *
    * @platform ios
    */
-  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription {
-    return emitter.addListener<ScanningResult>('onModernBarcodeScanned', listener);
+  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription {
+    return CameraManager.addListener('onModernBarcodeScanned', listener);
   }
 
   /**

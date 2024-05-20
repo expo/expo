@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.0.3 — 2024-05-06
 
 ### 🎉 New features

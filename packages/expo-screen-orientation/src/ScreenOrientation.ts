@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { Dimensions } from 'react-native';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
@@ -24,11 +24,10 @@ export {
   WebOrientation,
   SizeClassIOS,
   ScreenOrientationInfo,
-  Subscription,
+  EventSubscription as Subscription,
 };
 
-const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
-let _orientationChangeSubscribers: Subscription[] = [];
+let _orientationChangeSubscribers: EventSubscription[] = [];
 
 let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 
@@ -214,7 +213,9 @@ export async function supportsOrientationLockAsync(
  * @param listener Each orientation update will pass an object with the new [`OrientationChangeEvent`](#orientationchangeevent)
  * to the listener.
  */
-export function addOrientationChangeListener(listener: OrientationChangeListener): Subscription {
+export function addOrientationChangeListener(
+  listener: OrientationChangeListener
+): EventSubscription {
   if (typeof listener !== 'function') {
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
@@ -250,7 +251,7 @@ export function removeOrientationChangeListeners(): void {
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
  */
-export function removeOrientationChangeListener(subscription: Subscription): void {
+export function removeOrientationChangeListener(subscription: EventSubscription): void {
   if (!subscription || !subscription.remove) {
     throw new TypeError(`Must pass in a valid subscription`);
   }
@@ -260,9 +261,11 @@ export function removeOrientationChangeListener(subscription: Subscription): voi
   );
 }
 
-function createDidUpdateDimensionsSubscription(listener: OrientationChangeListener): Subscription {
+function createDidUpdateDimensionsSubscription(
+  listener: OrientationChangeListener
+): EventSubscription {
   if (Platform.OS === 'web' || Platform.OS === 'ios') {
-    return _orientationChangeEmitter.addListener(
+    return ExpoScreenOrientation.addListener(
       'expoDidUpdateDimensions',
       async (update: OrientationChangeEvent) => {
         listener(update);

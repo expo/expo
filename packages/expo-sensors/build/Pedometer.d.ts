@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
+import { PermissionExpiration, PermissionResponse, PermissionStatus, type EventSubscription } from 'expo-modules-core';
 export type PedometerResult = {
     /**
      * Number of steps taken between the given dates.
@@ -16,7 +16,7 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  */
-export declare function watchStepCount(callback: PedometerUpdateCallback): Subscription;
+export declare function watchStepCount(callback: PedometerUpdateCallback): EventSubscription;
 /**
  * Get the step count between two dates.
  * @param start A date indicating the start of the range over which to measure steps.
@@ -43,5 +43,5 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  * Asks the user to grant permissions for accessing pedometer.
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
-export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionExpiration, };
 //# sourceMappingURL=Pedometer.d.ts.map

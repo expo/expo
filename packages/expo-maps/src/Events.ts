@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, ProxyNativeModule } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, ProxyNativeModule } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import {
@@ -18,7 +18,7 @@ if (Platform.OS === 'ios') {
   module = NativeExpoGoogleMapsModule;
 }
 
-const emitter = new EventEmitter(module);
+const emitter = new LegacyEventEmitter(module);
 
 const MapsEventsNames = {
   ON_MARKER_CLICK_EVENT: 'onMarkerClick',
@@ -138,7 +138,7 @@ export type OnLocationChangeEvent = {
  */
 export function addOnMarkerClickListener(
   listener: (event: MarkerClickEvent) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<MarkerClickEvent>(MapsEventsNames.ON_MARKER_CLICK_EVENT, listener);
 }
 
@@ -156,7 +156,7 @@ export function removeAllOnMarkerClickListeners() {
  */
 export function addOnMarkerDragStartedListener(
   listener: (event: MarkerDragStartedEvent) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<MarkerDragStartedEvent>(
     MapsEventsNames.ON_MARKER_DRAG_STARTED_EVENT,
     listener
@@ -177,7 +177,7 @@ export function removeAllOnMarkerDragStartedListeners() {
  */
 export function addOnMarkerDragEndedListener(
   listener: (event: MarkerDragEndedEvent) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<MarkerDragEndedEvent>(
     MapsEventsNames.ON_MARKER_DRAG_ENDED_EVENT,
     listener
@@ -194,7 +194,7 @@ export function removeAllOnMarkerDragEndedListeners() {
 /**
  * Removes particular listener, which was earlier registered.
  */
-export function removeEventListener(subscription: Subscription) {
+export function removeEventListener(subscription: EventSubscription) {
   emitter.removeSubscription(subscription);
 }
 

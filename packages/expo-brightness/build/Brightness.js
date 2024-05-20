@@ -1,7 +1,6 @@
-import { createPermissionHook, PermissionStatus, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
-const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 // @needsAudit
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -198,6 +197,6 @@ export const usePermissions = createPermissionHook({
  * @platform ios
  */
 export function addBrightnessListener(listener) {
-    return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+    return ExpoBrightness.addListener('Expo.brightnessDidChange', listener);
 }
 //# sourceMappingURL=Brightness.js.map

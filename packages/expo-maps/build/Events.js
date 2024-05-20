@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import { NativeExpoAppleMapsModule, NativeExpoGoogleMapsModule } from './ExpoMaps';
 let module;
@@ -8,7 +8,7 @@ if (Platform.OS === 'ios') {
 else {
     module = NativeExpoGoogleMapsModule;
 }
-const emitter = new EventEmitter(module);
+const emitter = new LegacyEventEmitter(module);
 const MapsEventsNames = {
     ON_MARKER_CLICK_EVENT: 'onMarkerClick',
     ON_MARKER_DRAG_STARTED_EVENT: 'onMarkerDragStarted',

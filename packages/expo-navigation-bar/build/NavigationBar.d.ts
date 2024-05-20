@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { ColorValue } from 'react-native';
 import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**
@@ -12,7 +12,7 @@ import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition,
  * });
  * ```
  */
-export declare function addVisibilityListener(listener: (event: NavigationBarVisibilityEvent) => void): Subscription;
+export declare function addVisibilityListener(listener: (event: NavigationBarVisibilityEvent) => void): EventSubscription;
 /**
  * Changes the navigation bar's background color.
  *

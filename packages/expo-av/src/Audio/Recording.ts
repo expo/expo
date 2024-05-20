@@ -3,8 +3,8 @@ import {
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
-  EventEmitter,
-  Subscription,
+  LegacyEventEmitter,
+  type EventSubscription,
   Platform,
 } from 'expo-modules-core';
 
@@ -25,7 +25,7 @@ import {
 import ExponentAV from '../ExponentAV';
 
 let _recorderExists: boolean = false;
-const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+const eventEmitter = Platform.OS === 'android' ? new LegacyEventEmitter(ExponentAV) : null;
 
 /**
  * Checks user's permissions for audio recording.
@@ -92,7 +92,7 @@ export const usePermissions = createPermissionHook({
  * @platform ios
  */
 export class Recording {
-  _subscription: Subscription | null = null;
+  _subscription: EventSubscription | null = null;
   _canRecord: boolean = false;
   _isDoneRecording: boolean = false;
   _finalDurationMillis: number = 0;

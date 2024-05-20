@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import { AppleAuthenticationOperation, } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 // @needsAudit
@@ -110,9 +110,8 @@ export async function getCredentialStateAsync(user) {
     }
     return ExpoAppleAuthentication.getCredentialStateAsync(user);
 }
-const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentication);
 // @docsMissing
 export function addRevokeListener(listener) {
-    return ExpoAppleAuthenticationEventEmitter.addListener('Expo.appleIdCredentialRevoked', listener);
+    return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
 }
 //# sourceMappingURL=AppleAuthentication.js.map

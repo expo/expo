@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
+import { type EventSubscription, PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -127,5 +127,5 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  * @platform ios
  */
-export declare function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription;
+export declare function addBrightnessListener(listener: (event: BrightnessEvent) => void): EventSubscription;
 //# sourceMappingURL=Brightness.d.ts.map

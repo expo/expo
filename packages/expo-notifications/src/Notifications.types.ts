@@ -2,7 +2,7 @@ import type {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  Subscription,
+  EventSubscription,
 } from 'expo-modules-core';
 
 /**
@@ -717,4 +717,9 @@ export type NotificationCategoryOptions = {
   allowAnnouncement?: boolean;
 };
 
-export type { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export type {
+  EventSubscription as Subscription,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+};
