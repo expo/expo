@@ -3,7 +3,7 @@ import Foundation
 
 private let recordingStatus = "onRecordingStatusUpdate"
 
-class AudioRecorder: SharedRef<AVAudioRecorder>, Identifiable, RecordingResultHandler {
+class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   var id = UUID().uuidString
   private lazy var resultHandler = {
     RecordingDelegate(resultHandler: self)

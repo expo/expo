@@ -3,8 +3,8 @@ import Foundation
 
 private let playbackStatus = "onPlaybackStatusUpdate"
 
-public class AudioPlayer: SharedRef<AVPlayer>, Identifiable {
-  public var id = UUID().uuidString
+public class AudioPlayer: SharedRef<AVPlayer> {
+  var id = UUID().uuidString
   var isLooping = false
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
