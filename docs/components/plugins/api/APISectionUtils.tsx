@@ -113,15 +113,19 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'B',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentType',
   'PureComponent',
   'E',
   'EventSubscription',
   'K',
   'Listener',
+  'ModuleType',
   'NativeSyntheticEvent',
+  'P',
   'ParsedQs',
   'ServiceActionResult',
   'SharedObject',
@@ -133,7 +137,8 @@ const nonLinkableTypes = [
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
-  // Cross-package permissions management
+  // Cross-package types with no export entry
+  'CodedError',
   'RequestPermissionMethod',
   'GetPermissionMethod',
   'Options',
@@ -170,6 +175,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
@@ -202,6 +208,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
+  WebBrowserOpenOptions: '/versions/latest/sdk/webbrowser/#webbrowseropenoptions',
+  WebBrowserWindowFeatures: '/versions/latest/sdk/webbrowser/#webbrowserwindowfeatures',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',

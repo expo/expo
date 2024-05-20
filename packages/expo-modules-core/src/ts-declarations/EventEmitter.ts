@@ -62,4 +62,16 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
    * Returns a number of listeners added to the given event.
    */
   listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
+
+  /**
+   * Function that is automatically invoked when the first listener for an event with the given name is added.
+   * Override it in a subclass to perform some additional setup once the event started being observed.
+   */
+  startObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
+
+  /**
+   * Function that is automatically invoked when the last listener for an event with the given name is removed.
+   * Override it in a subclass to perform some additional cleanup once the event is no longer observed.
+   */
+  stopObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
 }

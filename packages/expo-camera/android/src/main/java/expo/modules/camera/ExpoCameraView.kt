@@ -14,6 +14,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.OptIn
@@ -89,6 +91,26 @@ class ExpoCameraView(
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
       ?: throw Exceptions.MissingActivity()
+
+  val orientationEventListener by lazy {
+    object : OrientationEventListener(currentActivity) {
+      override fun onOrientationChanged(orientation: Int) {
+        if (orientation == ORIENTATION_UNKNOWN) {
+          return
+        }
+
+        val rotation = when (orientation) {
+          in 45 until 135 -> Surface.ROTATION_270
+          in 135 until 225 -> Surface.ROTATION_180
+          in 225 until 315 -> Surface.ROTATION_90
+          else -> Surface.ROTATION_0
+        }
+
+        imageAnalysisUseCase?.targetRotation = rotation
+        imageCaptureUseCase?.targetRotation = rotation
+      }
+    }
+  }
 
   var camera: Camera? = null
   var activeRecording: Recording? = null
@@ -239,10 +261,11 @@ class ExpoCameraView(
     val file = FileSystemUtils.generateOutputFile(cacheDirectory, "Camera", ".mp4")
     val fileOutputOptions = FileOutputOptions.Builder(file)
       .setFileSizeLimit(options.maxFileSize.toLong())
-      .setDurationLimitMillis(options.maxDuration.toLong())
+      .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
     recorder?.let {
-      if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+      if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
         return
       }
       activeRecording = it.prepareRecording(context, fileOutputOptions)
@@ -254,20 +277,23 @@ class ExpoCameraView(
         .start(ContextCompat.getMainExecutor(context)) { event ->
           when (event) {
             is VideoRecordEvent.Finalize -> {
-              if (event.error > 0) {
-                promise.reject(
+              when (event.error) {
+                VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
+                VideoRecordEvent.Finalize.ERROR_DURATION_LIMIT_REACHED,
+                VideoRecordEvent.Finalize.ERROR_NONE -> {
+                  promise.resolve(
+                    Bundle().apply {
+                      putString("uri", event.outputResults.outputUri.toString())
+                    }
+                  )
+                }
+                else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
-                      ?: "Video recording Failed: Unknown error"
+                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
                   )
                 )
-                return@start
               }
-              promise.resolve(
-                Bundle().apply {
-                  putString("uri", event.outputResults.outputUri.toString())
-                }
-              )
             }
           }
         }
@@ -520,6 +546,7 @@ class ExpoCameraView(
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 
   init {
+    orientationEventListener.enable()
     previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View?, child: View?) = Unit
       override fun onChildViewAdded(parent: View?, child: View?) {

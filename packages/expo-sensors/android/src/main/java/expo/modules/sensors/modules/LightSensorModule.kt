@@ -16,6 +16,7 @@ class LightSensorModule : Module() {
     createSensorProxy<LightSensorServiceInterface>(EventName) { sensorEvent ->
       Bundle().apply {
         putDouble("illuminance", sensorEvent.values[0].toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }

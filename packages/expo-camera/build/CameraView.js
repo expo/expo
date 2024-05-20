@@ -1,9 +1,8 @@
-import { Platform, UnavailabilityError, EventEmitter } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
-const emitter = new EventEmitter(CameraManager);
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
@@ -136,7 +135,7 @@ export default class CameraView extends React.Component {
      * @platform ios
      */
     static onModernBarcodeScanned(listener) {
-        return emitter.addListener('onModernBarcodeScanned', listener);
+        return CameraManager.addListener('onModernBarcodeScanned', listener);
     }
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.

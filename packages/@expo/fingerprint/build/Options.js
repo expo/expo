@@ -7,6 +7,8 @@ exports.normalizeOptionsAsync = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRI
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
+const Config_1 = require("./Config");
+const SourceSkips_1 = require("./sourcer/SourceSkips");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 exports.DEFAULT_IGNORE_PATHS = [
     exports.FINGERPRINT_IGNORE_FILENAME,
@@ -70,12 +72,18 @@ exports.DEFAULT_IGNORE_PATHS = [
     ].join(',')}}/**/*`,
 ];
 async function normalizeOptionsAsync(projectRoot, options) {
+    const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     return {
-        ...options,
-        platforms: options?.platforms ?? ['android', 'ios'],
-        concurrentIoLimit: options?.concurrentIoLimit ?? os_1.default.cpus().length,
-        hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+        // Defaults
+        platforms: ['android', 'ios'],
+        concurrentIoLimit: os_1.default.cpus().length,
+        hashAlgorithm: 'sha1',
         ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+        sourceSkips: SourceSkips_1.SourceSkips.None,
+        // Options from config
+        ...config,
+        // Explicit options
+        ...options,
     };
 }
 exports.normalizeOptionsAsync = normalizeOptionsAsync;

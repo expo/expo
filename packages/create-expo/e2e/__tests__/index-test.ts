@@ -113,7 +113,7 @@ it('uses npm', async () => {
   expect(results.stdout).toMatch(/npm install/);
 
   expectFileExists(projectName, 'package.json');
-  expectFileExists(projectName, 'App.js');
+  expectFileExists(projectName, 'app/_layout.tsx');
   expectFileExists(projectName, '.gitignore');
   // Check if it skipped install
   expectFileNotExists(projectName, 'node_modules');

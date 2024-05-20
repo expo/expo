@@ -41,9 +41,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
         it.description = "expo-updates: Create updates resources for ${targetName}."
         it.projectRoot.set(projectRoot.toString())
-        it.entryFile.set(entryFileRelativePath.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
-        it.enabled = !isDebuggableVariant
+        it.debuggableVariant.set(isDebuggableVariant)
+        it.entryFile.set(entryFileRelativePath.toString())
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }
@@ -55,6 +55,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     @get:Input
     abstract val nodeExecutableAndArgs: ListProperty<String>
+
+    @get:Input
+    abstract val debuggableVariant: Property<Boolean>
 
     @get:Input
     abstract val entryFile: Property<String>
@@ -73,7 +76,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           add("android")
           add(projectRoot.get())
           add(assetDir.get().toString())
-          add("all")
+          add(if (debuggableVariant.get()) "only-fingerprint" else "all")
           add(entryFile.get())
         }
 

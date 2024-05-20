@@ -599,6 +599,6 @@ export async function withMetroMultiPlatformAsync(
   });
 }
 
-function isDirectoryIn(a: string, b: string) {
-  return b.startsWith(a) && b.length > a.length;
+function isDirectoryIn(targetPath: string, rootPath: string) {
+  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
 }

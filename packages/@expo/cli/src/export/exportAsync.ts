@@ -3,6 +3,7 @@ import path from 'path';
 import { exportAppAsync } from './exportApp';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
+import { waitUntilAtlasExportIsReadyAsync } from '../start/server/metro/debugging/attachAtlas';
 import { FileNotifier } from '../utils/FileNotifier';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
 
@@ -19,6 +20,9 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   // Stop any file watchers to prevent the CLI from hanging.
   FileNotifier.stopAll();
+  // Wait until Atlas is ready, when enabled
+  // NOTE(cedric): this is a workaround, remove when `process.exit` is removed
+  await waitUntilAtlasExportIsReadyAsync(projectRoot);
 
   // Final notes
   Log.log(`App exported to: ${options.outputDir}`);

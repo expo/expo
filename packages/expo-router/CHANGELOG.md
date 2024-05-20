@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- Fix Sitemap crashing when `UIViewControllerBasedStatusBarAppearance` is set to `YES` ([#28724](https://github.com/expo/expo/pull/28665) by [@hirbod](https://github.com/hirbod))
-
 ### 💡 Others
+
+## 3.5.14 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- Additional fixes for deep links from expo.dev QR codes ([#28882](https://github.com/expo/expo/pull/28882) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.13 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- Fix deep links from expo.dev QR codes ([#28881](https://github.com/expo/expo/pull/28881) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.12 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- Fix Sitemap crashing when `UIViewControllerBasedStatusBarAppearance` is set to `YES` ([#28724](https://github.com/expo/expo/pull/28665) by [@hirbod](https://github.com/hirbod))
 
 ## 3.5.11 — 2024-05-09
 

@@ -29,13 +29,14 @@ public final class MagnetometerModule: Module {
       let referenceFrame = getAttitudeReferenceFrame()
 
       motionManager.startDeviceMotionUpdates(using: referenceFrame, to: operationQueue) { [weak self] data, _ in
-        guard let magneticField = data?.magneticField.field else {
+        guard let magneticField = data?.magneticField.field, let timestamp = data?.timestamp else {
           return
         }
         self?.sendEvent(EVENT_MAGNETOMETER_DID_UPDATE, [
           "x": magneticField.x,
           "y": magneticField.y,
-          "z": magneticField.z
+          "z": magneticField.z,
+          "timestamp": timestamp
         ])
       }
     }

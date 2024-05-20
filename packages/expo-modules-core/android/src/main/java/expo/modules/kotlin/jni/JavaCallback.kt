@@ -29,6 +29,10 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
     }
   }
 
+  operator fun invoke() = checkIfValid {
+    invokeNative()
+  }
+
   operator fun invoke(result: Int) = checkIfValid {
     invokeNative(result)
   }

@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 13.0.7 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix crash when using `DeviceMotion` module. ([#28839](https://github.com/expo/expo/pull/28839) by [@behenate](https://github.com/behenate))
+
+## 13.0.6 — 2024-05-13
+
+### 💡 Others
+
+- Add timestamps to relevant sensor events. ([#28761](https://github.com/expo/expo/pull/28761) by [@jkaufman](https://github.com/jkaufman))
+
 ## 13.0.5 — 2024-05-06
 
 _This version does not introduce any user-facing changes._

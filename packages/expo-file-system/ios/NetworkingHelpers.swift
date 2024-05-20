@@ -63,7 +63,7 @@ func createLocalUrl(from sourceUrl: URL) throws -> URL {
 
 func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptions) -> Data? {
   let fieldName = options.fieldName ?? sourceUrl.lastPathComponent
-  var mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
+  let mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
   guard let data = try? Data(contentsOf: sourceUrl) else {
     return nil
   }

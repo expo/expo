@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- Switched exported `EventEmitter` to the C++ implementation. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.11 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- Fix expo-modules-core is broken on the server side. ([#28764](https://github.com/expo/expo/pull/28764) by [@alantoa](https://github.com/alantoa))
 
 ## 1.12.10 — 2024-05-09
 

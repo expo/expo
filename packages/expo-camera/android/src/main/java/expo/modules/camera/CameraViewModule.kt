@@ -221,6 +221,7 @@ class CameraViewModule : Module() {
       }.runOnQueue(Queues.MAIN)
 
       OnViewDestroys { view ->
+        view.orientationEventListener.disable()
         view.cancelCoroutineScope()
         view.releaseCamera()
       }

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { addNotificationResponseReceivedListener } from './NotificationsEmitter';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotificationResponse } from './utils/mapNotificationResponse';
 /**
  * A React hook always returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
@@ -42,7 +43,8 @@ export default function useLastNotificationResponse() {
     // useLayoutEffect ensures the listener is registered as soon as possible
     useLayoutEffect(() => {
         const subscription = addNotificationResponseReceivedListener((response) => {
-            setLastNotificationResponse(response);
+            const mappedResponse = mapNotificationResponse(response);
+            setLastNotificationResponse(mappedResponse);
         });
         return () => {
             subscription.remove();
@@ -56,7 +58,8 @@ export default function useLastNotificationResponse() {
             // We only update the state with the resolved value if it's empty,
             // because if it's not empty it must have been populated by the `useLayoutEffect`
             // listener which returns "live" values.
-            setLastNotificationResponse((currentResponse) => currentResponse ?? response);
+            const mappedResponse = response ? mapNotificationResponse(response) : response;
+            setLastNotificationResponse((currentResponse) => currentResponse ?? mappedResponse);
         });
     }, []);
     return lastNotificationResponse;

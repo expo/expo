@@ -8,7 +8,37 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, set previewLayer on scanner to get correct dimensions. ([#28931](https://github.com/expo/expo/pull/28931) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, correctly handle orientation when landscape pictures are rendered. ([#28929](https://github.com/expo/expo/pull/28929) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.9 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- On `iOS`, prevent a crash when rendering the view on a simulator. ([#28911](https://github.com/expo/expo/pull/28911) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix incorrect orientation when taking pictures in landscape. ([#28917](https://github.com/expo/expo/pull/28917) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.8 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix dead frames when switching from picture to video. ([#28783](https://github.com/expo/expo/pull/28783) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.7 — 2024-05-13
+
+### 💡 Others
+
+- Remove unused property `interval` from `BarcodeSettings`. ([#28760](https://github.com/expo/expo/pull/28760) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.6 — 2024-05-10
+
+### 🐛 Bug fixes
+
+- Fix documention for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.5 — 2024-05-09
 

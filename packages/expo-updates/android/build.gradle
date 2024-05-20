@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-kapt'
 
 group = 'host.exp.exponent'
-version = '0.25.11'
+version = '0.25.14'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -48,7 +48,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.25.11'
+    versionName '0.25.14'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -87,7 +87,7 @@ dependencies {
   implementation project(':expo-eas-client')
   implementation "com.facebook.react:react-android"
 
-  def room_version = "2.4.2"
+  def room_version = "2.6.1"
 
   implementation "androidx.room:room-runtime:$room_version"
   kapt "androidx.room:room-compiler:$room_version"

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.25.14 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- Fixed launch crash when using fingerprint runtime version policy on Android with expo-dev-client. ([#28912](https://github.com/expo/expo/pull/28912) by [@kudo](https://github.com/kudo))
+
+## 0.25.13 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.12 — 2024-05-14
+
+_This version does not introduce any user-facing changes._
+
 ## 0.25.11 — 2024-05-09
 
 _This version does not introduce any user-facing changes._

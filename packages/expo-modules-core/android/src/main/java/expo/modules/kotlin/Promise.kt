@@ -9,9 +9,7 @@ private const val unknownCode = "UnknownCode"
 interface Promise {
   fun resolve(value: Any?)
 
-  fun resolve() {
-    resolve(null)
-  }
+  fun resolve() = resolve(null)
 
   fun resolve(result: Int) = resolve(result as Any?)
 

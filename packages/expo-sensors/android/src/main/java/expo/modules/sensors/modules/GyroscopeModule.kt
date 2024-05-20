@@ -18,6 +18,7 @@ class GyroscopeModule : Module() {
         putDouble("x", sensorEvent.values[0].toDouble())
         putDouble("y", sensorEvent.values[1].toDouble())
         putDouble("z", sensorEvent.values[2].toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }

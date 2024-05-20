@@ -29,6 +29,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     return mm
   }()
   private var cameraShouldInit = true
+  private var isSessionPaused = false
 
   // MARK: Property Observers
 
@@ -158,7 +159,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func onAppForegrounded() {
-    if !session.isRunning {
+    if !session.isRunning && isSessionPaused {
+      isSessionPaused = false
       sessionQueue.async {
         self.session.startRunning()
       }
@@ -166,7 +168,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func onAppBackgrounded() {
-    if session.isRunning {
+    if session.isRunning && !isSessionPaused {
+      isSessionPaused = true
       sessionQueue.async {
         self.session.stopRunning()
       }
@@ -225,6 +228,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
         }
+        self.updateSessionAudioIsMuted()
       } else {
         self.cleanupMovieFileCapture()
       }
@@ -252,6 +256,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.photoOutput = photoOutput
       }
 
+      self.session.sessionPreset = self.mode == .video ? self.pictureSize.toCapturePreset() : .photo
       self.addErrorNotification()
       self.changePreviewOrientation()
     }
@@ -296,11 +301,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
 
       if error.code == .mediaServicesWereReset {
-        if !self.session.isRunning {
-          self.session.startRunning()
-          self.updateSessionAudioIsMuted()
-          self.onCameraReady()
-        }
+        self.session.startRunning()
+        self.updateSessionAudioIsMuted()
+        self.onCameraReady()
       }
     }
   }
@@ -692,10 +695,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     videoRecordedPromise = nil
     videoCodecType = nil
-
-    if session.sessionPreset != pictureSize.toCapturePreset() {
-      updateSessionPreset(preset: pictureSize.toCapturePreset())
-    }
   }
 
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {
@@ -785,6 +784,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       // We shouldn't access the device orientation anywhere but on the main thread
       let videoOrientation = ExpoCameraUtils.videoOrientation(for: self.deviceOrientation)
       if (self.previewLayer.videoPreviewLayer.connection?.isVideoOrientationSupported) == true {
+        self.physicalOrientation = ExpoCameraUtils.physicalOrientation(for: self.deviceOrientation)
         self.previewLayer.videoPreviewLayer.connection?.videoOrientation = videoOrientation
       }
     }
@@ -792,6 +792,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
+    scanner.setPreviewLayer(layer: previewLayer.videoPreviewLayer)
     scanner.onBarcodeScanned = { [weak self] body in
       guard let self else {
         return
