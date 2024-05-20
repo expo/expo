@@ -63,6 +63,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   playbackRate: number;
 
   /**
+   * Boolean value indicating whether the player is currently playing a live stream.
+   * > This property is get-only
+   */
+  isLive: boolean;
+
+  /**
    * Indicates the current status of the player.
    * > This property is get-only
    */

@@ -47,6 +47,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     get playbackRate() {
         return this._playbackRate;
     }
+    get isLive() {
+        return [...this._mountedVideos][0].duration === Infinity;
+    }
     set volume(value) {
         this._mountedVideos.forEach((video) => {
             video.volume = value;
