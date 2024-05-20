@@ -11,19 +11,20 @@ import android.view.Choreographer
 import android.view.Surface
 import android.view.WindowManager
 import expo.modules.core.interfaces.services.UIManager
-import expo.modules.interfaces.sensors.SensorServiceInterface
-import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
-import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface
-import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
-import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface
-import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface
-import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.sensors.getServiceInterface
+import expo.modules.sensors.SensorSubscription
 import java.lang.ref.WeakReference
+
+private val sensorTypes = arrayListOf(
+  Sensor.TYPE_GYROSCOPE,
+  Sensor.TYPE_ACCELEROMETER,
+  Sensor.TYPE_LINEAR_ACCELERATION,
+  Sensor.TYPE_ROTATION_VECTOR,
+  Sensor.TYPE_GRAVITY
+)
 
 class DeviceMotionModule : Module(), SensorEventListener2 {
   private var lastUpdate = 0L
@@ -35,11 +36,19 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private var rotationEvent: SensorEvent? = null
   private var rotationRateEvent: SensorEvent? = null
   private var gravityEvent: SensorEvent? = null
-  private lateinit var serviceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
   private lateinit var uiManager: UIManager
 
   private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
   private val dispatchEventRunnable = DispatchEventRunnable(WeakReference(this))
+
+  private var isObserving = false
+
+  private val subscriptions: List<SensorSubscription> by lazy {
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    sensorTypes.map { type ->
+      SensorSubscription(context, type, this, updateInterval = 0)
+    }
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExponentDeviceMotion")
@@ -56,33 +65,40 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       this@DeviceMotionModule.updateInterval = updateInterval
     }
 
-    OnStartObserving {
-      if (!this@DeviceMotionModule::serviceSubscriptions.isInitialized) {
-        serviceSubscriptions = ArrayList()
-        for (kernelService in getSensorKernelServices(appContext)) {
-          val subscription = kernelService.createSubscriptionForListener(this@DeviceMotionModule)
-          // We want handle update interval on our own,
-          // because we need to coordinate updates from multiple sensor services.
-          subscription.updateInterval = 0
-          serviceSubscriptions.add(subscription)
-        }
+    OnDestroy {
+      if (isObserving) {
+        subscriptions.forEach { it.stopObserving() }
       }
-      serviceSubscriptions.forEach { it.start() }
     }
 
-    // We can't use `OnStopObserving`, because we need access to the promise.
-    AsyncFunction("stopObserving") { _: String?, promise: Promise ->
-      uiManager.runOnUiQueueThread {
-        serviceSubscriptions.forEach { it.stop() }
-        currentFrameCallback.stop()
-        promise.resolve(null)
+    OnStartObserving {
+      subscriptions.forEach { it.startObserving() }
+      isObserving = true
+    }
+
+    OnActivityEntersForeground {
+      if (isObserving) {
+        subscriptions.forEach { it.startObserving() }
       }
     }
+
+    OnActivityEntersBackground {
+      if (isObserving) {
+        subscriptions.forEach { it.stopObserving() }
+      }
+    }
+
+    // We can't use `OnStopObserving`, because we need access to change the queue.
+    AsyncFunction("stopObserving") { _: String? ->
+      if (isObserving) {
+        subscriptions.forEach { it.stopObserving() }
+      }
+      currentFrameCallback.stop()
+    }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<Boolean>("isAvailableAsync") {
       val mSensorManager = appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         ?: return@AsyncFunction false
-      val sensorTypes = arrayListOf(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY)
       for (type in sensorTypes) {
         if (mSensorManager.getDefaultSensor(type) == null) {
           return@AsyncFunction false
@@ -90,16 +106,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
       return@AsyncFunction true
     }
-  }
-
-  private fun getSensorKernelServices(appContext: AppContext): List<SensorServiceInterface> {
-    return arrayListOf(
-      appContext.getServiceInterface<GyroscopeServiceInterface>(),
-      appContext.getServiceInterface<LinearAccelerationSensorServiceInterface>(),
-      appContext.getServiceInterface<AccelerometerServiceInterface>(),
-      appContext.getServiceInterface<RotationVectorSensorServiceInterface>(),
-      appContext.getServiceInterface<GravitySensorServiceInterface>()
-    )
   }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {
@@ -222,7 +228,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private fun getOrientation(): Int {
     val windowManager = appContext.reactContext?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      appContext.activityProvider?.currentActivity?.display?.rotation
+      appContext.currentActivity?.display?.rotation
     } else {
       @Suppress("DEPRECATION")
       windowManager?.defaultDisplay?.rotation
