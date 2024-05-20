@@ -19,10 +19,6 @@ function displayFromFontSource(asset: any): FontDisplay | undefined {
   return asset.display || FontDisplay.AUTO;
 }
 
-export function fontFamilyNeedsScoping(name: string): boolean {
-  return false;
-}
-
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
   const display = displayFromFontSource(source);
@@ -59,8 +55,4 @@ export function loadSingleFontAsync(name: string, input: Asset | FontResource): 
   }
 
   return Promise.resolve();
-}
-
-export function getNativeFontName(name: string): string {
-  return name;
 }

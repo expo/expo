@@ -28,6 +28,7 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
+import expo.modules.font.FontLoaderModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
@@ -175,6 +176,7 @@ open class HomeActivity : BaseExperienceActivity() {
         DeviceModule::class.java,
         EASClientModule::class.java,
         FileSystemModule::class.java,
+        FontLoaderModule::class.java,
         HapticsModule::class.java,
         KeepAwakeModule::class.java,
         LinearGradientModule::class.java,

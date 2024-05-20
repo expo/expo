@@ -33,24 +33,6 @@ describe('loadSingleFontAsync', () => {
   });
 });
 
-describe('getNativeFontName', () => {
-  // Sanity test platform resolution
-  it(`never changes`, () => {
-    for (const value of ['foo', false, null, undefined, true, {}, 'System']) {
-      expect(FontLoader.getNativeFontName(value as any)).toBe(value);
-    }
-  });
-});
-
-describe('fontFamilyNeedsScoping', () => {
-  // Sanity test platform resolution
-  it(`never needs scoping in the browser`, () => {
-    for (const value of ['foo', false, null, undefined, true, {}, 'System']) {
-      expect(FontLoader.fontFamilyNeedsScoping(value as any)).toBe(false);
-    }
-  });
-});
-
 describe('getAssetForSource', () => {
   it(`parses font display`, () => {
     expect((FontLoader.getAssetForSource('foo') as any).display).toBe(Font.FontDisplay.AUTO);

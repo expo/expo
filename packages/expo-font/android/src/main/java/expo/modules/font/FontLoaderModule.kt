@@ -24,9 +24,6 @@ open class FontLoaderModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  @Suppress("MemberVisibilityCanBePrivate")
-  open val prefix = ""
-
   override fun definition() = ModuleDefinition {
     Name("ExpoFontLoader")
 
@@ -51,7 +48,7 @@ open class FontLoaderModule : Module() {
       val fontManager = appContext.legacyModule<FontManagerInterface>()
         ?: throw FontManagerInterfaceNotFoundException()
 
-      fontManager.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
+      fontManager.setTypeface(fontFamilyName, Typeface.NORMAL, typeface)
     }
   }
 

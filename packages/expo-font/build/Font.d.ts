@@ -6,6 +6,7 @@ import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font
  *
  * @param fontFamily Name of font to process.
  * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/archive/managed-vs-bare/).
+ * @deprecated This method is not needed anymore and will be removed in the future.
  */
 export declare function processFontFamily(fontFamily: string | null): string | null;
 /**
