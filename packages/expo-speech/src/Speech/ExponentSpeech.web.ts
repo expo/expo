@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, createWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -71,16 +71,16 @@ export default createWebModule({
     }
 
     message.onstart = (nativeEvent: SpeechSynthesisEvent) => {
-      DeviceEventEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingStarted', { id, nativeEvent });
     };
     message.onend = (nativeEvent: SpeechSynthesisEvent) => {
-      DeviceEventEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingDone', { id, nativeEvent });
     };
     message.onpause = (nativeEvent: SpeechSynthesisEvent) => {
-      DeviceEventEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingStopped', { id, nativeEvent });
     };
     message.onerror = (nativeEvent: SpeechSynthesisErrorEvent) => {
-      DeviceEventEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingError', { id, nativeEvent });
     };
 
     message.text = text;
