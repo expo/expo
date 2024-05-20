@@ -136,6 +136,10 @@ public final class VideoModule: Module {
         player.playbackRate = playbackRate
       }
 
+      Property("isLive") { player -> Bool in
+        return player.pointer.currentItem?.duration.isIndefinite ?? false
+      }
+
       Property("preservesPitch") { player -> Bool in
         return player.preservesPitch
       }

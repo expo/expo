@@ -199,6 +199,11 @@ class VideoModule : Module() {
           }
         }
 
+      Property("isLive")
+        .get { ref: VideoPlayer ->
+          ref.isLive
+        }
+
       Property("preservesPitch")
         .get { ref: VideoPlayer ->
           ref.preservesPitch
