@@ -61,7 +61,6 @@ import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
@@ -98,7 +97,6 @@ object ExperiencePackagePicker : ModulesProvider {
     KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),

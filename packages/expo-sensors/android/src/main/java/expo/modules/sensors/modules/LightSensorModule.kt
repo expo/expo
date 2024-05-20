@@ -3,7 +3,6 @@ package expo.modules.sensors.modules
 
 import android.hardware.Sensor
 import android.os.Bundle
-import expo.modules.interfaces.sensors.services.LightSensorServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
@@ -13,7 +12,7 @@ private const val EventName = "lightSensorDidUpdate"
 
 class LightSensorModule : Module() {
   private val sensorProxy by lazy {
-    createSensorProxy<LightSensorServiceInterface>(EventName) { sensorEvent ->
+    createSensorProxy(EventName, Sensor.TYPE_LIGHT, appContext) { sensorEvent ->
       Bundle().apply {
         putDouble("illuminance", sensorEvent.values[0].toDouble())
         putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
