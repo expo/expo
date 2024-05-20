@@ -32,15 +32,17 @@ class VideoThumbnailsModule : Module() {
     Name("ExpoVideoThumbnails")
 
     AsyncFunction("getThumbnail") { sourceFilename: String, options: VideoThumbnailOptions, promise: Promise ->
-      if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
-        throw ThumbnailFileException()
-      }
-
       withModuleScope(promise) {
-        val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
-          ?: throw GenerateThumbnailException()
-
         try {
+          if (!URLUtil.isValidUrl(sourceFilename)) throw InvalidSourceFilenameException()
+
+          if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
+            throw ThumbnailFileException()
+          }
+
+          val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
+            ?: throw GenerateThumbnailException()
+
           val path = FileUtilities.generateOutputPath(context.cacheDir, "VideoThumbnails", "jpg")
           FileOutputStream(path).use { outputStream ->
             thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
@@ -91,6 +93,9 @@ class VideoThumbnailsModule : Module() {
           videoOptions.time.toLong() * 1000,
           MediaMetadataRetriever.OPTION_CLOSEST_SYNC
         )
+      } catch (e: Exception) {
+        Log.e(ERROR_TAG, "Unable to retrieve source file")
+        return null
       } finally {
         retriever.release()
       }

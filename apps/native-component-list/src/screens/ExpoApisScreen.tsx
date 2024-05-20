@@ -84,6 +84,7 @@ const screens = [
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',
+  'Video Thumbnails',
   'ViewShot',
   'WebBrowser',
 ];
