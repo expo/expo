@@ -63,7 +63,7 @@ Start a development server to work on your project by running:
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:8081` (for SDK 48 and lower, the port number is `19000`) that a client can use to interact with the bundler. The default bundler is [Metro](https://metrobundler.dev/).
+This command starts a server on `http://localhost:8081` that a client can use to interact with the bundler. The default bundler is [Metro](https://metrobundler.dev/).
 
 The UI that shows up in the process is referred to as the **Terminal UI**. It contains a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
@@ -100,7 +100,7 @@ By default, the project is served over a LAN connection. You can change this beh
 
 Other available options are:
 
-- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**. For SDK 48 and lower, defaults to `19000`.
+- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
