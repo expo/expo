@@ -4,6 +4,6 @@ export function createErrorHandler(originalHandler) {
 
 /**
  * @hidden
- * @deprecated Remove in the future.
+ * @deprecated Will be removed in the future.
  */
 export function disableErrorHandling() {}
