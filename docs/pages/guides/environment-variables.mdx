@@ -11,7 +11,7 @@ Environment variables are key-value pairs configured outside your source code th
 
 The Expo CLI will automatically load environment variables with an `EXPO_PUBLIC_` prefix from **.env** files for use within your JavaScript code whenever you use the Expo CLI, such as when running `npx expo start` to start your app in local development mode.
 
-> Available in SDK 49 and higher. See notes for [SDK 48 and lower](#environment-variables-in-sdk-48-and-lower).
+> Available in SDK 49 and higher.
 
 ## Reading environment variables from .env files
 
@@ -48,7 +48,9 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### How to read from environment variables
 
-- <YesIcon small /> **Every environment variable must be statically referenced as a property of `process.env` using JavaScript's dot notation for it to be inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
+- <YesIcon small /> **Every environment variable must be statically referenced as a property of `process.env`
+  using JavaScript's dot notation for it to be inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY`
+  is valid and will be inlined.
 
 - <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
   or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not be inlined.
@@ -149,7 +151,3 @@ Previously with `direnv`, you would need to use a [dynamic app config](/versions
 ## Security considerations
 
 Never store sensitive secrets in environment variables that are prefixed with `EXPO_PUBLIC_`. When an end-user runs your app, they have access to all of the code and embedded environment variables in your app. Read more about [storing sensitive info](https://reactnative.dev/docs/security#storing-sensitive-info).
-
-## Environment variables in SDK 48 and lower
-
-Due to its ability to automatically load and unload environment variables in your shell depending on your current directory, we recommend [`direnv`](https://direnv.net/) for the highest level of compatibility with all Expo and EAS CLI tooling for SDK versions that do not support Expo environment variables. Since variables loaded with `direnv` are available in Node processes but not your application code itself, you can load it into the `extra` field of your [dynamic Expo config](/versions/latest/config/app/#app-config) and then access it in your JavaScript code via [`expo-constants`](/versions/latest/sdk/constants).

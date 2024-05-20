@@ -228,33 +228,5 @@ After updating the Babel config file, run the following command to clear the bun
 
   </Tab>
 
-  <Tab label="SDK 48 and below">
-
-    Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK version below 49, you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
-
-    <Tabs>
-      <Tab label="Yarn">
-        ```json package.json
-        {
-          "resolutions": {
-            "metro": "0.76.0",
-            "metro-resolver": "0.76.0"
-          }
-        }
-        ```
-      </Tab>
-      <Tab label="npm">
-          ```json package.json
-          {
-            "overrides": {
-              "metro": "0.76.0",
-              "metro-resolver": "0.76.0"
-            }
-          }
-          ```
-      </Tab>
-    </Tabs>
-
-  </Tab>
 </Tabs>
 </Step>
