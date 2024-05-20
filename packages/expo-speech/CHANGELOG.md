@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fix `onDone` not firing listeners.
+- [Web] Fix `onDone` not firing listeners. ([#28904](https://github.com/expo/expo/pull/28904) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
