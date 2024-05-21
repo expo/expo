@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Made sure that `MediaMetadataRetriever` is safely released.
+
 ## 8.0.0 — 2024-04-18
 
 ### 🐛 Bug fixes
