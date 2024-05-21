@@ -38,7 +38,7 @@ export function useAudioRecorder(
 ): [AudioRecorder, RecorderState] {
   const recorder = useReleasingSharedObject(() => {
     return new AudioModule.AudioRecorder(options);
-  }, [options]);
+  }, [JSON.stringify(options)]);
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
@@ -50,7 +50,8 @@ export function useAudioRecorder(
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setState(recorder.getStatus());
+      const status = recorder.getStatus();
+      setState(status);
     }, 1000);
 
     return () => clearInterval(interval);

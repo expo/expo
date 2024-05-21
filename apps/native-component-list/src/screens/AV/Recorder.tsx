@@ -161,6 +161,7 @@ export default class Recorder extends React.Component<
 }
 
 const _formatTime = (duration: number) => {
+  console.log({ duration });
   const paddedSecs = _leftPad(`${Math.floor(duration % 60)}`, '0', 2);
   const paddedMins = _leftPad(`${Math.floor(duration / 60)}`, '0', 2);
   if (duration > 3600) {

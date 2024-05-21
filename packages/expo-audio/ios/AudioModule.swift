@@ -1,6 +1,7 @@
 import ExpoModulesCore
 import Combine
 
+
 public class AudioModule: Module {
   private var timeTokens = [String: Any?]()
   private var players = [String: AudioPlayer]()
@@ -8,7 +9,6 @@ public class AudioModule: Module {
   private var sessionIsActive = true
 
   // MARK: Properties
-  private var allowsRecording = false
   private var recordingSettings = [String: Any]()
 
   // MARK: Observers
@@ -25,52 +25,11 @@ public class AudioModule: Module {
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
-      try validateAudioMode(mode: mode)
-      var category: AVAudioSession.Category = .soloAmbient
-      var options: AVAudioSession.CategoryOptions = []
-      allowsRecording = mode.allowsRecording
-
-      if !mode.allowsRecording {
-        recorders.values.forEach { recorder in
-          if recorder.pointer.isRecording {
-            recorder.pointer.pause()
-          }
-        }
-      }
-
-      if !mode.playsInSilentMode {
-        if mode.interruptionMode == .doNotMix {
-          category = .soloAmbient
-        } else {
-          category = .ambient
-        }
-      } else {
-        category = mode.allowsRecording ? .playAndRecord : .playback
-        switch mode.interruptionMode {
-        case .doNotMix:
-          break
-        case .duckOthers:
-          options = .duckOthers
-        case .mixWithOthers:
-          options = .mixWithOthers
-        }
-      }
-      try AVAudioSession.sharedInstance().setCategory(category, options: options)
+      try setAudioMode(mode: mode)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
-      if !isActive {
-        for player in players.values {
-          player.pointer.pause()
-        }
-      }
-
-      do {
-        try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
-        sessionIsActive = isActive
-      } catch {
-        throw AudioStateException(error.localizedDescription)
-      }
+      try setIsAudioActive(isActive)
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
@@ -225,17 +184,16 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
-        guard let cachesDir = appContext?.fileSystem?.cachesDirectory, var directory = URL(string: cachesDir) else {
+        guard var cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
           throw Exceptions.AppContextLost()
         }
-
-        directory.appendPathComponent("Audio")
-        FileSystemUtilities.ensureDirExists(at: directory)
+        
+        let directoryPath = directory.appendingPathComponent("ExpoAudio")
+        FileSystemUtilities.ensureDirExists(at: directoryPath)
         let fileName = "recording-\(UUID().uuidString)\(options.extension)"
-        let fileUrl = directory.appendingPathComponent(fileName)
-
+        let fileUrl = directoryPath.appendingPathComponent(fileName)
+        
         let recorder = AudioRecorder(createRecorder(url: fileUrl, with: options))
-        recorder.pointer.prepareToRecord()
         recorders[recorder.id] = recorder
         return recorder
       }
@@ -245,7 +203,7 @@ public class AudioModule: Module {
       }
 
       Property("isRecording") { recorder in
-        recorder.pointer.isRecording
+        recorder.isRecording
       }
 
       Property("currentTime") { recorder in
@@ -253,22 +211,29 @@ public class AudioModule: Module {
       }
 
       Property("uri") { recorder in
-        recorder.pointer.url.absoluteString
+        recorder.uri
       }
 
       Function("record") { recorder in
         try checkPermissions()
         recorder.pointer.record()
+        recorder.startTimestamp = Int(recorder.deviceCurrentTime)
+        recorder.getRecordingStatus()
       }
 
       Function("pause") { recorder in
         try checkPermissions()
         recorder.pointer.pause()
+        let current = recorder.deviceCurrentTime
+        recorder.previousRecordingDuration += (current - recorder.startTimestamp)
+        recorder.startTimestamp = 0
       }
 
       Function("stop") { recorder in
         try checkPermissions()
         recorder.pointer.stop()
+        recorder.startTimestamp = 0
+        recorder.previousRecordingDuration = 0
       }
 
       Function("release") { recorder in
@@ -277,24 +242,7 @@ public class AudioModule: Module {
       }
 
       Function("getStatus") { recorder -> [String: Any] in
-        let time = recorder.pointer.deviceCurrentTime * 1000
-        let duration = recorder.pointer.currentTime
-
-        var result: [String: Any] = [
-          "id": recorder.id,
-          "canRecord": true,
-          "isRecording": recorder.pointer.isRecording,
-          "durationMillis": duration,
-          "mediaServicesDidReset": false
-        ]
-
-        if recorder.pointer.isMeteringEnabled {
-          recorder.pointer.updateMeters()
-          let currentLevel = recorder.pointer.averagePower(forChannel: 0)
-          result["metering"] = currentLevel
-        }
-
-        return result
+        recorder.getRecordingStatus()
       }
 
       Function("startRecordingAtTime") { (recorder, seconds: Double) in
@@ -320,7 +268,56 @@ public class AudioModule: Module {
       }
     }
   }
+  
+  private func setIsAudioActive(_ isActive: Bool) throws {
+    if !isActive {
+      for player in players.values {
+        player.pointer.pause()
+      }
+    }
 
+    do {
+      try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
+      sessionIsActive = isActive
+    } catch {
+      throw AudioStateException(error.localizedDescription)
+    }
+  }
+  
+  private func setAudioMode(mode: AudioMode) throws {
+    try validateAudioMode(mode: mode)
+    var category: AVAudioSession.Category = .soloAmbient
+    var options: AVAudioSession.CategoryOptions = []
+
+    if !mode.allowsRecording {
+      recorders.values.forEach { recorder in
+        if recorder.isRecording {
+          recorder.pointer.stop()
+        }
+      }
+    }
+
+    if !mode.playsInSilentMode {
+      if mode.interruptionMode == .doNotMix {
+        category = .soloAmbient
+      } else {
+        category = .ambient
+      }
+    } else {
+      category = mode.allowsRecording ? .playAndRecord : .playback
+      switch mode.interruptionMode {
+      case .doNotMix:
+        break
+      case .duckOthers:
+        options = .duckOthers
+      case .mixWithOthers:
+        options = .mixWithOthers
+      }
+    }
+
+    try AVAudioSession.sharedInstance().setCategory(category, options: options)
+  }
+  
   private func getAvailableInputs() -> [[String: Any]] {
     var inputs = [[String: Any]]()
     if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
@@ -380,8 +377,8 @@ public class AudioModule: Module {
     if let bitDepthHint = options.bitDepthHint {
       settings[AVEncoderBitDepthHintKey] = bitDepthHint
     }
-    if let linearPcm = options.linearPCMBitDepth {
-      settings[AVLinearPCMBitDepthKey] = linearPcm
+    if let linearPCMBitDepth = options.linearPCMBitDepth {
+      settings[AVLinearPCMBitDepthKey] = linearPCMBitDepth
     }
     if let linearPCMIsBigEndian = options.linearPCMIsBigEndian {
       settings[AVLinearPCMIsBigEndianKey] = linearPCMIsBigEndian
@@ -389,7 +386,6 @@ public class AudioModule: Module {
     if let linearPCMIsFloat = options.linearPCMIsFloat {
       settings[AVLinearPCMIsFloatKey] = linearPCMIsFloat
     }
-
     if let formatKey = options.outputFormat {
       settings[AVFormatIDKey] = getFormatIDFromString(typeString: formatKey)
     }
@@ -432,12 +428,20 @@ public class AudioModule: Module {
   }
 
   private func checkPermissions() throws {
-    switch AVAudioSession.sharedInstance().recordPermission {
-    case .denied, .undetermined:
-      throw AudioPermissionsException()
-    default:
-      // Do nothing
-      break
+    if #available(iOS 17.0, *) {
+      switch AVAudioApplication.shared.recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
+      }
+    } else {
+      switch AVAudioSession.sharedInstance().recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
+      }
     }
   }
 

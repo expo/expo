@@ -19,7 +19,7 @@ export function useAudioPlayer(source = null, statusListener) {
 export function useAudioRecorder(options, statusListener) {
     const recorder = useReleasingSharedObject(() => {
         return new AudioModule.AudioRecorder(options);
-    }, [options]);
+    }, [JSON.stringify(options)]);
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
@@ -29,7 +29,8 @@ export function useAudioRecorder(options, statusListener) {
     }, [recorder.id]);
     useEffect(() => {
         const interval = setInterval(() => {
-            setState(recorder.getStatus());
+            const status = recorder.getStatus();
+            setState(status);
         }, 1000);
         return () => clearInterval(interval);
     }, [recorder.id]);

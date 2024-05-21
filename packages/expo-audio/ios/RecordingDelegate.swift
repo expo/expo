@@ -19,4 +19,8 @@ class RecordingDelegate: NSObject, AVAudioRecorderDelegate {
   func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
     resultHandler.encodeErrorDidOccur(recorder, error: error)
   }
+  
+  deinit {
+    print("RecordingDelegate has been destroyed")
+  }
 }

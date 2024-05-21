@@ -139,7 +139,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       <View style={styles.centerer}>
         {renderRecorderButtons()}
         <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
-          {_formatTime(audioState.durationMillis)}
+          {_formatTime(audioState.durationMillis / 1000)}
         </Text>
       </View>
       <AudioInputSelector recorder={audioRecorder} />
