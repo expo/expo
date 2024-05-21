@@ -13,7 +13,7 @@ class EventObservingDefinition(
 
   enum class Type(val value: String) {
     StartObserving("startObserving"),
-    StopObserving("stopObserving"),
+    StopObserving("stopObserving")
   }
 
   private fun shouldBeInvoked(eventType: Type, eventName: String): Boolean {
