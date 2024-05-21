@@ -63,7 +63,8 @@ export type TypeDefinitionData = {
     type: string;
   };
   indexType?: {
-    type: string;
+    name?: string;
+    type?: string;
     value: string;
   };
   qualifiedName?: string;
@@ -83,6 +84,7 @@ export type TypePropertyDataFlags = {
   isExternal?: boolean;
   isOptional?: boolean;
   isStatic?: boolean;
+  isRest?: boolean;
 };
 
 // Constants section
