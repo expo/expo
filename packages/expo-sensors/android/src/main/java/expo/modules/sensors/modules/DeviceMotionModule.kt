@@ -12,7 +12,6 @@ import android.view.Surface
 import android.view.WindowManager
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.SensorSubscription
