@@ -5,7 +5,7 @@ private let recordingStatus = "onRecordingStatusUpdate"
 
 class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   var id = UUID().uuidString
-  private lazy var resultHandler = {
+  private lazy var delegate = {
     RecordingDelegate(resultHandler: self)
   }()
   var startTimestamp = 0
@@ -13,7 +13,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
-    pointer.delegate = resultHandler
+    pointer.delegate = delegate
 
     do {
       try AVAudioSession.sharedInstance().setCategory(.playAndRecord)

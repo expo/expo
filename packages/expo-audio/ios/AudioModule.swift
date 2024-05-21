@@ -60,7 +60,8 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?) -> AudioPlayer in
-        let player = AudioPlayer(createAVPlayer(source: source))
+        let avPlayer = AudioUtils.createAVPlayer(source: source)
+        let player = AudioPlayer(avPlayer)
         players[player.id] = player
         // Gets the duration of the item on load
         player.pointer
@@ -186,14 +187,10 @@ public class AudioModule: Module {
         guard var cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
           throw Exceptions.AppContextLost()
         }
-
-        let directoryPath = directory.appendingPathComponent("ExpoAudio")
-        FileSystemUtilities.ensureDirExists(at: directoryPath)
-        let fileName = "recording-\(UUID().uuidString)\(options.extension)"
-        let fileUrl = directoryPath.appendingPathComponent(fileName)
-
-        let recorder = AudioRecorder(createRecorder(url: fileUrl, with: options))
+        let avRecorder = AudioUtils.createRecorder(directory: directory, with: options)
+        let recorder = AudioRecorder(avRecorder)
         recorders[recorder.id] = recorder
+
         return recorder
       }
 
@@ -255,15 +252,15 @@ public class AudioModule: Module {
       }
 
       Function("getAvailableInputs") {
-        getAvailableInputs()
+        RecordingUtils.getAvailableInputs()
       }
 
       Function("getCurrentInput") { () -> [String: Any] in
-        try getCurrentInput()
+        try RecordingUtils.getCurrentInput()
       }
 
       Function("setInput") { (input: String) in
-        try setInput(input)
+        try RecordingUtils.setInput(input)
       }
     }
   }
@@ -284,7 +281,7 @@ public class AudioModule: Module {
   }
 
   private func setAudioMode(mode: AudioMode) throws {
-    try validateAudioMode(mode: mode)
+    try AudioUtils.validateAudioMode(mode: mode)
     var category: AVAudioSession.Category = .soloAmbient
     var options: AVAudioSession.CategoryOptions = []
 
@@ -315,115 +312,6 @@ public class AudioModule: Module {
     }
 
     try AVAudioSession.sharedInstance().setCategory(category, options: options)
-  }
-
-  private func getAvailableInputs() -> [[String: Any]] {
-    var inputs = [[String: Any]]()
-    if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      for desc in availableInputs {
-        inputs.append([
-          "name": desc.portName,
-          "type": desc.portType,
-          "uid": desc.uid
-        ])
-      }
-    }
-
-    return inputs
-  }
-
-  private func getCurrentInput() throws -> [String: Any] {
-    guard let desc = try? getCurrentInput() else {
-      throw NoInputFoundException()
-    }
-
-    return [
-      "name": desc.portName,
-      "type": desc.portType.rawValue,
-      "uid": desc.uid
-    ]
-  }
-
-  private func setInput(_ input: String) throws {
-    var prefferedInput: AVAudioSessionPortDescription?
-    if let currentInputs = AVAudioSession.sharedInstance().availableInputs {
-      for desc in currentInputs where desc.uid == input {
-        prefferedInput = desc
-      }
-    }
-
-    guard let prefferedInput else {
-      throw PreferredInputFoundException(input)
-    }
-
-    try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
-  }
-
-  private func setRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
-    let strategy = options.bitRateStrategy?.toAVBitRateStrategy() ?? AVAudioBitRateStrategy_Variable
-
-    var settings = [String: Any]()
-
-    if strategy == AVAudioBitRateStrategy_Variable {
-      settings[AVEncoderAudioQualityForVBRKey] = strategy
-    } else {
-      settings[AVEncoderAudioQualityKey] = strategy
-    }
-    settings[AVSampleRateKey] = options.sampleRate
-    settings[AVNumberOfChannelsKey] = options.numberOfChannels
-    settings[AVEncoderBitRateKey] = options.bitRate
-
-    if let bitDepthHint = options.bitDepthHint {
-      settings[AVEncoderBitDepthHintKey] = bitDepthHint
-    }
-    if let linearPCMBitDepth = options.linearPCMBitDepth {
-      settings[AVLinearPCMBitDepthKey] = linearPCMBitDepth
-    }
-    if let linearPCMIsBigEndian = options.linearPCMIsBigEndian {
-      settings[AVLinearPCMIsBigEndianKey] = linearPCMIsBigEndian
-    }
-    if let linearPCMIsFloat = options.linearPCMIsFloat {
-      settings[AVLinearPCMIsFloatKey] = linearPCMIsFloat
-    }
-    if let formatKey = options.outputFormat {
-      settings[AVFormatIDKey] = getFormatIDFromString(typeString: formatKey)
-    }
-
-    return settings
-  }
-
-  private func getCurrentInput() throws -> AVAudioSessionPortDescription? {
-    let currentRoute = AVAudioSession.sharedInstance().currentRoute
-    let inputs = currentRoute.inputs
-
-    if !inputs.isEmpty {
-      return inputs.first
-    }
-
-    if let preferredInput = AVAudioSession.sharedInstance().preferredInput {
-      return preferredInput
-    }
-
-    if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      if !availableInputs.isEmpty {
-        let defaultInput = availableInputs.first
-        try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
-        return defaultInput
-      }
-    }
-
-    return nil
-  }
-
-  private func createRecorder(url: URL?, with options: RecordingOptions) -> AVAudioRecorder {
-    if let url {
-      do {
-        return try AVAudioRecorder(url: url, settings: setRecordingOptions(options))
-      } catch {
-        return AVAudioRecorder()
-      }
-    }
-    return AVAudioRecorder()
   }
 
   private func checkPermissions() throws {
@@ -474,16 +362,6 @@ public class AudioModule: Module {
       player.updateStatus(with: [
         "currentPosition": time.seconds * 1000
       ])
-    }
-  }
-
-  private func validateAudioMode(mode: AudioMode) throws {
-    if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
-      throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.allowsRecording {
-      throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.shouldPlayInBackground {
-      throw InvalidAudioModeException("playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.")
     }
   }
 }
