@@ -16,7 +16,14 @@ Continue reading to add tabs to an existing project or to customize your app's t
 
 You can use file-based routing to create a tabs layout. Here's an example file structure:
 
-<FileTree files={['app/(tabs)/_layout.tsx', 'app/(tabs)/index.tsx', 'app/(tabs)/settings.tsx']} />
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/(tabs)/_layout.tsx',
+    'app/(tabs)/index.tsx',
+    'app/(tabs)/settings.tsx',
+  ]}
+/>
 
 This file structure produces a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs: **Home** and **Settings**:
 
