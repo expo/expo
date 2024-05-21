@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 export type CameraType = 'front' | 'back';
@@ -424,5 +424,5 @@ export type ScanningOptions = {
  * The available barcode types that can be scanned.
  */
 export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription, };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription as Subscription, };
 //# sourceMappingURL=Camera.types.d.ts.map

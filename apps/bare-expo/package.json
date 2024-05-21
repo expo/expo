@@ -55,7 +55,6 @@
     "expo-insights": "~0.7.0",
     "expo-network-addons": "~0.6.0",
     "expo-notifications": "~0.28.0",
-    "expo-random": "~14.0.0",
     "expo-splash-screen": "~0.27.0",
     "native-component-list": "*",
     "react": "18.2.0",

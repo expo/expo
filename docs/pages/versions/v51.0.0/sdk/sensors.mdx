@@ -40,9 +40,9 @@ import {
 
 ### Android
 
-Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates.
+Starting in Android 12 (API level 31), the system has a 200Hz limit for each sensor updates.
 
-If you need an update interval of less than 200ms, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+If you need an update interval of less than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
 
 <AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
 

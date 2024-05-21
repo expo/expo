@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, createWebModule } from 'expo-modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
@@ -54,16 +54,16 @@ export default createWebModule({
             message.onboundary = options.onBoundary;
         }
         message.onstart = (nativeEvent) => {
-            DeviceEventEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+            this.emit('Exponent.speakingStarted', { id, nativeEvent });
         };
         message.onend = (nativeEvent) => {
-            DeviceEventEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+            this.emit('Exponent.speakingDone', { id, nativeEvent });
         };
         message.onpause = (nativeEvent) => {
-            DeviceEventEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+            this.emit('Exponent.speakingStopped', { id, nativeEvent });
         };
         message.onerror = (nativeEvent) => {
-            DeviceEventEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+            this.emit('Exponent.speakingError', { id, nativeEvent });
         };
         message.text = text;
         window.speechSynthesis.speak(message);

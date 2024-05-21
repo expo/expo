@@ -3,7 +3,6 @@ package expo.modules.sensors.modules
 
 import android.hardware.Sensor
 import android.os.Bundle
-import expo.modules.interfaces.sensors.services.MagnetometerUncalibratedServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
@@ -13,7 +12,7 @@ private const val EventName = "magnetometerUncalibratedDidUpdate"
 
 class MagnetometerUncalibratedModule : Module() {
   private val sensorProxy by lazy {
-    createSensorProxy<MagnetometerUncalibratedServiceInterface>(EventName) { sensorEvent ->
+    createSensorProxy(EventName, Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, appContext) { sensorEvent ->
       Bundle().apply {
         putDouble("x", sensorEvent.values[0].toDouble())
         putDouble("y", sensorEvent.values[1].toDouble())

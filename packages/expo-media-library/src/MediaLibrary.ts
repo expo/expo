@@ -4,15 +4,12 @@ import {
   PermissionExpiration,
   PermissionHookOptions,
   createPermissionHook,
-  EventEmitter,
-  Subscription,
   UnavailabilityError,
+  EventSubscription,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';
-
-const eventEmitter = new EventEmitter(MediaLibrary);
 
 // @needsAudit
 export type PermissionResponse = EXPermissionResponse & {
@@ -324,7 +321,7 @@ export {
   PermissionExpiration,
   EXPermissionResponse,
   PermissionHookOptions,
-  Subscription,
+  EventSubscription as Subscription,
 };
 
 function arrayize(item: any): any[] {
@@ -808,12 +805,12 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
  */
 export function addListener(
   listener: (event: MediaLibraryAssetsChangeEvent) => void
-): Subscription {
-  return eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
+): EventSubscription {
+  return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
 
 // @docsMissing
-export function removeSubscription(subscription: Subscription): void {
+export function removeSubscription(subscription: EventSubscription): void {
   subscription.remove();
 }
 
@@ -822,7 +819,7 @@ export function removeSubscription(subscription: Subscription): void {
  * Removes all listeners.
  */
 export function removeAllListeners(): void {
-  eventEmitter.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
+  MediaLibrary.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
 }
 
 // @needsAudit

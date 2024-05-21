@@ -1,18 +1,16 @@
 import {
-  EventEmitter,
-  Subscription,
   UnavailabilityError,
   PermissionResponse,
   PermissionStatus,
   createPermissionHook,
   PermissionHookOptions,
+  EventSubscription,
 } from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
 
 const activeTags: Set<string> = new Set();
-const emitter = new EventEmitter(ExpoScreenCapture);
 
 const onScreenshotEventName = 'onScreenshot';
 
@@ -103,8 +101,8 @@ export function usePreventScreenCapture(key: string = 'default'): void {
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeScreenshotListener`.
  */
-export function addScreenshotListener(listener: () => void): Subscription {
-  return emitter.addListener<void>(onScreenshotEventName, listener);
+export function addScreenshotListener(listener: () => void): EventSubscription {
+  return ExpoScreenCapture.addListener(onScreenshotEventName, listener);
 }
 
 // @needsAudit
@@ -125,8 +123,8 @@ export function addScreenshotListener(listener: () => void): Subscription {
  *
  * @param subscription Subscription returned by `addScreenshotListener`.
  */
-export function removeScreenshotListener(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
+export function removeScreenshotListener(subscription: EventSubscription) {
+  subscription.remove();
 }
 
 /**
@@ -174,4 +172,9 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions };
+export {
+  EventSubscription as Subscription,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+};

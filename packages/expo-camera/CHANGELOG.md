@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, set previewLayer on scanner to get correct dimensions. ([#28931](https://github.com/expo/expo/pull/28931) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, correctly handle orientation when landscape pictures are rendered. ([#28929](https://github.com/expo/expo/pull/28929) by [@alanjhughes](https://github.com/alanjhughes))
 - On `web`, fix missing function "getCapabilities" in Firefox. ([#28947](https://github.com/expo/expo/pull/28947) by [@miso-belica](https://github.com/miso-belica))
 
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.9 — 2024-05-16
 
@@ -18,8 +22,6 @@
 
 - On `iOS`, prevent a crash when rendering the view on a simulator. ([#28911](https://github.com/expo/expo/pull/28911) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix incorrect orientation when taking pictures in landscape. ([#28917](https://github.com/expo/expo/pull/28917) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, set previewLayer on scanner to get correct dimensions. ([#28931](https://github.com/expo/expo/pull/28931) by [@alanjhughes](https://github.com/alanjhughes))
-- On `Android`, correctly handle orientation when landscape pictures are rendered. ([#28929](https://github.com/expo/expo/pull/28929) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.8 — 2024-05-13
 
