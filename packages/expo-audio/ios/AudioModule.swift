@@ -1,7 +1,6 @@
 import ExpoModulesCore
 import Combine
 
-
 public class AudioModule: Module {
   private var timeTokens = [String: Any?]()
   private var players = [String: AudioPlayer]()
@@ -187,12 +186,12 @@ public class AudioModule: Module {
         guard var cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
           throw Exceptions.AppContextLost()
         }
-        
+
         let directoryPath = directory.appendingPathComponent("ExpoAudio")
         FileSystemUtilities.ensureDirExists(at: directoryPath)
         let fileName = "recording-\(UUID().uuidString)\(options.extension)"
         let fileUrl = directoryPath.appendingPathComponent(fileName)
-        
+
         let recorder = AudioRecorder(createRecorder(url: fileUrl, with: options))
         recorders[recorder.id] = recorder
         return recorder
@@ -268,7 +267,7 @@ public class AudioModule: Module {
       }
     }
   }
-  
+
   private func setIsAudioActive(_ isActive: Bool) throws {
     if !isActive {
       for player in players.values {
@@ -283,7 +282,7 @@ public class AudioModule: Module {
       throw AudioStateException(error.localizedDescription)
     }
   }
-  
+
   private func setAudioMode(mode: AudioMode) throws {
     try validateAudioMode(mode: mode)
     var category: AVAudioSession.Category = .soloAmbient
@@ -317,7 +316,7 @@ public class AudioModule: Module {
 
     try AVAudioSession.sharedInstance().setCategory(category, options: options)
   }
-  
+
   private func getAvailableInputs() -> [[String: Any]] {
     var inputs = [[String: Any]]()
     if let availableInputs = AVAudioSession.sharedInstance().availableInputs {

@@ -10,11 +10,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }()
   var startTimestamp = 0
   var previousRecordingDuration = 0
-  
+
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
     pointer.delegate = resultHandler
-    
+
     do {
       try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
     } catch {
@@ -22,27 +22,27 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
     pointer.prepareToRecord()
   }
-  
+
   var isRecording: Bool {
     pointer.isRecording
   }
-  
+
   var currentTime: Double {
     pointer.currentTime * 1000
   }
-  
+
   var deviceCurrentTime: Int {
     Int(pointer.deviceCurrentTime * 1000)
   }
-  
+
   var uri: String {
     pointer.url.absoluteString
   }
-  
+
   func getRecordingStatus() -> [String: Any] {
     let currentDuration = isRecording ? (deviceCurrentTime - startTimestamp) : 0
     let duration = previousRecordingDuration + Int(currentDuration)
-    
+
     var result: [String: Any] = [
       "canRecord": true,
       "isRecording": isRecording,
