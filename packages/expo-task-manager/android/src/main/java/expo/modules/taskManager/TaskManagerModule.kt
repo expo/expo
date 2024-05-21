@@ -3,6 +3,7 @@ package expo.modules.taskManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskServiceInterface
@@ -39,7 +40,8 @@ class TaskManagerModule : Module() {
           // It may throw, because RN event emitter may not be available
           // we can just ignore those cases
           weakModule.get()?.sendEvent(name, body)
-        } catch (_: Throwable) {
+        } catch (error: Throwable) {
+          Log.e("ExpoTaskManager", "Failed to emit event $name using the module's event emitter: ${error.message}")
         }
         Unit
       }
