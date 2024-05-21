@@ -56,7 +56,7 @@ export interface PluginConfigTypeAndroid {
      */
     extraProguardRules?: string;
     /**
-     * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+     * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
      */
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
     /**
@@ -140,7 +140,7 @@ export interface AndroidMavenRepository {
      * The credentials to use when accessing the Maven repository.
      * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
      *
-     * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+     * @see The authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
      */
     credentials?: AndroidMavenRepositoryCredentials;
     /**
@@ -192,14 +192,16 @@ export interface PluginConfigTypeIos {
      * Add extra CocoaPods dependencies for all targets.
      *
      * This acts like to add the following code to **ios/Podfile**:
-     * ```
+     *
+     * ```ruby
      * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
-     * # e.g.
+     *
+     * # Example
      * pod 'Protobuf', '~> 3.14.0'
      * ```
      *
      * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside `expo-build-properties`.
      */
     extraPods?: ExtraIosPodDependency[];
     /**
@@ -207,8 +209,8 @@ export interface PluginConfigTypeIos {
      *
      * This speeds up compiling C++ code by caching the results of previous compilations.
      *
-     * @see https://reactnative.dev/docs/build-speed#local-caches
-     * @see https://ccache.dev/
+     * @see [React Native's documentation on local caches](https://reactnative.dev/docs/build-speed#local-caches) and
+     * [Ccache documentation](https://ccache.dev/).
      */
     ccacheEnabled?: boolean;
     /**
@@ -216,8 +218,8 @@ export interface PluginConfigTypeIos {
      * CocoaPods resource bundles. If enabled, the manifests will be merged into a
      * single file. If not enabled, developers will need to manually aggregate them.
      *
-     * @see https://docs.expo.dev/guides/apple-privacy/
-     * @see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+     * @see [Privacy manifests](https://docs.expo.dev/guides/apple-privacy/) guide
+     * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifestAggregationEnabled?: boolean;
 }
@@ -310,7 +312,7 @@ export interface ExtraIosPodDependency {
     commit?: string;
 }
 /**
- * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+ * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
  * @platform android
  */
 export interface PluginConfigTypeAndroidPackagingOptions {
@@ -337,7 +339,7 @@ export interface PluginConfigTypeAndroidQueries {
      */
     package: string[];
     /**
-     * Specifies an intent filter signature. Your app can discover other apps that have matching <intent-filter> elements.
+     * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
      * These intents have restrictions compared to typical intent filter signatures.
      *
      * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
@@ -345,13 +347,13 @@ export interface PluginConfigTypeAndroidQueries {
     intent?: PluginConfigTypeAndroidQueriesIntent[];
     /**
      * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
-     * There are some restrictions on the options that you can include in this <provider> element, compared to a typical <provider> manifest element. You may only specify the android:authorities attribute.
+     * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the `android:authorities` attribute.
      */
     provider?: string[];
 }
 export interface PluginConfigTypeAndroidQueriesIntent {
     /**
-     * A string naming the action to perform. Usually one of the platform-defined values, such as ACTION_SEND or ACTION_VIEW
+     * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
      */
     action?: string;
     /**
