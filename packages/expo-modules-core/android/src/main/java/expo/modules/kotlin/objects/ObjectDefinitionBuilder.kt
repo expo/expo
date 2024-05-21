@@ -46,11 +46,29 @@ open class ObjectDefinitionBuilder {
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
+  private val eventObservers = mutableListOf<EventObservingDefinition>()
+
   fun buildObject(): ObjectDefinitionData {
+    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
+      .toMutableMap()
+
+    EventObservingDefinition.Type.entries.forEach { type ->
+      // If the user exports a function that is called `startObserving` or `stopObserving`, we don't add the observer
+      // In the long run, we probably want to add a warning here or make it impossible to export such functions.
+      if (!asyncFunctions.containsKey(type.value)) {
+        val observerFunction = AsyncFunction(type.value) { eventName: String ->
+          eventObservers.forEach {
+            it.invokedIfNeed(type, eventName)
+          }
+        }
+        asyncFunctions[type.value] = observerFunction
+      }
+    }
+
     return ObjectDefinitionData(
       constantsProvider,
       syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
-      asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() },
+      asyncFunctions,
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
@@ -442,19 +460,55 @@ open class ObjectDefinitionBuilder {
   }
 
   /**
+   * Creates module's lifecycle listener that is called right after the first event listener is added for given event.
+   */
+  fun OnStartObserving(eventName: String, body: () -> Unit) {
+    EventObservingDefinition(
+      EventObservingDefinition.Type.StartObserving,
+      EventObservingDefinition.SelectedEventFiler(eventName),
+      body
+    ).also {
+      eventObservers.add(it)
+    }
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
-  inline fun OnStartObserving(crossinline body: () -> Unit) {
-    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
-    AsyncFunction("startObserving") { eventName: String? -> body() }
+  fun OnStartObserving(body: () -> Unit) {
+    EventObservingDefinition(
+      EventObservingDefinition.Type.StartObserving,
+      EventObservingDefinition.AllEventsFilter,
+      body
+    ).also {
+      eventObservers.add(it)
+    }
+  }
+
+  /**
+   * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
+   */
+  fun OnStopObserving(eventName: String, body: () -> Unit) {
+    EventObservingDefinition(
+      EventObservingDefinition.Type.StopObserving,
+      EventObservingDefinition.SelectedEventFiler(eventName),
+      body
+    ).also {
+      eventObservers.add(it)
+    }
   }
 
   /**
    * Creates module's lifecycle listener that is called right after all event listeners are removed.
    */
-  inline fun OnStopObserving(crossinline body: () -> Unit) {
-    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
-    AsyncFunction("stopObserving") { eventName: String? -> body() }
+  fun OnStopObserving(body: () -> Unit) {
+    EventObservingDefinition(
+      EventObservingDefinition.Type.StopObserving,
+      EventObservingDefinition.AllEventsFilter,
+      body
+    ).also {
+      eventObservers.add(it)
+    }
   }
 
   /**
