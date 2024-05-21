@@ -120,17 +120,20 @@ const nonLinkableTypes = [
   'ComponentType',
   'PureComponent',
   'E',
+  'EventName',
   'EventSubscription',
   'K',
   'Listener',
   'ModuleType',
   'NativeSyntheticEvent',
   'P',
+  'Parameters',
   'ParsedQs',
   'ServiceActionResult',
   'SharedObject',
   'T',
   'TaskOptions',
+  'TEventsMap',
   'Uint8Array',
   // React & React Native
   'React.FC',
@@ -443,6 +446,9 @@ export const resolveTypeName = (
           </span>
         ));
     } else if (type === 'indexedAccess') {
+      if (indexType?.name) {
+        return `${objectType?.name}[${indexType?.name}]`;
+      }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
@@ -471,7 +477,10 @@ export const renderParamRow = (
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <BOLD>{parseParamName(name)}</BOLD>
+        <BOLD>
+          {flags?.isRest ? '...' : ''}
+          {parseParamName(name)}
+        </BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
@@ -539,7 +548,16 @@ export const renderParams = (parameters: MethodParamData[], sdkVersion: string) 
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
-  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+  parameters
+    ? parameters
+        ?.map(param => {
+          if (param.flags?.isRest) {
+            return `...${parseParamName(param.name)}`;
+          }
+          return parseParamName(param.name);
+        })
+        .join(', ')
+    : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
