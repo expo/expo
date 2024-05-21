@@ -4,27 +4,9 @@ import { Platform } from 'expo-modules-core';
 import { dismissAuthSession } from 'expo-web-browser';
 
 import { AuthRequest } from './AuthRequest';
-import {
-  AuthRequestConfig,
-  AuthRequestPromptOptions,
-  CodeChallengeMethod,
-  Prompt,
-  ResponseType,
-} from './AuthRequest.types';
-import {
-  AuthSessionOptions,
-  AuthSessionRedirectUriOptions,
-  AuthSessionResult,
-} from './AuthSession.types';
-import {
-  DiscoveryDocument,
-  fetchDiscoveryAsync,
-  Issuer,
-  IssuerOrDiscovery,
-  ProviderMetadata,
-  resolveDiscoveryAsync,
-} from './Discovery';
-import { generateHexStringAsync } from './PKCE';
+import { AuthRequestConfig } from './AuthRequest.types';
+import { AuthSessionRedirectUriOptions } from './AuthSession.types';
+import { IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
 import sessionUrlProvider from './SessionUrlProvider';
 
 // @needsAudit
@@ -148,45 +130,3 @@ export async function loadAsync(
   await request.makeAuthUrlAsync(discovery);
   return request;
 }
-
-export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
-export { AuthError, TokenError } from './Errors';
-
-export {
-  AuthSessionOptions,
-  AuthSessionRedirectUriOptions,
-  AuthSessionResult,
-  AuthRequest,
-  AuthRequestConfig,
-  AuthRequestPromptOptions,
-  CodeChallengeMethod,
-  DiscoveryDocument,
-  Issuer,
-  IssuerOrDiscovery,
-  Prompt,
-  ProviderMetadata,
-  ResponseType,
-  resolveDiscoveryAsync,
-  fetchDiscoveryAsync,
-  generateHexStringAsync,
-};
-
-export {
-  // Token classes
-  TokenResponse,
-  AccessTokenRequest,
-  RefreshTokenRequest,
-  RevokeTokenRequest,
-  // Token methods
-  revokeAsync,
-  refreshAsync,
-  exchangeCodeAsync,
-  fetchUserInfoAsync,
-} from './TokenRequest';
-
-// Token types
-export * from './TokenRequest.types';
-
-// Provider specific types
-export { GoogleAuthRequestConfig } from './providers/Google';
-export { FacebookAuthRequestConfig } from './providers/Facebook';

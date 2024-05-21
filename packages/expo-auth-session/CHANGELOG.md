@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+- Prefer using `type` for describing the shape of objects. ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+
 ## 5.5.2 — 2024-05-02
 
 ### 🛠 Breaking changes

@@ -27,17 +27,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
-  'expo-auth-session': [
-    [
-      'AuthRequest.ts',
-      'AuthSession.ts',
-      'Discovery.ts',
-      'Errors.ts',
-      'Fetch.ts',
-      'TokenRequest.ts',
-      'providers/Provider.types.ts',
-    ],
-  ],
+  'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],

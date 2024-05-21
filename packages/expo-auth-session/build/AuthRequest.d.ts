@@ -1,7 +1,5 @@
-import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, ResponseType, Prompt } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, ResponseType, Prompt, AuthDiscoveryDocument } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument } from './Discovery';
-export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 /**
  * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
  * You can use this class directly for more info around the authorization.

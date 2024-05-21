@@ -8,17 +8,15 @@ import {
   CodeChallengeMethod,
   ResponseType,
   Prompt,
+  AuthDiscoveryDocument,
 } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { TokenResponse } from './TokenRequest';
 
 let _authLock: boolean = false;
-
-export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
 // @needsAudit @docsMissing
 /**

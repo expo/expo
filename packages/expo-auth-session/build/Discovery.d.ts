@@ -137,7 +137,7 @@ export type ProviderMetadata = Record<string, string | boolean | string[]> & Pro
     frontchannel_logout_supported?: boolean;
     frontchannel_logout_session_supported?: boolean;
 };
-export interface DiscoveryDocument {
+export type DiscoveryDocument = {
     /**
      * Used to interact with the resource owner and obtain an authorization grant.
      *
@@ -179,7 +179,7 @@ export interface DiscoveryDocument {
      * All metadata about the provider.
      */
     discoveryDocument?: ProviderMetadata;
-}
+};
 export type IssuerOrDiscovery = Issuer | DiscoveryDocument;
 /**
  * Append the well known resources path and OpenID connect discovery document path to a URL
