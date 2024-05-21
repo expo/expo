@@ -193,7 +193,7 @@ export interface PluginConfigTypeIos {
      *
      * This acts like to add the following code to **ios/Podfile**:
      *
-     * ```shell
+     * ```ruby
      * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
      *
      * # Example
@@ -347,7 +347,7 @@ export interface PluginConfigTypeAndroidQueries {
     intent?: PluginConfigTypeAndroidQueriesIntent[];
     /**
      * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
-     * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the android:authorities attribute.
+     * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the `android:authorities` attribute.
      */
     provider?: string[];
 }
