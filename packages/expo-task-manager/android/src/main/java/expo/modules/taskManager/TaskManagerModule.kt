@@ -8,6 +8,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.lang.ref.WeakReference
 
 class TaskManagerModule : Module() {
   private val _taskService: TaskServiceInterface? by lazy {
@@ -29,6 +30,25 @@ class TaskManagerModule : Module() {
     Constants(
       "EVENT_NAME" to TaskManagerInterface.EVENT_NAME
     )
+
+    OnCreate {
+      // Slightly hacky way to be able to emit events using the new event emitter from legacy modules.
+      val weakModule = WeakReference(this@TaskManagerModule)
+      val emitEvent = { name: String, body: Bundle ->
+        try {
+          // It may throw, because RN event emitter may not be available
+          // we can just ignore those cases
+          weakModule.get()?.sendEvent(name, body)
+        } catch (_: Throwable) {
+        }
+        Unit
+      }
+
+      // For compatibility reasons, we don't want to edit TaskManagerInterface, as it's in the expo-modules-core package.
+      // There is only one usage of the TaskManagerInterface and it's the TaskManagerInternalModule, so we can safely cast
+      // to it and set it's emitEventWrapper.
+      (appContext.legacyModule<TaskManagerInterface>() as? TaskManagerInternalModule)?.setEmitEventWrapper(emitEvent)
+    }
 
     AsyncFunction<Boolean>("isAvailableAsync") {
       return@AsyncFunction true
