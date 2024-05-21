@@ -47,10 +47,9 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
   }
 
   removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
-    const listenerCount = this.listenerCount(eventName);
-
+    const previousListenerCount = this.listenerCount(eventName);
     this.listeners?.get(eventName)?.clear();
-    if (listenerCount > 0) {
+    if (previousListenerCount > 0) {
       this.stopObserving(eventName);
     }
   }
