@@ -26,9 +26,9 @@ class EventEmitter {
         }
     }
     removeAllListeners(eventName) {
-        const listenerCount = this.listenerCount(eventName);
+        const previousListenerCount = this.listenerCount(eventName);
         this.listeners?.get(eventName)?.clear();
-        if (listenerCount > 0) {
+        if (previousListenerCount > 0) {
             this.stopObserving(eventName);
         }
     }
