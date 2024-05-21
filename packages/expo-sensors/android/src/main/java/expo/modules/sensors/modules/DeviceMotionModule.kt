@@ -12,7 +12,6 @@ import android.view.Surface
 import android.view.WindowManager
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.SensorSubscription
@@ -74,6 +73,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     OnStartObserving {
       subscriptions.forEach { it.startObserving() }
       isObserving = true
+      currentFrameCallback.maybePostFromNonUI()
     }
 
     OnActivityEntersForeground {
@@ -88,13 +88,12 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
     }
 
-    // We can't use `OnStopObserving`, because we need access to change the queue.
-    AsyncFunction("stopObserving") { _: String? ->
+    OnStopObserving {
       if (isObserving) {
         subscriptions.forEach { it.stopObserving() }
       }
       currentFrameCallback.stop()
-    }.runOnQueue(Queues.MAIN)
+    }
 
     AsyncFunction<Boolean>("isAvailableAsync") {
       val mSensorManager = appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
@@ -128,13 +127,16 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     @Volatile
     private var mIsPosted = false
 
+    @Volatile
     private var mShouldStop = false
 
     override fun doFrame(frameTimeNanos: Long) {
-      if (mShouldStop) {
-        mIsPosted = false
-      } else {
-        post()
+      synchronized(this) {
+        if (mShouldStop) {
+          mIsPosted = false
+        } else {
+          post()
+        }
       }
       val curTime = System.currentTimeMillis()
       if (curTime - lastUpdate > updateInterval) {
@@ -143,11 +145,13 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
       }
     }
 
-    fun stop() {
+    fun stop() = synchronized(this) {
       mShouldStop = true
     }
 
-    fun maybePost() {
+    fun maybePost() = synchronized(this) {
+      mShouldStop = false
+
       if (!mIsPosted) {
         mIsPosted = true
         post()
@@ -203,7 +207,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("alpha", Math.toDegrees(rotationRateEvent!!.values[0].toDouble()))
           putDouble("beta", Math.toDegrees(rotationRateEvent!!.values[1].toDouble()))
           putDouble("gamma", Math.toDegrees(rotationRateEvent!!.values[2].toDouble()))
-          putDouble("timestamp", rotationEvent!!.timestamp / 1_000_000_000.0)
+          putDouble("timestamp", rotationRateEvent!!.timestamp / 1_000_000_000.0)
         }
       )
     }
