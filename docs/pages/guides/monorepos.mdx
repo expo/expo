@@ -107,7 +107,7 @@ const path = require('path');
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(monorepoRoot);
+const config = getDefaultConfig(projectRoot);
 
 // Only list the packages within your monorepo that your app uses. No need to add anything else.
 // If your monorepo tooling can give you the list of monorepo workspaces linked
