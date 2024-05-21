@@ -58,7 +58,17 @@ fun Contact?.toBundle(keys: Set<String>): Bundle {
   }
 }
 
-fun Group?.toBundle(keys: Set<String>): Bundle {
+fun List<Group>?.toBundle(): Bundle {
+  val keys = setOf("groupId", "groupName")
+  val data = this?.map { it.toMap(keys) } ?: emptyList()
+
+  return Bundle().apply {
+    putParcelableArrayList("data", ArrayList(data))
+  }
+}
+
+fun Group?.toBundle(): Bundle {
+  val keys = setOf("groupId", "groupName")
   val serializedGroup = this?.toMap(keys)
   val data = serializedGroup?.let { listOf(it) } ?: emptyList()
 
@@ -180,7 +190,7 @@ class ContactsModule : Module() {
             val predicateMatchingName = "%$name%"
             getGroupByName(predicateMatchingName)
           } else {
-            getAllGroupsAsync(options)
+            fetchGroups(null, null)
           }
 
           promise.resolve(groupData.toBundle())
@@ -715,7 +725,7 @@ class ContactsModule : Module() {
     initQueryField: String?
   ): List<Group>? {
     val queryField = initQueryField ?: ContactsContract.Groups._ID
-    val groups: Map<String, Groups>
+    val groups: Map<String, Group>
     val cr = resolver
 
     if (!queryStrings.isNullOrEmpty()) {
@@ -738,7 +748,7 @@ class ContactsModule : Module() {
     }?.use { cursor ->
       groups = loadGroupsFrom(cursor)
 
-      return group.values.toList()
+      return groups.values.toList()
     }
     return null
   }
