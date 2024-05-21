@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Improve HLS compatibility. ([#28997](https://github.com/expo/expo/pull/28997) by [@behenate](https://github.com/behenate))
+
 ## 1.1.9 — 2024-05-13
 
 ### 🎉 New features
