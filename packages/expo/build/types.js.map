@@ -1,0 +1,1 @@
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../src/types.ts"],"names":[],"mappings":"","sourcesContent":["// Re-exports type declarations that may conflict with classes (values) exported from the main index.ts\nexport type * from 'expo-modules-core/types';\n"]}
