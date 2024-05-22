@@ -68,7 +68,6 @@ export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
   { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
 ) => {
-  console.warn(getMethodRootSignatures(method));
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
