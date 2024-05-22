@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
