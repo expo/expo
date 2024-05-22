@@ -269,7 +269,7 @@ class Chunk {
     }
     async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.
-        const outputFile = this.getFilenameForConfig(serializerConfig);
+        let outputFile = this.getFilenameForConfig(serializerConfig);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
         const debugId = (0, debugId_1.stringToUUID)(path_1.default.basename(outputFile, path_1.default.extname(outputFile)));
         let premodules = [...this.preModules];
@@ -279,6 +279,8 @@ class Chunk {
             }
             this.preModules = new Set(premodules);
         }
+        // The filename needs to be updated after the plugins run as they can change the file content.
+        outputFile = this.getFilenameForConfig(serializerConfig);
         const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
         const relativeEntry = path_1.default.relative(this.options.projectRoot, this.name);
         const jsAsset = {
