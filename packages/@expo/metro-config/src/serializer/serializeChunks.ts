@@ -381,10 +381,10 @@ export class Chunk {
         premodules = plugin({ graph: this.graph, premodules, debugId });
       }
       this.preModules = new Set(premodules);
-    }
 
-    // The filename needs to be updated after the plugins run as they can change the file content.
-    outputFile = this.getFilenameForConfig(serializerConfig);
+      // The filename needs to be updated after the plugins run as they can change the file content.
+      outputFile = this.getFilenameForConfig(serializerConfig);
+    }
 
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
 
