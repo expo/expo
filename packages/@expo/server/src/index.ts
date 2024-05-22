@@ -70,9 +70,12 @@ export function createRequestHandler(
 
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
-      // TODO: What's the standard behavior for malformed projects?
       if (!fs.existsSync(filePath)) {
-        return null;
+        console.error(`API route file not found: ${filePath}`);
+        return new Response('API route file not found', {
+          status: 404,
+          headers: { 'Content-Type': 'text/plain' },
+        });
       }
 
       if (/\.[cj]s$/.test(filePath)) {
