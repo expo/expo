@@ -3,17 +3,23 @@ package expo.modules.updates.loader
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
+import expo.modules.updates.TestUtils.asJSONResponse
+import expo.modules.updates.TestUtils.asResponse
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.codesigning.*
-import expo.modules.updates.manifest.Update
+import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
+import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.getTestCertificate
-import io.mockk.every
-import io.mockk.mockk
-import okhttp3.*
+import expo.modules.updates.manifest.Update
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okio.Buffer
+import okhttp3.MultipartBody
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,16 +29,8 @@ class FileDownloaderManifestParsingTest {
   @Test
   fun testManifestParsing_JSONBody() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val contentType = "application/json"
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(
-        "application/json; charset=utf-8".toMediaTypeOrNull(),
-        CertificateFixtures.testExpoUpdatesManifestBody
-      )
-    }
+
+    val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
@@ -66,12 +64,11 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBody() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
     val extensions = "{}"
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
@@ -90,15 +87,7 @@ class FileDownloaderManifestParsingTest {
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType, "expo-protocol-version" to "0").toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse(mapOf("expo-protocol-version" to "0").toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
@@ -137,26 +126,17 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodyOnlyDirective() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -194,26 +174,16 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodyOnlyDirective_v0CompatibilityMode() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
-
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -247,24 +217,15 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodyNoRelevantParts() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"fake\"; filename=\"hello3\"").toHeaders(),
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), "")
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -300,14 +261,14 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodyEmpty() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns contentType
-      every { headers } returns mapOf("content-type" to contentType).toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, "")
-    }
+    val response = Response.Builder()
+      .request(Request.Builder().url("http://wat.com").build())
+      .protocol(Protocol.HTTP_2)
+      .message("")
+      .code(200)
+      .body("".toResponseBody("${MultipartBody.MIXED}; boundary=$boundary".toMediaType()))
+      .build()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -342,11 +303,15 @@ class FileDownloaderManifestParsingTest {
   @Test
   fun testManifestParsing_NullBodyResponseProtocol1() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val response = mockk<Response>().apply {
-      every { headers } returns mapOf("expo-protocol-version" to "1").toHeaders()
-      every { code } returns 200
-      every { body } returns null
-    }
+
+    val response = Response.Builder()
+      .request(Request.Builder().url("http://wat.com").build())
+      .protocol(Protocol.HTTP_2)
+      .message("")
+      .code(200)
+      .header("expo-protocol-version", "1")
+      .body(null)
+      .build()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -381,11 +346,15 @@ class FileDownloaderManifestParsingTest {
   @Test
   fun testManifestParsing_204ResponseProtocol1() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val response = mockk<Response>().apply {
-      every { headers } returns mapOf("expo-protocol-version" to "1").toHeaders()
-      every { code } returns 204
-      every { body } returns null
-    }
+
+    val response = Response.Builder()
+      .request(Request.Builder().url("http://wat.com").build())
+      .protocol(Protocol.HTTP_2)
+      .message("")
+      .code(204)
+      .header("expo-protocol-version", "1")
+      .body(null)
+      .build()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -420,12 +389,14 @@ class FileDownloaderManifestParsingTest {
   @Test
   fun testManifestParsing_204ResponseNoProtocol() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val response = mockk<Response>().apply {
-      every { header("content-type") } returns null
-      every { headers } returns mapOf<String, String>().toHeaders()
-      every { code } returns 204
-      every { body } returns null
-    }
+
+    val response = Response.Builder()
+      .request(Request.Builder().url("http://wat.com").build())
+      .protocol(Protocol.HTTP_2)
+      .message("")
+      .code(204)
+      .body(null)
+      .build()
 
     val configuration = UpdatesConfiguration(
       null,
@@ -456,24 +427,15 @@ class FileDownloaderManifestParsingTest {
 
   @Test
   fun testManifestParsing_JSONBodySigned() {
-    val contentType = "application/json"
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
-      "content-type" to contentType,
       "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodySignature
     )
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
-    }
+    val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
     val testCertificate = getTestCertificate(TestCertificateType.VALID)
     val configuration = UpdatesConfiguration(
@@ -510,18 +472,16 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodySigned() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
-      "expo-sfv-version" to "0",
-      "content-type" to contentType
+      "expo-sfv-version" to "0"
     )
 
     val extensions = "{}"
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
@@ -548,17 +508,7 @@ class FileDownloaderManifestParsingTest {
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse(headersMap.toHeaders())
 
     val testCertificate = getTestCertificate(TestCertificateType.VALID)
     val configuration = UpdatesConfiguration(
@@ -597,23 +547,14 @@ class FileDownloaderManifestParsingTest {
 
   @Test
   fun testManifestParsing_JSONBodySigned_UnsignedRequest() {
-    val contentType = "application/json"
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
-      "expo-sfv-version" to "0",
-      "content-type" to contentType
+      "expo-sfv-version" to "0"
     )
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
-    }
+    val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
     val testCertificate = getTestCertificate(TestCertificateType.VALID)
     val configuration = UpdatesConfiguration(
@@ -649,12 +590,10 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodySignedCertificateParticularExperience() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
-      "expo-sfv-version" to "0",
-      "content-type" to contentType
+      "expo-sfv-version" to "0"
     )
 
     val extensions = "{}"
@@ -664,7 +603,7 @@ class FileDownloaderManifestParsingTest {
     val intermediateCert = getTestCertificate(TestCertificateType.CHAIN_INTERMEDIATE)
     val rootCert = getTestCertificate(TestCertificateType.CHAIN_ROOT)
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
@@ -695,17 +634,7 @@ class FileDownloaderManifestParsingTest {
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse(headersMap.toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
@@ -761,7 +690,7 @@ class FileDownloaderManifestParsingTest {
     val intermediateCert = getTestCertificate(TestCertificateType.CHAIN_INTERMEDIATE)
     val rootCert = getTestCertificate(TestCertificateType.CHAIN_ROOT)
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
@@ -784,17 +713,7 @@ class FileDownloaderManifestParsingTest {
         RequestBody.create("application/x-pem-file; charset=utf-8".toMediaTypeOrNull(), leafCert + intermediateCert)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse(headersMap.toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
@@ -832,12 +751,10 @@ class FileDownloaderManifestParsingTest {
   fun testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInDirective() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"
-    val contentType = "multipart/mixed; boundary=$boundary"
 
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
-      "expo-sfv-version" to "0",
-      "content-type" to contentType
+      "expo-sfv-version" to "0"
     )
 
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailableIncorrectProjectId
@@ -846,7 +763,7 @@ class FileDownloaderManifestParsingTest {
     val intermediateCert = getTestCertificate(TestCertificateType.CHAIN_INTERMEDIATE)
     val rootCert = getTestCertificate(TestCertificateType.CHAIN_ROOT)
 
-    val multipartBody = MultipartBody.Builder(boundary)
+    val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
         mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
@@ -865,17 +782,7 @@ class FileDownloaderManifestParsingTest {
         RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
       )
       .build()
-
-    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
-
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
-    }
+      .asResponse(headersMap.toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
@@ -911,23 +818,14 @@ class FileDownloaderManifestParsingTest {
 
   @Test
   fun testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional() {
-    val contentType = "application/json"
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
-      "expo-sfv-version" to "0",
-      "content-type" to contentType
+      "expo-sfv-version" to "0"
     )
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    val response = mockk<Response>().apply {
-      headersMap.forEach {
-        every { header(it.key) } returns it.value
-      }
-      every { headers } returns headersMap.toHeaders()
-      every { code } returns 200
-      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
-    }
+    val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
     val configuration = UpdatesConfiguration(
       null,
