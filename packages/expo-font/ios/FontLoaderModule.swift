@@ -12,7 +12,9 @@ public final class FontLoaderModule: Module {
       // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterGraphicsFont
       // would fail because of a duplicated font name when the app reloads or someone wants to override a font.
       if let familyName = FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) {
-        try unregisterFont(named: familyName)
+        guard try unregisterFont(named: familyName) else {
+          return
+        }
       }
 
       // Create a font object from the given file
