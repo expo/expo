@@ -114,7 +114,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### EAS
 
-[Expo Application Services (EAS)](/eas) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
 
 ### EAS CLI
 
@@ -143,11 +143,11 @@ The entry point usually refers to the initial JavaScript file used to load an ap
 
 ### Experience
 
-A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
+A synonym for an app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
 ### Expo Autolinking
 
-The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
+The original [Autolinking](#autolinking) system is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
 
 ### Expo CLI
 
@@ -273,7 +273,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Platform extensions
 
-Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **./index.js** file and a **./index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enables users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **.index.js** file and a **.index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
@@ -291,7 +291,7 @@ See [Prebuild template](#prebuild-template) and [Autolinking](#autolinking) for 
 
 ### Prebuild template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
@@ -315,7 +315,7 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 ### Remote Debugging
 
-Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit is that you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
 
 ### Simulator
 
@@ -323,7 +323,7 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [**app.json**](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [**app.json**](#appjson) to refer to the name to use for your app in its URL. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 
