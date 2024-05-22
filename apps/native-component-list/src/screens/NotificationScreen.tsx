@@ -148,6 +148,14 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification Permissions</HeadingText>
         <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
         <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+        <ListButton
+          onPress={this.getScheduleExactPermissionsAsync}
+          title="Get schedule exact permissions"
+        />
+        <ListButton
+          onPress={this.requestScheduleExactPermissionsAsync}
+          title="Request schedule exact permissions"
+        />
 
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
@@ -208,6 +216,17 @@ export default class NotificationScreen extends React.Component<
 
   private requestPermissionsAsync = async () => {
     const permission = await Notifications.requestPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
+  private getScheduleExactPermissionsAsync = async () => {
+    const permission = await Notifications.getScheduleExactPermissionsAsync();
+    console.log('Get schedule exact permission: ', permission);
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestScheduleExactPermissionsAsync = async () => {
+    const permission = await Notifications.requestScheduleExactPermissionsAsync();
     alert(`Status: ${permission.status}`);
   };
 

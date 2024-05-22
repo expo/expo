@@ -44,6 +44,14 @@ export declare function getPermissionsAsync(): Promise<NotificationPermissionsSt
  */
 export declare function requestPermissionsAsync(permissions?: NotificationPermissionsRequest): Promise<NotificationPermissionsStatus>;
 /**
+ * @header permissions
+ */
+export declare function requestScheduleExactPermissionsAsync(): Promise<any>;
+/**
+ * @header permissions
+ */
+export declare function getScheduleExactPermissionsAsync(): Promise<any>;
+/**
  * Check or request permissions to send and receive push notifications.
  * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
  * @example
