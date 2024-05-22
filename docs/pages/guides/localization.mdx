@@ -166,7 +166,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-For SDK 48 or above, to enable RTL support using SDK 48 or later you have to install [`expo-localization`](/versions/latest/sdk/localization/#installation) library and enable `extra.supports.RTL` property in app config:
+To enable RTL support, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and enable `extra.supportsRTL` property in app config:
 
 ```json app.json
 {
@@ -182,6 +182,22 @@ For SDK 48 or above, to enable RTL support using SDK 48 or later you have to ins
 This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `npx expo prebuild`.
 
 When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the app config file will render in RTL mode in Hebrew or Arabic locale.
+
+### Forcing RTL layout
+
+You can also force the RTL layout for testing or for applications that are only localized for RTL locales by enabling `extra.forcesRTL` property in the app config:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "supportsRTL": true,
+      "forcesRTL": true
+    },
+    "plugins": ["expo-localization"]
+  }
+}
+```
 
 <Collapsible summary="Dynamically overriding RTL settings">
 
