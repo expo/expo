@@ -26,6 +26,7 @@ type Props = PropsWithChildren<{
   platforms?: string[];
   buttonTitle?: string;
   contentHidden?: boolean;
+  isTypeScriptEnabled?: boolean;
 }>;
 
 export const SnackInline = ({
@@ -38,6 +39,7 @@ export const SnackInline = ({
   buttonTitle,
   contentHidden,
   children,
+  isTypeScriptEnabled,
 }: Props) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isReady, setReady] = useState(false);
@@ -95,6 +97,7 @@ export const SnackInline = ({
                   code: getCode(),
                   files,
                   baseURL: getExamplesPath(),
+                  isTypeScriptEnabled,
                 })
               )}
             />
