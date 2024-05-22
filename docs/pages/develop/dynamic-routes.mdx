@@ -5,15 +5,15 @@ description: Learn about dynamic routes and how you can create them using Expo R
 
 import { FileTree } from '~/ui/components/FileTree';
 
-In file-based routing libraries such as Expo Router, a **dynamic route** allows matching one or multiple paths based on a dynamic segment embedded in the URL. This segment is in the form of a variable such as a unique identifier and your app doesn't know the exact segment ahead of time.
+A **dynamic route** allows matching one or multiple paths based on a dynamic segment embedded in the URL. This segment is in the form of a variable, such as a unique identifier, and your app doesn't know the exact segment ahead of time.
 
 This guide explains how to handle dynamic routes with Expo Router.
 
-> This guide continues to build on top of the example and the **app** directory structure used in the previous [File-based routing](/develop/file-based-routing/) guide.
+> This guide continues to build on top of the example and the **app** directory structure used in the previous [File-based routing](/develop/file-based-routing/).
 
 ## Dynamic route convention
 
-A dynamic segment of a route can be created by wrapping a file's name in square brackets. For example, **[id].tsx**.
+A dynamic segment of a route is created by wrapping a file's name in square brackets. For example, **[id].tsx**.
 
 > **What is a dynamic segment?** Any segment of a path in a URL that is dynamic. For example, in an app screen where it displays a users list, you might have a path such as `/details/[id]` where the `[id]` is the dynamic segment and displays details based on the `id` of the user.
 
@@ -44,7 +44,7 @@ This dynamic segment convention makes sure that when an app user navigates from 
 
 ## Use `Link` to navigate to a dynamic route
 
-Navigating from one route to a dynamic route is done by providing query parameters to the `Link` component statically or using the `href` object.
+Navigating from one route to a dynamic route is done by providing query parameters to the `Link` component either statically or using the `href` object.
 
 For example, the following code allows you to navigate to the dynamic route statically using query parameters:
 
