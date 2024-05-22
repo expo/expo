@@ -48,17 +48,15 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
     return method.signatures ?? [];
   }
   if ('getSignature' in method) {
-    return method.getSignature ?? [];
+    return method.getSignature ? [method.getSignature] : [];
   }
   if ('type' in method) {
     if (method?.type?.declaration?.signatures) {
       if (method.type.declaration.name === '__type') {
-        return (
-          method.type.declaration.signatures.map(signature => ({
-            ...signature,
-            comment: method.comment,
-          })) ?? []
-        );
+        return method.type.declaration.signatures.map(signature => ({
+          ...signature,
+          comment: method.comment,
+        }));
       }
       return method.type.declaration.signatures ?? [];
     }
@@ -70,6 +68,7 @@ export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
   { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
 ) => {
+  console.warn(getMethodRootSignatures(method));
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);

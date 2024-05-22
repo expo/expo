@@ -146,7 +146,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
-  getSignature?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
 
