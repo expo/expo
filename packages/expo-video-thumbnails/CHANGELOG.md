@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [Android] Made sure that `MediaMetadataRetriever` is safely released.
+- [Android] Made sure that `MediaMetadataRetriever` is safely released. ([#29015](https://github.com/expo/expo/pull/29015) by [@lukmccall](https://github.com/lukmccall))
 
 ## 8.0.0 — 2024-04-18
 
