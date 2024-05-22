@@ -37,11 +37,6 @@ export function getSnackFiles(config: Config) {
     });
   }
 
-  // if (templateId) {
-  //   result['App.js'] = { type: 'CODE', url: `${baseURL}/${templateId}.js` };
-  // } else if (code) {
-  //   result['App.js'] = { type: 'CODE', contents: code };
-  // }
   if (templateId) {
     if (isTypeScriptEnabled) {
       result['App.tsx'] = { type: 'CODE', url: `${baseURL}/${templateId}.tsx` };
