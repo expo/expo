@@ -9,44 +9,23 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import XcodeInstructions from 'scenes/get-started/set-up-your-environment/instructions/_xcodeInstructions.mdx';
 
 Developing your app directly on a computer can be more convenient than constantly interacting with an iPhone or iPad, especially when network conditions are slow or when a [tunnel connection](/more/expo-cli/#tunneling) is required due to LAN limitations.
 
 This guide explains how to install the iOS Simulator on your Mac for app development. Note that the iOS Simulator can only be installed on macOS. If you are developing an iOS app from a Windows or a Linux machine, you will need a physical iOS device.
 
-<Step label="1">
+## Setup Xcode
 
-## Install Xcode
-
-Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and click **Install** it (or **Update** if you have it already).
-
-If you're unable to update, it is because your operating system might be out of date. You may run into issues further down the line if your Xcode version is out of date. For example, you may not be able to submit your app to the App Store.
-
-</Step>
-
-<Step label="2">
-
-## Install Xcode Command Line Tools
-
-Open Xcode, choose **Settings...** from the Xcode menu (or press <kbd>cmd ⌘</kbd> + <kbd>,</kbd>). Go to the **Locations** and install the tools by selecting the most recent version in the **Command Line Tools** dropdown.
-
-<ImageSpotlight
-  alt="Xcode preferences"
-  src="/static/images/ios-simulator/xcode-command-line.png"
-  style={{ maxWidth: 580 }}
-/>
-
-</Step>
+<XcodeInstructions />
 
 <Step label="3">
 
-## Try it out
+### Try it out
 
 Run your app with `npx expo start` and press <kbd>i</kbd> from the command line.
 
 You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful. If not, check the [troubleshooting](#troubleshooting) tips below.
-
-If the troubleshooting tips are not helpful, ask a question in our [Discord and forums](https://chat.expo.dev/), Stack Overflow, or Google.
 
 <Video file="open-in-ios-simulator.mp4" />
 
@@ -107,8 +86,8 @@ Create a project with the desired SDK version and open it in a simulator to inst
 
 <Terminal
   cmd={[
-    '# Bootstrap an SDK 49 project',
-    '$ npx create-expo-app --template blank@49',
+    '# Bootstrap an SDK 51 project',
+    '$ npx create-expo-app --template blank@51',
     '',
     '# Open the app on a simulator to install the required Expo Go app',
     '$ npx expo start --ios',
