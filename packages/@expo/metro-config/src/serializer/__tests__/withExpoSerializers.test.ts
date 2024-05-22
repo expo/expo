@@ -1,4 +1,5 @@
 import assert from 'assert';
+import CountingSet from 'metro/src/lib/CountingSet';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
@@ -127,6 +128,55 @@ describe('serializes', () => {
       );
 
       expect(didPluginRun).toBe(true);
+    });
+    it(`sourceMappingURL point to a correct file after plugins changes to preModules`, async () => {
+      const artifacts = await serializeTo(
+        {
+          options: {
+            dev: false,
+            platform: 'android',
+            hermes: false,
+            // Must be set to static to verify the file name changes
+            output: 'static',
+            sourceMaps: true,
+          },
+        },
+        [], // processors
+        {
+          unstable_beforeAssetSerializationPlugins: [
+            ({ premodules }) => {
+              return [
+                {
+                  dependencies: new Map(),
+                  getSource: () => Buffer.from('console.log("test")'),
+                  inverseDependencies: new CountingSet(),
+                  path: 'test-module',
+                  output: [
+                    {
+                      type: 'js/script/virtual',
+                      data: {
+                        code: 'console.log("test")',
+                        lineCount: 1,
+                        map: [],
+                      },
+                    },
+                  ],
+                },
+                ...premodules,
+              ];
+            },
+          ],
+        }
+      );
+      if (typeof artifacts === 'string') {
+        throw new Error('wrong type');
+      }
+
+      // Ensure the sourceMappingURL points to the correct source map file
+      expect(
+        // From '//# sourceMappingURL=https://localhost:8081/index-f7a7.js.map' => 'index-f7a7.js.map'
+        artifacts[0].source.match(/\/\/# sourceMappingURL=https?:\/\/[^/]+\/(.+\.map)/)![1]
+      ).toBe(artifacts[1].filename);
     });
   });
 
