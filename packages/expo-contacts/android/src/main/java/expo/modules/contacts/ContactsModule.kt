@@ -127,6 +127,9 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
+  val groupId: String? = null
+
+  @Field
   val id: String? = null
 }
 
@@ -173,30 +176,6 @@ class ContactsModule : Module() {
       }
     }
 
-    AsyncFunction("getGroupsAsync") { options: GroupQuery, promise: Promise ->
-      ensureReadPermission()
-
-      appContext
-        .backgroundCoroutineScope
-        .launch {
-          if (options.groupId != null) {
-            val group = getGroupById(options.groupId)
-            promise.resolve(group.toBundle())
-            return@launch
-          }
-
-          val name = options.groupName
-          val groupData = if (!name.isNullOrBlank()) {
-            val predicateMatchingName = "%$name%"
-            getGroupByName(predicateMatchingName)
-          } else {
-            fetchGroups(null, null)
-          }
-
-          promise.resolve(groupData.toBundle())
-        }
-    }
-
     AsyncFunction("getContactsAsync") { options: ContactQuery, promise: Promise ->
       ensureReadPermission()
 
@@ -210,9 +189,12 @@ class ContactsModule : Module() {
           }
 
           val name = options.name
+          val group = options.groupId
           val contactData = if (!name.isNullOrBlank()) {
             val predicateMatchingName = "%$name%"
-            getContactByName(predicateMatchingName, options.fields, options.sort)
+            getContactsByName(predicateMatchingName, options.fields, options.sort)
+          } else if (!group.isNullOrBlank()) {
+            getContactsByGroup(group, options.fields, options.sort)
           } else {
             getAllContactsAsync(options)
           }
@@ -272,6 +254,103 @@ class ContactsModule : Module() {
 
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId)
       resolver.delete(uri, null, null)
+    }
+
+    AsyncFunction("getGroupsAsync") { options: GroupQuery, promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          if (options.groupId != null) {
+            val group = getGroupById(options.groupId)
+            promise.resolve(group.toBundle())
+            return@launch
+          }
+
+          val name = options.groupName
+          val groupData = if (!name.isNullOrBlank()) {
+            val predicateMatchingName = "%$name%"
+            getGroupByName(predicateMatchingName)
+          } else {
+            fetchGroups(null, null)
+          }
+
+          promise.resolve(groupData.toBundle())
+        }
+    }
+
+    AsyncFunction("createGroupAsync") { name: String? ->
+      ensurePermissions()
+
+      val resolver: ContentResolver = context.contentResolver
+      val contentValues = ContentValues().apply {
+        put(ContactsContract.Groups.TITLE, name)
+      }
+
+      val uri: Uri = resolver.insert(ContactsContract.Groups.CONTENT_URI, contentValues)
+      val groupId = uri.lastPathSegment?.toLongOrNull()
+    }
+
+    AsyncFunction("updateGroupName") { groupName: String?, groupId: String? ->
+      ensurePermissions()
+
+      var targetGroup = getGroupById(groupId)
+
+      if (targetGroup != null) {
+        val resolver: ContentResolver = context.contentResolver
+        val contentValues = ContentValues().apply {
+          put(ContactsContract.Groups.TITLE, groupName)
+        }
+
+        val uri: Uri = Uri.withAppendedPath(ContactsContract.Groups.CONTENT_URI, groupId)
+        resolver.update(uri, contentValues, null, null)
+      } else {
+        throw GroupNotFoundException()
+      }
+    }
+
+    AsyncFunction("removeGroupAsync") { groupId: String? ->
+      ensurePermissions()
+
+      val uri = Uri.withAppendedPath(ContactsContract.Groups.CONTENT_URI, groupId)
+      val rowsDeleted = resolver.delete(uri, null, null)
+      return rowsDeleted
+    }
+
+    AsyncFunction("addExistingContactToGroupAsync") { contactId: String?, groupId: String? ->
+      ensurePermissions()
+
+      var targetGroup = getGroupById(groupId)
+
+      if (targetGroup != null) {
+        val contentValues = ContentValues().apply {
+          put(ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID, contactId)
+          put(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
+          put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
+        }
+        val uri: Uri = ContactsContract.Data.CONTENT_URI
+        resolver.insert(uri, contentValues)
+      } else {
+        throw GroupNotFoundException()
+      }
+    }
+
+    AsyncFunction("removeContactFromGroupAsync") { contactId: String?, groupId: String? ->
+      ensurePermissions()
+
+      var targetGroup = getGroupById(groupId)
+
+      if (targetGroup != null) {
+        val selection = "${ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID} = ? AND " +
+                "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?"
+        val selectionArgs = arrayOf(contactId, groupId)
+        val uri: Uri = ContactsContract.Data.CONTENT_URI
+        val rowsDeleted = resolver.delete(uri, selection, selectionArgs)
+        return rowsDeleted
+      } else {
+        throw GroupNotFoundException()
+      }
     }
 
     AsyncFunction("shareContactAsync") { contactId: String?, subject: String? ->
@@ -497,7 +576,18 @@ class ContactsModule : Module() {
     return null
   }
 
-  private fun getContactByName(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+  private fun getContactsByGroup(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+    return fetchContacts(
+      0,
+      9999,
+      arrayOf(query),
+      ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
+      keysToFetch,
+      sortOrder
+    )
+  }
+
+  private fun getContactsByName(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
     return fetchContacts(
       0,
       9999,
