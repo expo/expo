@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update to the correct `sourceMappingURL` file path after `beforeAssetSerializationPlugins` execution. ([#29054](https://github.com/expo/expo/pull/29054) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 0.18.4 — 2024-05-16
