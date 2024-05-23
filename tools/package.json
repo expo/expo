@@ -73,7 +73,7 @@
     "sharp": "^0.32.6",
     "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
-    "typedoc": "0.25.7",
+    "typedoc": "0.25.13",
     "uuid": "^9.0.0",
     "xcode": "^3.0.1"
   },
