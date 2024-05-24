@@ -10,7 +10,7 @@ import java.lang.Exception
  * Utility methods used by multiple [SelectionPolicy] subclasses.
  */
 object SelectionPolicies {
-  val TAG = SelectionPolicies::class.java.simpleName
+  val TAG: String = SelectionPolicies::class.java.simpleName
 
   fun matchesFilters(update: UpdateEntity, manifestFilters: JSONObject?): Boolean {
     if (manifestFilters == null) {
