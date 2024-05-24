@@ -76,6 +76,9 @@ android {
     packagingOptions {
       pickFirst "**/libfbjni.so"
       pickFirst "**/libc++_shared.so"
+
+      resources.excludes.add("META-INF/LICENSE.md")
+      resources.excludes.add("META-INF/LICENSE-notice.md")
     }
   }
   sourceSets {
@@ -100,6 +103,7 @@ dependencies {
   implementation "com.facebook.react:react-android"
 
   def room_version = "2.6.1"
+  def mockk_version = "1.13.11"
 
   implementation "androidx.room:room-runtime:$room_version"
   ksp "androidx.room:room-compiler:$room_version"
@@ -107,24 +111,19 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
-  implementation("com.squareup.okio:okio:2.9.0")
-  implementation("commons-codec:commons-codec:1.10")
-  implementation("commons-io:commons-io:2.6")
-  implementation("commons-fileupload:commons-fileupload:1.4")
-  implementation("javax.portlet:portlet-api:3.0.1")
-  implementation("javax.servlet:javax.servlet-api:4.0.1")
-  implementation("org.apache.commons:commons-lang3:3.9")
-  implementation("org.bouncycastle:bcutil-jdk15to18:1.70")
+  implementation("commons-io:commons-io:2.16.1")
+  implementation("org.bouncycastle:bcutil-jdk15to18:1.78.1")
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation 'androidx.test:core:1.5.0'
+  testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
 
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+  androidTestImplementation 'com.squareup.okio:okio:2.9.0'
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:core:1.5.0'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
+  androidTestImplementation "io.mockk:mockk-android:$mockk_version"
   androidTestImplementation "androidx.room:room-testing:$room_version"
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
 

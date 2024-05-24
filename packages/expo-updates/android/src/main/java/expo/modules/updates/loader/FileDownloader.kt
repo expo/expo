@@ -16,13 +16,10 @@ import java.io.IOException
 import java.util.*
 import kotlin.math.min
 import kotlin.math.max
-import org.apache.commons.fileupload.MultipartStream
-import org.apache.commons.fileupload.ParameterParser
-import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
 import expo.modules.structuredheaders.OuterList
-import okhttp3.Headers.Companion.toHeaders
 import expo.modules.structuredheaders.StringItem
+import expo.modules.updates.UpdatesUtils.parseContentDispositionNameParameter
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
@@ -139,21 +136,9 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
       return
     }
 
-    val contentType = response.header("content-type") ?: ""
-    val isMultipart = contentType.startsWith("multipart/", ignoreCase = true)
+    val isMultipart = responseBody.contentType()?.type == "multipart"
     if (isMultipart) {
-      val boundaryParameter = ParameterParser().parse(contentType, ';')["boundary"]
-      if (boundaryParameter == null) {
-        val message = "Missing boundary in multipart remote update content-type"
-        logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-        callback.onFailure(
-          message,
-          IOException(message)
-        )
-        return
-      }
-
-      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, callback)
+      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, callback)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
@@ -186,61 +171,46 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
     }
   }
 
-  private fun parseHeaders(text: String): Headers {
-    val headers = mutableMapOf<String, String>()
-    val lines = text.split(CRLF)
-    for (line in lines) {
-      val indexOfSeparator = line.indexOf(":")
-      if (indexOfSeparator == -1) {
-        continue
-      }
-      val key = line.substring(0, indexOfSeparator).trim()
-      val value = line.substring(indexOfSeparator + 1).trim()
-      headers[key] = value
-    }
-    return headers.toHeaders()
-  }
-
-  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, callback: RemoteUpdateDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
     var directivePartBodyAndHeaders: Pair<String, Headers>? = null
 
-    val multipartStream = MultipartStream(responseBody.byteStream(), boundary.toByteArray())
-
     try {
-      var nextPart = multipartStream.skipPreamble()
-      while (nextPart) {
-        val headers = parseHeaders(multipartStream.readHeaders())
-
-        // always read the body to progress the reader
-        val output = ByteArrayOutputStream()
-        multipartStream.readBodyData(output)
-
-        val contentDispositionValue = headers["content-disposition"]
-        if (contentDispositionValue != null) {
-          val contentDispositionParameterMap = ParameterParser().parse(contentDispositionValue, ';')
-          val contentDispositionName = contentDispositionParameterMap["name"]
-          if (contentDispositionName != null) {
-            when (contentDispositionName) {
-              "manifest" -> manifestPartBodyAndHeaders = Pair(output.toString(), headers)
-              "extensions" -> extensionsBody = output.toString()
-              "certificate_chain" -> certificateChainString = output.toString()
-              "directive" -> directivePartBodyAndHeaders = Pair(output.toString(), headers)
+      MultipartReader(responseBody).use { reader ->
+        while (true) {
+          val nextPart = reader.nextPart() ?: break
+          nextPart.use { part ->
+            val headers = part.headers
+            val body = part.body
+            val contentDispositionValue = headers["content-disposition"]
+            if (contentDispositionValue != null) {
+              val contentDispositionName =
+                contentDispositionValue.parseContentDispositionNameParameter()
+              if (contentDispositionName != null) {
+                when (contentDispositionName) {
+                  "manifest" -> manifestPartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                  "extensions" -> extensionsBody = body.readUtf8()
+                  "certificate_chain" -> certificateChainString = body.readUtf8()
+                  "directive" -> directivePartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                }
+              }
             }
           }
         }
-        nextPart = multipartStream.readBoundary()
       }
     } catch (e: Exception) {
-      val message = "Error while reading multipart remote update response"
-      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-      callback.onFailure(
-        message,
-        e
-      )
-      return
+      // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
+      if (responseBody.bytes().isNotEmpty()) {
+        val message = "Error while reading multipart remote update response"
+        logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
+        callback.onFailure(
+          message,
+          e
+        )
+        return
+      }
     }
 
     val extensions = try {
@@ -267,9 +237,9 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
       ResponsePartInfo(
         responseHeaderData = responseHeaderData,
         responsePartHeaderData = ResponsePartHeaderData(
-          signature = manifestPartBodyAndHeaders.second["expo-signature"]
+          signature = it.second["expo-signature"]
         ),
-        body = manifestPartBodyAndHeaders.first
+        body = it.first
       )
     }
 
@@ -281,9 +251,9 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
         ResponsePartInfo(
           responseHeaderData = responseHeaderData,
           responsePartHeaderData = ResponsePartHeaderData(
-            signature = directivePartBodyAndHeaders.second["expo-signature"]
+            signature = it.second["expo-signature"]
           ),
-          body = directivePartBodyAndHeaders.first
+          body = it.first
         )
       }
     }
@@ -556,8 +526,6 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
   }
 
   companion object {
-    private val TAG = FileDownloader::class.java.simpleName
-
     // Standard line separator for HTTP.
     private const val CRLF = "\r\n"
 
