@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Change from kapt to ksp for room. ([#29055](https://github.com/expo/expo/pull/29055) by [@wschurman](https://github.com/wschurman))
 
 ## 0.25.14 — 2024-05-16
 
