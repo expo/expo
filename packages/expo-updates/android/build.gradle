@@ -1,5 +1,19 @@
+buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${kspVersion()}"
+  }
+}
+
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.devtools.ksp'
 
 group = 'host.exp.exponent'
 version = '0.25.14'
@@ -55,14 +69,6 @@ android {
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", exUpdatesNativeDebug)
     buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
     buildConfigField("boolean", "USE_DEV_CLIENT", useDevClient.toString())
-
-    // uncomment below to export the database schema when making changes
-    /* javaCompileOptions {
-      annotationProcessorOptions {
-        arguments += ["room.schemaLocation":
-                      "$projectDir/src/androidTest/schemas".toString()]
-      }
-    } */
   }
   testOptions {
     unitTests.includeAndroidResources = true
@@ -79,6 +85,12 @@ android {
   }
 }
 
+ksp {
+  arg("room.generateKotlin", "true")
+  // uncomment below to export the database schema when making changes
+  // arg("room.schemaLocation", "$projectDir/src/androidTest/schemas".toString())
+}
+
 dependencies {
   implementation project(':expo-structured-headers')
   implementation project(':expo-updates-interface')
@@ -90,7 +102,7 @@ dependencies {
   def room_version = "2.6.1"
 
   implementation "androidx.room:room-runtime:$room_version"
-  kapt "androidx.room:room-compiler:$room_version"
+  ksp "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
