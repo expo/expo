@@ -282,7 +282,6 @@ abstract class Loader protected constructor(
       AssetLoadResult.FINISHED -> finishedAssetList.add(assetEntity)
       AssetLoadResult.ALREADY_EXISTS -> existingAssetList.add(assetEntity)
       AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
-      else -> throw AssertionError("Missing implementation for AssetLoadResult value")
     }
 
     callback!!.onAssetLoaded(
@@ -304,7 +303,7 @@ abstract class Loader protected constructor(
             var hash: ByteArray? = null
             try {
               hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
             asset.downloadTime = Date()
             asset.hash = hash

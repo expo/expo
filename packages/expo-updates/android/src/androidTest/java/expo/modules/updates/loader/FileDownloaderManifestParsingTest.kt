@@ -17,7 +17,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Protocol
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert
@@ -70,22 +70,10 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
-        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
-      )
+      .addFormDataPart("extraneous", "hello1", "hello".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("manifest", "hello2", CertificateFixtures.testExpoUpdatesManifestBody.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("extensions", "hello3", extensions.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("directive", "hello3", directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
       .build()
       .asResponse(mapOf("expo-protocol-version" to "0").toHeaders())
 
@@ -131,10 +119,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
-      )
+      .addFormDataPart("directive", "hello3", directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
       .build()
       .asResponse()
 
@@ -178,10 +163,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
-      )
+      .addFormDataPart("directive", "hello3", directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
       .build()
       .asResponse()
 
@@ -220,10 +202,7 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"fake\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), "")
-      )
+      .addFormDataPart("fake", " filename", "".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
       .build()
       .asResponse()
 
@@ -483,29 +462,23 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
-        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
-      )
+      .addFormDataPart("extraneous", "hello1", "hello".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
           "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodySignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
+        CertificateFixtures.testExpoUpdatesManifestBody.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
-      )
+      .addFormDataPart("extensions", "hello3", extensions.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"",
           "expo-signature" to CertificateFixtures.testDirectiveNoUpdateAvailableSignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
+        directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
       .build()
       .asResponse(headersMap.toHeaders())
@@ -605,33 +578,24 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
-        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
-      )
+      .addFormDataPart("extraneous", "hello1", "hello".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
           "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBody)
+        CertificateFixtures.testExpoUpdatesManifestBody.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"certificate_chain\"; filename=\"hello4\"").toHeaders(),
-        RequestBody.create("application/x-pem-file; charset=utf-8".toMediaTypeOrNull(), leafCert + intermediateCert)
-      )
+      .addFormDataPart("extensions", "hello3", extensions.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("certificate_chain", "toHeaders", (leafCert + intermediateCert).toRequestBody("application/x-pem-file; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"",
           "expo-signature" to CertificateFixtures.testDirectiveNoUpdateAvailableValidChainLeafSignature
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
+        directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
       .build()
       .asResponse(headersMap.toHeaders())
@@ -692,26 +656,17 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
-        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
-      )
+      .addFormDataPart("extraneous", "hello1", "hello".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
           "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignatureIncorrectProjectId
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testExpoUpdatesManifestBodyIncorrectProjectId)
+        CertificateFixtures.testExpoUpdatesManifestBodyIncorrectProjectId.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"certificate_chain\"; filename=\"hello4\"").toHeaders(),
-        RequestBody.create("application/x-pem-file; charset=utf-8".toMediaTypeOrNull(), leafCert + intermediateCert)
-      )
+      .addFormDataPart("extensions", "hello3", extensions.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("certificate_chain", "toHeaders", (leafCert + intermediateCert).toRequestBody("application/x-pem-file; charset=utf-8".toMediaTypeOrNull()))
       .build()
       .asResponse(headersMap.toHeaders())
 
@@ -765,21 +720,15 @@ class FileDownloaderManifestParsingTest {
 
     val response = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
-        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
-      )
-      .addPart(
-        mapOf("Content-Disposition" to "form-data; name=\"certificate_chain\"; filename=\"hello4\"").toHeaders(),
-        RequestBody.create("application/x-pem-file; charset=utf-8".toMediaTypeOrNull(), leafCert + intermediateCert)
-      )
+      .addFormDataPart("extraneous", "hello1", "hello".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+      .addFormDataPart("certificate_chain", "toHeaders", (leafCert + intermediateCert).toRequestBody("application/x-pem-file; charset=utf-8".toMediaTypeOrNull()))
       .addPart(
         mapOf(
           "Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"",
           "expo-signature" to CertificateFixtures.testDirectiveNoUpdateAvailableValidChainLeafSignatureIncorrectProjectId
         )
           .toHeaders(),
-        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
+        directive.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
       )
       .build()
       .asResponse(headersMap.toHeaders())

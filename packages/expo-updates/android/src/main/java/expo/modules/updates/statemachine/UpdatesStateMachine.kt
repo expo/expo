@@ -24,6 +24,7 @@ class UpdatesStateMachine(
         this@UpdatesStateMachine.processEvent(event)
       }
 
+      @Deprecated("Avoid needing to access current state to know how to transition to next state")
       override fun getCurrentState(): UpdatesStateValue {
         return state
       }

@@ -15,6 +15,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -221,7 +222,7 @@ class FileDownloaderTest {
             mockk(),
             mockk {
               every { isSuccessful } returns true
-              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
+              every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
             }
           )
         }
@@ -271,7 +272,7 @@ class FileDownloaderTest {
             mockk(),
             mockk {
               every { isSuccessful } returns true
-              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
+              every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
             }
           )
         }

@@ -50,7 +50,7 @@ class EnabledUpdatesController(
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.values().toSet())
+  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.entries.toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {

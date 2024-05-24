@@ -101,13 +101,13 @@ class ErrorRecovery(
 
   private fun registerErrorHandler(devSupportManager: DevSupportManager) {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      registerErrorHandlerImplBridgeless(devSupportManager)
+      registerErrorHandlerImplBridgeless()
     } else {
       registerErrorHandlerImplBridge(devSupportManager)
     }
   }
 
-  private fun registerErrorHandlerImplBridgeless(devSupportManager: DevSupportManager) {
+  private fun registerErrorHandlerImplBridgeless() {
     shouldHandleReactInstanceException = true
   }
 
