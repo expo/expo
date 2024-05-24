@@ -10,6 +10,7 @@
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
+- [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' [#29075](https://github.com/expo/expo/pull/29075)
 
 ### 💡 Others
 
