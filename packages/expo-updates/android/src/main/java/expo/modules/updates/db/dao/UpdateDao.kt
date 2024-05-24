@@ -11,34 +11,28 @@ import java.util.*
  */
 @Dao
 abstract class UpdateDao {
-  /**
-   * for private use only
-   * must be marked public for Room
-   * so we use the underscore to discourage use
-   */
-
   // if an update has successfully launched at least once, we treat it as launchable
   // even if it has also failed to launch at least once
   @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND (successful_launch_count > 0 OR failed_launch_count < 1) AND status IN (:statuses);")
-  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String, statuses: List<UpdateStatus>): List<UpdateEntity>
+  protected abstract fun loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String, statuses: List<UpdateStatus>): List<UpdateEntity>
 
   @Query("SELECT * FROM updates WHERE id = :id;")
-  abstract fun _loadUpdatesWithId(id: UUID): List<UpdateEntity>
+  protected abstract fun loadUpdatesWithId(id: UUID): List<UpdateEntity>
 
   @Query("SELECT assets.* FROM assets INNER JOIN updates ON updates.launch_asset_id = assets.id WHERE updates.id = :updateId;")
-  abstract fun _loadLaunchAssetForUpdate(updateId: UUID): AssetEntity?
+  protected abstract fun loadLaunchAssetForUpdateInternal(updateId: UUID): AssetEntity?
 
   @Query("UPDATE updates SET keep = 1 WHERE id = :id;")
-  abstract fun _keepUpdate(id: UUID)
+  protected abstract fun keepUpdate(id: UUID)
 
   @Query("UPDATE updates SET status = :status WHERE id = :id;")
-  abstract fun _markUpdateWithStatus(status: UpdateStatus, id: UUID)
+  protected abstract fun markUpdateWithStatus(status: UpdateStatus, id: UUID)
 
   @Query(
     "UPDATE updates SET status = :status WHERE id IN (" +
       "SELECT DISTINCT update_id FROM updates_assets WHERE asset_id IN (:missingAssetIds));"
   )
-  abstract fun _markUpdatesWithMissingAssets(missingAssetIds: List<Long>, status: UpdateStatus)
+  protected abstract fun markUpdatesWithMissingAssets(missingAssetIds: List<Long>, status: UpdateStatus)
 
   /**
    * for public use
@@ -47,7 +41,7 @@ abstract class UpdateDao {
   abstract fun loadAllUpdates(): List<UpdateEntity>
 
   fun loadLaunchableUpdatesForScope(scopeKey: String): List<UpdateEntity> {
-    return _loadLaunchableUpdatesForProjectWithStatuses(
+    return loadLaunchableUpdatesForProjectWithStatuses(
       scopeKey,
       listOf(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT)
     )
@@ -63,12 +57,12 @@ abstract class UpdateDao {
   abstract fun loadRecentUpdateIdsWithFailedLaunch(): List<UUID>
 
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
-    val updateEntities = _loadUpdatesWithId(id)
+    val updateEntities = loadUpdatesWithId(id)
     return if (updateEntities.isNotEmpty()) updateEntities[0] else null
   }
 
   fun loadLaunchAssetForUpdate(updateId: UUID): AssetEntity? {
-    return _loadLaunchAssetForUpdate(updateId)?.apply {
+    return loadLaunchAssetForUpdateInternal(updateId)?.apply {
       isLaunchAsset = true
     }
   }
@@ -86,11 +80,11 @@ abstract class UpdateDao {
 
   fun setUpdateCommitTime(update: UpdateEntity, commitTime: Date) {
     update.commitTime = commitTime
-    _setUpdateCommitTime(update.id, commitTime)
+    setUpdateCommitTimeInternal(update.id, commitTime)
   }
 
   @Query("UPDATE updates SET commit_time = :commitTime WHERE id = :id;")
-  abstract fun _setUpdateCommitTime(id: UUID, commitTime: Date)
+  abstract fun setUpdateCommitTimeInternal(id: UUID, commitTime: Date)
 
   @Transaction
   open fun markUpdateFinished(update: UpdateEntity, hasSkippedEmbeddedAssets: Boolean) {
@@ -100,8 +94,8 @@ abstract class UpdateDao {
     } else if (hasSkippedEmbeddedAssets) {
       statusToMark = UpdateStatus.EMBEDDED
     }
-    _markUpdateWithStatus(statusToMark, update.id)
-    _keepUpdate(update.id)
+    markUpdateWithStatus(statusToMark, update.id)
+    keepUpdate(update.id)
   }
 
   fun markUpdateFinished(update: UpdateEntity) {
@@ -111,34 +105,34 @@ abstract class UpdateDao {
   fun markUpdateAccessed(update: UpdateEntity) {
     val newLastAccessed = Date()
     update.lastAccessed = newLastAccessed
-    _markUpdateAccessed(update.id, newLastAccessed)
+    markUpdateAccessedInternal(update.id, newLastAccessed)
   }
 
   @Query("UPDATE updates SET last_accessed = :lastAccessed WHERE id = :id;")
-  abstract fun _markUpdateAccessed(id: UUID, lastAccessed: Date)
+  protected abstract fun markUpdateAccessedInternal(id: UUID, lastAccessed: Date)
 
   fun incrementSuccessfulLaunchCount(update: UpdateEntity) {
     update.successfulLaunchCount++
-    _incrementSuccessfulLaunchCount(update.id)
+    incrementSuccessfulLaunchCountInternal(update.id)
   }
 
   @Query("UPDATE updates SET successful_launch_count = successful_launch_count + 1 WHERE id = :id;")
-  abstract fun _incrementSuccessfulLaunchCount(id: UUID)
+  protected abstract fun incrementSuccessfulLaunchCountInternal(id: UUID)
 
   fun incrementFailedLaunchCount(update: UpdateEntity) {
     update.failedLaunchCount++
-    _incrementFailedLaunchCount(update.id)
+    incrementFailedLaunchCountInternal(update.id)
   }
 
   @Query("UPDATE updates SET failed_launch_count = failed_launch_count + 1 WHERE id = :id;")
-  abstract fun _incrementFailedLaunchCount(id: UUID)
+  abstract fun incrementFailedLaunchCountInternal(id: UUID)
 
   fun markUpdatesWithMissingAssets(missingAssets: List<AssetEntity>) {
     val missingAssetIds = mutableListOf<Long>()
     for (asset in missingAssets) {
       missingAssetIds.add(asset.id)
     }
-    _markUpdatesWithMissingAssets(missingAssetIds, UpdateStatus.PENDING)
+    markUpdatesWithMissingAssets(missingAssetIds, UpdateStatus.PENDING)
   }
 
   @Delete
