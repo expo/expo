@@ -18,6 +18,7 @@ if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
   );
 }
 
+require('@expo/env').load(projectRoot);
 process.chdir(projectRoot);
 
 const { exp } = getConfig(projectRoot, {

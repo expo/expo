@@ -1,10 +1,14 @@
 const { getConfig } = require('@expo/config');
 const fs = require('fs');
 const path = require('path');
+const { load } = require('@expo/env');
 
 jest.mock('fs');
 jest.mock('path');
 jest.mock('@expo/config');
+jest.mock('@expo/env', () => ({
+  load: jest.fn(),
+}));
 
 const possibleProjectRoot = '/path/to/project';
 const destinationDir = '/path/to/destination';
@@ -40,4 +44,8 @@ describe('getAppConfig', () => {
       JSON.stringify(mockExpConfig)
     );
   });
+
+  it('should load from @expo/env', () => {
+    expect(load).toHaveBeenCalledWith(possibleProjectRoot);
+  })
 });
