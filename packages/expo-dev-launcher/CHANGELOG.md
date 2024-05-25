@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed loading error from a https dev-server on Android. ([#28691](https://github.com/expo/expo/pull/28691) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 3.6.10 — 2024-05-25
+
+### 🐛 Bug fixes
+
+- Fixed loading error from a https dev-server on Android. ([#28691](https://github.com/expo/expo/pull/28691) by [@kudo](https://github.com/kudo))
 
 ## 3.6.9 — 2024-03-20
 

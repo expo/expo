@@ -77,7 +77,7 @@
   "expo-system-ui": "~2.9.4",
   "expo-task-manager": "~11.7.3",
   "expo-tracking-transparency": "~3.3.0",
-  "expo-updates": "~0.24.12",
+  "expo-updates": "~0.24.13",
   "expo-video-thumbnails": "~7.9.0",
   "expo-web-browser": "~12.8.2",
   "jest-expo": "~50.0.4",

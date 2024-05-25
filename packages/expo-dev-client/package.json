@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/clients/introduction/",
   "dependencies": {
-    "expo-dev-launcher": "3.6.9",
+    "expo-dev-launcher": "3.6.10",
     "expo-dev-menu": "4.5.8",
     "expo-dev-menu-interface": "1.7.2",
     "expo-manifests": "~0.13.0",
