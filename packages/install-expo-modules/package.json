@@ -36,8 +36,8 @@
     "directory": "packages/install-expo-modules"
   },
   "devDependencies": {
-    "@expo/config": "^9.0.0-beta.0",
-    "@expo/config-plugins": "^8.0.0-beta.0",
+    "@expo/config": "^9.0.0",
+    "@expo/config-plugins": "^8.0.0",
     "@expo/package-manager": "^1.5.0",
     "@types/prompts": "^2.0.6",
     "@types/semver": "^6.0.0",
