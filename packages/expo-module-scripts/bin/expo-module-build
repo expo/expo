@@ -8,7 +8,7 @@ args=("$@")
 
 # If the command is used like `yarn build plugin`, set the --build option to point to
 # plugin/tsconfig.json
-extra_module_build_types=("plugin" "cli" "utils")
+extra_module_build_types=("plugin" "cli" "utils" "scripts")
 for i in "${extra_module_build_types[@]}"
 do
   if [ "$1" == "$i" ]; then
