@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "files": [
     "build",
-    "lazy-imports-blacklist.js"
+    "lazy-imports-blacklist.js",
+    "react-compiler-runtime.js"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -42,7 +43,7 @@
   },
   "dependencies": {
     "react-forget-runtime": "file:../../../forget-feedback/dist/react-forget-runtime",
-    "babel-plugin-react-forget": "file:../../../forget-feedback",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-592953e-20240517",
     "@babel/plugin-proposal-decorators": "^7.12.9",
     "@babel/plugin-transform-export-namespace-from": "^7.22.11",
     "@babel/plugin-transform-object-rest-spread": "^7.12.13",

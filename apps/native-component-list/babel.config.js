@@ -5,7 +5,7 @@ module.exports = function (api) {
     presets: [
       [
         'babel-preset-expo',
-        { 'babel-plugin-react-forget': process.env.EXPO_USE_FORGET ? true : false },
+        { 'babel-plugin-react-compiler': process.env.EXPO_USE_FORGET ? true : false },
       ],
     ],
   };
