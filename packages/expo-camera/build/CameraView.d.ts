@@ -1,8 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
-import * as React from 'react';
-import { Ref } from 'react';
+import { type Ref, Component } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
-export default class CameraView extends React.Component<CameraProps> {
+export default class CameraView extends Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -32,7 +31,7 @@ export default class CameraView extends React.Component<CameraProps> {
     };
     static defaultProps: CameraProps;
     _cameraHandle?: number | null;
-    _cameraRef: React.RefObject<CameraViewRef>;
+    _cameraRef: import("react").RefObject<CameraViewRef>;
     _lastEvents: {
         [eventName: string]: string;
     };
@@ -62,7 +61,7 @@ export default class CameraView extends React.Component<CameraProps> {
      */
     static launchScanner(options?: ScanningOptions): Promise<void>;
     /**
-     * Dimiss the scanner presented by `launchScanner`.
+     * Dismiss the scanner presented by `launchScanner`.
      * @platform ios
      */
     static dismissScanner(): Promise<void>;
