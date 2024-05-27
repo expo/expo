@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ExpoResponse` using incorrect object.
+
 ### 💡 Others
 
 ## 0.4.2 — 2024-04-23
