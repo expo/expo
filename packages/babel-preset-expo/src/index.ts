@@ -47,8 +47,15 @@ type BabelPresetExpoPlatformOptions = {
         // TODO: Add full types and doc blocks.
         enableUseMemoCachePolyfill?: boolean;
         compilationMode?: 'infer' | 'strict';
-        panicThreshold?: 'NONE' | 'ERROR' | 'WARNING' | 'INFO' | 'DEBUG';
+        panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
         logger?: any;
+        environment?: unknown;
+        gating?: unknown;
+        noEmit?: boolean;
+        runtimeModule?: string | null;
+        eslintSuppressionRules?: unknown | null;
+        flowSuppressions?: boolean;
+        ignoreUseNoForget?: boolean;
       };
 
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */

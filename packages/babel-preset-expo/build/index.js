@@ -21,6 +21,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isNodeModule = api.caller(common_1.getIsNodeModule);
     const isServer = api.caller(common_1.getIsServer);
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
@@ -57,6 +58,28 @@ function babelPresetExpo(api, options = {}) {
     // `@react-native/babel-preset` will handle it.
     const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
+    // Add compiler as soon as possible to prevent other plugins from modifying the code.
+    if (
+    // Don't run compiler on node modules, it can only safely be run on the user's code.
+    !isNodeModule &&
+        // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
+        !isReactServer &&
+        // Give users the ability to opt-out of the feature, per-platform.
+        platformOptions['babel-plugin-react-compiler'] !== false &&
+        // Opt-in for now...
+        !!platformOptions['babel-plugin-react-compiler']) {
+        extraPlugins.push([
+            require('babel-plugin-react-compiler'),
+            {
+                runtimeModule: require.resolve('babel-preset-expo/react-compiler-runtime.js'),
+                // TODO: This isn't needed after React 19 apparently.
+                // enableUseMemoCachePolyfill: true,
+                // compilationMode: 'infer',
+                panicThreshold: isDev ? undefined : 'NONE',
+                ...platformOptions['babel-plugin-react-compiler'],
+            },
+        ]);
+    }
     if (engine !== 'hermes') {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
