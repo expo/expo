@@ -142,11 +142,14 @@ public final class VideoModule: Module {
         return player.pointer.currentItem?.duration.seconds ?? 0
       }
 
-      Property("playbackRate") { player -> Float in
-        return player.playbackRate
+      // JS sends a Double when calling the set function, which sometimes causes the `as?` conversion
+      // in expo-modules-core to fail when playbackRate is defined as a Float.
+      // AVPlayer uses Float for rate, so cast to Double only for communication with JS
+      Property("playbackRate") { player -> Double in
+        return Double(player.playbackRate)
       }
-      .set { (player, playbackRate: Float) in
-        player.playbackRate = playbackRate
+      .set { (player, playbackRate: Double) in
+        player.playbackRate = Float(playbackRate)
       }
 
       Property("isLive") { player -> Bool in
@@ -171,11 +174,12 @@ public final class VideoModule: Module {
         return player.status
       }
 
-      Property("volume") { player -> Float in
-        return player.volume
+      // Reason for type casting same as playbackRate
+      Property("volume") { player -> Double in
+        return Double(player.volume)
       }
-      .set { (player, volume: Float) in
-        player.volume = volume
+      .set { (player, volume: Double) in
+        player.volume = Float(volume)
       }
 
       Function("play") { player in

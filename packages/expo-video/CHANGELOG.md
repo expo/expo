@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
+- [iOS] Fix the conversion error when setting some specific numbers as `playbackRate` or `volume`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
