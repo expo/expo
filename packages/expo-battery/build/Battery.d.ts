@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState } from './Battery.types';
 /**
  * Resolves with whether the battery API is available on the current device. The value of this
@@ -90,7 +90,7 @@ export declare function getPowerStateAsync(): Promise<PowerState>;
  * single argument that is an object with a `batteryLevel` key.
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
-export declare function addBatteryLevelListener(listener: (event: BatteryLevelEvent) => void): Subscription;
+export declare function addBatteryLevelListener(listener: (event: BatteryLevelEvent) => void): EventSubscription;
 /**
  * Subscribe to the battery state change updates to receive an object with a [`Battery.BatteryState`](#batterystate)
  * enum value for whether the device is any of the four states.
@@ -100,7 +100,7 @@ export declare function addBatteryLevelListener(listener: (event: BatteryLevelEv
  * single argument that is an object with a `batteryState` key.
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
-export declare function addBatteryStateListener(listener: (event: BatteryStateEvent) => void): Subscription;
+export declare function addBatteryStateListener(listener: (event: BatteryStateEvent) => void): EventSubscription;
 /**
  * Subscribe to  Power Saver Mode (Android) or Low Power Mode (iOS) updates. The event fires whenever
  * the power mode is toggled.
@@ -110,7 +110,7 @@ export declare function addBatteryStateListener(listener: (event: BatteryStateEv
  * changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
-export declare function addLowPowerModeListener(listener: (event: PowerModeEvent) => void): Subscription;
+export declare function addLowPowerModeListener(listener: (event: PowerModeEvent) => void): EventSubscription;
 /**
  * Gets the device's battery level, as in [`getBatteryLevelAsync`](#getbatterylevelasync).
  *
@@ -155,5 +155,5 @@ export declare function useLowPowerMode(): boolean;
  * @return Returns power state information.
  */
 export declare function usePowerState(): PowerState;
-export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, Subscription, };
+export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, EventSubscription as Subscription, };
 //# sourceMappingURL=Battery.d.ts.map

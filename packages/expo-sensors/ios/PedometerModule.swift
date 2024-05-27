@@ -101,16 +101,15 @@ public final class PedometerModule: Module {
   }
 
   private func stopUpdates() {
-    guard let permissions = appContext?.permissions else {
+    guard watchHandler != nil,
+      let permissions = appContext?.permissions,
+      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
       return
     }
-    if permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) {
-      if watchHandler != nil {
-        pedometer.stopUpdates()
-        watchStartDate = nil
-        watchHandler = nil
-      }
-    }
+
+    pedometer.stopUpdates()
+    watchStartDate = nil
+    watchHandler = nil
   }
 }
 

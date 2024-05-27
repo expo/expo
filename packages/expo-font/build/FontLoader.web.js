@@ -17,9 +17,6 @@ function uriFromFontSource(asset) {
 function displayFromFontSource(asset) {
     return asset.display || FontDisplay.AUTO;
 }
-export function fontFamilyNeedsScoping(name) {
-    return false;
-}
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
     const display = displayFromFontSource(source);
@@ -49,8 +46,5 @@ export function loadSingleFontAsync(name, input) {
         // No-op.
     }
     return Promise.resolve();
-}
-export function getNativeFontName(name) {
-    return name;
 }
 //# sourceMappingURL=FontLoader.web.js.map

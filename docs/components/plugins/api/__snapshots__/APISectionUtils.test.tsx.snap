@@ -81,7 +81,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </p>
   <pre>
     <pre
-      class="last:mb-0 css-1r21cuo-Code"
+      class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
       data-text="true"
     >
       <code
@@ -274,7 +274,9 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
     class="css-1na8e0o-A"
-    href="#speechsynthesisevent"
+    href="https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent"
+    rel="noopener noreferrer"
+    target="_blank"
   >
     SpeechSynthesisEvent
   </a>

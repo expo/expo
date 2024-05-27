@@ -63,7 +63,7 @@ Start a development server to work on your project by running:
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:8081` (for SDK 48 and lower, the port number is `19000`) that a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
+This command starts a server on `http://localhost:8081` that a client can use to interact with the bundler. The default bundler is [Metro](https://metrobundler.dev/).
 
 The UI that shows up in the process is referred to as the **Terminal UI**. It contains a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
@@ -100,7 +100,7 @@ By default, the project is served over a LAN connection. You can change this beh
 
 Other available options are:
 
-- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**. For SDK 48 and lower, defaults to `19000`.
+- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
@@ -288,7 +288,7 @@ export default function Blog() {
 This will **export** to the following:
 
 ```html Output HTML
-<a href="/my-root/post/123">Go to blog post</a>
+<a href="/my-root/blog/123">Go to blog post</a>
 ```
 
 If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need to manually prepend the `baseUrl`.
@@ -440,13 +440,14 @@ To exclude packages from version checking, set the `expo.install` config object 
 
 ### Install package managers
 
-`npx expo install` has support for `yarn`, `npm`, and `pnpm`.
+`npx expo install` has support for `bun`, `npm`, `pnpm`, and `yarn`.
 
 You can force the package manager using a named argument:
 
+- `--bun`: Use `bun` to install dependencies. Default when **bun.lockb** exists.
 - `--npm`: Use `npm` to install dependencies. Default when **package-lock.json** exists.
-- `--yarn`: Use `yarn` to install dependencies. Default when **yarn.lock** exists.
 - `--pnpm`: Use `pnpm` to install dependencies. Default when **pnpm-lock.yaml** exists.
+- `--yarn`: Use `yarn` to install dependencies. Default when **yarn.lock** exists.
 
 ## Authentication
 
@@ -493,8 +494,8 @@ From here, you can choose to generate basic project files like:
 | `EXPO_EDITOR`                       | **string**  | An Expo-specific version of the `EDITOR` variable which takes higher priority when defined.                                                                                                                                                                                                                                                                                          |
 | `EXPO_IMAGE_UTILS_NO_SHARP`         | **boolean** | Disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.                                                                                                                                                                                             |
 | `EXPO_TUNNEL_SUBDOMAIN`             | **boolean** | <StatusTag status="experimental" /><br/>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
-| `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
-| `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag note="deprecated" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                              |
+| `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://metrobundler.dev/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                              |
+| `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag status="deprecated" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                            |
 | `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
 | `EXPO_NO_DOTENV`                    | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent all `.env` file loading across Expo CLI.                                                                                                                                                                                                                                                                                                    |
 | `EXPO_NO_METRO_LAZY`                | **boolean** | Prevent adding the `lazy=true` query parameter to Metro URLs (`metro@0.76.3` and greater). This disables `import()` support.                                                                                                                                                                                                                                                         |
@@ -503,6 +504,9 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_METRO_WORKSPACE_ROOT`     | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                           |
 | `EXPO_USE_UNSTABLE_DEBUGGER`        | **boolean** | <StatusTag status="experimental" /><br/>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                                          |
 | `EXPO_ADB_USER`                     | **string**  | <StatusTag status="SDK 50+" /><br/>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                   |
+| `EXPO_NO_TELEMETRY_DETACH`          | **boolean** | <StatusTag status="SDK 51+" /><br/>Send telemetry events in the main thread of `@expo/cli`. This causes the CLI to slow down as it waits for all the events to be sent.                                                                                                                                                                                                              |
+| `EXPO_UNSTABLE_ATLAS`               | **boolean** | <StatusTag status="experimental" /><StatusTag status="SDK 51+" /><br/>Gather Metro bundle information during development or export.                                                                                                                                                                                                                                                  |
+| `EXPO_NO_BUNDLE_SPLITTING`          | **boolean** | <StatusTag status="experimental" /><StatusTag status="SDK 51+" /><br/>Disable Metro splitting chunks on async imports in production (web-only).                                                                                                                                                                                                                                      |
 
 ## Telemetry
 

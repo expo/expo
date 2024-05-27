@@ -13,7 +13,7 @@ Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx
 
 ## Customizing
 
-You can customize the Metro bundler by creating a **metro.config.js** file at the root of your project. This file should export a [Metro configuration](https://facebook.github.io/metro/docs/configuration) that extends [`expo/metro-config`](https://github.com/expo/expo/tree/main/packages/@expo/metro-config). Import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
+You can customize the Metro bundler by creating a **metro.config.js** file at the root of your project. This file should export a [Metro configuration](https://metrobundler.dev/docs/configuration/) that extends [`expo/metro-config`](https://github.com/expo/expo/tree/main/packages/@expo/metro-config). Import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
 
 Run the following command to generate the template file:
 
@@ -29,11 +29,11 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-See [**metro.config.js** documentation](https://facebook.github.io/metro/docs/configuration) for more information.
+See [**metro.config.js** documentation](https://metrobundler.dev/docs/configuration/) for more information.
 
 ## Assets
 
-Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files used by your application. [Assets](/guides/assets) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default, the following extensions are included:
+Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files used by your application. [Assets](/develop/user-interface/assets/) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default, the following extensions are included:
 
 - [`resolver.assetExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L15)
 - [`resolver.sourceExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L53)
@@ -61,7 +61,7 @@ module.exports = config;
 
 From SDK 50, Expo CLI automatically splits bundles based on async imports (web-only).
 
-This technique can be used with Expo Router to automatically split the bundle based on route files in the **app/** directory. It will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. See [Async Routes](/router/reference/async-routes) for more information.
+This technique can be used with Expo Router to automatically split the bundle based on route files in the **app** directory. It will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. See [Async Routes](/router/reference/async-routes) for more information.
 
 ## Tree shaking
 

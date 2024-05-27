@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
@@ -33,7 +33,7 @@ export class Sound {
     _lastStatusUpdate = null;
     _lastStatusUpdateTime = null;
     _subscriptions = [];
-    _eventEmitter = new EventEmitter(ExponentAV);
+    _eventEmitter = new LegacyEventEmitter(ExponentAV);
     _coalesceStatusUpdatesInMillis = 100;
     _onPlaybackStatusUpdate = null;
     _onMetadataUpdate = null;

@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -112,26 +113,35 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'B',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentType',
   'PureComponent',
   'E',
+  'EventName',
   'EventSubscription',
   'K',
   'Listener',
+  'ModuleType',
   'NativeSyntheticEvent',
+  'P',
+  'Parameters',
   'ParsedQs',
   'ServiceActionResult',
+  'SharedObject',
   'T',
   'TaskOptions',
+  'TEventsMap',
   'Uint8Array',
   // React & React Native
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
-  // Cross-package permissions management
+  // Cross-package types with no export entry
+  'CodedError',
   'RequestPermissionMethod',
   'GetPermissionMethod',
   'Options',
@@ -160,12 +170,15 @@ const replaceableTypes: Partial<Record<string, string>> = {
  * Map of entity/type names that should be linked to user specified source, internal or external.
  */
 const hardcodedTypeLinks: Record<string, string> = {
+  ArrayBuffer:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
@@ -174,12 +187,10 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
-  ExpoUpdatesManifest: '/versions/latest/sdk/updates/#expoupdatesmanifest',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
-  Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
@@ -191,25 +202,67 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
+  SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
+  SpeechSynthesisUtterance:
+    'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
+  WebBrowserOpenOptions: '/versions/latest/sdk/webbrowser/#webbrowseropenoptions',
+  WebBrowserWindowFeatures: '/versions/latest/sdk/webbrowser/#webbrowserwindowfeatures',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
+  WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
 };
 
-const renderWithLink = (name: string, type?: string) => {
+const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {
+  'v49.0.0': {
+    Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
+  },
+};
+
+const packageLinks: Record<string, string> = {
+  'expo-manifests': 'manifests',
+};
+
+const renderWithLink = ({
+  name,
+  type,
+  typePackage,
+  sdkVersion,
+}: {
+  name: string;
+  type?: string;
+  typePackage: string | undefined;
+  sdkVersion: string;
+}) => {
   const replacedName = replaceableTypes[name] ?? name;
 
   if (name.includes('.')) return name;
+
+  if (typePackage && packageLinks[typePackage]) {
+    return (
+      <A
+        href={`${packageLinks[typePackage]}/#${replacedName.toLowerCase()}`}
+        key={`type-link-${replacedName}`}>
+        {replacedName}
+        {type === 'array' && '[]'}
+      </A>
+    );
+  }
 
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
   ) : (
     <A
-      href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
+      href={
+        sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ??
+        hardcodedTypeLinks[replacedName] ??
+        `#${replacedName.toLowerCase()}`
+      }
       key={`type-link-${replacedName}`}>
       {replacedName}
       {type === 'array' && '[]'}
@@ -217,9 +270,9 @@ const renderWithLink = (name: string, type?: string) => {
   );
 };
 
-const renderUnion = (types: TypeDefinitionData[]) =>
+const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: string }) =>
   types
-    .map(type => resolveTypeName(type))
+    .map(type => resolveTypeName(type, sdkVersion))
     .map((valueToRender, index) => (
       <span key={`union-type-${index}`}>
         {valueToRender}
@@ -228,7 +281,8 @@ const renderUnion = (types: TypeDefinitionData[]) =>
     ));
 
 export const resolveTypeName = (
-  typeDefinition: TypeDefinitionData
+  typeDefinition: TypeDefinitionData,
+  sdkVersion: string
 ): string | JSX.Element | (string | JSX.Element)[] => {
   if (!typeDefinition) {
     return 'undefined';
@@ -260,7 +314,7 @@ export const resolveTypeName = (
                 <span className="text-quaternary">{'<'}</span>
                 {typeArguments.map((type, index) => (
                   <span key={`record-type-${index}`}>
-                    {resolveTypeName(type)}
+                    {resolveTypeName(type, sdkVersion)}
                     {index !== typeArguments.length - 1 ? (
                       <span className="text-quaternary">, </span>
                     ) : null}
@@ -272,11 +326,11 @@ export const resolveTypeName = (
           } else {
             return (
               <>
-                {renderWithLink(name)}
+                {renderWithLink({ name, typePackage: typeDefinition.package, sdkVersion })}
                 <span className="text-quaternary">{'<'}</span>
                 {typeArguments.map((type, index) => (
                   <span key={`${name}-nested-type-${index}`}>
-                    {resolveTypeName(type)}
+                    {resolveTypeName(type, sdkVersion)}
                     {index !== typeArguments.length - 1 ? (
                       <span className="text-quaternary">, </span>
                     ) : null}
@@ -287,14 +341,19 @@ export const resolveTypeName = (
             );
           }
         } else {
-          return renderWithLink(name);
+          return renderWithLink({ name, typePackage: typeDefinition.package, sdkVersion });
         }
       } else {
         return name;
       }
     } else if (elementType?.name) {
       if (elementType.type === 'reference') {
-        return renderWithLink(elementType.name, type);
+        return renderWithLink({
+          name: elementType.name,
+          type,
+          typePackage: typeDefinition.package,
+          sdkVersion,
+        });
       } else if (type === 'array') {
         return elementType.name + '[]';
       }
@@ -303,17 +362,17 @@ export const resolveTypeName = (
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
         if (parameters && paramType) {
-          return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+          return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType, sdkVersion)} }`;
         }
       }
       return elementType.name + type;
     } else if (type === 'union' && types?.length) {
-      return renderUnion(types);
+      return renderUnion(types, { sdkVersion });
     } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
       const unionTypes = elementType?.types || [];
       return (
         <>
-          ({renderUnion(unionTypes)}){type === 'array' && '[]'}
+          ({renderUnion(unionTypes, { sdkVersion })}){type === 'array' && '[]'}
         </>
       );
     } else if (declaration?.signatures) {
@@ -325,18 +384,20 @@ export const resolveTypeName = (
             {baseSignature.parameters?.map((param, index) => (
               <span key={`param-${index}-${param.name}`}>
                 {param.name}
-                <span className="text-quaternary">:</span> {resolveTypeName(param.type)}
+                <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
                 {index + 1 !== baseSignature.parameters?.length && ', '}
               </span>
             ))}
             <span className="text-quaternary">)</span>{' '}
-            <span className="text-quaternary">{'=>'}</span> {resolveTypeName(baseSignature.type)}
+            <span className="text-quaternary">{'=>'}</span>{' '}
+            {resolveTypeName(baseSignature.type, sdkVersion)}
           </>
         );
       } else {
         return (
           <>
-            <span className="text-quaternary">{'() =>'}</span> {resolveTypeName(baseSignature.type)}
+            <span className="text-quaternary">{'() =>'}</span>{' '}
+            {resolveTypeName(baseSignature.type, sdkVersion)}
           </>
         );
       }
@@ -348,7 +409,7 @@ export const resolveTypeName = (
             <span key={`reflection-${name}-${i}`}>
               {'  '}
               {child.name + ': '}
-              {resolveTypeName(child.type)}
+              {resolveTypeName(child.type, sdkVersion)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
               {'\n'}
             </span>
@@ -362,7 +423,7 @@ export const resolveTypeName = (
           [
           {elements.map((elem, i) => (
             <span key={`tuple-${name}-${i}`}>
-              {resolveTypeName(elem)}
+              {resolveTypeName(elem, sdkVersion)}
               {i + 1 !== elements.length ? ', ' : null}
             </span>
           ))}
@@ -380,11 +441,14 @@ export const resolveTypeName = (
         .filter(({ name }) => !omittableTypes.includes(name ?? ''))
         .map((value, index, array) => (
           <span key={`intersection-${name}-${index}`}>
-            {resolveTypeName(value)}
+            {resolveTypeName(value, sdkVersion)}
             {index + 1 !== array.length && ' & '}
           </span>
         ));
     } else if (type === 'indexedAccess') {
+      if (indexType?.name) {
+        return `${objectType?.name}[${indexType?.name}]`;
+      }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
@@ -402,13 +466,10 @@ export const resolveTypeName = (
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParamRow = ({
-  comment,
-  name,
-  type,
-  flags,
-  defaultValue,
-}: MethodParamData): JSX.Element => {
+export const renderParamRow = (
+  { comment, name, type, flags, defaultValue }: MethodParamData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultData = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
@@ -416,11 +477,14 @@ export const renderParamRow = ({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <BOLD>{parseParamName(name)}</BOLD>
+        <BOLD>
+          {flags?.isRest ? '...' : ''}
+          {parseParamName(name)}
+        </BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <APIDataType typeDefinition={type} />
+        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
       <Cell>
         <CommentTextBlock
@@ -476,15 +540,24 @@ export const BoxSectionHeader = ({
   );
 };
 
-export const renderParams = (parameters: MethodParamData[]) => (
+export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => (
   <Table>
     <ParamsTableHeadRow />
-    <tbody>{parameters?.map(renderParamRow)}</tbody>
+    <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion))}</tbody>
   </Table>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
-  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+  parameters
+    ? parameters
+        ?.map(param => {
+          if (param.flags?.isRest) {
+            return `...${parseParamName(param.name)}`;
+          }
+          return parseParamName(param.name);
+        })
+        .join(', ')
+    : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
@@ -493,34 +566,40 @@ export const renderDefaultValue = (defaultValue?: string) =>
     </div>
   ) : undefined;
 
-export const renderTypeOrSignatureType = (
-  type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[] | TypeSignaturesData[],
-  allowBlock: boolean = false
-) => {
+export const renderTypeOrSignatureType = ({
+  type,
+  signatures,
+  allowBlock = false,
+  sdkVersion,
+}: {
+  type?: TypeDefinitionData;
+  signatures?: MethodSignatureData[] | TypeSignaturesData[];
+  allowBlock?: boolean;
+  sdkVersion: string;
+}) => {
   if (signatures && signatures.length) {
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
-        {signatures?.map(
-          ({ parameters }) =>
-            parameters?.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}
-                <span className="text-quaternary">:</span> {resolveTypeName(param.type)}
-              </span>
-            ))
+        {signatures?.map(({ parameters }) =>
+          parameters?.map((param, index) => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}
+              <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+              {parameters?.length !== index + 1 ? <span className="text-quaternary">, </span> : ''}
+            </span>
+          ))
         )}
         <span className="text-quaternary">{') =>'}</span>{' '}
-        {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
+        {signatures[0].type ? resolveTypeName(signatures[0].type, sdkVersion) : 'void'}
       </CODE>
     );
   } else if (type) {
     if (allowBlock) {
-      return <APIDataType typeDefinition={type} />;
+      return <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />;
     }
-    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
+    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type, sdkVersion)}</CODE>;
   }
   return undefined;
 };
@@ -608,7 +687,12 @@ const getParamTags = (shortText?: string) => {
 
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
-    .map(entry => entry.text)
+    .map(entry => {
+      if (entry.tag === '@link' && !entry.text.includes('/')) {
+        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+      }
+      return entry.text;
+    })
     .join('')
     .trim();
 };

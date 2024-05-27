@@ -23,6 +23,7 @@ var _exportNames = {
   withEntitlementsPlist: true,
   withExpoPlist: true,
   withXcodeProject: true,
+  withPodfile: true,
   withPodfileProperties: true,
   withAndroidManifest: true,
   withStringsXml: true,
@@ -173,6 +174,12 @@ Object.defineProperty(exports, "withPlugins", {
   enumerable: true,
   get: function () {
     return _withPlugins().withPlugins;
+  }
+});
+Object.defineProperty(exports, "withPodfile", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withPodfile;
   }
 });
 Object.defineProperty(exports, "withPodfileProperties", {

@@ -3,12 +3,12 @@ import commander from 'commander';
 import { patchReactImportsAsync } from './ReactImportsPatcher';
 import {
   findModulesAsync,
+  resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
   verifySearchResults,
   generatePackageListAsync,
   mergeLinkingOptionsAsync,
 } from './autolinking';
-import { resolveExtraDependenciesAsync } from './autolinking/extraDependencies';
 import {
   GenerateModulesProviderOptions,
   GenerateOptions,
@@ -104,7 +104,7 @@ module.exports = async function (args: string[]) {
   // Searches for available expo modules and resolves the results for given platform.
   registerResolveCommand('resolve', async (results, options) => {
     const modules = await resolveModulesAsync(results, options);
-    const extraDependencies = await resolveExtraDependenciesAsync(options.projectRoot);
+    const extraDependencies = await resolveExtraBuildDependenciesAsync(options);
 
     if (options.json) {
       console.log(JSON.stringify({ extraDependencies, modules }));

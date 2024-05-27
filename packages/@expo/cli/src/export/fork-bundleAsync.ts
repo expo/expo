@@ -16,12 +16,14 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
+import { attachAtlasAsync } from '../start/server/metro/debugging/attachAtlas';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
   getMetroDirectBundleOptionsForExpoConfig,
 } from '../start/server/middleware/metroOptions';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 
 export type MetroDevServerOptions = LoadOptions;
@@ -136,9 +138,21 @@ async function bundleProductionMetroClientAsync(
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
+    getMetroBundler() {
+      return metroServer.getBundler().getBundler();
+    },
   });
 
   assertMetroConfig(config);
+
+  // Attach Expo Atlas if enabled
+  await attachAtlasAsync({
+    exp: expoConfig,
+    projectRoot,
+    metroConfig: config,
+    isExporting: true,
+    resetAtlasFile: true, // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
+  });
 
   const metroServer = await Metro.runMetro(config, {
     watch: false,
@@ -154,6 +168,7 @@ async function bundleProductionMetroClientAsync(
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
+        splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && bundle.platform === 'web',
         minify: bundle.minify,
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,

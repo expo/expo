@@ -1,22 +1,27 @@
-/// <reference types="../../types/jest" />
 import './expect';
+import './mocks';
 
+import { NavigationState, PartialState } from '@react-navigation/native';
 import { act, render, RenderResult, screen } from '@testing-library/react-native';
 import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
-import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { stateCache } from '../getLinkingConfig';
+import { ExpoLinkingOptions, stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
 // re-export everything
 export * from '@testing-library/react-native';
 
+afterAll(() => {
+  store.cleanup();
+});
+
 type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
+  linking?: Partial<ExpoLinkingOptions>;
 };
 
 type Result = ReturnType<typeof render> & {
@@ -24,36 +29,39 @@ type Result = ReturnType<typeof render> & {
   getPathnameWithParams(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
+  getRouterState(): NavigationState<any> | PartialState<any>;
 };
+
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toHavePathname(pathname: string): R;
+      toHavePathnameWithParams(pathname: string): R;
+      toHaveSegments(segments: string[]): R;
+      toHaveSearchParams(params: Record<string, string | string[]>): R;
+      toHaveRouterState(state: NavigationState<any> | PartialState<any>): R;
+    }
+  }
+}
 
 export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(
   context: MockContextConfig = './app',
-  { initialUrl = '/', ...options }: RenderRouterOptions = {}
+  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
 
   const mockContext = getMockContext(context);
 
-  // Reset the initial URL
-  setInitialUrl(initialUrl);
-
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   stateCache.clear();
 
-  let location: URL | undefined;
-
-  if (typeof initialUrl === 'string') {
-    location = new URL(initialUrl, 'test://');
-  } else if (initialUrl instanceof URL) {
-    location = initialUrl;
-  }
-
-  const result = render(<ExpoRoot context={mockContext} location={location} />, {
-    ...options,
-  });
+  const result = render(
+    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
+    options
+  );
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
@@ -67,6 +75,9 @@ export function renderRouter(
     },
     getPathnameWithParams(this: RenderResult): string {
       return getPathFromState(store.rootState!, store.linking!.config);
+    },
+    getRouterState(this: RenderResult) {
+      return store.rootStateSnapshot();
     },
   });
 }

@@ -5,7 +5,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.video.UnsupportedDRMTypeException
 import java.util.UUID
 
-internal enum class DRMType(val value: String) : Enumerable {
+enum class DRMType(val value: String) : Enumerable {
   CLEARKEY("clearkey"),
   FAIRPLAY("fairplay"),
   PLAYREADY("playready"),

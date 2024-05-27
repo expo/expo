@@ -1,8 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-apply plugin: 'kotlin-kapt'
-
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -23,10 +21,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.google.firebase.crashlytics'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
 
 apply plugin: 'com.facebook.react'
 
@@ -51,36 +48,10 @@ android {
     buildConfig true
   }
 
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdk safeExtGet("compileSdk", safeExtGet("compileSdkVersion", 34))
-
-    defaultConfig {
-      minSdk safeExtGet("minSdk", safeExtGet("minSdkVersion", 23))
-      targetSdk safeExtGet("targetSdk", safeExtGet("targetSdkVersion", 34))
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
-  }
-
   defaultConfig {
     applicationId 'host.exp.exponent'
-    versionCode 221
-    versionName '2.30.5'
+    versionCode 227
+    versionName '2.31.2'
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -268,10 +239,6 @@ dependencies {
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-
-  // expo-image
-  def GLIDE_VERSION = "4.13.2"
-  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

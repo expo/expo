@@ -129,6 +129,10 @@ public final class ImageView: ExpoView {
     context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
     context[.imageTransformer] = createTransformPipeline()
 
+    // Tell SDWebImage to use our own class for animated formats,
+    // which has better compatibility with the UIImage and fixes issues with the image duration.
+    context[.animatedImageClass] = AnimatedImage.self
+
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
@@ -222,8 +226,7 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // Create an SDAnimatedImage if needed then handle the image
-    if let image = createAnimatedIfNeeded(image: image, data: data) {
+    if let image {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
@@ -231,7 +234,7 @@ public final class ImageView: ExpoView {
           "width": image.size.width,
           "height": image.size.height,
           "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "isAnimated": image.sd_isAnimated ?? false
+          "isAnimated": image.sd_isAnimated
         ]
       ])
 
@@ -256,19 +259,8 @@ public final class ImageView: ExpoView {
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
     let path: String? = {
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        // .path() on iOS 16 will remove the leading slash
-#if os(tvOS)
-        // but it doesn't on tvOS 16 🙃
-        if let path = source.uri?.path() {
-          return String(path.dropFirst())
-        }
-        return nil
-#else
-        return source.uri?.path()
-#endif
-      }
-
+      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
+      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
       // manually drop the leading slash below iOS 16
       if let path = source.uri?.path {
         return String(path.dropFirst())
@@ -331,6 +323,7 @@ public final class ImageView: ExpoView {
 
     context[.imageScaleFactor] = placeholder.scale
     context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
+    context[.animatedImageClass] = AnimatedImage.self
 
     // Cache placeholders on the disk. Should we let the user choose whether
     // to cache them or apply the same policy as with the proper image?

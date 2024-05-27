@@ -1,4 +1,10 @@
-import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  UnavailabilityError,
+  uuid,
+} from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -278,11 +284,11 @@ export type Contact = {
    */
   maidenName?: string;
   /**
-   * Dr. Mr. Mrs. ect…
+   * Dr., Mr., Mrs., and so on.
    */
   namePrefix?: string;
   /**
-   * Jr. Sr. ect…
+   * Jr., Sr., an so on.
    */
   nameSuffix?: string;
   /**
@@ -315,7 +321,7 @@ export type Contact = {
   department?: string;
   /**
    * Additional information.
-   * > On iOS 13+, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > The `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
    * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
    */
@@ -550,7 +556,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionExpiration };
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
@@ -649,7 +655,7 @@ export async function getContactByIdAsync(
       pageSize: 1,
       pageOffset: 0,
       fields,
-      id: Array.isArray(id) ? id : [id],
+      id,
     });
     if (results && results.data && results.data.length > 0) {
       return results.data[0];
@@ -941,6 +947,19 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
   }
 
   return await ExpoContacts.getGroupsAsync(groupQuery);
+}
+
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export async function presentContactPickerAsync(): Promise<Contact | null> {
+  if (!ExpoContacts.presentContactPickerAsync) {
+    throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+  }
+  return await ExpoContacts.presentContactPickerAsync();
 }
 
 /**

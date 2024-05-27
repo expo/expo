@@ -22,11 +22,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = require("react");
+const react_native_1 = require("react-native");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
@@ -48,6 +53,7 @@ class RouterStore {
     rootState;
     nextState;
     routeInfo;
+    splashScreenAnimationFrame;
     navigationRef;
     navigationRefSubscription;
     rootStateSubscribers = new Set();
@@ -63,44 +69,53 @@ class RouterStore {
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
-    initialize(context, navigationRef, initialLocation) {
+    initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;
         this.rootState = undefined;
         this.nextState = undefined;
-        this.routeInfo = undefined;
         this.linking = undefined;
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
-        this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
-        // Only error in production, in development we will show the onboarding screen
-        if (!this.routeNode && process.env.NODE_ENV === 'production') {
-            throw new Error('No routes found');
-        }
-        this.navigationRef = navigationRef;
+        this.routeNode = (0, getRoutes_1.getRoutes)(context, {
+            ...expo_constants_1.default.expoConfig?.extra?.router,
+            ignoreEntryPoints: true,
+            platform: react_native_1.Platform.OS,
+        });
+        // We always needs routeInfo, even if there are no routes. This can happen if:
+        //  - there are no routes (we are showing the onboarding screen)
+        //  - getInitialURL() is async
+        this.routeInfo = {
+            unstable_globalHref: '',
+            pathname: '',
+            isIndex: false,
+            params: {},
+            segments: [],
+        };
         if (this.routeNode) {
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode);
-            if (initialLocation) {
-                this.linking.getInitialURL = () => initialLocation.toString();
-                this.initialState = this.linking.getStateFromPath?.(initialLocation.pathname + initialLocation.search, this.linking.config);
+            // We have routes, so get the linking config and the root component
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode, context, linkingConfigOptions);
+            this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
+            // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
+            // This will cause static rendering to fail, which once performs a single pass.
+            // If the initialURL is a string, we can preload the state and routeInfo, skipping React Navigation's async behavior.
+            const initialURL = this.linking?.getInitialURL?.();
+            if (typeof initialURL === 'string') {
+                this.rootState = this.linking.getStateFromPath?.(initialURL, this.linking.config);
+                this.initialState = this.rootState;
+                if (this.rootState) {
+                    this.routeInfo = this.getRouteInfo(this.rootState);
+                }
             }
         }
-        // There is no routeNode, so we will be showing the onboarding screen
-        // In the meantime, just mock the routeInfo
-        if (this.initialState) {
-            this.rootState = this.initialState;
-            this.routeInfo = this.getRouteInfo(this.initialState);
-        }
         else {
-            this.routeInfo = {
-                unstable_globalHref: '',
-                pathname: '',
-                isIndex: false,
-                params: {},
-                segments: [],
-            };
+            // Only error in production, in development we will show the onboarding screen
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('No routes found');
+            }
+            // In development, we will show the onboarding screen
+            this.rootComponent = react_1.Fragment;
         }
         /**
          * Counter intuitively - this fires AFTER both React Navigation's state changes and the subsequent paint.
@@ -113,14 +128,16 @@ class RouterStore {
          * that hooks will manually update the store.
          *
          */
+        this.navigationRef = navigationRef;
         this.navigationRefSubscription = navigationRef.addListener('state', (data) => {
             const state = data.data.state;
             if (!this.hasAttemptedToHideSplash) {
                 this.hasAttemptedToHideSplash = true;
                 // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-                requestAnimationFrame(() => 
-                // @ts-expect-error: This function is native-only and for internal-use only.
-                SplashScreen._internal_maybeHideAsync?.());
+                this.splashScreenAnimationFrame = requestAnimationFrame(() => {
+                    // @ts-expect-error: This function is native-only and for internal-use only.
+                    SplashScreen._internal_maybeHideAsync?.();
+                });
             }
             let shouldUpdateSubscribers = this.nextState === state;
             this.nextState = undefined;
@@ -152,7 +169,7 @@ class RouterStore {
     getRouteInfo(state) {
         return (0, LocationProvider_1.getRouteInfoFromState)((state, asPath) => {
             return (0, getPathFromState_1.getPathDataFromState)(state, {
-                screens: [],
+                screens: {},
                 ...this.linking?.config,
                 preserveDynamicRoutes: asPath,
                 preserveGroups: asPath,
@@ -182,6 +199,11 @@ class RouterStore {
     routeInfoSnapshot = () => {
         return this.routeInfo;
     };
+    cleanup() {
+        if (this.splashScreenAnimationFrame) {
+            cancelAnimationFrame(this.splashScreenAnimationFrame);
+        }
+    }
 }
 exports.RouterStore = RouterStore;
 exports.store = new RouterStore();
@@ -207,9 +229,9 @@ function useStoreRouteInfo() {
     return (0, react_1.useSyncExternalStore)(exports.store.subscribeToRootState, exports.store.routeInfoSnapshot, exports.store.routeInfoSnapshot);
 }
 exports.useStoreRouteInfo = useStoreRouteInfo;
-function useInitializeExpoRouter(context, initialLocation) {
+function useInitializeExpoRouter(context, options) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
-    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, initialLocation), [context, initialLocation]);
+    (0, react_1.useMemo)(() => exports.store.initialize(context, navigationRef, options), [context]);
     useExpoRouter();
     return exports.store;
 }

@@ -16,6 +16,18 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },
+    {
+        propName: 'apple.extraPods',
+        propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
+    },
+    {
+        propName: 'apple.ccacheEnabled',
+        propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
+    },
+    {
+        propName: 'apple.privacyManifestAggregationEnabled',
+        propValueGetter: (config) => (config.ios?.privacyManifestAggregationEnabled ?? false).toString(),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;

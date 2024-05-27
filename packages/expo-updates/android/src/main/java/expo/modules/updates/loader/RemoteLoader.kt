@@ -125,7 +125,7 @@ class RemoteLoader internal constructor(
           onComplete(false)
         }
 
-        override fun onSuccess(loaderResult: Loader.LoaderResult) {
+        override fun onSuccess(loaderResult: LoaderResult) {
           val embeddedUpdateToLoad = loaderResult.updateEntity
           database.updateDao().setUpdateCommitTime(embeddedUpdateToLoad!!, updateDirective.commitTime)
           onComplete(true)

@@ -1,3 +1,3 @@
-declare const CameraManager: Record<string, any>;
-export default CameraManager;
+declare const _default: any;
+export default _default;
 //# sourceMappingURL=ExpoCameraManager.d.ts.map

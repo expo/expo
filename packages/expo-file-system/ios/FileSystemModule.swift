@@ -206,7 +206,6 @@ public final class FileSystemModule: Module {
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let resumeData = resumeDataString != nil ? Data(base64Encoded: resumeDataString ?? "") : nil
       let onWrite: EXDownloadDelegateOnWriteCallback = { [weak self] _, _, totalBytesWritten, totalBytesExpectedToWrite in
         self?.sendEvent(EVENT_DOWNLOAD_PROGRESS, [
           "uuid": uuid,
@@ -256,6 +255,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("getFreeDiskStorageAsync") { () -> Int in
+    // Uses required reason API based on the following reason: E174.1 85F4.1
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityKey])
 
       guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
@@ -265,6 +265,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("getTotalDiskCapacityAsync") { () -> Int in
+        // Uses required reason API based on the following reason: E174.1 85F4.1
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeTotalCapacityKey])
 
       guard let totalCapacity = resourceValues?.volumeTotalCapacity else {

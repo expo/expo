@@ -2,8 +2,8 @@ import { ExpoConfig } from '@expo/config';
 import { Middleware } from 'metro-config';
 
 import { DebugTool, getMetroDebugProperties } from './getMetroDebugProperties';
-import { logEventAsync } from './rudderstackClient';
 import { env } from '../env';
+import { logEventAsync } from '../telemetry';
 
 type Request = Parameters<Middleware>[0];
 type Response = Parameters<Middleware>[1];

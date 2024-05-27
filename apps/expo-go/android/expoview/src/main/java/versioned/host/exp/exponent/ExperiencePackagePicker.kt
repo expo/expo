@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationModule
+import expo.modules.asset.AssetModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
@@ -12,7 +13,7 @@ import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.camera.next.CameraViewNextModule
+import expo.modules.camera.legacy.CameraViewLegacyModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
@@ -27,6 +28,7 @@ import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
+import expo.modules.font.FontLoaderModule
 import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -57,10 +59,8 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
-import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
@@ -97,7 +97,6 @@ object ExperiencePackagePicker : ModulesProvider {
     KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
@@ -124,6 +123,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ApplicationModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
+    AssetModule::class.java,
     BarometerModule::class.java,
     GyroscopeModule::class.java,
     LightSensorModule::class.java,
@@ -146,7 +146,7 @@ object ExperiencePackagePicker : ModulesProvider {
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
-    CameraViewNextModule::class.java,
+    CameraViewLegacyModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
@@ -157,6 +157,7 @@ object ExperiencePackagePicker : ModulesProvider {
     EASClientModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
+    FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
@@ -174,7 +175,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NavigationBarModule::class.java,
     NetworkModule::class.java,
-    RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,

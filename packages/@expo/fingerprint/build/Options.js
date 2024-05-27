@@ -7,6 +7,8 @@ exports.normalizeOptionsAsync = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRI
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
+const Config_1 = require("./Config");
+const SourceSkips_1 = require("./sourcer/SourceSkips");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 exports.DEFAULT_IGNORE_PATHS = [
     exports.FINGERPRINT_IGNORE_FILENAME,
@@ -32,6 +34,8 @@ exports.DEFAULT_IGNORE_PATHS = [
     // iOS
     '**/ios/Pods/**/*',
     '**/ios/build/**/*',
+    '**/ios/.xcode.env.local',
+    '**/ios/**/project.xcworkspace',
     '**/ios/*.xcworkspace/xcuserdata/**/*',
     // System files that differ from machine to machine
     '**/.DS_Store',
@@ -47,6 +51,7 @@ exports.DEFAULT_IGNORE_PATHS = [
     '**/node_modules/expo/config.js',
     '**/node_modules/expo/config-plugins.js',
     `**/node_modules/{${[
+        'chalk',
         'debug',
         'escape-string-regexp',
         'getenv',
@@ -55,6 +60,7 @@ exports.DEFAULT_IGNORE_PATHS = [
         'imurmurhash',
         'js-tokens',
         'json5',
+        'picocolors',
         'lines-and-columns',
         'require-from-string',
         'resolve-from',
@@ -66,12 +72,18 @@ exports.DEFAULT_IGNORE_PATHS = [
     ].join(',')}}/**/*`,
 ];
 async function normalizeOptionsAsync(projectRoot, options) {
+    const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     return {
-        ...options,
-        platforms: options?.platforms ?? ['android', 'ios'],
-        concurrentIoLimit: options?.concurrentIoLimit ?? os_1.default.cpus().length,
-        hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+        // Defaults
+        platforms: ['android', 'ios'],
+        concurrentIoLimit: os_1.default.cpus().length,
+        hashAlgorithm: 'sha1',
         ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+        sourceSkips: SourceSkips_1.SourceSkips.None,
+        // Options from config
+        ...config,
+        // Explicit options
+        ...options,
     };
 }
 exports.normalizeOptionsAsync = normalizeOptionsAsync;

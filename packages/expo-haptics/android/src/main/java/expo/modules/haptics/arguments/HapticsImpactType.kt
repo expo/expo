@@ -7,7 +7,17 @@ object HapticsImpactType {
       intArrayOf(0, 30),
       longArrayOf(0, 20)
     ),
+    "soft" to HapticsVibrationType(
+      longArrayOf(0, 50),
+      intArrayOf(0, 30),
+      longArrayOf(0, 20)
+    ),
     "medium" to HapticsVibrationType(
+      longArrayOf(0, 43),
+      intArrayOf(0, 50),
+      longArrayOf(0, 43)
+    ),
+    "rigid" to HapticsVibrationType(
       longArrayOf(0, 43),
       intArrayOf(0, 50),
       longArrayOf(0, 43)
@@ -21,6 +31,6 @@ object HapticsImpactType {
 
   @Throws(HapticsInvalidArgumentException::class)
   fun fromString(style: String): HapticsVibrationType = types.getOrElse(style) {
-    throw HapticsInvalidArgumentException("'style' must be one of ['light', 'medium', 'heavy']. Obtained $style'.")
+    throw HapticsInvalidArgumentException("'style' must be one of ['light', 'medium', 'heavy', 'rigid', 'soft']. Obtained $style'.")
   }
 }

@@ -4,10 +4,12 @@ import path from 'path';
 
 import getVCSClientAsync from './vcs';
 
+export type Workflow = 'managed' | 'generic';
+
 export async function resolveWorkflowAsync(
   projectDir: string,
   platform: 'ios' | 'android'
-): Promise<'managed' | 'generic'> {
+): Promise<Workflow> {
   const vcsClient = await getVCSClientAsync(projectDir);
 
   let platformWorkflowMarkers: string[];
@@ -33,4 +35,12 @@ export async function resolveWorkflowAsync(
     }
   }
   return 'managed';
+}
+
+export function validateWorkflow(possibleWorkflow: string): Workflow {
+  if (possibleWorkflow === 'managed' || possibleWorkflow === 'generic') {
+    return possibleWorkflow;
+  }
+
+  throw new Error(`Invalid workflow: ${possibleWorkflow}. Must be either 'managed' or 'generic'`);
 }

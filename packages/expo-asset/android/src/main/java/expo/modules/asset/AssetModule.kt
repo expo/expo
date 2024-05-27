@@ -1,9 +1,11 @@
 package expo.modules.asset
 
+import android.content.Context
 import android.net.Uri
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -18,6 +20,9 @@ internal class UnableToDownloadAssetException(url: String) :
   CodedException("Unable to download asset from url: $url")
 
 class AssetModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+
   private fun getMD5HashOfFilePath(uri: URI): String {
     val md = MessageDigest.getInstance("MD5")
     return md.digest(uri.toString().toByteArray()).joinToString("") { "%02x".format(it) }
@@ -50,7 +55,11 @@ class AssetModule : Module() {
 
     return withContext(appContext.backgroundCoroutineScope.coroutineContext) {
       try {
-        uri.toURL().openStream().use { input ->
+        val inputStream = when {
+          uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
+          else -> uri.toURL().openStream()
+        }
+        inputStream.use { input ->
           localUrl.outputStream().use { output ->
             input.copyTo(output)
           }

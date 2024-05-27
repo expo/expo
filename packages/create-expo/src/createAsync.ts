@@ -12,6 +12,7 @@ import * as Template from './Template';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import {
+  configurePackageManager,
   installDependenciesAsync,
   PackageManagerName,
   resolvePackageManager,
@@ -52,9 +53,13 @@ async function resolveProjectRootArgAsync(
 }
 
 async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
-  // Install dependencies
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
+
+  // Configure package manager, which is unrelated to installing or not
+  await configureNodeDependenciesAsync(projectRoot, packageManager);
+
+  // Install dependencies
   let podsInstalled: boolean = false;
   const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
   if (shouldInstall) {
@@ -183,6 +188,21 @@ function getChangeDirectoryPath(projectRoot: string): string {
     return cdPath;
   }
   return projectRoot;
+}
+
+async function configureNodeDependenciesAsync(
+  projectRoot: string,
+  packageManager: PackageManagerName
+): Promise<void> {
+  try {
+    await configurePackageManager(projectRoot, packageManager, { silent: false });
+  } catch (error: any) {
+    debug(`Error configuring package manager: %O`, error);
+    Log.error(
+      `Something went wrong configuring the package manager. Check your ${packageManager} logs. Continuing to create the app.`
+    );
+    Log.exception(error);
+  }
 }
 
 async function installNodeDependenciesAsync(

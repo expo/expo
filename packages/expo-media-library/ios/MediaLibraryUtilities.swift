@@ -77,7 +77,9 @@ func exportAsset(asset: PHAsset?) -> [String: Any?]? {
     "mediaSubtypes": stringifyMedia(mediaSubtypes: asset.mediaSubtypes),
     "width": asset.pixelWidth,
     "height": asset.pixelHeight,
+    // Uses required reason API based on the following reason: 0A2A.1
     "creationTime": exportDate(asset.creationDate),
+    // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
     "duration": asset.duration
   ]
@@ -469,7 +471,9 @@ func prepareSortDescriptors(sortBy: [String]) throws -> [NSSortDescriptor] {
 
 private func sortDescriptor(from config: String) throws -> NSSortDescriptor? {
   let parts = config.components(separatedBy: " ")
-  let key = try convertSortByKey(parts[0])
+  guard let key = try convertSortByKey(parts[0]) else {
+    return nil
+  }
 
   var ascending = false
   if parts.count > 1 && parts[1] == "ASC" {

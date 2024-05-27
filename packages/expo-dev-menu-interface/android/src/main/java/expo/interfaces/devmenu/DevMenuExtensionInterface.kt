@@ -9,6 +9,11 @@ interface DevMenuExtensionSettingsInterface {
   val manager: DevMenuManagerInterface
 }
 
+/**
+ * A native extension to provide extra dev-menu items.
+ * The implementation should call [DevMenuManagerInterface.registerExtensionInterface]
+ * to register its instance to the manager.
+ */
 interface DevMenuExtensionInterface {
   /**
    * Returns a name of the module and the extension. Also required by [com.facebook.react.bridge.ReactContextBaseJavaModule].

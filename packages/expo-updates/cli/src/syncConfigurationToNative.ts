@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from './cli';
 import { syncConfigurationToNativeAsync } from './syncConfigurationToNativeAsync';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
+import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
 
 export const syncConfigurationToNative: Command = async (argv) => {
@@ -12,6 +13,7 @@ export const syncConfigurationToNative: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--platform': String,
+      '--workflow': String,
       // Aliases
       '-h': '--help',
     },
@@ -30,6 +32,7 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
 
   Options
   --platform <string>                  Platform to sync
+  --workflow <string>                  Workflow to use for configuration sync
   -h, --help                           Output usage information
     `,
       0
@@ -38,11 +41,19 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
 
   const platform = requireArg(args, '--platform');
   if (!['ios', 'android'].includes(platform)) {
-    throw new Error(`Invalid platform argument: ${platform}`);
+    throw new CommandError(`Invalid platform argument: ${platform}`);
+  }
+
+  const workflow = requireArg(args, '--workflow');
+  if (!['generic', 'managed'].includes(workflow)) {
+    throw new CommandError(
+      `Invalid workflow argument: ${workflow}. Must be either 'managed' or 'generic'`
+    );
   }
 
   await syncConfigurationToNativeAsync({
     projectRoot: getProjectRoot(args),
     platform,
+    workflow,
   });
 };

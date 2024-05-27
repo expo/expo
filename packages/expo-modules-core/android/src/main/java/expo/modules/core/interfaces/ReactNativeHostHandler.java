@@ -1,22 +1,13 @@
 package expo.modules.core.interfaces;
 
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public interface ReactNativeHostHandler {
-  /**
-   * Given chance for modules to customize {@link ReactInstanceManager}
-   *
-   * @param useDeveloperSupport true if {@link com.facebook.react.ReactNativeHost} enabled developer support
-   * @return instance of {@link ReactInstanceManager}, or null if not to override
-   */
-  @Nullable
-  default ReactInstanceManager createReactInstanceManager(boolean useDeveloperSupport) {
-    return null;
-  }
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
+public interface ReactNativeHostHandler {
   /**
    * Given chance for modules to override react bundle file.
    * e.g. for expo-updates
@@ -60,12 +51,16 @@ public interface ReactNativeHostHandler {
    * doesn't exist in the React Native 0.66 or below.
    *
    * @return custom DevSupportManagerFactory, or null if not to override
+   *
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default Object getDevSupportManagerFactory() { return null; }
 
   /**
    * Given chance for modules to override the javascript executor factory.
+   *
+   * NOTE: This callback is not supported on bridgeless mode
    */
   @Nullable
   default JavaScriptExecutorFactory getJavaScriptExecutorFactory() { return null; }
@@ -73,14 +68,26 @@ public interface ReactNativeHostHandler {
   //region event listeners
 
   /**
-   * Callback before {@link ReactInstanceManager} creation
+   * Callback before react instance creation
    */
-  default void onWillCreateReactInstanceManager(boolean useDeveloperSupport) {}
+  default void onWillCreateReactInstance(boolean useDeveloperSupport) {}
 
   /**
-   * Callback after {@link ReactInstanceManager} creation
+   * Callback when the {@link DevSupportManager} is available
    */
-  default void onDidCreateReactInstanceManager(ReactInstanceManager reactInstanceManager, boolean useDeveloperSupport) {}
+  default void onDidCreateDevSupportManager(@NonNull DevSupportManager devSupportManager) {}
+
+  /**
+   * Callback after react instance creation
+   */
+  default void onDidCreateReactInstance(boolean useDeveloperSupport, ReactContext reactContext) {}
+
+  /**
+   * Callback when receiving unhandled React Native exceptions
+   *
+   * NOTE: This callback is only available on bridgeless mode
+   */
+  default void onReactInstanceException(boolean useDeveloperSupport, @NonNull Exception exception) {}
 
   //endregion
 }

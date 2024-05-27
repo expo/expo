@@ -26,7 +26,7 @@ export declare enum TokenTypeHint {
 /**
  * Config used to request a token refresh, revocation, or code exchange.
  */
-export interface TokenRequestConfig {
+export type TokenRequestConfig = {
     /**
      * A unique string representing the registration information provided by the client.
      * The client identifier is not a secret; it is exposed to the resource owner and shouldn't be used
@@ -54,13 +54,13 @@ export interface TokenRequestConfig {
      * [Section 3.3](https://tools.ietf.org/html/rfc6749#section-3.3)
      */
     scopes?: string[];
-}
+};
 /**
  * Config used to exchange an authorization code for an access token.
  *
  * @see [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
-export interface AccessTokenRequestConfig extends TokenRequestConfig {
+export type AccessTokenRequestConfig = TokenRequestConfig & {
     /**
      * The authorization code received from the authorization server.
      */
@@ -71,24 +71,24 @@ export interface AccessTokenRequestConfig extends TokenRequestConfig {
      * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
      */
     redirectUri: string;
-}
+};
 /**
  * Config used to request a token refresh, or code exchange.
  *
  * @see [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
  */
-export interface RefreshTokenRequestConfig extends TokenRequestConfig {
+export type RefreshTokenRequestConfig = TokenRequestConfig & {
     /**
      * The refresh token issued to the client.
      */
     refreshToken?: string;
-}
+};
 /**
  * Config used to revoke a token.
  *
  * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
-export interface RevokeTokenRequestConfig extends Partial<TokenRequestConfig> {
+export type RevokeTokenRequestConfig = Partial<TokenRequestConfig> & {
     /**
      * The token that the client wants to get revoked.
      *
@@ -101,7 +101,7 @@ export interface RevokeTokenRequestConfig extends Partial<TokenRequestConfig> {
      * [Section 3.2](https://tools.ietf.org/html/rfc6749#section-3.2)
      */
     tokenTypeHint?: TokenTypeHint;
-}
+};
 /**
  * Grant type values used in dynamic client registration and auth requests.
  *
@@ -136,7 +136,7 @@ export declare enum GrantType {
 /**
  * Object returned from the server after a token response.
  */
-export interface ServerTokenResponseConfig {
+export type ServerTokenResponseConfig = {
     access_token: string;
     token_type?: TokenType;
     expires_in?: number;
@@ -144,8 +144,8 @@ export interface ServerTokenResponseConfig {
     scope?: string;
     id_token?: string;
     issued_at?: number;
-}
-export interface TokenResponseConfig {
+};
+export type TokenResponseConfig = {
     /**
      * The access token issued by the authorization server.
      *
@@ -199,5 +199,5 @@ export interface TokenResponseConfig {
      * Time in seconds when the token was received by the client.
      */
     issuedAt?: number;
-}
+};
 //# sourceMappingURL=TokenRequest.types.d.ts.map

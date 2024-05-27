@@ -145,6 +145,8 @@ const schema = {
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
                 networkInspector: { type: 'boolean', nullable: true },
+                ccacheEnabled: { type: 'boolean', nullable: true },
+                privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
                 extraPods: {
                     type: 'array',
                     items: {

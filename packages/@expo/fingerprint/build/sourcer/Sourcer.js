@@ -7,6 +7,7 @@ exports.getHashSourcesAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const Bare_1 = require("./Bare");
 const Expo_1 = require("./Expo");
+const Packages_1 = require("./Packages");
 const PatchPackage_1 = require("./PatchPackage");
 const Profile_1 = require("../utils/Profile");
 const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
@@ -17,6 +18,7 @@ async function getHashSourcesAsync(projectRoot, options) {
         (0, Profile_1.profile)(options, Expo_1.getExpoAutolinkingIosSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Expo_1.getExpoConfigSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Expo_1.getEasBuildSourcesAsync)(projectRoot, options),
+        (0, Profile_1.profile)(options, Expo_1.getExpoCNGPatchSourcesAsync)(projectRoot, options),
         // bare managed files
         (0, Profile_1.profile)(options, Bare_1.getGitIgnoreSourcesAsync)(projectRoot, options),
         (0, Profile_1.profile)(options, Bare_1.getPackageJsonScriptSourcesAsync)(projectRoot, options),
@@ -27,6 +29,8 @@ async function getHashSourcesAsync(projectRoot, options) {
         (0, Profile_1.profile)(options, Bare_1.getRncliAutolinkingSourcesAsync)(projectRoot, options),
         // patch-package
         (0, Profile_1.profile)(options, PatchPackage_1.getPatchPackageSourcesAsync)(projectRoot, options),
+        // some known dependencies, e.g. react-native
+        (0, Profile_1.profile)(options, Packages_1.getDefaultPackageSourcesAsync)(projectRoot, options),
     ]);
     // extra sources
     if (options.extraSources) {

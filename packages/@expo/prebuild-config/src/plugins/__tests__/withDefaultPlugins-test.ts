@@ -345,6 +345,7 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/AppDelegate.h',
       'ios/HelloWorld/AppDelegate.mm',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
+      'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
       'ios/HelloWorld/Images.xcassets/Contents.json',
       'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png',
       'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json',

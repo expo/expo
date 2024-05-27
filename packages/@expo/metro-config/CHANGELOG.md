@@ -6,15 +6,51 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.18.4 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.3 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.1 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Fully remove "exotic" transformer (`@expo/metro-config/transformer`) in favor of the default Expo transformer. ([#27855](https://github.com/expo/expo/pull/27855) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for splitting on `require.resolveWeak` syntax. ([#27014](https://github.com/expo/expo/pull/27014) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Fix serializer creating async imports to the main entrypoint, which could cause an infinite loop of loading the entrypoint bundle. ([#28016](https://github.com/expo/expo/pull/28016) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
+- Add unstable environment variable to disable bundle splitting. ([#27932](https://github.com/expo/expo/pull/27932) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
 - Uncomment all Metro tests. ([#26610](https://github.com/expo/expo/pull/26610) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `db` to the default `resolver.assetExts` to support `expo-sqlite`. ([#28290](https://github.com/expo/expo/pull/28290) by [@kudo](https://github.com/kudo))
+
+## 0.17.6 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
 
 ## 0.17.5 - 2024-02-27
 

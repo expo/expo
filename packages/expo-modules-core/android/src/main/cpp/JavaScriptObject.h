@@ -37,7 +37,7 @@ public:
   static void registerNatives();
 
   static jni::local_ref<JavaScriptObject::javaobject> newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jsiContext,
     std::weak_ptr<JavaScriptRuntime> runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
@@ -51,6 +51,8 @@ public:
     WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
+
+  virtual ~JavaScriptObject() = default;
 
   std::shared_ptr<jsi::Object> get() override;
 

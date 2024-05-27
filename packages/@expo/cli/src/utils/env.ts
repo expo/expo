@@ -45,6 +45,11 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /** Disable detaching telemetry to separate process */
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
+  }
+
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
     return string('EXPO_UNIVERSE_DIR', '');
@@ -178,6 +183,21 @@ class Env {
   /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
+  }
+
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
+
+  /** Unstable: Force single-bundle exports in production. */
+  get EXPO_NO_BUNDLE_SPLITTING(): boolean {
+    return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
+  }
+
+  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
+  get EXPO_UNSTABLE_ATLAS() {
+    return boolish('EXPO_UNSTABLE_ATLAS', false);
   }
 }
 

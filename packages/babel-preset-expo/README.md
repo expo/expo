@@ -42,6 +42,24 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 ## Options
 
+### `minifyTypeofWindow`
+
+Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your code, e.g. `if (typeof window === 'undefined')` -> `if (true)` in servers. This is useful when you're using libraries that mock the window object on native or in the server.
+
+```js
+[
+  'babel-preset-expo',
+  {
+    // If your native app doesn't polyfill `window` then setting this to `false` can reduce bundle size.
+    native: {
+      minifyTypeofWindow: true,
+    },
+  },
+];
+```
+
+Defaults to `false` for server environments and web, `true` for native platforms to support legacy browser polyfills.
+
 ### `reanimated`
 
 `boolean`, defaults to `true`. Set `reanimated: false` to disable adding the `react-native-reanimated/plugin` when `react-native-reanimated` is installed.

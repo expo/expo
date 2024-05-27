@@ -4,6 +4,16 @@
  */
 export type EventsMap = Record<string, (...args: any[]) => void>;
 /**
+ * A subscription object that allows to conveniently remove an event listener from the emitter.
+ */
+export type EventSubscription = {
+    /**
+     * Removes an event listener for which the subscription has been created.
+     * After calling this function, the listener will no longer receive any events from the emitter.
+     */
+    remove(): void;
+};
+/**
  * A class that provides a consistent API for emitting and listening to events.
  * It shares many concepts with other emitter APIs, such as Node's EventEmitter and `fbemitter`.
  * When the event is emitted, all of the functions attached to that specific event are called *synchronously*.
@@ -18,7 +28,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
     /**
      * Adds a listener for the given event name.
      */
-    addListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): void;
+    addListener<EventName extends keyof TEventsMap>(eventName: EventName, listener: TEventsMap[EventName]): EventSubscription;
     /**
      * Removes a listener for the given event name.
      */
@@ -32,5 +42,19 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
      * The event can include any number of arguments that will be passed to the listeners.
      */
     emit<EventName extends keyof TEventsMap>(eventName: EventName, ...args: Parameters<TEventsMap[EventName]>): void;
+    /**
+     * Returns a number of listeners added to the given event.
+     */
+    listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
+    /**
+     * Function that is automatically invoked when the first listener for an event with the given name is added.
+     * Override it in a subclass to perform some additional setup once the event started being observed.
+     */
+    startObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
+    /**
+     * Function that is automatically invoked when the last listener for an event with the given name is removed.
+     * Override it in a subclass to perform some additional cleanup once the event is no longer observed.
+     */
+    stopObserving?<EventName extends keyof TEventsMap>(eventName: EventName): void;
 }
 //# sourceMappingURL=EventEmitter.d.ts.map

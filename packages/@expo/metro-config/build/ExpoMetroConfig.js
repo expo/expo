@@ -92,19 +92,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
     if (isExotic && !hasWarnedAboutExotic) {
         hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} is no longer supported.`));
+        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
     }
     const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
-    try {
-        // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
-        // This hack is used because there doesn't appear to be anyway to resolve
-        // `babel-preset-fbjs` relative to the project root later (in `metro-expo-babel-transformer`).
-        const babelPresetFbjsPath = (0, resolve_from_1.default)(projectRoot, 'babel-preset-fbjs/package.json');
-        process.env.EXPO_METRO_CACHE_KEY_VERSION = String(require(babelPresetFbjsPath).version);
-    }
-    catch {
-        // noop -- falls back to a hardcoded value.
-    }
     const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
@@ -161,7 +151,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(
             // Add default support for `expo-image` file types.
-            ['heic', 'avif'])
+            ['heic', 'avif'], 
+            // Add default support for `expo-sqlite` file types.
+            ['db'])
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,

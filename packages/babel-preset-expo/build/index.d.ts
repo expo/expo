@@ -13,12 +13,8 @@ type BabelPresetExpoPlatformOptions = {
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
-    'babel-plugin-react-forget'?: false | {
-        enableUseMemoCachePolyfill?: boolean;
-        compilationMode?: 'infer' | 'strict';
-        panicThreshold?: 'NONE' | 'ERROR' | 'WARNING' | 'INFO' | 'DEBUG';
-        logger?: {};
-    };
+    /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
+    minifyTypeofWindow?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */

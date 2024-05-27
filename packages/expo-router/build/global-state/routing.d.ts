@@ -1,9 +1,9 @@
 import { type RouterStore } from './router-store';
-import { Href } from '../link/href';
-export declare function navigate(this: RouterStore, url: Href): any;
-export declare function push(this: RouterStore, url: Href): any;
+import { ExpoRouter } from '../../types/expo-router';
+export declare function navigate(this: RouterStore, url: ExpoRouter.Href): any;
+export declare function push(this: RouterStore, url: ExpoRouter.Href): any;
 export declare function dismiss(this: RouterStore, count?: number): void;
-export declare function replace(this: RouterStore, url: Href): any;
+export declare function replace(this: RouterStore, url: ExpoRouter.Href): any;
 export declare function dismissAll(this: RouterStore): void;
 export declare function goBack(this: RouterStore): void;
 export declare function canGoBack(this: RouterStore): boolean;

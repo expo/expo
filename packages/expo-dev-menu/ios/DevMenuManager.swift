@@ -103,7 +103,8 @@ open class DevMenuManager: NSObject {
         return
       }
 
-      if bridge.isLoading {
+      // When using the proxy bridge isLoading is always false, so always add the ContentDidAppearNotification observer
+      if bridge.isLoading || bridge.isProxy() {
         NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
       } else {
         autoLaunch()
@@ -239,6 +240,12 @@ open class DevMenuManager: NSObject {
     guard let bridge = currentBridge else {
       return nil
     }
+
+    if type(of: bridge) == RCTBridgeProxy.self {
+      // RCTBridgeProxy does not support modulesConformingToProtocol, fallback to using ExpoDevMenuExtensions only
+      return [bridge.module(forName: "ExpoDevMenuExtensions")] as? [DevMenuExtensionProtocol]
+    }
+
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
 
     let uniqueExtensionNames = Set(

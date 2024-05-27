@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../JSIInteropModuleRegistry.h"
+#include "../JSIContext.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -14,11 +14,15 @@ namespace jsi = facebook::jsi;
 namespace expo {
 
 jsi::Value convert(
-  JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
   jni::local_ref<jobject> value
 );
+
+/**
+ * Convert a string with FollyDynamicExtensionConverter support.
+ */
+std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, const std::string& string);
 
 /**
  * Decorate jsi::Value with FollyDynamicExtensionConverter support.

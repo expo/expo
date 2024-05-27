@@ -9,13 +9,11 @@ const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-const workflow_1 = require("../../utils/build/workflow");
 /**
  * Synchronize updates configuration to native files. This needs to do essentially the same thing as `withUpdates`
  */
 async function syncConfigurationToNativeAsync(options) {
-    const workflow = await (0, workflow_1.resolveWorkflowAsync)(options.projectRoot, options.platform);
-    if (workflow !== 'generic') {
+    if (options.workflow !== 'generic') {
         // not applicable to managed workflow
     }
     switch (options.platform) {

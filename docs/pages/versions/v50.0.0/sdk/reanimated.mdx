@@ -9,7 +9,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/expo-go/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
 [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
@@ -23,7 +23,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <br />
 
-No additional configuration is required. [Reanimated Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#reanimated-babel-plugin) is automatically configured in `babel-expo-preset` when you install the library.
+No additional configuration is required. [Reanimated Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#reanimated-babel-plugin) is automatically configured in [`babel-preset-expo`](https://www.npmjs.com/package/babel-preset-expo) when you install the library.
 
 ## Usage
 
@@ -68,7 +68,6 @@ export default function AnimatedStyleUpdateExample() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -82,7 +81,6 @@ const styles = StyleSheet.create({
     margin: 30,
   },
 });
-/* @end */
 ```
 
 </SnackInline>

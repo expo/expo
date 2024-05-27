@@ -3,7 +3,9 @@
 package expo.modules.sqlite
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -50,6 +52,18 @@ class SQLiteModuleNext : Module() {
       deleteDatabase(databaseName)
     }
 
+    AsyncFunction("importAssetDatabaseAsync") { databaseName: String, assetDatabasePath: String, forceOverwrite: Boolean ->
+      val dbFile = File(pathForDatabaseName(databaseName))
+      if (dbFile.exists() && !forceOverwrite) {
+        return@AsyncFunction
+      }
+      val assetFile = Uri.parse(assetDatabasePath).toFile()
+      if (!assetFile.isFile) {
+        throw OpenDatabaseException(assetDatabasePath)
+      }
+      assetFile.copyTo(dbFile, forceOverwrite)
+    }
+
     Class(NativeDatabase::class) {
       Constructor { databaseName: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
         val database: NativeDatabase
@@ -60,6 +74,7 @@ class SQLiteModuleNext : Module() {
 
           // Try to find opened database for fast refresh
           findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
+            it.addRef()
             return@Constructor it
           }
 

@@ -3,7 +3,8 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 
-import { createFastResolver } from '../createExpoMetroResolver';
+import { createFastResolver, FailedToResolvePathError } from '../createExpoMetroResolver';
+import { isFailedToResolvePathError } from '../metroErrors';
 
 type SupportedContext = Parameters<ReturnType<typeof createFastResolver>>[0];
 
@@ -127,6 +128,13 @@ function resolveTo(
       ? res.filePaths[0]
       : null;
 }
+
+describe(isFailedToResolvePathError, () => {
+  it(`matches custom error`, () => {
+    const error = new FailedToResolvePathError('message');
+    expect(isFailedToResolvePathError(error)).toBe(true);
+  });
+});
 
 describe(createFastResolver, () => {
   describe('node built-ins', () => {

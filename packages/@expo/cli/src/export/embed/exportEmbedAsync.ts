@@ -110,6 +110,9 @@ export async function createMetroServerAndBundleRequestAsync(
     {
       exp,
       isExporting: true,
+      getMetroBundler() {
+        return server.getBundler().getBundler();
+      },
     }
   );
 
@@ -123,7 +126,8 @@ export async function createMetroServerAndBundleRequestAsync(
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
-      mainModuleName: options.entryFile,
+      splitChunks: false,
+      mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
       platform: options.platform,
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
@@ -223,4 +227,18 @@ export async function exportEmbedAssetsAsync(
 
 function isError(error: any): error is Error {
   return error instanceof Error;
+}
+
+/**
+ * This is a workaround for Metro not resolving entry file paths to their real location.
+ * When running exports through `eas build --local` on macOS, the `/var/folders` path is used instead of `/private/var/folders`.
+ *
+ * See: https://github.com/expo/expo/issues/28890
+ */
+function resolveRealEntryFilePath(projectRoot: string, entryFile: string): string {
+  if (projectRoot.startsWith('/private/var') && entryFile.startsWith('/var')) {
+    return fs.realpathSync(entryFile);
+  }
+
+  return entryFile;
 }

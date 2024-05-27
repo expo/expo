@@ -37,14 +37,19 @@ const debug = require('debug')('expo:start:server:node-renderer') as typeof cons
 const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
 // Support unhandled rejections
-require('source-map-support').install({
-  retrieveSourceMap(source: string) {
-    if (cachedSourceMaps.has(source)) {
-      return cachedSourceMaps.get(source);
-    }
-    return null;
-  },
-});
+// Detect if running in Bun
+
+// @ts-expect-error: This is a global variable that is set by Bun.
+if (!process.isBun) {
+  require('source-map-support').install({
+    retrieveSourceMap(source: string) {
+      if (cachedSourceMaps.has(source)) {
+        return cachedSourceMaps.get(source);
+      }
+      return null;
+    },
+  });
+}
 
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
@@ -161,7 +166,7 @@ export async function requireFileContentsWithMetro(
 async function metroFetchAsync(
   projectRoot: string,
   url: string
-): Promise<{ src: string; filename: string }> {
+): Promise<{ src: string; filename: string; map?: any }> {
   debug('Fetching from Metro:', url);
   // TODO: Skip the dev server and use the Metro instance directly for better results, faster.
   const res = await fetch(url);
@@ -169,7 +174,11 @@ async function metroFetchAsync(
   // TODO: Improve error handling
   if (res.status === 500) {
     const text = await res.text();
-    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
+    if (
+      text.startsWith('{"originModulePath"') ||
+      text.startsWith('{"type":"TransformError"') ||
+      text.startsWith('{"type":"InternalError"')
+    ) {
       const errorObject = JSON.parse(text);
 
       throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
@@ -186,7 +195,11 @@ async function metroFetchAsync(
   const map = await fetch(url.replace('.bundle?', '.map?')).then((r) => r.json());
   cachedSourceMaps.set(url, { url: projectRoot, map });
 
-  return { src: wrapBundle(content), filename: url };
+  return {
+    src: wrapBundle(content),
+    filename: url,
+    map,
+  };
 }
 
 export async function getStaticRenderFunctionsForEntry<T = any>(

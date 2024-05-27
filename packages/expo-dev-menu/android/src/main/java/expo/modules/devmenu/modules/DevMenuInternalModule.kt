@@ -24,7 +24,7 @@ class DevMenuInternalModule : Module() {
       "doesDeviceSupportKeyCommands" to EmulatorUtilities.isRunningOnEmulator()
     )
 
-    AsyncFunction("loadFontsAsync") {
+    AsyncFunction<Unit>("loadFontsAsync") {
       DevMenuManager.loadFonts(context)
     }
 
@@ -32,11 +32,11 @@ class DevMenuInternalModule : Module() {
       DevMenuManager.dispatchCallable(callableId, args)
     }
 
-    AsyncFunction("hideMenu") {
+    AsyncFunction<Unit>("hideMenu") {
       DevMenuManager.hideMenu()
     }
 
-    AsyncFunction("closeMenu") {
+    AsyncFunction<Unit>("closeMenu") {
       DevMenuManager.closeMenu()
     }
 
@@ -45,9 +45,8 @@ class DevMenuInternalModule : Module() {
     }
 
     AsyncFunction<Unit>("openDevMenuFromReactNative") {
-      val instanceManager = DevMenuManager.getReactInstanceManager() ?: return@AsyncFunction
-      val devSupportManager = instanceManager.devSupportManager
-      val activity = instanceManager.currentReactContext?.currentActivity ?: return@AsyncFunction
+      val devSupportManager = DevMenuManager.getReactHost()?.devSupportManager ?: return@AsyncFunction
+      val activity = DevMenuManager.getReactHost()?.currentReactContext?.currentActivity ?: return@AsyncFunction
 
       activity.runOnUiThread {
         DevMenuManager.closeMenu()
