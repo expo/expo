@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add assertions for `NODE_OPTIONS` and Node.js versions.
+- Add assertions for `NODE_OPTIONS` and Node.js versions. ([#29155](https://github.com/expo/expo/pull/29155) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
