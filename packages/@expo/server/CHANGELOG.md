@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ExpoResponse` using incorrect object. ([#29154](https://github.com/expo/expo/pull/29154) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.4.2 — 2024-04-23
