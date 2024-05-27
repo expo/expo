@@ -131,7 +131,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not avaiable.
+ * @return The `void` on successful attempt, or throws error, if dismiss functionality is not available.
  * @platform ios
  */
 export function dismissBrowser() {
