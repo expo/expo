@@ -6,7 +6,7 @@ const node_1 = require("@remix-run/node");
 /** @deprecated */
 exports.ExpoRequest = Request;
 /** @deprecated */
-exports.ExpoResponse = Request;
+exports.ExpoResponse = Response;
 function installGlobals() {
     (0, node_1.installGlobals)();
     global.ExpoRequest = Request;

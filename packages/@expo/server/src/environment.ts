@@ -22,7 +22,7 @@ declare global {
 /** @deprecated */
 export const ExpoRequest = Request;
 /** @deprecated */
-export const ExpoResponse = Request;
+export const ExpoResponse = Response;
 
 export function installGlobals() {
   installRemixGlobals();
