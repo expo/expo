@@ -175,7 +175,7 @@ export default class CameraScreen extends React.Component<object, State> {
       this.camera?.current?.stopRecording();
       return Promise.resolve();
     } else {
-      return await this.camera?.current?.recordAsync();
+      return this.camera?.current?.recordAsync();
     }
   };
 
