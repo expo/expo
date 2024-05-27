@@ -1,6 +1,5 @@
 import { Platform, UnavailabilityError, EventEmitter, Subscription } from 'expo-modules-core';
-import * as React from 'react';
-import { Ref } from 'react';
+import { type Ref, Component, createRef } from 'react';
 
 import {
   CameraCapturedPicture,
@@ -34,12 +33,6 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
     options.quality = 1;
   }
 
-  if (options.mirror) {
-    console.warn(
-      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
-    );
-  }
-
   if (options.onPictureSaved) {
     const id = _GLOBAL_PICTURE_ID++;
     _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
@@ -50,15 +43,9 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
   return options;
 }
 
-function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
+function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
   if (!options || typeof options !== 'object') {
     return {};
-  }
-
-  if (options.mirror) {
-    console.warn(
-      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
-    );
   }
 
   return options;
@@ -77,7 +64,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends React.Component<CameraProps> {
+export default class CameraView extends Component<CameraProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -145,7 +132,7 @@ export default class CameraView extends React.Component<CameraProps> {
   };
 
   _cameraHandle?: number | null;
-  _cameraRef = React.createRef<CameraViewRef>();
+  _cameraRef = createRef<CameraViewRef>();
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
@@ -168,12 +155,10 @@ export default class CameraView extends React.Component<CameraProps> {
    *
    * **Note** Avoid calling this method while the preview is paused. On iOS, this will take a picture of the last frame that is currently on screen, on Android, this will throw an error.
    */
-  async takePictureAsync(
-    options?: CameraPictureOptions
-  ): Promise<CameraCapturedPicture | undefined> {
+  async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
-    return await this._cameraRef.current?.takePicture(pictureOptions);
+    return this._cameraRef.current?.takePicture(pictureOptions);
   }
 
   /**
@@ -190,7 +175,7 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   * Dimiss the scanner presented by `launchScanner`.
+   * Dismiss the scanner presented by `launchScanner`.
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
@@ -220,9 +205,9 @@ export default class CameraView extends React.Component<CameraProps> {
    * @platform android
    * @platform ios
    */
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string } | undefined> {
+  async recordAsync(options?: CameraRecordingOptions) {
     const recordingOptions = ensureRecordingOptions(options);
-    return await this._cameraRef.current?.record(recordingOptions);
+    return this._cameraRef.current?.record(recordingOptions);
   }
 
   /**

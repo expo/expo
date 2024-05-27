@@ -1,5 +1,5 @@
 import { Platform, UnavailabilityError, EventEmitter } from 'expo-modules-core';
-import * as React from 'react';
+import { Component, createRef } from 'react';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
@@ -14,9 +14,6 @@ function ensurePictureOptions(options) {
     if (!options.quality) {
         options.quality = 1;
     }
-    if (options.mirror) {
-        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
-    }
     if (options.onPictureSaved) {
         const id = _GLOBAL_PICTURE_ID++;
         _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
@@ -25,12 +22,9 @@ function ensurePictureOptions(options) {
     }
     return options;
 }
-function ensureRecordingOptions(options) {
+function ensureRecordingOptions(options = {}) {
     if (!options || typeof options !== 'object') {
         return {};
-    }
-    if (options.mirror) {
-        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
     }
     return options;
 }
@@ -42,7 +36,7 @@ function _onPictureSaved({ nativeEvent, }) {
         delete _PICTURE_SAVED_CALLBACKS[id];
     }
 }
-export default class CameraView extends React.Component {
+export default class CameraView extends Component {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -101,7 +95,7 @@ export default class CameraView extends React.Component {
         flash: 'off',
     };
     _cameraHandle;
-    _cameraRef = React.createRef();
+    _cameraRef = createRef();
     _lastEvents = {};
     _lastEventsTimes = {};
     // @needsAudit
@@ -125,7 +119,7 @@ export default class CameraView extends React.Component {
      */
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
-        return await this._cameraRef.current?.takePicture(pictureOptions);
+        return this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
      * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
@@ -140,7 +134,7 @@ export default class CameraView extends React.Component {
         }
     }
     /**
-     * Dimiss the scanner presented by `launchScanner`.
+     * Dismiss the scanner presented by `launchScanner`.
      * @platform ios
      */
     static async dismissScanner() {
@@ -170,7 +164,7 @@ export default class CameraView extends React.Component {
      */
     async recordAsync(options) {
         const recordingOptions = ensureRecordingOptions(options);
-        return await this._cameraRef.current?.record(recordingOptions);
+        return this._cameraRef.current?.record(recordingOptions);
     }
     /**
      * Stops recording if any is in progress.
