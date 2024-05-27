@@ -79,6 +79,10 @@ export function getBaseUrl(caller: any): string {
   return caller?.baseUrl ?? '';
 }
 
+export function getReactCompiler(caller: any) {
+  return caller?.reactCompiler ?? false;
+}
+
 export function getIsServer(caller: any) {
   return caller?.isServer ?? false;
 }

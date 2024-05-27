@@ -175,6 +175,7 @@ export async function exportAppAsync(
         baseUrl,
         includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        reactCompiler: exp.experiments?.reactCompiler,
         exportServer,
         maxWorkers,
         isExporting: true,

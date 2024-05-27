@@ -11,6 +11,7 @@ import {
   getIsProd,
   getIsReactServer,
   getIsServer,
+  getReactCompiler,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
@@ -91,6 +92,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isServer = api.caller(getIsServer);
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
+  const isReactCompilerEnabled = api.caller(getReactCompiler);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
@@ -138,22 +140,18 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Add compiler as soon as possible to prevent other plugins from modifying the code.
   if (
+    isReactCompilerEnabled &&
     // Don't run compiler on node modules, it can only safely be run on the user's code.
     !isNodeModule &&
     // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
     !isReactServer &&
     // Give users the ability to opt-out of the feature, per-platform.
-    platformOptions['babel-plugin-react-compiler'] !== false &&
-    // Opt-in for now...
-    !!platformOptions['babel-plugin-react-compiler']
+    platformOptions['babel-plugin-react-compiler'] !== false
   ) {
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
         runtimeModule: require.resolve('babel-preset-expo/react-compiler-runtime.js'),
-        // TODO: This isn't needed after React 19 apparently.
-        // enableUseMemoCachePolyfill: true,
-        // compilationMode: 'infer',
         panicThreshold: isDev ? undefined : 'NONE',
         ...platformOptions['babel-plugin-react-compiler'],
       },

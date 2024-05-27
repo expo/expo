@@ -57,6 +57,7 @@ import {
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
+  getReactCompilerFromExpoConfig,
   shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
@@ -241,13 +242,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
   } = {}): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
-    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
+        reactCompiler != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
     );
@@ -268,6 +270,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       isExporting,
       routerRoot,
+      reactCompiler,
       bytecode: false,
     });
 
@@ -331,11 +334,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
+        reactCompiler != null &&
         routerRoot != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
@@ -347,6 +352,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       mode,
       environment: 'client',
+      reactCompiler,
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
@@ -410,7 +416,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           platform: 'web',
           mode: 'development',
           bytecode: false,
-
+          reactCompiler: false,
           ...this.instanceMetroOptions,
           baseUrl,
           routerRoot,
@@ -438,6 +444,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform: 'web',
       mode: 'development',
       bytecode: false,
+      reactCompiler: false,
 
       ...this.instanceMetroOptions,
       baseUrl,
@@ -494,6 +501,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
+    const reactCompiler = getReactCompilerFromExpoConfig(exp);
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
@@ -502,6 +510,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       mode,
       routerRoot,
+      reactCompiler,
       minify: options.minify,
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.

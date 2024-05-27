@@ -39,6 +39,10 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
   const isNodeModule = filename.includes('node_modules');
   const isReactServer = options.customTransformOptions?.environment === 'react-server';
   const isGenericServer = options.customTransformOptions?.environment === 'node';
+  const reactCompilerValue = options.customTransformOptions?.reactCompiler;
+  const reactCompiler = reactCompilerValue
+    ? ['true', true].includes(reactCompilerValue)
+    : undefined;
   const isServer = isReactServer || isGenericServer;
 
   const routerRoot =
@@ -94,6 +98,8 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
 
     // Set the standard Babel flag to disable ESM transformations.
     supportsStaticESM: options.experimentalImportSupport,
+
+    reactCompiler,
   };
 }
 

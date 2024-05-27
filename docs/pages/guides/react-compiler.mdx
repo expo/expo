@@ -1,0 +1,31 @@
+---
+title: React Compiler
+description: Learn how to enable and use the React Compiler in Expo apps.
+---
+
+TODO
+
+You can enable in SDK 51 manually, ensure you set clear the bundler cache.
+
+```json
+{
+  "experiments": {
+    "reactCompiler": true
+  }
+}
+```
+
+... pass in custom settings ...
+
+```js
+
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [['babel-preset-expo', { 'babel-plugin-react-compiler': {
+        ...
+    } }]],
+  };
+};
+```

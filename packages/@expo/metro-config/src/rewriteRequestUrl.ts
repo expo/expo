@@ -36,6 +36,9 @@ function isEnableHermesManaged(
 function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoConfig): string {
   return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
+function getReactCompilerWithManifest(projectRoot: string, exp: ExpoConfig): boolean | undefined {
+  return exp?.experiments?.reactCompiler;
+}
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
@@ -80,6 +83,12 @@ export function getRewriteRequestUrl(projectRoot: string) {
           'transform.routerRoot',
           getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
         );
+      }
+      if (
+        !ensured.searchParams.has('transform.reactCompiler') &&
+        getReactCompilerWithManifest(projectRoot, exp)
+      ) {
+        ensured.searchParams.set('transform.reactCompiler', 'true');
       }
 
       if (!ensured.searchParams.has('transform.engine')) {
