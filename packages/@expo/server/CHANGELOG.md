@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add assertions for `NODE_OPTIONS` and Node.js versions.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

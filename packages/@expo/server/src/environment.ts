@@ -1,6 +1,7 @@
 /* eslint-disable no-var */
-import { installGlobals as installRemixGlobals } from '@remix-run/node';
+import './assertion';
 
+import { installGlobals as installRemixGlobals } from '@remix-run/node';
 declare const Response: {
   prototype: Response;
   new (body?: BodyInit | null, init?: ResponseInit): Response;
