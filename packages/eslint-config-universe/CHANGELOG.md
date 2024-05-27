@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update dependencies to support newer versions of TypeScript.
+- Reflect in peer dependencies the fact that config does not support yet ESLint 9.
+
 ## 12.1.0 — 2024-04-18
 
 ### 💡 Others
