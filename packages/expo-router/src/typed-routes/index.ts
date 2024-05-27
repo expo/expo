@@ -84,6 +84,7 @@ function throttle<T extends (...args: any[]) => any>(fn: T, interval: number) {
       timerId = setTimeout(() => {
         timerId = null; // reset the timer so next call will be executed
         if (shouldRunAgain) {
+          shouldRunAgain = false;
           run(...args); // call the function again
         }
       }, interval);
