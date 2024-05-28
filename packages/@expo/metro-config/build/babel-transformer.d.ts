@@ -13,5 +13,5 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
     bundler?: 'metro' | (string & object);
     platform?: string | null;
     routerRoot?: string;
-    projectRoot?: string;
+    projectRoot: string;
 };
