@@ -64,7 +64,7 @@ function babelPresetExpo(api, options = {}) {
         // Don't run compiler on node modules, it can only safely be run on the user's code.
         !isNodeModule &&
         // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
-        !isReactServer &&
+        !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
         extraPlugins.push([
