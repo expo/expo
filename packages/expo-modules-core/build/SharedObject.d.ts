@@ -1,4 +1,4 @@
-import type { SharedObject } from './ts-declarations/SharedObject';
-declare const _default: typeof SharedObject;
-export default _default;
+import type { SharedObject as SharedObjectType } from './ts-declarations/SharedObject';
+declare const SharedObject: typeof SharedObjectType;
+export default SharedObject;
 //# sourceMappingURL=SharedObject.d.ts.map

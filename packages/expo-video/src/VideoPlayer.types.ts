@@ -232,7 +232,7 @@ export type DRMOptions = {
   /**
    * Determines headers sent to the license server on license requests.
    */
-  headers?: { [key: string]: string };
+  headers?: Record<string, string>;
 
   /**
    * Specifies whether the DRM is a multi-key DRM.
