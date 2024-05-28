@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import type { Application } from 'express';
-import fs from 'fs';
-import http from 'http';
-import * as path from 'path';
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
@@ -186,11 +186,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // Create a webpack compiler that is configured with custom messages.
     const compiler = webpack(config);
 
-    const server = new WebpackDevServer(
-      // @ts-expect-error: type mismatch -- Webpack types aren't great.
-      compiler,
-      config.devServer
-    );
+    const server = new WebpackDevServer(compiler, config.devServer);
     // Launch WebpackDevServer.
     server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
       if (error) {
