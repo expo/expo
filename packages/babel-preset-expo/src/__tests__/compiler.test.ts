@@ -7,7 +7,8 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-const options = {
+const options: babel.TransformOptions = {
+  sourceType: 'unambiguous',
   caller: getCaller({
     name: 'metro',
     supportsReactCompiler: true,
@@ -70,7 +71,7 @@ it(`supports disabling memoizing`, () => {
   expect(code).not.toContain('react.memo_cache_sentinel');
 });
 
-it(`compiles to CJS`, () => {
+it(`compiles to CJS 1`, () => {
   const code = babel.transformFileSync(path.resolve(__dirname, 'samples/compile-memo.tsx'), {
     ...options,
     caller: getCaller({
@@ -85,28 +86,25 @@ it(`compiles to CJS`, () => {
   expect(code).not.toContain('import {');
   expect(code).toContain('react.memo_cache_sentinel');
 });
-it(`compiles CJS to CJS`, () => {
+
+it(`compiles CJS module`, () => {
   const code = babel.transformFileSync(path.resolve(__dirname, 'samples/compile-memo-cjs.js'), {
     ...options,
+    sourceType: 'unambiguous',
+    code: true,
     caller: getCaller({
       name: 'metro',
-      bundler: 'metro',
       platform: 'web',
       isServer: false,
       isReactServer: false,
-      baseUrl: '',
-      routerRoot: '__e2e__/compiler/app',
       isDev: true,
-      // preserveEnvVars: undefined,
-      // asyncRoutes: undefined,
-      // engine: undefined,
-      projectRoot: '/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e',
       isNodeModule: false,
       isHMREnabled: true,
       supportsStaticESM: false,
       supportsReactCompiler: true,
     }),
   })!.code!;
+  expect(code).toContain('var _reactCompilerRuntime = ');
   expect(code).not.toContain('import ');
 });
 
