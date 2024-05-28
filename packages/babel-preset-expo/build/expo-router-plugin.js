@@ -69,7 +69,7 @@ function expoRouterBabelPlugin(api) {
                                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
                             }
                             else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
-                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(possibleProjectRoot, routerAbsoluteRoot)));
+                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot)));
                             }
                         }
                     }

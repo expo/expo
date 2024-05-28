@@ -1,3 +1,4 @@
+import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'path';
 
 export function hasModule(name: string): boolean {
@@ -12,7 +13,7 @@ export function hasModule(name: string): boolean {
 }
 
 /** Determine which bundler is being used. */
-export function getBundler(caller: any) {
+export function getBundler(caller?: ExpoBabelCaller) {
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;
   if (
@@ -28,7 +29,7 @@ export function getBundler(caller: any) {
   return 'metro';
 }
 
-export function getPlatform(caller: any) {
+export function getPlatform(caller?: ExpoBabelCaller) {
   if (!caller) return null;
   if (caller.platform) return caller.platform;
   const bundler = getBundler(caller);
@@ -40,7 +41,7 @@ export function getPlatform(caller: any) {
   return caller.platform;
 }
 
-export function getPossibleProjectRoot(caller: any) {
+export function getPossibleProjectRoot(caller?: ExpoBabelCaller) {
   if (!caller) return null;
   if (caller.projectRoot) return caller.projectRoot;
   // unknown
@@ -48,46 +49,46 @@ export function getPossibleProjectRoot(caller: any) {
 }
 
 /** If bundling for a react-server target. */
-export function getIsReactServer(caller: any): boolean {
+export function getIsReactServer(caller?: ExpoBabelCaller): boolean {
   return caller?.isReactServer ?? false;
 }
 
-export function getIsDev(caller: any) {
+export function getIsDev(caller?: ExpoBabelCaller) {
   if (caller?.isDev != null) return caller.isDev;
 
   // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 
-export function getIsFastRefreshEnabled(caller: any) {
+export function getIsFastRefreshEnabled(caller?: ExpoBabelCaller) {
   if (!caller) return false;
   return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 
-export function getIsProd(caller: any) {
+export function getIsProd(caller?: ExpoBabelCaller) {
   if (caller?.isDev != null) return caller.isDev === false;
 
   // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 
-export function getIsNodeModule(caller: any): boolean {
+export function getIsNodeModule(caller?: ExpoBabelCaller): boolean {
   return caller?.isNodeModule ?? false;
 }
 
-export function getBaseUrl(caller: any): string {
+export function getBaseUrl(caller?: ExpoBabelCaller): string {
   return caller?.baseUrl ?? '';
 }
 
-export function getReactCompiler(caller: any) {
-  return caller?.reactCompiler ?? false;
+export function getReactCompiler(caller?: ExpoBabelCaller) {
+  return caller?.supportsReactCompiler ?? false;
 }
 
-export function getIsServer(caller: any) {
+export function getIsServer(caller?: ExpoBabelCaller) {
   return caller?.isServer ?? false;
 }
 
-export function getExpoRouterAbsoluteAppRoot(caller: any): string {
+export function getExpoRouterAbsoluteAppRoot(caller?: ExpoBabelCaller): string {
   const rootModuleId = caller?.routerRoot ?? './app';
   if (path.isAbsolute(rootModuleId)) {
     return rootModuleId;
@@ -97,7 +98,7 @@ export function getExpoRouterAbsoluteAppRoot(caller: any): string {
   return path.join(projectRoot, rootModuleId);
 }
 
-export function getInlineEnvVarsEnabled(caller: any): boolean {
+export function getInlineEnvVarsEnabled(caller?: ExpoBabelCaller): boolean {
   const isWebpack = getBundler(caller) === 'webpack';
   const isDev = getIsDev(caller);
   const isServer = getIsServer(caller);
@@ -108,7 +109,7 @@ export function getInlineEnvVarsEnabled(caller: any): boolean {
   return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
 
-export function getAsyncRoutes(caller: any): boolean {
+export function getAsyncRoutes(caller?: ExpoBabelCaller): boolean {
   const isServer = getIsServer(caller);
   if (isServer) {
     return false;
