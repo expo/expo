@@ -90,7 +90,7 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
 }
 
 export function getReactCompilerFromExpoConfig(exp: ExpoConfig): boolean {
-  return exp.experiments?.reactCompiler ?? false;
+  return !!exp.experiments?.reactCompiler;
 }
 
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
@@ -282,7 +282,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.routerRoot', routerRoot);
   }
   if (reactCompiler != null) {
-    queryParams.append('transform.reactCompiler', String(reactCompiler));
+    queryParams.append('transform.reactCompiler', String(true));
   }
 
   if (environment) {

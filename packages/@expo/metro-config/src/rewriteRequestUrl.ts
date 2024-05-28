@@ -36,6 +36,7 @@ function isEnableHermesManaged(
 function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoConfig): string {
   return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
+
 function getReactCompilerWithManifest(projectRoot: string, exp: ExpoConfig): boolean | undefined {
   return exp?.experiments?.reactCompiler;
 }

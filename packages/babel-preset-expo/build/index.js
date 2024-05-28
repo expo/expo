@@ -70,7 +70,9 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
-                runtimeModule: require.resolve('babel-preset-expo/react-compiler-runtime.js'),
+                runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
+                // enableUseMemoCachePolyfill: true,
+                // compilationMode: 'infer',
                 panicThreshold: isDev ? undefined : 'NONE',
                 ...platformOptions['react-compiler'],
             },
