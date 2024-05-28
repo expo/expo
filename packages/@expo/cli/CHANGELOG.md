@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused dependencies.
+
 ## 0.18.13 — 2024-05-16
 
 ### 🐛 Bug fixes
