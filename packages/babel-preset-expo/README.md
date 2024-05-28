@@ -161,7 +161,7 @@ Changes the engine preset in `@react-native/babel-preset` based on the JavaScrip
 
 ### `decoratorsPluginVersion`
 
-Changes version of proposal that `@babel/plugin-proposal-decorators` uses. Defaults to `legacy`. You can find more info about versions in [`@babel/plugin-proposal-decorators` docs](https://babeljs.io/docs/babel-plugin-proposal-decorators#version). It could be set to `false` to disable the plugin.
+Changes the proposal version that `@babel/plugin-proposal-decorators` uses. Defaults to `legacy`. Set to `false` to disable the plugin. Read more about supported versions in the [`@babel/plugin-proposal-decorators` docs](https://babeljs.io/docs/babel-plugin-proposal-decorators#version). 
 
 ```js
 [
