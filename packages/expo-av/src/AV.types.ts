@@ -83,7 +83,7 @@ export type AVPlaybackRemoteCommand = 'pause' | 'play' | 'nextTrack' | 'previous
 
 export type AVPlaybackRemoteCommandHandlers = {
   [key in AVPlaybackRemoteCommand as `on${Capitalize<key>}`]?: () => void;
-}
+};
 
 // @needsAudit
 /**
