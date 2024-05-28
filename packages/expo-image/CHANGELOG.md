@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `tintColor` not working on Safari browsers. ([#29169](https://github.com/expo/expo/pull/29169) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 ## 1.12.9 — 2024-05-09
