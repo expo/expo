@@ -47,8 +47,8 @@ function TextInputButton({ text }: { text: string }) {
         console.log(message);
         alert(message);
       }
-    } catch (error) {
-      console.error(error);
+    } catch ({ message }) {
+      console.error(message);
     }
   };
 

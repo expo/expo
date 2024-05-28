@@ -17,9 +17,14 @@ import Colors from '../../constants/Colors';
 // TODO (barthap): Fix the root cause and normalize them between platforms
 const inputRange = Platform.OS === 'ios' ? [0, 0.3] : [0, 1];
 
-function useIsJsiAudioSupported(sound: Audio.Sound | undefined) {
-  'use no forget';
-  return React.useMemo(() => {
+export function JsiAudioBar({
+  sound,
+  isPlaying,
+}: {
+  sound: Audio.Sound | undefined;
+  isPlaying: boolean;
+}) {
+  const isJsiAudioSupported = React.useMemo(() => {
     try {
       // @ts-expect-error that method is private
       sound?._updateAudioSampleReceivedCallback();
@@ -31,16 +36,6 @@ function useIsJsiAudioSupported(sound: Audio.Sound | undefined) {
       throw e;
     }
   }, [sound]);
-}
-
-export function JsiAudioBar({
-  sound,
-  isPlaying,
-}: {
-  sound: Audio.Sound | undefined;
-  isPlaying: boolean;
-}) {
-  const isJsiAudioSupported = useIsJsiAudioSupported(sound);
 
   const audioRmsValue = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {

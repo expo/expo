@@ -7,8 +7,6 @@
   "main": "index.js",
   "scripts": {
     "build:web": "expo export -p web",
-    "export:forget": "EXPO_USE_FORGET=1 expo export -p web --output-dir dist-forget --source-maps",
-    "export:default": "expo export -p web --output-dir dist-default --source-maps",
     "web": "expo start --web",
     "lint": "eslint .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
@@ -34,7 +32,6 @@
     }
   },
   "dependencies": {
-    
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.0.0",
