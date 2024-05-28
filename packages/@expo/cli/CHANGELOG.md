@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Remove unused dependencies.
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 
 ## 0.18.13 — 2024-05-16
 
