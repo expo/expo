@@ -36,6 +36,7 @@ jobs:
         with:
           yarn-docs: 'true'
           yarn-tools: 'true'
+          yarn-workspace: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
