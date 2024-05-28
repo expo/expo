@@ -197,7 +197,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("alpha", Math.toDegrees(rotationRateEvent!!.values[0].toDouble()))
           putDouble("beta", Math.toDegrees(rotationRateEvent!!.values[1].toDouble()))
           putDouble("gamma", Math.toDegrees(rotationRateEvent!!.values[2].toDouble()))
-          putDouble("timestamp", rotationEvent!!.timestamp / 1_000_000_000.0)
+          putDouble("timestamp", rotationRateEvent!!.timestamp / 1_000_000_000.0)
         }
       )
     }
