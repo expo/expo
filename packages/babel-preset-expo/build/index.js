@@ -66,13 +66,13 @@ function babelPresetExpo(api, options = {}) {
         // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
         !isReactServer &&
         // Give users the ability to opt-out of the feature, per-platform.
-        platformOptions['babel-plugin-react-compiler'] !== false) {
+        platformOptions['react-compiler'] !== false) {
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
                 runtimeModule: require.resolve('babel-preset-expo/react-compiler-runtime.js'),
                 panicThreshold: isDev ? undefined : 'NONE',
-                ...platformOptions['babel-plugin-react-compiler'],
+                ...platformOptions['react-compiler'],
             },
         ]);
     }

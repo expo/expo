@@ -42,6 +42,10 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 ## Options
 
+### `react-compiler`
+
+Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. As of SDK 51, you must also enable `experiments.reactCompiler: true` in the `app.json`.
+
 ### `minifyTypeofWindow`
 
 Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your code, e.g. `if (typeof window === 'undefined')` -> `if (true)` in servers. This is useful when you're using libraries that mock the window object on native or in the server.

@@ -13,7 +13,8 @@ type BabelPresetExpoPlatformOptions = {
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
-    'babel-plugin-react-compiler'?: false | {
+    /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
+    'react-compiler'?: false | {
         enableUseMemoCachePolyfill?: boolean;
         compilationMode?: 'infer' | 'strict';
         panicThreshold?: 'none' | 'all_errors' | 'critical_errors';

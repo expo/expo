@@ -42,7 +42,8 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
-  'babel-plugin-react-compiler'?:
+  /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
+  'react-compiler'?:
     | false
     | {
         // TODO: Add full types and doc blocks.
@@ -146,14 +147,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
     !isReactServer &&
     // Give users the ability to opt-out of the feature, per-platform.
-    platformOptions['babel-plugin-react-compiler'] !== false
+    platformOptions['react-compiler'] !== false
   ) {
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
         runtimeModule: require.resolve('babel-preset-expo/react-compiler-runtime.js'),
         panicThreshold: isDev ? undefined : 'NONE',
-        ...platformOptions['babel-plugin-react-compiler'],
+        ...platformOptions['react-compiler'],
       },
     ]);
   }
