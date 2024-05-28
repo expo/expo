@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add experimental React Compiler support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
