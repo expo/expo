@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
