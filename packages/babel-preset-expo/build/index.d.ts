@@ -19,7 +19,40 @@ type BabelPresetExpoPlatformOptions = {
         compilationMode?: 'infer' | 'strict';
         panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
         logger?: any;
-        environment?: unknown;
+        environment?: {
+            customHooks?: unknown;
+            enableResetCacheOnSourceFileChanges?: boolean;
+            enablePreserveExistingMemoizationGuarantees?: boolean;
+            /** @default true */
+            validatePreserveExistingMemoizationGuarantees?: boolean;
+            enableForest?: boolean;
+            enableUseTypeAnnotations?: boolean;
+            /** @default true */
+            enableReactiveScopesInHIR?: boolean;
+            /** @default true */
+            validateHooksUsage?: boolean;
+            validateRefAccessDuringRender?: boolean;
+            /** @default true */
+            validateNoSetStateInRender?: boolean;
+            validateMemoizedEffectDependencies?: boolean;
+            validateNoCapitalizedCalls?: string[] | null;
+            /** @default true */
+            enableAssumeHooksFollowRulesOfReact?: boolean;
+            /** @default true */
+            enableTransitivelyFreezeFunctionExpressions: boolean;
+            enableEmitFreeze?: unknown;
+            enableEmitHookGuards?: unknown;
+            enableEmitInstrumentForget?: unknown;
+            assertValidMutableRanges?: boolean;
+            enableChangeVariableCodegen?: boolean;
+            enableMemoizationComments?: boolean;
+            throwUnknownException__testonly?: boolean;
+            enableTreatFunctionDepsAsConditional?: boolean;
+            /** Automatically enabled when reanimated plugin is added. */
+            enableCustomTypeDefinitionForReanimated?: boolean;
+            /** @default `null` */
+            hookPattern?: string | null;
+        };
         gating?: unknown;
         noEmit?: boolean;
         runtimeModule?: string | null;

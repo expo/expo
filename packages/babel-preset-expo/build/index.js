@@ -73,6 +73,10 @@ function babelPresetExpo(api, options = {}) {
                 runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
                 // enableUseMemoCachePolyfill: true,
                 // compilationMode: 'infer',
+                environment: {
+                    enableResetCacheOnSourceFileChanges: !isProduction,
+                    ...(platformOptions['react-compiler']?.environment ?? {}),
+                },
                 panicThreshold: isDev ? undefined : 'NONE',
                 ...platformOptions['react-compiler'],
             },
