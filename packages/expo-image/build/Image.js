@@ -1,4 +1,4 @@
-import { createSnapshotFriendlyRef } from 'expo-modules-core';
+import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
@@ -7,9 +7,24 @@ import { resolveSources } from './utils/resolveSources';
 let loggedDefaultSourceDeprecationWarning = false;
 export class Image extends React.PureComponent {
     nativeViewRef;
+    containerViewRef;
     constructor(props) {
         super(props);
         this.nativeViewRef = createSnapshotFriendlyRef();
+        this.containerViewRef = createSnapshotFriendlyRef();
+        if (Platform.OS === 'web') {
+            // Define a getter/setter for the style property to make it work with reanimated on web
+            Object.defineProperty(this, 'style', {
+                get: () => {
+                    return this.containerViewRef.current.style;
+                },
+                set: (value) => {
+                    if (this.containerViewRef.current) {
+                        this.containerViewRef.current.style = value;
+                    }
+                },
+            });
+        }
     }
     static async prefetch(urls, options) {
         let cachePolicy = 'memory-disk';
@@ -95,7 +110,7 @@ export class Image extends React.PureComponent {
             console.warn('[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead');
             loggedDefaultSourceDeprecationWarning = true;
         }
-        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef}/>);
+        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef} containerViewRef={this.containerViewRef}/>);
     }
 }
 //# sourceMappingURL=Image.js.map

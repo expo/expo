@@ -2,6 +2,7 @@ import React from 'react';
 import { ImagePrefetchOptions, ImageProps } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
+    containerViewRef: any;
     constructor(props: any);
     /**
      * Preloads images at the given URLs that can be later used in the image view.

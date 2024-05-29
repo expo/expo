@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix reanimated support on web by ([#29197](https://github.com/expo/expo/pull/29197) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 1.12.9 — 2024-05-09

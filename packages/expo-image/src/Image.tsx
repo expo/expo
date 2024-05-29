@@ -1,4 +1,4 @@
-import { createSnapshotFriendlyRef } from 'expo-modules-core';
+import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -11,10 +11,24 @@ let loggedDefaultSourceDeprecationWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
-
+  containerViewRef;
   constructor(props) {
     super(props);
     this.nativeViewRef = createSnapshotFriendlyRef();
+    this.containerViewRef = createSnapshotFriendlyRef();
+    if (Platform.OS === 'web') {
+      // Define a getter/setter for the style property to make it work with reanimated on web
+      Object.defineProperty(this, 'style', {
+        get: () => {
+          return this.containerViewRef.current.style;
+        },
+        set: (value) => {
+          if (this.containerViewRef.current) {
+            this.containerViewRef.current.style = value;
+          }
+        },
+      });
+    }
   }
 
   /**
@@ -169,6 +183,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         nativeViewRef={this.nativeViewRef}
+        containerViewRef={this.containerViewRef}
       />
     );
   }
