@@ -67,6 +67,7 @@ private val defaultFields = setOf(
 
 const val RC_EDIT_CONTACT = 2137
 const val RC_PICK_CONTACT = 2138
+const val RC_ADD_CONTACT = 2139
 
 // TODO: Evan: default API is confusing. Duplicate data being requested.
 private val DEFAULT_PROJECTION = listOf(
@@ -253,20 +254,17 @@ class ContactsModule : Module() {
       if (contactId != null) {
         val contact = getContactById(contactId, defaultFields) ?: throw ContactNotFoundException()
         presentEditForm(contact, promise)
-        return@AsyncFunction
       }
       // Create contact from supplied data.
       if (contactData != null) {
         val contact = mutateContact(null, contactData)
-        contactManipulationPromise = promise
-        presentForm(contact)
+        presentForm(contact, promise)
       }
-      promise.resolve()
     }
 
     OnActivityResult { _, payload ->
       val (requestCode, resultCode, intent) = payload
-      if (requestCode == RC_EDIT_CONTACT) {
+      if (requestCode == RC_EDIT_CONTACT || requestCode == RC_ADD_CONTACT) {
         val pendingPromise = contactManipulationPromise ?: return@OnActivityResult
 
         pendingPromise.resolve(0)
@@ -303,12 +301,12 @@ class ContactsModule : Module() {
     }
   }
 
-  private fun presentForm(contact: Contact) {
+  private fun presentForm(contact: Contact, promise: Promise) {
     val intent = Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI)
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    activity.startActivity(intent)
+    contactManipulationPromise = promise;
+    activity.startActivityForResult(intent, RC_ADD_CONTACT)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
