@@ -8,7 +8,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -54,11 +57,28 @@ public class UIManagerModuleWrapper implements
     );
   }
 
+  private void addToUIManager() {
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      UIManager uiManager = UIManagerHelper.getUIManager(getContext(), UIManagerType.FABRIC);
+      ((FabricUIManager) uiManager).addUIBlock(this);
+    } else {
+      UIManagerModule uiManager = getContext().getNativeModule(UIManagerModule.class);
+      uiManager.addUIBlock(this);
+    }
+  }
+
   @Override
   public <T> void addUIBlock(final int tag, final UIBlock<T> block, final Class<T> tClass) {
-    getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
+    UIBlockInterface uiBlock = new UIBlockInterface() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        executeImpl(nativeViewHierarchyManager, null);
+      }
+      @Override
+      public void execute(UIBlockViewResolver uiBlockViewResolver){
+        executeImpl(null, uiBlockViewResolver);
+      }
+      private void executeImpl(NativeViewHierarchyManager nvhm, UIBlockViewResolver uiBlockViewResolver) {
         View view = nativeViewHierarchyManager.resolveView(tag);
         if (view == null) {
           block.reject(new IllegalArgumentException("Expected view for this tag not to be null."));
@@ -75,14 +95,23 @@ public class UIManagerModuleWrapper implements
           }
         }
       }
-    });
+    };
+
+    uiBlock.addToUIManager();
   }
 
   @Override
   public void addUIBlock(final GroupUIBlock block) {
-    getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
+    UIBlockInterface uiBlock = new UIBlockInterface() {
       @Override
-      public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        executeImpl(nativeViewHierarchyManager, null);
+      }
+      @Override
+      public void execute(UIBlockViewResolver uiBlockViewResolver){
+        executeImpl(null, uiBlockViewResolver);
+      }
+      private void executeImpl(NativeViewHierarchyManager nvhm, UIBlockViewResolver uiBlockViewResolver) {
         block.execute(new ViewHolder() {
           @Override
           public View get(Object key) {
@@ -99,7 +128,9 @@ public class UIManagerModuleWrapper implements
           }
         });
       }
-    });
+    };
+
+    uiBlock.addToUIManager();
   }
 
   @Nullable
@@ -234,3 +265,5 @@ public class UIManagerModuleWrapper implements
     return getContext().getCurrentActivity();
   }
 }
+
+interface UIBlockInterface extends com.facebook.react.uimanager.UIBlock, com.facebook.react.fabric.interop.UIBlock  {}
