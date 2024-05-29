@@ -90,27 +90,57 @@ it(`compiles to CJS 1`, () => {
 it(`compiles React module with js extension in filename`, () => {
   const code = babel.transformSync(
     `
+// import React from 'react';
+// const React2 = require('react');
 function App() {
   return <div />;
 }
 `,
+// {
+//   ...options,
+//   // File name ending with `.js`
+//   filename: '/samples/App.js',
+//   // This is the default type used in Metro.
+//   sourceType: 'unambiguous',
+//   babelrc: false,
+//   presets: [[require('@babel/preset-env'), {
+//     modules: 'commonjs',
+//   }], require('@babel/preset-react')],
+//   plugins: [
+//     require('babel-plugin-react-compiler'),
+//     require('@babel/plugin-transform-modules-commonjs'),
+//   ],
+
+//   comments: false,
+//   code: true,
+//   caller: getCaller({
+//     name: 'metro',
+//     platform: 'web',
+//     isServer: false,
+//     isReactServer: false,
+//     isDev: true,
+//     isNodeModule: false,
+//     isHMREnabled: true,
+//     supportsStaticESM: false,
+//     supportsReactCompiler: true,
+//   }),
+// },
     {
-      ...options,
+      // File name ending with `.js`
       filename: '/samples/App.js',
       // This is the default type used in Metro.
       sourceType: 'unambiguous',
+      babelrc: false,
+      presets: [[require('@babel/preset-env'), {
+        modules: 'commonjs',
+      }], require('@babel/preset-react')],
+      plugins: [
+        require('babel-plugin-react-compiler'),
+        require('@babel/plugin-transform-modules-commonjs'),
+      ],
+
+      comments: false,
       code: true,
-      caller: getCaller({
-        name: 'metro',
-        platform: 'web',
-        isServer: false,
-        isReactServer: false,
-        isDev: true,
-        isNodeModule: false,
-        isHMREnabled: true,
-        supportsStaticESM: false,
-        supportsReactCompiler: true,
-      }),
     }
   )!.code!;
   expect(code).toContain('var _reactCompilerRuntime = ');
