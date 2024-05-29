@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Source env when creating app config. ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 16.0.2 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- Source env when creating app config. ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
 
 ## 16.0.1 — 2024-04-23
 

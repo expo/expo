@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 12.0.6 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
 
 ## 12.0.5 — 2024-05-10
 

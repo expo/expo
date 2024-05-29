@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.5.2 — 2024-05-29
+
+### 🎉 New features
+
+- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
 
 ## 3.5.1 — 2024-04-23
 

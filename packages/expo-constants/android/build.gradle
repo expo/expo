@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '16.0.1'
+version = '16.0.2'
 
 apply from: "../scripts/get-app-config-android.gradle"
 
@@ -16,7 +16,7 @@ android {
   namespace "expo.modules.constants"
   defaultConfig {
     versionCode 33
-    versionName "16.0.1"
+    versionName "16.0.2"
   }
 }
 

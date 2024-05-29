@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix the task manager events not being sent to the JS side. ([#29024](https://github.com/expo/expo/pull/29024) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 11.8.2 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix the task manager events not being sent to the JS side. ([#29024](https://github.com/expo/expo/pull/29024) by [@behenate](https://github.com/behenate))
 
 ## 11.8.1 — 2024-04-23
 

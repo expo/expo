@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.2.2 — 2024-05-29
+
+_This version does not introduce any user-facing changes._
+
 ## 1.2.1 — 2024-04-18
 
 _This version does not introduce any user-facing changes._
