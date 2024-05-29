@@ -348,6 +348,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 </SnackInline>
 ```
 
+By default, `SnackInline` component uses `.tsx` when opening an example in Snack. To use `.js` extension, add `enableJavaScript` prop.
+
 ### Add multiple code variants
 
 Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component.

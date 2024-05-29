@@ -6,7 +6,7 @@ type Config = {
   templateId?: string;
   code?: string | null;
   files?: Record<string, string>;
-  isTypeScriptEnabled?: boolean;
+  enableJavaScript?: boolean;
 };
 
 type File = {
@@ -16,7 +16,7 @@ type File = {
 };
 
 export function getSnackFiles(config: Config) {
-  const { templateId, code, files, baseURL, isTypeScriptEnabled } = config;
+  const { templateId, code, files, baseURL, enableJavaScript } = config;
 
   const result: Record<string, File> = {};
   if (files) {
@@ -38,16 +38,16 @@ export function getSnackFiles(config: Config) {
   }
 
   if (templateId) {
-    if (isTypeScriptEnabled) {
-      result['App.tsx'] = { type: 'CODE', url: `${baseURL}/${templateId}.tsx` };
-    } else {
+    if (enableJavaScript) {
       result['App.js'] = { type: 'CODE', url: `${baseURL}/${templateId}.js` };
+    } else {
+      result['App.tsx'] = { type: 'CODE', url: `${baseURL}/${templateId}.tsx` };
     }
   } else if (code) {
-    if (isTypeScriptEnabled) {
-      result['App.tsx'] = { type: 'CODE', contents: code };
-    } else {
+    if (enableJavaScript) {
       result['App.js'] = { type: 'CODE', contents: code };
+    } else {
+      result['App.tsx'] = { type: 'CODE', contents: code };
     }
   }
 
