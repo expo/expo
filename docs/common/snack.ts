@@ -6,7 +6,7 @@ type Config = {
   templateId?: string;
   code?: string | null;
   files?: Record<string, string>;
-  codeLanguage: string | undefined;
+  codeLanguage?: string;
 };
 
 type File = {

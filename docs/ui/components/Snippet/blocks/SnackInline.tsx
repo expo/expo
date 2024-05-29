@@ -97,7 +97,8 @@ export const SnackInline = ({
     return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
   };
 
-  const codeLanguage = findPropInChildren(children as ReactElement, 'className')?.split('-')[1];
+  const prismBlockClassName = findPropInChildren(children as ReactElement, 'className');
+  const codeLanguage = prismBlockClassName ? prismBlockClassName.split('-')[1] : 'jsx';
 
   return (
     <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
