@@ -24,7 +24,7 @@ Here's a simple example of a video with a play and pause button.
 
 <SnackInline label='Video' dependencies={['expo-video']}>
 
-```jsx
+```tsx
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useRef, useState } from 'react';
 import { PixelRatio, StyleSheet, View, Button } from 'react-native';
@@ -35,13 +35,13 @@ const videoSource =
 export default function VideoScreen() {
   const ref = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const player = useVideoPlayer(videoSource, (player) => {
+  const player = useVideoPlayer(videoSource, player => {
     player.loop = true;
     player.play();
   });
 
   useEffect(() => {
-    const subscription = player.addListener('playingChange', (isPlaying) => {
+    const subscription = player.addListener('playingChange', isPlaying => {
       setIsPlaying(isPlaying);
     });
 

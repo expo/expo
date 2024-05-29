@@ -15,7 +15,7 @@ A checkbox is a button that exists in one of two states — it is checked or it 
 
 <SnackInline dependencies={['@expo/vector-icons']}>
 
-```jsx
+```tsx
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -90,7 +90,7 @@ This checkbox isn't useful in this state because the `checked` value is accessib
 <SnackInline dependencies={['@expo/vector-icons']}>
 
 {/* prettier-ignore */}
-```jsx
+```tsx
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -168,7 +168,7 @@ It's common enough to need to render different styles when the checkmark is `che
 
 <SnackInline dependencies={['@expo/vector-icons']}>
 
-```jsx
+```tsx
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -220,8 +220,12 @@ export default function App() {
         <MyCheckbox
           checked={checked}
           onChange={setChecked}
-          buttonStyle={/* @info Pass in base styles for the checkbox */styles.checkboxBase/* @end */}
-          activeButtonStyle={/* @info Pass in active styles for the checkbox */styles.checkboxChecked/* @end */}
+          buttonStyle={
+            /* @info Pass in base styles for the checkbox */ styles.checkboxBase /* @end */
+          }
+          activeButtonStyle={
+            /* @info Pass in active styles for the checkbox */ styles.checkboxChecked /* @end */
+          }
         />
         <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
       </View>

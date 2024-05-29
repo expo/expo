@@ -113,7 +113,7 @@ Let's take a look at a minimal example that uses Inter font family. It uses [`us
 
 <SnackInline label="Using custom fonts" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
 
-```jsx
+```tsx
 import { useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 /* @info Import useFonts hook from 'expo-font'. */ import { useFonts } from 'expo-font'; /* @end */
@@ -242,7 +242,7 @@ Each Google Fonts package provides the `useFonts` hook for convenience. Under th
 
 <SnackInline label="Using Google fonts" dependencies={['@expo-google-fonts/inter']}>
 
-```jsx
+```tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
@@ -298,8 +298,7 @@ However, if you to load a remote font file directly from the web rather than fro
 
 <SnackInline label="Using a remote font" dependencies={['expo-font']}>
 
-```jsx
-import React from 'react';
+```tsx
 import { Text, View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 
@@ -341,7 +340,7 @@ If you don't want to use the `useFonts` hook (for example, maybe you prefer clas
   'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
 }}>
 
-```jsx
+```tsx
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';

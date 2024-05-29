@@ -32,7 +32,7 @@ and call `ToastAndroid.show` with a message and duration option:
 
 <SnackInline label="Using ToastAndroid API" platforms={['android']}>
 
-```jsx
+```tsx
 import React from 'react';
 import { View, StyleSheet, ToastAndroid, Button, StatusBar } from 'react-native';
 
@@ -95,7 +95,8 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 
 // in your render function
 return (
-  <RootSiblingParent>{/* <- use RootSiblingParent to wrap your root component */}
+  <RootSiblingParent>
+    {/* <- use RootSiblingParent to wrap your root component */}
     <App />
   </RootSiblingParent>
 );
