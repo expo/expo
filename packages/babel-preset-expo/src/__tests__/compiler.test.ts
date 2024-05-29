@@ -87,23 +87,32 @@ it(`compiles to CJS 1`, () => {
   expect(code).toContain('react.memo_cache_sentinel');
 });
 
-it(`compiles CJS module`, () => {
-  const code = babel.transformFileSync(path.resolve(__dirname, 'samples/compile-memo-cjs.js'), {
-    ...options,
-    sourceType: 'unambiguous',
-    code: true,
-    caller: getCaller({
-      name: 'metro',
-      platform: 'web',
-      isServer: false,
-      isReactServer: false,
-      isDev: true,
-      isNodeModule: false,
-      isHMREnabled: true,
-      supportsStaticESM: false,
-      supportsReactCompiler: true,
-    }),
-  })!.code!;
+it(`compiles React module with js extension in filename`, () => {
+  const code = babel.transformSync(
+    `
+function App() {
+  return <div />;
+}
+`,
+    {
+      ...options,
+      filename: '/samples/App.js',
+      // This is the default type used in Metro.
+      sourceType: 'unambiguous',
+      code: true,
+      caller: getCaller({
+        name: 'metro',
+        platform: 'web',
+        isServer: false,
+        isReactServer: false,
+        isDev: true,
+        isNodeModule: false,
+        isHMREnabled: true,
+        supportsStaticESM: false,
+        supportsReactCompiler: true,
+      }),
+    }
+  )!.code!;
   expect(code).toContain('var _reactCompilerRuntime = ');
   expect(code).not.toContain('import ');
 });

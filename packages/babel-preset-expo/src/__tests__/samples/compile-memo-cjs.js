@@ -1,3 +1,0 @@
-function Thing() {
-  return <div />;
-}
