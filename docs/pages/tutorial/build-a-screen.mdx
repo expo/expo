@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 
 The background is dark, so the text is difficult to read. The `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white) in **App.js**.
 
-<SnackInline label="Change the text color" dependencies={['expo-status-bar']}>
+<SnackInline label="Change the text color" dependencies={['expo-status-bar']} enableJavaScript>
 
 {/* prettier-ignore */}
 ```jsx
@@ -149,7 +149,7 @@ Next, import and use the `<Image>` component from React Native and `background-i
 
 <SnackInline label="Display placeholder image" dependencies={['expo-status-bar']} files={{
   'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
-}}>
+}} enableJavaScript>
 
 {/* prettier-ignore */}
 ```jsx
@@ -456,7 +456,7 @@ Now, modify the **App.js** file to use the `theme="primary"` prop on the first b
     'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
     'components/ImageViewer.js': 'tutorial/01-layout/ImageViewer.js',
     'components/Button.js': 'tutorial/01-layout/Button.js'
-}}>
+}} enableJavaScript>
 
 {/* prettier-ignore */}
 ```jsx
