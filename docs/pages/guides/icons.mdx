@@ -16,7 +16,7 @@ The component loads the `Ionicons` font and renders a checkmark icon in the foll
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
-```tsx collapseHeight=350
+```jsx collapseHeight=350
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -84,7 +84,8 @@ files={{
 dependencies={['@expo/vector-icons', 'expo-font']}>
 
 {/* prettier-ignore */}
-```tsx
+```jsx
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
@@ -185,7 +186,7 @@ files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
 
-```tsx
+```jsx
 import { Image, View, StyleSheet } from 'react-native';
 
 export default function App() {
@@ -221,7 +222,7 @@ In the example below, a login button uses the `FontAwesome` icon set. Notice tha
 
 <SnackInline label='Icon Button Component' dependencies={['@expo/vector-icons']}>
 
-```tsx
+```jsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';

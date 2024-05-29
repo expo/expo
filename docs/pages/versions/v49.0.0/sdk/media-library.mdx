@@ -88,18 +88,9 @@ Learn how to configure the native projects in the [installation instructions in 
 
 <SnackInline label='Fetching albums and displaying assets' dependencies={['expo-media-library']}>
 
-```tsx
+```jsx
 import { useState, useEffect } from 'react';
-import {
-  Button,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Image,
-  View,
-  Platform,
-} from 'react-native';
+import { Button, Text, SafeAreaView, ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 
 export default function App() {
@@ -119,7 +110,9 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Button onPress={getAlbums} title="Get albums" />
-      <ScrollView>{albums && albums.map(album => <AlbumEntry album={album} />)}</ScrollView>
+      <ScrollView>
+        {albums && albums.map((album) => <AlbumEntry album={album} />)}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -141,8 +134,9 @@ function AlbumEntry({ album }) {
         {album.title} - {album.assetCount ?? 'no'} assets
       </Text>
       <View style={styles.albumAssetsContainer}>
-        {assets &&
-          assets.map(asset => <Image source={{ uri: asset.uri }} width={50} height={50} />)}
+        {assets && assets.map((asset) => (
+          <Image source={{ uri: asset.uri }} width={50} height={50} />
+        ))}
       </View>
     </View>
   );
@@ -156,8 +150,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Platform.select({
       android: {
-        paddingTop: 40,
-      },
+        paddingTop: 40
+      }
     }),
   },
   albumContainer: {
@@ -174,6 +168,7 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
 
 ## API
 
