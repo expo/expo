@@ -7,7 +7,6 @@
 import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import { TransformInputOptions } from 'metro';
@@ -18,13 +17,16 @@ import {
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
-import { ConfigT } from 'metro-config';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
-import { instantiateMetroAsync } from './instantiateMetro';
+import {
+  MetroPrivateServer,
+  assertMetroPrivateServer,
+  instantiateMetroAsync,
+} from './instantiateMetro';
 import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -100,39 +102,8 @@ const EXPO_GO_METRO_PORT = 8081;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-type MetroServerType = import('metro').Server & {
-  _bundler: import('metro/src/IncrementalBundler').default;
-  _config: ConfigT;
-  _createModuleId: (path: string) => number;
-  _isEnded: boolean;
-  _nextBundleBuildNumber: number;
-  _platforms: Set<string>;
-  _reporter: import('metro/src/lib/reporting').Reporter;
-  _serverOptions: import('metro').ServerOptions | void;
-
-  getNewBuildNumber(): number;
-  _getSortedModules(
-    graph: import('metro/src/IncrementalBundler').OutputGraph
-  ): import('metro/src/DeltaBundler/types').Module[];
-
-  _resolveRelativePath(
-    filePath: string,
-    {
-      relativeTo,
-      resolverOptions,
-      transformOptions,
-    }: {
-      relativeTo: 'project' | 'server';
-      resolverOptions: import('metro/src/shared/types').ResolverInputOptions;
-      transformOptions: TransformInputOptions;
-    }
-  ): Promise<string>;
-
-  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<any>): boolean;
-};
-
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: MetroServerType | null = null;
+  private metro: MetroPrivateServer | null = null;
 
   get name(): string {
     return 'metro';
@@ -777,7 +748,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    this.metro = metro as MetroServerType;
+    assertMetroPrivateServer(metro);
+    this.metro = metro;
     return {
       server,
       location: {
@@ -947,7 +919,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) {
     assert(this.metro, 'Metro server must be running to bundle directly.');
     const config = this.metro._config;
-    assert(config, 'Metro server is missing private _config member.');
 
     const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
       unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
@@ -1021,8 +992,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }> {
     assert(this.metro, 'Metro server must be running to bundle directly.');
     const config = this.metro._config;
-    assert(config, 'Metro server is missing private _config member.');
-
     const buildNumber = this.metro.getNewBuildNumber();
     const bundlePerfLogger = config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
       key: buildNumber,

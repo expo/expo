@@ -13,7 +13,6 @@ import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
-import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { Options } from './resolveOptions';
@@ -21,7 +20,10 @@ import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompiler
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
-import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import {
+  assertMetroPrivateServer,
+  loadMetroConfigAsync,
+} from '../../start/server/metro/instantiateMetro';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
@@ -238,7 +240,8 @@ export async function exportEmbedAssetsAsync(
       bundleType: 'todo',
     });
 
-    // @ts-expect-error: _bundler isn't exposed on the type.
+    assertMetroPrivateServer(server);
+
     const dependencies = await server._bundler.getDependencies(
       [entryFile],
       transformOptions,
@@ -246,17 +249,16 @@ export async function exportEmbedAssetsAsync(
       { onProgress, shallow: false, lazy: false }
     );
 
-    // @ts-expect-error
-    const _config = server._config as ConfigT;
+    const config = server._config;
 
     return getMetroAssets(dependencies, {
-      processModuleFilter: _config.serializer.processModuleFilter,
-      assetPlugins: _config.transformer.assetPlugins,
+      processModuleFilter: config.serializer.processModuleFilter,
+      assetPlugins: config.transformer.assetPlugins,
       platform: transformOptions.platform!,
       // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
       // behavior.
-      projectRoot: _config.projectRoot, // this._getServerRootDir(),
-      publicPath: _config.transformer.publicPath,
+      projectRoot: config.projectRoot, // this._getServerRootDir(),
+      publicPath: config.transformer.publicPath,
     });
   } catch (error: any) {
     if (isError(error)) {
