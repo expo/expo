@@ -34,6 +34,7 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('../instantiateMetro', () => ({
   instantiateMetroAsync: jest.fn(async () => ({
+    metro: { _config: {}, _bundler: {} },
     middleware: { use: jest.fn() },
     server: { listen: jest.fn(), close: jest.fn() },
   })),

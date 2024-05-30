@@ -4,11 +4,9 @@ import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
-import { TransformInputOptions } from 'metro';
 import Bundler from 'metro/src/Bundler';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
-import assert from 'node:assert';
 import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
@@ -33,48 +31,10 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 
-export type MetroPrivateServer = import('metro').Server & {
-  _bundler: import('metro/src/IncrementalBundler').default;
-  _config: ConfigT;
-  _createModuleId: (path: string) => number;
-  _isEnded: boolean;
-  _nextBundleBuildNumber: number;
-  _platforms: Set<string>;
-  _reporter: import('metro/src/lib/reporting').Reporter;
-  _serverOptions: import('metro').ServerOptions | void;
-
-  getNewBuildNumber(): number;
-  _getSortedModules(
-    graph: import('metro/src/IncrementalBundler').OutputGraph
-  ): import('metro/src/DeltaBundler/types').Module[];
-
-  _resolveRelativePath(
-    filePath: string,
-    {
-      relativeTo,
-      resolverOptions,
-      transformOptions,
-    }: {
-      relativeTo: 'project' | 'server';
-      resolverOptions: import('metro/src/shared/types').ResolverInputOptions;
-      transformOptions: TransformInputOptions;
-    }
-  ): Promise<string>;
-
-  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<any>): boolean;
-};
-
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
-
-export function assertMetroPrivateServer(metro: Metro.Server): asserts metro is MetroPrivateServer {
-  assert(
-    metro && '_config' in metro && '_bundler' in metro,
-    'Metro server is missing expected properties. This could be due to a version mismatch or change in the Metro API.'
-  );
-}
 
 function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
   if (!exp.sdkVersion) {

@@ -22,12 +22,9 @@ import path from 'path';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
-import {
-  MetroPrivateServer,
-  assertMetroPrivateServer,
-  instantiateMetroAsync,
-} from './instantiateMetro';
+import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
+import { MetroPrivateServer, assertMetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
