@@ -183,6 +183,12 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
   });
 }
 
+function isTransformError(
+  error: any
+): error is { type: 'TransformError'; filename: string; lineNumber: number; column: number } {
+  return error.type === 'TransformError';
+}
+
 /** @returns the html required to render the static metro error as an SPA. */
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
   symbolicated: any;
@@ -193,10 +199,9 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
     resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
   );
 
-  // console.log(Object.entries(error));
-
+  // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
   let stack;
-  if (error.type === 'TransformError') {
+  if (isTransformError(error)) {
     // Syntax errors in static rendering.
     stack = [
       {
