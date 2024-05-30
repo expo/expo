@@ -118,16 +118,16 @@ jobs:
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
         
-      - name: Get installed Playwright version for cache key
+      - name: 🎭 Get installed Playwright version for cache key
         run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
-      - name: Cache Playwright browser binaries
+      - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
           path: |
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-      - name: Install Playwright Browsers
+      - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
