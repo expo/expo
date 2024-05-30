@@ -23,7 +23,7 @@ import path from 'path';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { MetroPrivateServer, assertMetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -533,7 +533,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
-      'The server must be started before calling ssrLoadModuleContents.'
+      'The server must be started before calling legacySinglePageExportBundleAsync.'
     );
 
     const opts: ExpoMetroOptions = {
@@ -840,10 +840,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath);
       } catch (error: any) {
-        if (error instanceof Error) {
-          await logMetroErrorAsync({ error, projectRoot: this.projectRoot });
-        }
-        throw error;
+        const appDir = this.instanceMetroOptions?.routerRoot
+          ? path.join(this.projectRoot, this.instanceMetroOptions!.routerRoot!)
+          : undefined;
+        const relativePath = appDir ? path.relative(appDir, filePath) : filePath;
+
+        // Expected errors: invalid syntax, missing resolutions.
+        // Wrap with command error for better error messages.
+        throw new CommandError(
+          'API_ROUTE',
+          chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
+        );
       } finally {
         // pendingRouteOperations.delete(filepath);
       }
@@ -949,7 +956,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Direct Metro access
 
   // Emulates the Metro dev server .bundle endpoint without having to go through a server.
-  async _bundleDirectAsync(
+  private async _bundleDirectAsync(
     resolvedEntryFilePath: string,
     {
       transformOptions,
