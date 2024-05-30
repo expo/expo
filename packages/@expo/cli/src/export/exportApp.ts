@@ -1,17 +1,23 @@
 import { getConfig } from '@expo/config';
+import type { Platform } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
+import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
 import { exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
-import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
 import { Options } from './resolveOptions';
-import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
+import {
+  ExportAssetMap,
+  BundleOutput,
+  getFilesFromSerialAssets,
+  persistMetroFilesAsync,
+} from './saveAssets';
 import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
@@ -19,6 +25,7 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
@@ -104,34 +111,52 @@ export async function exportAppAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
+  const bundles: Partial<Record<Platform, BundleOutput>> = {};
+
+  const spaPlatforms = useServerRendering
+    ? platforms.filter((platform) => platform !== 'web')
+    : platforms;
+
   try {
     // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
     // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
     await copyPublicFolderAsync(publicPath, outputPath);
 
-    // Run metro bundler and create the JS bundles/source maps.
-    const bundles = await createBundlesAsync(projectRoot, devServer, projectConfig, {
-      clear: !!clear,
-      minify,
-      bytecode,
-      sourcemaps: sourceMaps,
-      platforms: useServerRendering
-        ? platforms.filter((platform) => platform !== 'web')
-        : platforms,
-      dev,
-      maxWorkers,
-    });
-
-    Object.values(bundles).forEach((bundle) => {
-      getFilesFromSerialAssets(bundle.artifacts, {
-        includeSourceMaps: sourceMaps,
-        files,
-      });
-    });
-
-    const bundleEntries = Object.entries(bundles);
     // Can be empty during web-only SSG.
-    if (bundleEntries.length) {
+    if (spaPlatforms.length) {
+      await Promise.all(
+        spaPlatforms.map(async (platform) => {
+          // Assert early so the user doesn't have to wait until bundling is complete to find out that
+          // Hermes won't be available.
+          const isHermes = isEnableHermesManaged(exp, platform);
+          if (isHermes) {
+            await assertEngineMismatchAsync(projectRoot, exp, platform);
+          }
+
+          // Run metro bundler and create the JS bundles/source maps.
+          const bundle = await devServer.legacySinglePageExportBundleAsync({
+            platform,
+            splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+            // minify,
+            mainModuleName: getEntryWithServerRoot(projectRoot, {
+              platform,
+              pkg: projectConfig.pkg,
+            }),
+            mode: dev ? 'development' : 'production',
+            engine: isHermes ? 'hermes' : undefined,
+            serializerIncludeMaps: sourceMaps,
+            bytecode: bytecode && isHermes,
+          });
+
+          bundles[platform] = bundle;
+
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+          });
+        })
+      );
+
       // TODO: Use same asset system across platforms again.
       const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
         files,

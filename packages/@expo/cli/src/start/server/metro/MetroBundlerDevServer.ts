@@ -34,8 +34,7 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { BundleAssetWithFileHashes } from '../../../export/fork-bundleAsync';
-import { ExportAssetMap } from '../../../export/saveAssets';
+import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { env } from '../../../utils/env';
