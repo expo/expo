@@ -20,10 +20,8 @@ import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompiler
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
-import {
-  assertMetroPrivateServer,
-  loadMetroConfigAsync,
-} from '../../start/server/metro/instantiateMetro';
+import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
