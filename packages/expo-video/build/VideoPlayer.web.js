@@ -13,7 +13,7 @@ export function getSourceUri(source) {
     }
     return source?.uri ?? null;
 }
-export class VideoPlayerWeb extends globalThis.expo.SharedObject {
+export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source) {
         super();
         this.src = source;
@@ -47,6 +47,9 @@ export class VideoPlayerWeb extends globalThis.expo.SharedObject {
     get playbackRate() {
         return this._playbackRate;
     }
+    get isLive() {
+        return [...this._mountedVideos][0].duration === Infinity;
+    }
     set volume(value) {
         this._mountedVideos.forEach((video) => {
             video.volume = value;
@@ -76,6 +79,10 @@ export class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this._mountedVideos.forEach((video) => {
             video.currentTime = value;
         });
+    }
+    get duration() {
+        // All videos should have the same duration, so we return the duration of the first video.
+        return [...this._mountedVideos][0].duration;
     }
     get preservesPitch() {
         return this._preservesPitch;

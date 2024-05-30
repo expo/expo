@@ -48,7 +48,7 @@ Additionally, all modules written using the [Expo Modules API](/modules/overview
 
 The compatibility status of many of the most popular libraries, such as `react-native-bootsplash`, `react-native-fbsdk-next`, and `react-native-pdf`, are tracked in the ["New Architecture support in popular libraries" spreadsheet](https://docs.google.com/spreadsheets/d/1F1tI9PQLl_uab3HNYNwgjPVL2r0hJ9VymXcgDp5etdg/edit?usp=sharing). This does not track every library, only those that appeared in the top 400 most installed libraries on EAS Build, so if a library is not there it does not mean it is necessarily unsupported.
 
-In React Native 0.74, there are various Interop Layers enabled by default which allows many libraries to work without any changes — however, it's not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
+In React Native 0.74, there are various Interop Layers enabled by default which allows many libraries to work without any changes. However, it's not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third-party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
 
 [Learn more about known issues](#known-issues-in-third-party-libraries).
 
@@ -98,7 +98,7 @@ Set `newArchEnabled` on target platforms:
 
 <Step label="3">
 
-Run prebuild command and compile your project:
+Run the prebuild command and compile your project:
 
 <Tabs tabs={['Android', 'iOS']}>
   <Tab>
@@ -116,8 +116,6 @@ Run prebuild command and compile your project:
 If the build succeeds, you will now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
 
 Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading [Troubleshooting](#troubleshooting) sections below for more information.
-
-> **warning** If you use Expo Router or React Navigation, your app may be impacted by a [known issue with `useLayoutEffect` in React Native with the New Architecture](#known-issues-in-react-native). This issue is expected to be resolved in a patch release for React Native 0.74.
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
@@ -142,7 +140,6 @@ We'd also love it if you could [report your experience](https://github.com/react
 
 While there are likely incompatibilities we are not aware of, the following are the known issues with the New Architecture in the Expo SDK:
 
-- **expo-splash-screen**: on iOS, `preventAutoHideAsync()` does not prevent hiding the splash screen. This will be fixed in React Native 0.74.1.
 - **expo-dev-client**: we are currently investigating issues with stability on iOS, so you may encounter an increased crash rate in your development builds.
 - **expo-notifications**: local notifications work, but remote notifications not yet fully supported.
 - **expo-task-manager** and **expo-background-fetch**: not yet supported.
@@ -152,7 +149,7 @@ While there are likely incompatibilities we are not aware of, the following are 
 
 <Collapsible summary="Known issues in React Native">
 
-- [facebook/react-native#44111](https://github.com/facebook/react-native/issues/44111) **impacts navigation libraries like Expo Router and React Navigation**, causing navigation properties for a screen to not be applied until after a transition has completed, and potentially other similar issues with navigation ([see an example](https://github.com/facebook/react-native/issues/44111#issuecomment-2076185849)). There is work in progress to fix this and we expect that it will be available soon in a patch release for React Native 0.74.
+- Reloading the app quickly in development may cause the app to crash. A fix is in progress.
 
 </Collapsible>
 
@@ -167,11 +164,14 @@ Refer to the [reactwg/react-native-new-architecture/discussions#167](https://git
 - **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
 - **react-native-geolocation-service**: use `expo-location` instead.
 - **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
+- **@shopify/flash-list**: may have not correctly in some cases. Be sure to test it thoroughly when migrating your app, and consider temporarily moving back to `FlatList` if you encounter issues.
 
 </Collapsible>
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 
-Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team.
+This isn't entirely surprising! Not all libraries are compatible yet. Read the logs to determine which library is incompatible. The first thing to do is to try updating it to the latest version, and if the issue persists, try temporarily removing it from your **package.json** and from your application code. Repeat this until your app runs.
+
+Once you have a running app, you can decide whether to look for alternative libraries that are compatible with the New Architecture, and report any issues you encounter to the library maintainers. Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team if you believe the issue originates in React Native itself.
 
 </Collapsible>

@@ -1,7 +1,7 @@
-import type { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoView.types';
+import type { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
-export declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
+export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
     constructor(source: VideoSource);
     src: VideoSource;
     _mountedVideos: Set<HTMLVideoElement>;
@@ -19,12 +19,14 @@ export declare class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get muted(): boolean;
     set playbackRate(value: number);
     get playbackRate(): number;
+    get isLive(): boolean;
     set volume(value: number);
     get volume(): number;
     set loop(value: boolean);
     get loop(): boolean;
     get currentTime(): number;
     set currentTime(value: number);
+    get duration(): number;
     get preservesPitch(): boolean;
     set preservesPitch(value: boolean);
     get status(): VideoPlayerStatus;

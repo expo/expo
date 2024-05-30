@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '1.1.6'
+version = '1.1.9'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.video"
   defaultConfig {
     versionCode 1
-    versionName '1.1.6'
+    versionName '1.1.9'
   }
 }
 
@@ -25,6 +25,7 @@ dependencies {
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-hls:${androidxMedia3Version}"
   implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
 
   def fragment_version = "1.6.2"

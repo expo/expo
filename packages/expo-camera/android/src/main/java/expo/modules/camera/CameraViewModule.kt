@@ -10,6 +10,7 @@ import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
+import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.core.errors.ModuleDestroyedException
@@ -182,6 +183,10 @@ class CameraViewModule : Module() {
         }
       }
 
+      Prop("autoFocus") { view, autoFocus: FocusMode? ->
+        view.autoFocus = autoFocus ?: FocusMode.OFF
+      }
+
       OnViewDidUpdateProps { view ->
         view.createCamera()
       }
@@ -216,6 +221,7 @@ class CameraViewModule : Module() {
       }.runOnQueue(Queues.MAIN)
 
       OnViewDestroys { view ->
+        view.orientationEventListener.disable()
         view.cancelCoroutineScope()
         view.releaseCamera()
       }

@@ -16,6 +16,10 @@ export type GyroscopeMeasurement = {
      * Value of rotation in degrees per second device reported in Z axis.
      */
     z: number;
+    /**
+     * Timestamp of the measurement in seconds.
+     */
+    timestamp: number;
 };
 export declare class GyroscopeSensor extends DeviceSensor<GyroscopeMeasurement> {
     /**

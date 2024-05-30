@@ -58,7 +58,7 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
-func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, contentFit: ContentFit) -> CGSize {
+func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
@@ -104,7 +104,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  */
 func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
   // If there are no image frames, only resize the main image.
-  guard let images = await image.images else {
+  guard let images = image.images else {
     return resize(image: image, toSize: size, scale: scale)
   }
 
@@ -116,7 +116,7 @@ func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) as
   // Create the new animated image with the resized frames.
   // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
   // so it should never happen in our case, but let's make sure to handle it gracefully.
-  if let newAnimatedImage = await UIImage.animatedImage(with: resizedImages, duration: image.duration) {
+  if let newAnimatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
     return newAnimatedImage
   }
   return resize(image: image, toSize: size, scale: scale)

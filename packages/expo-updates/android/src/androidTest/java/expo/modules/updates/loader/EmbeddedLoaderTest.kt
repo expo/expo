@@ -160,7 +160,7 @@ class EmbeddedLoaderTest {
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
 
     loader.start(mockCallback)
 
@@ -186,7 +186,7 @@ class EmbeddedLoaderTest {
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
 
     loader.start(mockCallback)
 

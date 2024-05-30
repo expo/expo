@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies && ([ ! -f node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/ReanimatedUIManager/latest/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-reanimated+3.6.0.patch || true)",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },

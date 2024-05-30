@@ -68,7 +68,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website for deploy
-        run: yarn export
+        run: yarn export-preview
         timeout-minutes: 20
         env:
           AWS_BUCKET: 'docs.expo.dev-pr-${{ github.event.pull_request.number }}'

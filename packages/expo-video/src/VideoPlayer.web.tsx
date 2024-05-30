@@ -5,7 +5,7 @@ import type {
   VideoPlayerEvents,
   VideoPlayerStatus,
   VideoSource,
-} from './VideoView.types';
+} from './VideoPlayer.types';
 
 export function useVideoPlayer(
   source: VideoSource,
@@ -27,7 +27,7 @@ export function getSourceUri(source: VideoSource): string | null {
   return source?.uri ?? null;
 }
 
-export class VideoPlayerWeb
+export default class VideoPlayerWeb
   extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
 {
@@ -70,6 +70,10 @@ export class VideoPlayerWeb
     return this._playbackRate;
   }
 
+  get isLive(): boolean {
+    return [...this._mountedVideos][0].duration === Infinity;
+  }
+
   set volume(value: number) {
     this._mountedVideos.forEach((video) => {
       video.volume = value;
@@ -104,6 +108,11 @@ export class VideoPlayerWeb
     this._mountedVideos.forEach((video) => {
       video.currentTime = value;
     });
+  }
+
+  get duration(): number {
+    // All videos should have the same duration, so we return the duration of the first video.
+    return [...this._mountedVideos][0].duration;
   }
 
   get preservesPitch(): boolean {

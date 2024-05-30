@@ -21,7 +21,7 @@ import java.util.*
  * first try to read it into the expo-updates cache and database and launch it like any other
  * update. The benefits of this include (a) a single code path for launching most updates and (b)
  * assets included in embedded updates and copied into the cache in this way do not need to be
- * redownloaded if included in future updates.
+ * re-downloaded if included in future updates.
  */
 class EmbeddedLoader internal constructor(
   private val context: Context,
@@ -42,8 +42,7 @@ class EmbeddedLoader internal constructor(
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
     updatesDirectory: File
-  ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
-  }
+  ) : this(context, configuration, database, updatesDirectory, LoaderFiles())
 
   override fun loadRemoteUpdate(
     context: Context,
@@ -97,8 +96,6 @@ class EmbeddedLoader internal constructor(
   }
 
   companion object {
-    private val TAG = EmbeddedLoader::class.java.simpleName
-
     const val BUNDLE_FILENAME = "app.bundle"
     const val BARE_BUNDLE_FILENAME = "index.android.bundle"
   }

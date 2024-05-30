@@ -330,14 +330,26 @@
   [self _removeInitModuleObserver];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-  UIView *rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
-                                                     initialProperties:nil
-                                                     launchOptions:_launchOptions];
 
+#if RCT_DEV
+  NSURL *url = [self devLauncherURL];
+  if (url != nil) {
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  }
+
+  [self _addInitModuleObserver];
+#endif
+
+  UIView *rootView;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
+
+  rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
+                                                     initialProperties:nil
+                                                     launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -345,15 +357,6 @@
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
-#if RCT_DEV
-  NSURL *url = [self devLauncherURL];
-  if (url != nil) {
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
-  } else {
-    [self _addInitModuleObserver];
-  }
-#endif
 
   [_window makeKeyAndVisible];
 }
@@ -503,7 +506,7 @@
       return;
     }
 
-    if (!self->_updatesInterface) {
+    if ([self->_updatesInterface isValidUpdatesConfiguration:updatesConfiguration] != YES) {
       [manifestParser tryToParseManifest:^(EXManifestsManifest *manifest) {
         if (!manifest.isUsingDeveloperTool) {
           onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);
@@ -672,6 +675,8 @@
     // expo-dev-menu registers its commands here: https://github.com/expo/expo/blob/6da15324ff0b4a9cb24055e9815b8aa11f0ac3af/packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift#L27-L29
     [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
                                                      modifierFlags:UIKeyModifierCommand];
+    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"r"
+                                                    modifierFlags:UIKeyModifierCommand];
   }
 }
 
@@ -722,7 +727,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge;
+  manager.currentBridge = self.appBridge.parentBridge;
 
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;

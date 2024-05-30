@@ -132,6 +132,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("autoFocus") { (view, focusMode: FocusMode?) in
+        view.autoFocus = focusMode?.toAVCaptureFocusMode() ?? .continuousAutoFocus
+      }
+
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool?) in
         if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation

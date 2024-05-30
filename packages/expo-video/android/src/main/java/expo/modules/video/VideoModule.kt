@@ -183,6 +183,11 @@ class VideoModule : Module() {
           }
         }
 
+      Property("duration")
+        .get { ref: VideoPlayer ->
+          ref.duration
+        }
+
       Property("playbackRate")
         .get { ref: VideoPlayer ->
           ref.playbackParameters.speed
@@ -192,6 +197,11 @@ class VideoModule : Module() {
             val pitch = if (ref.preservesPitch) 1f else playbackRate
             ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
           }
+        }
+
+      Property("isLive")
+        .get { ref: VideoPlayer ->
+          ref.isLive
         }
 
       Property("preservesPitch")

@@ -64,24 +64,6 @@ No additional configuration is required for web. Make sure that `react-native-re
 
 </Tab>
 
-<Tab label="SDK 48 and lower">
-
-Install the [`@babel/plugin-proposal-export-namespace-from`](https://babeljs.io/docs/en/babel-plugin-proposal-export-namespace-from#installation) Babel plugin and update the **babel.config.js** to load it:
-
-{/* prettier-ignore */}
-```js babel.config.js
-plugins: [
-  '@babel/plugin-proposal-export-namespace-from',
-  'react-native-reanimated/plugin',
-],
-```
-
-Next, restart your development server and clear the bundler cache using the command:
-
-<Terminal cmd={['$ npx expo start --clear']} />
-
-</Tab>
-
 </Tabs>
 
 ## Minimal example

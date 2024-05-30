@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 7.0.5 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- [Android] Fixed screen orientation change listener not firing. ([#28832](https://github.com/expo/expo/pull/28832) by [@lukmccall](https://github.com/lukmccall))
+
+## 7.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fix bug with weak var type causing dropped events. ([#28677](https://github.com/expo/expo/pull/28677) by [@aleqsio](https://github.com/aleqsio))
+
 ## 7.0.3 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

@@ -10,6 +10,45 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Change from kapt to ksp for room. ([#29055](https://github.com/expo/expo/pull/29055) by [@wschurman](https://github.com/wschurman))
+- [Android] Upgrade dependencies and remove unused ones. Change multipart parser to okhttp. ([#29060](https://github.com/expo/expo/pull/29060) by [@wschurman](https://github.com/wschurman))
+- [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
+
+## 0.25.14 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- Fixed launch crash when using fingerprint runtime version policy on Android with expo-dev-client. ([#28912](https://github.com/expo/expo/pull/28912) by [@kudo](https://github.com/kudo))
+
+## 0.25.13 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.12 — 2024-05-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.11 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.10 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+
+## 0.25.9 — 2024-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.8 — 2024-05-04
+
+### 💡 Others
+
+- Suppressed `Error: Cannot find module 'expo-dev-client/package.json'` from `pod install` on iOS. ([#28611](https://github.com/expo/expo/pull/28611) by [@kudo](https://github.com/kudo))
+
 ## 0.25.7 — 2024-05-02
 
 ### 🐛 Bug fixes

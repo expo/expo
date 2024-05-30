@@ -10,6 +10,43 @@
 
 ### 💡 Others
 
+- Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
+- Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.13 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- Resolve real path of entry file for `expo export:embed`. ([#28926](https://github.com/expo/expo/pull/28926) by [@byCedric](https://github.com/byCedric))
+- Parse full tarball object instead of quoted string with `npm view` for `npm@10.8.0+`. ([#28919](https://github.com/expo/expo/pull/28919) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.12 — 2024-05-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.11 — 2024-05-10
+
+### 🐛 Bug fixes
+
+- Force exit the export command to prevent hanging processes. ([#28735](https://github.com/expo/expo/pull/28735) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix HTTPS tunneling for accounts with dots in their username. ([#28692](https://github.com/expo/expo/pull/28692) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Avoid `<root>/node_modules` as extraneous `watchFolder`. ([#28778](https://github.com/expo/expo/pull/28778) by [@byCedric](https://github.com/byCedric))
+- Fix `findUp` utilities for Windows by aborting when `path.dirname(cwd)` returns `cwd`. ([#28801](https://github.com/expo/expo/pull/28801) by [@byCedric](https://github.com/byCedric))
+- Fix missing usbmux platform for platform to os conversion. ([#28802](https://github.com/expo/expo/pull/28802) by [@byCedric](https://github.com/byCedric))
+- Prevent exit the export command until Atlas is ready. ([#28759](https://github.com/expo/expo/pull/28759) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Filter out unavailable connected devices when running `npx expo run:ios -d`. ([#28642](https://github.com/expo/expo/pull/28642) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.18.9 — 2024-05-06
+
+### 💡 Others
+
+- Bump `experiments.reactCanary` to React 19 beta [commit](https://github.com/facebook/react/commit/4508873393058e86bed308b56e49ec883ece59d1). ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.18.8 — 2024-05-02
 
 _This version does not introduce any user-facing changes._
@@ -118,7 +155,8 @@ _This version does not introduce any user-facing changes._
 
 ### 📚 3rd party library updates
 
-- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- update `semver` from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- update `cacache` from 15.3.0 to 18.0.2. ([#28322](https://github.com/expo/expo/pull/28322) by [@Simek](https://github.com/Simek))
 
 ## 0.17.8 - 2024-03-13
 

@@ -125,11 +125,19 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("duration") { player -> Double in
+        return player.pointer.currentItem?.duration.seconds ?? 0
+      }
+
       Property("playbackRate") { player -> Float in
         return player.playbackRate
       }
       .set { (player, playbackRate: Float) in
         player.playbackRate = playbackRate
+      }
+
+      Property("isLive") { player -> Bool in
+        return player.pointer.currentItem?.duration.isIndefinite ?? false
       }
 
       Property("preservesPitch") { player -> Bool in

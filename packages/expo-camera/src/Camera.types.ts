@@ -3,8 +3,9 @@ import {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
+  EventSubscription,
 } from 'expo-modules-core';
-import { Ref } from 'react';
+import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
 export type CameraType = 'front' | 'back';
@@ -14,6 +15,14 @@ export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 
 export type CameraMode = 'picture' | 'video';
+
+/**
+ * This option specifies the mode of focus on the device.
+ * - `on` - Indicates that the device should autofocus once and then lock the focus.
+ * - `off` - Indicates that the device should automatically focus when needed.
+ * @default off
+ */
+export type FocusMode = 'on' | 'off';
 
 /**
  * This option specifies what codec to use when recording a video.
@@ -306,6 +315,12 @@ export type CameraProps = ViewProps & {
    */
   mute?: boolean;
   /**
+   * Indicates the focus mode to use.
+   * @default off
+   * @platform ios
+   */
+  autofocus?: FocusMode;
+  /**
    * Specify the quality of the recorded video. Use one of `VideoQuality` possible values:
    * for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
    * If the chosen quality is not available for a device, the highest available is chosen.
@@ -317,8 +332,8 @@ export type CameraProps = ViewProps & {
    */
   animateShutter?: boolean;
   /**
-   * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
-   * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
+   * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+   * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
    */
   pictureSize?: string;
   /**
@@ -407,6 +422,7 @@ export type CameraNativeProps = {
   flashMode?: string;
   enableTorch?: boolean;
   animateShutter?: boolean;
+  autoFocus?: FocusMode;
   mute?: boolean;
   zoom?: number;
   barcodeScannerSettings?: BarcodeSettings;
@@ -418,7 +434,6 @@ export type CameraNativeProps = {
 // @docsMissing
 export type BarcodeSettings = {
   barcodeTypes: BarcodeType[];
-  interval?: number;
 };
 
 /**
@@ -464,4 +479,10 @@ export type BarcodeType =
   | 'code128'
   | 'upc_a';
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionHookOptions,
+  EventSubscription as Subscription,
+};

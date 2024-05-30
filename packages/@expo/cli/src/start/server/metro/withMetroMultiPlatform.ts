@@ -359,20 +359,6 @@ export function withExtendedResolver(
       return null;
     },
 
-    // HACK(EvanBacon):
-    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-    // to fail to load. This is a temporary workaround until we can fix this upstream.
-    // https://github.com/facebook/react-native/pull/38628
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (platform !== 'web' && moduleName === 'event-target-shim') {
-        debug('For event-target-shim to use js:', context.originModulePath);
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve('event-target-shim/dist/event-target-shim.js');
-      }
-
-      return null;
-    },
-
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -599,6 +585,6 @@ export async function withMetroMultiPlatformAsync(
   });
 }
 
-function isDirectoryIn(a: string, b: string) {
-  return b.startsWith(a) && b.length > a.length;
+function isDirectoryIn(targetPath: string, rootPath: string) {
+  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
 }

@@ -8,7 +8,46 @@
 
 ### 🐛 Bug fixes
 
+- Fix generating types in a loop ([#29157](https://github.com/expo/expo/pull/29157) by [@kadikraman](https://github.com/kadikraman))
+
 ### 💡 Others
+
+## 3.5.14 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- Additional fixes for deep links from expo.dev QR codes ([#28882](https://github.com/expo/expo/pull/28882) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.13 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- Fix deep links from expo.dev QR codes ([#28881](https://github.com/expo/expo/pull/28881) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.12 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- Fix Sitemap crashing when `UIViewControllerBasedStatusBarAppearance` is set to `YES` ([#28724](https://github.com/expo/expo/pull/28665) by [@hirbod](https://github.com/hirbod))
+
+## 3.5.11 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fix Typed Routes generating incorrect routes and crashing when moving files ([#28665](https://github.com/expo/expo/pull/28665) by [@marklawlor](https://github.com/marklawlor))
+- Fix _layout files with platform extensions incorrectly registering as a route ([#28699](https://github.com/expo/expo/pull/28699) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.10 — 2024-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useMemo` crash when adding new routes.
+
+## 3.5.9 — 2024-05-06
+
+### 💡 Others
+
+- Use `ReactDOMServer.renderToString` to support React 19 beta. ([#28592](https://github.com/expo/expo/pull/28592) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.5.8 — 2024-05-03
 

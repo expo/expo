@@ -144,7 +144,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/faq/': '/faq/',
   '/next-steps/community/': '/',
   '/introduction/managed-vs-bare/': '/archive/managed-vs-bare/',
-  '/workflow/expo-go/': '/get-started/expo-go/',
+  '/workflow/expo-go/': '/get-started/set-up-your-environment/',
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
@@ -209,7 +209,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
-  '/guides/up-and-running/': '/get-started/installation/',
+  '/guides/up-and-running/': '/get-started/create-a-project/',
   '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
@@ -218,14 +218,14 @@ const RENAMED_PAGES: Record<string, string> = {
     'https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36',
 
   // Changes from redoing the getting started workflow, SDK35+
-  '/workflow/up-and-running/': '/get-started/installation/',
+  '/workflow/up-and-running/': '/get-started/create-a-project/',
   '/introduction/additional-resources/': '/next-steps/additional-resources/',
   '/introduction/already-used-react-native/':
     '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
-  '/introduction/installation/': '/get-started/installation/',
+  '/introduction/installation/': '/get-started/create-a-project/',
   '/versions/latest/overview/': '/versions/latest/',
-  '/versions/latest/introduction/installation/': '/get-started/installation/',
+  '/versions/latest/introduction/installation/': '/get-started/create-a-project/',
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
@@ -249,13 +249,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/account-permissions/': '/accounts/personal/',
 
   // Redirects based on Sentry reports
-  '/next-steps/installation/': '/get-started/installation/',
+  '/next-steps/installation/': '/get-started/create-a-project/',
   '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/push-notifications/': '/push-notifications/overview/',
   '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
-  '/get-started/': '/get-started/installation/',
+  '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
   '/eas/submit/': '/submit/introduction/',
@@ -356,6 +356,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
+  '/guides/assets/': '/develop/user-interface/assets/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -402,9 +403,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/expokit/eject/': '/archive/glossary/#eject',
   '/versions/latest/sdk/admob/': '/versions/latest/',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
-  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
-  '/tutorial/': '/tutorial/introduction/',
+  '/tutorial/': '/tutorial/overview/',
 
   // EAS Update
   '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
@@ -424,6 +425,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
   '/router/advance/modal': '/router/advanced/modals/',
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
 
@@ -431,17 +433,17 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
-  '/versions/v48.0.0/sdk/filesystem.md': '/versions/v48.0.0/sdk/filesystem/',
+  '/versions/v48.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v47.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v46.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
-  '/versions/v48.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
-  '/versions/v47.0.0/sdk/taskmanager': '/versions/v48.0.0/sdk/task-manager/',
+  '/versions/v48.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
+  '/versions/v47.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
   '/versions/v46.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
   'versions/v48.0.0/sdk': '/versions/latest',
-  'versions/v48.0.0/sdk/config/app': '/versions/v48.0.0/sdk/config/app/',
+  'versions/v48.0.0/sdk/config/app': '/versions/latest/sdk/config/app/',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
   '/versions/v47.0.0/sdk': '/versions/latest',
@@ -452,4 +454,16 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Stop encouraging usage of Expo Go when using native modules
   '/bare/using-expo-client/': '/archive/using-expo-client/',
+
+  // May 2024 home / get started section
+  '/overview/': '/get-started/introduction/',
+  '/get-started/installation/': '/get-started/create-a-project/',
+  '/get-started/expo-go/': '/get-started/set-up-your-environment/',
+
+  // Redirect for /learn URL
+  '/learn/': '/tutorial/introduction/',
+
+  // May 2024 home / develop section
+  '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
+  '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
 };

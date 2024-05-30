@@ -34,7 +34,14 @@ export function myFunc2(foo: T2 | null) {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -48,12 +55,12 @@ exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
   "messages": [
     {
       "column": 1,
-      "endColumn": 2,
-      "endLine": 6,
+      "endColumn": 21,
+      "endLine": 4,
       "line": 4,
-      "message": "For-in loops over arrays are forbidden. Use for-of or array.forEach instead.",
+      "message": "For-in loops over arrays skips holes, returns indices as strings, and may visit the prototype chain or other enumerable properties. Use a more robust iteration method such as for-of or array.forEach instead.",
       "messageId": "forInViolation",
-      "nodeType": "ForInStatement",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-for-in-array",
       "severity": 2,
     },
@@ -66,7 +73,14 @@ for (const b in arr) {
 }
 export { sum };",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -110,7 +124,14 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 1,
 }
 `;
@@ -138,7 +159,14 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
   throw 3;
 }",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 1,
 }
 `;

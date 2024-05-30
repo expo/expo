@@ -6,9 +6,31 @@
 
 ### 🎉 New features
 
+- Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.1.10 - 2024-05-29
+
+### 💡 Others
+
+- [Android] Improve HLS compatibility. ([#28997](https://github.com/expo/expo/pull/28997) by [@behenate](https://github.com/behenate))
+
+## 1.1.9 — 2024-05-13
+
+### 🎉 New features
+
+- Add `duration` property on all platforms. ([#28576](https://github.com/expo/expo/pull/28576) by [@justjoostnl](https://github.com/justjoostnl))
+
+## 1.1.8 — 2024-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.7 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 1.1.6 — 2024-05-01
 

@@ -10,6 +10,7 @@ import {
   FlashMode,
   PermissionStatus,
   Camera,
+  FocusMode,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
@@ -45,6 +46,7 @@ interface State {
   mute: boolean;
   torchEnabled: boolean;
   cornerPoints?: BarcodePoint[];
+  autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
@@ -72,6 +74,7 @@ export default class CameraScreen extends React.Component<object, State> {
     cornerPoints: undefined,
     mute: false,
     barcodeData: '',
+    autoFocus: 'off',
     newPhotos: false,
     permissionsGranted: false,
     micPermissionsGranted: false,
@@ -127,6 +130,11 @@ export default class CameraScreen extends React.Component<object, State> {
   toggleBarcodeScanning = () =>
     this.setState((state) => ({ barcodeScanning: !state.barcodeScanning }));
 
+  toggleFocus = () =>
+    this.setState((state) => ({
+      autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
+    }));
+
   collectPictureSizes = async () => {
     const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
@@ -167,12 +175,13 @@ export default class CameraScreen extends React.Component<object, State> {
       this.camera?.current?.stopRecording();
       return Promise.resolve();
     } else {
-      return await this.camera?.current?.recordAsync();
+      return this.camera?.current?.recordAsync();
     }
   };
 
   takeVideo = async () => {
     const result = await this.recordVideo();
+    this.setState((state) => ({ recording: !state.recording }));
     if (result?.uri) {
       await FileSystem.moveAsync({
         from: result.uri,
@@ -247,6 +256,15 @@ export default class CameraScreen extends React.Component<object, State> {
           size={28}
           color={this.state.torchEnabled ? 'white' : '#858585'}
         />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
+        <Text
+          style={[
+            styles.autoFocusLabel,
+            { color: this.state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
+          ]}>
+          AF
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
@@ -346,6 +364,7 @@ export default class CameraScreen extends React.Component<object, State> {
         onCameraReady={this.collectPictureSizes}
         responsiveOrientationWhenOrientationLocked
         enableTorch={this.state.torchEnabled}
+        autofocus={this.state.autoFocus}
         facing={this.state.facing}
         animateShutter
         pictureSize={this.state.pictureSize}

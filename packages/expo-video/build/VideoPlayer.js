@@ -13,4 +13,5 @@ export function useVideoPlayer(source, setup) {
         return player;
     }, [JSON.stringify(parsedSource)]);
 }
+export default NativeVideoModule.VideoPlayer;
 //# sourceMappingURL=VideoPlayer.js.map

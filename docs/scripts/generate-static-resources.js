@@ -10,14 +10,24 @@ const basePath = path.join(dirname, '../', 'public', 'static', 'constants');
 
 const env = process.argv.slice(2)[0] || 'development';
 
-const writeResource = (filename, data) =>
+function writeResource(filename, data) {
   fs.writeFileSync(path.join(basePath, filename), JSON.stringify(data), { flag: 'wx' });
+}
+
+function getVersionForEnvironment(environment) {
+  switch (environment) {
+    case 'production':
+      return versions.VERSIONS.filter(v => v !== 'unversioned');
+    case 'preview':
+    default:
+      return versions.VERSIONS;
+  }
+}
 
 fs.mkdirSync(basePath);
 
 writeResource('versions.json', {
   ...versions,
-  VERSIONS:
-    env === 'production' ? versions.VERSIONS.filter(v => v !== 'unversioned') : versions.VERSIONS,
+  VERSIONS: getVersionForEnvironment(env),
 });
 writeResource('navigation.json', navigation);

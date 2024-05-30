@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 14.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Web] Fix `shouldCorrectPitch` being ignored on web. ([#28837](https://github.com/expo/expo/pull/28837) by [@behenate](https://github.com/behenate))
+
+## 14.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- [Android] Fix events being sent using a wrong event emitter. ([#28716](https://github.com/expo/expo/pull/28716) by [@behenate](https://github.com/behenate))
+
 ## 14.0.3 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

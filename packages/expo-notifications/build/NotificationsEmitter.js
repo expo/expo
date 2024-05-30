@@ -1,7 +1,8 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotificationResponse } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
@@ -72,7 +73,10 @@ export function addNotificationsDroppedListener(listener) {
  * @header listen
  */
 export function addNotificationResponseReceivedListener(listener) {
-    return emitter.addListener(didReceiveNotificationResponseEventName, listener);
+    return emitter.addListener(didReceiveNotificationResponseEventName, (response) => {
+        const mappedResponse = mapNotificationResponse(response);
+        listener(mappedResponse);
+    });
 }
 /**
  * Removes a notification subscription returned by an `addNotificationListener` call.
@@ -80,7 +84,7 @@ export function addNotificationResponseReceivedListener(listener) {
  * @header listen
  */
 export function removeNotificationSubscription(subscription) {
-    emitter.removeSubscription(subscription);
+    subscription.remove();
 }
 // @docsMissing
 /**
