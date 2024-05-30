@@ -11,9 +11,9 @@ import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
+import { stripAnsi } from '../../../utils/ansi';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-import { stripAnsi } from '../../../utils/ansi';
 
 type CodeFrame = {
   content: string;
