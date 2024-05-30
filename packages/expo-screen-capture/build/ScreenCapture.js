@@ -1,8 +1,7 @@
-import { EventEmitter, UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
-const emitter = new EventEmitter(ExpoScreenCapture);
 const onScreenshotEventName = 'onScreenshot';
 // @needsAudit
 /**
@@ -85,7 +84,7 @@ export function usePreventScreenCapture(key = 'default') {
  * `remove()` or passing it to `removeScreenshotListener`.
  */
 export function addScreenshotListener(listener) {
-    return emitter.addListener(onScreenshotEventName, listener);
+    return ExpoScreenCapture.addListener(onScreenshotEventName, listener);
 }
 // @needsAudit
 /**
@@ -106,7 +105,7 @@ export function addScreenshotListener(listener) {
  * @param subscription Subscription returned by `addScreenshotListener`.
  */
 export function removeScreenshotListener(subscription) {
-    emitter.removeSubscription(subscription);
+    subscription.remove();
 }
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
@@ -149,5 +148,5 @@ const defaultPermissionsResponse = {
     canAskAgain: true,
     status: PermissionStatus.GRANTED,
 };
-export { PermissionStatus };
+export { PermissionStatus, };
 //# sourceMappingURL=ScreenCapture.js.map

@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+- Keep using the legacy event emitter for the `DevLoadingView` in Expo Go. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+
+## 51.0.8 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.7 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.6 — 2024-05-14
+
+_This version does not introduce any user-facing changes._
+
 ## 51.0.5 — 2024-05-13
 
 _This version does not introduce any user-facing changes._

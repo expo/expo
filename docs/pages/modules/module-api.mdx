@@ -133,6 +133,7 @@ AsyncFunction("asyncFunction") { (message: String) in
 
 // or
 
+// Make sure to import `Promise` class from `expo.modules.kotlin` instead of `expo.modules.core`.
 AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
   promise.resolve(message)
 }

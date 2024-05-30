@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed a crash when the source cannot be retrieved. ([#28961](https://github.com/expo/expo/pull/28961) by [@mrakesh0608](https://github.com/mrakesh0608))
+
 ### 💡 Others
+
+- [Android] Made sure that `MediaMetadataRetriever` is safely released. ([#29015](https://github.com/expo/expo/pull/29015) by [@lukmccall](https://github.com/lukmccall))
 
 ## 8.0.0 — 2024-04-18
 

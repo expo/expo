@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fix generating types in a loop ([#29157](https://github.com/expo/expo/pull/29157) by [@kadikraman](https://github.com/kadikraman))
+
 ### 💡 Others
+
+## 3.5.14 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- Additional fixes for deep links from expo.dev QR codes ([#28882](https://github.com/expo/expo/pull/28882) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.13 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- Fix deep links from expo.dev QR codes ([#28881](https://github.com/expo/expo/pull/28881) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.12 — 2024-05-13
 

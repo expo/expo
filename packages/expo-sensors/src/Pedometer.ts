@@ -2,15 +2,12 @@ import {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  EventEmitter,
-  Subscription,
+  type EventSubscription,
   UnavailabilityError,
 } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';
-
-const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
 export type PedometerResult = {
   /**
@@ -32,8 +29,8 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  */
-export function watchStepCount(callback: PedometerUpdateCallback): Subscription {
-  return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
+export function watchStepCount(callback: PedometerUpdateCallback): EventSubscription {
+  return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
 }
 
 // @needsAudit
@@ -94,4 +91,9 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export {
+  EventSubscription as Subscription,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+};

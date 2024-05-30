@@ -403,7 +403,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/expokit/eject/': '/archive/glossary/#eject',
   '/versions/latest/sdk/admob/': '/versions/latest/',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
-  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
   '/tutorial/': '/tutorial/overview/',
 
@@ -425,6 +425,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
   '/router/advance/modal': '/router/advanced/modals/',
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
 
@@ -461,4 +462,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect for /learn URL
   '/learn/': '/tutorial/introduction/',
+
+  // May 2024 home / develop section
+  '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
+  '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
 };

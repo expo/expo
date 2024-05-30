@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.8 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `NPE` in `DeviceMotionListener`. ([#29022](https://github.com/expo/expo/pull/29022) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.7 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix crash when using `DeviceMotion` module. ([#28839](https://github.com/expo/expo/pull/28839) by [@behenate](https://github.com/behenate))
+
 ## 13.0.6 — 2024-05-13
 
 ### 💡 Others

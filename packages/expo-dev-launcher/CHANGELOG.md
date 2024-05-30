@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 4.0.16 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.15 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Removes the unnecessary reload when opening the backgrounded app from the icon. ([#28893](https://github.com/expo/expo/pull/28893) by [@lukmccall](https://github.com/lukmccall))
+
 ## 4.0.14 — 2024-05-09
 
 _This version does not introduce any user-facing changes._

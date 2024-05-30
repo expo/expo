@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
 ## 17.0.1 — 2024-04-23
 

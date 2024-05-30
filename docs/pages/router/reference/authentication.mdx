@@ -193,7 +193,7 @@ export default function Root() {
 
 Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
-```jsx app/(app)/_layout.js
+```jsx app/(app)/_layout.js|collapseHeight=400
 import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
@@ -225,7 +225,7 @@ export default function AppLayout() {
 
 Create the `/sign-in` screen. It can toggle the authentication using `signIn()`. Since this screen is outside the `(app)` group, the group's layout and authentication check do not run when rendering this screen. This lets logged-out users see this screen.
 
-```jsx app/sign-in.js
+```jsx app/sign-in.js|collapseHeight=480
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
@@ -255,7 +255,7 @@ export default function SignIn() {
 
 Implement an authenticated screen that lets users sign out.
 
-```jsx app/(app)/index.js
+```jsx app/(app)/index.js|collapseHeight=480
 import { Text, View } from 'react-native';
 
 import { useSession } from '../../ctx';
@@ -286,7 +286,7 @@ With Expo Router, something must be rendered to the screen while loading the ini
 
 ## Modals and per-route authentication
 
-Another common pattern is to render a sign-in modal over the top of the app. This enables you to dismiss partially preserve deep links when the authentication is complete. However, this pattern requires routes to be rendered in the background as these routes require handling data loading without authentication.
+Another common pattern is to render a sign-in modal over the top of the app. This enables you to dismiss and partially preserve deep links when the authentication is complete. However, this pattern requires routes to be rendered in the background as these routes require handling data loading without authentication.
 
 <FileTree
   files={[
@@ -303,7 +303,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
   ]}
 />
 
-```jsx app/(app)/_layout.js
+```jsx app/(app)/_layout.js|collapseHeight=480
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {

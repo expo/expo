@@ -1,4 +1,4 @@
-import type { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
+import type { PermissionExpiration, PermissionResponse, PermissionStatus, EventSubscription } from 'expo-modules-core';
 /**
  * An object represents a notification delivered by a push notification system.
  *
@@ -373,6 +373,7 @@ export type NotificationContentIos = {
      * The value your app uses to determine which scene to display to handle the notification.
      */
     targetContentIdentifier?: string;
+    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 /**
  * @platform ios
@@ -502,6 +503,7 @@ export type NotificationContentInput = {
      * @platform ios
      */
     attachments?: NotificationContentAttachmentIos[];
+    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 /**
  * An object represents a notification request you can pass into `scheduleNotificationAsync`.
@@ -637,5 +639,5 @@ export type NotificationCategoryOptions = {
      */
     allowAnnouncement?: boolean;
 };
-export type { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export type { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionExpiration, };
 //# sourceMappingURL=Notifications.types.d.ts.map

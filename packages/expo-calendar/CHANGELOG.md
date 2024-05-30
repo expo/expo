@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
+
 ### 💡 Others
+
+## 13.0.5 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- [iOS] Fix missing event info on update. ([#28825](https://github.com/expo/expo/pull/28825) by [@robertying](https://github.com/robertying))
 
 ## 13.0.4 — 2024-05-09
 
