@@ -10,8 +10,9 @@ import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
-import { SilentError } from '../../../utils/errors';
+import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+import { stripAnsi } from '../../../utils/ansi';
 
 type CodeFrame = {
   content: string;
@@ -64,6 +65,10 @@ export async function logMetroErrorWithStack(
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
   Log.log();
+
+  if (error instanceof CommandError) {
+    return;
+  }
 
   if (codeFrame) {
     const maxWarningLineLength = Math.max(200, process.stdout.columns);
@@ -240,6 +245,11 @@ export async function getErrorOverlayHtmlAsync({
     codeFrame: log.codeFrame,
     error,
   });
+
+  // @ts-expect-error
+  if ('message' in log && 'content' in log.message && typeof log.message.content === 'string') {
+    log.message.content = stripAnsi(log.message.content);
+  }
 
   const logBoxContext = {
     selectedLogIndex: 0,
