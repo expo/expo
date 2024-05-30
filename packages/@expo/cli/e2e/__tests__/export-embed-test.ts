@@ -108,6 +108,7 @@ it(
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: 'true',
@@ -138,6 +139,10 @@ it(
       'assets/assets/icon.png',
       'output.js',
     ]);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000

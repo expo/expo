@@ -121,8 +121,9 @@ export async function exportEmbedBundleAndAssetsAsync(
         minify: options.minify,
         mode: options.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
-        bytecode: isHermes,
         serializerIncludeMaps: !!sourceMapUrl,
+        // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+        bytecode: false,
         // source map inline
       },
       {
@@ -212,8 +213,9 @@ export async function createMetroServerAndBundleRequestAsync(
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
-      bytecode: isHermes,
       isExporting: true,
+      // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+      bytecode: false,
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||
