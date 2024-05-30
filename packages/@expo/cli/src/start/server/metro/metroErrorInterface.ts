@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import chalk from 'chalk';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
@@ -192,7 +193,36 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
     resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
   );
 
-  const stack = parseErrorStack(error.stack);
+  // console.log(Object.entries(error));
+
+  let stack;
+  if (error.type === 'TransformError') {
+    // Syntax errors in static rendering.
+    stack = [
+      {
+        file: path.join(projectRoot, error.filename),
+        methodName: '<unknown>',
+        arguments: [],
+        // TODO: Import stack
+        lineNumber: error.lineNumber,
+        column: error.column,
+      },
+    ];
+  } else if ('originModulePath' in error) {
+    // TODO: Use import stack here when the error is resolution based.
+    stack = [
+      {
+        file: error.originModulePath,
+        methodName: '<unknown>',
+        arguments: [],
+        // TODO: Import stack
+        lineNumber: 0,
+        column: 0,
+      },
+    ];
+  } else {
+    stack = parseErrorStack(error.stack);
+  }
 
   return new LogBoxLog({
     level: 'static',
