@@ -128,7 +128,7 @@ jobs:
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: Install Playwright Browsers
-        run: bun playwright install-deps chromium
+        run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
