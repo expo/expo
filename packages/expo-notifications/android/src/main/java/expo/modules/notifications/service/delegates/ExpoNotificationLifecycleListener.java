@@ -11,6 +11,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.util.Objects;
+
 import expo.modules.core.interfaces.ReactActivityLifecycleListener;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
@@ -70,7 +72,10 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
         Log.d("ExpoNotificationLifecycleListener", method + " : keys count = " + extra.keySet().size());
 
         for (String key : extra.keySet()) {
-            Log.d("ExpoNotificationLifecycleListener", method + " : key = " + key + " = " + extra.get(key).toString());
+            Log.d(
+                    "ExpoNotificationLifecycleListener",
+                    method + " : key = " + key + " = " + Objects.requireNonNull(extra.get(key)).toString()
+            );
         }
     }
 }
