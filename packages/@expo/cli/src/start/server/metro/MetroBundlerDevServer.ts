@@ -275,7 +275,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const resolvedMainModuleName =
-      mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
+      mainModuleName ?? '.' + path.sep + resolveMainModuleName(this.projectRoot, { platform });
     return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
@@ -551,11 +551,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    const output = await this.metroLoadModuleContents(
-      './' + opts.mainModuleName,
-      opts,
-      extraOptions
-    );
+    if (!opts.mainModuleName.startsWith(path.sep)) {
+      opts.mainModuleName = '.' + path.sep + opts.mainModuleName;
+    }
+
+    const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
     return {
       artifacts: output.artifacts!,
       assets: output.assets!,
