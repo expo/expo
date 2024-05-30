@@ -9,14 +9,22 @@ import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { AssetData } from 'metro';
-import fetch from 'node-fetch';
+import { TransformInputOptions } from 'metro';
+import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import {
+  sourceMapGeneratorNonBlocking,
+  type SourceMapGeneratorOptions,
+} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+import bundleToString from 'metro/src/lib/bundleToString';
+import { TransformProfile } from 'metro-babel-transformer';
+import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
+import { MetroPrivateServer, assertMetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -26,6 +34,7 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { BundleAssetWithFileHashes } from '../../../export/fork-bundleAsync';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -35,9 +44,9 @@ import { getFreePortAsync } from '../../../utils/port';
 import { logEventAsync } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
+  cachedSourceMaps,
+  evalMetroAndWrapFunctions,
   evalMetroNoHandling,
-  getStaticRenderFunctionsForEntry,
-  requireFileContentsWithMetro,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -57,6 +66,7 @@ import {
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
   shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
@@ -66,17 +76,22 @@ export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
 
-export class ForwardHtmlError extends CommandError {
-  constructor(
-    message: string,
-    public html: string,
-    public statusCode: number
-  ) {
-    super(message);
-  }
-}
+type MetroOnProgress = NonNullable<
+  import('metro/src/DeltaBundler/types').Options<void>['onProgress']
+>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+
+const getGraphId = require('metro/src/lib/getGraphId') as (
+  entryFile: string,
+  options: any,
+  etc: {
+    shallow: boolean;
+    lazy: boolean;
+    unstable_allowRequireContext: boolean;
+    resolverOptions: unknown;
+  }
+) => string;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -85,7 +100,7 @@ const EXPO_GO_METRO_PORT = 8081;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: import('metro').Server | null = null;
+  private metro: MetroPrivateServer | null = null;
 
   get name(): string {
     return 'metro';
@@ -144,19 +159,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             /\/\/# sourceMappingURL=.*/g,
             `//# sourceMappingURL=${artifactBasename}`
           );
+
+          const parsedMap = JSON.parse(contents.map);
           files.set(artifactFilename + '.map', {
             contents: JSON.stringify({
-              version: contents.map.version,
-              sources: contents.map.sources.map((source: string) => {
+              version: parsedMap.version,
+              sources: parsedMap.sources.map((source: string) => {
                 source =
                   typeof source === 'string' && source.startsWith(this.projectRoot)
                     ? path.relative(this.projectRoot, source)
                     : source;
                 return source.split(path.sep).join('/');
               }),
-              sourcesContent: new Array(contents.map.sources.length).fill(null),
-              names: contents.map.names,
-              mappings: contents.map.mappings,
+              sourcesContent: new Array(parsedMap.sources.length).fill(null),
+              names: parsedMap.names,
+              mappings: parsedMap.mappings,
             }),
             targetDomain: 'server',
           });
@@ -240,7 +257,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }: {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
-  } = {}): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
+  } = {}) {
     const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -254,7 +271,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const platform = 'web';
 
-    const devBundleUrlPathname = createBundleUrlPath({
+    const resolvedMainModuleName =
+      mainModuleName ?? '.' + path.sep + resolveMainModuleName(this.projectRoot, { platform });
+    return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -262,7 +281,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       serializerIncludeMaps: includeSourceMaps,
-      mainModuleName: mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform }),
+      mainModuleName: resolvedMainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       asyncRoutes,
       baseUrl,
@@ -270,64 +289,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot,
       bytecode: false,
     });
-
-    const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-
-    // Fetch the generated HTML from our custom Metro serializer
-    const results = await fetch(bundleUrl.toString());
-
-    const txt = await results.text();
-
-    let data: any;
-    try {
-      data = JSON.parse(txt);
-    } catch (error: any) {
-      debug(txt);
-
-      // Metro can throw this error when the initial module id cannot be resolved.
-      if (!results.ok && txt.startsWith('<!DOCTYPE html>')) {
-        throw new ForwardHtmlError(
-          `Metro failed to bundle the project. Check the console for more information.`,
-          txt,
-          results.status
-        );
-      }
-
-      Log.error(
-        'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
-      );
-      throw error;
-    }
-
-    // NOTE: This could potentially need more validation in the future.
-    if ('artifacts' in data && Array.isArray(data.artifacts)) {
-      return data;
-    }
-
-    if (data != null && (data.errors || data.type?.match(/.*Error$/))) {
-      // {
-      //   type: 'InternalError',
-      //   errors: [],
-      //   message: 'Metro has encountered an error: While trying to resolve module `stylis` from file `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js`, the package `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs`. Indeed, none of these files exist:\n' +
-      //     '\n' +
-      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css)\n' +
-      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs/index(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css): /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/metro/src/node-haste/DependencyGraph.js (289:17)\n' +
-      //     '\n' +
-      //     '\x1B[0m \x1B[90m 287 |\x1B[39m         }\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 288 |\x1B[39m         \x1B[36mif\x1B[39m (error \x1B[36minstanceof\x1B[39m \x1B[33mInvalidPackageError\x1B[39m) {\x1B[0m\n' +
-      //     '\x1B[0m\x1B[31m\x1B[1m>\x1B[22m\x1B[39m\x1B[90m 289 |\x1B[39m           \x1B[36mthrow\x1B[39m \x1B[36mnew\x1B[39m \x1B[33mPackageResolutionError\x1B[39m({\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m     |\x1B[39m                 \x1B[31m\x1B[1m^\x1B[22m\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 290 |\x1B[39m             packageError\x1B[33m:\x1B[39m error\x1B[33m,\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 291 |\x1B[39m             originModulePath\x1B[33m:\x1B[39m \x1B[36mfrom\x1B[39m\x1B[33m,\x1B[39m\x1B[0m\n' +
-      //     '\x1B[0m \x1B[90m 292 |\x1B[39m             targetModuleName\x1B[33m:\x1B[39m to\x1B[33m,\x1B[39m\x1B[0m'
-      // }
-      // The Metro logger already showed this error.
-      throw new Error(data.message);
-    }
-
-    throw new Error(
-      'Invalid resources returned from the Metro serializer. Expected array, found: ' + data
-    );
   }
 
   private async getStaticPageAsync(pathname: string) {
@@ -394,57 +355,208 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<T> {
-    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
-    assert(
-      baseUrl != null && routerRoot != null && isExporting != null,
-      'The server must be started before calling ssrLoadModule.'
-    );
-
-    return (
-      await getStaticRenderFunctionsForEntry<T>(
-        this.projectRoot,
-        this.getDevServerUrl()!,
-        {
-          // Bundle in Node.js mode for SSR.
-          environment: 'node',
-          platform: 'web',
-          mode: 'development',
-          bytecode: false,
-
-          ...this.instanceMetroOptions,
-          baseUrl,
-          routerRoot,
-          isExporting,
-          ...specificOptions,
-        },
-        filePath
-      )
-    ).fn;
+    const res = await this.ssrLoadModuleContents(filePath, specificOptions);
+    return await evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
-  async ssrLoadModuleContents(
+  private async metroImportAsArtifactsAsync(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
-  ): Promise<{ src: string; filename: string }> {
+  ) {
+    const results = await this.ssrLoadModuleContents(filePath, {
+      serializerOutput: 'static',
+      ...specificOptions,
+    });
+
+    // NOTE: This could potentially need more validation in the future.
+    if (results.artifacts && results.assets) {
+      return {
+        artifacts: results.artifacts,
+        assets: results.assets,
+        src: results.src,
+        filename: results.filename,
+        map: results.map,
+      };
+    }
+    throw new CommandError('Invalid bundler results: ' + results);
+  }
+
+  private async metroLoadModuleContents(
+    filePath: string,
+    specificOptions: ExpoMetroOptions,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ) {
+    const { baseUrl } = this.instanceMetroOptions;
+    assert(baseUrl != null, 'The server must be started before calling ssrLoadModuleContents.');
+
+    const opts: ExpoMetroOptions = {
+      // TODO: Possibly issues with using an absolute path here...
+      // mainModuleName: filePath,
+      lazy: false,
+      asyncRoutes: false,
+      inlineSourceMap: false,
+      engine: 'hermes',
+      minify: false,
+      // bytecode: false,
+      // Bundle in Node.js mode for SSR.
+      environment: 'node',
+      // platform: 'web',
+      // mode: 'development',
+      //
+      ...this.instanceMetroOptions,
+      baseUrl,
+      // routerRoot,
+      // isExporting,
+      ...specificOptions,
+    };
+
+    const expoBundleOptions = getMetroDirectBundleOptions(opts);
+
+    const resolverOptions = {
+      customResolverOptions: expoBundleOptions.customResolverOptions ?? {},
+      dev: expoBundleOptions.dev ?? true,
+    };
+
+    const transformOptions: TransformInputOptions = {
+      dev: expoBundleOptions.dev ?? true,
+      hot: true,
+      minify: expoBundleOptions.minify ?? false,
+      type: 'module',
+      unstable_transformProfile:
+        extraOptions.unstable_transformProfile ??
+        expoBundleOptions.unstable_transformProfile ??
+        'default',
+      customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
+      platform: expoBundleOptions.platform ?? 'web',
+      runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
+    };
+
+    const resolvedEntryFilePath = await this.resolveRelativePathAsync(filePath, {
+      resolverOptions,
+      transformOptions,
+    });
+
+    // Use fully qualified URL with all options to represent the file path that's used for source maps and HMR. This prevents collisions.
+    const filename = createBundleUrlPath({
+      ...opts,
+      mainModuleName: resolvedEntryFilePath,
+    });
+
+    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    const results = await this._bundleDirectAsync(resolvedEntryFilePath, {
+      graphOptions: {
+        lazy: expoBundleOptions.lazy ?? false,
+        shallow: expoBundleOptions.shallow ?? false,
+      },
+      resolverOptions,
+      serializerOptions: {
+        ...expoBundleOptions.serializerOptions,
+
+        inlineSourceMap: expoBundleOptions.inlineSourceMap ?? false,
+        modulesOnly: expoBundleOptions.modulesOnly ?? false,
+        runModule: expoBundleOptions.runModule ?? true,
+        // @ts-expect-error
+        sourceUrl: expoBundleOptions.sourceUrl,
+        // @ts-expect-error
+        sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl,
+      },
+      transformOptions,
+    });
+
+    return {
+      ...results,
+      filename,
+    };
+  }
+
+  private async ssrLoadModuleContents(
+    filePath: string,
+    specificOptions: Partial<ExpoMetroOptions> = {}
+  ) {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
-      'The server must be started before calling ssrLoadModule.'
+      'The server must be started before calling ssrLoadModuleContents.'
     );
 
-    return await requireFileContentsWithMetro(this.projectRoot, this.getDevServerUrl()!, filePath, {
+    const opts: ExpoMetroOptions = {
+      // TODO: Possibly issues with using an absolute path here...
+      mainModuleName: filePath,
+      lazy: false,
+      asyncRoutes: false,
+      inlineSourceMap: false,
+      engine: 'hermes',
+      minify: false,
+      bytecode: false,
       // Bundle in Node.js mode for SSR.
       environment: 'node',
       platform: 'web',
       mode: 'development',
-      bytecode: false,
-
+      //
       ...this.instanceMetroOptions,
       baseUrl,
       routerRoot,
       isExporting,
       ...specificOptions,
-    });
+    };
+
+    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
+    const scriptContents = wrapBundle(bundle);
+    if (map) {
+      debug('Registering SSR source map for:', filename);
+      cachedSourceMaps.set(filename, { url: this.projectRoot, map });
+    } else {
+      debug('No SSR source map found for:', filename);
+    }
+
+    return {
+      ...rest,
+      src: scriptContents,
+      filename,
+      map,
+    };
+  }
+
+  async legacySinglePageExportBundleAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
+    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(
+      baseUrl != null && routerRoot != null && isExporting != null,
+      'The server must be started before calling ssrLoadModuleContents.'
+    );
+
+    const opts: ExpoMetroOptions = {
+      ...this.instanceMetroOptions,
+      baseUrl,
+      routerRoot,
+      isExporting,
+      ...options,
+      environment: 'client',
+      serializerOutput: 'static',
+    };
+
+    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    if (!opts.mainModuleName.startsWith(path.sep)) {
+      opts.mainModuleName = '.' + path.sep + opts.mainModuleName;
+    }
+
+    const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
+    return {
+      artifacts: output.artifacts!,
+      assets: output.assets!,
+    };
   }
 
   async watchEnvironmentVariables() {
@@ -633,6 +745,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
+    assertMetroPrivateServer(metro);
     this.metro = metro;
     return {
       server,
@@ -711,7 +824,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private pendingRouteOperations = new Map<
     string,
-    Promise<{ src: string; filename: string; map?: any } | null>
+    Promise<{ src: string; filename: string; map: string } | null>
   >();
 
   // API Routes
@@ -719,7 +832,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string
-  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
+  ): Promise<{ src: string; filename: string; map: string } | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
@@ -782,6 +895,312 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
   }
+
+  private getMetroRevision(
+    resolvedEntryFilePath: string,
+    {
+      graphOptions,
+      transformOptions,
+      resolverOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+      graphOptions: {
+        shallow: boolean;
+        lazy: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'Metro server must be running to bundle directly.');
+    const config = this.metro._config;
+
+    const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
+      unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
+      resolverOptions,
+      shallow: graphOptions.shallow,
+      lazy: graphOptions.lazy,
+    });
+    return this.metro.getBundler().getRevisionByGraphId(graphId);
+  }
+
+  private async resolveRelativePathAsync(
+    moduleId: string,
+    {
+      resolverOptions,
+      transformOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'cannot invoke resolveRelativePathAsync without metro instance');
+    return await this.metro._resolveRelativePath(moduleId, {
+      relativeTo: 'server',
+      resolverOptions,
+      transformOptions,
+    });
+  }
+
+  // Direct Metro access
+
+  // Emulates the Metro dev server .bundle endpoint without having to go through a server.
+  async _bundleDirectAsync(
+    resolvedEntryFilePath: string,
+    {
+      transformOptions,
+      resolverOptions,
+      graphOptions,
+      serializerOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+      serializerOptions: {
+        modulesOnly: boolean;
+        runModule: boolean;
+        sourceMapUrl: string;
+        sourceUrl: string;
+        inlineSourceMap: boolean;
+        excludeSource: boolean;
+      };
+      graphOptions: {
+        shallow: boolean;
+        lazy: boolean;
+      };
+    }
+  ): Promise<{
+    numModifiedFiles: number;
+    lastModifiedDate: Date;
+    nextRevId: string;
+    bundle: string;
+    map: string;
+
+    // Defined if the output is multi-bundle.
+    artifacts?: SerialAsset[];
+    assets?: readonly BundleAssetWithFileHashes[];
+  }> {
+    assert(this.metro, 'Metro server must be running to bundle directly.');
+    const config = this.metro._config;
+    const buildNumber = this.metro.getNewBuildNumber();
+    const bundlePerfLogger = config.unstable_perfLoggerFactory?.('BUNDLING_REQUEST', {
+      key: buildNumber,
+    });
+
+    const onProgress: MetroOnProgress = (transformedFileCount: number, totalFileCount: number) => {
+      this.metro?._reporter?.update?.({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_transform_progressed',
+        transformedFileCount,
+        totalFileCount,
+      });
+    };
+
+    const revPromise = this.getMetroRevision(resolvedEntryFilePath, {
+      graphOptions,
+      transformOptions,
+      resolverOptions,
+    });
+
+    bundlePerfLogger?.point('resolvingAndTransformingDependencies_start');
+    bundlePerfLogger?.annotate({
+      bool: {
+        initial_build: revPromise == null,
+      },
+    });
+    this.metro?._reporter.update({
+      buildID: getBuildID(buildNumber),
+      bundleDetails: {
+        bundleType: transformOptions.type,
+        dev: transformOptions.dev,
+        entryFile: resolvedEntryFilePath,
+        minify: transformOptions.minify,
+        platform: transformOptions.platform,
+        // @ts-expect-error: typed incorrectly upstream
+        customResolverOptions: resolverOptions.customResolverOptions,
+        customTransformOptions: transformOptions.customTransformOptions,
+      },
+      isPrefetch: false,
+      type: 'bundle_build_started',
+    });
+
+    try {
+      const { delta, revision } = await (revPromise != null
+        ? this.metro.getBundler().updateGraph(await revPromise, false)
+        : this.metro.getBundler().initializeGraph(
+            // NOTE: Using absolute path instead of relative input path is a breaking change.
+            // entryFile,
+            resolvedEntryFilePath,
+
+            transformOptions,
+            resolverOptions,
+            {
+              onProgress,
+              shallow: graphOptions.shallow,
+              // @ts-expect-error: typed incorrectly
+              lazy: graphOptions.lazy,
+            }
+          ));
+      bundlePerfLogger?.annotate({
+        int: {
+          graph_node_count: revision.graph.dependencies.size,
+        },
+      });
+      bundlePerfLogger?.point('resolvingAndTransformingDependencies_end');
+      bundlePerfLogger?.point('serializingBundle_start');
+
+      const shouldAddToIgnoreList = this.metro._shouldAddModuleToIgnoreList.bind(this.metro);
+
+      const serializer = this.getMetroSerializer();
+
+      const bundle = await serializer(
+        // NOTE: Using absolute path instead of relative input path is a breaking change.
+        // entryFile,
+        resolvedEntryFilePath,
+
+        revision.prepend as any,
+        revision.graph as any,
+        {
+          asyncRequireModulePath: await this.metro._resolveRelativePath(
+            config.transformer.asyncRequireModulePath,
+            {
+              relativeTo: 'project',
+              resolverOptions,
+              transformOptions,
+            }
+          ),
+          // ...serializerOptions,
+          processModuleFilter: config.serializer.processModuleFilter,
+          createModuleId: this.metro._createModuleId,
+          getRunModuleStatement: config.serializer.getRunModuleStatement,
+          includeAsyncPaths: graphOptions.lazy,
+          dev: transformOptions.dev,
+          projectRoot: config.projectRoot,
+          modulesOnly: serializerOptions.modulesOnly,
+          runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
+            resolvedEntryFilePath
+            // path.relative(config.projectRoot, entryFile)
+          ),
+          runModule: serializerOptions.runModule,
+          sourceMapUrl: serializerOptions.sourceMapUrl,
+          sourceUrl: serializerOptions.sourceUrl,
+          inlineSourceMap: serializerOptions.inlineSourceMap,
+          serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+          shouldAddToIgnoreList,
+
+          // @ts-expect-error: passed to our serializer to enable non-serial return values.
+          serializerOptions,
+        }
+      );
+
+      this.metro._reporter.update({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_build_done',
+      });
+
+      bundlePerfLogger?.point('serializingBundle_end');
+
+      let bundleCode: string | null = null;
+      let bundleMap: string | null = null;
+
+      // @ts-expect-error: If the output is multi-bundle...
+      if (serializerOptions.output === 'static') {
+        try {
+          const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+
+          assert(
+            'artifacts' in parsed && Array.isArray(parsed.artifacts),
+            'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
+          );
+
+          const artifacts = parsed.artifacts as SerialAsset[];
+          const assets = parsed.assets;
+
+          const bundleCode = artifacts.filter((asset) => asset.type === 'js')[0];
+          const bundleMap = artifacts.filter((asset) => asset.type === 'map')?.[0]?.source ?? '';
+
+          return {
+            numModifiedFiles: delta.reset
+              ? delta.added.size + revision.prepend.length
+              : delta.added.size + delta.modified.size + delta.deleted.size,
+            lastModifiedDate: revision.date,
+            nextRevId: revision.id,
+            bundle: bundleCode.source,
+            map: bundleMap,
+            artifacts,
+            assets,
+          };
+        } catch (error: any) {
+          throw new Error(
+            'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
+              error.message
+          );
+        }
+      }
+
+      if (typeof bundle === 'string') {
+        bundleCode = bundle;
+
+        // Create the source map in a second pass...
+        let { prepend, graph } = revision;
+        if (serializerOptions.modulesOnly) {
+          prepend = [];
+        }
+
+        bundleMap = await sourceMapStringAsync(
+          [
+            //
+            ...prepend,
+            ...this.metro._getSortedModules(graph),
+          ],
+          {
+            excludeSource: serializerOptions.excludeSource,
+            processModuleFilter: config.serializer.processModuleFilter,
+            shouldAddToIgnoreList,
+          }
+        );
+      } else {
+        bundleCode = bundle.code;
+        bundleMap = bundle.map;
+      }
+
+      return {
+        numModifiedFiles: delta.reset
+          ? delta.added.size + revision.prepend.length
+          : delta.added.size + delta.modified.size + delta.deleted.size,
+        lastModifiedDate: revision.date,
+        nextRevId: revision.id,
+        bundle: bundleCode,
+        map: bundleMap,
+      };
+    } catch (error) {
+      this.metro._reporter.update({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_build_failed',
+      });
+
+      throw error;
+    }
+  }
+
+  private getMetroSerializer() {
+    return (
+      this.metro?._config?.serializer.customSerializer ||
+      ((entryPoint, preModules, graph, options) =>
+        bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code)
+    );
+  }
+}
+
+function getBuildID(buildNumber: number): string {
+  return buildNumber.toString(36);
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
@@ -793,4 +1212,20 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+function wrapBundle(str: string) {
+  // Skip the metro runtime so debugging is a bit easier.
+  // Replace the __r() call with an export statement.
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+}
+
+async function sourceMapStringAsync(
+  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  options: SourceMapGeneratorOptions
+): Promise<string> {
+  return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
+    excludeSource: options.excludeSource,
+  });
 }
