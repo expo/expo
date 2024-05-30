@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop outdated React Native resolver patch.
+
 ## 0.18.13 — 2024-05-16
 
 ### 🐛 Bug fixes
