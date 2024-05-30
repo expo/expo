@@ -68,7 +68,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+      
+      - name: Build Expo CLI
+        run: yarn workspace @expo/cli prepare
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -101,17 +104,24 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
         with:
-          yarn-workspace: 'true'
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+      
+      - name: Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+        
       - name: Install Playwright Browsers
         run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
+        
       - name: E2E (playwright) Test CLI
         run: yarn test:playwright
         working-directory: packages/@expo/cli
