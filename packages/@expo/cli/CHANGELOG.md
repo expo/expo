@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.18.16 — 2024-06-06
 
 _This version does not introduce any user-facing changes._
