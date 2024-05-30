@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fixed an issue where the `presentFormAsync` promise doesn't resolve when the form is closed on Android. ([#29201](https://github.com/expo/expo/pull/29201) by [@jp1987](https://github.com/jp1987))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
