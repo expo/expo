@@ -28,7 +28,7 @@ export function formatDeviceChoice(item: AnyDevice): { title: string; value: str
         : '';
   const format = isActive ? chalk.bold : (text: string) => text;
   return {
-    title: `${symbol}${format(item.name)}${
+    title: `${symbol}${format(item.name)}${isConnected ? ` - ${item.modelName}` : ''}${
       item.osVersion ? chalk.dim(` (${item.osVersion})`) : ''
     }`,
     value: item.udid,

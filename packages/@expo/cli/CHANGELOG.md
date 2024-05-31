@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Display the iOS device model for connected devices. ([#29225](https://github.com/expo/expo/pull/29225) by [@michalzuk](https://github.com/michalzuk))
 - Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
 - Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
 
