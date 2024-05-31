@@ -137,7 +137,6 @@ export async function exportAppAsync(
           const bundle = await devServer.legacySinglePageExportBundleAsync({
             platform,
             splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
-            // minify,
             mainModuleName: getEntryWithServerRoot(projectRoot, {
               platform,
               pkg: projectConfig.pkg,
