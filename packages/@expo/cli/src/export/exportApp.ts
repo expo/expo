@@ -153,6 +153,37 @@ export async function exportAppAsync(
             includeSourceMaps: sourceMaps,
             files,
           });
+
+          if (platform === 'web') {
+            // TODO: Unify with exportStaticAsync
+            // TODO: Maybe move to the serializer.
+            let html = await serializeHtmlWithAssets({
+              isExporting: true,
+              resources: bundle.artifacts,
+              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+                scripts: [],
+                cssLinks: [],
+              }),
+              baseUrl,
+            });
+
+            // Add the favicon assets to the HTML.
+            const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+              outputDir,
+              baseUrl,
+              files,
+            });
+            if (modifyHtml) {
+              html = modifyHtml(html);
+            }
+
+            // Generate SPA-styled HTML file.
+            // If web exists, then write the template HTML file.
+            files.set('index.html', {
+              contents: html,
+              targetDomain: 'client',
+            });
+          }
         })
       );
 
@@ -200,58 +231,27 @@ export async function exportAppAsync(
 
     // Additional web-only steps...
 
-    if (platforms.includes('web')) {
-      if (useServerRendering) {
-        const exportServer = exp.web?.output === 'server';
+    if (platforms.includes('web') && useServerRendering) {
+      const exportServer = exp.web?.output === 'server';
 
-        if (exportServer) {
-          // TODO: Remove when this is abstracted into the files map
-          await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
-        }
-
-        await exportFromServerAsync(projectRoot, devServer, {
-          mode,
-          files,
-          clear: !!clear,
-          outputDir: outputPath,
-          minify,
-          baseUrl,
-          includeSourceMaps: sourceMaps,
-          routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-          exportServer,
-          maxWorkers,
-          isExporting: true,
-        });
-      } else {
-        // TODO: Unify with exportStaticAsync
-        // TODO: Maybe move to the serializer.
-        let html = await serializeHtmlWithAssets({
-          isExporting: true,
-          resources: bundles.web!.artifacts,
-          template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-            scripts: [],
-            cssLinks: [],
-          }),
-          baseUrl,
-        });
-
-        // Add the favicon assets to the HTML.
-        const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
-          outputDir,
-          baseUrl,
-          files,
-        });
-        if (modifyHtml) {
-          html = modifyHtml(html);
-        }
-
-        // Generate SPA-styled HTML file.
-        // If web exists, then write the template HTML file.
-        files.set('index.html', {
-          contents: html,
-          targetDomain: 'client',
-        });
+      if (exportServer) {
+        // TODO: Remove when this is abstracted into the files map
+        await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
       }
+
+      await exportFromServerAsync(projectRoot, devServer, {
+        mode,
+        files,
+        clear: !!clear,
+        outputDir: outputPath,
+        minify,
+        baseUrl,
+        includeSourceMaps: sourceMaps,
+        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        exportServer,
+        maxWorkers,
+        isExporting: true,
+      });
     }
   } finally {
     await devServerManager.stopAsync();
