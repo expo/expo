@@ -24,7 +24,7 @@ function getTypedRoutesDeclarationFile(ctx) {
     }), staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     // If the user has expo-router v3+ installed, we can use the types from the package
     return (node_fs_1.default
-        .readFileSync(path_1.default.join(__dirname, '../../types/expo-router.d.ts'), 'utf-8')
+        .readFileSync(path_1.default.join(require.resolve('expo-router/package.json'), '..', './types/expo-router.d.ts'), 'utf-8')
         // Swap from being a namespace to a module
         .replace('declare namespace ExpoRouter {', `declare module "expo-router" {`)
         // Add the route values

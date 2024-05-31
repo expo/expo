@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-
+    "module": "commonjs",
+    "declarationMap": true,
     "types": ["jest", "jest-require", "node"]
   },
   "include": [

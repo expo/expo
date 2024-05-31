@@ -1,4 +1,7 @@
-export const getDevServer = () => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDevServer = void 0;
+const getDevServer = () => {
     // Disable for SSR
     if (typeof window === 'undefined') {
         return {
@@ -22,4 +25,5 @@ export const getDevServer = () => {
         url: location.origin + '/',
     };
 };
+exports.getDevServer = getDevServer;
 //# sourceMappingURL=index.js.map

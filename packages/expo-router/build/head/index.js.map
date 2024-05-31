@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/head/index.ts"],"names":[],"mappings":"AAAA,cAAc,YAAY,CAAC","sourcesContent":["export * from './ExpoHead';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/head/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,6CAA2B","sourcesContent":["export * from './ExpoHead';\n"]}

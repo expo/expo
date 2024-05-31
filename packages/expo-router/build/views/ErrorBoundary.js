@@ -1,15 +1,21 @@
-import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import React from 'react';
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Pressable } from './Pressable';
-import { Link } from '../link/Link';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ErrorBoundary = void 0;
+const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const Pressable_1 = require("./Pressable");
+const Link_1 = require("../link/Link");
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
     const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
     useMetroSymbolication = function (error) {
-        const [logBoxLog, setLogBoxLog] = React.useState(null);
-        React.useEffect(() => {
+        const [logBoxLog, setLogBoxLog] = react_1.default.useState(null);
+        react_1.default.useEffect(() => {
             let isMounted = true;
             const stack = parseErrorStack(error.stack);
             const log = new LogBoxLog({
@@ -48,7 +54,7 @@ if (process.env.NODE_ENV === 'development') {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;
         }
-        return (<ScrollView style={{ flex: 1 }}>
+        return (<react_native_1.ScrollView style={{ flex: 1 }}>
         <LogContext.Provider value={{
                 isDisabled: false,
                 logs: [logData],
@@ -56,53 +62,54 @@ if (process.env.NODE_ENV === 'development') {
             }}>
           <LogBoxInspectorStackFrames onRetry={function () { }} type="stack"/>
         </LogContext.Provider>
-      </ScrollView>);
+      </react_native_1.ScrollView>);
     };
 }
 else {
     StackTrace = function () {
-        return <View style={{ flex: 1 }}/>;
+        return <react_native_1.View style={{ flex: 1 }}/>;
     };
 }
-export function ErrorBoundary({ error, retry }) {
+function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
-    const inTabBar = React.useContext(BottomTabBarHeightContext);
-    const Wrapper = inTabBar ? View : SafeAreaView;
-    return (<View style={styles.container}>
+    const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
+    const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
+    return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        <View style={{
+        <react_native_1.View style={{
             marginBottom: 12,
             gap: 4,
             flexWrap: 'wrap',
         }}>
-          <Text role="heading" aria-level={1} style={styles.title}>
+          <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
-          </Text>
-          <Text role="heading" aria-level={2} style={styles.errorMessage}>
+          </react_native_1.Text>
+          <react_native_1.Text role="heading" aria-level={2} style={styles.errorMessage}>
             Error: {error.message}
-          </Text>
-        </View>
+          </react_native_1.Text>
+        </react_native_1.View>
 
         <StackTrace logData={logBoxLog}/>
-        {process.env.NODE_ENV === 'development' && (<Link href="/_sitemap" style={styles.link}>
+        {process.env.NODE_ENV === 'development' && (<Link_1.Link href="/_sitemap" style={styles.link}>
             Sitemap
-          </Link>)}
-        <Pressable onPress={retry}>
-          {({ hovered, pressed }) => (<View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
-              <Text style={[
+          </Link_1.Link>)}
+        <Pressable_1.Pressable onPress={retry}>
+          {({ hovered, pressed }) => (<react_native_1.View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
+              <react_native_1.Text style={[
                 styles.buttonText,
                 {
                     color: hovered || pressed ? 'black' : 'white',
                 },
             ]}>
                 Retry
-              </Text>
-            </View>)}
-        </Pressable>
+              </react_native_1.Text>
+            </react_native_1.View>)}
+        </Pressable_1.Pressable>
       </Wrapper>
-    </View>);
+    </react_native_1.View>);
 }
-const styles = StyleSheet.create({
+exports.ErrorBoundary = ErrorBoundary;
+const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'black',
@@ -112,21 +119,21 @@ const styles = StyleSheet.create({
     },
     title: {
         color: 'white',
-        fontSize: Platform.select({ web: 32, default: 24 }),
+        fontSize: react_native_1.Platform.select({ web: 32, default: 24 }),
         fontWeight: 'bold',
     },
     buttonText: {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 transitionDuration: '100ms',
             },
         }),
     },
     buttonInner: {
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 transitionDuration: '100ms',
             },
@@ -140,7 +147,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     code: {
-        fontFamily: Platform.select({
+        fontFamily: react_native_1.Platform.select({
             default: 'Courier',
             ios: 'Courier New',
             android: 'monospace',
