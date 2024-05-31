@@ -34,9 +34,6 @@ function _getRoutes() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function isOverrideContext(context) {
-  return Boolean(typeof context === 'object' && 'appDir' in context);
-}
 function getMockConfig(context, metaOnly = true) {
   return (0, _getLinkingConfig().getNavigationConfig)((0, _getRoutes().getExactRoutes)(getMockContext(context)), metaOnly);
 }
@@ -47,10 +44,12 @@ function getMockContext(context) {
     return (0, _contextStubs().inMemoryContext)(Object.fromEntries(context.map(filename => [filename, {
       default: () => null
     }])));
-  } else if (isOverrideContext(context)) {
+  } else if (!('appDir' in context)) {
+    return (0, _contextStubs().inMemoryContext)(context);
+  } else if ('appDir' in context && typeof context.appDir === 'string') {
     return (0, _contextStubs().requireContextWithOverrides)(context.appDir, context.overrides);
   } else {
-    return (0, _contextStubs().inMemoryContext)(context);
+    throw new Error('Invalid context');
   }
 }
 //# sourceMappingURL=mock-config.js.map

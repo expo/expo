@@ -3,17 +3,26 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.adjustPathname = adjustPathname;
 exports.extractExpoPathFromURL = extractExpoPathFromURL;
-function Linking() {
-  const data = _interopRequireWildcard(require("expo-linking"));
-  Linking = function () {
-    return data;
+exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
+exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
+function parsePathAndParamsFromExpoGoLink(url) {
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+
+  const href = parsePathFromExpoGoLink(url);
+  const results = href.match(/(.*?)(\?.*)/);
+  return {
+    pathname: results?.[1] ?? '',
+    queryString: results?.[2] ?? ''
   };
-  return data;
 }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function parsePathFromExpoGoLink(url) {
+  // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+  // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+  return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
+}
+
 // This is only run on native.
 function extractExactPathFromURL(url) {
   if (
@@ -22,8 +31,14 @@ function extractExactPathFromURL(url) {
   url.match(/^https?:\/\//)) {
     const {
       origin,
-      href
+      href,
+      hostname
     } = new URL(url);
+    if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
+      // These are QR code generate deep-link that always like to the '/' path
+      // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+      return '';
+    }
     return href.replace(origin, '');
   }
   const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -33,16 +48,16 @@ function extractExactPathFromURL(url) {
   // while not exhaustive, `exp` and `exps` are the only two schemes which
   // are passed through to other apps in Expo Go.
   url.match(/^exp(s)?:\/\//)) {
-    const pathname = url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1];
+    const pathname = parsePathFromExpoGoLink(url);
     if (pathname) {
       return fromDeepLink('a://' + pathname);
     }
-    const res = Linking().parse(url);
-    const qs = !res.queryParams ? '' : Object.entries(res.queryParams).map(([k, v]) => `${k}=${v}`).join('&');
-    return adjustPathname({
-      hostname: res.hostname,
-      pathname: res.path || ''
-    }) + (qs ? '?' + qs : '');
+    // Match the `?.*` segment of the URL.
+    const queryParams = url.match(/exps?:\/\/.*\?(.*)/)?.[1];
+    if (queryParams) {
+      return fromDeepLink('a://?' + queryParams);
+    }
+    return '';
   }
 
   // TODO: Support dev client URLs
@@ -86,14 +101,8 @@ function fromDeepLink(url) {
   return results;
 }
 function extractExpoPathFromURL(url = '') {
+  return extractExactPathFromURL(url)
   // TODO: We should get rid of this, dropping specificities is not good
-  return extractExactPathFromURL(url).replace(/^\//, '');
-}
-function adjustPathname(url) {
-  if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
-    // drop the first two segments from pathname:
-    return url.pathname.split('/').slice(2).join('/');
-  }
-  return url.pathname;
+  .replace(/^\//, '');
 }
 //# sourceMappingURL=extractPathFromURL.js.map

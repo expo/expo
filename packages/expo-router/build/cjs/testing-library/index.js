@@ -31,6 +31,7 @@ Object.defineProperty(exports, "getMockContext", {
 exports.renderRouter = renderRouter;
 exports.testRouter = void 0;
 require("./expect");
+require("./mocks");
 var _reactNative = require("@testing-library/react-native");
 Object.keys(_reactNative).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
@@ -53,13 +54,6 @@ function _react() {
 function _mockConfig() {
   const data = require("./mock-config");
   _mockConfig = function () {
-    return data;
-  };
-  return data;
-}
-function _mocks() {
-  const data = require("./mocks");
-  _mocks = function () {
     return data;
   };
   return data;
@@ -100,34 +94,27 @@ function _imperativeApi() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-/// <reference types="../../types/jest" />
-
 // re-export everything
 
+afterAll(() => {
+  _routerStore().store.cleanup();
+});
 function renderRouter(context = './app', {
   initialUrl = '/',
+  linking,
   ...options
 } = {}) {
+  jest.useFakeTimers();
   const mockContext = (0, _mockConfig().getMockContext)(context);
-
-  // Reset the initial URL
-  (0, _mocks().setInitialUrl)(initialUrl);
 
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
   _getLinkingConfig().stateCache.clear();
-  let location;
-  if (typeof initialUrl === 'string') {
-    location = new URL(initialUrl, 'test://');
-  } else if (initialUrl instanceof URL) {
-    location = initialUrl;
-  }
   const result = (0, _reactNative.render)( /*#__PURE__*/_react().default.createElement(_ExpoRoot().ExpoRoot, {
     context: mockContext,
-    location: location
-  }), {
-    ...options
-  });
+    location: initialUrl,
+    linking: linking
+  }), options);
   return Object.assign(result, {
     getPathname() {
       return _routerStore().store.routeInfoSnapshot().pathname;
@@ -140,6 +127,9 @@ function renderRouter(context = './app', {
     },
     getPathnameWithParams() {
       return (0, _getPathFromState().default)(_routerStore().store.rootState, _routerStore().store.linking.config);
+    },
+    getRouterState() {
+      return _routerStore().store.rootStateSnapshot();
     }
   });
 }

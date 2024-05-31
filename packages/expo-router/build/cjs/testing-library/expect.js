@@ -21,6 +21,9 @@ expect.extend({
   },
   toHaveSearchParams(screen, expected) {
     return _matchers().default.toEqual(screen.getSearchParams(), expected);
+  },
+  toHaveRouterState(screen, expected) {
+    return _matchers().default.toEqual(screen.getRouterState(), expected);
   }
 });
 //# sourceMappingURL=expect.js.map

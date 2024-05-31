@@ -11,9 +11,9 @@ function _react() {
   };
   return data;
 }
-function _reactHelmetAsync() {
-  const data = require("react-helmet-async");
-  _reactHelmetAsync = function () {
+function _reactNativeHelmetAsync() {
+  const data = require("react-native-helmet-async");
+  _reactNativeHelmetAsync = function () {
     return data;
   };
   return data;
@@ -22,8 +22,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const Head = ({
   children
 }) => {
-  return /*#__PURE__*/_react().default.createElement(_reactHelmetAsync().Helmet, null, children);
+  return /*#__PURE__*/_react().default.createElement(_reactNativeHelmetAsync().Helmet, null, children);
 };
 exports.Head = Head;
-Head.Provider = _reactHelmetAsync().HelmetProvider;
+Head.Provider = _reactNativeHelmetAsync().HelmetProvider;
 //# sourceMappingURL=ExpoHead.js.map

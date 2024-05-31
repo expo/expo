@@ -23,8 +23,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // @ts-ignore: types node
 
-function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/) {
-  const files = {};
+function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/, files = {}) {
   function readDirectory(directory) {
     _nodeFs().default.readdirSync(directory).forEach(file => {
       const fullPath = _nodePath().default.resolve(directory, file);
@@ -37,7 +36,9 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
       files[relativePath] = true;
     });
   }
-  readDirectory(base);
+  if (_nodeFs().default.existsSync(base)) {
+    readDirectory(base);
+  }
   const context = Object.assign(function Module(file) {
     return require(_nodePath().default.join(base, file));
   }, {

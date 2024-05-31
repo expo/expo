@@ -5,13 +5,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ExpoRoot = ExpoRoot;
-function _expoConstants() {
-  const data = _interopRequireDefault(require("expo-constants"));
-  _expoConstants = function () {
-    return data;
-  };
-  return data;
-}
 function _expoStatusBar() {
   const data = require("expo-status-bar");
   _expoStatusBar = function () {
@@ -54,9 +47,16 @@ function _routerStore() {
   };
   return data;
 }
-function _serverLocationContext() {
-  const data = require("./global-state/serverLocationContext");
-  _serverLocationContext = function () {
+function _serverContext() {
+  const data = _interopRequireDefault(require("./global-state/serverContext"));
+  _serverContext = function () {
+    return data;
+  };
+  return data;
+}
+function _statusbar() {
+  const data = require("./utils/statusbar");
+  _statusbar = function () {
     return data;
   };
   return data;
@@ -68,9 +68,9 @@ function _Splash() {
   };
   return data;
 }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = _Platform().default.OS === 'web' || isTestEnv ? {
@@ -87,7 +87,6 @@ const INITIAL_METRICS = _Platform().default.OS === 'web' || isTestEnv ? {
     bottom: 0
   }
 } : undefined;
-const hasViewControllerBasedStatusBarAppearance = _Platform().default.OS === 'ios' && !!_expoConstants().default.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 function ExpoRoot({
   wrapper: ParentWrapper = _react().Fragment,
   ...props
@@ -104,7 +103,7 @@ function ExpoRoot({
     // SSR support
     , {
       initialMetrics: INITIAL_METRICS
-    }, children, !hasViewControllerBasedStatusBarAppearance && /*#__PURE__*/_react().default.createElement(_expoStatusBar().StatusBar, {
+    }, children, !_statusbar().hasViewControllerBasedStatusBarAppearance && /*#__PURE__*/_react().default.createElement(_expoStatusBar().StatusBar, {
       style: "auto"
     })));
   };
@@ -116,9 +115,43 @@ const initialUrl = _Platform().default.OS === 'web' && typeof window !== 'undefi
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
-  wrapper: WrapperComponent = _react().Fragment
+  wrapper: WrapperComponent = _react().Fragment,
+  linking = {}
 }) {
-  const store = (0, _routerStore().useInitializeExpoRouter)(context, initialLocation);
+  // location and linking.getInitialURL are both used to initialize the router state
+  //  - location is used on web and during static rendering
+  //  - linking.getInitialURL is used on native
+  const serverContext = (0, _react().useMemo)(() => {
+    let contextType = {};
+    if (initialLocation instanceof URL) {
+      contextType = {
+        location: {
+          pathname: initialLocation.pathname,
+          search: initialLocation.search
+        }
+      };
+    } else if (typeof initialLocation === 'string') {
+      // The initial location is a string, so we need to parse it into a URL.
+      const url = new URL(initialLocation, 'http://placeholder.base');
+      contextType = {
+        location: {
+          pathname: url.pathname,
+          search: url.search
+        }
+      };
+    }
+    return contextType;
+  }, []);
+
+  /*
+   * The serverUrl is an initial URL used in server rendering environments.
+   * e.g Static renders, units tests, etc
+   */
+  const serverUrl = serverContext.location ? `${serverContext.location.pathname}${serverContext.location.search}` : undefined;
+  const store = (0, _routerStore().useInitializeExpoRouter)(context, {
+    ...linking,
+    serverUrl
+  });
   if (store.shouldShowTutorial()) {
     _Splash().SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
@@ -138,8 +171,8 @@ function ContextNavigator({
     documentTitle: {
       enabled: false
     }
-  }, /*#__PURE__*/_react().default.createElement(_serverLocationContext().ServerLocationContext.Provider, {
-    value: initialLocation
+  }, /*#__PURE__*/_react().default.createElement(_serverContext().default.Provider, {
+    value: serverContext
   }, /*#__PURE__*/_react().default.createElement(WrapperComponent, null, /*#__PURE__*/_react().default.createElement(Component, null))));
 }
 let onUnhandledAction;

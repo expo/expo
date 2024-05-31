@@ -112,6 +112,13 @@ function _matchers() {
   };
   return data;
 }
+function _statusbar() {
+  const data = require("../utils/statusbar");
+  _statusbar = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const INDENT = 24;
 function getNavOptions() {
@@ -145,7 +152,7 @@ function Sitemap() {
   } = (0, _useWindowDimensions().default)();
   return /*#__PURE__*/_react().default.createElement(_View().default, {
     style: styles.container
-  }, /*#__PURE__*/_react().default.createElement(_StatusBar().default, {
+  }, !_statusbar().hasViewControllerBasedStatusBarAppearance && /*#__PURE__*/_react().default.createElement(_StatusBar().default, {
     barStyle: "light-content"
   }), /*#__PURE__*/_react().default.createElement(_View().default, {
     style: [styles.main, {

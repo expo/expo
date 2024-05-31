@@ -33,9 +33,9 @@ function _createMemoryHistory() {
   };
   return data;
 }
-function _serverLocationContext() {
-  const data = require("../global-state/serverLocationContext");
-  _serverLocationContext = function () {
+function _serverContext() {
+  const data = _interopRequireDefault(require("../global-state/serverContext"));
+  _serverContext = function () {
     return data;
   };
   return data;
@@ -57,7 +57,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
 // createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
 
-// This was removed as we don't use ServerContext
 // import ServerContext from './ServerContext';
 
 /* End of fork */
@@ -148,16 +147,7 @@ function useLinking(ref, {
     getPathFromStateRef.current = getPathFromState;
     getActionFromStateRef.current = getActionFromState;
   });
-
-  /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L142 */
-  // ServerContext is used inside ServerContainer to set the location during SSR: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/ServerContainer.tsx#L50-L54
-  // Expo Router uses the `initialLocation` prop to set the initial location during SSR:
-  const location = React().useContext(_serverLocationContext().ServerLocationContext);
-  const server = {
-    location
-  };
-  /* End of fork */
-
+  const server = React().useContext(_serverContext().default);
   const getInitialState = React().useCallback(() => {
     let value;
     if (enabledRef.current) {

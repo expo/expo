@@ -48,6 +48,13 @@ function _path() {
   };
   return data;
 }
+function _matchers() {
+  const data = require("../matchers");
+  _matchers = function () {
+    return data;
+  };
+  return data;
+}
 function _url() {
   const data = require("../utils/url");
   _url = function () {
@@ -156,25 +163,75 @@ function linkTo(href, event) {
   }
   return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
-function rewriteNavigationStateToParams(state, params = {}) {
-  if (!state) return params;
-  // We Should always have at least one route in the state
-  const lastRoute = state.routes[state.routes.length - 1];
-  params.screen = lastRoute.name;
-  // Weirdly, this always needs to be an object. If it's undefined, it won't work.
-  params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
-  if (lastRoute.state) {
-    rewriteNavigationStateToParams(lastRoute.state, params.params);
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
+  /**
+   * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
+   * lowest navigator is the target.
+   *
+   * By default React Navigation will target the current navigator, but this doesn't work for all actions
+   * For example:
+   *  - /deeply/nested/route -> /top-level-route the target needs to be the top-level navigator
+   *  - /stack/nestedStack/page -> /stack1/nestedStack/other-page needs to target the nestedStack navigator
+   *
+   * This matching needs to done by comparing the route names and the dynamic path, for example
+   * - /1/page -> /2/anotherPage needs to target the /[id] navigator
+   *
+   * Other parameters such as search params and hash are not evaluated.
+   */
+  let actionStateRoute;
+
+  // Traverse the state tree comparing the current state and the action state until we find where they diverge
+  while (actionState && navigationState) {
+    const stateRoute = navigationState.routes[navigationState.index];
+    actionStateRoute = actionState.routes[actionState.routes.length - 1];
+    const childState = actionStateRoute.state;
+    const nextNavigationState = stateRoute.state;
+    const dynamicName = (0, _matchers().matchDynamicName)(actionStateRoute.name);
+    const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name || !childState || !nextNavigationState || dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName];
+    if (didActionAndCurrentStateDiverge) {
+      break;
+    }
+    actionState = childState;
+    navigationState = nextNavigationState;
   }
-  return JSON.parse(JSON.stringify(params));
-}
-function getNavigateAction(state, parentState, type = 'NAVIGATE') {
-  const {
-    screen,
-    params
-  } = rewriteNavigationStateToParams(state);
-  let key;
+
+  /*
+   * We found the target navigator, but the payload is in the incorrect format
+   * We need to convert the action state to a payload that can be dispatched
+   */
+  const rootPayload = {
+    params: {}
+  };
+  let payload = rootPayload;
+  let params = payload.params;
+
+  // The root level of payload is a bit weird, its params are in the child object
+  while (actionStateRoute) {
+    Object.assign(params, {
+      ...payload.params,
+      ...actionStateRoute.params
+    });
+    // Assign the screen name to the payload
+    payload.screen = actionStateRoute.name;
+    // Merge the params, ensuring that we create a new object
+    payload.params = {
+      ...params
+    };
+    // Params don't include the screen, thats a separate attribute
+    delete payload.params['screen'];
+
+    // Continue down the payload tree
+    // Initially these values are separate, but React Nav merges them after the first layer
+    payload = payload.params;
+    params = payload;
+    actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+  }
+
+  // Expo Router uses only three actions, but these don't directly translate to all navigator actions
   if (type === 'PUSH') {
+    // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
+    type = 'NAVIGATE';
+
     /*
      * The StackAction.PUSH does not work correctly with Expo Router.
      *
@@ -189,20 +246,20 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
      * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
      *
      */
-    type = 'NAVIGATE';
-    if (parentState.type === 'stack') {
-      key = `${screen}-${(0, _nonSecure().nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+    if (navigationState.type === 'stack') {
+      rootPayload.key = `${rootPayload.name}-${(0, _nonSecure().nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
     }
-  } else if (type === 'REPLACE' && parentState.type === 'tab') {
+  }
+  if (type === 'REPLACE' && navigationState.type === 'tab') {
     type = 'JUMP_TO';
   }
   return {
     type,
-    target: parentState.key,
+    target: navigationState.key,
     payload: {
-      key,
-      name: screen,
-      params
+      key: rootPayload.key,
+      name: rootPayload.screen,
+      params: rootPayload.params
     }
   };
 }

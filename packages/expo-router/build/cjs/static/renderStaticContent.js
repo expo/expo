@@ -115,6 +115,7 @@ _AppRegistry().default.registerComponent('App', () => _ExpoRoot().ExpoRoot);
 async function getManifest(options = {}) {
   const routeTree = (0, _getRoutes().getRoutes)(_ctx().ctx, {
     preserveApiRoutes: true,
+    platform: 'web',
     ...options
   });
   if (!routeTree) {
@@ -134,7 +135,10 @@ async function getManifest(options = {}) {
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-  const routeTree = (0, _getRoutes().getRoutes)(_ctx().ctx, options);
+  const routeTree = (0, _getRoutes().getRoutes)(_ctx().ctx, {
+    platform: 'web',
+    ...options
+  });
   if (!routeTree) {
     throw new Error('No routes found');
   }
@@ -180,15 +184,11 @@ async function getStaticContent(location) {
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
-  const stream = await _server2().default.renderToStaticNodeStream( /*#__PURE__*/_react().default.createElement(_head().Head.Provider, {
+  const html = await _server2().default.renderToString( /*#__PURE__*/_react().default.createElement(_head().Head.Provider, {
     context: headContext
   }, /*#__PURE__*/_react().default.createElement(_native().ServerContainer, {
     ref: ref
   }, element)));
-  let html = '';
-  for await (const chunk of stream) {
-    html += chunk;
-  }
 
   // Eval the CSS after the HTML is rendered so that the CSS is in the same order
   const css = _server2().default.renderToStaticMarkup(getStyleElement());

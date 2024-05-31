@@ -157,6 +157,7 @@ function walkConfigItems(route, focusedRoute, configs, {
   }
   let pattern = null;
   let focusedParams;
+  let hash;
   const collectedParams = {};
   while (route.name in configs) {
     const configItem = configs[route.name];
@@ -167,6 +168,10 @@ function walkConfigItems(route, focusedRoute, configs, {
     }
     pattern = inputPattern;
     if (route.params) {
+      if (route.params['#']) {
+        hash = route.params['#'];
+        delete route.params['#'];
+      }
       const params = processParamsWithUserSettings(configItem, route.params);
       if (pattern !== undefined && pattern !== null) {
         Object.assign(collectedParams, params);
@@ -244,6 +249,7 @@ function walkConfigItems(route, focusedRoute, configs, {
     pattern,
     nextRoute: route,
     focusedParams,
+    hash,
     params: collectedParams
   };
 }
@@ -253,6 +259,7 @@ function getPathFromResolvedState(state, configs, {
 }) {
   let path = '';
   let current = state;
+  let hash;
   const allParams = {};
   while (current) {
     path += '/';
@@ -269,12 +276,16 @@ function getPathFromResolvedState(state, configs, {
       pattern,
       params,
       nextRoute,
-      focusedParams
+      focusedParams,
+      hash: $hash
     } = walkConfigItems(route, getActiveRoute(current), {
       ...configs
     }, {
       preserveDynamicRoutes
     });
+    if ($hash) {
+      hash = $hash;
+    }
     Object.assign(allParams, params);
     path += getPathWithConventionsCollapsed({
       pattern,
@@ -312,9 +323,14 @@ function getPathFromResolvedState(state, configs, {
       break;
     }
   }
+  if (hash) {
+    allParams['#'] = hash;
+    path += `#${hash}`;
+  }
+  const params = decodeParams(allParams);
   return {
     path: appendBaseUrl(basicSanitizePath(path)),
-    params: decodeParams(allParams)
+    params
   };
 }
 function decodeParams(params) {

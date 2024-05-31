@@ -3,6 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "Options", {
+  enumerable: true,
+  get: function () {
+    return _getRoutes().Options;
+  }
+});
 exports.createRoutesManifest = createRoutesManifest;
 function _getRoutes() {
   const data = require("./getRoutes");
@@ -30,12 +36,14 @@ function createMockContextModule(map = []) {
   });
   return contextModule;
 }
-function createRoutesManifest(paths) {
+function createRoutesManifest(paths, options) {
   // TODO: Drop this part for Node.js
   const routeTree = (0, _getRoutes().getRoutes)(createMockContextModule(paths), {
+    ...options,
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
-    ignoreEntryPoints: true
+    ignoreEntryPoints: true,
+    platform: 'web'
   });
   if (!routeTree) {
     return null;

@@ -8,7 +8,7 @@ exports.resolveHref = void 0;
 const resolveHref = href => {
   if (typeof href === 'string') {
     return resolveHref({
-      pathname: href ?? ''
+      pathname: href
     });
   }
   const path = href.pathname ?? '';

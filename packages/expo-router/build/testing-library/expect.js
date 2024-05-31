@@ -14,7 +14,7 @@ expect.extend({
         return matchers.toEqual(screen.getSearchParams(), expected);
     },
     toHaveRouterState(screen, expected) {
-        return matchers_1.default.toEqual(screen.getRouterState(), expected);
+        return matchers.toEqual(screen.getRouterState(), expected);
     },
 });
 //# sourceMappingURL=expect.js.map
