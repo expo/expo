@@ -305,7 +305,7 @@ class ContactsModule : Module() {
     val intent = Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI)
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
-    contactManipulationPromise = promise;
+    contactManipulationPromise = promise
     activity.startActivityForResult(intent, RC_ADD_CONTACT)
   }
 
