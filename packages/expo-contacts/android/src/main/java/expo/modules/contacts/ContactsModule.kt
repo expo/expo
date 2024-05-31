@@ -281,7 +281,7 @@ class ContactsModule : Module() {
           val contact = getContactById(contactId, defaultFields)
           pendingPromise.resolve(contact?.toMap(defaultFields))
         } else {
-          pendingPromise.resolve();
+          pendingPromise.resolve()
         }
 
         contactPickingPromise = null
