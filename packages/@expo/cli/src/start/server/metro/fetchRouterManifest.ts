@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import resolveFrom from 'resolve-from';
+import { createRoutesManifest } from 'expo-router/build/routes-manifest';
 
 import { getRoutePaths } from './router';
 
@@ -22,23 +22,16 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
-function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/build/cjs/routes-manifest'))
-    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
-}
-
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
 export async function fetchManifest<TRegex = string>(
-  projectRoot: string,
   options: {
     asJson?: boolean;
     appDir: string;
   } & import('expo-router/build/routes-manifest').Options
 ): Promise<ExpoRouterServerManifestV1<TRegex> | null> {
-  const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
   const paths = getRoutePaths(options.appDir);
   // Get the serialized manifest
-  const jsonManifest = getManifest(paths, options);
+  const jsonManifest = createRoutesManifest(paths, options);
 
   if (!jsonManifest) {
     return null;

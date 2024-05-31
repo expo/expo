@@ -6,6 +6,7 @@
  */
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
+import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -217,9 +218,6 @@ export async function exportFromServerAsync(
 
   return files;
 }
-
-const { stripGroupSegmentsFromPath } =
-  require('expo-router/build/cjs/matchers') as typeof import('expo-router/build/matchers');
 
 export function getHtmlFiles({
   manifest,

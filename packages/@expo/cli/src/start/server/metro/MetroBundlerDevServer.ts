@@ -199,7 +199,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     // getBuiltTimeServerManifest
     const { exp } = getConfig(this.projectRoot);
-    const manifest = await fetchManifest(this.projectRoot, {
+    const manifest = await fetchManifest({
       ...exp.extra?.router?.platformRoutes,
       asJson: true,
       appDir,
