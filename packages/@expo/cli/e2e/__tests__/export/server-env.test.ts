@@ -1,16 +1,15 @@
 import execa from 'execa';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
+import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
 const projectRoot = getRouterE2ERoot();
-it(`asserts the server env isn't correct`, async () => {
-  await ensurePortFreeAsync(8081);
 
+it(`asserts the server env isn't correct`, async () => {
   await expect(
-    execa('node', [bin, 'start'], {
+    execa('node', [bin, 'start', '--port', '3002'], {
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
@@ -24,7 +23,4 @@ it(`asserts the server env isn't correct`, async () => {
   ).rejects.toThrow(
     /NODE_OPTIONS="--no-experimental-fetch" is not supported with Expo server. Node.js built-in Request\/Response APIs are required to continue./
   );
-});
-afterAll(async () => {
-  await ensurePortFreeAsync(8081);
-});
+}, 10000);
