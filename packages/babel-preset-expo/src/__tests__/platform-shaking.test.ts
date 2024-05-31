@@ -31,63 +31,41 @@ function stripReactNativeImport(code: string) {
     .replace('var _reactNative=require("react-native");', '');
 }
 
-it(`does not remove Platform module in development`, () => {
-  const options = {
-    ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
-  };
-
-  const sourceCode = `
-    import { Platform } from 'react-native';
-  
-    if (Platform.OS === 'ios') {
-      console.log('ios')
-    }
-    
-    Platform.select({
-      ios: () => console.log('ios'),
-      web: () => console.log('web'),
-      android: () => console.log('android'),
-    })
-    `;
-
-  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
-    /_Platform\.default\.OS===/
-  );
-});
-
-it(`does not remove Platform module in development`, () => {
-  const options = {
-    ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
-  };
-
-  const sourceCode = `
-    import { Platform } from 'react-native';
-  
-    if (Platform.OS === 'ios') {
-      console.log('ios')
-    }
-    
-    Platform.select({
-      ios: () => console.log('ios'),
-      web: () => console.log('web'),
-      android: () => console.log('android'),
-    })
-    `;
-
-  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
-    /_Platform\.default\.OS===/
-  );
-});
-
-it(`removes Platform module without import (undefined behavior)`, () => {
+it(`does not replace Platform.OS when assigning`, () => {
   const options = {
     ...DEFAULT_OPTS,
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
   };
 
-  const sourceCode = `  
+  const sourceCode = `
+    Platform.OS = 'web';
+  `;
+
+  expect(babel.transform(sourceCode, options)!.code!).toEqual("Platform.OS='web';");
+});
+
+it(`does not replace EXPO_OS when assigning`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    process.env.EXPO_OS = 'web';
+  `;
+
+  expect(babel.transform(sourceCode, options)!.code!).toEqual("process.env.EXPO_OS='web';");
+});
+
+describe('global scoping', () => {
+  // TODO: Maybe break this behavior and only allow Platform.OS if it's not a global.
+  it(`removes Platform module without import (from global)`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `  
     if (Platform.OS === 'ios') {
       console.log('ios')
     }
@@ -99,10 +77,91 @@ it(`removes Platform module without import (undefined behavior)`, () => {
     })
     `;
 
-  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`()=>console.log('web');`);
+    // expect(babel.transform(sourceCode, options)!.code!).toEqual(
+    //   `if(Platform.OS==='ios'){console.log('ios');}(function(){return console.log('web');});`
+    // );
+  });
+
+  it(`does remove Platform["OS"] usage in globals`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    expect(babel.transform(`Platform["OS"]`, options)!.code!).toBe('"web";');
+    // expect(babel.transform(`Platform["OS"]`, options)!.code!).toBe('Platform["OS"];');
+  });
+});
+
+it(`does not remove Platform module in development`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
+    /_Platform\.default\.OS===/
   );
 });
+
+it(`does not remove Platform module in development`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: true }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toMatch(
+    /_Platform\.default\.OS===/
+  );
+});
+
+// This is different to default Metro behavior.
+it(`does not remove React.Platform.OS module`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = ` 
+    if (React.Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
+    `if(React.Platform.OS==='ios'){console.log('ios');}`
+  );
+});
+
 it(`supports Platform module default fallback on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
@@ -116,11 +175,115 @@ it(`supports Platform module default fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('default');});`
+    `()=>console.log('default');`
   );
 });
 
-xit(`removes Platform module and native fallback on web`, () => {
+// This behavior is different to React Native upstream.
+it(`removes Platform["OS"] usage`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  expect(
+    stripReactNativeImport(
+      babel.transform(`import { Platform } from 'react-native';Platform["OS"]`, options)!.code!
+    )
+  ).toBe('"web";');
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform["OS"] === 'ios') {
+      console.log('ios')
+    }
+    if ('web' === Platform["OS"]) {
+      console.log('web')
+    }
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).not.toMatch('ios');
+  expect(code).not.toMatch('android');
+  expect(code).not.toMatch('native');
+});
+
+it(`inlines Platform["OS"] in a switch statement but does not collapse the switch`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    switch (Platform["OS"]) {
+      case 'ios':
+        console.log('ios');
+        break;
+      case 'android':
+        console.log('android');
+        break;
+      default:
+        console.log('web');
+        break;
+    }
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).toMatch('ios');
+});
+
+it(`removes Platform module usage on web (expo-modules-core)`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'expo-modules-core';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+      native: () => console.log('native'),
+      default: () => console.log('default'),
+    })
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).not.toMatch('ios');
+  expect(code).not.toMatch('android');
+  expect(code).not.toMatch('native');
+});
+
+it(`does not use native option from Platform module on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+    
+    Platform.select({
+      native: () => console.log('ios'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(`undefined;`);
+});
+
+it(`removes Platform module and native fallback on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
@@ -133,7 +296,7 @@ xit(`removes Platform module and native fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
+    `()=>console.log('default');`
   );
 });
 
@@ -158,8 +321,112 @@ it(`removes Platform module usage on web`, () => {
     `;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
+    `()=>console.log('web');`
   );
+});
+
+// This behavior is different to React Native upstream.
+it(`removes Platform["OS"] usage`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  expect(
+    stripReactNativeImport(
+      babel.transform(`import { Platform } from 'react-native';Platform["OS"]`, options)!.code!
+    )
+  ).toBe('"web";');
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    if (Platform["OS"] === 'ios') {
+      console.log('ios')
+    }
+    if ('web' === Platform["OS"]) {
+      console.log('web')
+    }
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).not.toMatch('ios');
+  expect(code).not.toMatch('android');
+  expect(code).not.toMatch('native');
+});
+
+it(`inlines Platform["OS"] in a switch statement but does not collapse the switch`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+  
+    switch (Platform["OS"]) {
+      case 'ios':
+        console.log('ios');
+        break;
+      case 'android':
+        console.log('android');
+        break;
+      default:
+        console.log('web');
+        break;
+    }
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).toMatch('ios');
+});
+
+it(`removes Platform module usage on web (expo-modules-core)`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'expo-modules-core';
+  
+    if (Platform.OS === 'ios') {
+      console.log('ios')
+    }
+    
+    Platform.select({
+      ios: () => console.log('ios'),
+      web: () => console.log('web'),
+      android: () => console.log('android'),
+      native: () => console.log('native'),
+      default: () => console.log('default'),
+    })
+    `;
+
+  const code = stripReactNativeImport(babel.transform(sourceCode, options)!.code!);
+  expect(code).toMatch("console.log('web');");
+  expect(code).not.toMatch('ios');
+  expect(code).not.toMatch('android');
+  expect(code).not.toMatch('native');
+});
+
+it(`does not use native option from Platform module on web`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+  };
+
+  const sourceCode = `
+    import { Platform } from 'react-native';
+    
+    Platform.select({
+      native: () => console.log('ios'),
+    })
+    `;
+
+  expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(`undefined;`);
 });
 
 it(`removes Platform module usage on native`, () => {
@@ -194,20 +461,92 @@ it(`removes Platform module usage on native`, () => {
   );
 });
 
-it(`removes __DEV__ usage`, () => {
-  const options = {
-    ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
-  };
+describe('__DEV__', () => {
+  it(`removes __DEV__ usage`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
+    };
 
-  const sourceCode = `  
+    const sourceCode = `  
     if (__DEV__) {
       require('./foobar')
     }
     `;
 
-  // No minfication needed here, the babel plugin does it to ensure the imports are removed before dependencies are collected.
-  expect(babel.transform(sourceCode, options)!.code!).toEqual(``);
+    // No minfication needed here, the babel plugin does it to ensure the imports are removed before dependencies are collected.
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(``);
+  });
+
+  it('preserves __DEV__ in export alias', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `
+      const dev = true;
+      export { dev as __DEV__ };
+    `;
+
+    // Ensure this doesn't throw
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(
+      `Object.defineProperty(exports,"__esModule",{value:true});exports.__DEV__=undefined;const dev=exports.__DEV__=true;`
+    );
+  });
+
+  it(`does not replace __DEV__ key in object`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `const x = { __DEV__: __DEV__ };`;
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`const x={__DEV__:false};`);
+  });
+
+  it('preserves __DEV__ in an object shorthand method name', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `
+  const x = {
+    __DEV__() { return __DEV__; },
+  };
+  `;
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(
+      `const x={__DEV__(){return false;}};`
+    );
+  });
+
+  it('preserves __DEV__ as the name of an optional property access', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+    const sourceCode = `
+    x?.__DEV__;
+    x?.__DEV__();
+  `;
+
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`x?.__DEV__;x?.__DEV__();`);
+  });
+
+  it('preserves __DEV__ as a label of a block statement', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+    const sourceCode = `
+    __DEV__: {
+      break __DEV__;
+    };
+  `;
+
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`__DEV__:{break __DEV__;};`);
+  });
 });
 
 describe('SSR window check', () => {

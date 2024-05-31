@@ -90,9 +90,12 @@ describe(RouterStore, () => {
     store.initialize(
       inMemoryContext({
         index: () => null,
+        page: () => null,
       }),
       createNavigationContainerRef(),
-      new URL('/', 'http://acme.com')
+      {
+        serverUrl: '/page',
+      }
     );
 
     // Should be the same as`creates qualified context with routes`, but with these
@@ -101,24 +104,24 @@ describe(RouterStore, () => {
       rootState: {
         routes: [
           {
-            name: 'index',
-            path: '/',
+            name: 'page',
+            path: '/page',
           },
         ],
       },
       initialState: {
         routes: [
           {
-            name: 'index',
-            path: '/',
+            name: 'page',
+            path: '/page',
           },
         ],
       },
       routeInfo: {
-        unstable_globalHref: '/',
-        pathname: '/',
+        unstable_globalHref: '/page',
+        pathname: '/page',
         params: {},
-        segments: [],
+        segments: ['page'],
       },
     });
   });

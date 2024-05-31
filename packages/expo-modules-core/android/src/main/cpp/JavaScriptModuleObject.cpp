@@ -1,12 +1,14 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaScriptModuleObject.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JSIUtils.h"
+#include "EventEmitter.h"
 #include "SharedObject.h"
 #include "NativeModule.h"
 
 #include <folly/dynamic.h>
+#include <jni.h>
 #include <jsi/JSIDynamic.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <fbjni/detail/Hybrid.h>
@@ -29,21 +31,19 @@ namespace expo {
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (auto &[name, method]: objectData->methodsMetadata) {
     jsObject->setProperty(
       runtime,
       jsi::String::createFromUtf8(runtime, name),
-      jsi::Value(runtime, *method.toJSFunction(runtime, jsiInteropModuleRegistry))
+      jsi::Value(runtime, *method->toJSFunction(runtime))
     );
   }
 }
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (auto &[name, property]: objectData->properties) {
@@ -54,14 +54,12 @@ void decorateObjectWithProperties(
     descriptor.setProperty(
       runtime,
       "get",
-      jsi::Value(runtime, *getter.toJSFunction(runtime,
-                                               jsiInteropModuleRegistry))
+      jsi::Value(runtime, *getter->toJSFunction(runtime))
     );
     descriptor.setProperty(
       runtime,
       "set",
-      jsi::Value(runtime, *setter.toJSFunction(runtime,
-                                               jsiInteropModuleRegistry))
+      jsi::Value(runtime, *setter->toJSFunction(runtime))
     );
     common::defineProperty(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
@@ -69,7 +67,6 @@ void decorateObjectWithProperties(
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData) {
   for (const auto &[name, value]: objectData->constants) {
@@ -83,7 +80,7 @@ void decorateObjectWithConstants(
 
 jni::local_ref<jni::HybridClass<JavaScriptModuleObject>::jhybriddata>
 JavaScriptModuleObject::initHybrid(jni::alias_ref<jhybridobject> jThis) {
-  return makeCxxInstance(jThis);
+  return makeCxxInstance();
 }
 
 void JavaScriptModuleObject::registerNatives() {
@@ -99,7 +96,9 @@ void JavaScriptModuleObject::registerNatives() {
                    makeNativeMethod("registerClass",
                                     JavaScriptModuleObject::registerClass),
                    makeNativeMethod("registerViewPrototype",
-                                    JavaScriptModuleObject::registerViewPrototype)
+                                    JavaScriptModuleObject::registerViewPrototype),
+                   makeNativeMethod("emitEvent",
+                                    JavaScriptModuleObject::emitEvent)
                  });
 }
 
@@ -119,26 +118,22 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
 void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *moduleObject) {
   decorateObjectWithConstants(
     runtime,
-    jsiInteropModuleRegistry,
     moduleObject,
     this
   );
   decorateObjectWithProperties(
     runtime,
-    jsiInteropModuleRegistry,
     moduleObject,
     this
   );
   decorateObjectWithFunctions(
     runtime,
-    jsiInteropModuleRegistry,
     moduleObject,
     this
   );
 
   if (viewPrototype) {
     auto viewPrototypeObject = viewPrototype->cthis();
-    viewPrototypeObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
     auto viewPrototypeJSIObject = viewPrototypeObject->getJSIObject(runtime);
     moduleObject->setProperty(
       runtime,
@@ -150,19 +145,25 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
   for (auto &[name, classInfo]: classes) {
     auto &[classRef, constructor, ownerClass] = classInfo;
     auto classObject = classRef->cthis();
-    classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
-
+    auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
     auto klass = SharedObject::createClass(
       runtime,
       name.c_str(),
-      [classObject, &constructor = constructor, jsiInteropModuleRegistry = jsiInteropModuleRegistry](
+      [classObject, weakConstructor = std::move(weakConstructor)](
         jsi::Runtime &runtime,
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
-      ) {
+      ) -> jsi::Value {
+        // We need to check if the constructor is still alive.
+        // If not we can just ignore the call. We're destroying the module.
+        auto ctr = weakConstructor.lock();
+        if (ctr == nullptr) {
+          return jsi::Value::undefined();
+        }
+
         auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
-        decorateObjectWithProperties(runtime, jsiInteropModuleRegistry, thisObject.get(),
+        decorateObjectWithProperties(runtime, thisObject.get(),
                                      classObject);
         try {
           JNIEnv *env = jni::Environment::current();
@@ -172,16 +173,15 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
           * all LocalReferences are deleted.
           */
           jni::JniLocalScope scope(env, (int) count);
-          auto result = constructor.callJNISync(
+          auto result = ctr->callJNISync(
             env,
             runtime,
-            jsiInteropModuleRegistry,
             thisValue,
             args,
             count
           );
           if (result == nullptr) {
-            return;
+            return jsi::Value(runtime, thisValue);
           }
           jobject unpackedResult = result.get();
           jclass resultClass = env->GetObjectClass(unpackedResult);
@@ -190,13 +190,15 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
             JavaReferencesCache::instance()->getJClass(
               "expo/modules/kotlin/sharedobjects/SharedObject").clazz
           )) {
+            JSIContext *jsiContext = getJSIContext(runtime);
             auto jsThisObject = JavaScriptObject::newInstance(
-              jsiInteropModuleRegistry,
-              jsiInteropModuleRegistry->runtimeHolder,
+              jsiContext,
+              jsiContext->runtimeHolder,
               thisObject
             );
-            jsiInteropModuleRegistry->registerSharedObject(result, jsThisObject);
+            jsiContext->registerSharedObject(result, jsThisObject);
           }
+          return jsi::Value(runtime, thisValue);
         } catch (jni::JniException &jniException) {
           rethrowAsCodedError(runtime, jniException);
         }
@@ -205,14 +207,16 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
 
     auto klassSharedPtr = std::make_shared<jsi::Function>(std::move(klass));
 
+    JSIContext *jsiContext = getJSIContext(runtime);
+
     auto jsThisObject = JavaScriptObject::newInstance(
-      jsiInteropModuleRegistry,
-      jsiInteropModuleRegistry->runtimeHolder,
+      jsiContext,
+      jsiContext->runtimeHolder,
       klassSharedPtr
     );
 
     if (ownerClass != nullptr) {
-      jsiInteropModuleRegistry->registerClass(jni::make_local(ownerClass), jsThisObject);
+      jsiContext->registerClass(jni::make_local(ownerClass), jsThisObject);
     }
 
     moduleObject->setProperty(
@@ -228,7 +232,6 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
 
     decorateObjectWithFunctions(
       runtime,
-      jsiInteropModuleRegistry,
       &klassPrototype,
       classObject
     );
@@ -253,15 +256,14 @@ void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-
-  methodsMetadata.try_emplace(
+  auto methodMetadata = std::make_shared<MethodMetadata>(
     cName,
-    cName,
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
+  methodsMetadata.insert_or_assign(cName, std::move(methodMetadata));
 }
 
 void JavaScriptModuleObject::registerAsyncFunction(
@@ -271,15 +273,14 @@ void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-
-  methodsMetadata.try_emplace(
+  auto methodMetadata = std::make_shared<MethodMetadata>(
     cName,
-    cName,
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     true,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
+  methodsMetadata.insert_or_assign(cName, std::move(methodMetadata));
 }
 
 void JavaScriptModuleObject::registerClass(
@@ -291,9 +292,9 @@ void JavaScriptModuleObject::registerClass(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-  MethodMetadata constructor(
+  auto constructor = std::make_shared<MethodMetadata>(
     "constructor",
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
@@ -328,17 +329,17 @@ void JavaScriptModuleObject::registerProperty(
 ) {
   auto cName = name->toStdString();
 
-  auto getterMetadata = MethodMetadata(
+  auto getterMetadata = make_shared<MethodMetadata>(
     cName,
-    getterTakesOwner,
+    getterTakesOwner & 0x1, // We're unsure if getterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(getterExpectedArgsTypes),
     jni::make_global(getter)
   );
 
-  auto setterMetadata = MethodMetadata(
+  auto setterMetadata = make_shared<MethodMetadata>(
     cName,
-    setterTakesOwner,
+    setterTakesOwner & 0x1, // We're unsure if setterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(setterExpectedArgsTypes),
     jni::make_global(setter)
@@ -349,10 +350,41 @@ void JavaScriptModuleObject::registerProperty(
     std::move(setterMetadata)
   );
 
-  properties.insert({cName, std::move(functions)});
+  properties.insert_or_assign(cName, std::move(functions));
 }
 
-JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
-  : javaPart_(jni::make_global(jThis)) {
+void JavaScriptModuleObject::emitEvent(
+  jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
+  jni::alias_ref<jstring> eventName,
+  jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+) {
+  const std::string name = eventName->toStdString();
+  folly::dynamic body;
+  if (eventBody) {
+    body = eventBody->cthis()->consume();
+  }
+
+  const JSIContext *jsiContext = jsiContextRef->cthis();
+
+  jsiContext->runtimeHolder->jsInvoker->invokeAsync([
+    jsiContext,
+    name = std::move(name),
+    body = std::move(body),
+    weakThis = jsiObject
+  ]() {
+    std::shared_ptr<jsi::Object> jsThis = weakThis.lock();
+    if (!jsThis) {
+      return;
+    }
+
+    // TODO(@lukmccall): refactor when jsInvoker recieves a runtime as a parameter
+    jsi::Runtime &rt  = jsiContext->runtimeHolder->get();
+
+    jsi::Value convertedBody = jsi::valueFromDynamic(rt, body);
+    std::vector<jsi::Value> args;
+    args.emplace_back(std::move(convertedBody));
+
+    EventEmitter::emitEvent(rt, *jsThis, name, args);
+  });
 }
 } // namespace expo

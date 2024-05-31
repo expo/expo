@@ -6,6 +6,70 @@
 
 ### 🎉 New features
 
+- Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.10 - 2024-05-29
+
+### 💡 Others
+
+- [Android] Improve HLS compatibility. ([#28997](https://github.com/expo/expo/pull/28997) by [@behenate](https://github.com/behenate))
+
+## 1.1.9 — 2024-05-13
+
+### 🎉 New features
+
+- Add `duration` property on all platforms. ([#28576](https://github.com/expo/expo/pull/28576) by [@justjoostnl](https://github.com/justjoostnl))
+
+## 1.1.8 — 2024-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.7 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.6 — 2024-05-01
+
+### 🎉 New features
+
+- [Android] Add support for customizing the now playing notification. ([#28390](https://github.com/expo/expo/pull/28390) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Improve audio focus management. ([#28453](https://github.com/expo/expo/pull/28453) by [@behenate](https://github.com/behenate))
+
+## 1.1.5 — 2024-04-26
+
+### 🎉 New features
+
+- [iOS] Add support for customizing the now playing notification. ([#28386](https://github.com/expo/expo/pull/28386) by [@behenate](https://github.com/behenate))
+
+## 1.1.4 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.2 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2024-04-18
+
+### 🎉 New features
+
+- Create a docs page. ([#27854](https://github.com/expo/expo/pull/27854) by [@behenate](https://github.com/behenate))
+- Add support for events on Android and iOS. ([#27632](https://github.com/expo/expo/pull/27632) by [@behenate](https://github.com/behenate))
 - Add support for `loop`, `playbackRate`, `preservesPitch` and `currentTime` properties. ([#27367](https://github.com/expo/expo/pull/27367) by [@behenate](https://github.com/behenate))
 - Add background playback support. ([#27110](https://github.com/expo/expo/pull/27110) by [@behenate](https://github.com/behenate))
 - Add DRM support for Android and iOS. ([#26465](https://github.com/expo/expo/pull/26465) by [@behenate](https://github.com/behenate))
@@ -17,7 +81,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix memory leaks on fast refresh. ([#27428](https://github.com/expo/expo/pull/27428) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 0.3.1 — 2023-12-12
 

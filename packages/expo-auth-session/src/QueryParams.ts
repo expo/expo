@@ -1,6 +1,6 @@
 export function getQueryParams(input: string): {
   errorCode: string | null;
-  params: { [key: string]: string };
+  params: Record<string, string>;
 } {
   const url = new URL(input, 'https://phony.example');
 

@@ -6,6 +6,7 @@
  */
 import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
+import Bundler from 'metro/src/Bundler';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import * as metroResolver from 'metro-resolver';
@@ -13,17 +14,9 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { createFastResolver } from './createExpoMetroResolver';
-import {
-  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
-  EXTERNAL_REQUIRE_POLYFILL,
-  METRO_SHIMS_FOLDER,
-  REACT_CANARY_FOLDER,
-  getNodeExternalModuleId,
-  isNodeExternal,
-  setupNodeExternals,
-  setupShimFiles,
-} from './externals';
+import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
@@ -43,23 +36,41 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT): ConfigT {
+function withWebPolyfills(
+  config: ConfigT,
+  {
+    getMetroBundler,
+  }: {
+    getMetroBundler: () => Bundler;
+  }
+): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualModuleId = `\0polyfill:external-require`;
+
+    const contents = (() => {
+      if (ctx.platform === 'web') {
+        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+      } else {
+        // Wrap in try/catch to support Android.
+        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+      }
+    })();
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualModuleId,
+      contents
+    );
+
     if (ctx.platform === 'web') {
-      return [
-        // NOTE: We might need this for all platforms
-        path.join(config.projectRoot, EXTERNAL_REQUIRE_POLYFILL),
-        // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
-      ];
+      return [virtualModuleId];
     }
+
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-
-    return [...polyfills, path.join(config.projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL)];
+    return [...polyfills, virtualModuleId];
   };
 
   return {
@@ -105,19 +116,21 @@ export function withExtendedResolver(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (isFastResolverEnabled) {
     Log.warn(`Experimental bundling features are enabled.`);
   }
   if (isReactCanaryEnabled) {
-    Log.warn(`Experimental React Server Components support is enabled.`);
+    Log.warn(`Experimental React Canary version is enabled.`);
   }
 
   // Get the `transformer.assetRegistryPath`
@@ -205,10 +218,6 @@ export function withExtendedResolver(
   }
 
   let nodejsSourceExtensions: string[] | null = null;
-
-  const canaryFolder = path.join(config.projectRoot, REACT_CANARY_FOLDER);
-
-  const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
   function getStrictResolver(
     { resolveRequest, ...context }: ResolutionContext,
@@ -312,9 +321,17 @@ export function withExtendedResolver(
         );
       }
 
-      const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-      debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
-      return getStrictResolver(context, platform)(redirectedModuleName);
+      const contents = `module.exports=$$require_external('node:${moduleId}');`;
+      debug(`Virtualizing Node.js "${moduleId}"`);
+      const virtualModuleId = `\0node:${moduleId}`;
+      getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+        virtualModuleId,
+        contents
+      );
+      return {
+        type: 'sourceFile',
+        filePath: virtualModuleId,
+      };
     },
 
     // Basic moduleId aliases
@@ -337,20 +354,6 @@ export function withExtendedResolver(
           debug(`Alias "${moduleName}" to "${aliasedModule}"`);
           return doResolve(aliasedModule);
         }
-      }
-
-      return null;
-    },
-
-    // HACK(EvanBacon):
-    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-    // to fail to load. This is a temporary workaround until we can fix this upstream.
-    // https://github.com/facebook/react-native/pull/38628
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (platform !== 'web' && moduleName === 'event-target-shim') {
-        debug('For event-target-shim to use js:', context.originModulePath);
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve('event-target-shim/dist/event-target-shim.js');
       }
 
       return null;
@@ -383,10 +386,19 @@ export function withExtendedResolver(
             // Drop everything up until the `node_modules` folder.
             .replace(/.*node_modules\//, '');
 
-          const shimPath = path.join(shimsFolder, normalName);
-          if (fs.existsSync(shimPath)) {
-            // @ts-expect-error: `readonly` for some reason.
-            result.filePath = shimPath;
+          const shimFile = shouldCreateVirtualShim(normalName);
+          if (shimFile) {
+            const virtualId = `\0shim:${normalName}`;
+            const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+            if (!bundler.hasVirtualModule(virtualId)) {
+              bundler.setVirtualModule(virtualId, fs.readFileSync(shimFile, 'utf8'));
+            }
+            debug(`Redirecting module "${result.filePath}" to shim`);
+
+            return {
+              ...result,
+              filePath: virtualId,
+            };
           }
         }
       } else {
@@ -397,12 +409,13 @@ export function withExtendedResolver(
             // Drop everything up until the `node_modules` folder.
             .replace(/.*node_modules\//, '');
 
-          // Files are added via the `@expo/cli/static/canary` folder.
-          const shimPath = path.join(canaryFolder, normalName);
-          if (fs.existsSync(shimPath)) {
+          const canaryFile = shouldCreateVirtualCanary(normalName);
+          if (canaryFile) {
             debug(`Redirecting React Native module "${result.filePath}" to canary build`);
-            // @ts-expect-error: `readonly` for some reason.
-            result.filePath = shimPath;
+            return {
+              ...result,
+              filePath: canaryFile,
+            };
           }
         }
       }
@@ -432,7 +445,6 @@ export function withExtendedResolver(
         context.sourceExts = nodejsSourceExtensions;
 
         context.unstable_enablePackageExports = true;
-        context.unstable_conditionNames = ['node', 'require'];
         context.unstable_conditionsByPlatform = {};
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
@@ -440,7 +452,9 @@ export function withExtendedResolver(
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
-          context.unstable_conditionNames = ['node', 'require', 'react-server', 'server'];
+          context.unstable_conditionNames = ['node', 'require', 'react-server', 'workerd'];
+        } else {
+          context.unstable_conditionNames = ['node', 'require'];
         }
       } else {
         // Non-server changes
@@ -499,6 +513,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
@@ -508,6 +523,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    getMetroBundler: () => Bundler;
   }
 ) {
   if (!config.projectRoot) {
@@ -544,12 +560,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
-  await setupShimFiles(projectRoot, {
-    shims: true,
-    canary: isReactCanaryEnabled,
-  });
-  await setupNodeExternals(projectRoot);
-
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
       ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
@@ -563,7 +573,7 @@ export async function withMetroMultiPlatformAsync(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  config = withWebPolyfills(config);
+  config = withWebPolyfills(config, { getMetroBundler });
 
   return withExtendedResolver(config, {
     tsconfig,
@@ -571,9 +581,10 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isReactCanaryEnabled,
+    getMetroBundler,
   });
 }
 
-function isDirectoryIn(a: string, b: string) {
-  return b.startsWith(a) && b.length > a.length;
+function isDirectoryIn(targetPath: string, rootPath: string) {
+  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
 }

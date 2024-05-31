@@ -200,11 +200,7 @@ EX_REGISTER_MODULE();
 
 - (void *)javaScriptRuntimePointer
 {
-  if ([_bridge respondsToSelector:@selector(runtime)]) {
-    return _bridge.runtime;
-  } else {
-    return nil;
-  }
+  return _bridge.runtime;
 }
 
 # pragma mark - App state observing
@@ -300,7 +296,7 @@ EX_REGISTER_MODULE();
       UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
       UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
 #else
-      UIView *view = viewRegistry[viewId];
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
 #endif
       block(view);
     }];
@@ -317,7 +313,7 @@ EX_REGISTER_MODULE();
       UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
       UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
 #else
-      UIView *view = viewRegistry[viewId];
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
 #endif
       block(view);
     }];

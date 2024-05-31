@@ -10,8 +10,49 @@
 
 ### 💡 Others
 
+- Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.0.6 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.0.5 — 2024-05-10
+
+### 🐛 Bug fixes
+
+- Fixed some vector icons not rendering correctly. ([#28747](https://github.com/expo/expo/pull/28747) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.4 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.3 — 2024-04-24
+
+- Fix font name lookup when name is not the same as family. ([#28407](https://github.com/expo/expo/pull/28407) by [@brentvatne](https://github.com/brentvatne))
+
+## 12.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2024-04-22
+
+### 💡 Others
+
+- Stopped scoping font family names in Expo Go on iOS. ([#28344](https://github.com/expo/expo/pull/28344) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- [iOS] The native module has been simplified and rewritten to Swift. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 11.10.3 - 2024-02-16
 

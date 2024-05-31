@@ -25,6 +25,13 @@ export async function sdkVersionAsync(): Promise<string> {
   return packageJson.version as string;
 }
 
+/**
+ * Returns a major version number of the `expo` package.
+ */
+export async function sdkVersionNumberAsync(): Promise<number> {
+  return semver.major(await sdkVersionAsync());
+}
+
 export async function iosAppVersionAsync(): Promise<string> {
   const infoPlistPath = path.join(EXPO_GO_IOS_DIR, 'Exponent', 'Supporting', 'Info.plist');
   const infoPlist = plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));

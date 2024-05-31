@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 14.0.2 — 2024-04-24
+
+### 🐛 Bug fixes
+
+- Fixed integration with `react-native-reanimated`. ([#28414](https://github.com/expo/expo/pull/28414) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
 ## 13.6.0 — 2023-12-12
 
 ### 💡 Others

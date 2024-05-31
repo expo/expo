@@ -4,10 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = void 0;
+/**
+ * Copyright © 2024 650 Industries.
+ */
+const core_1 = require("@babel/core");
 const url_1 = __importDefault(require("url"));
-function reactClientReferencesPlugin(api) {
-    const { types: t } = api;
-    const reactServerAdapter = 'react-server-dom-webpack/server';
+function reactClientReferencesPlugin() {
     return {
         name: 'expo-client-references',
         visitor: {
@@ -33,63 +35,21 @@ function reactClientReferencesPlugin(api) {
                 if (isUseClient) {
                     path.node.body = [];
                     path.node.directives = [];
-                    // Inject the following:
-                    //
-                    // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${filePath}`)
-                    // TODO: Use `require.resolveWeak` instead of `filePath` to avoid leaking the file path.
-                    // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${require.resolveWeak(filePath)}`)
-                    path.pushContainer('body', t.expressionStatement(t.assignmentExpression('=', t.memberExpression(t.identifier('module'), t.identifier('exports')), t.callExpression(t.memberExpression(t.callExpression(t.identifier('require'), [
-                        t.stringLiteral(reactServerAdapter),
-                    ]), t.identifier('createClientModuleProxy')), 
-                    // `${outputKey}#${require.resolveWeak(filePath)}`
-                    [t.stringLiteral(outputKey)]))));
+                    path.pushContainer('body', core_1.template.ast `module.exports = require("react-server-dom-webpack/server").createClientModuleProxy(${JSON.stringify(outputKey)});`);
                 }
                 else {
-                    // Inject the following:
-                    //
-                    // ;(() => {
-                    //  const { registerServerReference } = require('react-server-dom-webpack/server');
-                    //  if (typeof module.exports === 'function') registerServerReference(module.exports, moduleId, null);
-                    //  else {
-                    //    for (const key in module.exports) {
-                    //      if (typeof module.exports[key] === 'function') {
-                    //        registerServerReference(module.exports[key], moduleId, key);
-                    //       }
-                    //     }
-                    //   }
-                    // })()
-                    const mmexp = t.memberExpression(t.callExpression(t.identifier('require'), [t.stringLiteral(reactServerAdapter)]), t.identifier('registerServerReference'));
-                    // Create the loop body
-                    const loopBody = t.blockStatement([
-                        t.ifStatement(t.binaryExpression('===', t.unaryExpression('typeof', t.memberExpression(t.memberExpression(t.identifier('module'), t.identifier('exports')), t.identifier('key'), true)), t.stringLiteral('function')), t.expressionStatement(t.callExpression(mmexp, [
-                            t.memberExpression(t.memberExpression(t.identifier('module'), t.identifier('exports')), t.identifier('key'), true),
-                            t.stringLiteral(outputKey),
-                            t.identifier('key'),
-                        ]))),
-                    ]);
-                    // Create the for-in loop
-                    const forInStatement = t.forInStatement(t.variableDeclaration('const', [t.variableDeclarator(t.identifier('key'))]), t.memberExpression(t.identifier('module'), t.identifier('exports')), loopBody);
-                    path.pushContainer('body', t.expressionStatement(t.callExpression(t.arrowFunctionExpression([], t.blockStatement([
-                        t.ifStatement(t.binaryExpression('===', t.unaryExpression('typeof', t.memberExpression(t.identifier('module'), t.identifier('exports'))), t.stringLiteral('function')), 
-                        // registerServerReference(module.exports, moduleId, null);
-                        t.blockStatement([
-                            t.expressionStatement(t.callExpression(mmexp, [
-                                t.memberExpression(t.identifier('module'), t.identifier('exports')),
-                                t.stringLiteral(outputKey),
-                                t.nullLiteral(),
-                            ])),
-                        ]), 
-                        // Else
-                        t.blockStatement([
-                            // for (const key in module.exports) {
-                            //   if (typeof module.exports[key] === 'function') {
-                            //     registerServerReference(module.exports[key], moduleId, key);
-                            //   }
-                            // }
-                            forInStatement,
-                        ])),
-                    ])), [])));
-                    //
+                    path.pushContainer('body', core_1.template.ast `
+            ;(() => {
+              if (typeof module.exports === 'function') {
+                require('react-server-dom-webpack/server').registerServerReference(module.exports, ${JSON.stringify(outputKey)}, null);
+              } else {
+                for (const key in module.exports) {
+                  if (typeof module.exports[key] === 'function') {
+                    require('react-server-dom-webpack/server').registerServerReference(module.exports[key], ${JSON.stringify(outputKey)}, key);
+                  }
+                }
+              }
+            })()`);
                 }
             },
         },

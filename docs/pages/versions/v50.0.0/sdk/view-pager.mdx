@@ -9,7 +9,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/expo-go/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
 **`react-native-pager-view`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
@@ -28,14 +28,13 @@ See full documentation at [callstack/react-native-pager-view](https://github.com
 ## Example
 
 ```js
-import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import PagerView from 'react-native-pager-view';
 
-const MyPager = () => {
+export default function MyPager() {
   return (
-    <View style={{ flex: 1 }}>
-      <PagerView style={styles.viewPager} initialPage={0}>
+    <View style={styles.container}>
+      <PagerView style={styles.container} initialPage={0}>
         <View style={styles.page} key="1">
           <Text>First page</Text>
           <Text>Swipe ➡️</Text>
@@ -49,10 +48,10 @@ const MyPager = () => {
       </PagerView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  viewPager: {
+  container: {
     flex: 1,
   },
   page: {
@@ -60,6 +59,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default MyPager;
 ```

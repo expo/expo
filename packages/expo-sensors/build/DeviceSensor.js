@@ -1,51 +1,42 @@
-import { PermissionStatus, EventEmitter, Platform, } from 'expo-modules-core';
+import { PermissionStatus, Platform, } from 'expo-modules-core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
  * specified by the parameter type `Measurement`.
  */
 export default class DeviceSensor {
     _nativeModule;
-    _nativeEmitter;
     _nativeEventName;
-    _listenerCount;
     constructor(nativeSensorModule, nativeEventName) {
         this._nativeModule = nativeSensorModule;
-        this._nativeEmitter = new EventEmitter(nativeSensorModule);
         this._nativeEventName = nativeEventName;
-        this._listenerCount = 0;
     }
     addListener(listener) {
-        const subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
-        subscription.remove = () => this.removeSubscription(subscription);
-        this._listenerCount++;
-        return subscription;
+        return this._nativeModule.addListener(this._nativeEventName, listener);
     }
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
     hasListeners() {
-        return this._listenerCount > 0;
+        return this._nativeModule.listenerCount(this._nativeEventName) > 0;
     }
     /**
      * Returns the registered listeners count.
      */
     getListenerCount() {
-        return this._listenerCount;
+        return this._nativeModule.listenerCount(this._nativeEventName);
     }
     /**
      * Removes all registered listeners.
      */
     removeAllListeners() {
-        this._listenerCount = 0;
-        this._nativeEmitter.removeAllListeners(this._nativeEventName);
+        this._nativeModule.removeAllListeners(this._nativeEventName);
     }
     /**
      * Removes the given subscription.
      * @param subscription A subscription to remove.
      */
     removeSubscription(subscription) {
-        this._listenerCount--;
-        this._nativeEmitter.removeSubscription(subscription);
+        subscription.remove();
     }
     /**
      * Set the sensor update interval.

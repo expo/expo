@@ -13,5 +13,8 @@ expect.extend({
     toHaveSearchParams(screen, expected) {
         return matchers.toEqual(screen.getSearchParams(), expected);
     },
+    toHaveRouterState(screen, expected) {
+        return matchers_1.default.toEqual(screen.getRouterState(), expected);
+    },
 });
 //# sourceMappingURL=expect.js.map

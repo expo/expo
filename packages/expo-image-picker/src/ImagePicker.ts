@@ -211,4 +211,5 @@ export async function launchImageLibraryAsync(
 
 export * from './ImagePicker.types';
 
-export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export type { PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export { PermissionStatus };

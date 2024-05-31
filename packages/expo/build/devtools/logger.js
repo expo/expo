@@ -14,6 +14,11 @@ export function info(...params) {
         console.info(...params);
     }
 }
+export function warn(...params) {
+    if (enableLogging) {
+        console.warn(...params);
+    }
+}
 export function setEnableLogging(enabled) {
     enableLogging = enabled;
 }

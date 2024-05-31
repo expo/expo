@@ -26,7 +26,7 @@ class JavaScriptClassTest {
     val prototypeKeys = evaluateScript("Object.keys($moduleRef.MyClass.prototype)")
       .getArray()
       .map { it.getString() }
-    Truth.assertThat(prototypeKeys).containsExactly(
+    Truth.assertThat(prototypeKeys).containsAtLeast(
       "myFunction",
       "myAsyncFunction"
     )

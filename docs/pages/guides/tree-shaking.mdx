@@ -191,9 +191,7 @@ The above code snippet is then minified, which removes the unused conditional:
 
 It's common to use `typeof window === 'undefined'` to conditionally enable or disable code for server and client environments.
 
-`babel-preset-expo` automatically transforms `typeof window === 'undefined` to `true` when bundling for server environments and `false` when bundling for websites. The check remains unchanged when bundling for native client environments to support apps that polyfill `window`.
-
-This transform is run in both development and production but only removes conditional requires in production.
+`babel-preset-expo` automatically transforms `typeof window === 'undefined'` to `true` when bundling for server environments and `false` when bundling for websites. The check remains unchanged when bundling for native client environments to support apps that polyfill `window`. This transform runs in both development and production but only removes conditional requires in production.
 
 You can configure `babel-preset-expo` to skip the transform by passing `{ preserveTypeofWindow: false }`.
 

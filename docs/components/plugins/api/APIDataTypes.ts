@@ -27,6 +27,8 @@ export type CommentTagData = {
 export type CommentContentData = {
   kind: string;
   text: string;
+  tag?: string;
+  tsLinkText?: string;
 };
 
 export type TypeDefinitionData = {
@@ -55,12 +57,14 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | number | boolean | null;
   operator?: string;
+  package?: string;
   objectType?: {
     name: string;
     type: string;
   };
   indexType?: {
-    type: string;
+    name?: string;
+    type?: string;
     value: string;
   };
   qualifiedName?: string;
@@ -80,6 +84,7 @@ export type TypePropertyDataFlags = {
   isExternal?: boolean;
   isOptional?: boolean;
   isStatic?: boolean;
+  isRest?: boolean;
 };
 
 // Constants section
@@ -141,7 +146,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
-  getSignature?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
 

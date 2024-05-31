@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
-import { resolveWorkflowAsync } from './workflow';
+import { resolveWorkflowAsync, validateWorkflow } from './workflow';
 
 export async function createFingerprintForBuildAsync(
   platform: 'ios' | 'android',
@@ -33,15 +33,26 @@ export async function createFingerprintForBuildAsync(
     return;
   }
 
-  if (runtimeVersion.policy !== 'fingerprintExperimental') {
+  if (runtimeVersion.policy !== 'fingerprint') {
     // not a policy that needs fingerprinting
     return;
   }
 
-  const workflow = await resolveWorkflowAsync(projectRoot, platform);
-  const fingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
+  let fingerprint: { hash: string };
 
-  console.log(JSON.stringify(fingerprint.sources));
+  const fingerprintOverride = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
+  if (fingerprintOverride) {
+    console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${fingerprintOverride}`);
+    fingerprint = { hash: fingerprintOverride };
+  } else {
+    const workflowOverride = process.env.EXPO_UPDATES_WORKFLOW_OVERRIDE;
+    const workflow = workflowOverride
+      ? validateWorkflow(workflowOverride)
+      : await resolveWorkflowAsync(projectRoot, platform);
+    const createdFingerprint = await createFingerprintAsync(projectRoot, platform, workflow, {});
+    console.log(JSON.stringify(createdFingerprint.sources));
+    fingerprint = createdFingerprint;
+  }
 
   fs.writeFileSync(path.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }

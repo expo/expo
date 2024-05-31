@@ -222,6 +222,7 @@ function walkConfigItems(
 
   let pattern: string | null = null;
   let focusedParams: Record<string, any> | undefined;
+  let hash: string | undefined;
 
   const collectedParams: Record<string, any> = {};
 
@@ -236,6 +237,11 @@ function walkConfigItems(
     pattern = inputPattern;
 
     if (route.params) {
+      if (route.params['#']) {
+        hash = route.params['#'];
+        delete route.params['#'];
+      }
+
       const params = processParamsWithUserSettings(configItem, route.params);
       if (pattern !== undefined && pattern !== null) {
         Object.assign(collectedParams, params);
@@ -326,6 +332,7 @@ function walkConfigItems(
     pattern,
     nextRoute: route,
     focusedParams,
+    hash,
     params: collectedParams,
   };
 }
@@ -340,6 +347,7 @@ function getPathFromResolvedState(
 ) {
   let path = '';
   let current: State = state;
+  let hash: string | undefined;
 
   const allParams: Record<string, any> = {};
 
@@ -355,12 +363,17 @@ function getPathFromResolvedState(
       route.state = createFakeState(route.params);
     }
 
-    const { pattern, params, nextRoute, focusedParams } = walkConfigItems(
-      route,
-      getActiveRoute(current),
-      { ...configs },
-      { preserveDynamicRoutes }
-    );
+    const {
+      pattern,
+      params,
+      nextRoute,
+      focusedParams,
+      hash: $hash,
+    } = walkConfigItems(route, getActiveRoute(current), { ...configs }, { preserveDynamicRoutes });
+
+    if ($hash) {
+      hash = $hash;
+    }
 
     Object.assign(allParams, params);
 
@@ -405,7 +418,14 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
+  if (hash) {
+    allParams['#'] = hash;
+    path += `#${hash}`;
+  }
+
+  const params = decodeParams(allParams);
+
+  return { path: appendBaseUrl(basicSanitizePath(path)), params };
 }
 
 function decodeParams(params: Record<string, string>) {

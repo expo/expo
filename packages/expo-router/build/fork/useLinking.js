@@ -1,16 +1,44 @@
+"use strict";
 /* eslint-disable */
 // Forked from react-navigation to add basePath functionality to web.
 // https://github.com/react-navigation/react-navigation/blob/6.x/packages/native/src/useLinking.tsx
-import { findFocusedRoute, getActionFromState as getActionFromStateDefault, getPathFromState as getPathFromStateDefault, getStateFromPath as getStateFromPathDefault, } from '@react-navigation/core';
-import isEqual from 'fast-deep-equal';
-import * as React from 'react';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.series = void 0;
+const core_1 = require("@react-navigation/core");
+const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
+const React = __importStar(require("react"));
 /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
 // createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
-import createMemoryHistory from '@react-navigation/native/lib/commonjs/createMemoryHistory';
-// This was removed as we don't use ServerContext
+const createMemoryHistory_1 = __importDefault(require("@react-navigation/native/lib/commonjs/createMemoryHistory"));
 // import ServerContext from './ServerContext';
-import { ServerLocationContext } from '../global-state/serverLocationContext';
-import { appendBaseUrl } from './getPathFromState';
+const serverContext_1 = __importDefault(require("../global-state/serverContext"));
+const getPathFromState_1 = require("./getPathFromState");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -43,15 +71,16 @@ const findMatchingState = (a, b) => {
 /**
  * Run async function in series as it's called.
  */
-export const series = (cb) => {
+const series = (cb) => {
     let queue = Promise.resolve();
     const callback = () => {
         queue = queue.then(cb);
     };
     return callback;
 };
+exports.series = series;
 let linkingHandlers = [];
-export default function useLinking(ref, { independent, enabled = true, config, getStateFromPath = getStateFromPathDefault, getPathFromState = getPathFromStateDefault, getActionFromState = getActionFromStateDefault, }) {
+function useLinking(ref, { independent, enabled = true, config, getStateFromPath = core_1.getStateFromPath, getPathFromState = core_1.getPathFromState, getActionFromState = core_1.getActionFromState, }) {
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
@@ -79,7 +108,7 @@ export default function useLinking(ref, { independent, enabled = true, config, g
             }
         };
     }, [enabled, independent]);
-    const [history] = React.useState(createMemoryHistory);
+    const [history] = React.useState(createMemoryHistory_1.default);
     // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
     // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
     // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
@@ -95,12 +124,7 @@ export default function useLinking(ref, { independent, enabled = true, config, g
         getPathFromStateRef.current = getPathFromState;
         getActionFromStateRef.current = getActionFromState;
     });
-    /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L142 */
-    // ServerContext is used inside ServerContainer to set the location during SSR: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/ServerContainer.tsx#L50-L54
-    // Expo Router uses the `initialLocation` prop to set the initial location during SSR:
-    const location = React.useContext(ServerLocationContext);
-    const server = { location };
-    /* End of fork */
+    const server = React.useContext(serverContext_1.default);
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {
@@ -192,12 +216,12 @@ export default function useLinking(ref, { independent, enabled = true, config, g
             if (route?.path) {
                 const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
                 if (stateForPath) {
-                    const focusedRoute = findFocusedRoute(stateForPath);
+                    const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
-                        isEqual(focusedRoute.params, route.params)) {
+                        (0, fast_deep_equal_1.default)(focusedRoute.params, route.params)) {
                         /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
-                        return appendBaseUrl(route.path);
+                        return (0, getPathFromState_1.appendBaseUrl)(route.path);
                         /* End of fork */
                     }
                 }
@@ -209,7 +233,7 @@ export default function useLinking(ref, { independent, enabled = true, config, g
             // This will allow the initial state to be in the history entry
             const state = ref.current.getRootState();
             if (state) {
-                const route = findFocusedRoute(state);
+                const route = (0, core_1.findFocusedRoute)(state);
                 const path = getPathForRoute(route, state);
                 if (previousStateRef.current === undefined) {
                     previousStateRef.current = state;
@@ -229,7 +253,7 @@ export default function useLinking(ref, { independent, enabled = true, config, g
                 return;
             }
             const pendingPath = pendingPopStatePathRef.current;
-            const route = findFocusedRoute(state);
+            const route = (0, core_1.findFocusedRoute)(state);
             const path = getPathForRoute(route, state);
             previousStateRef.current = state;
             pendingPopStatePathRef.current = undefined;
@@ -291,10 +315,11 @@ export default function useLinking(ref, { independent, enabled = true, config, g
         // We debounce onStateChange coz we don't want multiple state changes to be handled at one time
         // This could happen since `history.go(n)` is asynchronous
         // If `pushState` or `replaceState` were called before `history.go(n)` completes, it'll mess stuff up
-        return ref.current?.addListener('state', series(onStateChange));
+        return ref.current?.addListener('state', (0, exports.series)(onStateChange));
     }, [enabled, history, ref]);
     return {
         getInitialState,
     };
 }
+exports.default = useLinking;
 //# sourceMappingURL=useLinking.js.map

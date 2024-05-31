@@ -23,7 +23,6 @@ config.resolver.blockList = [
 ];
 
 // Copied from expo-yarn-workspaces
-config.resolver.assetExts.push('db');
 config.transformer.enableBabelRCLookup = false;
 
 module.exports = config;

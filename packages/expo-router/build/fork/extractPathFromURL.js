@@ -1,11 +1,35 @@
-import * as Linking from 'expo-linking';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractExpoPathFromURL = exports.parsePathFromExpoGoLink = exports.parsePathAndParamsFromExpoGoLink = void 0;
+function parsePathAndParamsFromExpoGoLink(url) {
+    // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+    // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+    const href = parsePathFromExpoGoLink(url);
+    const results = href.match(/(.*?)(\?.*)/);
+    return {
+        pathname: results?.[1] ?? '',
+        queryString: results?.[2] ?? '',
+    };
+}
+exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
+function parsePathFromExpoGoLink(url) {
+    // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
+    // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
+    return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
+}
+exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
 // This is only run on native.
 function extractExactPathFromURL(url) {
     if (
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
     url.match(/^https?:\/\//)) {
-        const { origin, href } = new URL(url);
+        const { origin, href, hostname } = new URL(url);
+        if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
+            // These are QR code generate deep-link that always like to the '/' path
+            // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+            return '';
+        }
         return href.replace(origin, '');
     }
     const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -14,17 +38,16 @@ function extractExactPathFromURL(url) {
         // while not exhaustive, `exp` and `exps` are the only two schemes which
         // are passed through to other apps in Expo Go.
         url.match(/^exp(s)?:\/\//)) {
-        const pathname = url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1];
+        const pathname = parsePathFromExpoGoLink(url);
         if (pathname) {
             return fromDeepLink('a://' + pathname);
         }
-        const res = Linking.parse(url);
-        const qs = !res.queryParams
-            ? ''
-            : Object.entries(res.queryParams)
-                .map(([k, v]) => `${k}=${v}`)
-                .join('&');
-        return (adjustPathname({ hostname: res.hostname, pathname: res.path || '' }) + (qs ? '?' + qs : ''));
+        // Match the `?.*` segment of the URL.
+        const queryParams = url.match(/exps?:\/\/.*\?(.*)/)?.[1];
+        if (queryParams) {
+            return fromDeepLink('a://?' + queryParams);
+        }
+        return '';
     }
     // TODO: Support dev client URLs
     return fromDeepLink(url);
@@ -66,15 +89,10 @@ function fromDeepLink(url) {
     }
     return results;
 }
-export function extractExpoPathFromURL(url = '') {
-    // TODO: We should get rid of this, dropping specificities is not good
-    return extractExactPathFromURL(url).replace(/^\//, '');
+function extractExpoPathFromURL(url = '') {
+    return (extractExactPathFromURL(url)
+        // TODO: We should get rid of this, dropping specificities is not good
+        .replace(/^\//, ''));
 }
-export function adjustPathname(url) {
-    if (url.hostname === 'exp.host' || url.hostname === 'u.expo.dev') {
-        // drop the first two segments from pathname:
-        return url.pathname.split('/').slice(2).join('/');
-    }
-    return url.pathname;
-}
+exports.extractExpoPathFromURL = extractExpoPathFromURL;
 //# sourceMappingURL=extractPathFromURL.js.map

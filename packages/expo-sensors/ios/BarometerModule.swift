@@ -23,6 +23,10 @@ public final class BarometerModule: Module {
     }
 
     OnStartObserving {
+      if CMAltimeter.authorizationStatus() == .notDetermined {
+        CMSensorRecorder().recordAccelerometer(forDuration: 0.1)
+      }
+
       altimeter.startRelativeAltitudeUpdates(to: operationQueue) { [weak self] data, _ in
         guard let data else {
           return
@@ -30,7 +34,8 @@ public final class BarometerModule: Module {
         self?.sendEvent(EVENT_BAROMETER_DID_UPDATE, [
           // Given pressure needs to be converted from kPa to hPa
           "pressure": data.pressure.doubleValue * 10.0,
-          "relativeAltitude": data.relativeAltitude.doubleValue
+          "relativeAltitude": data.relativeAltitude.doubleValue,
+          "timestamp": data.timestamp
         ])
       }
     }

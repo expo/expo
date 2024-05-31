@@ -6,7 +6,12 @@
 
     "types": ["jest", "jest-require", "node"]
   },
-  "include": ["./src", "./types/jest.d.ts", "./types/expect.d.ts", "../expo/src/ts-declarations"],
+  "include": [
+    "./types/expo-router.d.ts",
+    "./src",
+    "./types/expect.d.ts",
+    "../expo/src/ts-declarations"
+  ],
   "exclude": [
     "**/__mocks__/*",
     "**/.expo/*",

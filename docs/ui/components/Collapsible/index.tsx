@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   useEffect,
+  MouseEventHandler,
 } from 'react';
 
 import withHeadingManager, {
@@ -58,22 +59,29 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       }
     }, []);
 
-    function onToggle() {
-      setOpen(!isOpen);
-    }
+    const onToggle: MouseEventHandler<HTMLElement> = event => {
+      // Detect if we are clicking the PermalinkIcon. Probably a better way to do this?
+      if (event.target instanceof SVGElement) {
+        if (!isOpen) {
+          setOpen(true);
+        }
+      } else {
+        setOpen(!isOpen);
+        // Ensure that the collapsible opens nicely on the first click
+        event.preventDefault();
+      }
+    };
 
     return (
       <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
-        <summary css={summaryStyle} className="group">
-          <div css={markerWrapperStyle} onClick={onToggle}>
+        <summary css={summaryStyle} className="group" onClick={onToggle}>
+          <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
-          <LinkBase
-            href={'#' + heading.current.slug}
-            onClick={onToggle}
-            ref={heading.current.ref}
-            className="inline-flex gap-1.5 items-center scroll-m-5 relative">
+          <span className="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative">
             <DEMI>{summary}</DEMI>
+          </span>
+          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
             <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>

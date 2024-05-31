@@ -6,14 +6,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 import { sync as globSync } from 'glob';
 
-import {
-  execute,
-  projectRoot,
-  getLoadedModulesAsync,
-  setupTestProjectAsync,
-  bin,
-  ensurePortFreeAsync,
-} from './utils';
+import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -47,7 +40,6 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {
@@ -58,7 +50,7 @@ describe('server', () => {
         env: {
           NODE_ENV: 'production',
           TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-          EXPO_USE_FAST_RESOLVER: 'false',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
 
@@ -201,7 +193,7 @@ describe('server', () => {
           env: {
             NODE_ENV: 'production',
             TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-            EXPO_USE_FAST_RESOLVER: 'false',
+            EXPO_USE_FAST_RESOLVER: 'true',
           },
         }
       );

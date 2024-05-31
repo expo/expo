@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.5.2 - 2024-05-29
+
+### 🎉 New features
+
+- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.5.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
 - Add support for package cli and utils subpackages (like plugins). ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
+
+- Use appropriate version of `tsc` when executing `expo-module build` in monorepos with multiple typescript versions installed ([#27779](https://github.com/expo/expo/pull/27779) by [@peter.jozsa](https://github.com/peter.jozsa)
 
 ### 💡 Others
 

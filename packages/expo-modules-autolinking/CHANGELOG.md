@@ -6,11 +6,27 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.11.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.0 — 2024-04-18
+
+### 🎉 New features
+
 - Expand Android auto-linking to support new expo-build-properties ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
 
 ### 🐛 Bug fixes
 
+- Support custom debug build configuration for debugOnly pods (expo-dev-client for example) ([#28085](https://github.com/expo/expo/pull/28085) by [@Titozzz](https://github.com/Titozzz))
+
 ### 💡 Others
+
+- Read `extraPods` from **Podfile.properties.json** and `extraMavenRepos` from **gradle.properties**. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
 
 ## 1.10.3 - 2024-02-06
 

@@ -7,8 +7,8 @@ import DevToolsPluginManager from './DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
-import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { env } from '../../utils/env';
+import { logEventAsync } from '../../utils/telemetry';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
@@ -35,6 +35,18 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
+  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+    const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    await devServerManager.startAsync([
+      {
+        type: 'metro',
+        options: startOptions,
+      },
+    ]);
+    return devServerManager;
+  }
+
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
   public readonly devtoolsPluginManager: DevToolsPluginManager;
 
@@ -45,7 +57,9 @@ export class DevServerManager {
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.notifier = this.watchBabelConfig();
+    if (!options.isExporting) {
+      this.notifier = this.watchBabelConfig();
+    }
     this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 

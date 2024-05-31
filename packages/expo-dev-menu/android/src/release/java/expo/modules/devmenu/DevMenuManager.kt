@@ -5,16 +5,16 @@ import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
-import kotlinx.coroutines.CoroutineScope
 import expo.modules.manifests.core.Manifest
+import kotlinx.coroutines.CoroutineScope
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
@@ -28,7 +28,7 @@ object DevMenuManager : DevMenuManagerInterface {
 
   var registeredCallbacks = arrayListOf<Callback>()
 
-  fun getReactInstanceManager(): ReactInstanceManager? {
+  fun getReactHost(): ReactHostWrapper? {
     return null
   }
 
@@ -66,11 +66,13 @@ object DevMenuManager : DevMenuManagerInterface {
 
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) = Unit
 
-  override fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost) = Unit
+  override fun initializeWithReactHost(reactHost: ReactHostWrapper) = Unit
 
   override fun dispatchCallable(actionId: String, args: ReadableMap?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
+  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) = Unit
 
   override fun serializedItems(): List<Bundle> {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
@@ -88,7 +90,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun getMenuHost(): ReactNativeHost {
+  override fun getMenuHost(): ReactHostWrapper {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

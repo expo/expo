@@ -6,18 +6,68 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.6 — 2024-05-13
+
+### 🐛 Bug fixes
+
+- Fix replacement of `__DEV__` in export statement. ([#28786](https://github.com/expo/expo/pull/28786) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.5 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2024-05-01
+
+### 💡 Others
+
+- Align versions of fast refresh. ([#28550](https://github.com/expo/expo/pull/28550) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Remove all unused babel plugins on web and SSR. ([#27907](https://github.com/expo/expo/pull/27907) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add faster `Platform.select` transform. ([#27533](https://github.com/expo/expo/pull/27533) by [@EvanBacon](https://github.com/EvanBacon))
 - Minify `typeof window` in server and web contexts. ([#27530](https://github.com/expo/expo/pull/27530) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for using `process.env.EXPO_OS` to detect the platform without platform shaking imports. ([#27509](https://github.com/expo/expo/pull/27509) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic `react-server` support. ([#27264](https://github.com/expo/expo/pull/27264) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing reassignment of globals. ([#27533](https://github.com/expo/expo/pull/27533) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
+- Add more tests for obscure syntax used in Expo apps. ([#27709](https://github.com/expo/expo/pull/27709) by [@EvanBacon](https://github.com/EvanBacon))
+- Relax forbidden React server API errors to better support shared components. ([#27878](https://github.com/expo/expo/pull/27878) by [@EvanBacon](https://github.com/EvanBacon))
+- Reset env in tests. ([#27950](https://github.com/expo/expo/pull/27950) by [@EvanBacon](https://github.com/EvanBacon))
+- Add Hermes language support tests. ([#27900](https://github.com/expo/expo/pull/27900) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused peer dependency on `@babel/preset-env`. ([#27705](https://github.com/expo/expo/pull/27705) by [@EvanBacon](https://github.com/EvanBacon))
 - Disable color in snapshot tests in CI. ([#27301](https://github.com/expo/expo/pull/27301) by [@EvanBacon](https://github.com/EvanBacon))
 - Add additional tests for undefined platform minification behavior. ([#27515](https://github.com/expo/expo/pull/27515) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `babel-plugin-react-native-web` for latest `react-native-web` aliases. ([#27214](https://github.com/expo/expo/pull/27214) by [@EvanBacon](https://github.com/EvanBacon))
 - Directly resolve plugins. ([#27041](https://github.com/expo/expo/pull/27041) by [@EvanBacon](https://github.com/EvanBacon))
+- Simplify react server code injection by using more expensive template code. ([#27879](https://github.com/expo/expo/pull/27879) by [@EvanBacon](https://github.com/EvanBacon))
+- Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
 
 ## 10.0.1 - 2023-12-19
 

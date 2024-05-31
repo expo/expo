@@ -3,30 +3,10 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 
-#import <ExpoModulesCore-Swift.h>
-
-#if DEBUG
-#import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher-Swift.h>
-#import <EXDevMenuInterface-Swift.h>
-#import <EXDevMenu-Swift.h>
-#endif
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if DEBUG
-  BOOL useDevClient = YES;
-
-  if (!useDevClient) {
-    ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
-
-    // Uncomment to use the default dev-menu from react-native
-    // ExpoDevMenuReactDelegateHandler.enableAutoSetup = NO;
-  }
-#endif
-
   self.moduleName = @"main";
 
   // You can add your custom initial props in the dictionary below.

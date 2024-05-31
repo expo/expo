@@ -6,7 +6,7 @@ import { CommandError } from '../../../utils/errors';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
-export type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
+export type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS' | 'xrOS';
 
 export type Device = {
   availabilityError?: 'runtime profile not found';

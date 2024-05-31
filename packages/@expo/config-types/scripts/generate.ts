@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import axios from 'axios';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import fs from 'fs-extra';
@@ -26,11 +25,10 @@ const program = new Command(packageJSON.name)
 async function fetchSchemaAsync(version: string): Promise<Record<string, any>> {
   const url = `http://exp.host/--/api/v2/project/configuration/schema/${version}`;
 
-  const {
-    data: { data },
-  } = await axios.get(url);
+  const response = await fetch(url);
+  const data = await response.json();
 
-  return data.schema;
+  return data.data.schema;
 }
 
 (async () => {

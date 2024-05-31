@@ -20,6 +20,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   public let updatesDirectory: URL? // internal for E2E test
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
+  public let isActiveController = true
   public private(set) var isStarted = false
 
   public var shouldEmitJsEvents = false {
@@ -132,10 +133,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     }
   }
 
-  func startupProcedure(_ startupProcedure: StartupProcedure, didEmitLegacyUpdateEventForAppContext eventType: String, body: [String: Any]) {
-    sendLegacyUpdateEventToAppContext(eventType, body: body)
-  }
-
   func startupProcedure(_ startupProcedure: StartupProcedure, errorRecoveryDidRequestRelaunchWithCompletion completion: @escaping (Error?, Bool) -> Void) {
     let procedure = RelaunchProcedure(
       database: self.database,
@@ -197,11 +194,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
 
   // MARK: - Send events to JS
 
-  internal func sendLegacyUpdateEventToAppContext(_ eventType: String, body: [String: Any]) {
-    logger.info(message: "sendLegacyUpdateEventToAppContext(): type = \(eventType)")
-    sendEventToAppContext(EXUpdatesEventName, eventType, body: body)
-  }
-
   internal func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
     logger.info(message: "sendUpdateStateChangeEventToAppContext(): type = \(eventType)")
     sendEventToAppContext(EXUpdatesStateChangeEventName, "\(eventType)", body: body)
@@ -248,7 +240,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     return UpdatesModuleConstants(
       launchedUpdate: startupProcedure.launchedUpdate(),
       embeddedUpdate: getEmbeddedUpdate(),
-      isEmergencyLaunch: startupProcedure.isEmergencyLaunch,
+      emergencyLaunchException: startupProcedure.emergencyLaunchException,
       isEnabled: true,
       isUsingEmbeddedAssets: startupProcedure.isUsingEmbeddedAssets(),
       runtimeVersion: self.config.runtimeVersion,

@@ -1,19 +1,9 @@
-import { ReactNode, PureComponent, useMemo, createRef } from 'react';
+import { ReactNode, PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer, VideoSource, VideoViewProps } from './VideoView.types';
-
-export function useVideoPlayer(source: VideoSource): VideoPlayer {
-  return useMemo(() => {
-    if (typeof source === 'string') {
-      return new NativeVideoModule.VideoPlayer({
-        uri: source,
-      });
-    }
-    return new NativeVideoModule.VideoPlayer(source);
-  }, []);
-}
+import type { VideoPlayer } from './VideoPlayer.types';
+import type { VideoViewProps } from './VideoView.types';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
@@ -21,25 +11,23 @@ export function useVideoPlayer(source: VideoSource): VideoPlayer {
  * @platform android
  * @platform ios
  */
-export function isPictureInPictureSupported(): Promise<boolean> {
+export function isPictureInPictureSupported(): boolean {
   return NativeVideoModule.isPictureInPictureSupported();
 }
 
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 
-  replace(source: VideoSource) {
-    if (typeof source === 'string') {
-      this.nativeRef.current?.replace({ uri: source });
-      return;
-    }
-    this.nativeRef.current?.replace(source);
-  }
-
+  /**
+   * Enters fullscreen mode.
+   */
   enterFullscreen() {
     this.nativeRef.current?.enterFullscreen();
   }
 
+  /**
+   * Exits fullscreen mode.
+   */
   exitFullscreen() {
     this.nativeRef.current?.exitFullscreen();
   }
@@ -50,7 +38,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  startPictureInPicture() {
+  startPictureInPicture(): void {
     return this.nativeRef.current?.startPictureInPicture();
   }
 
@@ -59,7 +47,7 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * @platform android
    * @platform ios 14+
    */
-  stopPictureInPicture() {
+  stopPictureInPicture(): void {
     return this.nativeRef.current?.stopPictureInPicture();
   }
 

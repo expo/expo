@@ -1,25 +1,33 @@
-import path from 'path';
-import { inMemoryContext, requireContext, requireContextWithOverrides, } from './context-stubs';
-import { getNavigationConfig } from '../getLinkingConfig';
-import { getExactRoutes } from '../getRoutes';
-function isOverrideContext(context) {
-    return Boolean(typeof context === 'object' && 'appDir' in context);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMockContext = exports.getMockConfig = void 0;
+const path_1 = __importDefault(require("path"));
+const context_stubs_1 = require("./context-stubs");
+const getLinkingConfig_1 = require("../getLinkingConfig");
+const getRoutes_1 = require("../getRoutes");
+function getMockConfig(context, metaOnly = true) {
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)), metaOnly);
 }
-export function getMockConfig(context, metaOnly = true) {
-    return getNavigationConfig(getExactRoutes(getMockContext(context)), metaOnly);
-}
-export function getMockContext(context) {
+exports.getMockConfig = getMockConfig;
+function getMockContext(context) {
     if (typeof context === 'string') {
-        return requireContext(path.resolve(process.cwd(), context));
+        return (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
     }
     else if (Array.isArray(context)) {
-        return inMemoryContext(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
+        return (0, context_stubs_1.inMemoryContext)(Object.fromEntries(context.map((filename) => [filename, { default: () => null }])));
     }
-    else if (isOverrideContext(context)) {
-        return requireContextWithOverrides(context.appDir, context.overrides);
+    else if (!('appDir' in context)) {
+        return (0, context_stubs_1.inMemoryContext)(context);
+    }
+    else if ('appDir' in context && typeof context.appDir === 'string') {
+        return (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
     }
     else {
-        return inMemoryContext(context);
+        throw new Error('Invalid context');
     }
 }
+exports.getMockContext = getMockContext;
 //# sourceMappingURL=mock-config.js.map

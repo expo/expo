@@ -1,5 +1,5 @@
+import React
 import ExpoModulesCore
-import simd
 
 public class ExpoAppleMapsModule: Module {
   public func definition() -> ModuleDefinition {

@@ -22,6 +22,7 @@ import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
+  sdkVersion: string;
 };
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
@@ -31,7 +32,11 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
-const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+const renderNamespace = (
+  namespace: ClassDefinitionData,
+  exposeInSidebar: boolean,
+  sdkVersion: string
+): JSX.Element => {
   const { name, comment, children } = namespace;
 
   const methods = children
@@ -59,20 +64,20 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
       {methods?.length ? (
         <>
           <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
-          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
+          {methods.map(method => renderMethod(method, { exposeInSidebar, sdkVersion }))}
         </>
       ) : undefined}
     </div>
   );
 };
 
-const APISectionNamespaces = ({ data }: APISectionNamespacesProps) => {
+const APISectionNamespaces = ({ data, sdkVersion }: APISectionNamespacesProps) => {
   if (data?.length) {
     const exposeInSidebar = data.length < 2;
     return (
       <>
         <H2>Namespaces</H2>
-        {data.map(namespace => renderNamespace(namespace, exposeInSidebar))}
+        {data.map(namespace => renderNamespace(namespace, exposeInSidebar, sdkVersion))}
       </>
     );
   }

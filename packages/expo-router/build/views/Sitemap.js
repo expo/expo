@@ -1,15 +1,22 @@
 // Copyright © 2024 650 Industries.
 'use client';
-import React from 'react';
-import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar, useWindowDimensions, } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Pressable } from './Pressable';
-import { useExpoRouter } from '../global-state/router-store';
-import { router } from '../imperative-api';
-import { Link } from '../link/Link';
-import { matchDeepDynamicRouteName } from '../matchers';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Sitemap = exports.getNavOptions = void 0;
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const Pressable_1 = require("./Pressable");
+const router_store_1 = require("../global-state/router-store");
+const imperative_api_1 = require("../imperative-api");
+const Link_1 = require("../link/Link");
+const matchers_1 = require("../matchers");
+const statusbar_1 = require("../utils/statusbar");
 const INDENT = 24;
-export function getNavOptions() {
+function getNavOptions() {
     return {
         title: 'sitemap',
         headerShown: false,
@@ -30,18 +37,19 @@ export function getNavOptions() {
         },
     };
 }
-export function Sitemap() {
-    const { top, bottom } = useSafeAreaInsets();
-    const { width } = useWindowDimensions();
-    return (<View style={styles.container}>
-      <StatusBar barStyle="light-content"/>
-      <View style={[
+exports.getNavOptions = getNavOptions;
+function Sitemap() {
+    const { top, bottom } = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
+    const { width } = (0, react_native_1.useWindowDimensions)();
+    return (<react_native_1.View style={styles.container}>
+      {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <react_native_1.StatusBar barStyle="light-content"/>}
+      <react_native_1.View style={[
             styles.main,
             {
                 minWidth: Math.min(960, width * 0.9),
             },
         ]}>
-        <ScrollView contentContainerStyle={[
+        <react_native_1.ScrollView contentContainerStyle={[
             styles.scroll,
             {
                 paddingTop: top + 12,
@@ -49,27 +57,28 @@ export function Sitemap() {
             },
         ]} style={{ flex: 1 }}>
           <FileSystemView />
-        </ScrollView>
-      </View>
-    </View>);
+        </react_native_1.ScrollView>
+      </react_native_1.View>
+    </react_native_1.View>);
 }
+exports.Sitemap = Sitemap;
 function FileSystemView() {
-    const routes = useExpoRouter().getSortedRoutes();
+    const routes = (0, router_store_1.useExpoRouter)().getSortedRoutes();
     return (<>
-      {routes.map((child) => (<View key={child.contextKey} style={styles.itemContainer}>
+      {routes.map((child) => (<react_native_1.View key={child.contextKey} style={styles.itemContainer}>
           <FileItem route={child}/>
-        </View>))}
+        </react_native_1.View>))}
     </>);
 }
 function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
     const disabled = route.children.length > 0;
-    const segments = React.useMemo(() => [...parents, ...route.route.split('/')], [parents, route.route]);
-    const href = React.useMemo(() => {
+    const segments = react_1.default.useMemo(() => [...parents, ...route.route.split('/')], [parents, route.route]);
+    const href = react_1.default.useMemo(() => {
         return ('/' +
             segments
                 .map((v) => {
                 // add an extra layer of entropy to the url for deep dynamic routes
-                if (matchDeepDynamicRouteName(v)) {
+                if ((0, matchers_1.matchDeepDynamicRouteName)(v)) {
                     return v + '/' + Date.now();
                 }
                 // index must be erased but groups can be preserved.
@@ -78,7 +87,7 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
                 .filter(Boolean)
                 .join('/'));
     }, [segments, route.route]);
-    const filename = React.useMemo(() => {
+    const filename = react_1.default.useMemo(() => {
         const segments = route.contextKey.split('/');
         // join last two segments for layout routes
         if (route.contextKey.match(/_layout\.[jt]sx?$/)) {
@@ -91,16 +100,16 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
     }, [route]);
     const info = isInitial ? 'Initial' : route.generated ? 'Virtual' : '';
     return (<>
-      {!route.internal && (<Link accessibilityLabel={route.contextKey} href={href} onPress={() => {
-                if (Platform.OS !== 'web' && router.canGoBack()) {
+      {!route.internal && (<Link_1.Link accessibilityLabel={route.contextKey} href={href} onPress={() => {
+                if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
                     // Ensure the modal pops
-                    router.back();
+                    imperative_api_1.router.back();
                 }
             }} style={{ flex: 1, display: 'flex' }} disabled={disabled} asChild 
         // Ensure we replace the history so you can't go back to this page.
         replace>
-          <Pressable style={{ flex: 1 }}>
-            {({ pressed, hovered }) => (<View style={[
+          <Pressable_1.Pressable style={{ flex: 1 }}>
+            {({ pressed, hovered }) => (<react_native_1.View style={[
                     styles.itemPressable,
                     {
                         paddingLeft: INDENT + level * INDENT,
@@ -109,31 +118,31 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
                     pressed && { backgroundColor: '#323232' },
                     disabled && { opacity: 0.4 },
                 ]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   {route.children.length ? <PkgIcon /> : <FileIcon />}
-                  <Text style={styles.filename}>{filename}</Text>
-                </View>
+                  <react_native_1.Text style={styles.filename}>{filename}</react_native_1.Text>
+                </react_native_1.View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {!!info && (<Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</Text>)}
+                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {!!info && (<react_native_1.Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</react_native_1.Text>)}
                   {!disabled && <ForwardIcon />}
-                </View>
-              </View>)}
-          </Pressable>
-        </Link>)}
+                </react_native_1.View>
+              </react_native_1.View>)}
+          </Pressable_1.Pressable>
+        </Link_1.Link>)}
       {route.children.map((child) => (<FileItem key={child.contextKey} route={child} isInitial={route.initialRouteName === child.route} parents={segments} level={level + (route.generated ? 0 : 1)}/>))}
     </>);
 }
 function FileIcon() {
-    return <Image style={styles.image} source={require('expo-router/assets/file.png')}/>;
+    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/file.png')}/>;
 }
 function PkgIcon() {
-    return <Image style={styles.image} source={require('expo-router/assets/pkg.png')}/>;
+    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/pkg.png')}/>;
 }
 function ForwardIcon() {
-    return <Image style={styles.image} source={require('expo-router/assets/forward.png')}/>;
+    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/forward.png')}/>;
 }
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     container: {
         backgroundColor: 'black',
         flex: 1,
@@ -163,7 +172,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        ...Platform.select({
+        ...react_native_1.Platform.select({
             web: {
                 transitionDuration: '100ms',
             },

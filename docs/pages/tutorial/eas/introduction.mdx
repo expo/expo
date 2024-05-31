@@ -1,0 +1,53 @@
+---
+title: 'EAS Tutorial: Introduction'
+sidebar_title: Introduction
+description: An introduction to the tutorial for building apps for Android and iOS using Expo Application Services (EAS) that covers the Build, Update, and Submit workflows.
+---
+
+import Highlight from '~/components/plugins/Highlight';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+## About this tutorial
+
+This tutorial will give you proficiency with [Expo Application Services (EAS)](https://expo.dev/eas) core services: [Build](/build/introduction/), [Submit](/submit/introduction/), and [Update](/eas-update/introduction/). When you complete the tutorial, you will know how to set up a professional mobile Continuous Integration (CI)/Continuous Development (CD) pipeline for your individual and team projects.
+
+This tutorial covers the following topics:
+
+- Use EAS Build to create and install a development build, then run it on a device, emulator, or simulator.
+- Experience the benefits of using a development build instead of Expo Go.
+- Implement workflows for sharing development builds with a team or external stakeholders.
+- Automatically increment app build versions.
+- Simultaneously install different app variants, like development and preview, on one device.
+- Utilize EAS Update to create and deploy updates swiftly during the development phase.
+- Automate build processes by integrating with a GitHub repository.
+
+These topics will give us the foundation needed to use EAS effectively and to approach more advanced topics when needed.
+
+## Prerequisites
+
+This tutorial is hands-on and designed to be completed in about two hours. You will need an existing Expo project to follow along and set it up locally on your machine. Options include:
+
+- Continuing with the Sticker Smash app from our previous tutorial. If new, download it from [GitHub](https://github.com/amandeepmittal/sticker-smash-expo-tutorial-app).
+- Starting a new project with [`npx create-expo-app`](/get-started/create-a-project/).
+- Using a bare React Native project. Ensure the `expo` package is installed, which you can do [automatically](/bare/installing-expo-modules/) or [manually](/bare/installing-expo-modules/#manual-installation).
+
+## Tools
+
+[Expo Orbit](https://expo.dev/orbit) to manage and launch builds with one click on macOS and Windows.
+
+If you want to install and run the build locally on your machine simultaneously, you can use Android Emulator or iOS Simulator. To set them up, see the following:
+
+- [Android Emulator](/workflow/android-studio-emulator/)
+- [iOS Simulator](/workflow/ios-simulator/) (available only on macOS)
+
+## Next step
+
+We're ready for this journey after setting up an Expo project locally. In the next chapter, let's learn how to create your first build with EAS Build.
+
+<BoxLink
+  title="Start"
+  description="Let's start by configuring a development build."
+  Icon={BookOpen02Icon}
+  href="/tutorial/eas/configure-development-build/"
+/>

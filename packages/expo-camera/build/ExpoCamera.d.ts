@@ -1,5 +1,5 @@
-import * as React from 'react';
+import { type ComponentType } from 'react';
 import { CameraNativeProps } from './Camera.types';
-declare const ExponentCamera: React.ComponentType<CameraNativeProps>;
-export default ExponentCamera;
+declare const ExpoCamera: ComponentType<CameraNativeProps>;
+export default ExpoCamera;
 //# sourceMappingURL=ExpoCamera.d.ts.map

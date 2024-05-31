@@ -5,7 +5,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
@@ -21,13 +20,6 @@ import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotific
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedGravitySensorService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedGyroscopeService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedLinearAccelerationSensorService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerUncalibratedService
-import versioned.host.exp.exponent.modules.universal.sensors.ScopedRotationVectorSensorService
 
 open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?, modulesProvider: ModulesProvider? = null) :
   ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
@@ -40,14 +32,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
   ): List<NativeModule> {
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
 
-    // Overriding sensor services from expo-sensors for scoped implementations using kernel services
-    moduleRegistry.registerInternalModule(ScopedAccelerometerService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedGravitySensorService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedGyroscopeService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedLinearAccelerationSensorService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedMagnetometerService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedMagnetometerUncalibratedService(experienceKey))
-    moduleRegistry.registerInternalModule(ScopedRotationVectorSensorService(experienceKey))
     moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
 
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
@@ -87,11 +71,7 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         register(
           ExpoGoModule(manifest),
           ExpoGoUpdatesModule(experienceProperties),
-          ScopedSecureStoreModule(scopedContext),
-          object : FontLoaderModule() {
-            override val prefix: String
-              get() = "ExpoFont-"
-          }
+          ScopedSecureStoreModule(scopedContext)
         )
 
         // Notifications

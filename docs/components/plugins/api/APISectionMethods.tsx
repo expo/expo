@@ -29,6 +29,7 @@ import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
+  sdkVersion: string;
   apiName?: string;
   header?: string;
   exposeInSidebar?: boolean;
@@ -36,21 +37,38 @@ export type APISectionMethodsProps = {
 
 export type RenderMethodOptions = {
   apiName?: string;
+  sdkVersion: string;
   header?: string;
   exposeInSidebar?: boolean;
   baseNestingLevel?: number;
 };
 
+function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
+  if ('signatures' in method) {
+    return method.signatures ?? [];
+  }
+  if ('getSignature' in method) {
+    return method.getSignature ? [method.getSignature] : [];
+  }
+  if ('type' in method) {
+    if (method?.type?.declaration?.signatures) {
+      if (method.type.declaration.name === '__type') {
+        return method.type.declaration.signatures.map(signature => ({
+          ...signature,
+          comment: method.comment,
+        }));
+      }
+      return method.type.declaration.signatures ?? [];
+    }
+  }
+  return [];
+}
+
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true, ...options }: RenderMethodOptions = {}
+  { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
 ) => {
-  const signatures =
-    (method as MethodDefinitionData).signatures ||
-    (method as PropData)?.type?.declaration?.signatures || [
-      (method as AccessorDefinitionData)?.getSignature,
-    ] ||
-    [];
+  const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   return signatures.map(
@@ -72,18 +90,18 @@ export const renderMethod = (
           </HeaderComponent>
           {parameters && parameters.length > 0 && (
             <>
-              {renderParams(parameters)}
+              {renderParams(parameters, sdkVersion)}
               <br />
             </>
           )}
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          {resolveTypeName(type) !== 'undefined' && (
+          {resolveTypeName(type, sdkVersion) !== 'undefined' && (
             <>
               <BoxSectionHeader text="Returns" />
               <UL className="!list-none !ml-0">
                 <LI>
                   <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
-                  <APIDataType typeDefinition={type} />
+                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </LI>
               </UL>
               <>
@@ -100,6 +118,7 @@ export const renderMethod = (
 
 const APISectionMethods = ({
   data,
+  sdkVersion,
   apiName,
   header = 'Methods',
   exposeInSidebar = true,
@@ -108,7 +127,7 @@ const APISectionMethods = ({
     <>
       <H2 key={`${header}-header`}>{header}</H2>
       {data.map((method: MethodDefinitionData | PropData) =>
-        renderMethod(method, { apiName, header, exposeInSidebar })
+        renderMethod(method, { apiName, sdkVersion, header, exposeInSidebar })
       )}
     </>
   ) : null;
@@ -117,6 +136,7 @@ export default APISectionMethods;
 
 export const APIMethod = ({
   name,
+  sdkVersion,
   comment,
   returnTypeName,
   isProperty = false,
@@ -127,6 +147,7 @@ export const APIMethod = ({
 }: {
   exposeInSidebar?: boolean;
   name: string;
+  sdkVersion: string;
   comment: string;
   returnTypeName: string;
   isProperty: boolean;
@@ -168,6 +189,6 @@ export const APIMethod = ({
       ],
       kind: isProperty ? TypeDocKind.Property : TypeDocKind.Function,
     },
-    { exposeInSidebar }
+    { sdkVersion, exposeInSidebar }
   );
 };

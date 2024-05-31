@@ -1,34 +1,67 @@
-import { StackActions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
-import { nanoid } from 'nanoid/non-secure';
-import { resolveHref } from '../link/href';
-import { resolve } from '../link/path';
-import { shouldLinkExternally } from '../utils/url';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
+const native_1 = require("@react-navigation/native");
+const Linking = __importStar(require("expo-linking"));
+const non_secure_1 = require("nanoid/non-secure");
+const href_1 = require("../link/href");
+const path_1 = require("../link/path");
+const matchers_1 = require("../matchers");
+const url_1 = require("../utils/url");
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
-export function navigate(url) {
-    return this.linkTo(resolveHref(url), 'NAVIGATE');
+function navigate(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
 }
-export function push(url) {
-    return this.linkTo(resolveHref(url), 'PUSH');
+exports.navigate = navigate;
+function push(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
 }
-export function dismiss(count) {
-    this.navigationRef?.dispatch(StackActions.pop(count));
+exports.push = push;
+function dismiss(count) {
+    this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
-export function replace(url) {
-    return this.linkTo(resolveHref(url), 'REPLACE');
+exports.dismiss = dismiss;
+function replace(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
 }
-export function dismissAll() {
-    this.navigationRef?.dispatch(StackActions.popToTop());
+exports.replace = replace;
+function dismissAll() {
+    this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
-export function goBack() {
+exports.dismissAll = dismissAll;
+function goBack() {
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-export function canGoBack() {
+exports.goBack = goBack;
+function canGoBack() {
     // Return a default value here if the navigation hasn't mounted yet.
     // This can happen if the user calls `canGoBack` from the Root Layout route
     // before mounting a navigator. This behavior exists due to React Navigation being dynamically
@@ -39,7 +72,8 @@ export function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-export function canDismiss() {
+exports.canGoBack = canGoBack;
+function canDismiss() {
     let state = this.rootState;
     // Keep traversing down the state tree until we find a stack navigator that we can pop
     while (state) {
@@ -52,12 +86,14 @@ export function canDismiss() {
     }
     return false;
 }
-export function setParams(params = {}) {
+exports.canDismiss = canDismiss;
+function setParams(params = {}) {
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-export function linkTo(href, event) {
-    if (shouldLinkExternally(href)) {
+exports.setParams = setParams;
+function linkTo(href, event) {
+    if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
     }
@@ -100,7 +136,7 @@ export function linkTo(href, event) {
         if (!this.routeInfo?.isIndex) {
             base += '/..';
         }
-        href = resolve(base, href);
+        href = (0, path_1.resolve)(base, href);
     }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
@@ -109,23 +145,66 @@ export function linkTo(href, event) {
     }
     return navigationRef.dispatch(getNavigateAction(state, rootState, event));
 }
-function rewriteNavigationStateToParams(state, params = {}) {
-    if (!state)
-        return params;
-    // We Should always have at least one route in the state
-    const lastRoute = state.routes[state.routes.length - 1];
-    params.screen = lastRoute.name;
-    // Weirdly, this always needs to be an object. If it's undefined, it won't work.
-    params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
-    if (lastRoute.state) {
-        rewriteNavigationStateToParams(lastRoute.state, params.params);
+exports.linkTo = linkTo;
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
+    /**
+     * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
+     * lowest navigator is the target.
+     *
+     * By default React Navigation will target the current navigator, but this doesn't work for all actions
+     * For example:
+     *  - /deeply/nested/route -> /top-level-route the target needs to be the top-level navigator
+     *  - /stack/nestedStack/page -> /stack1/nestedStack/other-page needs to target the nestedStack navigator
+     *
+     * This matching needs to done by comparing the route names and the dynamic path, for example
+     * - /1/page -> /2/anotherPage needs to target the /[id] navigator
+     *
+     * Other parameters such as search params and hash are not evaluated.
+     */
+    let actionStateRoute;
+    // Traverse the state tree comparing the current state and the action state until we find where they diverge
+    while (actionState && navigationState) {
+        const stateRoute = navigationState.routes[navigationState.index];
+        actionStateRoute = actionState.routes[actionState.routes.length - 1];
+        const childState = actionStateRoute.state;
+        const nextNavigationState = stateRoute.state;
+        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
+            !childState ||
+            !nextNavigationState ||
+            (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
+        if (didActionAndCurrentStateDiverge) {
+            break;
+        }
+        actionState = childState;
+        navigationState = nextNavigationState;
     }
-    return JSON.parse(JSON.stringify(params));
-}
-function getNavigateAction(state, parentState, type = 'NAVIGATE') {
-    const { screen, params } = rewriteNavigationStateToParams(state);
-    let key;
+    /*
+     * We found the target navigator, but the payload is in the incorrect format
+     * We need to convert the action state to a payload that can be dispatched
+     */
+    const rootPayload = { params: {} };
+    let payload = rootPayload;
+    let params = payload.params;
+    // The root level of payload is a bit weird, its params are in the child object
+    while (actionStateRoute) {
+        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
+        // Assign the screen name to the payload
+        payload.screen = actionStateRoute.name;
+        // Merge the params, ensuring that we create a new object
+        payload.params = { ...params };
+        // Params don't include the screen, thats a separate attribute
+        delete payload.params['screen'];
+        // Continue down the payload tree
+        // Initially these values are separate, but React Nav merges them after the first layer
+        payload = payload.params;
+        params = payload;
+        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+    }
+    // Expo Router uses only three actions, but these don't directly translate to all navigator actions
     if (type === 'PUSH') {
+        // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
+        type = 'NAVIGATE';
         /*
          * The StackAction.PUSH does not work correctly with Expo Router.
          *
@@ -140,21 +219,20 @@ function getNavigateAction(state, parentState, type = 'NAVIGATE') {
          * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
          *
          */
-        type = 'NAVIGATE';
-        if (parentState.type === 'stack') {
-            key = `${screen}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+        if (navigationState.type === 'stack') {
+            rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
-    else if (type === 'REPLACE' && parentState.type === 'tab') {
+    if (type === 'REPLACE' && navigationState.type === 'tab') {
         type = 'JUMP_TO';
     }
     return {
         type,
-        target: parentState.key,
+        target: navigationState.key,
         payload: {
-            key,
-            name: screen,
-            params,
+            key: rootPayload.key,
+            name: rootPayload.screen,
+            params: rootPayload.params,
         },
     };
 }

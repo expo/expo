@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+
+import { listMissingHashLinkTargets } from '~/common/utilities';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -23,7 +26,6 @@ type Props = {
   packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
 
@@ -45,7 +47,7 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: GeneratedData) =>
+const isHook = ({ name }: { name: string }) =>
   name.startsWith('use') &&
   // note(simek): hardcode this exception until the method will be renamed
   name !== 'useSystemBrightnessAsync';
@@ -73,7 +75,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
@@ -98,11 +100,10 @@ const groupByHeader = (entries: GeneratedData[]) => {
 };
 
 const renderAPI = (
-  version: string,
+  sdkVersion: string,
   {
     packageName,
     apiName,
-    strictTypes = false,
     testRequire = undefined,
     headersMapping = {},
     ...restProps
@@ -115,16 +116,16 @@ const renderAPI = (
       data = packageName
         .map(name => {
           const { children } = testRequire
-            ? testRequire(`~/public/static/data/${version}/${name}.json`)
-            : require(`~/public/static/data/${version}/${name}.json`);
+            ? testRequire(`~/public/static/data/${sdkVersion}/${name}.json`)
+            : require(`~/public/static/data/${sdkVersion}/${name}.json`);
           return children;
         })
         .flat()
         .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
     } else {
       const { children } = testRequire
-        ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
-        : require(`~/public/static/data/${version}/${packageName}.json`);
+        ? testRequire(`~/public/static/data/${sdkVersion}/${packageName}.json`)
+        : require(`~/public/static/data/${sdkVersion}/${packageName}.json`);
       data = children;
     }
 
@@ -161,8 +162,7 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
@@ -214,16 +214,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 
@@ -234,7 +233,7 @@ const renderAPI = (
         method?.kind === TypeDocKind.Method &&
         method?.flags?.isStatic === true &&
         !methodsNames.includes(method.name) &&
-        !isHook(method as GeneratedData)
+        !isHook(method)
     );
     const componentMethods = componentsChildren
       .filter(
@@ -260,32 +259,48 @@ const renderAPI = (
                   data={categorizedMethods[key]}
                   header={header}
                   key={`${header}-${index}`}
+                  sdkVersion={sdkVersion}
                 />
               ))
             : Object.entries(categorizedMethods).map(([key, data], index) => (
-                <APISectionMethods data={data} header={key} key={`${key}-${index}`} />
+                <APISectionMethods
+                  data={data}
+                  header={key}
+                  key={`${key}-${index}`}
+                  sdkVersion={sdkVersion}
+                />
               )))}
-        <APISectionComponents data={components} componentsProps={componentsProps} />
-        <APISectionMethods data={staticMethods} header="Static Methods" />
-        <APISectionMethods data={componentMethods} header="Component Methods" />
-        <APISectionConstants data={constants} apiName={apiName} />
-        <APISectionMethods data={hooks} header="Hooks" />
+        <APISectionComponents
+          data={components}
+          sdkVersion={sdkVersion}
+          componentsProps={componentsProps}
+        />
+        <APISectionMethods data={staticMethods} header="Static Methods" sdkVersion={sdkVersion} />
+        <APISectionMethods
+          data={componentMethods}
+          header="Component Methods"
+          sdkVersion={sdkVersion}
+        />
+        <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
+        <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
         <APISectionClasses
           data={classes}
+          sdkVersion={sdkVersion}
           exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
         />
         {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
+          <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}
-        <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionMethods data={methods} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
+          sdkVersion={sdkVersion}
         />
-        <APISectionNamespaces data={namespaces} />
-        <APISectionInterfaces data={interfaces} />
-        <APISectionTypes data={types} />
+        <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />
+        <APISectionInterfaces data={interfaces} sdkVersion={sdkVersion} />
+        <APISectionTypes data={types} sdkVersion={sdkVersion} />
         <APISectionEnums data={enums} />
       </>
     );
@@ -295,11 +310,20 @@ const renderAPI = (
   }
 };
 
+const isDevMode = process.env.NODE_ENV === 'development';
+
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+
+  useEffect(() => {
+    if (isDevMode) {
+      listMissingHashLinkTargets(restProps.apiName);
+    }
+  }, []);
+
   return renderAPI(resolvedVersion, restProps);
 };
 

@@ -1,6 +1,6 @@
 #include "WeakRuntimeHolder.h"
 #include "JavaScriptRuntime.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 namespace expo {
 WeakRuntimeHolder::WeakRuntimeHolder(std::weak_ptr<JavaScriptRuntime> runtime)
@@ -16,9 +16,9 @@ void WeakRuntimeHolder::ensureRuntimeIsValid() {
   assert((!expired()) && "JS Runtime was used after deallocation");
 }
 
-JSIInteropModuleRegistry *WeakRuntimeHolder::getModuleRegistry() {
+JSIContext *WeakRuntimeHolder::getJSIContext() {
   auto runtime = lock();
   assert((runtime != nullptr) && "JS Runtime was used after deallocation");
-  return runtime->getModuleRegistry();
+  return expo::getJSIContext(runtime->get());
 }
 } // namespace expo

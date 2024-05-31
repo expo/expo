@@ -49,7 +49,6 @@ const screens = [
   'FileSystem',
   'Font',
   'Errors',
-  'ExpoModules',
   'Geocoding',
   'Haptics',
   'ImageManipulator',
@@ -62,6 +61,7 @@ const screens = [
   'Location',
   'MailComposer',
   'MediaLibrary',
+  'ModulesCore',
   'Network',
   'NetInfo',
   'Notification',
@@ -84,6 +84,7 @@ const screens = [
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',
+  'Video Thumbnails',
   'ViewShot',
   'WebBrowser',
 ];

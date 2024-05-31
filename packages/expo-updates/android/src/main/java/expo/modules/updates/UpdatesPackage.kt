@@ -2,18 +2,16 @@ package expo.modules.updates
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,32 +23,32 @@ import kotlinx.coroutines.withContext
  */
 class UpdatesPackage : Package {
   private val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
-  private var mShouldAutoSetup: Boolean? = null
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.launchAssetFile else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.launchAssetFile else null
       }
 
       override fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.bundleAssetName else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.bundleAssetName else null
       }
 
-      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
-          UpdatesController.initialize(context)
-        }
+      override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
+        UpdatesController.initialize(context)
       }
 
-      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
-        // WHEN_VERSIONING_REMOVE_FROM_HERE
-        // This code path breaks versioning and is not necessary for Expo Go.
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
-          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
-        }
-        // WHEN_VERSIONING_REMOVE_TO_HERE
+      override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+        UpdatesController.instance.onDidCreateDevSupportManager(devSupportManager)
+      }
+
+      override fun onDidCreateReactInstance(useDeveloperSupport: Boolean, reactContext: ReactContext) {
+        UpdatesController.instance.onDidCreateReactInstance(reactContext)
+      }
+
+      override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
+        UpdatesController.instance.onReactInstanceException(exception)
       }
     }
     return listOf(handler)
@@ -64,7 +62,7 @@ class UpdatesPackage : Package {
         }
         val context = activity.applicationContext
         val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
+        if (!useDeveloperSupport || BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
           return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
             CoroutineScope(Dispatchers.IO).launch {
               startUpdatesController(context)
@@ -99,7 +97,7 @@ class UpdatesPackage : Package {
     val handler = object : ApplicationLifecycleListener {
       override fun onCreate(application: Application) {
         super.onCreate(application)
-        if (shouldAutoSetup(context) && isRunningAndroidTest()) {
+        if (isRunningAndroidTest()) {
           // Preload updates to prevent Detox ANR
           UpdatesController.initialize(context)
           UpdatesController.instance.launchAssetFile
@@ -108,20 +106,6 @@ class UpdatesPackage : Package {
     }
 
     return listOf(handler)
-  }
-
-  private fun shouldAutoSetup(context: Context): Boolean {
-    if (mShouldAutoSetup == null) {
-      mShouldAutoSetup = try {
-        val pm = context.packageManager
-        val ai = pm.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        ai.metaData.getBoolean("expo.modules.updates.AUTO_SETUP", true)
-      } catch (e: Exception) {
-        Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e)
-        true
-      }
-    }
-    return mShouldAutoSetup!!
   }
 
   private fun isRunningAndroidTest(): Boolean {

@@ -134,7 +134,7 @@ available via the provided properties.
       You should only attempt to render this if 
       <a
         class="css-1na8e0o-A"
-        href="#isavailableasync"
+        href="#appleauthenticationisavailableasync"
       >
         <code
           class="css-qyuze8-TextComponent"
@@ -642,7 +642,7 @@ for more details.
           The method to call when the user presses the button. You should call 
           <a
             class="css-1na8e0o-A"
-            href="#isavailableasync"
+            href="#appleauthenticationisavailableasync"
           >
             <code
               class="css-qyuze8-TextComponent"
@@ -2295,12 +2295,7 @@ sign-out operation.
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
-          <a
-            class="css-1na8e0o-A"
-            href="#subscription"
-          >
-            Subscription
-          </a>
+          EventSubscription
         </code>
       </li>
     </ul>
@@ -4148,6 +4143,12 @@ OAuth 2.0 protocol
         </svg>
       </a>
     </h3>
+    <p
+      class="mb-4 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      A subscription object that allows to conveniently remove an event listener from the emitter.
+    </p>
     <div
       class="css-1uyflf8-Table"
     >
@@ -4194,13 +4195,18 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span
                   class="text-quaternary"
                 >
-                  () =&gt;
+                  (
+                </span>
+                <span
+                  class="text-quaternary"
+                >
+                  ) =&gt;
                 </span>
                  
                 void
@@ -4213,7 +4219,8 @@ OAuth 2.0 protocol
                 class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                A method to unsubscribe the listener.
+                Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
               </p>
             </td>
           </tr>
@@ -4319,7 +4326,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined color scheme to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -4579,7 +4586,7 @@ OAuth 2.0 protocol
         An enum whose values control which pre-defined text to use when rendering an 
         <a
           class="css-1na8e0o-A"
-          href="#appleauthenticationappleauthenticationbutton"
+          href="#appleauthenticationbutton"
         >
           <code
             class="css-qyuze8-TextComponent"
@@ -6129,23 +6136,38 @@ exports[`APISection expo-barcode-scanner 1`] = `
             >
               Deprecated.
             </strong>
-             BarCodeScanner has been deprecated and will be removed in a future SDK version. Plesae use 
+             BarCodeScanner has been deprecated and will be removed in a future SDK version. Use 
             <code
               class="css-qyuze8-TextComponent"
               data-text="true"
             >
               expo-camera
             </code>
-             instead. see 
+             instead.
+See 
             <a
               class="css-1na8e0o-A"
               href="https://expo.fyi/barcode-scanner-to-expo-camera"
               rel="noopener noreferrer"
               target="_blank"
             >
-              barcode-scanner-to-expo-camera
+              How to migrate from 
+              <code
+                class="css-qyuze8-TextComponent"
+                data-text="true"
+              >
+                expo-barcode-scanner
+              </code>
+               to 
+              <code
+                class="css-qyuze8-TextComponent"
+                data-text="true"
+              >
+                expo-camera
+              </code>
             </a>
-             for more details on how to migrate.
+            
+for more details.
           </p>
         </div>
       </blockquote>
@@ -6954,7 +6976,7 @@ This uses both
     </p>
     <pre>
       <pre
-        class="last:mb-0 css-1r21cuo-Code"
+        class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
         data-text="true"
       >
         <code
@@ -9019,7 +9041,7 @@ you don't get this value.
                 class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                The information encoded in the bar code.
+                The parsed information encoded in the bar code.
               </p>
             </td>
           </tr>
@@ -10531,12 +10553,7 @@ provided with a single argument that is
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
-          <a
-            class="css-1na8e0o-A"
-            href="#subscription"
-          >
-            Subscription
-          </a>
+          EventSubscription
         </code>
       </li>
     </ul>
@@ -11275,6 +11292,12 @@ in order to enable/disable the permission.
         </svg>
       </a>
     </h3>
+    <p
+      class="mb-4 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      A subscription object that allows to conveniently remove an event listener from the emitter.
+    </p>
     <div
       class="css-1uyflf8-Table"
     >
@@ -11321,13 +11344,18 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span
                   class="text-quaternary"
                 >
-                  () =&gt;
+                  (
+                </span>
+                <span
+                  class="text-quaternary"
+                >
+                  ) =&gt;
                 </span>
                  
                 void
@@ -11340,7 +11368,8 @@ in order to enable/disable the permission.
                 class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                A method to unsubscribe the listener.
+                Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
               </p>
             </td>
           </tr>

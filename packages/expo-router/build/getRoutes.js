@@ -1,4 +1,8 @@
-import { matchArrayGroupName, matchDeepDynamicRouteName, matchDynamicName, matchGroupName, removeSupportedExtensions, } from './matchers';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateDynamic = exports.extrapolateGroups = exports.getIgnoreList = exports.getExactRoutes = exports.getRoutes = void 0;
+const matchers_1 = require("./matchers");
+const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -11,7 +15,7 @@ import { matchArrayGroupName, matchDeepDynamicRouteName, matchDynamicName, match
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-export function getRoutes(contextModule, options = {}) {
+function getRoutes(contextModule, options = {}) {
     const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
@@ -23,18 +27,20 @@ export function getRoutes(contextModule, options = {}) {
     }
     return rootNode;
 }
-export function getExactRoutes(contextModule, options = {}) {
+exports.getRoutes = getRoutes;
+function getExactRoutes(contextModule, options = {}) {
     return getRoutes(contextModule, {
         ...options,
         skipGenerated: true,
     });
 }
+exports.getExactRoutes = getExactRoutes;
 /**
  * Converts the RequireContext keys (file paths) into a directory tree.
  */
 function getDirectoryTree(contextModule, options) {
     const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
-    const ignoreList = [/^\.\/\+html\.[tj]sx?$/]; // Ignore the top level ./+html file
+    const ignoreList = [/^\.\/\+(html|native-intent)\.[tj]sx?$/]; // Ignore the top level ./+html file
     if (options.ignore) {
         ignoreList.push(...options.ignore);
     }
@@ -52,7 +58,7 @@ function getDirectoryTree(contextModule, options) {
             continue;
         }
         isValid = true;
-        const meta = getFileMeta(filePath);
+        const meta = getFileMeta(filePath, options);
         // This is a file that should be ignored. e.g maybe it has an invalid platform?
         if (meta.specificity < 0) {
             continue;
@@ -130,7 +136,7 @@ function getDirectoryTree(contextModule, options) {
                     nodes = [];
                     directory.files.set(fileKey, nodes);
                 }
-                // TODO(Platform Route): Throw error if specificity > 0, as you cannot specify platform extensions for api routes
+                // API Routes have no specificity, they are always the first node
                 const existing = nodes[0];
                 if (existing) {
                     // In production, use the first route found
@@ -215,7 +221,7 @@ pathToRemove = '') {
      */
     if (directory.layout) {
         const previousLayout = layout;
-        layout = directory.layout[0]; // TODO(Platform Routes): We need to pick the most specific layout.
+        layout = getMostSpecific(directory.layout);
         // Add the new layout as a child of its parent
         if (previousLayout) {
             previousLayout.children.push(layout);
@@ -234,8 +240,7 @@ pathToRemove = '') {
     if (!layout)
         throw new Error('Expo Router Internal Error: No nearest layout');
     for (const routes of directory.files.values()) {
-        // TODO(Platform Routes): We need to pick the most specific layout and ensure that all routes have a non-platform route.
-        const routeNode = routes[0];
+        const routeNode = getMostSpecific(routes);
         // `route` is the absolute pathname. We need to make this relative to the nearest layout
         routeNode.route = routeNode.route.replace(pathToRemove, '');
         routeNode.dynamic = generateDynamic(routeNode.route);
@@ -250,14 +255,15 @@ pathToRemove = '') {
     }
     return layout;
 }
-function getFileMeta(key) {
+function getFileMeta(key, options) {
     // Remove the leading `./`
     key = key.replace(/^\.\//, '');
     const parts = key.split('/');
+    let route = (0, matchers_1.removeSupportedExtensions)(key);
     const filename = parts[parts.length - 1];
-    const filenameWithoutExtensions = removeSupportedExtensions(filename);
+    const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
-    const isApi = filename.match(/\+api\.[jt]sx?$/);
+    const isApi = filename.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
         throw new Error(`Invalid route ./${key}. Routes cannot end with '(group)' syntax`);
     }
@@ -266,27 +272,59 @@ function getFileMeta(key) {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
         throw new Error(`Invalid route ./${key}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
     }
+    let specificity = 0;
+    const hasPlatformExtension = validPlatforms.has(platformExtension);
+    const usePlatformRoutes = options.platformRoutes ?? true;
+    if (hasPlatformExtension) {
+        if (!usePlatformRoutes) {
+            // If the user has disabled platform routes, then we should ignore this file
+            specificity = -1;
+        }
+        else if (!options.platform) {
+            // If we don't have a platform, then we should ignore this file
+            // This used by typed routes, sitemap, etc
+            specificity = -1;
+        }
+        else if (platformExtension === options.platform) {
+            // If the platform extension is the same as the options.platform, then it is the most specific
+            specificity = 2;
+        }
+        else if (platformExtension === 'native' && options.platform !== 'web') {
+            // `native` is allow but isn't as specific as the platform
+            specificity = 1;
+        }
+        else if (platformExtension !== options.platform) {
+            // Somehow we have a platform extension that doesn't match the options.platform and it isn't native
+            // This is an invalid file and we will ignore it
+            specificity = -1;
+        }
+        if (isApi && specificity !== 0) {
+            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from './${key}'`);
+        }
+        route = route.replace(new RegExp(`.${platformExtension}$`), '');
+    }
     return {
-        route: removeSupportedExtensions(key),
-        specificity: 0,
+        route,
+        specificity,
         isLayout,
         isApi,
     };
 }
-export function getIgnoreList(options) {
+function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
     if (options?.preserveApiRoutes !== true) {
         ignore.push(/\+api\.[tj]sx?$/);
     }
     return ignore;
 }
+exports.getIgnoreList = getIgnoreList;
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *
  * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
  */
 function extrapolateGroups(key, keys = new Set()) {
-    const match = matchArrayGroupName(key);
+    const match = (0, matchers_1.matchArrayGroupName)(key);
     if (!match) {
         keys.add(key);
         return keys;
@@ -305,7 +343,8 @@ function extrapolateGroups(key, keys = new Set()) {
     }
     return keys;
 }
-export function generateDynamic(path) {
+exports.extrapolateGroups = extrapolateGroups;
+function generateDynamic(path) {
     const dynamic = path
         .split('/')
         .map((part) => {
@@ -316,8 +355,8 @@ export function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = matchDeepDynamicRouteName(part);
-        const dynamicName = deepDynamicName ?? matchDynamicName(part);
+        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
+        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
         if (!dynamicName)
             return null;
         return { name: dynamicName, deep: !!deepDynamicName };
@@ -325,6 +364,7 @@ export function generateDynamic(path) {
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;
 }
+exports.generateDynamic = generateDynamic;
 function appendSitemapRoute(directory) {
     if (!directory.files.has('_sitemap')) {
         directory.files.set('_sitemap', [
@@ -370,7 +410,7 @@ function getLayoutNode(node, options) {
      * So
      */
     // We may strip loadRoute during testing
-    const groupName = matchGroupName(node.route);
+    const groupName = (0, matchers_1.matchGroupName)(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
@@ -408,7 +448,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
          * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
          * Each of these layouts will have a different initialRouteName based upon the first group.
          */
-        const groupName = matchGroupName(node.route);
+        const groupName = (0, matchers_1.matchGroupName)(node.route);
         const childMatchingGroup = node.children.find((child) => {
             return child.route.replace(/\/index$/, '') === groupName;
         });
@@ -448,5 +488,14 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
             crawlAndAppendInitialRoutesAndEntryFiles(child, options, entryPoints);
         }
     }
+}
+function getMostSpecific(routes) {
+    const route = routes[routes.length - 1];
+    if (!routes[0]) {
+        throw new Error(`The file ${route.contextKey} does not have a fallback sibling file without a platform extension.`);
+    }
+    // This works even tho routes is holey array (e.g it might have index 0 and 2 but not 1)
+    // `.length` includes the holes in its count
+    return routes[routes.length - 1];
 }
 //# sourceMappingURL=getRoutes.js.map

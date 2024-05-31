@@ -76,6 +76,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
   );
+  const isServerEnv = isServer || isReactServer;
 
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
@@ -121,14 +122,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
     extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
-  } else {
+  } else if (!isServerEnv) {
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
     extraPlugins.push(require('@babel/plugin-transform-parameters'));
   }
-
-  const isServerEnv = isServer || isReactServer;
 
   const inlines: Record<string, boolean | string> = {
     'process.env.EXPO_OS': platform,
@@ -144,27 +143,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
   }
 
-  // if (isProduction) {
-  //   inlines['process.env.NODE_ENV'] = 'production';
-  //   inlines['__DEV__'] = false;
-  // }
+  if (isProduction) {
+    inlines['process.env.NODE_ENV'] = 'production';
+    inlines['__DEV__'] = false;
+    inlines['Platform.OS'] = platform;
+  }
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
   }
 
-  extraPlugins.push([require('babel-plugin-transform-define'), inlines]);
+  extraPlugins.push([require('./define-plugin'), inlines]);
 
-  if (isProduction && hasModule('metro-transform-plugins')) {
-    // Metro applies this plugin too but it does it after the imports have been transformed which breaks
-    // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
-    // is replaced with a string literal and `__DEV__` is converted to a boolean.
-    // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+  if (isProduction) {
+    // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
+    // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
     extraPlugins.push([
-      require('metro-transform-plugins/src/inline-plugin.js'),
+      require('./minify-platform-select-plugin'),
       {
-        dev: isDev,
-        inlinePlatform: true,
         platform,
       },
     ]);
@@ -219,6 +215,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     ]);
   }
 
+  // Use the simpler babel preset for web and server environments (both web and native SSR).
+  const isModernEngine = platform === 'web' || isServerEnv;
+
   return {
     presets: [
       [
@@ -226,7 +225,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // specifically use the `@react-native/babel-preset` installed by this package (ex:
         // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        require('@react-native/babel-preset'),
+        isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
         {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
