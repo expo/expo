@@ -44,9 +44,9 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        shard: [1, 2, 3]
+    # strategy:
+    #   matrix:
+    #     shard: [1, 2, 3]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -64,6 +64,10 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: 🏗️ Setup Watchman
+        run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install watchman && watchman version
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: true
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -76,7 +80,7 @@ jobs:
         run: yarn typecheck
         working-directory: packages/@expo/cli
       - name: E2E Test CLI
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e #--shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
       # - name: 🔔 Notify on Slack
       #   uses: 8398a7/action-slack@v3
