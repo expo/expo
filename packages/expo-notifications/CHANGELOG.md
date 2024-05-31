@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.28.5 — 2024-05-31
+
+### 🐛 Bug fixes
+
+- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.4 — 2024-05-29
 
