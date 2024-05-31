@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Jump directly to source.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
