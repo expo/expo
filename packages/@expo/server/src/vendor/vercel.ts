@@ -67,7 +67,7 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
 export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
-  res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
+  res.writeHead(expoRes.status, expoRes.statusText, ...expoRes.headers.entries());
 
   if (expoRes.body) {
     await writeReadableStreamToWritable(expoRes.body, res);
