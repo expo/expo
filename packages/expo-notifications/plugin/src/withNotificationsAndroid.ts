@@ -32,9 +32,10 @@ const {
 } = AndroidConfig.Manifest;
 const BASELINE_PIXEL_SIZE = 24;
 const ERROR_MSG_PREFIX = 'An error occurred while configuring Android notifications. ';
-export const META_DATA_NOTIFICATION_ICON = 'expo.modules.notifications.default_notification_icon';
+export const META_DATA_NOTIFICATION_ICON =
+  'com.google.firebase.messaging.default_notification_icon';
 export const META_DATA_NOTIFICATION_ICON_COLOR =
-  'expo.modules.notifications.default_notification_color';
+  'com.google.firebase.messaging.default_notification_color';
 export const NOTIFICATION_ICON = 'notification_icon';
 export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
 export const NOTIFICATION_ICON_COLOR = 'notification_icon_color';

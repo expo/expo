@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.0.0 — 2024-05-30
+
+### 💡 Others
+
 - Update dependencies to support newer versions of TypeScript. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
 - Reflect in peer dependencies the fact that config does not support yet ESLint 9. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
 

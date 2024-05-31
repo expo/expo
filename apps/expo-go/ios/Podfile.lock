@@ -176,8 +176,6 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (13.0.1):
     - ExpoModulesCore
-  - ExpoRandom (14.0.1):
-    - ExpoModulesCore
   - ExpoScreenCapture (6.0.1):
     - ExpoModulesCore
   - ExpoScreenOrientation (7.0.5):
@@ -1906,7 +1904,6 @@ DEPENDENCIES:
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
-  - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -2140,8 +2137,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-network/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
-  ExpoRandom:
-    :path: "../../../packages/expo-random/ios"
   ExpoScreenCapture:
     :path: "../../../packages/expo-screen-capture/ios"
   ExpoScreenOrientation:
@@ -2379,7 +2374,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: dc3e6f221ce5717e6e0a771780e6e7d50a790189
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
-  ExpoLocalAuthentication: 9e02a56a4cf9868f0052656a93d4c94101a42ed7
+  ExpoLocalAuthentication: f119167649d0465a06fa7c5b44c6c70f43f477ee
   ExpoLocalization: f04eeec2e35bed01ab61c72ee1768ec04d093d01
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
@@ -2387,7 +2382,6 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a
-  ExpoRandom: 099ddce39b39ffb984b45118d031e8713e962a50
   ExpoScreenCapture: ece7593264d1384aff2481eea29f9a238b484090
   ExpoScreenOrientation: 5d6a977177dc2f904cc072b51a0d37d0983c0d6a
   ExpoSecureStore: 5f6b712785986b54d95a92bd365aabb82a52088e
