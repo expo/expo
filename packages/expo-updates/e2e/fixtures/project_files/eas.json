@@ -64,6 +64,37 @@
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
     },
+
+    // Maestro
+    "update_testing_maestro_release": {
+      "extends": "base",
+      "env": {
+        "EX_UPDATES_NATIVE_DEBUG": "1"
+      },
+      "withoutCredentials": true,
+      "config": "maestro-e2e.yaml",
+      "distribution": "internal",
+      "android": {
+        "image": "latest",
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "image": "latest",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    },
+    "updates_testing_maestro_debug": {
+      "extends": "update_testing_maestro_release",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+
     "production": {
       "extends": "base"
     }

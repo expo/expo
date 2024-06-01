@@ -181,7 +181,10 @@ export default function App() {
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
-      <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
+      <TestValue
+        testID="runtimeVersion"
+        value={`${currentlyRunning.runtimeVersion || undefined}`}
+      />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />

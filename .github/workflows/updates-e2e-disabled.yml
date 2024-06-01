@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ios, android]
-        variant: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["updates_testing_debug", "updates_testing_release"]') || fromJson('["updates_testing_debug"]') }}
+        variant: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["updates_testing_maestro_debug", "updates_testing_maestro_release"]') || fromJson('["updates_testing_maestro_debug"]') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 80
     env:

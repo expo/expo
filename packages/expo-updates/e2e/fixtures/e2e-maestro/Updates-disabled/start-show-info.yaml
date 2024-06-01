@@ -1,0 +1,32 @@
+appId: dev.expo.updatese2e
+name: starts app, shows info when updates are disabled
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: 'updateString'
+    text: 'test'
+- assertVisible:
+    id: 'updateID'
+    text: 'null'
+- assertVisible:
+    id: 'runtimeVersion'
+    text: 'undefined'
+- assertVisible:
+    id: 'checkAutomatically'
+    text: 'NEVER'
+- assertVisible:
+    id: 'isEmbeddedLaunch'
+    text: 'false'
+- assertVisible:
+    id: 'availableUpdateID'
+    text: 'undefined'
+- assertVisible:
+    id: 'lastJSAPIErrorMessage'
+    text: 'false'
+- tapOn:
+    id: 'callJSAPI'
+- assertVisible:
+    id: 'lastJSAPIErrorMessage'
+    text: 'true'
+- stopApp

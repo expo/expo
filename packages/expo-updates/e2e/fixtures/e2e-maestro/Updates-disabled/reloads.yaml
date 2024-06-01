@@ -1,0 +1,25 @@
+appId: dev.expo.updatese2e
+name: reloads
+---
+- launchApp: 
+    clearState: true
+- assertVisible:
+    id: "isReloading"
+    text: "false"
+- copyTextFrom:
+    id: "startTime"
+- evalScript: ${ maestro.startTime = maestro.copiedText }
+- assertTrue: ${ parseInt(maestro.startTime, 10) > 0 }
+- tapOn:
+    id: "reload"
+- assertVisible:
+    id: "isReloading"
+    text: "true"
+# wait for isReloading be false
+- assertVisible:
+    id: "isReloading"
+    text: "false"
+- copyTextFrom:
+    id: "startTime"
+- assertTrue: ${ parseInt(maestro.copiedText, 10) > parseInt(maestro.startTime, 10) }
+- stopApp

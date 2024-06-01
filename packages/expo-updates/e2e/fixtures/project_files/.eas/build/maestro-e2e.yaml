@@ -1,0 +1,9 @@
+build:
+  name: Run Updates E2E tests
+  steps:
+    - eas/build
+
+    - eas/maestro_test:
+        inputs:
+          flow_path: |
+            e2e/tests/maestro/
