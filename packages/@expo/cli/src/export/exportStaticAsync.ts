@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/build/Route';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import path from 'path';
 import resolveFrom from 'resolve-from';

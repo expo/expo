@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Compile as esm with cjs extras. ([#27638](https://github.com/expo/expo/pull/27638) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

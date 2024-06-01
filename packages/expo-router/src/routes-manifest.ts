@@ -2,7 +2,7 @@
 // no relative imports
 import { Options, getRoutes } from './getRoutes';
 import { getServerManifest } from './getServerManifest';
-import { RequireContext } from './types';
+import type { RequireContext } from './types';
 
 export { Options } from './getRoutes';
 

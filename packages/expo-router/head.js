@@ -1,1 +1,1 @@
-export { Head as default } from './build/head/ExpoHead';
+export { Head as default } from './src/head/ExpoHead';

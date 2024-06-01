@@ -4,11 +4,8 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ],
+    "declarationMap": true,
+    "types": ["jest", "jest-require", "node"]
   },
   "include": [
     "./types/expo-router.d.ts",
