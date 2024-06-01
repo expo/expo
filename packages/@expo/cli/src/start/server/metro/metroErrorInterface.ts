@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import chalk from 'chalk';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
-import { SilentError } from '../../../utils/errors';
+import { stripAnsi } from '../../../utils/ansi';
+import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
 
 type CodeFrame = {
@@ -64,6 +66,10 @@ export async function logMetroErrorWithStack(
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
   Log.log();
+
+  if (error instanceof CommandError) {
+    return;
+  }
 
   if (codeFrame) {
     const maxWarningLineLength = Math.max(200, process.stdout.columns);
@@ -177,6 +183,12 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
   });
 }
 
+function isTransformError(
+  error: any
+): error is { type: 'TransformError'; filename: string; lineNumber: number; column: number } {
+  return error.type === 'TransformError';
+}
+
 /** @returns the html required to render the static metro error as an SPA. */
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
   symbolicated: any;
@@ -187,7 +199,35 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
     resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
   );
 
-  const stack = parseErrorStack(error.stack);
+  // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
+  let stack;
+  if (isTransformError(error)) {
+    // Syntax errors in static rendering.
+    stack = [
+      {
+        file: path.join(projectRoot, error.filename),
+        methodName: '<unknown>',
+        arguments: [],
+        // TODO: Import stack
+        lineNumber: error.lineNumber,
+        column: error.column,
+      },
+    ];
+  } else if ('originModulePath' in error) {
+    // TODO: Use import stack here when the error is resolution based.
+    stack = [
+      {
+        file: error.originModulePath,
+        methodName: '<unknown>',
+        arguments: [],
+        // TODO: Import stack
+        lineNumber: 0,
+        column: 0,
+      },
+    ];
+  } else {
+    stack = parseErrorStack(error.stack);
+  }
 
   return new LogBoxLog({
     level: 'static',
@@ -240,6 +280,11 @@ export async function getErrorOverlayHtmlAsync({
     codeFrame: log.codeFrame,
     error,
   });
+
+  // @ts-expect-error
+  if ('message' in log && 'content' in log.message && typeof log.message.content === 'string') {
+    log.message.content = stripAnsi(log.message.content);
+  }
 
   const logBoxContext = {
     selectedLogIndex: 0,
