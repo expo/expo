@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Split up getRoutes method for SSR.
+- Split up getRoutes method for SSR. ([#29232](https://github.com/expo/expo/pull/29232) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.5.14 — 2024-05-15
 
