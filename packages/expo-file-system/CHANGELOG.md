@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- WriteAsStringAsync Add `append` option
+
 ### 🐛 Bug fixes
 
 - Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))

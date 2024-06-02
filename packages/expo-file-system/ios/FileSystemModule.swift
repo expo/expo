@@ -62,16 +62,18 @@ public final class FileSystemModule: Module {
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
       try ensurePathPermission(appContext, path: url.path, flag: .write)
-
+      
       if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
+        try writeFileAsBase64(path: url.path, string: string, append: options.append)
         return
       }
+      
       do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
+        let writeOptions: Data.WritingOptions = options.append ? .atomic : .atomicWrite
+        let data = string.data(using: options.encoding.toStringEncoding() ?? .utf8)!
+        try data.write(to: url, options: writeOptions)
       } catch {
-        throw FileNotWritableException(url.path)
-          .causedBy(error)
+        throw FileNotWritableException(url.path).causedBy(error)
       }
     }
 
