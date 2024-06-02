@@ -6,26 +6,30 @@ describe(formatDeviceChoice, () => {
     const option = formatDeviceChoice({
       name: "Evan's phone",
       model: 'iPhone13,4',
+      modelName: "iPhone 12 mini",
       osVersion: '15.4.1',
       deviceType: 'device',
       connectionType: 'USB',
       udid: '00008101-001964A22629003A',
+      osType: "iOS"
     });
 
-    expect(stripAnsi(option.title)).toEqual(`🔌 Evan's phone (15.4.1)`);
+    expect(stripAnsi(option.title)).toEqual(`🔌 Evan's phone - iPhone 12 mini (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
   });
   it(`formats network connected device`, () => {
     const option = formatDeviceChoice({
       name: "Evan's phone",
       model: 'iPhone13,4',
+      modelName: "iPhone 12 mini",
       osVersion: '15.4.1',
       deviceType: 'device',
       connectionType: 'Network',
       udid: '00008101-001964A22629003A',
+      osType: "iOS"
     });
 
-    expect(stripAnsi(option.title)).toEqual(`🌐 Evan's phone (15.4.1)`);
+    expect(stripAnsi(option.title)).toEqual(`🌐 Evan's phone - iPhone 12 mini (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
   });
   it(`formats active simulator`, () => {
