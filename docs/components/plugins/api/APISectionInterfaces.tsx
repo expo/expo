@@ -125,7 +125,7 @@ const renderInterface = (
       </H3Code>
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
-          <CALLOUT tag="span" theme="secondary" weight="semiBold">
+          <CALLOUT tag="span" theme="secondary" weight="medium">
             Extends:{' '}
           </CALLOUT>
           {extendedTypes.map(extendedType => (

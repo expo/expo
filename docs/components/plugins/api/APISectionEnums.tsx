@@ -45,7 +45,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
       <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
         <APISectionDeprecationNote comment={enumValue.comment} />
         <APISectionPlatformTags comment={enumValue.comment} />
-        <H4 className="!mt-0">
+        <H4 className="!mt-0" hideInSidebar>
           <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
         </H4>
         <CODE theme="secondary" className="mb-3">
