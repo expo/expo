@@ -12,8 +12,8 @@ enum class ContentFit(val value: String) : Enumerable {
   fun toResizeMode(): Int {
     return when (this) {
       CONTAIN -> AspectRatioFrameLayout.RESIZE_MODE_FIT
-      FILL -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-      COVER -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+      FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+      COVER -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
     }
   }
 }
