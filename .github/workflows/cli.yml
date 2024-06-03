@@ -47,6 +47,7 @@ jobs:
     strategy:
       matrix:
         shard: [1, 2, 3]
+        node: [18, 20, 22]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -54,7 +55,7 @@ jobs:
           fetch-depth: 100
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ matrix.node }}
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
