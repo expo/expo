@@ -30,6 +30,9 @@ concurrency:
 jobs:
   check-packages:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node: [18, 20, 22]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -40,7 +43,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
