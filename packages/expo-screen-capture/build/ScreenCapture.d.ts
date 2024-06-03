@@ -54,7 +54,7 @@ export declare function usePreventScreenCapture(key?: string): void;
 export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
- * If you prefer, you can also call `remove()` on that `Subscription` object.
+ * You can also call `remove()` on that `Subscription` object.
  *
  * @param subscription Subscription returned by `addScreenshotListener`.
  *
