@@ -14,6 +14,10 @@ export const APISectionPlatformTags = ({ comment, platforms, prefix = 'Only for:
   const experimentalData = getAllTagData('experimental', comment);
   const platformNames = platformsData?.map(platformData => getCommentContent(platformData.content));
 
+  if (!experimentalData.length && !platformsData.length) {
+    return null;
+  }
+
   return (
     <div className="flex flex-row items-center mb-2">
       {experimentalData.length > 0 && (
