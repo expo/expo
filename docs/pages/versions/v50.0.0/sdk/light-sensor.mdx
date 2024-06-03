@@ -24,24 +24,16 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Basic Light Sensor usage' dependencies={['expo-sensors']} platforms={['android']}>
 
 ```jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { LightSensor } from 'expo-sensors';
 
 export default function App() {
   const [{ illuminance }, setData] = useState({ illuminance: 0 });
-  const subscriptionRef = useRef(null);
-
-  useEffect(() => {
-    toggle();
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const [subscription, setSubscription] = useState(null);
 
   const toggle = () => {
-    if (subscriptionRef.current) {
+    if (subscription) {
       unsubscribe();
     } else {
       subscribe();
@@ -49,15 +41,22 @@ export default function App() {
   };
 
   const subscribe = () => {
-    subscriptionRef.current = LightSensor.addListener(setData);
+    setSubscription(
+      LightSensor.addListener(sensorData => {
+        setData(sensorData);
+      })
+    );
   };
 
   const unsubscribe = () => {
-    if (subscriptionRef.current) {
-      subscriptionRef.current.remove();
-      subscriptionRef.current = null;
-    }
+    subscription && subscription.remove();
+    setSubscription(null);
   };
+
+  useEffect(() => {
+    subscribe();
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.sensor}>
