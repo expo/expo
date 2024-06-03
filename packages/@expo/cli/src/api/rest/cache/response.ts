@@ -1,5 +1,4 @@
 import type { CacheObject } from 'cacache';
-import { BodyInit, Response, ResponseInit } from 'node-fetch';
 
 const responseInternalSymbol = Object.getOwnPropertySymbols(new Response())[1];
 
@@ -22,10 +21,10 @@ export class NFCResponse extends Response {
       url: res.url,
       status: res.status,
       statusText: res.statusText,
-      headers: res.headers.raw(),
-      size: res.size,
-      timeout: res.timeout,
-      // @ts-ignore
+      headers: Object.fromEntries(res.headers.entries()),
+      size: res.headers.get('content-length'),
+      // timeout: res.timeout, // Non-standard node-fetch property
+      // @ts-expect-error
       counter: res[responseInternalSymbol].counter,
     };
 

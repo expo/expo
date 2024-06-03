@@ -1,6 +1,5 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import { JSONValue } from '@expo/json-file';
-import fetchInstance from 'node-fetch';
 import path from 'path';
 
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
@@ -57,8 +56,9 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
     }
 
     const resolvedHeaders = options.headers ?? ({} as any);
-
     const token = UserSettings.getAccessToken();
+
+    // Try to add the credentials to the request headers
     if (token) {
       resolvedHeaders.authorization = `Bearer ${token}`;
     } else {
@@ -69,13 +69,14 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
     }
 
     try {
-      const results = await fetchFunction(url, {
+      const response = await fetchFunction(url, {
         ...options,
         headers: resolvedHeaders,
       });
 
-      if (results.status >= 400 && results.status < 500) {
-        const body = await results.text();
+      // Handle proper API responses, or invalid requests
+      if (response.status >= 400 && response.status < 500) {
+        const body = await response.text();
         try {
           const data = JSON.parse(body);
           if (data?.errors?.length) {
@@ -89,7 +90,8 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
           throw error;
         }
       }
-      return results;
+
+      return response;
     } catch (error: any) {
       // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
       if ('code' in error && error.code === 'ENOTFOUND') {
@@ -106,7 +108,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
   };
 }
 
-const fetchWithOffline = wrapFetchWithOffline(fetchInstance);
+const fetchWithOffline = wrapFetchWithOffline(fetch);
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 

@@ -9,8 +9,20 @@ export function wrapFetchWithOffline(fetchFunction: FetchLike): FetchLike {
   return function fetchWithOffline(url, options = {}) {
     if (env.EXPO_OFFLINE) {
       debug('Skipping network request: ' + url);
-      options.timeout = 1;
+      options.signal = getAbortController().signal;
     }
     return fetchFunction(url, options);
   };
+}
+
+/** The default abort controller when running in offline mode */
+let abortController: AbortController | undefined;
+/** Get the default abort controller that disables all requests when running in offline mode */
+function getAbortController() {
+  if (!abortController) {
+    abortController = new AbortController();
+    abortController.abort();
+  }
+
+  return abortController;
 }

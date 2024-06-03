@@ -31,10 +31,12 @@ export class FileSystemCache {
 
     const bodyStream = empty
       ? Readable.from(Buffer.alloc(0))
-      : cacache.get.stream.byDigest(this.options.cacheDirectory, bodyStreamIntegrity);
+      : Readable.from(
+          cacache.get.stream.byDigest(this.options.cacheDirectory, bodyStreamIntegrity)
+        );
 
     return {
-      bodyStream,
+      bodyStream: Readable.toWeb(bodyStream),
       metaData,
     };
   }
@@ -48,7 +50,7 @@ export class FileSystemCache {
     ]);
   }
 
-  async set(key: string, bodyStream: NodeJS.ReadStream, metaData: any) {
+  async set(key: string, bodyStream: ReadableStream | null, metaData: any) {
     const [bodyKey, metaKey] = getBodyAndMetaKeys(key);
     const metaCopy = { ...metaData };
 
@@ -58,7 +60,10 @@ export class FileSystemCache {
 
     try {
       metaCopy.bodyStreamIntegrity = await new Promise((fulfill, reject) => {
-        bodyStream
+        if (!bodyStream) return fulfill(null);
+
+        // @ts-ignore: ???
+        Readable.fromWeb(bodyStream)
           .pipe(cacache.put.stream(this.options.cacheDirectory, bodyKey))
           .on('integrity', (i) => fulfill(i))
           .on('error', (e) => {

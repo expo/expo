@@ -11,7 +11,6 @@
 import crypto from 'crypto';
 import FormData from 'form-data';
 import fs from 'fs';
-import { Request, RequestInfo, RequestInit, Response } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
 import { FileSystemCache } from './FileSystemCache';
@@ -162,6 +161,7 @@ export function wrapFetchWithCache(
 
     if (cachedValue) {
       return new NFCResponse(
+        // @ts-expect-error - This body stream is a web-stream, not a node stream
         cachedValue.bodyStream,
         cachedValue.metaData,
         ejectSelfFromCache,
@@ -174,6 +174,7 @@ export function wrapFetchWithCache(
       cachedValue = await cache.get(cacheKey);
       if (cachedValue) {
         return new NFCResponse(
+          // @ts-expect-error - This body stream is a web-stream, not a node stream
           cachedValue.bodyStream,
           cachedValue.metaData,
           ejectSelfFromCache,
@@ -183,15 +184,10 @@ export function wrapFetchWithCache(
 
       const fetchResponse = await fetch(url, init);
       const serializedMeta = NFCResponse.serializeMetaFromNodeFetchResponse(fetchResponse);
-
-      const newlyCachedData = await cache.set(
-        cacheKey,
-        // @ts-expect-error
-        fetchResponse.body,
-        serializedMeta
-      );
+      const newlyCachedData = await cache.set(cacheKey, fetchResponse.body, serializedMeta);
 
       return new NFCResponse(
+        // @ts-expect-error - This body stream is a web-stream, not a node stream
         newlyCachedData!.bodyStream,
         newlyCachedData!.metaData,
         ejectSelfFromCache,
@@ -201,5 +197,6 @@ export function wrapFetchWithCache(
       unlock(cacheKey);
     }
   }
+
   return (url: RequestInfo, init?: RequestInit | undefined) => getResponse(cache, url, init);
 }
