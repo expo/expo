@@ -128,3 +128,9 @@ it(`renders Text to RSC`, async () => {
 it(`renders Text to RSC`, async () => {
   await expect(<Text>Hello</Text>).toMatchFlightSnapshot();
 });
+
+it(`doesn't fail when importing all of react-native-web`, async () => {
+  // Use this syntax to circumvent the babel plugin that rewrites clean imports.
+  const RN = require('react-native-web');
+  console.log(RN);
+});
