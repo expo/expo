@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Refactored `ExpoFabricView` and remove the view wrapper for each native component. ([#28829](https://github.com/expo/expo/pull/28829) by [@kudo](https://github.com/kudo))
+
 ## 1.12.12 — 2024-05-29
 
 _This version does not introduce any user-facing changes._
