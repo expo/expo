@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native/index.js b/node_modules/react-native/index.js
+index f087b70..87af75f 100644
+--- a/node_modules/react-native/index.js
++++ b/node_modules/react-native/index.js
+@@ -8,6 +8,7 @@
+  * @flow
+  */
+ 
++'use client';
+ 'use strict';
+ 
+ // APIs
