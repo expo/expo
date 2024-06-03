@@ -358,6 +358,27 @@ export function withExtendedResolver(
 
       return null;
     },
+    
+    // RSC helpers
+    // (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    //   if (context.customResolverOptions?.environment === 'react-server') {
+    //     if (moduleName === 'react-native/Libraries/Utilities/codegenNativeComponent') {
+    //       const contents = `module.exports=(name)=>throw new Error(\`codegenNativeComponent("\${name}") cannot be called from the server.\`)`;
+    //       debug(`Virtualizing native module "${moduleName}"`);
+    //       const virtualModuleId = `\0node:${moduleName}`;
+    //       getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+    //         virtualModuleId,
+    //         contents
+    //       );
+    //       return {
+    //         type: 'sourceFile',
+    //         filePath: virtualModuleId,
+    //       };
+    //     }
+    //   }
+    //   return null;
+    // },
+
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.

@@ -1,0 +1,72 @@
+diff --git a/node_modules/react-native-screens/src/TransitionProgressContext.tsx b/node_modules/react-native-screens/src/TransitionProgressContext.tsx
+index 480d56f..86541c4 100644
+--- a/node_modules/react-native-screens/src/TransitionProgressContext.tsx
++++ b/node_modules/react-native-screens/src/TransitionProgressContext.tsx
+@@ -1,3 +1,4 @@
++"use client"
+ import * as React from 'react';
+ import { Animated } from 'react-native';
+ 
+diff --git a/node_modules/react-native-screens/src/components/Screen.web.tsx b/node_modules/react-native-screens/src/components/Screen.web.tsx
+index c624a49..a70f62e 100644
+--- a/node_modules/react-native-screens/src/components/Screen.web.tsx
++++ b/node_modules/react-native-screens/src/components/Screen.web.tsx
+@@ -1,3 +1,5 @@
++'use client'
++
+ import { ScreenProps } from 'react-native-screens';
+ import { Animated, View } from 'react-native';
+ import React from 'react';
+@@ -8,15 +10,13 @@ export const InnerScreen = View;
+ 
+ // We're using class component here because of the error from reanimated:
+ // createAnimatedComponent` does not support stateless functional components; use a class component instead.
+-export class NativeScreen extends React.Component<ScreenProps> {
+-  render(): JSX.Element {
+-    let {
+-      active,
+-      activityState,
+-      style,
+-      enabled = screensEnabled(),
+-      ...rest
+-    } = this.props;
++export function NativeScreen({
++  active,
++  activityState,
++  style,
++  enabled = screensEnabled(),
++  ...rest
++}: ScreenProps) {
+   
+     if (enabled) {
+       if (active !== undefined && activityState === undefined) {
+@@ -33,7 +33,7 @@ export class NativeScreen extends React.Component<ScreenProps> {
+     }
+ 
+     return <View {...rest} />;
+-  }
++  
+ }
+ 
+ const Screen = Animated.createAnimatedComponent(NativeScreen);
+diff --git a/node_modules/react-native-screens/src/core.ts b/node_modules/react-native-screens/src/core.ts
+index 369bd03..37bb085 100644
+--- a/node_modules/react-native-screens/src/core.ts
++++ b/node_modules/react-native-screens/src/core.ts
+@@ -4,6 +4,7 @@ import { Platform, UIManager } from 'react-native';
+ export const shouldUseActivityState = true;
+ 
+ export const isNativePlatformSupported =
++  typeof window !== 'undefined' &&
+   Platform.OS === 'ios' ||
+   Platform.OS === 'android' ||
+   Platform.OS === 'windows';
+diff --git a/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx b/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx
+index 05b93e2..4c3cf7f 100644
+--- a/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx
++++ b/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx
+@@ -1,3 +1,4 @@
++"use client"
+ import React, { PropsWithChildren } from 'react';
+ import { GestureProviderProps } from '../types';
+ 
