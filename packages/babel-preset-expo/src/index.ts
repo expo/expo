@@ -146,8 +146,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (isProduction) {
     inlines['process.env.NODE_ENV'] = 'production';
     inlines['__DEV__'] = false;
-    inlines['Platform.OS'] = platform;
   }
+  inlines['Platform.OS'] = platform;
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;

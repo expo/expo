@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders FullWindowOverlay to RSC 1`] = `
+"2:I["../../node_modules/react-native/index.js",[],"View"]
+1:{"name":"FullWindowOverlay","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders InnerScreen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.tsx",[],"InnerScreen"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.tsx",[],"NativeScreen"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreenContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenContainer.tsx",[],"NativeScreenContainer"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreenNavigationContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenContainer.tsx",[],"NativeScreenNavigationContainer"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeSearchBar to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/SearchBar.tsx",[],"NativeSearchBar"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeSearchBarCommands to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/SearchBar.tsx",[],"NativeSearchBarCommands"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Screen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.tsx",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenContainer.tsx",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderBackButtonImage to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderBackButtonImage"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderCenterView to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderCenterView"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderConfig to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderConfig"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderLeftView to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderLeftView"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderRightView to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderRightView"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderSearchBarView to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderSearchBarView"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderSubview to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx",[],"ScreenStackHeaderSubview"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SearchBar to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/SearchBar.tsx",[],""]
+0:["$","$L1",null,{},null]"
+`;

@@ -7,6 +7,16 @@ index 480d56f..86541c4 100644
  import * as React from 'react';
  import { Animated } from 'react-native';
  
+diff --git a/node_modules/react-native-screens/src/components/Screen.tsx b/node_modules/react-native-screens/src/components/Screen.tsx
+index 45767f7..3c2333e 100644
+--- a/node_modules/react-native-screens/src/components/Screen.tsx
++++ b/node_modules/react-native-screens/src/components/Screen.tsx
+@@ -1,3 +1,5 @@
++"use client"
++
+ /* eslint-disable @typescript-eslint/no-var-requires */
+ import React from 'react';
+ import { Animated, View, Platform } from 'react-native';
 diff --git a/node_modules/react-native-screens/src/components/Screen.web.tsx b/node_modules/react-native-screens/src/components/Screen.web.tsx
 index c624a49..a70f62e 100644
 --- a/node_modules/react-native-screens/src/components/Screen.web.tsx
@@ -49,11 +59,55 @@ index c624a49..a70f62e 100644
  }
  
  const Screen = Animated.createAnimatedComponent(NativeScreen);
+diff --git a/node_modules/react-native-screens/src/components/ScreenContainer.tsx b/node_modules/react-native-screens/src/components/ScreenContainer.tsx
+index 1a968b2..064485c 100644
+--- a/node_modules/react-native-screens/src/components/ScreenContainer.tsx
++++ b/node_modules/react-native-screens/src/components/ScreenContainer.tsx
+@@ -1,3 +1,5 @@
++"use client"
++
+ import { Platform, View } from 'react-native';
+ import React from 'react';
+ import { ScreenContainerProps } from 'react-native-screens';
+diff --git a/node_modules/react-native-screens/src/components/ScreenStack.tsx b/node_modules/react-native-screens/src/components/ScreenStack.tsx
+index 1783dcf..fad5923 100644
+--- a/node_modules/react-native-screens/src/components/ScreenStack.tsx
++++ b/node_modules/react-native-screens/src/components/ScreenStack.tsx
+@@ -1,3 +1,5 @@
++"use client";
++
+ import React from 'react';
+ import { ScreenStackProps, freezeEnabled } from 'react-native-screens';
+ import DelayedFreeze from './helpers/DelayedFreeze';
+diff --git a/node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx b/node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx
+index 005dcb2..fe1997f 100644
+--- a/node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx
++++ b/node_modules/react-native-screens/src/components/ScreenStackHeaderConfig.tsx
+@@ -1,3 +1,5 @@
++"use client";
++
+ import React from 'react';
+ import {
+   HeaderSubviewTypes,
+diff --git a/node_modules/react-native-screens/src/components/SearchBar.tsx b/node_modules/react-native-screens/src/components/SearchBar.tsx
+index e5759e6..d5de0f8 100644
+--- a/node_modules/react-native-screens/src/components/SearchBar.tsx
++++ b/node_modules/react-native-screens/src/components/SearchBar.tsx
+@@ -1,3 +1,5 @@
++"use client"
++
+ import React, { ReactNode } from 'react';
+ import {
+   isSearchBarAvailableForCurrentPlatform,
 diff --git a/node_modules/react-native-screens/src/core.ts b/node_modules/react-native-screens/src/core.ts
-index 369bd03..37bb085 100644
+index 369bd03..5bec3e0 100644
 --- a/node_modules/react-native-screens/src/core.ts
 +++ b/node_modules/react-native-screens/src/core.ts
-@@ -4,6 +4,7 @@ import { Platform, UIManager } from 'react-native';
+@@ -1,9 +1,11 @@
++"use client"
+ import { Platform, UIManager } from 'react-native';
+ 
+ // const that tells if the library should use new implementation, will be undefined for older versions
  export const shouldUseActivityState = true;
  
  export const isNativePlatformSupported =
@@ -61,6 +115,106 @@ index 369bd03..37bb085 100644
    Platform.OS === 'ios' ||
    Platform.OS === 'android' ||
    Platform.OS === 'windows';
+diff --git a/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts b/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts
+index 9d1c662..3e0c7d8 100644
+--- a/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/FullWindowOverlayNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps } from 'react-native';
+ 
+diff --git a/node_modules/react-native-screens/src/fabric/ModalScreenNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ModalScreenNativeComponent.ts
+index 2ace0d3..3eb8655 100644
+--- a/node_modules/react-native-screens/src/fabric/ModalScreenNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ModalScreenNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps, ColorValue } from 'react-native';
+ import type {
+diff --git a/node_modules/react-native-screens/src/fabric/NativeScreensModule.ts b/node_modules/react-native-screens/src/fabric/NativeScreensModule.ts
+index 23c2bc7..d2edf54 100644
+--- a/node_modules/react-native-screens/src/fabric/NativeScreensModule.ts
++++ b/node_modules/react-native-screens/src/fabric/NativeScreensModule.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ /* eslint-disable @typescript-eslint/ban-types */
+ import type { TurboModule } from 'react-native';
+ import { TurboModuleRegistry } from 'react-native';
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenContainerNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenContainerNativeComponent.ts
+index 290375c..02423ca 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenContainerNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenContainerNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps } from 'react-native';
+ 
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenNativeComponent.ts
+index 83d60be..6e2fd75 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps, ColorValue } from 'react-native';
+ import type {
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenNavigationContainerNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenNavigationContainerNativeComponent.ts
+index c616a7c..4267281 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenNavigationContainerNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenNavigationContainerNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps } from 'react-native';
+ 
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenStackHeaderConfigNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenStackHeaderConfigNativeComponent.ts
+index 9cbc3da..0125a15 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenStackHeaderConfigNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenStackHeaderConfigNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps, ColorValue } from 'react-native';
+ import type {
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenStackHeaderSubviewNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenStackHeaderSubviewNativeComponent.ts
+index cb0fa41..38b9dd0 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenStackHeaderSubviewNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenStackHeaderSubviewNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps } from 'react-native';
+ import type { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
+diff --git a/node_modules/react-native-screens/src/fabric/ScreenStackNativeComponent.ts b/node_modules/react-native-screens/src/fabric/ScreenStackNativeComponent.ts
+index fbf5665..b26785a 100644
+--- a/node_modules/react-native-screens/src/fabric/ScreenStackNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/ScreenStackNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps } from 'react-native';
+ import type { DirectEventHandler } from 'react-native/Libraries/Types/CodegenTypes';
+diff --git a/node_modules/react-native-screens/src/fabric/SearchBarNativeComponent.ts b/node_modules/react-native-screens/src/fabric/SearchBarNativeComponent.ts
+index 60ad564..5a8ac80 100644
+--- a/node_modules/react-native-screens/src/fabric/SearchBarNativeComponent.ts
++++ b/node_modules/react-native-screens/src/fabric/SearchBarNativeComponent.ts
+@@ -1,3 +1,5 @@
++"use client"
++
+ /* eslint-disable */
+ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+ import type { ViewProps, ColorValue, HostComponent } from 'react-native';
 diff --git a/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx b/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx
 index 05b93e2..4c3cf7f 100644
 --- a/node_modules/react-native-screens/src/native-stack/contexts/GHContext.tsx
