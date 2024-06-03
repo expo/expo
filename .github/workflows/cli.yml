@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        shard: [1, 2, 3]
+        # shard: [1, 2, 3]
         node: [18, 20, 22]
     steps:
       - name: 👀 Checkout
@@ -85,7 +85,7 @@ jobs:
         run: yarn typecheck
         working-directory: packages/@expo/cli
       - name: E2E Test CLI
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e #--shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
 
   web:
