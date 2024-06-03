@@ -78,6 +78,7 @@ export const mdComponents: MDComponents = {
     ) : (
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
     ),
+  pre: ({ children }) => <>{children}</>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
   ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
@@ -722,7 +723,7 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <Fragment key={'example-' + index}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="my-2">
+        <DEMI theme="secondary" className="flex mb-1">
           Example
         </DEMI>
       ) : (
