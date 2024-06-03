@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Disable all debug info from Hermes when source maps are disabled.
+- Disable all debug info from Hermes when source maps are disabled. ([#29393](https://github.com/expo/expo/pull/29393) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.4 — 2024-05-16
 
