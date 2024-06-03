@@ -171,7 +171,7 @@ function getRootCodeBlockProps(children: ReactNode, className?: string) {
   }
 
   const firstChild = Children.toArray(children)[0];
-  if (isValidElement(firstChild)) {
+  if (isValidElement(firstChild) && firstChild.props.className) {
     if (firstChild.props.className.startsWith('language')) {
       return {
         className: firstChild.props.className,
