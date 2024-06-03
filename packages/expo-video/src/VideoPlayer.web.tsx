@@ -70,6 +70,10 @@ export default class VideoPlayerWeb
     return this._playbackRate;
   }
 
+  get isLive(): boolean {
+    return [...this._mountedVideos][0].duration === Infinity;
+  }
+
   set volume(value: number) {
     this._mountedVideos.forEach((video) => {
       video.volume = value;

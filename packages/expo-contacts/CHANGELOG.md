@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue where only paths of urls were stored in contacts and social profiles were only stored when all fields were filled. ([#29199](https://github.com/expo/expo/pull/29199) by [@mlecoq](https://github.com/mlecoq))
+
 ### 💡 Others
 
 ## 13.0.3 — 2024-05-01

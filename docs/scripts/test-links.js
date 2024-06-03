@@ -11,12 +11,10 @@ const externalLinks = [
   '/versions/latest/workflow/expo-cli/', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/README.md and https://github.com/expo/expo-cli/blob/main/README.md
   '/versions/latest/workflow/configuration/', // https://github.com/expo/expo-cli/blob/main/CONTRIBUTING.md and https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/init.js and https://github.com/expo/expo-cli/blob/main/packages/xdl/src/project/Doctor.js
   // https://github.com/expo/expo-cli/blob/4e16a55e98e0612f71685ed16b3b5f8405219d4a/packages/xdl/README.md#xdl [Documentation](https://docs.expo.dev/versions/devdocs/index.html)
-  '/versions/latest/distribution/building-standalone-apps/#switch-to-push-notification-key-on-ios', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/credentials/constants.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/AndroidBuilder.js
   '/versions/latest/distribution/building-standalone-apps/#if-you-choose-to-build-for-android', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/AndroidBuilder.js
   '/versions/latest/workflow/linking/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.ts
   '/versions/latest/workflow/configuration/#ios', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.js
-  '/versions/latest/guides/splash-screens/#differences-between-environments---android', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/Android.js
   '/versions/latest/sdk/overview/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/project/Convert.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/IOSBuilder.js
   '/versions/latest/introduction/faq/#can-i-use-nodejs-packages-with-expo', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/logs/PackagerLogsStream.js

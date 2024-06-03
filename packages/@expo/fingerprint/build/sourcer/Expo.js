@@ -12,6 +12,7 @@ const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
+const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
@@ -20,17 +21,19 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     }
     const results = [];
     let config;
+    let expoConfig;
     let loadedModules = [];
     const ignoredFile = await createTempIgnoredFileAsync(options);
     try {
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: __dirname });
         const stdoutJson = JSON.parse(stdout);
         config = stdoutJson.config;
+        expoConfig = normalizeExpoConfig(config.exp, options);
         loadedModules = stdoutJson.loadedModules;
         results.push({
             type: 'contents',
             id: 'expoConfig',
-            contents: normalizeExpoConfig(config.exp),
+            contents: (0, Utils_1.stringifyJsonSorted)(expoConfig),
             reasons: ['expoConfig'],
         });
     }
@@ -45,25 +48,25 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     const isIos = options.platforms.includes('ios');
     const externalFiles = [
         // icons
-        config.exp.icon,
-        isAndroid ? config.exp.android?.icon : undefined,
-        isIos ? config.exp.ios?.icon : undefined,
-        isAndroid ? config.exp.android?.adaptiveIcon?.foregroundImage : undefined,
-        isAndroid ? config.exp.android?.adaptiveIcon?.backgroundImage : undefined,
-        config.exp.notification?.icon,
+        expoConfig.icon,
+        isAndroid ? expoConfig.android?.icon : undefined,
+        isIos ? expoConfig.ios?.icon : undefined,
+        isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
+        isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
+        expoConfig.notification?.icon,
         // splash images
-        config.exp.splash?.image,
-        isAndroid ? config.exp.android?.splash?.image : undefined,
-        isAndroid ? config.exp.android?.splash?.mdpi : undefined,
-        isAndroid ? config.exp.android?.splash?.hdpi : undefined,
-        isAndroid ? config.exp.android?.splash?.xhdpi : undefined,
-        isAndroid ? config.exp.android?.splash?.xxhdpi : undefined,
-        isAndroid ? config.exp.android?.splash?.xxxhdpi : undefined,
-        isIos ? config.exp.ios?.splash?.image : undefined,
-        isIos ? config.exp.ios?.splash?.tabletImage : undefined,
+        expoConfig.splash?.image,
+        isAndroid ? expoConfig.android?.splash?.image : undefined,
+        isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
+        isAndroid ? expoConfig.android?.splash?.hdpi : undefined,
+        isAndroid ? expoConfig.android?.splash?.xhdpi : undefined,
+        isAndroid ? expoConfig.android?.splash?.xxhdpi : undefined,
+        isAndroid ? expoConfig.android?.splash?.xxxhdpi : undefined,
+        isIos ? expoConfig.ios?.splash?.image : undefined,
+        isIos ? expoConfig.ios?.splash?.tabletImage : undefined,
         // google service files
-        isAndroid ? config.exp.android?.googleServicesFile : undefined,
-        isIos ? config.exp.ios?.googleServicesFile : undefined,
+        isAndroid ? expoConfig.android?.googleServicesFile : undefined,
+        isIos ? expoConfig.ios?.googleServicesFile : undefined,
     ].filter(Boolean);
     const externalFileSources = (await Promise.all(externalFiles.map(async (file) => {
         const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, file, 'expoConfigExternalFile');
@@ -83,23 +86,64 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     return results;
 }
 exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
-function normalizeExpoConfig(config) {
+function normalizeExpoConfig(config, options) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
-    if (typeof normalizedConfig.runtimeVersion === 'string') {
-        delete normalizedConfig.runtimeVersion;
-    }
-    if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
-        delete normalizedConfig.android.runtimeVersion;
-    }
-    if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
-        delete normalizedConfig.ios.runtimeVersion;
-    }
-    if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
-        delete normalizedConfig.web.runtimeVersion;
-    }
+    const { sourceSkips } = options;
     delete normalizedConfig._internal;
-    return (0, Utils_1.stringifyJsonSorted)(normalizedConfig);
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigVersions) {
+        delete normalizedConfig.version;
+        delete normalizedConfig.android?.versionCode;
+        delete normalizedConfig.ios?.buildNumber;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigRuntimeVersionIfString) {
+        if (typeof normalizedConfig.runtimeVersion === 'string') {
+            delete normalizedConfig.runtimeVersion;
+        }
+        if (typeof normalizedConfig.android?.runtimeVersion === 'string') {
+            delete normalizedConfig.android.runtimeVersion;
+        }
+        if (typeof normalizedConfig.ios?.runtimeVersion === 'string') {
+            delete normalizedConfig.ios.runtimeVersion;
+        }
+        if (typeof normalizedConfig.web?.runtimeVersion === 'string') {
+            delete normalizedConfig.web.runtimeVersion;
+        }
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigNames) {
+        normalizedConfig.name = '';
+        delete normalizedConfig.description;
+        delete normalizedConfig.web?.name;
+        delete normalizedConfig.web?.shortName;
+        delete normalizedConfig.web?.description;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAndroidPackage) {
+        delete normalizedConfig.android?.package;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigIosBundleIdentifier) {
+        delete normalizedConfig.ios?.bundleIdentifier;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigSchemes) {
+        delete normalizedConfig.scheme;
+        normalizedConfig.slug = '';
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigEASProject) {
+        delete normalizedConfig.owner;
+        delete normalizedConfig?.extra?.eas;
+        delete normalizedConfig?.updates?.url;
+    }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAssets) {
+        delete normalizedConfig.icon;
+        delete normalizedConfig.splash;
+        delete normalizedConfig.android?.adaptiveIcon;
+        delete normalizedConfig.android?.icon;
+        delete normalizedConfig.android?.splash;
+        delete normalizedConfig.ios?.icon;
+        delete normalizedConfig.ios?.splash;
+        delete normalizedConfig.web?.favicon;
+        delete normalizedConfig.web?.splash;
+    }
+    return normalizedConfig;
 }
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.

@@ -27,7 +27,6 @@ import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
@@ -259,12 +258,6 @@ class AppContext(
    * Provides access to the font manager from the legacy module registry
    */
   val font: FontManagerInterface?
-    get() = legacyModule()
-
-  /**
-   * Provides access to the sensor manager from the legacy module registry
-   */
-  val sensor: SensorServiceInterface?
     get() = legacyModule()
 
   /**

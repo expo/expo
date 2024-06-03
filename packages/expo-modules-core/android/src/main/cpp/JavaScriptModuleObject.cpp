@@ -145,7 +145,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
   for (auto &[name, classInfo]: classes) {
     auto &[classRef, constructor, ownerClass] = classInfo;
     auto classObject = classRef->cthis();
-    auto weakConstructor = std::weak_ptr(constructor);
+    auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
     auto klass = SharedObject::createClass(
       runtime,
       name.c_str(),

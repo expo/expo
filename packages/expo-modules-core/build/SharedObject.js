@@ -1,4 +1,5 @@
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 ensureNativeModulesAreInstalled();
-export default globalThis.expo.SharedObject;
+const SharedObject = globalThis.expo.SharedObject;
+export default SharedObject;
 //# sourceMappingURL=SharedObject.js.map

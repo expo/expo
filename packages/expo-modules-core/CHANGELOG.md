@@ -6,11 +6,22 @@
 
 ### 🎉 New features
 
+- Switched exported `EventEmitter` to the C++ implementation. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
+
+- [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' ([#29075](https://github.com/expo/expo/pull/29075) by [@rafi16jan](https://github.com/rafi16jan))
 
 ### 💡 Others
 
+- [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
+- Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Refactored `ExpoFabricView` and remove the view wrapper for each native component. ([#28829](https://github.com/expo/expo/pull/28829) by [@kudo](https://github.com/kudo))
+
+## 1.12.12 - 2024-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 1.12.11 — 2024-05-14
 

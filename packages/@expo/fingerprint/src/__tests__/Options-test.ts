@@ -1,4 +1,5 @@
-import fs from 'fs/promises';
+import { vol } from 'memfs';
+import requireString from 'require-from-string';
 
 import { normalizeOptionsAsync } from '../Options';
 
@@ -7,6 +8,10 @@ jest.mock('fs/promises');
 jest.mock('os', () => ({ cpus: jest.fn().mockReturnValue([0]) }));
 
 describe(normalizeOptionsAsync, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
   it('should return the default options if no options are provided', async () => {
     const options = await normalizeOptionsAsync('/app');
     expect(options).toMatchSnapshot();
@@ -14,55 +19,39 @@ describe(normalizeOptionsAsync, () => {
 
   it('should respect fingerprint config', async () => {
     await jest.isolateModulesAsync(async () => {
-      jest.doMock(
-        '/app/fingerprint.config.js',
-        () => ({
-          hashAlgorithm: 'sha256',
-        }),
-        { virtual: true }
-      );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
 
       const { hashAlgorithm } = await normalizeOptionsAsync('/app');
       expect(hashAlgorithm).toBe('sha256');
-
-      jest.dontMock('/app/fingerprint.config.js');
-    });
-  });
-
-  it('should respect fingerprint config', async () => {
-    await jest.isolateModulesAsync(async () => {
-      jest.doMock(
-        '/app/fingerprint.config.js',
-        () => ({
-          hashAlgorithm: 'sha256',
-        }),
-        { virtual: true }
-      );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
-
-      const { hashAlgorithm } = await normalizeOptionsAsync('/app');
-      expect(hashAlgorithm).toBe('sha256');
-
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 
   it('should respect explicit option from arguments than fingerprint config', async () => {
     await jest.isolateModulesAsync(async () => {
-      jest.doMock(
-        '/app/fingerprint.config.js',
-        () => ({
-          hashAlgorithm: 'sha256',
-        }),
-        { virtual: true }
-      );
-      fs.stat = jest.fn().mockResolvedValueOnce({ isFile: () => true } as any);
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
 
       const { hashAlgorithm } = await normalizeOptionsAsync('/app', { hashAlgorithm: 'md5' });
       expect(hashAlgorithm).toBe('md5');
-
-      jest.dontMock('/app/fingerprint.config.js');
     });
   });
 });

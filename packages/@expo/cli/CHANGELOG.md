@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
+- Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
+
+## 0.18.13 — 2024-05-16
+
+### 🐛 Bug fixes
+
+- Resolve real path of entry file for `expo export:embed`. ([#28926](https://github.com/expo/expo/pull/28926) by [@byCedric](https://github.com/byCedric))
+- Parse full tarball object instead of quoted string with `npm view` for `npm@10.8.0+`. ([#28919](https://github.com/expo/expo/pull/28919) by [@byCedric](https://github.com/byCedric))
+
 ## 0.18.12 — 2024-05-14
 
 _This version does not introduce any user-facing changes._
@@ -145,7 +157,8 @@ _This version does not introduce any user-facing changes._
 
 ### 📚 3rd party library updates
 
-- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- update `semver` from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+- update `cacache` from 15.3.0 to 18.0.2. ([#28322](https://github.com/expo/expo/pull/28322) by [@Simek](https://github.com/Simek))
 
 ## 0.17.8 - 2024-03-13
 

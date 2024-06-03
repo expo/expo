@@ -1,15 +1,7 @@
-const platformModule = {
-    get documentDirectory() {
-        return null;
-    },
-    get cacheDirectory() {
-        return null;
-    },
-    get bundleDirectory() {
-        return null;
-    },
-    addListener(eventName) { },
-    removeListeners(count) { },
-};
-export default platformModule;
+import { NativeModule } from 'expo-modules-core';
+export default class FileSystemShim extends NativeModule {
+    documentDirectory = null;
+    cacheDirectory = null;
+    bundleDirectory = null;
+}
 //# sourceMappingURL=ExponentFileSystemShim.js.map

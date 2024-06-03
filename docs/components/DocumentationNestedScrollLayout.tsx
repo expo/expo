@@ -15,7 +15,7 @@ type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMobileMenuVisible: boolean;
   hideTOC: boolean;
-  header: React.ReactNode;
+  header: ReactNode;
   sidebarScrollPosition: number;
   sidebar: ReactNode;
   sidebarActiveGroup: string;

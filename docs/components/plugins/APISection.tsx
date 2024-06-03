@@ -75,7 +75,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>

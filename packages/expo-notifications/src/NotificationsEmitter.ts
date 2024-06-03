@@ -1,10 +1,11 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
@@ -39,7 +40,7 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  */
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
 }
 
@@ -51,7 +52,7 @@ export function addNotificationReceivedListener(
  * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
  * @header listen
  */
-export function addNotificationsDroppedListener(listener: () => void): Subscription {
+export function addNotificationsDroppedListener(listener: () => void): EventSubscription {
   return emitter.addListener<void>(didDropNotificationsEventName, listener);
 }
 
@@ -83,23 +84,11 @@ export function addNotificationsDroppedListener(listener: () => void): Subscript
  */
 export function addNotificationResponseReceivedListener(
   listener: (event: NotificationResponse) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
     (response: NotificationResponse) => {
-      const mappedResponse: NotificationResponse & {
-        notification: { request: { content: { dataString?: string } } };
-      } = { ...response };
-      try {
-        const dataString = mappedResponse?.notification?.request?.content['dataString'];
-        if (typeof dataString === 'string') {
-          mappedResponse.notification.request.content.data = JSON.parse(dataString);
-          delete mappedResponse.notification.request.content.dataString;
-        }
-      } catch (e: any) {
-        console.log(`Error in response: ${e}`);
-      }
-      console.log(`response received: ${JSON.stringify(mappedResponse, null, 2)}`);
+      const mappedResponse = mapNotificationResponse(response);
       listener(mappedResponse);
     }
   );
@@ -110,8 +99,8 @@ export function addNotificationResponseReceivedListener(
  * @param subscription A subscription returned by `addNotificationListener` method.
  * @header listen
  */
-export function removeNotificationSubscription(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
+export function removeNotificationSubscription(subscription: EventSubscription) {
+  subscription.remove();
 }
 
 // @docsMissing

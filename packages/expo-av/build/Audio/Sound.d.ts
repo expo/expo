@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 export type AudioChannel = {
@@ -73,7 +73,7 @@ export declare class Sound implements Playback {
     _subscriptions: {
         remove: () => void;
     }[];
-    _eventEmitter: EventEmitter;
+    _eventEmitter: LegacyEventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
     _onMetadataUpdate: ((metadata: AVMetadata) => void) | null;

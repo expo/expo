@@ -1,12 +1,10 @@
-import { EventEmitter, UnavailabilityError, uuid } from 'expo-modules-core';
+import { UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExponentFileSystem from './ExponentFileSystem';
 import { FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
-// Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';
@@ -272,7 +270,6 @@ export function createUploadTask(url, fileUri, options, callback) {
 export class FileSystemCancellableNetworkTask {
     _uuid = uuid.v4();
     taskWasCanceled = false;
-    emitter = new EventEmitter(ExponentFileSystem);
     subscription;
     // @docsMissing
     async cancelAsync() {
@@ -297,7 +294,7 @@ export class FileSystemCancellableNetworkTask {
         if (this.subscription) {
             return;
         }
-        this.subscription = this.emitter.addListener(this.getEventName(), (event) => {
+        this.subscription = ExponentFileSystem.addListener(this.getEventName(), (event) => {
             if (event.uuid === this.uuid) {
                 const callback = this.getCallback();
                 if (callback) {
@@ -310,7 +307,7 @@ export class FileSystemCancellableNetworkTask {
         if (!this.subscription) {
             return;
         }
-        this.emitter.removeSubscription(this.subscription);
+        this.subscription.remove();
         this.subscription = null;
     }
 }

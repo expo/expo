@@ -1,4 +1,4 @@
-import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
@@ -257,7 +257,7 @@ export type PagedInfo<T> = {
 };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, EventSubscription as Subscription, };
 /**
  * Possible media types.
  */
@@ -426,8 +426,8 @@ export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<P
  * @return An [`Subscription`](#subscription) object that you can call `remove()` on when you would
  * like to unsubscribe the listener.
  */
-export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
-export declare function removeSubscription(subscription: Subscription): void;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): EventSubscription;
+export declare function removeSubscription(subscription: EventSubscription): void;
 /**
  * Removes all listeners.
  */

@@ -70,7 +70,7 @@ class UpdatesDatabaseTest {
     updateDao.insertUpdate(testUpdate)
 
     try {
-      assetDao._insertUpdateAsset(UpdateAssetEntity(uuid, 47))
+      assetDao.insertUpdateAssetForTest(UpdateAssetEntity(uuid, 47))
     } finally {
       updateDao.deleteUpdates(listOf(testUpdate))
     }

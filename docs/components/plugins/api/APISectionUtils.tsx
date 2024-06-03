@@ -113,27 +113,35 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'B',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentType',
   'PureComponent',
   'E',
+  'EventName',
   'EventSubscription',
   'K',
   'Listener',
+  'ModuleType',
   'NativeSyntheticEvent',
+  'P',
+  'Parameters',
   'ParsedQs',
   'ServiceActionResult',
   'SharedObject',
   'T',
   'TaskOptions',
+  'TEventsMap',
   'Uint8Array',
   // React & React Native
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
-  // Cross-package permissions management
+  // Cross-package types with no export entry
+  'CodedError',
   'RequestPermissionMethod',
   'GetPermissionMethod',
   'Options',
@@ -170,6 +178,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
@@ -202,6 +211,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
+  WebBrowserOpenOptions: '/versions/latest/sdk/webbrowser/#webbrowseropenoptions',
+  WebBrowserWindowFeatures: '/versions/latest/sdk/webbrowser/#webbrowserwindowfeatures',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
@@ -435,6 +446,9 @@ export const resolveTypeName = (
           </span>
         ));
     } else if (type === 'indexedAccess') {
+      if (indexType?.name) {
+        return `${objectType?.name}[${indexType?.name}]`;
+      }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
@@ -463,7 +477,10 @@ export const renderParamRow = (
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <BOLD>{parseParamName(name)}</BOLD>
+        <BOLD>
+          {flags?.isRest ? '...' : ''}
+          {parseParamName(name)}
+        </BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
@@ -531,7 +548,16 @@ export const renderParams = (parameters: MethodParamData[], sdkVersion: string) 
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
-  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+  parameters
+    ? parameters
+        ?.map(param => {
+          if (param.flags?.isRest) {
+            return `...${parseParamName(param.name)}`;
+          }
+          return parseParamName(param.name);
+        })
+        .join(', ')
+    : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
@@ -556,11 +582,12 @@ export const renderTypeOrSignatureType = ({
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
         {signatures?.map(({ parameters }) =>
-          parameters?.map(param => (
+          parameters?.map((param, index) => (
             <span key={`signature-param-${param.name}`}>
               {param.name}
               {param.flags?.isOptional && '?'}
               <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+              {parameters?.length !== index + 1 ? <span className="text-quaternary">, </span> : ''}
             </span>
           ))
         )}
