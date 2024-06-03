@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.5 — 2024-05-31
