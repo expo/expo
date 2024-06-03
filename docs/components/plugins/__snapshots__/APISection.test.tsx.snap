@@ -6974,73 +6974,71 @@ This uses both
     >
       Example
     </p>
-    <pre>
-      <pre
-        class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
-        data-text="true"
+    <pre
+      class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
+      data-text="true"
+    >
+      <code
+        class="css-dpez7n-Code"
       >
-        <code
-          class="css-dpez7n-Code"
+        <span
+          class="token keyword"
         >
-          <span
-            class="token keyword"
-          >
-            const
-          </span>
-           
-          <span
-            class="token punctuation"
-          >
-            [
-          </span>
-          permissionResponse
-          <span
-            class="token punctuation"
-          >
-            ,
-          </span>
-           requestPermission
-          <span
-            class="token punctuation"
-          >
-            ]
-          </span>
-           
-          <span
-            class="token operator"
-          >
-            =
-          </span>
-           BarCodeScanner
-          <span
-            class="token punctuation"
-          >
-            .
-          </span>
-          <span
-            class="token function"
-          >
-            usePermissions
-          </span>
-          <span
-            class="token punctuation"
-          >
-            (
-          </span>
-          <span
-            class="token punctuation"
-          >
-            )
-          </span>
-          <span
-            class="token punctuation"
-          >
-            ;
-          </span>
-          
+          const
+        </span>
+         
+        <span
+          class="token punctuation"
+        >
+          [
+        </span>
+        permissionResponse
+        <span
+          class="token punctuation"
+        >
+          ,
+        </span>
+         requestPermission
+        <span
+          class="token punctuation"
+        >
+          ]
+        </span>
+         
+        <span
+          class="token operator"
+        >
+          =
+        </span>
+         BarCodeScanner
+        <span
+          class="token punctuation"
+        >
+          .
+        </span>
+        <span
+          class="token function"
+        >
+          usePermissions
+        </span>
+        <span
+          class="token punctuation"
+        >
+          (
+        </span>
+        <span
+          class="token punctuation"
+        >
+          )
+        </span>
+        <span
+          class="token punctuation"
+        >
+          ;
+        </span>
+        
 
-        </code>
-      </pre>
+      </code>
     </pre>
     <p
       class="css-wrgtfc-BoxSectionHeader"

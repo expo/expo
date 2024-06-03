@@ -79,56 +79,54 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   >
     Example
   </p>
-  <pre>
-    <pre
-      class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
-      data-text="true"
+  <pre
+    class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
+    data-text="true"
+  >
+    <code
+      class="css-dpez7n-Code"
     >
-      <code
-        class="css-dpez7n-Code"
+      <span
+        class="token keyword"
       >
-        <span
-          class="token keyword"
-        >
-          await
-        </span>
-         Application
-        <span
-          class="token punctuation"
-        >
-          .
-        </span>
-        <span
-          class="token function"
-        >
-          getInstallReferrerAsync
-        </span>
-        <span
-          class="token punctuation"
-        >
-          (
-        </span>
-        <span
-          class="token punctuation"
-        >
-          )
-        </span>
-        <span
-          class="token punctuation"
-        >
-          ;
-        </span>
-        
+        await
+      </span>
+       Application
+      <span
+        class="token punctuation"
+      >
+        .
+      </span>
+      <span
+        class="token function"
+      >
+        getInstallReferrerAsync
+      </span>
+      <span
+        class="token punctuation"
+      >
+        (
+      </span>
+      <span
+        class="token punctuation"
+      >
+        )
+      </span>
+      <span
+        class="token punctuation"
+      >
+        ;
+      </span>
+      
 
-        <span
-          class="token comment"
-        >
-          // "utm_source=google-play&utm_medium=organic"
-        </span>
-        
+      <span
+        class="token comment"
+      >
+        // "utm_source=google-play&utm_medium=organic"
+      </span>
+      
 
-      </code>
-    </pre>
+    </code>
   </pre>
 </div>
 `;

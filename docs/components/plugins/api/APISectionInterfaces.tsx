@@ -71,6 +71,7 @@ const renderInterfaceComment = (
       <>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
+          inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
