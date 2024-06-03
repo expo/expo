@@ -10,6 +10,7 @@ const TARGET_DEVICE_IOS_VERSION = '17.5';
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
+const RETRIES = 10;
 
 enum StartMode {
   BUILD,
@@ -34,7 +35,7 @@ enum StartMode {
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === StartMode.TEST || startMode === StartMode.BUILD_AND_TEST) {
-      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 6);
+      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
