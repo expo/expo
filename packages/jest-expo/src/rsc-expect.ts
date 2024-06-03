@@ -2,6 +2,7 @@ import 'server-only';
 
 import matchers from 'expect/build/matchers';
 import React from 'react';
+import { toMatchSnapshot } from 'jest-snapshot';
 
 import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
 
@@ -41,6 +42,10 @@ expect.extend({
       }
     });
   },
+  async toMatchFlightSnapshot(this: any, data: string | React.ReactNode | ReadableStream) {
+    const resolved = await flightInputAsStringOrPromise(data);
+    return toMatchSnapshot.call(this, resolved);
+  },
 });
 
 declare global {
@@ -54,6 +59,8 @@ declare global {
        *
        */
       toMatchFlight(data: string): R;
+
+      toMatchFlightSnapshot(): R;
     }
   }
 }

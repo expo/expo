@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders TouchableNativeFeedback to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"UnimplementedView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"style":[{"alignSelf":"flex-start","borderColor":"red","borderWidth":1},"$undefined"],"children":"$undefined"},"$1"]"
+`;
