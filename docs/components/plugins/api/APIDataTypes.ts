@@ -17,6 +17,7 @@ export type CommentData = {
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
+  modifierTags?: string[];
 };
 
 export type CommentTagData = {
