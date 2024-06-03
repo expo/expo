@@ -55,6 +55,9 @@ internal class KeyChainException: GenericException<OSStatus> {
       return "Authentication failed. Provided passphrase/PIN is incorrect or there is no user authentication method configured for this device."
 
     default:
+      if let errorMessage = SecCopyErrorMessageString(param, nil) as? String {
+        return errorMessage
+      }
       return "Unknown Keychain Error."
     }
   }
