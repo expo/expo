@@ -14,7 +14,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getMethodName,
-  getTagNamesList,
   renderParams,
   resolveTypeName,
   STYLES_APIBOX,
@@ -80,7 +79,7 @@ export const renderMethod = (
           css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} />
-          <HeaderComponent tags={getTagNamesList(comment)}>
+          <HeaderComponent>
             <MONOSPACE
               weight="medium"
               css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}

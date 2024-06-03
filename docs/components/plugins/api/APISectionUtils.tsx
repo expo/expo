@@ -649,7 +649,22 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
+  [...(comment?.blockTags ?? []), ...(comment?.modifierTags ?? [])]
+    .map(tag => {
+      if (typeof tag === 'string') {
+        return {
+          tag,
+          content: [
+            {
+              text: tag.substring(1),
+              tag,
+            } as CommentContentData,
+          ],
+        };
+      }
+      return tag;
+    })
+    .filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
