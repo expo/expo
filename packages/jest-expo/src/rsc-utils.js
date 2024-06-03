@@ -37,17 +37,13 @@ export function renderJsxToReadableStream(jsx) {
       get(_target, encodedId) {
         clientBoundaries.push(encodedId);
         const [file, name = ''] = encodedId.split('#');
-
-        const filePath = file.startsWith('file://')
-          ? decodeURI(file.slice('file://'.length))
-          : file;
-
-        // HACK: To keep tests somewhat agnostic to the runtime environment, we'll make them relative to
-        // the current working directory. It'd be better to have a stable value to test against though.
-        const metroOpaqueId = path.relative(process.cwd(), filePath);
-
         return {
-          id: metroOpaqueId,
+          // HACK: To keep tests somewhat agnostic to the runtime environment, we'll make them relative to
+          // the current working directory. It'd be better to have a stable value to test against though.
+          id: path.relative(
+            process.cwd(),
+            file.startsWith('file://') ? decodeURI(file.slice(7)) : file
+          ),
           chunks: [],
           name,
           async: true,

@@ -1,9 +1,9 @@
 import 'server-only';
 
+import matchers from 'expect/build/matchers';
 import React from 'react';
 
 import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
-import matchers from 'expect/build/matchers';
 
 matchers.customTesters = [];
 
