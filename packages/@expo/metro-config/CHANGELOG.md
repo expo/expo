@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Disable all debug info from Hermes when source maps are disabled.
+
 ## 0.18.4 — 2024-05-16
 
 _This version does not introduce any user-facing changes._

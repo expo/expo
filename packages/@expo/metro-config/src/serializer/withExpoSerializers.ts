@@ -232,6 +232,11 @@ function getDefaultSerializer(
       return null;
     })();
 
+    // This is used for standard network requests to the Metro dev server.
+    // - Dev client and Expo Go requests
+    // - Web error overlay requests
+    // - SPA requests
+    // - SSG requests from the browser
     if (serializerOptions?.outputMode !== 'static') {
       return defaultSerializer(...props);
     }
@@ -252,11 +257,16 @@ function getDefaultSerializer(
       ...props
     );
 
+    // Most Expo CLI invocations will return here so they can process the results:
+    // - expo export
+    // - expo export:embed
+    // - SSR imports
     if (supportsNonSerialReturn) {
       // @ts-expect-error: this is future proofing for adding assets to the output as well.
       return assets;
     }
 
+    // TODO: Is this used anywhere?
     return JSON.stringify(assets);
   };
 }

@@ -76,6 +76,11 @@ async function directlyBuildHermesBundleAsync({ code, map, minify = false, filen
         if (map) {
             args.push('-output-source-map');
         }
+        else {
+            // When source maps are not enabled, Hermes will generate maximum debug information.
+            // This causes the bundle to inflate in size. We can disable debug information to reduce the size.
+            args.push('-g0');
+        }
         debug(`Running hermesc: ${hermesCommand} ${args.join(' ')}`);
         await (0, spawn_async_1.default)(hermesCommand, args);
         let hbc;
