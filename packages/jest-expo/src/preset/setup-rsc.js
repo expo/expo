@@ -1,3 +1,5 @@
+globalThis.__DEV__ = true;
+
 const { TextDecoder, TextEncoder } = require('node:util');
 const { ReadableStream, TransformStream } = require('node:stream/web');
 

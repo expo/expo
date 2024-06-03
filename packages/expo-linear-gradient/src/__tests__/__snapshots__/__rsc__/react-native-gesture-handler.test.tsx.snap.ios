@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders BaseButton to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js",[],"BaseButton"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders BorderlessButton to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js",[],"BorderlessButton"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders DrawerLayout to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/components/DrawerLayout.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders DrawerLayoutAndroid to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js",[],"DrawerLayoutAndroid"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders FlatList to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js",[],"FlatList"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders FlingGestureHandler to RSC 1`] = `
+"1:I["../../node_modules/react-native-gesture-handler/lib/commonjs/handlers/FlingGestureHandler.js",[],"FlingGestureHandler"]
+0:["$","$L1",null,{},null]"
+`;

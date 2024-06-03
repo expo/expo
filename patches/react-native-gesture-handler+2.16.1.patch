@@ -1,0 +1,255 @@
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/GestureHandlerRootViewContext.js b/node_modules/react-native-gesture-handler/lib/commonjs/GestureHandlerRootViewContext.js
+index d6dc403..9a89216 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/GestureHandlerRootViewContext.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/GestureHandlerRootViewContext.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/DrawerLayout.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/DrawerLayout.js
+index 1ad5908..bd00c2d 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/DrawerLayout.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/DrawerLayout.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js
+index 88b7a80..3588e42 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureButtons.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.js
+index 2e6e7a9..441e172 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js
+index 53c876d..73dfc95 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureComponents.native.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.native.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.native.js
+index b9fdf94..1ac6712 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.native.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.native.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/Swipeable.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/Swipeable.js
+index ad630db..df912a6 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/Swipeable.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/Swipeable.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/gestureHandlerRootHOC.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/gestureHandlerRootHOC.js
+index 1252ab9..7f8443d 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/gestureHandlerRootHOC.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/gestureHandlerRootHOC.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/GenericTouchable.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/GenericTouchable.js
+index 042627f..e5c3221 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/GenericTouchable.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/GenericTouchable.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableHighlight.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableHighlight.js
+index c792c98..5d161e9 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableHighlight.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableHighlight.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableOpacity.js b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableOpacity.js
+index 22d7458..1928b22 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableOpacity.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/components/touchables/TouchableOpacity.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/FlingGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/FlingGestureHandler.js
+index 2d8c632..5b3ae57 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/FlingGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/FlingGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/ForceTouchGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/ForceTouchGestureHandler.js
+index 27b9255..1fec3f8 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/ForceTouchGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/ForceTouchGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/LongPressGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/LongPressGestureHandler.js
+index 5d4935c..5b45d95 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/LongPressGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/LongPressGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/NativeViewGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/NativeViewGestureHandler.js
+index 0726db7..f8bfc1d 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/NativeViewGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/NativeViewGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PanGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PanGestureHandler.js
+index e9bf430..7158f15 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PanGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PanGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PinchGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PinchGestureHandler.js
+index 41f06cf..db54b51 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PinchGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/PinchGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/RotationGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/RotationGestureHandler.js
+index dbf6e01..45d886b 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/RotationGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/RotationGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/TapGestureHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/TapGestureHandler.js
+index 0409437..0a785d4 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/TapGestureHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/TapGestureHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
+index c9718ab..3a18a50 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createNativeWrapper.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createNativeWrapper.js
+index a2a7fca..17cfbd3 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createNativeWrapper.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createNativeWrapper.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/GestureDetector.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/GestureDetector.js
+index 73a9cc5..515d4ca 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/GestureDetector.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/GestureDetector.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client'
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/eventReceiver.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/eventReceiver.js
+index 7496fe8..492d192 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/eventReceiver.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/gestures/eventReceiver.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/init.js b/node_modules/react-native-gesture-handler/lib/commonjs/init.js
+index 28903ed..d444cb4 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/init.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/init.js
+@@ -17,7 +17,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
+ let fabricInitialized = false;
+ 
+ function initialize() {
+-  (0, _eventReceiver.startListening)();
++  if (typeof window !== 'undefined') {
++    (0, _eventReceiver.startListening)();
++  }
+ } // since isFabric() may give wrong results before the first render, we call this
+ // method during render of GestureHandlerRootView
+ 
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/specs/NativeRNGestureHandlerModule.js b/node_modules/react-native-gesture-handler/lib/commonjs/specs/NativeRNGestureHandlerModule.js
+index 3c8ae03..a2e7d96 100644
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/specs/NativeRNGestureHandlerModule.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/specs/NativeRNGestureHandlerModule.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
