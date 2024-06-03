@@ -22,6 +22,8 @@
     "react-native": "0.74.1",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
+    "react": "19.0.0-beta-4508873393-20240430",
+    "react-dom": "19.0.0-beta-4508873393-20240430",
     "**/util": "~0.12.4"
   },
   "dependencies": {

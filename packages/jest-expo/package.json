@@ -10,6 +10,7 @@
     "directory": "packages/jest-expo"
   },
   "files": [
+    "rsc",
     "android",
     "bin",
     "config",
@@ -42,7 +43,8 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-test-renderer": "18.2.0",
-    "stacktrace-js": "^2.0.2"
+    "stacktrace-js": "^2.0.2",    
+    "react-server-dom-webpack": "19.0.0-beta-4508873393-20240430"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

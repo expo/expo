@@ -59,6 +59,8 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
+    "client-only": "^0.0.1",
+    "server-only": "^0.0.1",
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.18.13",
     "@expo/config": "9.0.2",

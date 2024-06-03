@@ -13,7 +13,7 @@ function getUpstreamBabelJest(transform) {
   return upstreamBabelJest;
 }
 
-function getPlatformPreset(displayOptions, extensions, platform, isServer) {
+function getPlatformPreset(displayOptions, extensions, platform, { isServer, isReactServer } = {}) {
   const moduleFileExtensions = getBareExtensions(extensions, {
     isTS: true,
     isReact: true,
@@ -22,6 +22,12 @@ function getPlatformPreset(displayOptions, extensions, platform, isServer) {
   const testMatch = ['', ...extensions].flatMap((extension) => {
     const platformExtension = extension ? `.${extension}` : '';
     const sourceExtension = `.[jt]s?(x)`;
+
+    // NOTE(EvanBacon): For now (assuming this doesn't stick), we'll only run RSC on tests in the `__tests__/__rsc__` directory.
+    if (isReactServer) {
+      return [`**/__tests__/__rsc__/**/*test${platformExtension}${sourceExtension}`];
+    }
+
     return [
       `**/__tests__/**/*spec${platformExtension}${sourceExtension}`,
       `**/__tests__/**/*test${platformExtension}${sourceExtension}`,
@@ -31,7 +37,11 @@ function getPlatformPreset(displayOptions, extensions, platform, isServer) {
 
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
 
-  return withWatchPlugins({
+  if (isReactServer && displayOptions && displayOptions.name) {
+    displayOptions.name = `RSC(${displayOptions.name})`;
+  }
+
+  const preset = withWatchPlugins({
     transform: {
       ...expoPreset.transform,
       [upstreamBabelJest]: [
@@ -45,12 +55,21 @@ function getPlatformPreset(displayOptions, extensions, platform, isServer) {
             platform,
             // Add support for removing server related code from the bundle.
             isServer,
+            // Bundle in React Server Component mode.
+            isReactServer,
           },
         },
       ],
     },
     displayName: displayOptions,
     testMatch,
+    testPathIgnorePatterns: isReactServer
+      ? ['/node_modules/']
+      : [
+          '/node_modules/',
+          // Ignore the files in the `__tests__/__rsc__` directory when not targeting RSC.
+          '/__tests__/__rsc__/',
+        ],
     moduleFileExtensions,
     snapshotResolver: require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),
     haste: {
@@ -59,6 +78,38 @@ function getPlatformPreset(displayOptions, extensions, platform, isServer) {
       platforms: extensions,
     },
   });
+
+  if (isServer) {
+    preset.testEnvironment = 'node';
+  }
+
+  if (isReactServer) {
+    preset.testEnvironment = 'node';
+    if (!preset.setupFiles) {
+      preset.setupFiles = [];
+    }
+    preset.setupFiles.push(require.resolve('../src/preset/setup-rsc.js'));
+
+    // Setup custom expect matchers
+    if (!preset.setupFilesAfterEnv) {
+      preset.setupFilesAfterEnv = [];
+    }
+    preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
+
+    if (!preset.testEnvironmentOptions) {
+      preset.testEnvironmentOptions = {};
+    }
+
+    // Matches withMetroMultiPlatform, e.g. resolution for RSC.
+    preset.testEnvironmentOptions.customExportConditions = [
+      'node',
+      'require',
+      'react-server',
+      'workerd',
+    ];
+  }
+
+  return preset;
 }
 
 // Combine React Native for web with React Native
@@ -77,33 +128,42 @@ function getBaseWebPreset() {
 }
 
 module.exports = {
-  getWebPreset() {
-    return {
+  getWebPreset({ isReactServer } = {}) {
+    const preset = {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web'),
       testEnvironment: 'jsdom',
+      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web', {
+        isReactServer,
+      }),
     };
+    return preset;
   },
   getNodePreset() {
     return {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', true),
-      testEnvironment: 'node',
+      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', {
+        isServer: true,
+      }),
     };
   },
-  getIOSPreset() {
+  getIOSPreset({ isReactServer } = {}) {
     return {
       ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios'),
+      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
+        isReactServer,
+      }),
     };
   },
-  getAndroidPreset() {
+  getAndroidPreset({ isReactServer } = {}) {
     return {
       ...expoPreset,
       ...getPlatformPreset(
         { name: 'Android', color: 'blueBright' },
         ['android', 'native'],
-        'android'
+        'android',
+        {
+          isReactServer,
+        }
       ),
     };
   },
