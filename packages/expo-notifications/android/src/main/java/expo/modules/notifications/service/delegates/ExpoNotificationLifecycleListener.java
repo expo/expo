@@ -38,11 +38,9 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
     @Override
     public void onCreate(Activity activity, Bundle savedInstanceState) {
         Intent intent = activity.getIntent();
-        String actionIdentifier = intent.getAction();
         if (intent != null) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                logExtra("onCreate", extras);
                 mNotificationManager.onNotificationResponseFromExtras(extras);
             }
         }
@@ -60,22 +58,9 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
     @Override
     public boolean onNewIntent(Intent intent) {
         Bundle extras = intent.getExtras();
-        String actionIdentifier = intent.getAction();
         if (extras != null) {
-            logExtra("onNewIntent", extras);
             mNotificationManager.onNotificationResponseFromExtras(extras);
         }
         return ReactActivityLifecycleListener.super.onNewIntent(intent);
-    }
-
-    private void logExtra(String method, Bundle extra) {
-        Log.d("ExpoNotificationLifecycleListener", method + " : keys count = " + extra.keySet().size());
-
-        for (String key : extra.keySet()) {
-            Log.d(
-                    "ExpoNotificationLifecycleListener",
-                    method + " : key = " + key + " = " + Objects.requireNonNull(extra.get(key)).toString()
-            );
-        }
     }
 }
