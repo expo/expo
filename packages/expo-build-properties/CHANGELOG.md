@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export missing types.
+
 ## 0.12.1 — 2024-05-06
 
 ### 🎉 New features
