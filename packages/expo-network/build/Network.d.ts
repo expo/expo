@@ -1,4 +1,4 @@
-import { type Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
 export { NetworkState, NetworkStateEvent, NetworkStateType };
 /**
@@ -63,7 +63,7 @@ export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
  *
  * @returns A subscription object with a remove function to unregister the listener.
  */
-export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): Subscription;
+export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): EventSubscription;
 /**
  * Returns the current network state of the device. This method
  * initiates a listener for network state changes and cleans up before unmounting.

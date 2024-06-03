@@ -12,7 +12,7 @@ public final class NetworkModule: Module {
 
     Events(onNetworkStateChanged)
 
-    OnStartObserving {
+    OnStartObserving(onNetworkStateChanged) {
       setupNetworkMonitoring()
     }
 
@@ -24,7 +24,11 @@ public final class NetworkModule: Module {
       return getNetworkStateAsync()
     }
 
-    OnStopObserving {
+    OnStopObserving(onNetworkStateChanged) {
+      monitor.cancel()
+    }
+
+    OnDestroy {
       monitor.cancel()
     }
   }

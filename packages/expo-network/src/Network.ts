@@ -1,4 +1,4 @@
-import { type Subscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';
@@ -93,7 +93,7 @@ export async function isAirplaneModeEnabledAsync(): Promise<boolean> {
  */
 export function addNetworkStateListener(
   listener: (event: NetworkStateEvent) => void
-): Subscription {
+): EventSubscription {
   return ExpoNetwork.addListener(onNetworkStateEventName, listener);
 }
 

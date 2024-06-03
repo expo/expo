@@ -1,6 +1,6 @@
 import { EventEmitter } from 'expo-modules-core';
 import { NetworkStateType } from './Network.types';
-const emitter = new EventEmitter({});
+const emitter = new EventEmitter();
 const onNetworkStateEventName = 'onNetworkStateChanged';
 function getNetworkState() {
     const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
