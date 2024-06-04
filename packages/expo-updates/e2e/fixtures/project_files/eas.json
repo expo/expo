@@ -37,10 +37,7 @@
         // Not necessarily to upload the archive for updates_testing_debug, upload eas.json instead.
         "applicationArchivePath": "eas.json",
         "simulator": true,
-        "buildConfiguration": "Debug",
-        "cache": {
-          "cacheDefaultPaths": false
-        }
+        "buildConfiguration": "Debug"
       },
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
@@ -56,10 +53,7 @@
       },
       "ios": {
         "simulator": true,
-        "buildConfiguration": "Release",
-        "cache": {
-          "cacheDefaultPaths": false
-        }
+        "buildConfiguration": "Release"
       },
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
