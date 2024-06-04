@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import nock from 'nock';
 
 import { dotExpoHomeDirectory, getStateJsonPath } from '../paths';
 import {
