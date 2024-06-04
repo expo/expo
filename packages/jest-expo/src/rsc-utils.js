@@ -25,11 +25,19 @@ export const streamToString = async (stream) => {
  * @param {*} jsx
  * @returns
  */
-export async function renderJsxToFlightStringAsync(jsx) {
-  return streamToString(renderJsxToReadableStream(jsx).stream);
+export async function renderJsxToFlightStringAsync(jsx, throwOnError = true) {
+  return new Promise((res, rej) => {
+    // Fail fast when an error occurs.
+    // NOTE: This prevents E: objects from being added to the RSC.
+    streamToString(
+      renderJsxToReadableStream(jsx, { onError: throwOnError ? rej : undefined }).stream
+    )
+      .then(res)
+      .catch(rej);
+  });
 }
 
-export function renderJsxToReadableStream(jsx) {
+export function renderJsxToReadableStream(jsx, { onError } = {}) {
   const clientBoundaries = [];
   const bundlerConfig = new Proxy(
     {},
@@ -53,7 +61,9 @@ export function renderJsxToReadableStream(jsx) {
   );
 
   return {
-    stream: renderToReadableStream(jsx, bundlerConfig),
+    stream: renderToReadableStream(jsx, bundlerConfig, {
+      onError,
+    }),
     clientBoundaries,
   };
 }
