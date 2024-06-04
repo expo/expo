@@ -10590,6 +10590,72 @@ provided with a single argument that is
       </code>
        when you would like to unsubscribe the listener.
     </p>
+    
+
+    <blockquote
+      class="css-zknray-Callout"
+      data-testid="callout-container"
+    >
+      <div
+        class="css-7jywx8-Callout"
+      >
+        <svg
+          class="icon-sm text-icon-default"
+          fill="currentColor"
+          role="img"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="info-circle-solid-icon"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
+        </svg>
+      </div>
+      <div
+        class="css-1ohc0ia-Callout"
+      >
+        
+
+        <p
+          class="mb-4 css-1kfqm4n-TextComponent"
+          data-text="true"
+        >
+          Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
+
+          <a
+            class="css-1na8e0o-A"
+            href="https://developer.android.com/health-and-fitness/guides/health-connect"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <code
+              class="css-qyuze8-TextComponent"
+              data-text="true"
+            >
+              Health Connect API
+            </code>
+          </a>
+          .
+On iOS, the 
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            getStepCountAsync
+          </code>
+           method can be used to get the step count between two dates.
+        </p>
+        
+
+      </div>
+    </blockquote>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
