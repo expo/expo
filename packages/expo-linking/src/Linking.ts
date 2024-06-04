@@ -1,6 +1,6 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { EmitterSubscription, Platform } from 'react-native';
+import { EmitterSubscription } from 'react-native';
 
 import NativeLinking from './ExpoLinking';
 import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
@@ -18,6 +18,11 @@ import { validateURL } from './validateURL';
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type: 'url', handler: URLListener): EmitterSubscription {
+  // Do nothing in Node.js environments
+  if (typeof window === 'undefined') {
+    return { remove() {} };
+  }
+
   return NativeLinking.addEventListener(type, handler);
 }
 
@@ -30,7 +35,7 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * @return A promise that resolves with `ParsedURL` object.
  */
 export async function parseInitialURLAsync(): Promise<ParsedURL> {
-  const initialUrl = await NativeLinking.getInitialURL();
+  const initialUrl = typeof window === 'undefined' ? null : await NativeLinking.getInitialURL();
   if (!initialUrl) {
     return {
       scheme: null,
@@ -51,7 +56,7 @@ export async function parseInitialURLAsync(): Promise<ParsedURL> {
  * @platform android
  */
 export async function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void> {
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' && typeof window !== 'undefined') {
     return await NativeLinking.sendIntent(action, extras);
   }
   throw new UnavailabilityError('Linking', 'sendIntent');
@@ -62,7 +67,7 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
  */
 export async function openSettings(): Promise<void> {
-  if (Platform.OS === 'web') {
+  if (Platform.OS === 'web' || typeof window === 'undefined') {
     throw new UnavailabilityError('Linking', 'openSettings');
   }
   if (NativeLinking.openSettings) {
@@ -77,6 +82,9 @@ export async function openSettings(): Promise<void> {
  * @return The URL string that launched your app, or `null`.
  */
 export async function getInitialURL(): Promise<string | null> {
+  if (typeof window === 'undefined') {
+    return null;
+  }
   return (await NativeLinking.getInitialURL()) ?? null;
 }
 
@@ -91,6 +99,9 @@ export async function getInitialURL(): Promise<string | null> {
  */
 export async function openURL(url: string): Promise<true> {
   validateURL(url);
+  if (typeof window === 'undefined') {
+    return true;
+  }
   return await NativeLinking.openURL(url);
 }
 
@@ -107,6 +118,9 @@ export async function openURL(url: string): Promise<true> {
  */
 export async function canOpenURL(url: string): Promise<boolean> {
   validateURL(url);
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return await NativeLinking.canOpenURL(url);
 }
 

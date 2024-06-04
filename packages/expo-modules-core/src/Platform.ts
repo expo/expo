@@ -1,4 +1,4 @@
-import { Platform as ReactNativePlatform, PlatformOSType } from 'react-native';
+import { PlatformOSType } from 'react-native';
 
 import {
   isDOMAvailable,
@@ -11,12 +11,24 @@ export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'def
 
 export type PlatformSelect = <T>(specifics: { [platform in PlatformSelectOSType]?: T }) => T;
 
+function select<T>(specifics: { [platform in PlatformSelectOSType]?: T }): T | undefined {
+  if (specifics.hasOwnProperty(process.env.EXPO_OS)) {
+    return specifics[process.env.EXPO_OS]!;
+  } else if (process.env.EXPO_OS !== 'web' && specifics.hasOwnProperty('native')) {
+    return specifics.native!;
+  } else if (specifics.hasOwnProperty('default')) {
+    return specifics.default!;
+  }
+  // do nothing...
+  return undefined;
+}
+
 const Platform = {
   /**
    * Denotes the currently running platform.
    * Can be one of ios, android, web.
    */
-  OS: ReactNativePlatform.OS,
+  OS: process.env.EXPO_OS,
   /**
    * Returns the value with the matching platform.
    * Object keys can be any of ios, android, native, web, default.
@@ -25,7 +37,7 @@ const Platform = {
    * @android android, native, default
    * @web web, default
    */
-  select: ReactNativePlatform.select as PlatformSelect,
+  select: select as PlatformSelect,
   /**
    * Denotes if the DOM API is available in the current environment.
    * The DOM is not available in native React runtimes and Node.js.
