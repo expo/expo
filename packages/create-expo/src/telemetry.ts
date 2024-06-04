@@ -2,7 +2,6 @@ import JsonFile from '@expo/json-file';
 import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
-import { fetch } from 'undici';
 
 import { dotExpoHomeDirectory, getStateJsonPath } from './paths';
 import { getSession } from './sessionStorage';

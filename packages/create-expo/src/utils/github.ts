@@ -1,6 +1,5 @@
 import type { Endpoints } from '@octokit/types';
 import { Readable } from 'stream';
-import { fetch } from 'undici';
 
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
 import { createGlobFilter } from '../createFileTransform';
@@ -83,7 +82,11 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(Readable.from(response.body), { ...props, filter, strip });
+  await extractNpmTarballAsync(
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
+    { ...props, filter, strip }
+  );
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(

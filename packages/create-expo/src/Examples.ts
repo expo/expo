@@ -5,7 +5,6 @@ import path from 'path';
 import prompts from 'prompts';
 import { Readable, Stream } from 'stream';
 import tar from 'tar';
-import { fetch } from 'undici';
 import { promisify } from 'util';
 
 import {
@@ -104,7 +103,8 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
   }
 
   await pipeline(
-    Readable.from(response.body),
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
     tar.extract(
       {
         cwd: root,
