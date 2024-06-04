@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import fetch from 'node-fetch';
+import { fetch } from 'undici';
 
 import { dotExpoHomeDirectory, getStateJsonPath } from '../paths';
 import {
@@ -13,7 +13,7 @@ import {
   track,
 } from '../telemetry';
 
-jest.mock('node-fetch');
+jest.mock('undici');
 jest.mock('crypto', () => {
   const actual = jest.requireActual('crypto');
   return { ...actual, randomUUID: jest.fn(actual.randomUUID) };

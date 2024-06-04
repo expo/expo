@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import typedFetch from 'node-fetch';
 import typedPrompts from 'prompts';
+import { fetch as typedFetch } from 'undici';
 
 import {
   ensureExampleExists,
@@ -11,8 +11,8 @@ import {
 import { env } from '../utils/env';
 
 jest.mock('fs');
-jest.mock('node-fetch');
 jest.mock('prompts');
+jest.mock('undici');
 
 const fetch = typedFetch as jest.MockedFunction<typeof typedFetch>;
 const prompts = typedPrompts as jest.MockedFunction<typeof typedPrompts>;

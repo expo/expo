@@ -1,11 +1,11 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import prompts from 'prompts';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 import tar from 'tar';
+import { fetch } from 'undici';
 import { promisify } from 'util';
 
 import {
@@ -36,7 +36,7 @@ async function listExamplesAsync() {
     throw new Error('Unexpected GitHub API response: https://github.com/expo/examples');
   }
 
-  const data: GithubContent[] = await response.json();
+  const data = (await response.json()) as GithubContent[];
   return data.filter((item) => item.type === 'dir' && !item.name.startsWith('.'));
 }
 
@@ -96,8 +96,15 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
   }
 
+  if (!response.body) {
+    debug(
+      `Failed to fetch the examples code, Github responded without content, received status "${response.status}"`
+    );
+    throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
+  }
+
   await pipeline(
-    response.body,
+    Readable.from(response.body),
     tar.extract(
       {
         cwd: root,
