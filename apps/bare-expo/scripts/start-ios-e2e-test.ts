@@ -9,7 +9,7 @@ const TARGET_DEVICE = 'iPhone 15';
 const TARGET_DEVICE_IOS_VERSION = '17.5';
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
-const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
+const MAESTRO_DRIVER_STARTUP_TIMEOUT = '6000'; // Wait 1 minute for Maestro driver to start
 const RETRIES = 10;
 
 enum StartMode {
@@ -107,8 +107,11 @@ async function retryAsync<T>(
   for (let i = 0; i < retries; ++i) {
     try {
       return await fn();
-    } catch (e) {
-      lastError = e;
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        lastError = e;
+        console.warn(`Received error ${e.message} and waiting ${delayAfterErrorMs}ms for next attempts.`);
+      }
       await delayAsync(delayAfterErrorMs);
     }
   }
