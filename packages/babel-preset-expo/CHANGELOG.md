@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `export * from` to `use client` plugin.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
