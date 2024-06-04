@@ -61,7 +61,7 @@ enum BarcodeType: String, Enumerable {
       return .aztec
     }
   }
-  
+
   static func toBarcodeType(type: AVMetadataObject.ObjectType) -> BarcodeType {
     if #available(iOS 15.4, *) {
       if type == .codabar {
