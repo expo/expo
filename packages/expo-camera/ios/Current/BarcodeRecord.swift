@@ -81,8 +81,6 @@ enum BarcodeType: String, Enumerable {
       return .pdf417
     case .itf14:
       return .itf14
-    case .ean13:
-      return .ean13
     case .upce:
       return .upc_e
     case .code39:
