@@ -103,6 +103,8 @@ export default function ExpoImage({
   recyclingKey,
   style,
   nativeViewRef,
+  accessibilityLabel,
+  tintColor,
   containerViewRef,
   ...props
 }: ImageNativeProps) {
@@ -124,7 +126,6 @@ export default function ExpoImage({
         ({ onAnimationFinished }) =>
           (className, style) => (
             <ImageWrapper
-              {...props}
               ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
               source={placeholder?.[0]}
               style={{
@@ -139,6 +140,10 @@ export default function ExpoImage({
               contentPosition={{ left: '50%', top: '50%' }}
               hashPlaceholderContentPosition={contentPosition}
               hashPlaceholderStyle={imageHashStyle}
+              accessibilityLabel={accessibilityLabel}
+              cachePolicy={cachePolicy}
+              priority={priority}
+              tintColor={tintColor}
             />
           ),
       ]
@@ -150,7 +155,6 @@ export default function ExpoImage({
     ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
       (className, style) => (
         <ImageWrapper
-          {...props}
           ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
           source={selectedSource || placeholder?.[0]}
           events={{
@@ -170,7 +174,8 @@ export default function ExpoImage({
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}
-          accessibilityLabel={props.accessibilityLabel}
+          accessibilityLabel={accessibilityLabel}
+          tintColor={tintColor}
         />
       ),
   ];
@@ -178,7 +183,8 @@ export default function ExpoImage({
     <View
       ref={containerViewRef}
       dataSet={{ expoimage: true }}
-      style={[{ overflow: 'hidden' }, style]}>
+      style={[{ overflow: 'hidden' }, style]}
+      {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
