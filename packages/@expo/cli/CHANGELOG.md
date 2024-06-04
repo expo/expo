@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed broken React DevTools since SDK 51. ([#29181](https://github.com/expo/expo/pull/29181) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.18.14 — 2024-05-29
