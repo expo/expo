@@ -8,6 +8,10 @@ import ExponentPedometer from './ExponentPedometer';
  * provided with a single argument that is [`PedometerResult`](#pedometerresult).
  * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
+ *
+ * > Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
+ * > [`Health Connect API`](https://developer.android.com/health-and-fitness/guides/health-connect).
+ * > On iOS, the `getStepCountAsync` method can be used to get the step count between two dates.
  */
 export function watchStepCount(callback) {
     return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
