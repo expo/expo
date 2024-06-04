@@ -90,7 +90,6 @@ export interface PluginConfigTypeAndroid {
   /**
    * Add extra maven repositories to all gradle projects.
    *
-   *
    * Takes an array of objects or strings.
    * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
    *
@@ -105,7 +104,6 @@ export interface PluginConfigTypeAndroid {
    * ```
    *
    * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
-   *
    * ```groovy
    * allprojects {
    *   repositories {
@@ -154,6 +152,10 @@ export interface PluginConfigTypeAndroid {
   manifestQueries?: PluginConfigTypeAndroidQueries;
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface AndroidMavenRepository {
   /**
    * The URL of the Maven repository.
@@ -172,23 +174,39 @@ export interface AndroidMavenRepository {
   authentication?: 'basic' | 'digest' | 'header';
 }
 
-interface AndroidMavenRepositoryPasswordCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryPasswordCredentials {
   username: string;
   password: string;
 }
 
-interface AndroidMavenRepositoryHttpHeaderCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryHttpHeaderCredentials {
   name: string;
   value: string;
 }
 
-interface AndroidMavenRepositoryAWSCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryAWSCredentials {
   accessKey: string;
   secretKey: string;
   sessionToken?: string;
 }
 
-type AndroidMavenRepositoryCredentials =
+// @docsMissing
+/**
+ * @platform android
+ */
+export type AndroidMavenRepositoryCredentials =
   | AndroidMavenRepositoryPasswordCredentials
   | AndroidMavenRepositoryHttpHeaderCredentials
   | AndroidMavenRepositoryAWSCredentials;
@@ -225,12 +243,20 @@ export interface PluginConfigTypeIos {
   /**
    * Add extra CocoaPods dependencies for all targets.
    *
-   * This acts like to add the following code to **ios/Podfile**:
+   * This configuration is responsible for adding the new Pod entries to **ios/Podfile**.
    *
+   * @example
+   * Creating entry in the configuration like below:
+   * ```json
+   * [
+   *   {
+   *     name: "Protobuf",
+   *     version: "~> 3.14.0",
+   *   }
+   * ]
+   * ```
+   * Will produce the following entry in the generated **ios/Podfile**:
    * ```ruby
-   * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
-   *
-   * # Example
    * pod 'Protobuf', '~> 3.14.0'
    * ```
    *
@@ -325,12 +351,17 @@ export interface ExtraIosPodDependency {
    * Use the bleeding edge version of a Pod.
    *
    * @example
-   * ```
-   * { "name": "AFNetworking", "git": "https://github.com/gowalla/AFNetworking.git", "tag": "0.7.0" }
+   * ```json
+   * {
+   *   "name": "AFNetworking",
+   *   "git": "https://github.com/gowalla/AFNetworking.git",
+   *   "tag": "0.7.0"
+   * }
    * ```
    *
    * This acts like to add this pod dependency statement:
-   * ```
+   *
+   * ```rb
    * pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
    * ```
    */
@@ -372,6 +403,10 @@ export interface PluginConfigTypeAndroidPackagingOptions {
   doNotStrip?: string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueries {
   /**
    * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
@@ -391,6 +426,10 @@ export interface PluginConfigTypeAndroidQueries {
   provider?: string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesIntent {
   /**
    * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
@@ -407,6 +446,10 @@ export interface PluginConfigTypeAndroidQueriesIntent {
   category?: string | string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesData {
   /**
    * Specify a URI scheme that is handled
