@@ -30,7 +30,10 @@ it('prevents overwriting directories with projects', async () => {
   try {
     await execute([projectName]);
   } catch (error: any) {
-    expect(error.stdout).toMatch(/has files that might be overwritten/);
+    expect(error).toMatchObject({
+      stdout: expect.stringContaining('has files that might be overwritten'),
+      stderr: expect.stringContaining(''),
+    });
   }
 });
 
