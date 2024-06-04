@@ -412,6 +412,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
   '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
   '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/known-issues/': '/eas-update/introduction/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
   '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
