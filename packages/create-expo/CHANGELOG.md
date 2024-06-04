@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed `node-fetch` in favor of Node's built-in `fetch`. ([#29422](https://github.com/expo/expo/pull/29422) by [@byCedric](https://github.com/byCedric))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
