@@ -45,7 +45,7 @@
     "@types/picomatch": "^2.3.3",
     "@types/prompts": "2.0.14",
     "@types/tar": "^6.1.2",
-    "@vercel/ncc": "npm:@bycedric/ncc@0.38.1-patch.1",
+    "@vercel/ncc": "^0.38.1",
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",

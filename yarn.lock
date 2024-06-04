@@ -5091,15 +5091,10 @@
     "@urql/core" ">=2.3.1"
     wonka "^4.0.14"
 
-"@vercel/ncc@^0.38.0":
+"@vercel/ncc@^0.38.0", "@vercel/ncc@^0.38.1":
   version "0.38.1"
   resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.38.1.tgz#13f08738111e1d9e8a22fd6141f3590e54d9a60e"
   integrity sha512-IBBb+iI2NLu4VQn3Vwldyi2QwaXt5+hTyh58ggAMoCGE6DJmPvwL3KPBWcJl1m9LYPChBLE980Jw+CS4Wokqxw==
-
-"@vercel/ncc@npm:@bycedric/ncc@0.38.1-patch.1":
-  version "0.38.1-patch.1"
-  resolved "https://registry.yarnpkg.com/@bycedric/ncc/-/ncc-0.38.1-patch.1.tgz#1b14c83057655471dd8e1617d20265767bd3c437"
-  integrity sha512-TkqZj7wnWWQavlhHb2zsuexiYAWv3kfEz0tqta7LuzYE3ve9b/nFquEDeAWgqpLld0vYbMy46od6ovwu9Pdqsg==
 
 "@web3-storage/multipart-parser@^1.0.0":
   version "1.0.0"
