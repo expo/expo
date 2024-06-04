@@ -4545,7 +4545,7 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@^16.11.56", "@types/node@^16.18.11":
+"@types/node@^16.11.56":
   version "16.18.50"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.50.tgz#93003cf0251a2ecd26dad6dc757168d648519805"
   integrity sha512-OiDU5xRgYTJ203v4cprTs0RwOCd5c5Zjv+K5P8KSqfiCsB1W3LcamTUMcnQarpq5kOYbhHfSOgIEJvdPyb5xyw==
