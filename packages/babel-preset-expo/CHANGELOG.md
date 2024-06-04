@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for `export * from` to `use client` plugin.
+- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
