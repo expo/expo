@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixes jest spitting console error caused by ref stubbing.
+- Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
