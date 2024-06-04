@@ -21,7 +21,7 @@ inputs:
     description: 'Message attached to the build'
     required: false
   retries:
-    description: 'Retries from eas build failures'
+    description: 'Number of times to retry the eas build command when the command fails. Note that this is not build retries.'
     required: false
     default: 3
 
