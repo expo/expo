@@ -34,8 +34,8 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/json-file": "8.3.3",
     "@expo/config": "9.0.2",
+    "@expo/json-file": "8.3.3",
     "@expo/package-manager": "^1.5.0",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.7",
@@ -57,6 +57,7 @@
     "picomatch": "^2.3.1",
     "prompts": "^2.4.2",
     "tar": "6.1.13",
+    "undici": "^6.18.2",
     "update-check": "^1.5.4"
   }
 }
