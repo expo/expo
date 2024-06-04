@@ -560,7 +560,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         manifestQueries: {
           type: 'object',
           properties: {
-            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
             intent: {
               type: 'array',
               items: {
@@ -581,7 +581,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
               },
               nullable: true,
             },
-            provider: { type: 'array', items: { type: 'string' }, nullable: true },
+            provider: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
           },
           nullable: true,
         },
