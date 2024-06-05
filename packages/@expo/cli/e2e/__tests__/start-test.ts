@@ -203,8 +203,12 @@ describe('server', () => {
         version: 3,
         sources: expect.arrayContaining([
           '__prelude__',
+          expect.stringContaining('metro-runtime/src/polyfills/require.js'),
+          expect.stringContaining('@react-native/js-polyfills/console.js'),
+          expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
+          '\0polyfill:external-require',
           // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
-          '__env__',
+          '\0polyfill:environment-variables',
         ]),
         mappings: expect.any(String),
       });

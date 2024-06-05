@@ -89,11 +89,26 @@ export function environmentVariableSerializerPlugin(
 
   // Set the process.env object to the current environment variables object
   // ensuring they aren't iterable, settable, or enumerable.
-  const str = `process.env=Object.defineProperties(process.env, {${Object.keys(
-    getAllExpoPublicEnvVars()
-  )
-    .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
-    .join(',')}});`;
+  const str =
+    `process.env=Object.defineProperties(process.env, {` +
+    Object.keys(getAllExpoPublicEnvVars())
+      .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
+      .join(',') +
+    '});';
+
+  const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
+  if (prelude) {
+    debug('Injecting environment variables in virtual module.');
+    const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;
+
+    // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
+    prelude.output[0].data.code = code;
+
+    return [entryPoint, preModules, graph, options];
+  }
+
+  // Old system which doesn't work very well since Metro doesn't serialize graphs the same way in all cases.
+  // e.g. the `.map` endpoint is serialized differently to error symbolication.
 
   // Inject the new module at index 1
   // @ts-expect-error: The preModules are mutable and we need to mutate them in order to ensure the changes are applied outside of the serializer.
@@ -108,7 +123,7 @@ export function environmentVariableSerializerPlugin(
 }
 
 function getEnvPrelude(contents: string): Module<MixedOutput> {
-  const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
+  const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + contents;
   const name = '__env__';
   const lineCount = countLines(code);
 
