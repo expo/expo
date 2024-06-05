@@ -33,7 +33,7 @@ target 'HelloWorld' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'false',
+      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] != 'false',
     )
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
