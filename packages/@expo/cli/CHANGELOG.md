@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support passing `--port 0` to use any free port.
+- Support passing `--port 0` to use any free port. ([#29466](https://github.com/expo/expo/pull/29466) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
