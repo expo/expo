@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix generating types in a loop ([#29157](https://github.com/expo/expo/pull/29157) by [@kadikraman](https://github.com/kadikraman))
-
 ### 💡 Others
+
+## 3.5.15 - 2024-06-03
+
+### 🐛 Bug fixes
+
+- Fix generating types in a loop ([#29157](https://github.com/expo/expo/pull/29157) by [@kadikraman](https://github.com/kadikraman))
 
 ## 3.5.14 — 2024-05-15
 
