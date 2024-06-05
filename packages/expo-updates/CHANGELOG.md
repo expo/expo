@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improved stability of E2E testing. ([#29402](https://github.com/expo/expo/pull/29402) by [@kudo](https://github.com/kudo))
+
 ## 0.25.16 — 2024-06-06
 
 _This version does not introduce any user-facing changes._
