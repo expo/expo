@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support passing `--port 0` to use any free port.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
