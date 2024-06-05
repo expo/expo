@@ -28,13 +28,11 @@
         "EX_UPDATES_NATIVE_DEBUG": "1"
       },
       "android": {
-        // Not necessarily to upload the archive for updates_testing_debug, upload eas.json instead.
         "applicationArchivePath": "eas.json",
         "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true
       },
       "ios": {
-        // Not necessarily to upload the archive for updates_testing_debug, upload eas.json instead.
         "applicationArchivePath": "eas.json",
         "simulator": true,
         "buildConfiguration": "Debug"
