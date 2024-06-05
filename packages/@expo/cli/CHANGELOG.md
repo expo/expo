@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Deep link to simulators without prompting for permissions first.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
