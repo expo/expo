@@ -37,6 +37,9 @@ runs:
       shell: bash
       id: build_start
       run: |
+        if [[ -z "${COMMIT_MESSAGE}" ]]; then
+          COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)
+        fi
         MESSAGE="${MESSAGE:-$COMMIT_MESSAGE}"
         RETRIES=0
         SUCCESS=false
