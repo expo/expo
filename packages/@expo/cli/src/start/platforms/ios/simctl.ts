@@ -122,14 +122,6 @@ export async function getInfoPlistValueAsync(
   return null;
 }
 
-const getSimulatorDataFilePath = (uniqueId: string, relativePath: string) => {
-  return path.join(
-    os.homedir(),
-    `Library/Developer/CoreSimulator/Devices/${uniqueId}/data`,
-    relativePath
-  );
-};
-
 /** Rewrite the simulator permissions to allow opening deep links without needing to prompt the user first. */
 async function updateSimulatorLinkingPermissionsAsync(
   device: Partial<DeviceContext>,
@@ -162,12 +154,12 @@ async function updateSimulatorLinkingPermissionsAsync(
     os.homedir(),
     `Library/Developer/CoreSimulator/Devices`,
     device.udid,
-    `data/Library/Preferences/com.apple.launchservices.schemeapproval.plist`,
+    `data/Library/Preferences/com.apple.launchservices.schemeapproval.plist`
   );
 
   const plistData = fs.existsSync(plistPath)
-    // If the file exists, then read it in the bplist format.
-    ? await parsePlistAsync(plistPath)
+    ? // If the file exists, then read it in the bplist format.
+      await parsePlistAsync(plistPath)
     : // The file doesn't exist when we first launch the simulator, but an empty object can be used to create it (June 2024 x Xcode 15.3).
       // Can be tested by launching a new simulator or by deleting the file and relaunching the simulator.
       {};
