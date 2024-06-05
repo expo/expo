@@ -5,7 +5,7 @@ export { CellularGeneration };
 // @needsAudit
 /**
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
- * the system supports SIP-based VoIP API. See [Android documentation](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
+ * the system supports SIP-based VoIP API. See the [Android documentation](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
  * for more information.
  *
  * On iOS, if you configure a device for a carrier and then remove the SIM card, this property
