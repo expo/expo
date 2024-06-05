@@ -21,6 +21,9 @@
     "build",
     "template"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
