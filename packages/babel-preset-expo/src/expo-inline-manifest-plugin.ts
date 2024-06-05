@@ -1,5 +1,5 @@
 import { ConfigAPI } from '@babel/core';
-import { ExpoConfig, getConfig, getNameFromConfig, ProjectConfig } from 'expo/config';
+import { ExpoConfig, getConfig, getNameFromConfig, ProjectConfig } from '@expo/config';
 
 import { getPlatform, getPossibleProjectRoot } from './common';
 

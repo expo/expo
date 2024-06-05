@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- fix path to the expo config file ([#29397](https://github.com/expo/expo/pull/29397))
+
 ## 11.0.6 — 2024-05-13
 
 ### 🐛 Bug fixes
