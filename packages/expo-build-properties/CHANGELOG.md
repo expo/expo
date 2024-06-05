@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
