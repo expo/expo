@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for passing `platform` and `isServer` to the Babel caller to support `process.env.EXPO_OS` and other standard Expo CLI transforms in Jest.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

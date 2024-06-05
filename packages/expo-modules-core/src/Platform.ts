@@ -11,10 +11,14 @@ export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'def
 
 export type PlatformSelect = <T>(specifics: { [platform in PlatformSelectOSType]?: T }) => T;
 
-const OS = process.env.EXPO_OS || ReactNativePlatform.OS;
+if (__DEV__ && typeof process.env.EXPO_OS === 'undefined') {
+  console.warn(
+    `The global process.env.EXPO_OS is not defined. This should be inlined by babel-preset-expo during transformation.`
+  );
+}
 
 const nativeSelect =
-  typeof window !== 'undefined' || OS === 'web'
+  typeof window !== 'undefined'
     ? ReactNativePlatform.select
     : // process.env.EXPO_OS is injected by `babel-preset-expo` and available in both client and `react-server` environments.
       // Opt to use the env var when possible, and fallback to the React Native Platform module when it's not (arbitrary bundlers and transformers).
@@ -36,7 +40,7 @@ const Platform = {
    * Denotes the currently running platform.
    * Can be one of ios, android, web.
    */
-  OS,
+  OS: process.env.EXPO_OS || ReactNativePlatform.OS,
   /**
    * Returns the value with the matching platform.
    * Object keys can be any of ios, android, native, web, default.

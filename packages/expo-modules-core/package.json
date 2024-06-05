@@ -35,7 +35,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-core",
   "jest": {
-    "preset": "jest-expo/universal"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "invariant": "^2.2.4"
