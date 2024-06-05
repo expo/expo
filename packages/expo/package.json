@@ -62,7 +62,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.18.15",
     "@expo/config": "9.0.1",
-    "@expo/config-plugins": "8.0.4",
+    "@expo/config-plugins": "8.0.5",
     "@expo/metro-config": "0.18.3",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~11.0.7",

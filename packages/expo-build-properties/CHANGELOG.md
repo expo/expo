@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
-
 ### 💡 Others
+
+## 0.12.2 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
 
 ## 0.12.1 — 2024-05-06
 

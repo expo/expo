@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Improved android manifest queries, making package optional and changing provider to array ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
-
 ### 💡 Others
+
+## 8.0.5 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Improved android manifest queries, making package optional and changing provider to array ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
 
 ## 8.0.4 — 2024-05-01
 
