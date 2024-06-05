@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 7.0.4 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
+
 ## 7.0.3 — 2024-05-02
 
 _This version does not introduce any user-facing changes._
