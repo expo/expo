@@ -1,5 +1,6 @@
 package expo.modules.updates.db.dao
 
+import androidx.annotation.VisibleForTesting
 import androidx.room.*
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateAssetEntity
@@ -154,5 +155,15 @@ abstract class AssetDao {
     val deletedAssets = loadAssetsMarkedForDeletionInternal()
     deleteAssetsMarkedForDeletionInternal()
     return deletedAssets
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  internal fun insertAssetForTest(asset: AssetEntity): Long {
+    return insertAssetInternal(asset)
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  internal fun insertUpdateAssetForTest(updateAsset: UpdateAssetEntity) {
+    insertUpdateAssetInternal(updateAsset)
   }
 }

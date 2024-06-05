@@ -3,9 +3,8 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { BundleOutput } from './fork-bundleAsync';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { Asset, ExportAssetMap } from './saveAssets';
+import type { Asset, ExportAssetMap, BundleOutput } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';

@@ -17,7 +17,6 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
-import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
@@ -163,7 +162,7 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<MetroDevServerOptions, 'logger'>,
+  options: Omit<LoadOptions, 'logger'>,
   { isExporting }: { isExporting: boolean }
 ): Promise<{
   metro: Metro.Server;
@@ -226,16 +225,31 @@ export async function instantiateMetroAsync(
   middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({ isExporting, exp, projectRoot, middleware, metroConfig });
-
-  const { server, metro } = await runServer(metroBundler, metroConfig, {
-    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints: {
-      ...websocketEndpoints,
-      ...debugWebsocketEndpoints,
-    },
-    watch: !isExporting && isWatchEnabled(),
+  const atlas = await attachAtlasAsync({
+    isExporting,
+    exp,
+    projectRoot,
+    middleware,
+    metroConfig,
+    // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
+    resetAtlasFile: isExporting,
   });
+
+  const { server, metro } = await runServer(
+    metroBundler,
+    metroConfig,
+    {
+      // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
+      websocketEndpoints: {
+        ...websocketEndpoints,
+        ...debugWebsocketEndpoints,
+      },
+      watch: !isExporting && isWatchEnabled(),
+    },
+    {
+      mockServer: isExporting,
+    }
+  );
 
   // If Atlas is enabled, and can register to Metro, attach it to listen for changes
   atlas?.registerMetro(metro);

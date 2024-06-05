@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Jump directly to source. ([#29244](https://github.com/expo/expo/pull/29244) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

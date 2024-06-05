@@ -1,3 +1,4 @@
+import './assertion';
 declare const Response: {
     prototype: Response;
     new (body?: BodyInit | null, init?: ResponseInit): Response;

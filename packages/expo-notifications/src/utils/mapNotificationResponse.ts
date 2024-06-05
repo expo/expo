@@ -23,6 +23,5 @@ export const mapNotificationResponse = (response: NotificationResponse) => {
   } catch (e: any) {
     console.log(`Error in response: ${e}`);
   }
-  console.log(`response received: ${JSON.stringify(mappedResponse, null, 2)}`);
   return mappedResponse;
 };

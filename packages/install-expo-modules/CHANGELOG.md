@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.10.1 - 2024-05-29
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.0 — 2024-04-25
 
 ### 🎉 New features
