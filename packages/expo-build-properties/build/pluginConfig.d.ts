@@ -364,9 +364,9 @@ export interface PluginConfigTypeAndroidPackagingOptions {
  */
 export interface PluginConfigTypeAndroidQueries {
     /**
-     * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+     * Specifies one or more apps that your app intends to access. These other apps might integrate with your app, or your app might use services that these other apps provide.
      */
-    package: string[];
+    package?: string[];
     /**
      * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
      * These intents have restrictions compared to typical intent filter signatures.

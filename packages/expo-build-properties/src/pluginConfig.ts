@@ -409,9 +409,9 @@ export interface PluginConfigTypeAndroidPackagingOptions {
  */
 export interface PluginConfigTypeAndroidQueries {
   /**
-   * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+   * Specifies one or more apps that your app intends to access. These other apps might integrate with your app, or your app might use services that these other apps provide.
    */
-  package: string[];
+  package?: string[];
   /**
    * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
    * These intents have restrictions compared to typical intent filter signatures.
@@ -558,10 +558,9 @@ const schema: JSONSchemaType<PluginConfigType> = {
         useLegacyPackaging: { type: 'boolean', nullable: true },
 
         manifestQueries: {
-          required: ['package'],
           type: 'object',
           properties: {
-            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
             intent: {
               type: 'array',
               items: {
@@ -582,7 +581,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
               },
               nullable: true,
             },
-            provider: { type: 'array', items: { type: 'string' }, nullable: true },
+            provider: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
           },
           nullable: true,
         },
