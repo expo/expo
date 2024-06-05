@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior.  ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.9.0 — 2024-06-05
+
+### 🛠 Breaking changes
+
+- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior.  ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
 
 ## 0.8.0 — 2024-05-15
 
