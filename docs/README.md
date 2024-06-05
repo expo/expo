@@ -44,7 +44,7 @@ The documentation is divided into four main sections:
 
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
 - **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it. This section also contains all EAS related documentation.
-- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [A note about versioning](#a-note-about-versioning) for more information.
+- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [Update latest version of docs](#update-latest-version-of-docs) for more information.
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
 > **Note**
@@ -72,7 +72,7 @@ These metadata items include:
 
 ### Edit Code
 
-The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [To run locally in development mode](#to-run-locally-in-development-mode) section, then open a separate terminal and run the TypeScript compiler in watch mode &mdash; it will watch your code changes and notify you about errors.
 
 ```sh
 yarn watch
@@ -183,7 +183,7 @@ Before proceeding, make sure you:
 - have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
   - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
 - have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
-- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#to-run-locally-in-development-mode)**.
 - can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
 
 Once you have made sure the development setup is ready, proceed to the next section:

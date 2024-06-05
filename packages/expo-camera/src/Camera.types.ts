@@ -5,7 +5,7 @@ import {
   PermissionHookOptions,
   EventSubscription,
 } from 'expo-modules-core';
-import { Ref } from 'react';
+import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
 export type CameraType = 'front' | 'back';

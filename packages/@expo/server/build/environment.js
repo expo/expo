@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.installGlobals = exports.ExpoResponse = exports.ExpoRequest = void 0;
 /* eslint-disable no-var */
+require("./assertion");
 const node_1 = require("@remix-run/node");
 /** @deprecated */
 exports.ExpoRequest = Request;
 /** @deprecated */
-exports.ExpoResponse = Request;
+exports.ExpoResponse = Response;
 function installGlobals() {
     (0, node_1.installGlobals)();
     global.ExpoRequest = Request;

@@ -17,6 +17,7 @@ export type CommentData = {
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
+  modifierTags?: string[];
 };
 
 export type CommentTagData = {
@@ -146,7 +147,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
-  getSignature?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
 

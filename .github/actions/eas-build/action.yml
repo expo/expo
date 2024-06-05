@@ -20,6 +20,10 @@ inputs:
   message:
     description: 'Message attached to the build'
     required: false
+  retries:
+    description: 'Number of times to retry the eas build command when the command fails. Note that this is not build retries.'
+    required: false
+    default: 3
 
 outputs:
   build_id:
@@ -37,7 +41,29 @@ runs:
           COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)
         fi
         MESSAGE="${MESSAGE:-$COMMIT_MESSAGE}"
-        BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
+        RETRIES=0
+        SUCCESS=false
+
+        while [ $RETRIES -lt $MAX_RETRIES ]; do
+          set +e
+          BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
+          BUILD_STATUS=$?
+          set -e
+          if [ $BUILD_STATUS -eq 0 ] && [ -n "$BUILD_ID" ]; then
+            echo build_id="$BUILD_ID" >> $GITHUB_OUTPUT
+            SUCCESS=true
+            break
+          else
+            echo "Build attempt $((RETRIES+1)) failed with status $BUILD_STATUS. Retrying in $RETRY_DELAY seconds..."
+            RETRIES=$((RETRIES+1))
+            sleep $RETRY_DELAY
+          fi
+        done
+
+        if [ "$SUCCESS" = false ]; then
+          echo "Build failed after $MAX_RETRIES attempts."
+          exit 1
+        fi
         echo build_id="$BUILD_ID" >> $GITHUB_OUTPUT
       working-directory: ${{ inputs.projectRoot }}
       env:
@@ -46,6 +72,9 @@ runs:
         PLATFORM: ${{ inputs.platform }}
         MESSAGE: ${{ inputs.message }}
         EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: host.exp.exponent
+        MAX_RETRIES: ${{ inputs.retries }}
+        RETRY_DELAY: 30
+
     - name: Wait for build to finish
       shell: bash
       if: ${{ !inputs.noWait }}
