@@ -1,6 +1,8 @@
 #!/bin/bash
 
 export NODE_ENV=production
+export EXPO_USE_FAST_RESOLVER=1
+export EXPO_NO_TELEMETRY=1
 
 # Generate temporary app.json for `npx expo export:embed` and indicate that we want to use JSC bundling profile.
 # The reason to use JSC because the bundle should be compatible with both JSC and Hermes.
