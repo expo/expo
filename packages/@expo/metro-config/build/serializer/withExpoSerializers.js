@@ -107,7 +107,6 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 };
             }
         }
-        console.log(options, graph.transformOptions);
         if (isPossiblyDev) {
             if (bundleMap == null) {
                 return bundleCode;
