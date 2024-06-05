@@ -42,8 +42,7 @@ EXPO_BUNDLE_APP=1 npx expo export:embed \
     --entry-file index.js \
     --unstable-transform-profile default \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
-    --assets-dest android/src/debug/res \
-    --reset-cache
+    --assets-dest android/src/debug/res
 
 # Cleanup
 
