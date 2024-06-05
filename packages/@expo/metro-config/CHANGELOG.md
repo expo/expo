@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix source map generation in development.
+
 ### 💡 Others
 
 ## 0.18.4 — 2024-05-16

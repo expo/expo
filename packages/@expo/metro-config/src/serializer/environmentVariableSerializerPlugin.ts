@@ -95,22 +95,16 @@ export function environmentVariableSerializerPlugin(
     .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
     .join(',')}});`;
 
-  const [firstModule, ...restModules] = preModules;
-  // const envCode = `var process=this.process||{};${str}`;
-  // process.env
-  return [
-    entryPoint,
-    [
-      // First module defines the process.env object.
-      firstModule,
-      // Second module modifies the process.env object.
-      getEnvPrelude(str),
-      // Now we add the rest
-      ...restModules,
-    ],
-    graph,
-    options,
-  ];
+  // Inject the new module at index 1
+  // @ts-expect-error: The preModules are mutable and we need to mutate them in order to ensure the changes are applied outside of the serializer.
+  preModules.splice(
+    // Inject at index 1 to ensure it runs after the prelude (which injects env vars).
+    1,
+    0,
+    getEnvPrelude(str)
+  );
+
+  return [entryPoint, preModules, graph, options];
 }
 
 function getEnvPrelude(contents: string): Module<MixedOutput> {
