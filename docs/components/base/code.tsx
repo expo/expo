@@ -4,7 +4,15 @@ import { borderRadius, spacing } from '@expo/styleguide-base';
 import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
 import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
-import { useEffect, useRef, useState, type PropsWithChildren, Children } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type PropsWithChildren,
+  Children,
+  ReactNode,
+  isValidElement,
+} from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
@@ -157,17 +165,31 @@ function parseValue(value: string) {
   };
 }
 
+function getRootCodeBlockProps(children: ReactNode, className?: string) {
+  if (className && className.startsWith('language')) {
+    return { className, children };
+  }
+
+  const firstChild = Children.toArray(children)[0];
+  if (isValidElement(firstChild) && firstChild.props.className) {
+    if (firstChild.props.className.startsWith('language')) {
+      return {
+        className: firstChild.props.className,
+        children: firstChild.props.children,
+        isNested: true,
+      };
+    }
+  }
+
+  return {};
+}
+
 export function Code({ className, children }: PropsWithChildren<Props>) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
   const [isExpanded, setExpanded] = useState(true);
 
-  // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
-  // which results in this nesting mess, we should fix it in the future
-  const rootProps =
-    className && className.startsWith('language')
-      ? { className, children }
-      : (Children.toArray(children)[0] as JSX.Element)?.props;
+  const rootProps = getRootCodeBlockProps(children, className);
 
   const codeBlockData = parseValue(rootProps?.children?.toString() || '');
   const collapseHeight = codeBlockData?.params?.collapseHeight

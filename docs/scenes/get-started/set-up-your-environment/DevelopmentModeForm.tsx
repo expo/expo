@@ -16,7 +16,7 @@ export function DevelopmentModeForm() {
         if (query.mode) {
           setMode(query.mode as DevelopmentMode);
         } else {
-          setMode('development-build');
+          setMode('expo-go');
         }
       }
     },
@@ -41,15 +41,6 @@ export function DevelopmentModeForm() {
   return (
     <div className="flex flex-wrap gap-4">
       <SelectCard
-        imgSrc="/static/images/get-started/development-build.png"
-        darkImgSrc="/static/images/get-started/development-build-dark.png"
-        title="Development build"
-        alt="Development build"
-        description="Make a build of your own app with developer tools. Supports custom native modules. Intended for production projects."
-        isSelected={mode === 'development-build'}
-        onClick={() => onRadioChange('development-build')}
-      />
-      <SelectCard
         imgSrc="/static/images/get-started/expo-go.png"
         darkImgSrc="/static/images/get-started/expo-go-dark.png"
         title="Expo Go"
@@ -57,6 +48,15 @@ export function DevelopmentModeForm() {
         description="Try out app development in a limited sandbox without custom native modules. Great for testing out Expo quickly. Not intended for long-term projects."
         isSelected={mode === 'expo-go'}
         onClick={() => onRadioChange('expo-go')}
+      />
+      <SelectCard
+        imgSrc="/static/images/get-started/development-build.png"
+        darkImgSrc="/static/images/get-started/development-build-dark.png"
+        title="Development build"
+        alt="Development build"
+        description="Make a build of your own app with developer tools. Supports custom native modules. Intended for production projects."
+        isSelected={mode === 'development-build'}
+        onClick={() => onRadioChange('development-build')}
       />
     </div>
   );

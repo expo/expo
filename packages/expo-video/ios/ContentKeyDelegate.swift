@@ -95,10 +95,17 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
   }
 
   private func requestApplicationCertificate(keyRequest: AVContentKeyRequest) throws -> Data {
-    guard let url = videoSource?.drm?.certificateUrl else {
-      throw DRMLoadException("The certificate uri is null")
+    if let certificateData = videoSource?.drm?.base64CertificateData {
+      return try requestCertificateFrom(base64String: certificateData)
     }
 
+    guard let url = videoSource?.drm?.certificateUrl else {
+      throw DRMLoadException("The certificate uri and data are null")
+    }
+    return try requestCertificateFrom(url: url)
+  }
+
+  private func requestCertificateFrom(url: URL) throws -> Data {
     let urlRequest = URLRequest(url: url)
     let (data, response, error) = URLSession.shared.synchronousDataTask(with: urlRequest)
 
@@ -121,6 +128,13 @@ internal class ContentKeyDelegate: NSObject, AVContentKeySessionDelegate {
     }
 
     return data
+  }
+
+  private func requestCertificateFrom(base64String: String) throws -> Data {
+    guard let certificateData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters) else {
+      throw DRMLoadException("Failed to load the application certificate from the provided base64 string")
+    }
+    return certificateData
   }
 
   private func requestContentKeyFromKeySecurityModule(spcData: Data, assetID: String, keyRequest: AVContentKeyRequest) throws -> Data {

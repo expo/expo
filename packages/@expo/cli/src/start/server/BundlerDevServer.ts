@@ -228,7 +228,9 @@ export abstract class BundlerDevServer {
     }
     await this.startDevSessionAsync();
 
-    this.watchConfig();
+    if (!options.isExporting) {
+      this.watchConfig();
+    }
   }
 
   protected abstract getConfigModuleIds(): string[];
@@ -328,11 +330,16 @@ export abstract class BundlerDevServer {
           debug(`Stopping dev server (bundler: ${this.name})`);
 
           if (this.instance?.server) {
+            // Check if server is even running.
             this.instance.server.close((error) => {
               debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
-                reject(error);
+                if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
+                  resolve();
+                } else {
+                  reject(error);
+                }
               } else {
                 resolve();
               }

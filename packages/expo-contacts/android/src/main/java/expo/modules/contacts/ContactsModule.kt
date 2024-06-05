@@ -274,14 +274,12 @@ class ContactsModule : Module() {
       if (requestCode == RC_PICK_CONTACT) {
         val pendingPromise = contactPickingPromise ?: return@OnActivityResult
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-          pendingPromise.resolve()
-        }
-
         if (resultCode == Activity.RESULT_OK) {
           val contactId = intent?.data?.lastPathSegment
           val contact = getContactById(contactId, defaultFields)
           pendingPromise.resolve(contact?.toMap(defaultFields))
+        } else {
+          pendingPromise.resolve()
         }
 
         contactPickingPromise = null

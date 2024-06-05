@@ -7,7 +7,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
     data-sidebar="true"
   >
     <p
-      class="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none css-1t1p06f-TextComponent"
+      class="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10 css-1t1p06f-TextComponent"
       data-text="true"
     >
       <svg

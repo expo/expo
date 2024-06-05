@@ -60,13 +60,18 @@ test.describe(inputDir, () => {
   });
 
   test('updates with fast refresh', async ({ page }) => {
+    console.time('expo start');
     await expo.startAsync();
+    console.timeEnd('expo start');
     console.log('Server running:', expo.url);
+    console.time('Eagerly bundled JS');
     await expo.fetchAsync('/');
-    console.log('Eagerly bundled JS');
+    console.timeEnd('Eagerly bundled JS');
 
+    console.time('Open page');
     // Navigate to the app
     await page.goto(expo.url);
+    console.timeEnd('Open page');
 
     // Ensure the message socket connects (not related to HMR).
 
@@ -102,6 +107,7 @@ test.describe(inputDir, () => {
       }),
     });
 
+    console.time('Press button');
     // Ensure the initial state is correct
     await expect(page.locator('[data-testid="index-count"]')).toHaveText('0');
 
@@ -112,12 +118,14 @@ test.describe(inputDir, () => {
     // data-testid="index-text"
     const test = page.locator('[data-testid="index-text"]');
     await expect(test).toHaveText('ROUTE_VALUE');
+    console.timeEnd('Press button');
 
     // Now we'll modify the file and observe a fast refresh event...
 
     // Use a changing value to prevent caching.
     const nextValue = 'ROUTE_VALUE_' + Date.now();
 
+    console.time('Mutate file');
     // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
     await mutateIndexFile((contents) => {
       if (!contents.includes("'ROUTE_VALUE'")) {
@@ -126,7 +134,9 @@ test.describe(inputDir, () => {
       console.log('Emulate writing to a file');
       return contents.replace(/ROUTE_VALUE/g, nextValue);
     });
+    console.timeEnd('Mutate file');
 
+    console.time('Observe update');
     // Metro begins the HMR process
     await raceOrFail(
       hotSocket.waitForEvent('framereceived', {
@@ -157,6 +167,7 @@ test.describe(inputDir, () => {
 
     // Ensure the state is preserved between updates
     await expect(page.locator('[data-testid="index-count"]')).toHaveText('1');
+    console.timeEnd('Observe update');
   });
 });
 

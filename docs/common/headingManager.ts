@@ -93,7 +93,8 @@ export class HeadingManager {
     this._meta = meta;
     this._headings = [];
 
-    const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
+    const maxHeadingDepth =
+      (meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT) + (meta.packageName ? 1 : 0);
     this._maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 

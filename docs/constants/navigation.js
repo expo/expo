@@ -363,7 +363,6 @@ const general = [
       makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
