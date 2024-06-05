@@ -38,6 +38,7 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoCo
 }
 
 function getReactCompilerWithManifest(projectRoot: string, exp: ExpoConfig): boolean | undefined {
+  // @ts-expect-error: TODO -- Not on type yet
   return exp?.experiments?.reactCompiler;
 }
 

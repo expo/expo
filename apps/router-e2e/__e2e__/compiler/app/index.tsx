@@ -14,7 +14,9 @@ export default function Page() {
   const [index, setIndex] = React.useState(0);
   return (
     <>
-      <Text onPress={() => setIndex((i) => i + 1)}>Increment {index}</Text>
+      <Text testID="button" onPress={() => setIndex((i) => i + 1)}>
+        Increment {index}
+      </Text>
       <Expensive />
     </>
   );

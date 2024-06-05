@@ -36,6 +36,7 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot, exp) {
     return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 function getReactCompilerWithManifest(projectRoot, exp) {
+    // @ts-expect-error: TODO -- Not on type yet
     return exp?.experiments?.reactCompiler;
 }
 function getRouterDirectory(projectRoot) {
