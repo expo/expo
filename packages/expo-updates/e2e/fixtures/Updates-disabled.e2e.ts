@@ -32,7 +32,7 @@ describe('Basic tests', () => {
 
     jestExpect(await testElementValueAsync('updateString')).toBe('test');
     jestExpect(await testElementValueAsync('updateID')).toBeTruthy();
-    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('');
+    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('null');
     jestExpect(await testElementValueAsync('checkAutomatically')).toBe('NEVER');
     jestExpect(await testElementValueAsync('isEmbeddedLaunch')).toBe('false');
     jestExpect(await testElementValueAsync('availableUpdateID')).toBe('undefined');
