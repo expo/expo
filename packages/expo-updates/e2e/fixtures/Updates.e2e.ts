@@ -775,14 +775,14 @@ describe('JS API tests', () => {
     jestExpect(isUpdateAvailable).toEqual('false');
     jestExpect(isUpdatePending).toEqual('false');
     jestExpect(isRollback).toEqual('false');
-    jestExpect(latestManifestId).toEqual('');
-    jestExpect(downloadedManifestId).toEqual('');
+    jestExpect(latestManifestId).toEqual('null');
+    jestExpect(downloadedManifestId).toEqual('null');
     // After check for update and getting a manifest
     jestExpect(isUpdateAvailable2).toEqual('true');
     jestExpect(isUpdatePending2).toEqual('false');
     jestExpect(isRollback2).toEqual('false');
     jestExpect(latestManifestId2).toEqual(manifest.id);
-    jestExpect(downloadedManifestId2).toEqual('');
+    jestExpect(downloadedManifestId2).toEqual('null');
     // After downloading the update
     jestExpect(isUpdateAvailable3).toEqual('true');
     jestExpect(isUpdatePending3).toEqual('true');
@@ -797,16 +797,16 @@ describe('JS API tests', () => {
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');
     jestExpect(isRollback4).toEqual('false');
-    jestExpect(latestManifestId4).toEqual('');
-    jestExpect(downloadedManifestId4).toEqual('');
-    jestExpect(rollbackCommitTime4).toEqual('');
+    jestExpect(latestManifestId4).toEqual('null');
+    jestExpect(downloadedManifestId4).toEqual('null');
+    jestExpect(rollbackCommitTime4).toEqual('null');
     // After check for update and getting a rollback
     jestExpect(isUpdateAvailable5).toEqual('true');
     jestExpect(isUpdatePending5).toEqual('false');
     jestExpect(isRollback5).toEqual('true');
-    jestExpect(latestManifestId5).toEqual('');
-    jestExpect(downloadedManifestId5).toEqual('');
-    jestExpect(rollbackCommitTime5).not.toEqual('');
+    jestExpect(latestManifestId5).toEqual('null');
+    jestExpect(downloadedManifestId5).toEqual('null');
+    jestExpect(rollbackCommitTime5).not.toEqual('null');
 
     // Check for update, and expect isRollback to be true
     await pressTestButtonAsync('triggerParallelFetchAndDownload');

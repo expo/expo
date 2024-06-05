@@ -16,9 +16,13 @@ As your project grows, it can be helpful to move all of the directories containi
 
 Simply move your **app** directory to **src/app** and restart the development server.
 
-<Terminal
-  cmd={['$ npx expo start', '', '# Or export for production', '$ npx expo export']}
-/>
+{/* prettier-ignore */}
+<Terminal cmd={[
+  '$ npx expo start',
+  '',
+  '# Or export for production',
+  '$ npx expo export'
+]} />
 
 **Notes**:
 
@@ -40,7 +44,7 @@ You can dangerously customize the root directory using the Expo Router Config Pl
     [
       "expo-router",
       {
-        "root": "./src/routes",
+        "root": "./src/routes"
       }
     ]
   ]

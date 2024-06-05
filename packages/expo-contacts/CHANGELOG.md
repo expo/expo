@@ -2,11 +2,16 @@
 
 ## Unpublished
 
+- Fixed an issue where the `presentFormAsync` promise doesn't resolve when the form is closed on Android. ([#29201](https://github.com/expo/expo/pull/29201) by [@jp1987](https://github.com/jp1987))
+- Fixed an issue where the `presentContactPickerAsync` promise doesn't resolve when using the Android back button. ([#29202](https://github.com/expo/expo/pull/29202) by [@jp1987](https://github.com/jp1987))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed an issue where only paths of urls were stored in contacts and social profiles were only stored when all fields were filled. ([#29199](https://github.com/expo/expo/pull/29199) by [@mlecoq](https://github.com/mlecoq))
 
 ### 💡 Others
 

@@ -76,9 +76,8 @@ eas build --profile=updates_testing_debug --platform=<android|ios>
 @@ -15,7 +15,8 @@
      "updates_testing_debug": {
        "env": {
-         "EX_UPDATES_NATIVE_DEBUG": "1",
--        "NO_FLIPPER": "1"
-+        "NO_FLIPPER": "1",
+-        "EX_UPDATES_NATIVE_DEBUG": "1"
++        "EX_UPDATES_NATIVE_DEBUG": "1",
 +        "LOCAL_TESTING": "1"
        },
        "android": {

@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
@@ -63,7 +63,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Name of your app.
@@ -139,7 +139,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Edit the 'Display Name' field in Xcode
@@ -148,7 +148,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
@@ -208,7 +208,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Configuration for the bottom navigation bar on Android.
@@ -284,7 +284,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Set this property using AppConstants.java.
@@ -362,7 +362,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Set this property using just Xcode
@@ -370,7 +370,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -439,7 +439,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         Determines how and when the navigation bar is shown.
@@ -515,7 +515,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="last:[&>*]:!mb-1 css-qbaxbl"
         >
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             Set this property using Xcode.
@@ -523,7 +523,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
@@ -592,7 +592,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Test sub-sub-property
@@ -600,7 +600,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -669,7 +669,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         Specifies the background color of the navigation bar.
@@ -677,7 +677,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       
 
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         6 character long hex color string, eg: 
@@ -691,7 +691,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
@@ -751,7 +751,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Configuration for setting an array of custom intent filters in Android manifest.
@@ -827,7 +827,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="last:[&>*]:!mb-1 css-qbaxbl"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           This is set in AndroidManifest.xml directly.
@@ -862,7 +862,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </span>
     </span>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -931,14 +931,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         You may also use an intent filter to set your app as the default handler for links
       </p>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -1007,7 +1007,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-c2t1qw-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
       >
         <p
           class="group css-1kfqm4n-TextComponent"

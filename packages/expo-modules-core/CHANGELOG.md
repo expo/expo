@@ -15,8 +15,15 @@
 
 ### 💡 Others
 
+- Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
 - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.12.13 - 2024-06-05
+
+### 💡 Others
+
+- [iOS] Refactored `ExpoFabricView` and remove the view wrapper for each native component. ([#28829](https://github.com/expo/expo/pull/28829) by [@kudo](https://github.com/kudo))
 
 ## 1.12.12 - 2024-05-29
 

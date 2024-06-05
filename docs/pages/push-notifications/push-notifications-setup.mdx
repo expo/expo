@@ -95,8 +95,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -107,19 +106,18 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ??
-      Constants?.easConfig?.projectId;
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
     if (!projectId) {
       handleRegistrationError('Project ID not found');
     }
     try {
-    /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
+      /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({
           projectId,
         })
       ).data;
-    /* @end */
+      /* @end */
       console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
@@ -132,53 +130,42 @@ async function registerForPushNotificationsAsync() {
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
     /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
     registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ''))
+      .then(token => setExpoPushToken(token ?? ''))
       .catch((error: any) => setExpoPushToken(`${error}`));
     /* @end */
 
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
 
     return () => {
       notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current,
-        );
+        Notifications.removeNotificationSubscription(notificationListener.current);
       responseListener.current &&
         Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}
-    >
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
       <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Text>
-          Title: {notification && notification.request.content.title}{' '}
-        </Text>
+        <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>
-          Data:{' '}
-          {notification && JSON.stringify(notification.request.content.data)}
-        </Text>
+        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
         title="Press to Send Notification"

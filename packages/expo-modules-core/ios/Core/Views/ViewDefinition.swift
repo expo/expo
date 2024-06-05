@@ -42,6 +42,11 @@ public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDe
 
   public func createView(appContext: AppContext) -> UIView? {
     if let expoViewType = ViewType.self as? AnyExpoView.Type {
+#if RN_FABRIC_ENABLED
+      if let fabricViewType = ViewType.self as? ExpoFabricView.Type {
+        return ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext)
+      }
+#endif
       return expoViewType.init(appContext: appContext)
     }
     if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {

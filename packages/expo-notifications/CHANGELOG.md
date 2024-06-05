@@ -8,12 +8,33 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
-- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.28.7 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.6 — 2024-06-03
+
+### 🐛 Bug fixes
+
+- [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.5 — 2024-05-31
+
+### 🐛 Bug fixes
+
+- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.4 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.3 — 2024-05-16
 

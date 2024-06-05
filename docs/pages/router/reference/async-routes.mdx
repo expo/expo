@@ -55,7 +55,6 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
 
 </Tab>
 
-
 <Tab label="SDK 50 and above">
 
     > SDK 50 supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
@@ -78,6 +77,7 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
       }
     }
     ```
+
 </Tab>
 </Tabs>
 
@@ -92,9 +92,9 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
         {
           "origin": "https://acme.com",
           "asyncRoutes": {
-             "web": true,
-             "android": false,
-             "default": "development"
+            "web": true,
+            "android": false,
+            "default": "development"
           }
         }
       ]
