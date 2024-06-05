@@ -150,26 +150,31 @@ async function updateSimulatorLinkingPermissionsAsync(
   });
   let scheme: string;
   try {
-    // Add the deeplink to the scheme approval list:
+    // Attempt to extract the scheme from the URL.
     scheme = new URL(url).protocol.slice(0, -1);
   } catch (error: any) {
     debug(`Could not parse the URL scheme: ${error.message}`);
     return;
   }
 
-  // 58BEC952-8426-4FF8-9AA8-AF2AD3240693
-  const plistPath = getSimulatorDataFilePath(
+  // Get the hard-coded path to the simulator's scheme approval plist file.
+  const plistPath = path.join(
+    os.homedir(),
+    `Library/Developer/CoreSimulator/Devices`,
     device.udid,
-    './Library/Preferences/com.apple.launchservices.schemeapproval.plist'
+    `data/Library/Preferences/com.apple.launchservices.schemeapproval.plist`,
   );
 
   const plistData = fs.existsSync(plistPath)
+    // If the file exists, then read it in the bplist format.
     ? await parsePlistAsync(plistPath)
     : // The file doesn't exist when we first launch the simulator, but an empty object can be used to create it (June 2024 x Xcode 15.3).
       // Can be tested by launching a new simulator or by deleting the file and relaunching the simulator.
       {};
+
   debug('Allowed links:', plistData);
   const key = `com.apple.CoreSimulator.CoreSimulatorBridge-->${scheme}`;
+  // Replace any existing value for the scheme with the new appId.
   plistData[key] = appId;
   debug('Allowing deep link:', { key, appId });
 
