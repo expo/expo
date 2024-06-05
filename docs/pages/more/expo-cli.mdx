@@ -197,6 +197,10 @@ You can compile the Android app for production by running:
 
 <Terminal cmd={['$ npx expo run:android --variant release']} />
 
+In order to have an access to the local API using android emulator you can reverse port:
+
+<Terminal cmd={['$ npx expo run:android --reverse-port <port>']} />
+
 This build is not automatically code-signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
 
 You can debug the native Android project using native debugging tools by opening the **android** directory in Android Studio:

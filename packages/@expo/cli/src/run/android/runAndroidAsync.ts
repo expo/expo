@@ -10,6 +10,7 @@ import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import { startAdbReverseAsync } from '../../start/platforms/android/adbReverse';
 
 const debug = require('debug')('expo:run:android');
 
@@ -40,6 +41,10 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     props.shouldStartBundler = false;
   }
 
+  if (options.reversePort && typeof options.reversePort === 'number') {
+    await startAdbReverseAsync([options.reversePort]);
+  }
+    
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     // If a scheme is specified then use that instead of the package name.
