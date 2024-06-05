@@ -102,11 +102,11 @@ function reactClientReferencesPlugin() {
                 assertExpoMetadata(state.file.metadata);
                 // Save the client reference in the metadata.
                 if (!state.file.metadata.clientReferences) {
-                    state.file.metadata.clientReferences = [];
+                    state.file.metadata.clientReferences ??= [];
                 }
                 state.file.metadata.clientReferences.push(outputKey);
                 // Store the proxy export names for testing purposes.
-                state.file.metadata.proxyExports = Array.from(proxyExports);
+                state.file.metadata.proxyExports = [...proxyExports];
             },
         },
     };
