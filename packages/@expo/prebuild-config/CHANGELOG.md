@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix empty splash config resulting in build error.
+- Fix empty splash config resulting in build error. ([#29497](https://github.com/expo/expo/pull/29497) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
