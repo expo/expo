@@ -59,6 +59,10 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
     public boolean onNewIntent(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras != null) {
+            if (extras.containsKey("notificationResponse")) {
+                Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshaled notification response. Skipping.");
+                return;
+            }
             mNotificationManager.onNotificationResponseFromExtras(extras);
         }
         return ReactActivityLifecycleListener.super.onNewIntent(intent);
