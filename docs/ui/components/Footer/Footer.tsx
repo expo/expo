@@ -1,5 +1,5 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
-import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon } from '@expo/styleguide-icons';
+import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 
 import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
