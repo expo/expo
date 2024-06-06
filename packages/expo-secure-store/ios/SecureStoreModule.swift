@@ -140,6 +140,12 @@ public final class SecureStoreModule: Module {
     query[kSecMatchLimit as String] = kSecMatchLimitOne
     query[kSecReturnData as String] = kCFBooleanTrue
 
+    let accessibility = attributeWith(options: options)
+
+    if !options.requireAuthentication {
+      query[kSecAttrAccessible as String] = accessibility
+    }
+
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt
     }
