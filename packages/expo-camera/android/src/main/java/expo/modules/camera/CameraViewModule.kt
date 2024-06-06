@@ -127,7 +127,7 @@ class CameraViewModule : Module() {
       }
 
       Prop("enableTorch") { view, enabled: Boolean? ->
-        view.setTorchEnabled(enabled ?: false)
+        view.enableTorch = enabled ?: false
       }
 
       Prop("animateShutter") { view, animate: Boolean? ->
