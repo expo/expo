@@ -72,6 +72,7 @@
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.6.0",
     "@emotion/jest": "^11.11.0",
+    "@expo/spawn-async": "^1.7.2",
     "@ocular-d/vale-bin": "^2.29.6",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^1.0.0",
