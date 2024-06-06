@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, store the font `postscriptName` instead of `fullName` which is what `iOS` will use to register the font. ([#29502](https://github.com/expo/expo/pull/29502) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 12.0.6 — 2024-05-29
