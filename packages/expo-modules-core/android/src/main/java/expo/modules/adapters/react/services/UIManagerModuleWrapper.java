@@ -5,26 +5,26 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
-import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.UIManagerType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
+import androidx.annotation.Nullable;
 import expo.modules.BuildConfig;
 import expo.modules.core.interfaces.ActivityEventListener;
 import expo.modules.core.interfaces.ActivityProvider;
@@ -62,12 +62,10 @@ public class UIManagerModuleWrapper implements
   private void addToUIManager(final UIBlockInterface block) {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       com.facebook.react.bridge.UIManager uiManager = UIManagerHelper.getUIManager(getContext(), UIManagerType.FABRIC);
-      assert uiManager != null;
-      ((FabricUIManager) uiManager).addUIBlock(block);
+      Objects.requireNonNull(((FabricUIManager) uiManager)).addUIBlock(block);
     } else {
       UIManagerModule uiManager = getContext().getNativeModule(UIManagerModule.class);
-      assert uiManager != null;
-      uiManager.addUIBlock(block);
+      Objects.requireNonNull(uiManager).addUIBlock(block);
     }
   }
 
