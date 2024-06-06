@@ -16,11 +16,15 @@ const Wrapper = ({ children }: PropsWithChildren) => (
   </TooltipProvider>
 );
 
-export const renderWithHeadings = (
+export function renderWithHeadings(
   element: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) => render(element, { wrapper: Wrapper, ...options });
+) {
+  return render(element, { wrapper: Wrapper, ...options });
+}
 
-export const renderWithTestRouter = (element: ReactElement, router: Partial<NextRouter> = {}) => (
-  render(<RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>)
-);
+export function renderWithTestRouter(element: ReactElement, router: Partial<NextRouter> = {}) {
+  return render(
+    <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
+  );
+}
