@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
