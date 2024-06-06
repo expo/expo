@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix reanimated support on web by ([#29197](https://github.com/expo/expo/pull/29197) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix reanimated support on web. ([#29197](https://github.com/expo/expo/pull/29197) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
