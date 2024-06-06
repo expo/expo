@@ -1,4 +1,4 @@
-import createHttpsProxyAgent from 'https-proxy-agent';
+import { ProxyAgent } from 'undici';
 
 import { FetchLike } from './client.types';
 import { env } from '../../utils/env';
@@ -10,10 +10,11 @@ export function wrapFetchWithProxy(fetchFunction: FetchLike): FetchLike {
   // NOTE(EvanBacon): DO NOT RETURN AN ASYNC WRAPPER. THIS BREAKS LOADING INDICATORS.
   return function fetchWithProxy(url, options = {}) {
     const proxy = env.HTTP_PROXY;
-    if (!options.agent && proxy) {
+    if (!options.dispatcher && proxy) {
       debug('Using proxy:', proxy);
-      options.agent = createHttpsProxyAgent(proxy);
+      options.dispatcher = new ProxyAgent(proxy);
     }
+
     return fetchFunction(url, options);
   };
 }
