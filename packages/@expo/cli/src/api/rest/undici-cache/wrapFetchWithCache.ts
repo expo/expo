@@ -35,29 +35,3 @@ export function wrapFetchWithCache(fetch: FetchLike, cache: ResponseCache): Fetc
     }
   };
 }
-
-// const cacheLocks = new Map<string, { promise: Promise<void>; unlock?: () => void }>();
-
-// function lock(cacheKey: string) {
-//   if (!cacheLocks.has(cacheKey)) {
-//     cacheLocks.set(cacheKey, { promise: Promise.resolve() });
-//   }
-
-//   const cacheLock = cacheLocks.get(cacheKey)!;
-//   cacheLock.promise = cacheLock.promise.then(() => new Promise((resolve) => {
-
-//   });
-
-//   if (!cacheLock.unlock) {
-//     cacheLock.unlock = () => {
-//       cacheLocks.delete(cacheKey);
-//     };
-
-
-// }
-
-// function unlock(cacheKey: string) {
-//   if (!cacheLocks.has(cacheKey)) {
-//     return Promise.resolve();
-//   }
-// }
