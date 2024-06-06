@@ -536,7 +536,7 @@ class ExpoCameraView(
           target = id,
           data = barcode.value,
           raw = barcode.raw,
-          type = barcode.type,
+          type = BarcodeType.mapFormatToString(barcode.type),
           cornerPoints = cornerPoints,
           boundingBox = boundingBox
         )

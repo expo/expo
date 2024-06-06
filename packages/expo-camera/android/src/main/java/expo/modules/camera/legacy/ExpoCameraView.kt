@@ -44,6 +44,7 @@ import android.view.WindowManager
 import expo.modules.camera.common.BarcodeScannedEvent
 import expo.modules.camera.common.CameraMountErrorEvent
 import expo.modules.camera.common.PictureSavedEvent
+import expo.modules.camera.records.BarcodeType
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 import expo.modules.kotlin.viewevent.EventDispatcher
 
@@ -282,7 +283,7 @@ class ExpoCameraView(
           target = id,
           data = barCode.value,
           raw = barCode.raw,
-          type = barCode.type,
+          type = BarcodeType.mapFormatToString(barCode.type),
           cornerPoints = cornerPoints,
           boundingBox = boundingBox
         )
