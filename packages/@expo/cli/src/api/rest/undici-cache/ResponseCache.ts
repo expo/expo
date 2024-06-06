@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { ReadStream } from 'fs';
 import type { Response, RequestInfo, RequestInit } from 'undici';
 
-const GLOBAL_CACHE_VERSION = 3;
+const GLOBAL_CACHE_VERSION = 4;
 
 export type ResponseCacheEntry = {
   body: import('stream/web').ReadableStream;
@@ -80,7 +80,7 @@ export function getRequestBodyCacheData(body: RequestInit['body']) {
     return body.toString();
   }
 
-  // Supported for legacy purposes as node-fetch because fs.readStream
+  // Supported for legacy purposes because node-fetch uses fs.readStream
   if (body instanceof ReadStream) {
     return body.path;
   }
