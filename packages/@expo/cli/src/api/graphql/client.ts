@@ -14,6 +14,7 @@ import { retryExchange } from '@urql/exchange-retry';
 import { DocumentNode } from 'graphql';
 
 import * as Log from '../../log';
+import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { wrapFetchWithOffline } from '../rest/wrapFetchWithOffline';
 import { wrapFetchWithProxy } from '../rest/wrapFetchWithProxy';

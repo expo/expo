@@ -10,6 +10,7 @@ import { wrapFetchWithProgress } from './wrapFetchWithProgress';
 import { wrapFetchWithProxy } from './wrapFetchWithProxy';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
 import UserSettings from '../user/UserSettings';
@@ -105,7 +106,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
   };
 }
 
-const fetchWithOffline = wrapFetchWithOffline(fetch as any);
+const fetchWithOffline = wrapFetchWithOffline(fetch);
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
