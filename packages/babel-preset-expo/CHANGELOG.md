@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.0.8 — 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.7 — 2024-06-05
 
 ### 💡 Others

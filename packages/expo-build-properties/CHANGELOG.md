@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.12.3 — 2024-06-06
+
+### 🎉 New features
+
+- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.12.2 — 2024-06-05
 
