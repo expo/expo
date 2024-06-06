@@ -20,11 +20,17 @@ const SPLASH_COLOR_NAME = 'splashscreen_background';
 export const withAndroidSplashStyles: ConfigPlugin = (config) => {
   config = withAndroidColors(config, (config) => {
     const backgroundColor = getSplashBackgroundColor(config);
+    if (!backgroundColor) {
+      return config;
+    }
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
   config = withAndroidColorsNight(config, (config) => {
     const backgroundColor = getSplashDarkBackgroundColor(config);
+    if (!backgroundColor) {
+      return config;
+    }
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
