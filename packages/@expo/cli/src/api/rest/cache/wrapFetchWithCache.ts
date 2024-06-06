@@ -181,7 +181,9 @@ export function wrapFetchWithCache(
         );
       }
 
+      // @ts-expect-error - We are moving off from node-fetch
       const fetchResponse = await fetch(url, init);
+      // @ts-expect-error - We are moving off from node-fetch
       const serializedMeta = NFCResponse.serializeMetaFromNodeFetchResponse(fetchResponse);
 
       const newlyCachedData = await cache.set(

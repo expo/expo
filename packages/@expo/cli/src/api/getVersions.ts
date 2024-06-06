@@ -56,6 +56,6 @@ export async function getVersionsAsync({
       `Unexpected response when fetching version info from Expo servers: ${results.statusText}.`
     );
   }
-  const json = await results.json();
+  const json: any = await results.json(); // TODO(cedric): figure out better typing here
   return json.data;
 }

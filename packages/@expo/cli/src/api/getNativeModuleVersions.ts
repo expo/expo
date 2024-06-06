@@ -43,7 +43,7 @@ export async function getNativeModuleVersionsAsync(
       `Unexpected response when fetching version info from Expo servers: ${results.statusText}.`
     );
   }
-  const { data } = await results.json();
+  const { data } = (await results.json()) as any; // TODO(cedric): figure out better typing here
   if (!data.length) {
     throw new CommandError('VERSIONS', 'The bundled native module list from the Expo API is empty');
   }

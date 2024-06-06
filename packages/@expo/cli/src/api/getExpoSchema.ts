@@ -87,6 +87,6 @@ async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObje
     ttl: 1000 * 60 * 60 * 24 * 7,
   });
   const response = await fetchAsync(`project/configuration/schema/${sdkVersion}`);
-  const { data } = await response.json();
+  const { data } = (await response.json()) as { data: JSONObject }; // TODO(cedric): figure out better typing here
   return data;
 }
