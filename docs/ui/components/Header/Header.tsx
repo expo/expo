@@ -53,7 +53,7 @@ export const Header = ({
             className="px-2 text-secondary"
             leftSlot={<Star01Icon className="icon-sm" />}
             href="https://github.com/expo/expo">
-            Star Us on GitHub
+            GitHub
           </Button>
           <Button
             openInNewTab
