@@ -59,7 +59,7 @@ async function run() {
     {bold  npm:} {cyan npm create expo-app}
     {bold yarn:} {cyan yarn create expo-app}
     {bold pnpm:} {cyan pnpm create expo-app}
-    {bold  bun:} {cyan bunx create-expo-app}
+    {bold  bun:} {cyan bun create expo-app}
     `
     );
   }
