@@ -32,6 +32,7 @@ export default function DocumentationPage({
   hideFromSearch,
   platforms,
   hideTOC,
+  modificationDate,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
@@ -151,6 +152,7 @@ export default function DocumentationPage({
           packageName={packageName}
           previousPage={previousPage}
           nextPage={nextPage}
+          modificationDate={modificationDate}
         />
       </div>
     </DocumentationNestedScrollLayout>
