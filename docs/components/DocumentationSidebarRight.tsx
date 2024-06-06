@@ -81,10 +81,10 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
+      <nav className="pb-6 px-6 w-[280px]" data-sidebar>
         <CALLOUT
           weight="medium"
-          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
+          className="absolute bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
           <LayoutAlt03Icon className="icon-sm" /> On this page
           <Button
             theme="quaternary"
