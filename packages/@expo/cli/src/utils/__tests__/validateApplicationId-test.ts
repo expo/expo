@@ -1,5 +1,4 @@
-import fetch from 'node-fetch';
-
+import { fetchAsync } from '../../api/rest/client';
 import { Log } from '../../log';
 import { stripAnsi } from '../ansi';
 import { isUrlAvailableAsync } from '../url';
@@ -14,9 +13,9 @@ import {
   assertValidPackage,
 } from '../validateApplicationId';
 
-jest.mock('node-fetch');
-jest.mock('../../log');
 jest.mock('../url');
+jest.mock('../../log');
+jest.mock('../../api/rest/client');
 
 function resetOfflineMode() {
   beforeEach(() => {
@@ -147,23 +146,20 @@ describe(getBundleIdWarningInternalAsync, () => {
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
-
-    jest.mocked(fetch).mockResolvedValueOnce({
+    jest.mocked(fetchAsync).mockResolvedValueOnce({
       status: 200,
-      json() {
-        return Promise.resolve({
-          resultCount: 1,
-          results: [
-            {
-              trackName: 'Pillar Valley',
-              sellerName: 'Evan Bacon',
-              kind: 'software',
-              artistName: 'Evan Bacon',
-              genres: ['Games', 'Entertainment', 'Family', 'Casual'],
-            },
-          ],
-        });
-      },
+      json: async () => ({
+        resultCount: 1,
+        results: [
+          {
+            trackName: 'Pillar Valley',
+            sellerName: 'Evan Bacon',
+            kind: 'software',
+            artistName: 'Evan Bacon',
+            genres: ['Games', 'Entertainment', 'Family', 'Casual'],
+          },
+        ],
+      }),
     } as any);
 
     expect(
@@ -188,9 +184,7 @@ describe(getPackageNameWarningInternalAsync, () => {
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
-    jest.mocked(fetch).mockResolvedValueOnce({
-      status: 200,
-    } as any);
+    jest.mocked(fetchAsync).mockResolvedValueOnce({ status: 200 } as any);
 
     expect(
       stripAnsi(await getPackageNameWarningInternalAsync('com.bacon.pillarvalley'))

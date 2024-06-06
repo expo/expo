@@ -12,7 +12,6 @@ import {
 } from '@urql/core';
 import { retryExchange } from '@urql/exchange-retry';
 import { DocumentNode } from 'graphql';
-import fetch from 'node-fetch';
 
 import * as Log from '../../log';
 import { getExpoApiBaseUrl } from '../endpoint';
