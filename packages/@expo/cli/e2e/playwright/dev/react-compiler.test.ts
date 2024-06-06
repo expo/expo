@@ -27,7 +27,7 @@ test.describe(inputDir, () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'compiler',
-        EXPO_E2E_COMPILER: true,
+        EXPO_E2E_COMPILER: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -66,11 +66,8 @@ test.describe(inputDir, () => {
 
     console.time('hydrate');
     // Wait for the app to load
-    await expect(page.locator('[data-testid="button"]')).toHaveText('Increment 0');
 
-    await page.locator('[data-testid="button"]').click();
-
-    await expect(page.locator('[data-testid="button"]')).toHaveText('Increment 1');
+    await expect(page.locator('[data-testid="react-compiler"]')).toHaveText('3');
 
     console.timeEnd('hydrate');
 

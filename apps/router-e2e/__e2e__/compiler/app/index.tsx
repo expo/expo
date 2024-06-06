@@ -1,23 +1,17 @@
-import React from 'react';
 import { Text } from 'react-native';
 
-function Expensive() {
-  let i = 0;
-  while (i < 1000000000) {
-    i++;
+export default function Page() {
+  let compilerJsx: any;
+  if (typeof window !== 'undefined') {
+    const compilerSlots = eval('$');
+    if ('length' in compilerSlots)
+      compilerJsx = <Text testID="react-compiler">{compilerSlots.length}</Text>;
   }
 
-  return <Text>Expensive</Text>;
-}
-
-export default function Page() {
-  const [index, setIndex] = React.useState(0);
   return (
     <>
-      <Text testID="button" onPress={() => setIndex((i) => i + 1)}>
-        Increment {index}
-      </Text>
-      <Expensive />
+      <Text testID="test-anchor">Test</Text>
+      {compilerJsx}
     </>
   );
 }
