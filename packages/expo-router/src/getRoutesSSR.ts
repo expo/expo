@@ -23,8 +23,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
         return {
           type: 'layout',
           loadRoute: () => ({
-            default: (require('./views/Navigator') as typeof import('./views/Navigator'))
-              .DefaultNavigator,
+            default: () => null,
           }),
           // Generate a fake file name for the directory
           contextKey: 'expo-router/build/views/Navigator.js',
@@ -35,10 +34,9 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
         };
       } else if (route === '_sitemap' && type === 'route') {
         return {
-          loadRoute() {
-            const { Sitemap, getNavOptions } = require('./views/Sitemap');
-            return { default: Sitemap, getNavOptions };
-          },
+          loadRoute: () => ({
+            default: () => null,
+          }),
           route: '_sitemap',
           type: 'route',
           contextKey: 'expo-router/build/views/Sitemap.js',
@@ -49,9 +47,9 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
         };
       } else if (route === '+not-found' && type === 'route') {
         return {
-          loadRoute() {
-            return { default: require('./views/Unmatched').Unmatched };
-          },
+          loadRoute: () => ({
+            default: () => null,
+          }),
           type: 'route',
           route: '+not-found',
           contextKey: 'expo-router/build/views/Unmatched.js',
