@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix props not being passed to parent container. ([#29416](https://github.com/expo/expo/pull/29416) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 1.12.10 - 2024-06-05

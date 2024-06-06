@@ -62,7 +62,7 @@ function isFlipTransition(transition) {
         transition?.effect === 'flip-from-left' ||
         transition?.effect === 'flip-from-right');
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, accessibilityLabel, tintColor, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
@@ -73,13 +73,13 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const initialNode = placeholder?.[0]?.uri
         ? [
             initialNodeAnimationKey,
-            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={placeholder?.[0]} style={{
+            ({ onAnimationFinished }) => (className, style) => (<ImageWrapper ref={nativeViewRef} source={placeholder?.[0]} style={{
                     objectFit: imagePlaceholderContentFit,
                     ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
                 }} className={className} events={{
                     onTransitionEnd: [onAnimationFinished],
-                }} contentPosition={{ left: '50%', top: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle}/>),
+                }} contentPosition={{ left: '50%', top: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={accessibilityLabel} cachePolicy={cachePolicy} priority={priority} tintColor={tintColor}/>),
         ]
         : null;
     const currentNodeAnimationKey = (recyclingKey
@@ -87,7 +87,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
     const currentNode = [
         currentNodeAnimationKey,
-        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper {...props} ref={nativeViewRef} source={selectedSource || placeholder?.[0]} events={{
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (<ImageWrapper ref={nativeViewRef} source={selectedSource || placeholder?.[0]} events={{
                 onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],
@@ -96,9 +96,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }} className={className} cachePolicy={cachePolicy} priority={priority} contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={props.accessibilityLabel}/>),
+            }} className={className} cachePolicy={cachePolicy} priority={priority} contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={accessibilityLabel} tintColor={tintColor}/>),
     ];
-    return (<View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+    return (<View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]} {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
