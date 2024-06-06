@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix empty splash config resulting in build error.
+
 ### 💡 Others
 
 ## 7.0.4 — 2024-05-16
