@@ -7,8 +7,11 @@
 ### 🎉 New features
 
 - Support passing `--port 0` to use any free port. ([#29466](https://github.com/expo/expo/pull/29466) by [@EvanBacon](https://github.com/EvanBacon))
+- Deep link to simulators without prompting for permissions first. ([#29468](https://github.com/expo/expo/pull/29468) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+- Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

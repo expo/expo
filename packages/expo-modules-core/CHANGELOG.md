@@ -12,9 +12,11 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' ([#29075](https://github.com/expo/expo/pull/29075) by [@rafi16jan](https://github.com/rafi16jan))
+- [Android] Fix `getContext().getNativeModule(UIManagerModule.class)` in Bridgeless. ([#29203](https://github.com/expo/expo/pull/29203) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 
 ### 💡 Others
 
+- Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
 - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 

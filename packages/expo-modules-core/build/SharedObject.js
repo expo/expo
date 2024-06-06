@@ -1,3 +1,4 @@
+'use client';
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 ensureNativeModulesAreInstalled();
 const SharedObject = globalThis.expo.SharedObject;
