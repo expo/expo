@@ -61,17 +61,15 @@ Skips installing npm dependencies or CocoaPods.
 
 Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
 
-The **default template** is designed to build multi-screen apps. It includes Expo Router for file-based routing and enables TypeScript.
-
 You can use the `--template` option to choose one of the following templates:
 
-| Template                | Description                                                                                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Default                 | Default template. Includes recommended tools such as Expo CLI, Expo Router library and TypeScript configuration enabled. Suitable for most apps. |
-| Blank                   | Installs minimum required npm dependencies without configuring navigation.                                                                       |
-| Blank (TypeScript)      | A Blank template with TypeScript enabled.                                                                                                        |
-| Navigation (TypeScript) | Installs and configures file-based routing with TypeScript enabled.                                                                              |
-| Blank (Bare)            | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/prebuild/) during the setup.  |
+| Template                | Description                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default                 | Default template. Designed to build multi-screen apps. Includes recommended tools such as Expo CLI, Expo Router library and TypeScript configuration enabled. Suitable for most apps. |
+| Blank                   | Installs minimum required npm dependencies without configuring navigation.                                                                                                            |
+| Blank (TypeScript)      | A Blank template with TypeScript enabled.                                                                                                                                             |
+| Navigation (TypeScript) | Installs and configures file-based routing with TypeScript enabled.                                                                                                                   |
+| Blank (Bare)            | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/prebuild/) during the setup.                                       |
 
 ### `--example`
 
@@ -89,7 +87,11 @@ Prints the list of available options and exits.
 
 ## Node Package Managers support
 
-`create-expo-app` takes care The following package managers are supported with Expo:
+Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node Package Manager.
+
+**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
+
+All the additional steps for each package manager are listed below.
 
 ### npm
 
