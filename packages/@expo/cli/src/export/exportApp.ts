@@ -145,6 +145,8 @@ export async function exportAppAsync(
             engine: isHermes ? 'hermes' : undefined,
             serializerIncludeMaps: sourceMaps,
             bytecode: bytecode && isHermes,
+            // @ts-expect-error
+            reactCompiler: !!exp.experiments?.reactCompiler,
           });
 
           bundles[platform] = bundle;
@@ -248,6 +250,7 @@ export async function exportAppAsync(
         baseUrl,
         includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        // @ts-expect-error: TODO -- add to universe schema.
         reactCompiler: exp.experiments?.reactCompiler,
         exportServer,
         maxWorkers,

@@ -90,6 +90,7 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
 }
 
 export function getReactCompilerFromExpoConfig(exp: ExpoConfig): boolean {
+  // @ts-expect-error: TODO -- Add to universe schema.
   return !!exp.experiments?.reactCompiler;
 }
 
@@ -281,8 +282,8 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
   }
-  if (reactCompiler != null) {
-    queryParams.append('transform.reactCompiler', String(true));
+  if (reactCompiler) {
+    queryParams.append('transform.reactCompiler', String(reactCompiler));
   }
 
   if (environment) {

@@ -183,6 +183,7 @@ export abstract class ManifestMiddleware<
       ),
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
       protocol,
+      // @ts-expect-error: TODO -- add to universe schema.
       reactCompiler: projectConfig.exp.experiments?.reactCompiler ?? false,
     });
 
