@@ -1,17 +1,25 @@
+import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 export default function Page() {
-  let compilerJsx: any;
-  if (typeof window !== 'undefined') {
-    const compilerSlots = eval('$');
-    if ('length' in compilerSlots)
-      compilerJsx = <Text testID="react-compiler">{compilerSlots.length}</Text>;
-  }
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
       <Text testID="test-anchor">Test</Text>
-      {compilerJsx}
+      {isMounted && <CompilerSlots />}
     </>
   );
+}
+
+function CompilerSlots() {
+  const compilerSlots = eval('$');
+  if ('length' in compilerSlots) {
+    return <Text testID="react-compiler">{compilerSlots.length}</Text>;
+  }
+  return null;
 }

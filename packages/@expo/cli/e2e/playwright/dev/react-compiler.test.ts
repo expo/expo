@@ -27,7 +27,7 @@ test.describe(inputDir, () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'compiler',
-        EXPO_E2E_COMPILER: 'true',
+        E2E_ROUTER_COMPILER: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -67,7 +67,7 @@ test.describe(inputDir, () => {
     console.time('hydrate');
     // Wait for the app to load
 
-    await expect(page.locator('[data-testid="react-compiler"]')).toHaveText('3');
+    await expect(page.locator('[data-testid="react-compiler"]')).toHaveText('2');
 
     console.timeEnd('hydrate');
 

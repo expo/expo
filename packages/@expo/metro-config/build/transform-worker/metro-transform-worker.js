@@ -323,7 +323,7 @@ async function transformAsset(file, context) {
 async function transformJSWithBabel(file, context) {
     const { babelTransformerPath } = context.config;
     const transformer = require(babelTransformerPath);
-    // NOTE: React Compiler injects import statements and exits the Babel process which leaves the code in
+    // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
     // a malformed state. For now, we'll enable the experimental import support which compiles import statements
     // outside of the standard Babel process.
     if (!context.options.experimentalImportSupport) {
