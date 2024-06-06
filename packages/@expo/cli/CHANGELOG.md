@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))

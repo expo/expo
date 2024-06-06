@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.18.3 — 2024-04-25
