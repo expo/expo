@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
+- [iOS] Fix Keychain accessibility options ignored when calling `getItem` and `getItemAsync` ([#29514](https://github.com/expo/expo/pull/29514) by [@rgommezz](https://github.com/rgommezz))
 ### 💡 Others
 
 ## 13.0.1 — 2024-04-23
