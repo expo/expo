@@ -110,6 +110,7 @@
     "temp-dir": "^2.0.0",
     "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",
+    "undici": "^6.18.2",
     "wrap-ansi": "^7.0.0",
     "ws": "^8.12.1"
   },
@@ -140,8 +141,8 @@
     "@types/klaw-sync": "^6.0.0",
     "@types/lodash.debounce": "^4.0.9",
     "@types/minimatch": "^3.0.5",
-    "@types/npm-package-arg": "^6.1.0",
     "@types/node": "^18.19.34",
+    "@types/npm-package-arg": "^6.1.0",
     "@types/picomatch": "^2.3.3",
     "@types/progress": "^2.0.5",
     "@types/prompts": "^2.0.6",
