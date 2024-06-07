@@ -71,7 +71,9 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
           '/__tests__/_rsc/',
         ],
     moduleFileExtensions,
-    snapshotResolver: require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),
+    snapshotResolver: isReactServer
+      ? require.resolve(`../src/snapshot/rsc/resolver.${extensions[0]}.js`)
+      : require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),
     haste: {
       ...expoPreset.haste,
       defaultPlatform: extensions[0],

@@ -1,3 +1,4 @@
+'use client';
 import * as Linking from '../Linking';
 
 describe(Linking.addEventListener, () => {

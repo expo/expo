@@ -1,3 +1,4 @@
+'use client';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 
