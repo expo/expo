@@ -4,8 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.withAndroidNavigationBarExpoGoManifest = exports.resolveProps = void 0;
-// @ts-ignore: uses flow
-const normalize_colors_1 = __importDefault(require("@react-native/normalize-colors"));
 // @ts-ignore
 const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
@@ -24,12 +22,8 @@ const LEGACY_BAR_STYLE_MAP = {
     'dark-content': 'dark',
     'light-content': 'light',
 };
-function convertColorAndroid(input) {
-    let color = (0, normalize_colors_1.default)(input);
-    if (!color) {
-        throw new Error('Invalid color value: ' + input);
-    }
-    color = ((color << 24) | (color >>> 8)) >>> 0;
+function convertColorAndroid(projectRoot, input) {
+    const color = (0, config_plugins_1.convertColor)(projectRoot, input);
     // Android use 32 bit *signed* integer to represent the color
     // We utilize the fact that bitwise operations in JS also operates on
     // signed 32 bit integers, so that we can use those to convert from
@@ -92,13 +86,13 @@ const withNavigationBar = (config, _props) => {
     config = withNavigationBarColors(config, props);
     config = withNavigationBarStyles(config, props);
     return (0, config_plugins_1.withStringsXml)(config, (config) => {
-        config.modResults = setStrings(config.modResults, props);
+        config.modResults = setStrings(config.modRequest.projectRoot, config.modResults, props);
         return config;
     });
 };
-function setStrings(strings, { borderColor, visibility, position, behavior, legacyVisible, }) {
+function setStrings(projectRoot, strings, { borderColor, visibility, position, behavior, legacyVisible, }) {
     const pairs = [
-        [BORDER_COLOR_KEY, borderColor ? convertColorAndroid(borderColor) : null],
+        [BORDER_COLOR_KEY, borderColor ? convertColorAndroid(projectRoot, borderColor) : null],
         [VISIBILITY_KEY, visibility],
         [POSITION_KEY, position],
         [BEHAVIOR_KEY, behavior],

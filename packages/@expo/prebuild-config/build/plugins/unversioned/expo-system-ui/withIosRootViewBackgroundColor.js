@@ -15,13 +15,6 @@ function _configPlugins() {
   };
   return data;
 }
-function _normalizeColors() {
-  const data = _interopRequireDefault(require("@react-native/normalize-colors"));
-  _normalizeColors = function () {
-    return data;
-  };
-  return data;
-}
 function _semver() {
   const data = _interopRequireDefault(require("semver"));
   _semver = function () {
@@ -30,15 +23,13 @@ function _semver() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-// @ts-ignore: uses flow
-
 // Maps to the template AppDelegate.m
 const BACKGROUND_COLOR_KEY = 'RCTRootViewBackgroundColor';
 const debug = require('debug')('expo:system-ui:plugin:ios');
 const withIosRootViewBackgroundColor = config => {
   config = (0, _configPlugins().withInfoPlist)(config, config => {
     if (shouldUseLegacyBehavior(config)) {
-      config.modResults = setRootViewBackgroundColor(config, config.modResults);
+      config.modResults = setRootViewBackgroundColor(config.modRequest.projectRoot, config, config.modResults);
     } else {
       warnSystemUIMissing(config);
     }
@@ -62,16 +53,12 @@ function warnSystemUIMissing(config) {
     _configPlugins().WarningAggregator.addWarningIOS('ios.backgroundColor', 'Install expo-system-ui to enable this feature', 'https://docs.expo.dev/build-reference/migrating/#expo-config--backgroundcolor--depends-on');
   }
 }
-function setRootViewBackgroundColor(config, infoPlist) {
+function setRootViewBackgroundColor(projectRoot, config, infoPlist) {
   const backgroundColor = getRootViewBackgroundColor(config);
   if (!backgroundColor) {
     delete infoPlist[BACKGROUND_COLOR_KEY];
   } else {
-    let color = (0, _normalizeColors().default)(backgroundColor);
-    if (!color) {
-      throw new Error('Invalid background color on iOS');
-    }
-    color = (color << 24 | color >>> 8) >>> 0;
+    const color = (0, _configPlugins().convertColor)(projectRoot, backgroundColor);
     infoPlist[BACKGROUND_COLOR_KEY] = color;
     debug(`Convert color: ${backgroundColor} -> ${color}`);
   }

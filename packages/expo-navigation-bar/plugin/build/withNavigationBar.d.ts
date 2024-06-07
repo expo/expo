@@ -16,7 +16,7 @@ export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigation
  * of the static values that Expo Go reads from (`androidNavigationBar`).
  */
 export declare const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props>;
-export declare function setStrings(strings: AndroidConfig.Resources.ResourceXML, { borderColor, visibility, position, behavior, legacyVisible, }: Omit<Props, 'backgroundColor' | 'barStyle'>): AndroidConfig.Resources.ResourceXML;
+export declare function setStrings(projectRoot: string, strings: AndroidConfig.Resources.ResourceXML, { borderColor, visibility, position, behavior, legacyVisible, }: Omit<Props, 'backgroundColor' | 'barStyle'>): AndroidConfig.Resources.ResourceXML;
 export declare function setNavigationBarColors({ backgroundColor }: Pick<Props, 'backgroundColor'>, colors: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
 export declare function setNavigationBarStyles({ backgroundColor, barStyle }: Pick<Props, 'backgroundColor' | 'barStyle'>, styles: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
 declare const _default: ConfigPlugin<void | Props>;

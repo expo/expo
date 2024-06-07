@@ -1,7 +1,5 @@
-// @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-colors';
 import { ExpoConfig } from 'expo/config';
-import { ConfigPlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
+import { ConfigPlugin, InfoPlist, convertColor, withInfoPlist } from 'expo/config-plugins';
 
 // Maps to the template AppDelegate.m
 const BACKGROUND_COLOR_KEY = 'RCTRootViewBackgroundColor';
@@ -10,13 +8,18 @@ const debug = require('debug')('expo:system-ui:plugin:ios');
 
 export const withIosRootViewBackgroundColor: ConfigPlugin = (config) => {
   config = withInfoPlist(config, (config) => {
-    config.modResults = setRootViewBackgroundColor(config, config.modResults);
+    config.modResults = setRootViewBackgroundColor(
+      config.modRequest.projectRoot,
+      config,
+      config.modResults
+    );
     return config;
   });
   return config;
 };
 
 export function setRootViewBackgroundColor(
+  projectRoot: string,
   config: Pick<ExpoConfig, 'backgroundColor' | 'ios'>,
   infoPlist: InfoPlist
 ): InfoPlist {
@@ -24,11 +27,7 @@ export function setRootViewBackgroundColor(
   if (!backgroundColor) {
     delete infoPlist[BACKGROUND_COLOR_KEY];
   } else {
-    let color = normalizeColor(backgroundColor);
-    if (!color) {
-      throw new Error('Invalid background color on iOS');
-    }
-    color = ((color << 24) | (color >>> 8)) >>> 0;
+    const color = convertColor(projectRoot, backgroundColor);
     infoPlist[BACKGROUND_COLOR_KEY] = color;
 
     debug(`Convert color: ${backgroundColor} -> ${color}`);

@@ -1,10 +1,9 @@
-// @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-colors';
 // @ts-ignore
 import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
+  convertColor,
   createRunOncePlugin,
   AndroidConfig,
   withStringsXml,
@@ -52,12 +51,8 @@ const LEGACY_BAR_STYLE_MAP: Record<
   'light-content': 'light',
 };
 
-function convertColorAndroid(input: string): number {
-  let color = normalizeColor(input);
-  if (!color) {
-    throw new Error('Invalid color value: ' + input);
-  }
-  color = ((color << 24) | (color >>> 8)) >>> 0;
+function convertColorAndroid(projectRoot: string, input: string): number {
+  const color = convertColor(projectRoot, input);
 
   // Android use 32 bit *signed* integer to represent the color
   // We utilize the fact that bitwise operations in JS also operates on
@@ -135,12 +130,13 @@ const withNavigationBar: ConfigPlugin<Props | void> = (config, _props) => {
   config = withNavigationBarStyles(config, props);
 
   return withStringsXml(config, (config) => {
-    config.modResults = setStrings(config.modResults, props);
+    config.modResults = setStrings(config.modRequest.projectRoot, config.modResults, props);
     return config;
   });
 };
 
 export function setStrings(
+  projectRoot: string,
   strings: AndroidConfig.Resources.ResourceXML,
   {
     borderColor,
@@ -151,7 +147,7 @@ export function setStrings(
   }: Omit<Props, 'backgroundColor' | 'barStyle'>
 ): AndroidConfig.Resources.ResourceXML {
   const pairs = [
-    [BORDER_COLOR_KEY, borderColor ? convertColorAndroid(borderColor) : null],
+    [BORDER_COLOR_KEY, borderColor ? convertColorAndroid(projectRoot, borderColor) : null],
     [VISIBILITY_KEY, visibility],
     [POSITION_KEY, position],
     [BEHAVIOR_KEY, behavior],

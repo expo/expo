@@ -16,6 +16,17 @@ jest.mock('expo/config-plugins', () => {
   };
 });
 
+jest.mock('resolve-from', () => {
+  const path = jest.requireActual('path');
+  const expoRoot = path.resolve(__dirname, '../../../../..');
+  return {
+    // Try to resolve packages from workspace root because all packages are hoisted to the root
+    silent: jest.fn().mockImplementation((projectRoot: string, packageName: string) => {
+      return path.join(expoRoot, 'node_modules', packageName);
+    }),
+  };
+});
+
 describe(resolveProps, () => {
   it(`resolves no props`, () => {
     expect(resolveProps({})).toStrictEqual({
@@ -104,12 +115,12 @@ describe(setStrings, () => {
   // TODO: Should we do validation on backgroundColor just for convenience?
   it(`asserts an invalid color`, () => {
     expect(() =>
-      setStrings({ resources: {} }, resolveProps({}, { borderColor: '-bacon-' }))
+      setStrings('/app', { resources: {} }, resolveProps({}, { borderColor: '-bacon-' }))
     ).toThrow(/Invalid color value: -bacon-/);
   });
 
   it(`sets all strings`, () => {
-    expect(setStrings({ resources: {} }, getAllProps())).toStrictEqual({
+    expect(setStrings('/app', { resources: {} }, getAllProps())).toStrictEqual({
       resources: {
         string: [
           {
@@ -155,6 +166,7 @@ describe(setStrings, () => {
   it(`sets no strings`, () => {
     expect(
       setStrings(
+        '/app',
         {
           resources: {
             string: [],
@@ -170,9 +182,9 @@ describe(setStrings, () => {
   });
   it(`unsets string`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, getAllProps());
+    const strings = setStrings('/app', { resources: {} }, getAllProps());
     // Unset all strings
-    expect(setStrings(strings, resolveProps({}))).toStrictEqual({
+    expect(setStrings('/app', strings, resolveProps({}))).toStrictEqual({
       resources: {
         string: [],
       },
@@ -180,7 +192,7 @@ describe(setStrings, () => {
   });
   it(`redefines duplicates`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, { borderColor: '#4630EB' });
+    const strings = setStrings('/app', { resources: {} }, { borderColor: '#4630EB' });
 
     expect(strings.resources.string).toStrictEqual([
       {
@@ -190,7 +202,7 @@ describe(setStrings, () => {
       },
     ]);
     expect(
-      setStrings(strings, resolveProps({}, { borderColor: 'dodgerblue' })).resources.string
+      setStrings('/app', strings, resolveProps({}, { borderColor: 'dodgerblue' })).resources.string
     ).toStrictEqual([
       {
         $: { name: 'expo_navigation_bar_border_color', translatable: 'false' },
