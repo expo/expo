@@ -99,12 +99,10 @@ export function useGlobalSearchParams<
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
-export function useLocalSearchParams<
-  TParams extends SearchParams = SearchParams,
->(): Partial<TParams> {
+export function useLocalSearchParams<TParams extends SearchParams = SearchParams>(): TParams {
   const params = React.useContext(NavigationRouteContext)?.params ?? {};
   return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
+    Object.entries(params).map(([key, value]: [string, string | string[]]) => {
       if (Array.isArray(value)) {
         return [
           key,
@@ -124,5 +122,5 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as Partial<TParams>;
+  );
 }

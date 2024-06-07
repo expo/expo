@@ -50,6 +50,6 @@ export declare function useGlobalSearchParams<TParams extends SearchParams = Sea
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
-export declare function useLocalSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams>;
+export declare function useLocalSearchParams<TParams extends SearchParams = SearchParams>(): TParams;
 export {};
 //# sourceMappingURL=hooks.d.ts.map
