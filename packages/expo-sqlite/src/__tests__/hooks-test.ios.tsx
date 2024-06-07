@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
 
 import { useSQLiteContext, SQLiteProvider } from '../hooks';
 
-jest.mock('../ExpoSQLiteNext');
+jest.mock('../ExpoSQLiteNext', () => require('../__mocks__/ExpoSQLiteNext'));
 
 describe(useSQLiteContext, () => {
   it('should return a SQLite database instance', async () => {
