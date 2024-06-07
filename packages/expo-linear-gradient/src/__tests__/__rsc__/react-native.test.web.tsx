@@ -111,6 +111,12 @@ Object.entries({
   });
 });
 
+it(`AccessibilityInfo`, () => {
+  AccessibilityInfo.addEventListener('boldTextChanged', () => {});
+  console.log(AccessibilityInfo);
+  expect(AccessibilityInfo.isBoldTextEnabled).toBe(undefined);
+});
+
 it(`renders Button to RSC`, async () => {
   await expect(<Button title="button" />).toMatchFlightSnapshot();
 });
@@ -132,5 +138,5 @@ it(`renders Text to RSC`, async () => {
 it(`doesn't fail when importing all of react-native-web`, async () => {
   // Use this syntax to circumvent the babel plugin that rewrites clean imports.
   const RN = require('react-native-web');
-  console.log(RN);
+  // console.log(RN);
 });
