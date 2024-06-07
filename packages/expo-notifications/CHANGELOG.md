@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.7 — 2024-06-05

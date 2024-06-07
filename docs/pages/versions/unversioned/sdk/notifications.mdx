@@ -384,6 +384,11 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Tint color for the push notification image when it appears in the notification tray.',
     },
     {
+      name: 'defaultChannel',
+      platform: 'android',
+      description: 'Default channel for FCMv1 notifications.',
+    },
+    {
       name: 'sounds',
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
@@ -402,6 +407,7 @@ Here is an example of using the config plugin in the app config file:
         {
           "icon": "./local/assets/notification-icon.png",
           "color": "#ffffff",
+          "defaultChannel": "default",
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
