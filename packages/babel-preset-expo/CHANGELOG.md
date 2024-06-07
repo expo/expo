@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Removed `@react-native/babel-preset` dependency. ([#29544](https://github.com/expo/expo/pull/29544) by [@kudo](https://github.com/kudo))
+
 ## 11.0.7 - 2024-06-05
 
 ### 💡 Others
