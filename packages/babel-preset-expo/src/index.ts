@@ -19,6 +19,7 @@ import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
+import { requireUpstreamBabelPreset } from './resolve-package';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -303,11 +304,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   return {
     presets: [
       [
-        // We use `require` here instead of directly using the package name because we want to
-        // specifically use the `@react-native/babel-preset` installed by this package (ex:
-        // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
-        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
+        isModernEngine ? require('./web-preset') : requireUpstreamBabelPreset(),
         {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
