@@ -90,8 +90,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     mModuleRegistry.ensureIsInitialized();
 
     KotlinInteropModuleRegistry kotlinModuleRegistry = getKotlinInteropModuleRegistry();
-    kotlinModuleRegistry.emitOnCreate();
     kotlinModuleRegistry.installJSIInterop();
+    kotlinModuleRegistry.emitOnCreate();
 
     Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, new HashMap<>());

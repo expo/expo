@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix data race in `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
