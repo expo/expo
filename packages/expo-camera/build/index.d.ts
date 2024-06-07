@@ -53,7 +53,7 @@ export declare const useMicrophonePermissions: (options?: import("expo-modules-c
  * @return A possibly empty array of objects of the `BarcodeScanningResult` shape, where the type
  * refers to the barcode type that was scanned and the data is the information encoded in the barcode.
  */
-export declare function scanFromURLAsync(url: string, barcodeTypes?: BarcodeType[]): Promise<BarcodeScanningResult>;
+export declare function scanFromURLAsync(url: string, barcodeTypes?: BarcodeType[]): Promise<BarcodeScanningResult[]>;
 export * from './Camera.types';
 /**
  * @hidden

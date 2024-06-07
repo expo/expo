@@ -87,7 +87,7 @@ export const useMicrophonePermissions = createPermissionHook({
 export async function scanFromURLAsync(
   url: string,
   barcodeTypes: BarcodeType[] = ['qr']
-): Promise<BarcodeScanningResult> {
+): Promise<BarcodeScanningResult[]> {
   return CameraManager.scanFromURLAsync(url, barcodeTypes);
 }
 
