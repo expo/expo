@@ -289,6 +289,10 @@ async function onCapabilitiesReady(
   track: MediaStreamTrack,
   settings: WebCameraSettings = {}
 ): Promise<void> {
+  if (typeof track.getCapabilities !== 'function') {
+    return;
+  }
+
   const capabilities = track.getCapabilities();
 
   // Create an empty object because if you set a constraint that isn't available an error will be thrown.

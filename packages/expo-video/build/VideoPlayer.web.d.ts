@@ -19,6 +19,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get muted(): boolean;
     set playbackRate(value: number);
     get playbackRate(): number;
+    get isLive(): boolean;
     set volume(value: number);
     get volume(): number;
     set loop(value: boolean);

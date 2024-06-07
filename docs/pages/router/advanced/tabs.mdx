@@ -6,6 +6,7 @@ description: Learn how to use the Tabs layout in Expo Router.
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { CODE } from '~/ui/components/Text';
 
 Tabs are a common way to navigate between different sections of an app. Expo Router provides a tabs layout to help you create a tab bar at the bottom of your app. The fastest way to get started is to use a template. See the [quick start installation](/router/installation/#quick-start) to get started.
 
@@ -24,7 +25,7 @@ You can use file-based routing to create a tabs layout. Here's an example file s
   ]}
 />
 
-This file structure will produce a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs, "Home" and "Settings":
+This file structure produces a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs: **Home** and **Settings**:
 
 <ImageSpotlight
   alt="A screenshot of a tab bar with two tabs: Home and Settings."
@@ -32,12 +33,12 @@ This file structure will produce a layout with a tab bar at the bottom of the sc
   style={{ maxWidth: 540 }}
 />
 
-You can use the **app/\_layout.tsx** file to define your app's main navigator:
+You can use the **app/\_layout.tsx** file to define your app's root layout:
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router/stack';
 
-export default function AppLayout() {
+export default function Layout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -48,10 +49,9 @@ export default function AppLayout() {
 
 The **(tabs)** directory is a special directory name that tells Expo Router to use the `Tabs` layout.
 
-From the example, the **(tabs)** directory has three files. The first is **(tabs)/\_layout.tsx**. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab button look and behave.
+From the file structure, the **(tabs)** directory has three files. The first is **(tabs)/\_layout.tsx**. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab button look and behave.
 
 ```tsx app/(tabs)/_layout.tsx
-import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
@@ -77,42 +77,52 @@ export default function TabLayout() {
 }
 ```
 
-The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the options presented in the React Navigation documentation to customize the tab bar.
-
-Finally, we have the two tab files that make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
+Finally, you have the two tab files that make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
 
 ```tsx app/(tabs)/index.tsx & app/(tabs)/settings.tsx
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function Tab() {
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+    <View style={styles.container}>
       <Text>Tab [Home|Settings]</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 ```
 
-The tab file named **index.tsx** will become the default tab when the app is loaded. We made the second tab file **settings.tsx** to show how you can add more tabs to the tab bar.
+The tab file named **index.tsx** is the default tab when the app loads. The second tab file **settings.tsx** shows how you can add more tabs to the tab bar.
+
+## Screen options
+
+The tabs layout wraps the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. You can use the [options presented in the React Navigation documentation](https://reactnavigation.org/docs/bottom-tab-navigator/#options) to customize the tab bar or each tab.
 
 ## Advanced
 
 ### Hiding a tab
 
-Sometimes you want a route to exist but not show up in the tab bar, you can pass `href: null` to disable the button:
+Sometimes you want a route to exist but not show up in the tab bar. You can pass `href: null` to disable the button:
 
 ```tsx app/(tabs)/_layout.tsx
-import { Tabs } from 'expo-router/tabs';
+import { Tabs } from 'expo-router';
 
-export default function AppLayout() {
+export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        // Name of the route to hide.
         name="index"
         options={{
-          // This tab will no longer show up in the tab bar.
+          /* @info Adding <CODE>href: null</CODE> in this tab's <CODE>options</CODE> will not show this tab in the tab bar.*/
           href: null,
+          /* @end */
         }}
       />
     </Tabs>
@@ -122,21 +132,21 @@ export default function AppLayout() {
 
 ### Dynamic routes
 
-You may want to use a dynamic route in your tab bar (for example, a profile tab). For this case, you'll want the button to always link to a specific `href`.
+You can use a dynamic route in a tab bar. For example, you have a `[user]` tab that shows a user's profile. You can use the `href` option to link to a specific user's profile.
 
 ```tsx app/(tabs)/_layout.tsx
-import { Tabs } from 'expo-router/tabs';
+import { Tabs } from 'expo-router';
 
-export default function AppLayout() {
+export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        // Name of the dynamic route.
+        {/* Name of the dynamic route.*/}
         name="[user]"
         options={{
-          // Ensure the tab always links to the same href.
+          {/* Ensure the tab always links to the same href.*/}
           href: '/evanbacon',
-          // OR you can use the href object:
+          {/* OR you can use the href object.*/}
           href: {
             pathname: '/[user]',
             params: {
@@ -149,3 +159,5 @@ export default function AppLayout() {
   );
 }
 ```
+
+> **Note**: When adding a dynamic route in your tab layout, ensure that the dynamic route defined is unique. You cannot have two screens for the same dynamic route. For example, you cannot have two `[user]` tabs. If you need to have multiple dynamic routes, create a custom navigator.

@@ -15,7 +15,7 @@ type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMobileMenuVisible: boolean;
   hideTOC: boolean;
-  header: React.ReactNode;
+  header: ReactNode;
   sidebarScrollPosition: number;
   sidebar: ReactNode;
   sidebarActiveGroup: string;
@@ -82,8 +82,8 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
           {!hideTOC && (
             <div
               className={mergeClasses(
-                'flex flex-col shrink-0 max-w-[280px] h-full overflow-hidden border-l border-l-default',
-                'max-lg-gutters:hidden'
+                'flex flex-col shrink-0 max-w-[280px] h-[calc(100dvh-60px)] overflow-hidden border-l border-l-default',
+                'max-xl-gutters:hidden'
               )}>
               <ScrollContainer ref={this.sidebarRightRef}>
                 {cloneElement(sidebarRight, {

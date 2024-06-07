@@ -168,24 +168,21 @@ const APISectionProps = ({
   const baseProp = data.find(prop => prop.name === header);
   return data?.length > 0 ? (
     <>
-      {data?.length === 1 || header === 'Props' ? (
+      {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4 key={`${header}-props-header`}>{header}</H4>
+            <H4 key={`${header}-props-header`} hideInSidebar>
+              {header}
+            </H4>
           </div>
           {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(
-          propsDefinition,
-          sdkVersion,
-          defaultProps,
-          data?.length === 1 || header === 'Props'
-        )
+        renderProps(propsDefinition, sdkVersion, defaultProps, header === 'Props')
       )}
     </>
   ) : null;

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.0.3 — 2024-05-06
 
 ### 🎉 New features
@@ -30,6 +32,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+- [Web] Gracefully handle unsupported language tags. ([#27403](https://github.com/expo/expo/pull/27403) by [@mary-ext](https://github.com/mary-ext))
 
 ### 💡 Others
 

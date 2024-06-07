@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -38,7 +38,7 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
     isListening: false,
   };
 
-  _subscription?: Subscription;
+  _subscription?: EventSubscription;
 
   componentDidMount() {
     this.checkAvailability();

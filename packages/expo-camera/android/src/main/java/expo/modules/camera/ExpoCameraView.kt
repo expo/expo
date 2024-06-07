@@ -14,6 +14,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.OptIn
@@ -76,6 +78,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.roundToInt
+import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
 const val ANIMATION_SLOW_MILLIS = 100L
@@ -89,6 +92,26 @@ class ExpoCameraView(
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
       ?: throw Exceptions.MissingActivity()
+
+  val orientationEventListener by lazy {
+    object : OrientationEventListener(currentActivity) {
+      override fun onOrientationChanged(orientation: Int) {
+        if (orientation == ORIENTATION_UNKNOWN) {
+          return
+        }
+
+        val rotation = when (orientation) {
+          in 45 until 135 -> Surface.ROTATION_270
+          in 135 until 225 -> Surface.ROTATION_180
+          in 225 until 315 -> Surface.ROTATION_90
+          else -> Surface.ROTATION_0
+        }
+
+        imageAnalysisUseCase?.targetRotation = rotation
+        imageCaptureUseCase?.targetRotation = rotation
+      }
+    }
+  }
 
   var camera: Camera? = null
   var activeRecording: Recording? = null
@@ -142,6 +165,9 @@ class ExpoCameraView(
 
   var mute: Boolean = false
   var animateShutter: Boolean = true
+  var enableTorch: Boolean by Delegates.observable(false) { _, _, newValue ->
+    setTorchEnabled(newValue)
+  }
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
@@ -229,7 +255,7 @@ class ExpoCameraView(
     }
   }
 
-  fun setTorchEnabled(enabled: Boolean) {
+  private fun setTorchEnabled(enabled: Boolean) {
     if (camera?.cameraInfo?.hasFlashUnit() == true) {
       camera?.cameraControl?.enableTorch(enabled)
     }
@@ -242,7 +268,8 @@ class ExpoCameraView(
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
     recorder?.let {
-      if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+      if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
         return
       }
       activeRecording = it.prepareRecording(context, fileOutputOptions)
@@ -404,6 +431,7 @@ class ExpoCameraView(
       when (it.type) {
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
+          setTorchEnabled(enableTorch)
         }
         else -> {}
       }
@@ -433,10 +461,8 @@ class ExpoCameraView(
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }
 
-  fun releaseCamera() {
-    appContext.mainQueue.launch {
-      cameraProvider?.unbindAll()
-    }
+  fun releaseCamera() = appContext.mainQueue.launch {
+    cameraProvider?.unbindAll()
   }
 
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
@@ -510,7 +536,7 @@ class ExpoCameraView(
           target = id,
           data = barcode.value,
           raw = barcode.raw,
-          type = barcode.type,
+          type = BarcodeType.mapFormatToString(barcode.type),
           cornerPoints = cornerPoints,
           boundingBox = boundingBox
         )
@@ -523,6 +549,7 @@ class ExpoCameraView(
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 
   init {
+    orientationEventListener.enable()
     previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View?, child: View?) = Unit
       override fun onChildViewAdded(parent: View?, child: View?) {
@@ -540,11 +567,9 @@ class ExpoCameraView(
     onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
   }
 
-  fun cancelCoroutineScope() {
-    try {
-      scope.cancel(ModuleDestroyedException())
-    } catch (e: Exception) {
-      Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
-    }
+  fun cancelCoroutineScope() = try {
+    scope.cancel(ModuleDestroyedException())
+  } catch (e: Exception) {
+    Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
   }
 }

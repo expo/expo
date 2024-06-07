@@ -10,17 +10,22 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   @objc
   public var cachesDirectory: String
 
+  @objc
+  public var applicationSupportDirectory: String
+
   var isScoped: Bool = false
 
   @objc
-  public init(documentDirectory: String, cachesDirectory: String) {
+  public init(documentDirectory: String, cachesDirectory: String, applicationSupportDirectory: String) {
     self.documentDirectory = documentDirectory
     self.cachesDirectory = cachesDirectory
+    self.applicationSupportDirectory = applicationSupportDirectory
     self.isScoped = true
 
     super.init()
     ensureDirExists(withPath: self.cachesDirectory)
     ensureDirExists(withPath: self.documentDirectory)
+    ensureDirExists(withPath: self.applicationSupportDirectory)
   }
 
   required public override init() {
@@ -30,9 +35,14 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     let cachesPaths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
     self.cachesDirectory = cachesPaths[0]
 
+    let applicationSupportDirectoryPaths =
+    NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)
+    self.applicationSupportDirectory = applicationSupportDirectoryPaths[0]
+
     super.init()
     ensureDirExists(withPath: self.cachesDirectory)
     ensureDirExists(withPath: self.documentDirectory)
+    ensureDirExists(withPath: self.applicationSupportDirectory)
   }
 
   public static func exportedInterfaces() -> [Protocol] {
@@ -84,7 +94,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func getInternalPathPermissions(_ url: URL) -> EXFileSystemPermissionFlags {
-    let scopedDirs: [String] = [cachesDirectory, documentDirectory]
+    let scopedDirs: [String] = [cachesDirectory, documentDirectory, applicationSupportDirectory]
     let standardizedPath = url.standardized.path
     for scopedDirectory in scopedDirs {
       if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {

@@ -1,5 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
-import { Ref } from 'react';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
+import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
@@ -293,8 +293,8 @@ export type CameraProps = ViewProps & {
      */
     animateShutter?: boolean;
     /**
-     * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
-     * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
+     * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+     * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
      */
     pictureSize?: string;
     /**
@@ -424,5 +424,5 @@ export type ScanningOptions = {
  * The available barcode types that can be scanned.
  */
 export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription as Subscription, };
 //# sourceMappingURL=Camera.types.d.ts.map

@@ -1,3 +1,2 @@
-import { EventEmitter } from 'expo-modules-core';
-export declare const LocationEventEmitter: EventEmitter;
+export declare const LocationEventEmitter: import("expo-modules-core/build/ts-declarations/EventEmitter").EventEmitter<Record<never, never>>;
 //# sourceMappingURL=LocationEventEmitter.web.d.ts.map

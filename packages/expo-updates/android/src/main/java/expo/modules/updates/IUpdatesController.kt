@@ -1,7 +1,6 @@
 package expo.modules.updates
 
 import android.os.Bundle
-import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
@@ -61,7 +60,6 @@ interface IUpdatesController {
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
    * check for a new update from the server. This method should be called as early as possible in
    * the application's lifecycle.
-   * @param context the base context of the application, ideally a [ReactApplication]
    */
   fun start()
 

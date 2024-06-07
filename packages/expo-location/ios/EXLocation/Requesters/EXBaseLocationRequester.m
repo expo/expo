@@ -137,7 +137,9 @@
       // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
       // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
       _locationManagerWasCalled = true;
-      return;
+      if (status != kCLAuthorizationStatusAuthorizedWhenInUse) {
+        return;
+      }
     }
 
     if (_resolve) {

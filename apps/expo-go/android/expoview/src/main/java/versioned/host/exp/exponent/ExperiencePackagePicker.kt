@@ -28,6 +28,7 @@ import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
+import expo.modules.font.FontLoaderModule
 import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -58,10 +59,8 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
-import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
@@ -98,7 +97,6 @@ object ExperiencePackagePicker : ModulesProvider {
     KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
@@ -159,6 +157,7 @@ object ExperiencePackagePicker : ModulesProvider {
     EASClientModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
+    FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
@@ -176,7 +175,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NavigationBarModule::class.java,
     NetworkModule::class.java,
-    RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,

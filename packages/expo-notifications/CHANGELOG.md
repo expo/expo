@@ -10,6 +10,38 @@
 
 ### 💡 Others
 
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.28.7 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.6 — 2024-06-03
+
+### 🐛 Bug fixes
+
+- [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.5 — 2024-05-31
+
+### 🐛 Bug fixes
+
+- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.4 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.3 — 2024-05-16
+
+### 💡 Others
+
+- [iOS] Add support for `interruptionLevel`. ([#28921](https://github.com/expo/expo/pull/28921) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.28.2 — 2024-05-15
 
 ### 🐛 Bug fixes

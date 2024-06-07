@@ -143,19 +143,19 @@ const renderType = (
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
-              <P>
+              <CALLOUT theme="secondary">
                 {type.types
                   .filter(type =>
                     ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
                   )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>
-                      <CODE>{resolveTypeName(validType, sdkVersion)}</CODE>
+                      <CODE className="text-default">{resolveTypeName(validType, sdkVersion)}</CODE>
                       {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
                 {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
-              </P>
+              </CALLOUT>
               <br />
             </>
           ) : null}
@@ -178,14 +178,16 @@ const renderType = (
             </MONOSPACE>
           </H3Code>
           <CALLOUT className="mb-3">
-            <CALLOUT tag="span" theme="secondary" weight="semiBold">
+            <CALLOUT tag="span" theme="secondary" weight="medium">
               Literal Type:{' '}
             </CALLOUT>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
           <P>
-            Acceptable values are:{' '}
+            <CALLOUT tag="span" theme="secondary" weight="medium">
+              Acceptable values are:{' '}
+            </CALLOUT>
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>

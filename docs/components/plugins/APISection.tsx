@@ -13,7 +13,7 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
+  getPossibleComponentPropsNames,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -75,7 +75,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
@@ -196,9 +196,10 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
-    );
+    const componentsPropNames = components
+      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+      .flat();
+
     const componentsProps = filterDataByKind(
       props,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],

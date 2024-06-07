@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import {
@@ -9,8 +9,6 @@ import {
   PowerState,
 } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
-
-const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
 // @needsAudit
 /**
@@ -149,8 +147,8 @@ export async function getPowerStateAsync(): Promise<PowerState> {
  */
 export function addBatteryLevelListener(
   listener: (event: BatteryLevelEvent) => void
-): Subscription {
-  return BatteryEventEmitter.addListener('Expo.batteryLevelDidChange', listener);
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.batteryLevelDidChange', listener);
 }
 
 // @needsAudit
@@ -165,8 +163,8 @@ export function addBatteryLevelListener(
  */
 export function addBatteryStateListener(
   listener: (event: BatteryStateEvent) => void
-): Subscription {
-  return BatteryEventEmitter.addListener('Expo.batteryStateDidChange', listener);
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.batteryStateDidChange', listener);
 }
 
 // @needsAudit
@@ -179,8 +177,10 @@ export function addBatteryStateListener(
  * changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
-export function addLowPowerModeListener(listener: (event: PowerModeEvent) => void): Subscription {
-  return BatteryEventEmitter.addListener('Expo.powerModeDidChange', listener);
+export function addLowPowerModeListener(
+  listener: (event: PowerModeEvent) => void
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.powerModeDidChange', listener);
 }
 
 // @needsAudit
@@ -291,5 +291,5 @@ export {
   BatteryStateEvent,
   PowerModeEvent,
   PowerState,
-  Subscription,
+  EventSubscription as Subscription,
 };

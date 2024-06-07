@@ -1,6 +1,5 @@
-import { Platform, UnavailabilityError, EventEmitter, Subscription } from 'expo-modules-core';
-import * as React from 'react';
-import { Ref } from 'react';
+import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
+import { type Ref, Component, createRef } from 'react';
 
 import {
   CameraCapturedPicture,
@@ -17,8 +16,6 @@ import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
-const emitter = new EventEmitter(CameraManager);
-
 const EventThrottleMs = 500;
 
 const _PICTURE_SAVED_CALLBACKS = {};
@@ -26,29 +23,30 @@ const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
-  const pictureOptions: CameraPictureOptions =
-    !options || typeof options !== 'object' ? {} : options;
+  if (!options || typeof options !== 'object') {
+    return {};
+  }
 
-  if (!pictureOptions.quality) {
-    pictureOptions.quality = 1;
+  if (!options.quality) {
+    options.quality = 1;
   }
-  if (pictureOptions.onPictureSaved) {
+
+  if (options.onPictureSaved) {
     const id = _GLOBAL_PICTURE_ID++;
-    _PICTURE_SAVED_CALLBACKS[id] = pictureOptions.onPictureSaved;
-    pictureOptions.id = id;
-    pictureOptions.fastMode = true;
+    _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
+    options.id = id;
+    options.fastMode = true;
   }
-  return pictureOptions;
+
+  return options;
 }
 
-function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
-  let recordingOptions = options || {};
-
-  if (!recordingOptions || typeof recordingOptions !== 'object') {
-    recordingOptions = {};
+function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
+  if (!options || typeof options !== 'object') {
+    return {};
   }
 
-  return recordingOptions;
+  return options;
 }
 
 function _onPictureSaved({
@@ -64,7 +62,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends React.Component<CameraProps> {
+export default class CameraView extends Component<CameraProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -118,7 +116,7 @@ export default class CameraView extends React.Component<CameraProps> {
   };
 
   _cameraHandle?: number | null;
-  _cameraRef = React.createRef<CameraViewRef>();
+  _cameraRef = createRef<CameraViewRef>();
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
@@ -139,12 +137,10 @@ export default class CameraView extends React.Component<CameraProps> {
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
    */
-  async takePictureAsync(
-    options?: CameraPictureOptions
-  ): Promise<CameraCapturedPicture | undefined> {
+  async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
-    return await this._cameraRef.current?.takePicture(pictureOptions);
+    return this._cameraRef.current?.takePicture(pictureOptions);
   }
 
   /**
@@ -161,7 +157,7 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   * Dimiss the scanner presented by `launchScanner`.
+   * Dismiss the scanner presented by `launchScanner`.
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
@@ -178,8 +174,8 @@ export default class CameraView extends React.Component<CameraProps> {
    *
    * @platform ios
    */
-  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription {
-    return emitter.addListener<ScanningResult>('onModernBarcodeScanned', listener);
+  static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription {
+    return CameraManager.addListener('onModernBarcodeScanned', listener);
   }
 
   /**
@@ -191,9 +187,9 @@ export default class CameraView extends React.Component<CameraProps> {
    * @platform android
    * @platform ios
    */
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string } | undefined> {
+  async recordAsync(options?: CameraRecordingOptions) {
     const recordingOptions = ensureRecordingOptions(options);
-    return await this._cameraRef.current?.record(recordingOptions);
+    return this._cameraRef.current?.record(recordingOptions);
   }
 
   /**

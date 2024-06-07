@@ -88,7 +88,7 @@ describe('startAsync', () => {
     });
 
     // Cache is cleared...
-    expect(vol.toJSON()['/.expo/web/cache']).toBe(null);
+    expect(vol.toJSON()['/.expo/web/cache']).toBe(undefined);
   });
 });
 

@@ -54,6 +54,11 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     playbackRate: number;
     /**
+     * Boolean value indicating whether the player is currently playing a live stream.
+     * > This property is get-only
+     */
+    isLive: boolean;
+    /**
      * Indicates the current status of the player.
      * > This property is get-only
      */
@@ -192,9 +197,7 @@ export type DRMOptions = {
     /**
      * Determines headers sent to the license server on license requests.
      */
-    headers?: {
-        [key: string]: string;
-    };
+    headers?: Record<string, string>;
     /**
      * Specifies whether the DRM is a multi-key DRM.
      * @platform android
@@ -210,5 +213,11 @@ export type DRMOptions = {
      * @platform ios
      */
     certificateUrl?: string;
+    /**
+     * Specifies the base64 encoded certificate data for the FairPlay DRM.
+     * When this property is set, the `certificateUrl` property is ignored.
+     * @platform ios
+     */
+    base64CertificateData?: string;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

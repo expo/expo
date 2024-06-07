@@ -49,28 +49,36 @@ function withWebPolyfills(
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualEnvVarId = `\0polyfill:environment-variables`;
+
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualEnvVarId,
+      (() => {
+        return `//`;
+      })()
+    );
+
     const virtualModuleId = `\0polyfill:external-require`;
 
-    const contents = (() => {
-      if (ctx.platform === 'web') {
-        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
-      } else {
-        // Wrap in try/catch to support Android.
-        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
-      }
-    })();
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
       virtualModuleId,
-      contents
+      (() => {
+        if (ctx.platform === 'web') {
+          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+        } else {
+          // Wrap in try/catch to support Android.
+          return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+        }
+      })()
     );
 
     if (ctx.platform === 'web') {
-      return [virtualModuleId];
+      return [virtualModuleId, virtualEnvVarId];
     }
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId];
+    return [...polyfills, virtualModuleId, virtualEnvVarId];
   };
 
   return {
@@ -354,20 +362,6 @@ export function withExtendedResolver(
           debug(`Alias "${moduleName}" to "${aliasedModule}"`);
           return doResolve(aliasedModule);
         }
-      }
-
-      return null;
-    },
-
-    // HACK(EvanBacon):
-    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-    // to fail to load. This is a temporary workaround until we can fix this upstream.
-    // https://github.com/facebook/react-native/pull/38628
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (platform !== 'web' && moduleName === 'event-target-shim') {
-        debug('For event-target-shim to use js:', context.originModulePath);
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve('event-target-shim/dist/event-target-shim.js');
       }
 
       return null;

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
 ## 14.0.5 — 2024-05-15
 
 ### 🐛 Bug fixes

@@ -1,7 +1,8 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotificationResponse } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
@@ -73,18 +74,7 @@ export function addNotificationsDroppedListener(listener) {
  */
 export function addNotificationResponseReceivedListener(listener) {
     return emitter.addListener(didReceiveNotificationResponseEventName, (response) => {
-        const mappedResponse = { ...response };
-        try {
-            const dataString = mappedResponse?.notification?.request?.content['dataString'];
-            if (typeof dataString === 'string') {
-                mappedResponse.notification.request.content.data = JSON.parse(dataString);
-                delete mappedResponse.notification.request.content.dataString;
-            }
-        }
-        catch (e) {
-            console.log(`Error in response: ${e}`);
-        }
-        console.log(`response received: ${JSON.stringify(mappedResponse, null, 2)}`);
+        const mappedResponse = mapNotificationResponse(response);
         listener(mappedResponse);
     });
 }
@@ -94,7 +84,7 @@ export function addNotificationResponseReceivedListener(listener) {
  * @header listen
  */
 export function removeNotificationSubscription(subscription) {
-    emitter.removeSubscription(subscription);
+    subscription.remove();
 }
 // @docsMissing
 /**

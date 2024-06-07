@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
+- [iOS] Add base64 certificate support for FairPlay DRM. ([#28990](https://github.com/expo/expo/pull/28990) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
+
 ### 💡 Others
+
+## 1.1.10 - 2024-05-29
+
+### 💡 Others
+
+- [Android] Improve HLS compatibility. ([#28997](https://github.com/expo/expo/pull/28997) by [@behenate](https://github.com/behenate))
 
 ## 1.1.9 — 2024-05-13
 

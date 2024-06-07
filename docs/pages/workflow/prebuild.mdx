@@ -103,9 +103,6 @@ In addition to generating the native folders, prebuild also makes the following 
 
 - Modifies the `scripts` field in the **package.json**.
 - Modifies the `dependencies` field in the **package.json**.
-- For SDK 48 and below, removes the `main` field in the **package.json**.
-- For SDK 48 and below, generates an **index.js** file (if it doesn't exist).
-- For SDK 48 and below generates a **metro.config.js** file (if it doesn't exist).
 
 The convenience change to the `scripts` field is the only side effect that alters how a developer works on their app before/after prebuild. All other changes can be left in place and committed to git to minimize the diff when running prebuild.
 

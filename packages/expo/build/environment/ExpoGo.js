@@ -16,6 +16,7 @@ export function isRunningInExpoGo() {
     return NativeExpoGoModule != null;
 }
 /**
+ * @hidden
  * Returns an Expo Go project config from the manifest or `null` if the app is not running in Expo Go.
  */
 export function getExpoGoProjectConfig() {

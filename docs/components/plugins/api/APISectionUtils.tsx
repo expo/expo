@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { CodeSquare01Icon } from '@expo/styleguide-icons';
 import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
-import { Fragment } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
@@ -43,6 +43,7 @@ import {
   DEMI,
   CALLOUT,
   createTextComponent,
+  SPAN,
 } from '~/ui/components/Text';
 import { TextElement } from '~/ui/components/Text/types';
 
@@ -78,7 +79,8 @@ export const mdComponents: MDComponents = {
     ) : (
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
     ),
-  h1: ({ children }) => <H4>{children}</H4>,
+  pre: ({ children }) => <>{children}</>,
+  h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
   ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
@@ -113,27 +115,35 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'B',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentType',
   'PureComponent',
   'E',
+  'EventName',
   'EventSubscription',
   'K',
   'Listener',
+  'ModuleType',
   'NativeSyntheticEvent',
+  'P',
+  'Parameters',
   'ParsedQs',
   'ServiceActionResult',
   'SharedObject',
   'T',
   'TaskOptions',
+  'TEventsMap',
   'Uint8Array',
   // React & React Native
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
-  // Cross-package permissions management
+  // Cross-package types with no export entry
+  'CodedError',
   'RequestPermissionMethod',
   'GetPermissionMethod',
   'Options',
@@ -170,6 +180,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
@@ -202,6 +213,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
+  WebBrowserOpenOptions: '/versions/latest/sdk/webbrowser/#webbrowseropenoptions',
+  WebBrowserWindowFeatures: '/versions/latest/sdk/webbrowser/#webbrowserwindowfeatures',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
@@ -435,6 +448,9 @@ export const resolveTypeName = (
           </span>
         ));
     } else if (type === 'indexedAccess') {
+      if (indexType?.name) {
+        return `${objectType?.name}[${indexType?.name}]`;
+      }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
@@ -454,7 +470,8 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 
 export const renderParamRow = (
   { comment, name, type, flags, defaultValue }: MethodParamData,
-  sdkVersion: string
+  sdkVersion: string,
+  showDescription?: boolean
 ): JSX.Element => {
   const defaultData = getTagData('default', comment);
   const initValue = parseCommentContent(
@@ -463,29 +480,34 @@ export const renderParamRow = (
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <BOLD>{parseParamName(name)}</BOLD>
+        <BOLD>
+          {flags?.isRest ? '...' : ''}
+          {parseParamName(name)}
+        </BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
-      <Cell>
-        <CommentTextBlock
-          comment={comment}
-          afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
-        />
-      </Cell>
+      {showDescription && (
+        <Cell>
+          <CommentTextBlock
+            comment={comment}
+            afterContent={renderDefaultValue(initValue)}
+            emptyCommentFallback="-"
+          />
+        </Cell>
+      )}
     </Row>
   );
 };
 
-export const ParamsTableHeadRow = () => (
+export const ParamsTableHeadRow = ({ hasDescription = true }) => (
   <TableHead>
     <Row>
-      <HeaderCell>Name</HeaderCell>
-      <HeaderCell>Type</HeaderCell>
-      <HeaderCell>Description</HeaderCell>
+      <HeaderCell size="sm">Name</HeaderCell>
+      <HeaderCell size="sm">Type</HeaderCell>
+      {hasDescription && <HeaderCell size="sm">Description</HeaderCell>}
     </Row>
   </TableHead>
 );
@@ -502,36 +524,52 @@ function createInheritPermalink(baseNestingLevel: number) {
 
 export const BoxSectionHeader = ({
   text,
+  Icon,
   exposeInSidebar,
   className,
   baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
+  Icon?: ComponentType<any>;
   exposeInSidebar?: boolean;
   className?: string;
   baseNestingLevel?: number;
 }) => {
-  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
+  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
   return (
-    <CALLOUT
-      theme="secondary"
-      weight="medium"
-      css={STYLES_NESTED_SECTION_HEADER}
-      className={className}>
-      <TextWrapper>{text}</TextWrapper>
+    <CALLOUT css={STYLES_NESTED_SECTION_HEADER} className={className}>
+      <TextWrapper
+        theme="secondary"
+        weight="medium"
+        className="text-inherit flex flex-row gap-2 items-center">
+        {Icon && <Icon className="icon-sm text-icon-secondary" />}
+        {text}
+      </TextWrapper>
     </CALLOUT>
   );
 };
 
-export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => (
-  <Table>
-    <ParamsTableHeadRow />
-    <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion))}</tbody>
-  </Table>
-);
+export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
+  const hasDescription = Boolean(parameters.find(param => param.comment));
+  return (
+    <Table>
+      <ParamsTableHeadRow hasDescription={hasDescription} />
+      <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion, hasDescription))}</tbody>
+    </Table>
+  );
+};
 
 export const listParams = (parameters: MethodParamData[]) =>
-  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+  parameters
+    ? parameters
+        ?.map(param => {
+          if (param.flags?.isRest) {
+            return `...${parseParamName(param.name)}`;
+          }
+          return parseParamName(param.name);
+        })
+        .join(', ')
+    : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
@@ -556,11 +594,12 @@ export const renderTypeOrSignatureType = ({
       <CODE key={`signature-type-${signatures[0].name}`}>
         <span className="text-quaternary">(</span>
         {signatures?.map(({ parameters }) =>
-          parameters?.map(param => (
+          parameters?.map((param, index) => (
             <span key={`signature-param-${param.name}`}>
               {param.name}
               {param.flags?.isOptional && '?'}
               <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
+              {parameters?.length !== index + 1 ? <span className="text-quaternary">, </span> : ''}
             </span>
           ))
         )}
@@ -621,7 +660,22 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
+  [...(comment?.blockTags ?? []), ...(comment?.modifierTags ?? [])]
+    .map(tag => {
+      if (typeof tag === 'string') {
+        return {
+          tag,
+          content: [
+            {
+              text: tag.substring(1),
+              tag,
+            } as CommentContentData,
+          ],
+        };
+      }
+      return tag;
+    })
+    .filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
@@ -693,23 +747,23 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <Fragment key={'example-' + index}>
+    <div key={'example-' + index} className={ELEMENT_SPACING}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="my-2">
+        <DEMI theme="secondary" className="flex mb-1">
           Example
         </DEMI>
       ) : (
-        <BoxSectionHeader text="Example" />
+        <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content)}
       </ReactMarkdown>
-    </Fragment>
+    </div>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
-    <Callout>
+    <Callout className={`!${ELEMENT_SPACING}`}>
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {`**See:** ` + getCommentContent(see.content)}
       </ReactMarkdown>
@@ -732,6 +786,7 @@ export const CommentTextBlock = ({
       {beforeContent}
       {parsedContent}
       {afterContent}
+      {afterContent && !exampleText && <br />}
       {seeText}
       {exampleText}
     </>
@@ -756,6 +811,11 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
+export function getPossibleComponentPropsNames(name?: string, children: PropData[] = []) {
+  const componentName = getComponentName(name, children);
+  return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
+}
+
 export const STYLES_APIBOX = css({
   borderRadius: borderRadius.md,
   borderWidth: 1,
@@ -775,8 +835,8 @@ export const STYLES_APIBOX = css({
   },
 
   th: {
-    color: theme.text.secondary,
-    padding: `${spacing[3]}px ${spacing[4]}px`,
+    color: theme.text.tertiary,
+    padding: `${spacing[2.5]}px ${spacing[4]}px`,
   },
 
   li: {

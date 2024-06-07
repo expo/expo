@@ -185,6 +185,9 @@ export async function syncTrackCapabilities(cameraType, stream, settings = {}) {
 }
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
 async function onCapabilitiesReady(cameraType, track, settings = {}) {
+    if (typeof track.getCapabilities !== 'function') {
+        return;
+    }
     const capabilities = track.getCapabilities();
     // Create an empty object because if you set a constraint that isn't available an error will be thrown.
     const constraints = {};
