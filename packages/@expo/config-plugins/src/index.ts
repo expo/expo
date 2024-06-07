@@ -60,6 +60,7 @@ export { withStaticPlugin } from './plugins/withStaticPlugin';
 export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/mod-compiler';
 
 export { PluginError } from './utils/errors';
+export { convertColor } from './utils/color';
 
 export const BaseMods = {
   withGeneratedBaseMods,

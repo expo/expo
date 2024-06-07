@@ -26,6 +26,7 @@ export { withAndroidManifest, withStringsXml, withAndroidColors, withAndroidColo
 export { withStaticPlugin } from './plugins/withStaticPlugin';
 export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/mod-compiler';
 export { PluginError } from './utils/errors';
+export { convertColor } from './utils/color';
 export declare const BaseMods: {
     withGeneratedBaseMods: typeof withGeneratedBaseMods;
     provider: typeof provider;

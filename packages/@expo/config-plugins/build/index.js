@@ -40,7 +40,8 @@ var _exportNames = {
   compileModsAsync: true,
   withDefaultBaseMods: true,
   evalModsAsync: true,
-  PluginError: true
+  PluginError: true,
+  convertColor: true
 };
 exports.IOSConfig = exports.History = exports.BaseMods = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
@@ -54,6 +55,12 @@ Object.defineProperty(exports, "compileModsAsync", {
   enumerable: true,
   get: function () {
     return _modCompiler().compileModsAsync;
+  }
+});
+Object.defineProperty(exports, "convertColor", {
+  enumerable: true,
+  get: function () {
+    return _color().convertColor;
   }
 });
 Object.defineProperty(exports, "createRunOncePlugin", {
@@ -401,6 +408,13 @@ function _modCompiler() {
 function _errors() {
   const data = require("./utils/errors");
   _errors = function () {
+    return data;
+  };
+  return data;
+}
+function _color() {
+  const data = require("./utils/color");
+  _color = function () {
     return data;
   };
   return data;
