@@ -1,5 +1,4 @@
-
-name: docs-pr-destroy
+name: Docs Website PR Destroy Preview
 
 on:
   pull_request:
