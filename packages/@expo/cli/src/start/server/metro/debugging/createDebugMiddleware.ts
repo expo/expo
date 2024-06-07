@@ -2,13 +2,23 @@ import chalk from 'chalk';
 
 import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
+import { resolveProjectTransitiveDependency } from '../../../../utils/resolvePackage';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   // Load the React Native debugging tools from project
-  // TODO: check if this works with isolated modules
-  const { createDevMiddleware } =
-    require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
+  const devMiddlewarePath = resolveProjectTransitiveDependency(
+    metroBundler.projectRoot,
+    'react-native',
+    '@react-native/community-cli-plugin',
+    '@react-native/dev-middleware'
+  );
+  if (!devMiddlewarePath) {
+    throw new Error('Unable to resolve the @react-native/dev-middleware package.');
+  }
+  const { createDevMiddleware } = require(
+    devMiddlewarePath
+  ) as typeof import('@react-native/dev-middleware');
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
     projectRoot: metroBundler.projectRoot,
