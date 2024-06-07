@@ -19,7 +19,7 @@
 - Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
 - Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
-- Export generated expo routes type. ([#000](https://github.com/expo/expo/pull/24999) by [@MaxKostenko](https://github.com/MaxKostenko))
+- Export generated expo routes type. ([#29524](https://github.com/expo/expo/pull/29524) by [@MaxKostenko](https://github.com/MaxKostenko))
 
 ## 0.18.15 — 2024-06-05
 
