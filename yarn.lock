@@ -4661,11 +4661,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native__assets@~1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-native__assets/-/react-native__assets-1.0.0.tgz#5ae261d71b43560f5e4f05b7ce9212a2ff5fb02a"
-  integrity sha512-9/VzYmiUPHdRJn1WwiG5TgKlLyyFyp7MaRzh4iTCTgWOcHQ9ZMjdUbwMHaXMp6F5fnrn4Oxk7LRR4flNz6VOBw==
-
 "@types/react-redux@^7.1.16", "@types/react-redux@^7.1.20":
   version "7.1.23"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.23.tgz#3c2bb1bcc698ae69d70735f33c5a8e95f41ac528"
