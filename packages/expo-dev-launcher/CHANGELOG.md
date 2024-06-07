@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 4.0.18 — 2024-06-10
