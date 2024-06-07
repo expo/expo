@@ -14,7 +14,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     pointer.currentItem?.status == .readyToPlay
   }
 
-  var isPlaying: Bool {
+  var playing: Bool {
     pointer.timeControlStatus == .playing
   }
 

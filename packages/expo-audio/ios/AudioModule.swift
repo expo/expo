@@ -98,8 +98,9 @@ public class AudioModule: Module {
         player.isLoaded
       }
 
-      Property("isPlaying") { player in
-        player.isPlaying
+      Property("playing") { player in
+        player.playing
+
       }
 
       Property("mute") { player in
@@ -148,7 +149,7 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if player.isPlaying {
+        if player.playing {
           player.pointer.rate = playerRate
         }
         player.currentRate = playerRate
