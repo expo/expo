@@ -4,11 +4,13 @@ const testDirectory = `__tests__`;
 module.exports = (platform, { isReactServer } = {}) => {
   const customPath = path.join(testDirectory, '__snapshots__');
   const getExt = (ext) => {
-    let extension = `${ext}.${platform}`;
     if (isReactServer) {
-      extension = `rsc+${extension}`;
+      // foo.test.web => foo.test.web+rsc.web.snap
+      // bar-test => bar-test+rsc.web.snap
+      return `+rsc.${platform}${ext}`;
     }
-    return extension;
+    // TODO: Fix this in a breaking change so `.snap` is the end of the file.
+    return `${ext}.${platform}`;
   };
   return {
     resolveSnapshotPath: (testPath, snapshotExtension) => {

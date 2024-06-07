@@ -1,4 +1,3 @@
-'use client';
 import * as Linking from '../Linking';
 
 describe(Linking.addEventListener, () => {
@@ -7,4 +6,8 @@ describe(Linking.addEventListener, () => {
     // NOTE(EvanBacon): This test ensures that the web and native implementations return the same subscription.
     subscription.remove();
   });
+});
+
+it('foo', () => {
+  expect(Linking.parse('exp://')).toMatchSnapshot();
 });

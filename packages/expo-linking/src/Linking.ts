@@ -20,6 +20,7 @@ import { validateURL } from './validateURL';
 export function addEventListener(type: 'url', handler: URLListener): EmitterSubscription {
   // Do nothing in Node.js environments
   if (typeof window === 'undefined') {
+    // @ts-expect-error
     return { remove() {} };
   }
 

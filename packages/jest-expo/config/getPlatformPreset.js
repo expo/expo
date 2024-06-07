@@ -38,7 +38,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
 
   if (isReactServer && displayOptions && displayOptions.name) {
-    displayOptions.name = `RSC(${displayOptions.name})`;
+    displayOptions.name = `rsc/${extensions[0]}`;
   }
 
   const preset = withWatchPlugins({
