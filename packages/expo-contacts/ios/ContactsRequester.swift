@@ -30,10 +30,6 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
       guard let self else {
         return
       }
-      if let error {
-        reject("E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error)
-        return
-      }
 
       resolve(self.getPermissions())
     }
