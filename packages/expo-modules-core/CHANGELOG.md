@@ -15,6 +15,7 @@
 - [Android] Fix `getContext().getNativeModule(UIManagerModule.class)` in Bridgeless. ([#29203](https://github.com/expo/expo/pull/29203) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 - [Android] Fixed converting from `null` to `Record` sometimes didn't work as expected. ([#29508](https://github.com/expo/expo/pull/29508) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `No implementation found for com.facebook.jni.HybridData expo.modules.kotlin.jni.JavaScriptModuleObject.initHybrid`. ([#29513](https://github.com/expo/expo/pull/29513) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
 
 ### 💡 Others
 
