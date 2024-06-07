@@ -23,9 +23,9 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     const platformExtension = extension ? `.${extension}` : '';
     const sourceExtension = `.[jt]s?(x)`;
 
-    // NOTE(EvanBacon): For now (assuming this doesn't stick), we'll only run RSC on tests in the `__tests__/__rsc__` directory.
+    // NOTE(EvanBacon): For now (assuming this doesn't stick), we'll only run RSC on tests in the `__tests__/_rsc` directory.
     if (isReactServer) {
-      return [`**/__tests__/__rsc__/**/*test${platformExtension}${sourceExtension}`];
+      // return [`**/__tests__/_rsc/**/*test${platformExtension}${sourceExtension}`];
     }
 
     return [
@@ -67,8 +67,8 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       ? ['/node_modules/']
       : [
           '/node_modules/',
-          // Ignore the files in the `__tests__/__rsc__` directory when not targeting RSC.
-          '/__tests__/__rsc__/',
+          // Ignore the files in the `__tests__/_rsc` directory when not targeting RSC.
+          '/__tests__/_rsc/',
         ],
     moduleFileExtensions,
     snapshotResolver: require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),

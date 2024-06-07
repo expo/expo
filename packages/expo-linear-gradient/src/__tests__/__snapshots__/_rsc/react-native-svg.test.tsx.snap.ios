@@ -1,0 +1,256 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Circle to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Circle"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ClipPath to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"ClipPath"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Defs to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Defs"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Ellipse to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Ellipse"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ForeignObject to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"ForeignObject"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders G to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"G"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Image to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Image"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Line to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Line"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders LinearGradient to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"LinearGradient"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Marker to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Marker"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Mask to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Mask"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Path to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Path"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Pattern to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Pattern"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Polygon to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Polygon"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Polyline to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Polyline"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGCircle to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGCircle"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGClipPath to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGClipPath"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGDefs to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGDefs"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGEllipse to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGEllipse"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGForeignObject to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGForeignObject"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGGroup to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGGroup"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGImage to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGImage"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGLine to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGLine"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGLinearGradient to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGLinearGradient"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGMarker to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGMarker"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGMask to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGMask"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGPath to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGPath"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGPattern to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGPattern"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGRadialGradient to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGRadialGradient"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGRect to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGRect"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGSvgAndroid to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGSvgAndroid"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGSvgIOS to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGSvgIOS"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGSymbol to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGSymbol"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGTSpan to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGTSpan"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGText to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGText"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGTextPath to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGTextPath"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RNSVGUse to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RNSVGUse"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders RadialGradient to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"RadialGradient"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Rect to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Rect"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Shape to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Shape"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Stop to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Stop"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SvgAst to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"SvgAst"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SvgFromUri to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"SvgFromUri"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SvgFromXml to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"SvgFromXml"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SvgUri to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"SvgUri"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SvgXml to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"SvgXml"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Symbol to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Symbol"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders TSpan to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"TSpan"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Text to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Text"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders TextPath to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"TextPath"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Use to RSC 1`] = `
+"1:I["../../node_modules/react-native-svg/lib/commonjs/index.js",[],"Use"]
+0:["$","$L1",null,{},null]"
+`;

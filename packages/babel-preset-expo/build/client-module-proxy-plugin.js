@@ -99,6 +99,12 @@ function reactClientReferencesPlugin() {
                 path.node.body = [];
                 path.node.directives = [];
                 path.pushContainer('body', core_1.template.ast(proxyModule.join('\n')));
+                // If the "use client" directive is inside of a test file, we need to add a noop test to prevent Jest from failing.
+                // This enables users to make tests client-only by marking them with "use client".
+                if (process.env.NODE_ENV === 'test' &&
+                    filePath.match(/[\\/]__tests__[\\/].*(test|spec)(\.[a-z]+)?\.[jt]sx?$/)) {
+                    path.pushContainer('body', core_1.template.ast('xit("use client", () => {});'));
+                }
                 assertExpoMetadata(state.file.metadata);
                 // Save the client reference in the metadata.
                 if (!state.file.metadata.clientReferences) {
