@@ -3,11 +3,11 @@
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="pb-6 px-6 w-[280px]"
+    class="pt-14 pb-12 px-6 w-[280px]"
     data-sidebar="true"
   >
     <p
-      class="absolute bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10 css-1t1p06f-TextComponent"
+      class="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10 css-1t1p06f-TextComponent"
       data-text="true"
     >
       <svg
