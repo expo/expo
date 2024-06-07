@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Removed `@react-native/normalize-colors` dependency and migrated to `convert()` from `@expo/config-plugins`. ([#29543](https://github.com/expo/expo/pull/29543) by [@kudo](https://github.com/kudo))
 
 ## 3.0.5 - 2024-06-05
 

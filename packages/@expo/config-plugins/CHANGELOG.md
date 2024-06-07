@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `convertColor()` that can convert color string to integer. ([#29543](https://github.com/expo/expo/pull/29543) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Improved android manifest queries, making package optional and changing provider to array ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
