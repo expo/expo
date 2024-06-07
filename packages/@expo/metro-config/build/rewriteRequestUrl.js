@@ -35,10 +35,6 @@ function isEnableHermesManaged(expoConfig, platform) {
 function getRouterDirectoryModuleIdWithManifest(projectRoot, exp) {
     return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
-function getReactCompilerWithManifest(projectRoot, exp) {
-    // @ts-expect-error: TODO -- Not on type yet
-    return exp?.experiments?.reactCompiler;
-}
 function getRouterDirectory(projectRoot) {
     // more specific directories first
     if (directoryExistsSync(path_1.default.join(projectRoot, 'src/app'))) {
@@ -72,9 +68,8 @@ function getRewriteRequestUrl(projectRoot) {
             if (!ensured.searchParams.has('transform.routerRoot')) {
                 ensured.searchParams.set('transform.routerRoot', getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
             }
-            if (!ensured.searchParams.has('transform.reactCompiler') &&
-                getReactCompilerWithManifest(projectRoot, exp)) {
-                ensured.searchParams.set('transform.reactCompiler', 'true');
+            if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
+                ensured.searchParams.set('transform.reactCompiler', String(!!exp.experiments?.reactCompiler));
             }
             if (!ensured.searchParams.has('transform.engine')) {
                 const isHermesEnabled = isEnableHermesManaged(exp, platform);

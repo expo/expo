@@ -37,11 +37,6 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoCo
   return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 
-function getReactCompilerWithManifest(projectRoot: string, exp: ExpoConfig): boolean | undefined {
-  // @ts-expect-error: TODO -- Not on type yet
-  return exp?.experiments?.reactCompiler;
-}
-
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
   if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
@@ -86,11 +81,11 @@ export function getRewriteRequestUrl(projectRoot: string) {
           getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
         );
       }
-      if (
-        !ensured.searchParams.has('transform.reactCompiler') &&
-        getReactCompilerWithManifest(projectRoot, exp)
-      ) {
-        ensured.searchParams.set('transform.reactCompiler', 'true');
+      if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
+        ensured.searchParams.set(
+          'transform.reactCompiler',
+          String(!!exp.experiments?.reactCompiler)
+        );
       }
 
       if (!ensured.searchParams.has('transform.engine')) {

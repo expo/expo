@@ -65,7 +65,6 @@ import {
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
-  getReactCompilerFromExpoConfig,
   getMetroDirectBundleOptions,
   shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
@@ -601,7 +600,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
-    const reactCompiler = getReactCompilerFromExpoConfig(exp);
+    const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 

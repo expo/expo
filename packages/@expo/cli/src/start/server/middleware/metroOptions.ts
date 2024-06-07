@@ -89,11 +89,6 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
-export function getReactCompilerFromExpoConfig(exp: ExpoConfig): boolean {
-  // @ts-expect-error: TODO -- Add to universe schema.
-  return !!exp.experiments?.reactCompiler;
-}
-
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
   let asyncRoutesSetting;
 
@@ -116,7 +111,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
 ): Partial<ExpoMetroBundleOptions> {
   return getMetroDirectBundleOptions({
     ...options,
-    reactCompiler: getReactCompilerFromExpoConfig(exp),
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
@@ -211,7 +206,7 @@ export function createBundleUrlPathFromExpoConfig(
 ): string {
   return createBundleUrlPath({
     ...options,
-    reactCompiler: getReactCompilerFromExpoConfig(exp),
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
   });

@@ -125,7 +125,6 @@ export async function exportEmbedBundleAndAssetsAsync(
         // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
         bytecode: false,
         // source map inline
-        // @ts-expect-error: TODO -- add to universe schema.
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
       {

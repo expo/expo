@@ -132,7 +132,6 @@ export async function loadMetroConfigAsync(
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
-  // @ts-expect-error: TODO -- add to universe schema.
   if (exp.experiments?.reactCompiler) {
     Log.warn(`Experimental React Compiler is enabled.`);
   }
