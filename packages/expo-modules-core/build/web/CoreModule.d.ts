@@ -7,6 +7,8 @@ declare class EventEmitter<TEventsMap extends EventsMap> implements EventEmitter
     removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void;
     emit<EventName extends keyof TEventsMap>(eventName: EventName, ...args: Parameters<TEventsMap[EventName]>): void;
     listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number;
+    startObserving<EventName extends keyof TEventsMap>(eventName: EventName): void;
+    stopObserving<EventName extends keyof TEventsMap>(eventName: EventName): void;
 }
 export declare class NativeModule<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements NativeModuleType {
     [key: string]: any;
