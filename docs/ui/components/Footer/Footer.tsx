@@ -30,7 +30,10 @@ export const Footer = ({
 }: Props) => {
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
+  const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName && packageName.startsWith('expo-');
+
+  const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
   return (
     <footer
@@ -96,12 +99,14 @@ export const Footer = ({
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
-            {!isDev && modificationDate && (
-              <LI className="!text-quaternary !text-xs !mt-4">Last modified: {modificationDate}</LI>
+            {!isDev && shouldShowModifiedDate && modificationDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated on {modificationDate}
+              </LI>
             )}
-            {isDev && (
-              <LI className="!text-quaternary !text-xs !mt-4">
-                Last modified: Not available in dev mode
+            {isDev && shouldShowModifiedDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated data is not available in dev mode
               </LI>
             )}
           </UL>

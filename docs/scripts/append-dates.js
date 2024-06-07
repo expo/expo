@@ -10,9 +10,13 @@ async function appendModificationDate(dir = './pages') {
       if (!file.isDirectory() && file.name.endsWith('.mdx')) {
         const filePath = path.join(file.path, file.name);
 
-        const { stdout } = await spawnAsync('git', ['log', '-1', '--pretty="%cs"', filePath], {
-          stdio: 'pipe',
-        });
+        const { stdout } = await spawnAsync(
+          'git',
+          ['log', '-1', '--pretty="%cd"', '--date=format:"%B %d, %Y"', filePath],
+          {
+            stdio: 'pipe',
+          }
+        );
 
         const fileContent = (await readFile(filePath, 'utf8')).split('\n');
         const modificationDateLine = `modificationDate: ${stdout.replace('\n', '')}`;
