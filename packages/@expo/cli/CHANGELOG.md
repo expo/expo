@@ -22,6 +22,7 @@
 - Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
 - Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
+- Removed @react-native/dev-middleware dependency. ([#29542](https://github.com/expo/expo/pull/29542) by [@kudo](https://github.com/kudo))
 
 ## 0.18.15 — 2024-06-05
 
