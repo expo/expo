@@ -13,7 +13,7 @@ import { CALLOUT } from '~/ui/components/Text';
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
-const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 10;
+const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 const isDynamicScrollAvailable = () => {
   return !window.matchMedia('(prefers-reduced-motion)').matches;
@@ -84,7 +84,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
       <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
         <CALLOUT
           weight="medium"
-          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none">
+          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
           <LayoutAlt03Icon className="icon-sm" /> On this page
           <Button
             theme="quaternary"
@@ -147,7 +147,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - 28,
     });
 
     if (history?.replaceState) {

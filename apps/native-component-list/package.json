@@ -32,6 +32,7 @@
     }
   },
   "dependencies": {
+    "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.0.0",
@@ -132,7 +133,7 @@
     "processing-js": "^1.6.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.74.1",
+    "react-native": "0.74.2",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-maps": "1.14.0",

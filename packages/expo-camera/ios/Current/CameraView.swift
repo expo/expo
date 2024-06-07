@@ -163,6 +163,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       isSessionPaused = false
       sessionQueue.async {
         self.session.startRunning()
+        self.enableTorch()
       }
     }
   }
@@ -266,6 +267,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.barcodeScanner.maybeStartBarcodeScanning()
       self.session.startRunning()
       self.onCameraReady()
+      self.enableTorch()
     }
   }
 

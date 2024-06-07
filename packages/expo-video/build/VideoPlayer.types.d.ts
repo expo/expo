@@ -213,5 +213,11 @@ export type DRMOptions = {
      * @platform ios
      */
     certificateUrl?: string;
+    /**
+     * Specifies the base64 encoded certificate data for the FairPlay DRM.
+     * When this property is set, the `certificateUrl` property is ignored.
+     * @platform ios
+     */
+    base64CertificateData?: string;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix an issue where if the user selects "Allow Once" for location permissions, we needed to request background permissions twice because the first time had effect. ([#29272](https://github.com/expo/expo/pull/29272) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))

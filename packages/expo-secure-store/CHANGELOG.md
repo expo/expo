@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Improve error message for unhandled errors ([#29394](https://github.com/expo/expo/pull/29394) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 13.0.1 — 2024-04-23

@@ -319,8 +319,15 @@ export const Screens: ScreenConfig[] = [
     getComponent() {
       return optionalRequire(() => require('../screens/AV/RecordingScreen'));
     },
-    name: 'Recording',
-    options: { title: 'Audio Recording' },
+    name: 'Recording (expo-av)',
+    options: { title: 'Audio Recording (expo-av)' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Audio/RecordingScreen'));
+    },
+    name: 'Recording (expo-audio)',
+    options: { title: 'Audio Recording (expo-audio)' },
   },
   {
     getComponent() {

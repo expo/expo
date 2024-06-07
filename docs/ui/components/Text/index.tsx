@@ -225,6 +225,8 @@ export const CAPTION = createTextComponent(TextElement.P, css(typography.body.ca
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
+export const SPAN = createTextComponent(TextElement.SPAN, css(typography.body.callout));
+
 export const UL = createTextComponent(
   TextElement.UL,
   css([typography.body.ul, { listStyle: 'disc' }])

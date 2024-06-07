@@ -1,94 +1,81 @@
-import { Asset } from 'expo-asset';
-import { useAudioPlayer } from 'expo-audio';
-import { useEffect, useState } from 'react';
+import { useAudioPlayer, AudioSource, AudioPlayerState, AudioStatus } from 'expo-audio';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import Player from '../AV/Player';
-
-type PlaybackSource =
-  | number
-  | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: {
-        [fieldName: string]: string;
-      };
-    }
-  | Asset;
+import Player from './Player';
 
 type AudioPlayerProps = {
-  source: PlaybackSource;
-  style: StyleProp<ViewStyle>;
+  source: AudioSource | string | number;
+  style?: StyleProp<ViewStyle>;
 };
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
-  const [state, setState] = useState({
-    androidImplementation: 'SimpleExoPlayer',
-    isMuted: false,
-    isPlaying: false,
-    isLoaded: true,
-    isLooping: false,
-    positionMillis: 0,
-    durationMillis: 0,
-    rate: 1,
-    volume: 1,
-    audioPan: 0,
-    shouldCorrectPitch: false,
-  });
-
   const player = useAudioPlayer(
-    'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02'
+    source,
+    useCallback((status: AudioStatus) => {
+      setState({
+        ...state,
+        ...status,
+        positionMillis: status.currentTime ?? 0,
+        durationMillis: isNaN(status.duration) ? 0 : status.duration,
+        volume: player.volume,
+      });
+    }, [])
   );
 
-  useEffect(() => {
-    return () => player.pause();
-  }, []);
-
-  const play = () => {
-    player.play();
-    setState({ ...state, isPlaying: true });
-  };
-
-  const pause = () => {
-    player.pause();
-    setState({ ...state, isPlaying: false });
-  };
+  const [state, setState] = useState<AudioPlayerState>({
+    isLoaded: player.isLoaded,
+    isLooping: player.loop,
+    isMuted: player.muted,
+    positionMillis: player.currentTime,
+    durationMillis: isNaN(player.duration) ? 0 : player.duration,
+    rate: player.playbackRate,
+    volume: player.volume,
+    isPlaying: player.isPlaying,
+    audioPan: 0,
+    shouldCorrectPitch: player.shouldCorrectPitch,
+  });
 
   const setVolume = (volume: number) => {
-    player.setVolume(volume);
+    player.volume = volume;
     setState({ ...state, volume });
   };
 
-  const setIsMuted = () => {
-    player.isMuted = !player.isMuted;
-    setState({ ...state, isMuted: player.isMuted });
+  const setIsMuted = (isMuted: boolean) => {
+    player.muted = isMuted;
+    setState({ ...state, isMuted });
   };
 
   const setIsLooping = (isLooping: boolean) => {
-    player.isLoopingEnabled(isLooping);
+    player.loop = isLooping;
     setState({ ...state, isLooping });
   };
 
-  const setRate = (rate: number) => {
-    player.setRate(rate);
-    setState({ ...state, rate });
+  const setRate = (rate: number, shouldCorrectPitch: boolean) => {
+    player.shouldCorrectPitch = shouldCorrectPitch;
+    player.setPlaybackRate(rate);
+    setState({ ...state, rate: player.playbackRate, shouldCorrectPitch });
   };
+
+  useEffect(() => {
+    return () => player.release();
+  }, []);
 
   return (
     <Player
       {...state}
-      positionMillis={player.currentTime}
-      rate={1}
       style={style}
-      playAsync={play}
-      pauseAsync={pause}
-      replayAsync={() => {}}
-      setPositionAsync={(position: number) => {
-        return new Promise(() => {});
+      play={() => player.play()}
+      pause={() => player.pause()}
+      replay={() => {
+        return player.seekTo(0);
       }}
-      setIsLoopingAsync={setIsLooping}
-      setRateAsync={setRate}
-      setIsMutedAsync={setIsMuted}
+      setPosition={(position: number) => {
+        return player.seekTo(position);
+      }}
+      setIsLooping={setIsLooping}
+      setRate={setRate}
+      setIsMuted={setIsMuted}
       setVolume={setVolume}
     />
   );

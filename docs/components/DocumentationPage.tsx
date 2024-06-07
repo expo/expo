@@ -19,7 +19,6 @@ import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { P } from '~/ui/components/Text';
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
 
@@ -137,15 +136,11 @@ export default function DocumentationPage({
         {title && (
           <PageTitle
             title={title}
+            description={description}
             sourceCodeUrl={sourceCodeUrl}
             packageName={packageName}
             iconUrl={iconUrl}
           />
-        )}
-        {description && (
-          <P theme="secondary" data-description="true">
-            {description}
-          </P>
         )}
         {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
