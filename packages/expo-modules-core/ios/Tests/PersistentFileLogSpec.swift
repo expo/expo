@@ -75,7 +75,7 @@ class PersistentFileLogSpec: ExpoSpec {
 /// Allows for synchronization pertaining to the file scope.
 private final class Synchronized<T> {
   private var _storage: T
-  private var lock = NSLock()
+  private let lock = NSLock()
 
   /// Thread safe access here.
   var value: T {
