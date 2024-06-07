@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix resolver to handle fields in package.json other than browser (e.g., react-native). ([#29549](https://github.com/expo/expo/pull/29549) by [@Nodonisko](https://github.com/Nodonisko))
 
 ### 💡 Others
 

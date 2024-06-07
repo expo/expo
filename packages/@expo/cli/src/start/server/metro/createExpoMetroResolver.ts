@@ -28,6 +28,8 @@ const realpathFS =
     ? fs.realpathSync.native
     : fs.realpathSync;
 
+// console.log('hello');
+
 function realpathSync(x: string) {
   try {
     return realpathFS(x);
@@ -180,15 +182,24 @@ export function createFastResolver({
           // Disable `browser` field for server environments.
           isServer
             ? undefined
-            : // Enable `browser` field support
+            : // Enable package.json `browser` and `react-native` fields support
               (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
                 let relativePath = relativePathIn;
                 if (relativePath[0] !== '.') {
                   relativePath = `./${relativePath}`;
                 }
 
-                const replacements = pkg.browser;
-                if (replacements === undefined) {
+                let replacements: Record<string, string | false> | string | undefined;
+
+                for (const field of context.mainFields) {
+                  if (pkg[field]) {
+                    replacements = pkg[field];
+                    break;
+                  }
+                }
+
+                // if replacements is a string or undefined, we should ignore it for path mapping inside package because it's used for main field already
+                if (replacements === undefined || typeof replacements === 'string') {
                   return '';
                 }
 

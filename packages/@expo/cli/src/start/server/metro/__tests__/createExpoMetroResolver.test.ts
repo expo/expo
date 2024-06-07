@@ -62,6 +62,8 @@ const originProjectRoot = path.join(
   '../../../../../../../../apps/native-component-list'
 );
 
+const toolsProjectRoot = path.join(__dirname, '../../../../../../../../tools');
+
 function resolveToEmpty(
   moduleId: string,
   {
@@ -182,6 +184,42 @@ describe(createFastResolver, () => {
         resolveTo('react-dom/server.js', { platform: 'web', packageExports: true, isServer: true })
       ).toThrow(/Missing "\.\/server\.js" specifier in "react-dom" package/);
       resolveTo('react-dom/server.js', { platform: 'web', packageExports: false, isServer: true });
+    });
+  });
+
+  describe('resolves file overrided by package.json "react-native" or "browser" field', () => {
+    it('use "react-native" field over "browser" field', () => {
+      const platform = 'ios';
+      const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
+      const context = createContext({
+        platform,
+        // We need to use different origin because only @aws-sdk/client-s3 package has both "react-native" and "browser" fields.
+        origin: path.join(toolsProjectRoot, 'src/Utils.ts'),
+      });
+      const results = resolver(context, '@aws-sdk/client-s3/dist-es/runtimeConfig', platform);
+
+      expect(results).toEqual({
+        filePath: expect.stringMatching(/@aws-sdk\/client-s3\/dist-es\/runtimeConfig\.native\.js$/),
+        type: 'sourceFile',
+      });
+    });
+
+    it('use "browser" field over "react-native" field', () => {
+      const platform = 'web';
+      const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
+      const context = createContext({
+        platform,
+        // We need to use different origin because only @aws-sdk/client-s3 package has both "react-native" and "browser" fields.
+        origin: path.join(toolsProjectRoot, 'src/Utils.ts'),
+      });
+      const results = resolver(context, '@aws-sdk/client-s3/dist-es/runtimeConfig', platform);
+
+      expect(results).toEqual({
+        filePath: expect.stringMatching(
+          /@aws-sdk\/client-s3\/dist-es\/runtimeConfig\.browser\.js$/
+        ),
+        type: 'sourceFile',
+      });
     });
   });
 
