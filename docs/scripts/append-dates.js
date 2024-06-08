@@ -19,12 +19,11 @@ async function appendModificationDate(dir = './pages') {
         );
 
         const fileContent = (await readFile(filePath, 'utf8')).split('\n');
-        const modificationDateLine = `modificationDate: ${stdout.replace('\n', '')}`;
+        const cleanDate = stdout.replace('\n', '').replaceAll('"', '');
+        const modificationDateLine = `modificationDate: ${cleanDate}`;
 
         if (!fileContent[1].startsWith('modificationDate')) {
           fileContent.splice(1, 0, modificationDateLine);
-        } else {
-          fileContent[1] = modificationDateLine;
         }
 
         await writeFile(filePath, fileContent.join('\n'), 'utf8');
