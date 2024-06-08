@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `ExpoResponse` using incorrect object. ([#29154](https://github.com/expo/expo/pull/29154) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix nested headers array. ([#29259](https://github.com/expo/expo/pull/29259) by (@younes200](https://github.com/younes200))
 
 ### 💡 Others
 
