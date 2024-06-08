@@ -26,6 +26,7 @@ import android.widget.ScrollView;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 
@@ -57,7 +58,7 @@ import static android.view.View.VISIBLE;
 /**
  * Snapshot utility class allow to screenshot a view.
  */
-public class ViewShot implements UIBlock {
+public class ViewShot implements UIBlock, com.facebook.react.fabric.interop.UIBlock  {
     //region Constants
     /**
      * Tag fort Class logs.
@@ -183,6 +184,17 @@ public class ViewShot implements UIBlock {
     //region Overrides
     @Override
     public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+        executeImpl(nativeViewHierarchyManager, null);
+    }
+
+    @Override
+    public void execute(@NonNull UIBlockViewResolver uiBlockViewResolver) {
+        executeImpl(null, uiBlockViewResolver);
+    }
+    //endregion
+
+    //region Implementation
+    private void executeImpl(final NativeViewHierarchyManager nativeViewHierarchyManager, final UIBlockViewResolver uiBlockViewResolver) {
         executor.execute(new Runnable () {
             @Override
             public void run() {
@@ -191,6 +203,8 @@ public class ViewShot implements UIBlock {
 
                     if (tag == -1) {
                         view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
+                    } else if (uiBlockViewResolver != null) {
+                        view = uiBlockViewResolver.resolveView(tag);
                     } else {
                         view = nativeViewHierarchyManager.resolveView(tag);
                     }

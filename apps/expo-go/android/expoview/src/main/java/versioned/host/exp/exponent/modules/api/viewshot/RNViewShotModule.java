@@ -16,7 +16,11 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
+import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.UIManagerType;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -102,13 +106,19 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
             }
 
             final Activity activity = getCurrentActivity();
-            final UIManagerModule uiManager = this.reactContext.getNativeModule(UIManagerModule.class);
 
-            uiManager.addUIBlock(new ViewShot(
+            ViewShot uiBlock = new ViewShot(
                     tag, extension, imageFormat, quality,
                     scaleWidth, scaleHeight, outputFile, resultStreamFormat,
-                    snapshotContentContainer, reactContext, activity, handleGLSurfaceView, promise, executor)
-            );
+                    snapshotContentContainer, reactContext, activity, handleGLSurfaceView, promise, executor);
+
+            if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+                UIManager uiManager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC);
+                ((FabricUIManager)uiManager).addUIBlock(uiBlock);
+            } else {
+                final UIManagerModule uiManager = this.reactContext.getNativeModule(UIManagerModule.class);
+                uiManager.addUIBlock(uiBlock);
+            }
         } catch (final Throwable ex) {
             Log.e(RNVIEW_SHOT, "Failed to snapshot view tag " + tag, ex);
             promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag " + tag);
