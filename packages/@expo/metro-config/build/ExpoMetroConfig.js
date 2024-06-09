@@ -181,7 +181,21 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return preModules;
             },
-            getPolyfills: () => require('@react-native/js-polyfills')(),
+            getPolyfills: ({ platform }) => {
+                // Do nothing for nullish platforms.
+                if (!platform) {
+                    return [];
+                }
+                if (platform === 'web') {
+                    return [
+                        // Ensure that the error-guard polyfill is included in the web polyfills to
+                        // make metro-runtime work correctly.
+                        require.resolve('@react-native/js-polyfills/error-guard'),
+                    ];
+                }
+                // Native behavior.
+                return require('@react-native/js-polyfills')();
+            },
         },
         server: {
             rewriteRequestUrl: (0, rewriteRequestUrl_1.getRewriteRequestUrl)(projectRoot),
