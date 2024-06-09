@@ -6,7 +6,7 @@ description: Learn how to enable and use the React Compiler in Expo apps.
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **warning** **Warning:** React Compiler is still experimental! First available in Expo SDK 51.
+> **warning** **Warning:** React Compiler is experimental. Available from Expo SDK 51.
 
 The new [React Compiler](https://react.dev/learn/react-compiler) automatically memoizes components and hooks to enable fine-grained reactivity. This can lead to significant performance improvements in your app. The React Compiler is currently experimental and is not enabled by default. You can enable it in your app by following the instructions below.
 
@@ -121,13 +121,13 @@ function MyComponent() {
 
 > To better understand how React Compiler works, check out the [React Playground](https://playground.react.dev/).
 
-Improvements are primarily automatic. You can remove instances of `useCallback`, `useMemo`, and `React.memo` in favor of the automatic memoization. Class components will not be optimized, migrate to function components instead.
+Improvements are primarily automatic. You can remove instances of `useCallback`, `useMemo`, and `React.memo` in favor of the automatic memoization. Class components will not be optimized. Instead, migrate to function components.
 
 Expo's implementation of the React Compiler will only run on application code (no node modules), and only when bundling for the client (disabled in server rendering).
 
 ## Configuration
 
-You can pass additional settings to the React Compiler Babel plugin, by using the `react-compiler` object in your Babel configuration:
+You can pass additional settings to the React Compiler Babel plugin by using the `react-compiler` object in the Babel configuration:
 
 ```js babel.config.js
 module.exports = function (api) {
