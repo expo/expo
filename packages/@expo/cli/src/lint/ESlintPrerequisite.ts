@@ -6,8 +6,8 @@ import { Log } from '../log';
 import { PrerequisiteCommandError, ProjectPrerequisite } from '../start/doctor/Prerequisite';
 import { ensureDependenciesAsync } from '../start/doctor/dependencies/ensureDependenciesAsync';
 import { findFileInParents } from '../utils/findUp';
-import { confirmAsync } from '../utils/prompts';
 import { isInteractive } from '../utils/interactive';
+import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:lint') as typeof console.log;
 
