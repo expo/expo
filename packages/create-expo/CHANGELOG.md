@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Drop legacy package manager availability check for performance.
+
 ## 2.3.4 — 2024-05-01
 
 ### 🐛 Bug fixes
