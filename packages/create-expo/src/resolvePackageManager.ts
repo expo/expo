@@ -1,13 +1,12 @@
 import * as PackageManager from '@expo/package-manager';
-import { execSync } from 'child_process';
 
 import { CLI_NAME } from './cmd';
 
-export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun';
+export type PackageManagerName = PackageManager.NodePackageManager['name'];
 
 const debug = require('debug')('expo:init:resolvePackageManager') as typeof console.log;
 
-/** Determine which package manager to use for installing dependencies based on how the process was started. */
+/** Resolve the package manager that was used when invoking this tool, using `env.npm_config_user_agent` */
 export function resolvePackageManager(): PackageManagerName {
   // Attempt to detect if the user started the command using `yarn` or `pnpm` or `bun`
   const userAgent = process.env.npm_config_user_agent;
@@ -22,24 +21,7 @@ export function resolvePackageManager(): PackageManagerName {
     return 'npm';
   }
 
-  // Try availability
-  if (isPackageManagerAvailable('yarn')) {
-    return 'yarn';
-  } else if (isPackageManagerAvailable('pnpm')) {
-    return 'pnpm';
-  } else if (isPackageManagerAvailable('bun')) {
-    return 'bun';
-  }
-
   return 'npm';
-}
-
-export function isPackageManagerAvailable(manager: PackageManagerName): boolean {
-  try {
-    execSync(`${manager} --version`, { stdio: 'ignore' });
-    return true;
-  } catch {}
-  return false;
 }
 
 export function formatRunCommand(packageManager: PackageManagerName, cmd: string) {
