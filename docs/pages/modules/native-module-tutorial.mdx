@@ -442,7 +442,7 @@ export function setTheme(theme: Theme): void {
 
 ### Example app
 
-If we change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will complain, and if we ignore that and go ahead and press the button anyway, we'll see the following error:
+If we change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will complain, and if we ignore that and go ahead and press the button, we'll see the following error:
 
 ```text
  ERROR  Error: FunctionCallException: Calling the 'setTheme' function has failed (at ExpoModulesCore/SyncFunctionComponent.swift:76)

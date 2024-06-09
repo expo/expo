@@ -45,7 +45,7 @@ If `expo-updates` catches a JS error, what will happen next depends on whether R
 
 If an error is caught and the "content appeared" event has already fired, OR if it has ever been fired on this device on a past launch of the same update, the following will happen:
 
-- A 5-second timer will be started, and (unless `EXUpdatesCheckOnLaunch`/`expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` is set to `NEVER`) the app will check for a new update and download it if there is one.
+- A 5 second timer will be started, and (unless `EXUpdatesCheckOnLaunch`/`expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` is set to `NEVER`) the app will check for a new update and download it if there is one.
 - If there is no new update, the update finishes downloading, or the timer runs out (whichever happens first), the app will throw the original error and crash.
 
 Note that if a new update is downloaded, it will launch when the user next tries to open the app.
@@ -55,7 +55,7 @@ Note that if a new update is downloaded, it will launch when the user next tries
 If an error is caught before the "content appeared" event has fired, and this is the first time the current update is being launched on this device, the following will happen:
 
 - The update will be marked as "failed" locally and will not be launched again on this device.
-- A 5-second timer will be started, and (unless `EXUpdatesCheckOnLaunch`/`expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` is set to `NEVER`) the app will check for a new update and download it if there is one.
+- A 5 second timer will be started, and (unless `EXUpdatesCheckOnLaunch`/`expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` is set to `NEVER`) the app will check for a new update and download it if there is one.
 - If a new update finishes downloading before the timer runs out, the app will immediately try to reload itself and launch the newly downloaded update.
 - If this newly downloaded update also throws a fatal error, or there is no new update, or the timer runs out, the app will immediately try to reload by rolling back to an older update, whichever one was most recently launched successfully.
 - If this also fails, or there is no older update available on the device, the app will throw the original error and crash.
