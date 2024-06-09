@@ -59,17 +59,23 @@ export const TEMPLATES: {
     ],
   },
   {
-    id: 'webpack.config.js',
-    file: (projectRoot) =>
-      importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
-    destination: () => 'webpack.config.js',
-    dependencies: ['@expo/webpack-config'],
-  },
-  {
     id: 'metro.config.js',
     dependencies: ['@expo/metro-config'],
     destination: () => 'metro.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
+  },
+  {
+    // `tsconfig.json` is special-cased and doesn't follow the template.
+    id: 'tsconfig.json',
+    dependencies: [],
+    destination: () => 'tsconfig.json',
+    file: () => '',
+  },
+  {
+    id: '.eslintrc.js',
+    dependencies: ['eslint-config-expo'],
+    destination: () => '.eslintrc.js',
+    file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
   },
   {
     id: 'serve.json',
@@ -86,11 +92,11 @@ export const TEMPLATES: {
     dependencies: [],
   },
   {
-    // `tsconfig.json` is special cased and don't not follow the template
-    id: 'tsconfig.json',
-    dependencies: [],
-    destination: () => 'tsconfig.json',
-    file: () => '',
+    id: 'webpack.config.js',
+    file: (projectRoot) =>
+      importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
+    destination: () => 'webpack.config.js',
+    dependencies: ['@expo/webpack-config'],
   },
 ];
 
