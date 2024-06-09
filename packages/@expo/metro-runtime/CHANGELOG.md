@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support `location.reload()` in native production builds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -127,6 +127,11 @@ class Location {
                             .DevSettings;
                         return DevSettings.reload();
                     }
+                    else if (typeof globalThis.expo !== 'undefined' &&
+                        'reloadAppAsync' in globalThis.expo) {
+                        // Expo SDK 51 and above.
+                        globalThis.expo.reloadAppAsync('');
+                    }
                     else {
                         throw new DOMException(`Cannot call "location.reload()".`, 'NotSupportedError');
                     }
