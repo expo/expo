@@ -27,7 +27,7 @@ describe(queryAndGenerateAsync, () => {
         extras: [],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Invalid files: file1, file2. Allowed: babel.config.js, webpack.config.js, metro.config.js, web/serve.json, web/index.html, tsconfig.json"`
+      `"Invalid files: file1, file2. Allowed: babel.config.js, webpack.config.js, metro.config.js, web/index.html, tsconfig.json"`
     );
   });
   it(`does nothing`, async () => {

@@ -72,13 +72,6 @@ export const TEMPLATES: {
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
   },
   {
-    id: 'serve.json',
-    file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'serve.json'),
-    // web/serve.json
-    destination: ({ webStaticPath }) => webStaticPath + '/serve.json',
-    dependencies: [],
-  },
-  {
     id: 'index.html',
     file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'index.html'),
     // web/index.html
