@@ -132,6 +132,10 @@ export async function loadMetroConfigAsync(
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
+  if (exp.experiments?.reactCompiler) {
+    Log.warn(`Experimental React Compiler is enabled.`);
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,

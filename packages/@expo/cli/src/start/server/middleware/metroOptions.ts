@@ -26,6 +26,8 @@ export type ExpoMetroOptions = {
   asyncRoutes?: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot: string;
+  /** Enable React compiler support in Babel. */
+  reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
   inlineSourceMap?: boolean;
@@ -86,6 +88,7 @@ function withDefaults({
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
+
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
   let asyncRoutesSetting;
 
@@ -104,10 +107,11 @@ export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, plat
 export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot' | 'asyncRoutes'>
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
 ): Partial<ExpoMetroBundleOptions> {
   return getMetroDirectBundleOptions({
     ...options,
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
@@ -135,6 +139,7 @@ export function getMetroDirectBundleOptions(
     isExporting,
     inlineSourceMap,
     splitChunks,
+    reactCompiler,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -176,6 +181,7 @@ export function getMetroDirectBundleOptions(
       baseUrl,
       routerRoot,
       bytecode,
+      reactCompiler,
     },
     customResolverOptions: {
       __proto__: null,
@@ -196,10 +202,11 @@ export function getMetroDirectBundleOptions(
 export function createBundleUrlPathFromExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+  options: Omit<ExpoMetroOptions, 'reactCompiler' | 'baseUrl' | 'routerRoot'>
 ): string {
   return createBundleUrlPath({
     ...options,
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
   });
@@ -221,6 +228,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     asyncRoutes,
     baseUrl,
     routerRoot,
+    reactCompiler,
     inlineSourceMap,
     isExporting,
     splitChunks,
@@ -268,6 +276,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
+  }
+  if (reactCompiler) {
+    queryParams.append('transform.reactCompiler', String(reactCompiler));
   }
 
   if (environment) {
