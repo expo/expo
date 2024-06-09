@@ -74,7 +74,7 @@ export const TEMPLATES: {
     destination: () => 'tsconfig.json',
     file: () => '',
     configureAsync: async (projectRoot) => {
-      const { typescript } = await import('./typescript.js');
+      const { typescript } = require('./typescript') as typeof import('./typescript');
       await typescript(projectRoot);
       return true;
     },
@@ -85,7 +85,8 @@ export const TEMPLATES: {
     destination: () => '.eslintrc.js',
     file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
     configureAsync: async (projectRoot) => {
-      const { ESLintProjectPrerequisite } = await import('../lint/ESlintPrerequisite.js');
+      const { ESLintProjectPrerequisite } =
+        require('../lint/ESlintPrerequisite') as typeof import('../lint/ESlintPrerequisite.js');
       const prerequisite = new ESLintProjectPrerequisite(projectRoot);
       if (!(await prerequisite.assertAsync())) {
         await prerequisite.bootstrapAsync();
