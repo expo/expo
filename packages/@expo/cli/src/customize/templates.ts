@@ -48,6 +48,9 @@ export const TEMPLATES: {
   destination: (props: DestinationResolutionProps) => string;
   /** List of dependencies to install in the project. These are used inside of the template file. */
   dependencies: string[];
+
+  /** Custom step for configuring the file. Return true to exit early. */
+  configureAsync?: (projectRoot: string) => Promise<boolean>;
 }[] = [
   {
     id: 'babel.config.js',
@@ -70,12 +73,25 @@ export const TEMPLATES: {
     dependencies: [],
     destination: () => 'tsconfig.json',
     file: () => '',
+    configureAsync: async (projectRoot) => {
+      const { typescript } = await import('./typescript.js');
+      await typescript(projectRoot);
+      return true;
+    },
   },
   {
     id: '.eslintrc.js',
-    dependencies: ['eslint-config-expo'],
+    dependencies: [],
     destination: () => '.eslintrc.js',
     file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
+    configureAsync: async (projectRoot) => {
+      const { ESLintProjectPrerequisite } = await import('../lint/ESlintPrerequisite.js');
+      const prerequisite = new ESLintProjectPrerequisite(projectRoot);
+      if (!(await prerequisite.assertAsync())) {
+        await prerequisite.bootstrapAsync();
+      }
+      return false;
+    },
   },
   {
     id: 'serve.json',

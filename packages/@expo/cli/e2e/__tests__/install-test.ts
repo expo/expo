@@ -35,7 +35,7 @@ it('loads expected modules by default', async () => {
   ]);
 });
 
-it('runs `npx install install --help`', async () => {
+it('runs `npx expo install --help`', async () => {
   const results = await execute('install', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
