@@ -73,6 +73,10 @@ object VideoManager {
     }
   }
 
+  fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
+    return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
+  }
+
   fun onAppForegrounded() = Unit
 
   fun onAppBackgrounded() {

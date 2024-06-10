@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
+- [Android] Fix `VideoPlayer.replace` not working when the previous source caused an error.
 
 ### 💡 Others
 
