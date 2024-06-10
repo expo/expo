@@ -112,9 +112,7 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank-51', {
-        sdkVersion: '51.0.0',
-      });
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank-51');
 
       await fs.remove(path.join(projectRoot, '.expo'));
 

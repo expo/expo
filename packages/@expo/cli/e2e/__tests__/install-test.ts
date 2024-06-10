@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa, { ExecaError } from 'execa';
-import fs from 'fs/promises';
-import klawSync from 'klaw-sync';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as klawSync from 'klaw-sync';
+import * as path from 'path';
 
 import {
   execute,
@@ -65,7 +65,6 @@ it(
   'runs `npx expo install expo-sms`',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-install', 'with-blank', {
-      sdkVersion: '51.0.0',
       reuseExisting: false,
     });
     // `npx expo install expo-sms`
@@ -110,7 +109,6 @@ it(
   'runs `npx expo install --check` fails',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
-      sdkVersion: '51.0.0',
       reuseExisting: false,
     });
     await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
@@ -147,7 +145,6 @@ it(
   'runs `npx expo install --fix` fails',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
-      sdkVersion: '51.0.0',
       reuseExisting: false,
     });
     await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
@@ -189,7 +186,6 @@ it(
       'install-expo-canary-fix',
       'with-blank',
       {
-        sdkVersion: '51.0.0',
         reuseExisting: false,
       }
     );

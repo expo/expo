@@ -30,10 +30,7 @@ it(
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'expo-28016-export-async-imports',
-      'with-circular-async-imports',
-      {
-        sdkVersion: '51.0.0',
-      }
+      'with-circular-async-imports'
     );
     // `npx expo export:web`
     await execa('node', [bin, 'export', '-p', 'web', '--no-minify'], {

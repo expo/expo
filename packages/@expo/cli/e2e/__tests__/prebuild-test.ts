@@ -178,9 +178,7 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 it(
   'runs `npx expo prebuild`',
   async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank-51', {
-      sdkVersion: '51.0.0',
-    });
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank-51');
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
@@ -290,10 +288,7 @@ it(
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'github-template-prebuild',
-      'with-blank-51',
-      {
-        sdkVersion: '51.0.0',
-      }
+      'with-blank-51'
     );
 
     const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;

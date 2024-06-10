@@ -71,7 +71,6 @@ it(
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-customize', 'with-blank', {
       reuseExisting: false,
-      sdkVersion: '51.0.0',
     });
     // `npx expo customize index.html serve.json babel.config.js`
     await execa(
@@ -113,7 +112,6 @@ it(
       'with-router',
       {
         reuseExisting: false,
-        sdkVersion: '51.0.0',
       }
     );
 
@@ -140,7 +138,7 @@ it(
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'expo-customize-typescript-partial',
       'with-router',
-      { sdkVersion: '51.0.0', reuseExisting: false }
+      { reuseExisting: false }
     );
 
     const existingTsConfig = {

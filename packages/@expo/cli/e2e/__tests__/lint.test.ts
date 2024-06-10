@@ -80,6 +80,7 @@ it(
       'App.js',
       'app.json',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
     ]);
 
@@ -129,6 +130,7 @@ it(
       'App.js',
       'app.json',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
     ]);
 

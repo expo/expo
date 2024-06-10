@@ -6,7 +6,13 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 import { sync as globSync } from 'glob';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -43,7 +49,7 @@ describe('server', () => {
   it(
     'runs `npx expo export`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
       // `npx expo export`
       await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
         cwd: projectRoot,
@@ -183,7 +189,7 @@ describe('server', () => {
   it(
     'runs `npx expo export --no-bytecode`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
 
       await execa(
         'node',
