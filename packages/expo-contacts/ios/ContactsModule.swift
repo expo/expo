@@ -80,6 +80,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         throw ContactManipulationInProgressException()
       }
 
+      presentingViewController?.dismiss(animated: false, completion: nil)
+
       var controller: ContactsViewController?
 
       if let identifier {

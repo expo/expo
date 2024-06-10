@@ -68,7 +68,7 @@ func decodeUrlAddresses(_ input: [UrlAddress]?) -> [CNLabeledValue<NSString>]? {
   var output = [CNLabeledValue<NSString>]()
   for item in input {
     let label = decodeUrlAddressLabel(item.label)
-    if let urlString = item.url?.absoluteString {
+    if let urlString = item.url {
       output.append(CNLabeledValue(label: label, value: urlString as NSString))
     }
   }
