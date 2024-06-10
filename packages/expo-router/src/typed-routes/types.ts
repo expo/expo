@@ -1,20 +1,17 @@
 export type StaticRoutes = ExpoRouter.__routes extends { StaticRoutes: string }
-  ? // @ts-expect-error
-    ExpoRouter.__routes['StaticRoutes']
+  ? ExpoRouter.__routes['StaticRoutes']
   : string;
 export type DynamicRoutes<T extends string> =
   ExpoRouter.__routes<T> extends {
     DynamicRoutes: any;
   }
-    ? // @ts-expect-error
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
       T extends ExpoRouter.__routes<infer _>['DynamicRoutes']
       ? T
       : never
     : string;
 export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTemplate: string }
-  ? // @ts-expect-error
-    ExpoRouter.__routes['DynamicRouteTemplate']
+  ? ExpoRouter.__routes['DynamicRouteTemplate']
   : string;
 
 /**
@@ -24,7 +21,7 @@ export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTem
  */
 export namespace ExpoRouter {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export interface __routes<T extends string = string> {}
+  export interface __routes<T extends string = string> extends Record<string, unknown> {}
 }
 
 export type Routes = DynamicRouteTemplate | StaticRoutes;

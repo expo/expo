@@ -13,7 +13,7 @@ export type DynamicRouteTemplate = ExpoRouter.__routes extends {
  * @internal
  */
 export declare namespace ExpoRouter {
-    interface __routes<T extends string = string> {
+    interface __routes<T extends string = string> extends Record<string, unknown> {
     }
 }
 export type Routes = DynamicRouteTemplate | StaticRoutes;

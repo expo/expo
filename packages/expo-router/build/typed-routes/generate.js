@@ -17,13 +17,14 @@ function getTypedRoutesDeclarationFile(ctx) {
         ignoreRequireErrors: true,
         importMode: 'async',
     }), staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
-    return `import * as Router from 'expo-router';
+    return `/* eslint-disable */
+import * as Router from 'expo-router';
 
 export * from 'expo-router';
 
 declare module 'expo-router' {
   export namespace ExpoRouter {
-    export interface __routes<T extends string = string> {
+    export interface __routes<T extends string = string> extends Record<string, unknown> {
       StaticRoutes: ${setToUnionType(staticRoutes)};
       DynamicRoutes: ${setToUnionType(dynamicRoutes)};
       DynamicRouteTemplate: ${setToUnionType(dynamicRouteContextKeys)};
