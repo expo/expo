@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -41,6 +42,7 @@ type Options = {
   reactCompiler: boolean;
   maxWorkers?: number;
   isExporting: boolean;
+  exp?: ExpoConfig;
 };
 
 type HtmlRequestLocation = {
@@ -134,7 +136,15 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
 export async function exportFromServerAsync(
   projectRoot: string,
   devServer: MetroBundlerDevServer,
-  { outputDir, baseUrl, exportServer, includeSourceMaps, routerRoot, files = new Map() }: Options
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    includeSourceMaps,
+    routerRoot,
+    files = new Map(),
+    exp,
+  }: Options
 ): Promise<ExportAssetMap> {
   Log.log(
     `Static rendering is enabled. ` +
@@ -148,6 +158,7 @@ export async function exportFromServerAsync(
     outputDir,
     baseUrl,
     files,
+    exp,
   });
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([

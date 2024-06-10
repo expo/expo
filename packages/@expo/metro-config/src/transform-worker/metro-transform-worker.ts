@@ -332,7 +332,12 @@ async function transformJS(
         importDefault,
         importAll,
         dependencyMapName,
-        config.globalPrefix
+        config.globalPrefix,
+        // TODO: This config is optional to allow its introduction in a minor
+        // release. It should be made non-optional in ConfigT or removed in
+        // future.
+        // @ts-expect-error: Not on types yet (Metro 0.80.9).
+        config.unstable_renameRequire === false
       ));
     }
   }
