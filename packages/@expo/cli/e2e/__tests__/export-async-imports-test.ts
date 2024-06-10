@@ -7,7 +7,6 @@ import path from 'path';
 import {
   expectChunkPathMatching,
   projectRoot,
-  setupTestProjectAsync,
   bin,
   setupTestProjectWithOptionsAsync,
 } from './utils';
