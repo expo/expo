@@ -241,6 +241,8 @@ async function spawnXcodeBuildWithFormat(
     isDebug: env.EXPO_DEBUG,
   });
 
+  const startTime = Date.now();
+
   const results = await spawnXcodeBuildWithFlush(args, options, {
     onFlush(data) {
       // Process data.
@@ -261,6 +263,9 @@ async function spawnXcodeBuildWithFormat(
   ) {
     throw new AbortCommandError();
   }
+  const duration = Date.now() - startTime;
+  const formatTime = duration < 1000 ? `${duration}ms` : `${(duration / 1000).toFixed(2)}s`;
+  logPrettyItem(`Built in ${formatTime}`);
 
   Log.log(formatter.getBuildSummary());
 
@@ -272,7 +277,6 @@ export async function buildAsync(props: BuildProps): Promise<string> {
 
   const { projectRoot, xcodeProject, shouldSkipInitialBundling, port } = props;
 
-  const startTime = Date.now();
   const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
     args,
     getProcessOptions({
@@ -286,9 +290,6 @@ export async function buildAsync(props: BuildProps): Promise<string> {
       xcodeProject,
     }
   );
-  const duration = Date.now() - startTime;
-  const formatTime = duration < 1000 ? `${duration}ms` : `${(duration / 1000).toFixed(2)}s`;
-  Log.log(`Built in ${formatTime}ms.`);
 
   const logFilePath = writeBuildLogs(projectRoot, results, error);
 
