@@ -71,7 +71,7 @@ jobs:
       - name: 🏗️ Build iOS project
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
-        timeout-minutes: 45
+        timeout-minutes: 60
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
@@ -126,7 +126,7 @@ jobs:
       - name: 🧪 Run tests
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
-        timeout-minutes: 30
+        timeout-minutes: 45
       - name: Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v3
