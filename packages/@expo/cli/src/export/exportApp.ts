@@ -164,6 +164,7 @@ export async function exportAppAsync(
               template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
                 scripts: [],
                 cssLinks: [],
+                exp: projectConfig.exp,
               }),
               baseUrl,
             });
@@ -173,6 +174,7 @@ export async function exportAppAsync(
               outputDir,
               baseUrl,
               files,
+              exp: projectConfig.exp,
             });
             if (modifyHtml) {
               html = modifyHtml(html);
@@ -253,6 +255,7 @@ export async function exportAppAsync(
         exportServer,
         maxWorkers,
         isExporting: true,
+        exp: projectConfig.exp,
       });
     }
   } finally {
