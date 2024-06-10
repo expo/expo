@@ -1,7 +1,6 @@
 package expo.modules.audio
 
 import android.content.Context
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -32,10 +31,12 @@ class AudioPlayer(
     },
   appContext
 ) {
-  var preservesPitch = false
   val player = ref
+  val id = UUID.randomUUID().toString()
+  var preservesPitch = false
+  var isMuted = false
+
   private var playerScope = CoroutineScope(Dispatchers.Default)
-  val id = UUID.randomUUID()
 
   init {
     addPlayerListeners()
@@ -46,6 +47,9 @@ class AudioPlayer(
       }
     }
   }
+
+  val requiresAudioFocus get() = player.isPlaying || (shouldPlayerPlay && !isMuted);
+  private val shouldPlayerPlay get() = player.playbackParameters.speed > 0.0
 
   private fun addPlayerListeners() {
     player.addListener(object : Player.Listener {
@@ -70,13 +74,14 @@ class AudioPlayer(
     val isBuffering = player.playbackState == Player.STATE_BUFFERING
 
     val data = mapOf(
+      "id" to id,
       "currentTime" to player.currentPosition,
       "status" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
-      "muted" to isMuted,
+      "mute" to isMuted,
       "duration" to player.duration,
-      "isPlaying" to player.isPlaying,
+      "playing" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to player.playbackParameters.speed,

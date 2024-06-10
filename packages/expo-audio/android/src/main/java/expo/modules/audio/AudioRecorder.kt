@@ -25,7 +25,7 @@ class AudioRecorder(
   private var meteringEnabled = false
   private var durationAlreadyRecorded = 0L
 
-  val id = UUID.randomUUID()
+  val id = UUID.randomUUID().toString()
   var uri: String? = null
   var uptime = 0L
   var isRecording = false

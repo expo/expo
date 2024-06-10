@@ -38,7 +38,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
    * Boolean value indicating whether the player is currently playing.
    */
-  isPlaying: boolean;
+  playing: boolean;
 
   /**
    * Boolean value indicating whether the player is currently muted.

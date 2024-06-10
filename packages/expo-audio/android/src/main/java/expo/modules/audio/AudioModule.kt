@@ -1,12 +1,12 @@
 package expo.modules.audio
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
@@ -31,6 +31,7 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -40,16 +41,30 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
-import java.util.UUID
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
+class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, LifecycleEventListener {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val players = mutableMapOf<String, AudioPlayer>()
+  private var appIsPaused = false
+  private var staysActiveInBackground = false
+  private var audioEnabled = true
+  private var focusAcquired = false
+  private var shouldDuckAudio = false
+  private var audioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS
+  private var isDuckingAudio = false
+  private var shouldRouteThroughEarpiece = false
+
+  private enum class AudioInterruptionMode {
+    DO_NOT_MIX,
+    DUCK_OTHERS,
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
@@ -59,10 +74,17 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
+      shouldDuckAudio = mode.shouldDuckAudio ?: false
+
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
-      audioManager.abandonAudioFocus(this@AudioModule)
+      audioEnabled = enabled
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+        audioManager.abandonAudioFocusRequest(AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_LOSS).build())
+      } else {
+        audioManager.abandonAudioFocus(this@AudioModule)
+      }
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { promise: Promise ->
@@ -85,16 +107,18 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
 
         val mediaSource = buildMediaSourceFactory(factory, Uri.parse(source.uri))
         runBlocking(appContext.mainQueue.coroutineContext) {
-          AudioPlayer(
+          val player = AudioPlayer(
             context,
             appContext,
             mediaSource
           )
+          players[player.id] = player
+          player
         }
       }
 
       Property("id") { ref ->
-        ref.id.toString()
+        ref.id
       }
 
       Property("isBuffering") { ref ->
@@ -208,7 +232,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       }
 
       Property("id") { ref ->
-        ref.id.toString()
+        ref.id
       }
 
       Property("uri") { ref ->
@@ -300,6 +324,11 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
   }
 
+  private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
+    audioManager.setMode(if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL)
+    audioManager.setSpeakerphoneOn(!playThroughEarpiece)
+  }
+
   private fun getDeviceInfoFromUid(uid: String): AudioDeviceInfo? {
     val id = uid.toInt()
     val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
@@ -325,7 +354,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
       // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
       deviceInfo = ref.recorder.getRoutedDevice()
     } catch (e: java.lang.Exception) {
-      // Noop if this throws, try alternate method of determining current input below.
+      // no-op
     }
 
     // If no routed device is found try preferred device
@@ -363,8 +392,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
   }
 
-  private fun retrieveStreamType(uri: Uri): Int =
-    Util.inferContentType(uri)
+  private fun retrieveStreamType(uri: Uri): Int = Util.inferContentType(uri)
 
   private fun buildMediaSourceFactory(
     factory: DataSource.Factory,
@@ -397,69 +425,110 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener {
     }
   }
 
-  @SuppressLint("SwitchIntDef")
   private fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
     val map = Bundle()
-    val type = deviceInfo.type
-    var typeStr = type.toString()
-    when (type) {
-      AudioDeviceInfo.TYPE_BUILTIN_MIC -> {
-        typeStr = "MicrophoneBuiltIn"
-      }
-
-      AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> {
-        typeStr = "BluetoothSCO"
-      }
-
-      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> {
-        typeStr = "BluetoothA2DP"
-      }
-
-      AudioDeviceInfo.TYPE_TELEPHONY -> {
-        typeStr = "Telephony"
-      }
-
-      AudioDeviceInfo.TYPE_WIRED_HEADSET -> {
-        typeStr = "MicrophoneWired"
-      }
+    val type = when (deviceInfo.type) {
+      AudioDeviceInfo.TYPE_BUILTIN_MIC -> "MicrophoneBuiltIn"
+      AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "BluetoothSCO"
+      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "BluetoothA2DP"
+      AudioDeviceInfo.TYPE_TELEPHONY -> "Telephony"
+      AudioDeviceInfo.TYPE_WIRED_HEADSET -> "MicrophoneWired"
+      else -> "Unknown device type"
     }
     map.putString("name", deviceInfo.getProductName().toString())
-    map.putString("type", typeStr)
+    map.putString("type", type)
     map.putString("uid", deviceInfo.id.toString())
     return map
   }
 
   override fun onAudioFocusChange(focusChange: Int) {
-//    when (focusChange) {
-//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-//        if (mShouldDuckAudio) {
-//          mIsDuckingAudio = true
-//          mAcquiredAudioFocus = true
+    when (focusChange) {
+      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+        if (shouldDuckAudio) {
+          isDuckingAudio = true
+          focusAcquired = true
 //          updateDuckStatusForAllPlayersPlaying()
-//          break
-//        }
-//        mIsDuckingAudio = false
-//        mAcquiredAudioFocus = false
-//        for (handler in getAllRegisteredAudioEventHandlers()) {
-//          handler.handleAudioFocusInterruptionBegan()
-//        }
-//      }
-//
-//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> {
-//        mIsDuckingAudio = false
-//        mAcquiredAudioFocus = false
-//        for (handler in getAllRegisteredAudioEventHandlers()) {
-//          handler.handleAudioFocusInterruptionBegan()
-//        }
-//      }
-//
-//      AudioManager.AUDIOFOCUS_GAIN -> {
-//        mIsDuckingAudio = false
-//        mAcquiredAudioFocus = true
-//        for (handler in getAllRegisteredAudioEventHandlers()) {
-//          handler.handleAudioFocusGained()
-//        }
-//      }
-//    }
+          return
+        }
+        isDuckingAudio = false
+        focusAcquired = false
+        for (player in players.values) {
+          player.player.playWhenReady = false
+        }
+      }
+
+      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> {
+        isDuckingAudio = false
+        focusAcquired = false
+        for (player in players.values) {
+          player.player.playWhenReady = false
+        }
+      }
+
+      AudioManager.AUDIOFOCUS_GAIN -> {
+        isDuckingAudio = false
+        focusAcquired = true
+      }
+    }
+  }
+
+  override fun onHostResume() {
+    if (appIsPaused) {
+      appIsPaused = false
+      if (!staysActiveInBackground) {
+        if (shouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(true)
+        }
+      }
+    }
+  }
+
+  override fun onHostPause() {
+    if (!appIsPaused) {
+      if (!staysActiveInBackground) {
+        for (player in players.values) {
+          player.player.playWhenReady = false
+        }
+      }
+    }
+  }
+
+  override fun onHostDestroy() {
+    for (player in players.values) {
+      player.player.stop()
+      player.deallocate()
+    }
+  }
+
+  private fun requestAudioFocus() {
+    if (!audioEnabled) {
+      throw AudioFocusNotAcquiredException()
+    }
+
+    if (appIsPaused && !staysActiveInBackground) {
+      throw AudioFocusException()
+    }
+
+    if (focusAcquired) {
+      return
+    }
+
+    val audioFocusRequest = if (audioInterruptionMode == AudioInterruptionMode.DO_NOT_MIX
+    ) {
+      AudioManager.AUDIOFOCUS_GAIN
+    } else {
+      AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+    }
+
+    val result: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      audioManager.requestAudioFocus(AudioFocusRequest.Builder(audioFocusRequest).build())
+    } else {
+      audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, audioFocusRequest);
+    }
+
+    focusAcquired = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+    if (!focusAcquired) {
+      throw AudioFocusFailedException()
+    }
   }
 }

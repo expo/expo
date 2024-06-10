@@ -25,7 +25,7 @@ export type AudioPlayerState = {
   durationMillis: number;
   rate: number;
   volume: number;
-  isPlaying: boolean;
+  playing: boolean;
   audioPan: number;
   shouldCorrectPitch: boolean;
 };
@@ -40,7 +40,7 @@ export type AudioStatus = {
   reasonForWaitingToPlay: string;
   mute: boolean;
   duration: number;
-  isPlaying: boolean;
+  playing: boolean;
   loop: boolean;
   isBuffering: boolean;
   isLoaded: boolean;

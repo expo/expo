@@ -49,7 +49,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: pointer.reasonForWaitingToPlay),
       "mute": pointer.isMuted,
       "duration": (pointer.currentItem?.duration.seconds ?? 0) * 1000,
-      "isPlaying": pointer.timeControlStatus == .playing,
+      "playing": pointer.timeControlStatus == .playing,
       "loop": isLooping,
       "isLoaded": pointer.currentItem?.status == .readyToPlay,
       "playbackRate": pointer.rate,

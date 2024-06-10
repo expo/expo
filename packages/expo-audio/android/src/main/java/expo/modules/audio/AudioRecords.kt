@@ -14,7 +14,8 @@ class AudioMode(
   @Field val playsInSilentMode: Boolean = false,
   @Field val interruptionMode: InterruptionMode = InterruptionMode.MIX_WITH_OTHERS,
   @Field val allowsRecording: Boolean = true,
-  @Field val shouldPlayInBackground: Boolean = true
+  @Field val shouldPlayInBackground: Boolean = true,
+  @Field val shouldDuckAudio: Boolean?
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {

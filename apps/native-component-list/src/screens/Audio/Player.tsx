@@ -52,7 +52,7 @@ interface Props {
   positionMillis: number;
   durationMillis: number;
   shouldCorrectPitch: boolean;
-  isPlaying: boolean;
+  playing: boolean;
   isMuted: boolean;
   metadata?: AVMetadata;
 
@@ -95,7 +95,7 @@ export default function Player(props: Props) {
     let onPress = _pause;
     let iconName = 'pause';
 
-    if (!props.isPlaying) {
+    if (!props.playing) {
       onPress = _play;
       iconName = 'play';
     }
