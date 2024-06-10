@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Use proper `create-expo(-app)` reference in `--help` and clean up bun example. ([#29504](https://github.com/expo/expo/pull/29504) by [@byCedric](https://github.com/byCedric))
+
 ## 2.3.4 — 2024-05-01
 
 ### 🐛 Bug fixes
