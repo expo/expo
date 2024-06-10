@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.4.3 — 2024-06-10
+
+### 🎉 New features
+
 - Add assertions for `NODE_OPTIONS` and Node.js versions. ([#29155](https://github.com/expo/expo/pull/29155) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Fix `ExpoResponse` using incorrect object. ([#29154](https://github.com/expo/expo/pull/29154) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.4.2 — 2024-04-23
 
