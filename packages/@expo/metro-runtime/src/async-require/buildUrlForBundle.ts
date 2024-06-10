@@ -5,6 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/** Given a path encodes the pathname part to be a safe URI.
+ *
+ * @remarks
+ * On file services, especially S3, special characters in the pathname
+ * part must be encoded to be recognized properly.
+ * We list a regular expression with the specifically problematic
+ * characters manually to be encoded here.
+ */
+function encodeBundlePath(filename: string): string {
+  if (typeof window === 'undefined') {
+    return encodeURI(filename);
+  }
+  const url = new URL(filename, window.location.origin);
+  url.pathname = url.pathname.replace(
+    /[+!"#$&'()*+,:;=?@]/g,
+    (match) => `%${match.charCodeAt(0).toString(16)}`,
+  );
+  return url.toString();
+}
+
 /**
  * Given a path and some optional additional query parameters, create the dev server bundle URL.
  * @param bundlePath like `/foobar`
@@ -13,9 +33,9 @@
  */
 export function buildUrlForBundle(bundlePath: string): string {
   if (bundlePath.match(/^https?:\/\//)) {
-    return bundlePath;
+    return encodeBundlePath(bundlePath);
   }
   // NOTE(EvanBacon): This must come from the window origin (at least in dev mode).
   // Otherwise Metro will crash from attempting to load a bundle that doesn't exist.
-  return '/' + bundlePath.replace(/^\/+/, '');
+  return encodeBundlePath('/' + bundlePath.replace(/^\/+/, ''));
 }
