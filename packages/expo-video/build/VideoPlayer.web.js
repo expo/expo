@@ -13,7 +13,7 @@ export function getSourceUri(source) {
     }
     return source?.uri ?? null;
 }
-export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
+export default class VideoPlayerWeb extends expo.SharedObject {
     constructor(source) {
         super();
         this.src = source;
@@ -151,6 +151,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             }
             else {
                 video.removeAttribute('src');
+                video.load();
             }
         });
         this.playing = true;

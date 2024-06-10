@@ -28,7 +28,7 @@ export function getSourceUri(source: VideoSource): string | null {
 }
 
 export default class VideoPlayerWeb
-  extends globalThis.expo.SharedObject<VideoPlayerEvents>
+  extends expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
 {
   constructor(source: VideoSource) {
@@ -198,6 +198,7 @@ export default class VideoPlayerWeb
         video.play();
       } else {
         video.removeAttribute('src');
+        video.load();
       }
     });
     this.playing = true;
