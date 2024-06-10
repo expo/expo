@@ -26,7 +26,7 @@ function encodeBundlePath(filename) {
         return url.toString();
     }
     else {
-        const [pathname, query] = filename.split('?');
+        const [pathname, query] = encodeURI(filename).split('?');
         return query ? `${encode(pathname)}?${query}` : encode(pathname);
     }
 }
