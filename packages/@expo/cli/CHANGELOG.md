@@ -32,6 +32,7 @@
 - Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+- Removed <SDK51 type tests.
 
 ## 0.18.19 - 2024-06-13
 
@@ -62,6 +63,8 @@ _This version does not introduce any user-facing changes._
 ## 0.18.16 - 2024-06-06
 
 _This version does not introduce any user-facing changes._
+
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 
 ## 0.18.15 — 2024-06-05
 
