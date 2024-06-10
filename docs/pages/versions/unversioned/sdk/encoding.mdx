@@ -1,0 +1,33 @@
+---
+title: Encoding
+description: Standard TextEncoder and TextDecoder APIs available on all Expo-supported platforms.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-51/packages/expo'
+packageName: 'expo'
+platforms: ['android', 'ios', 'web', 'tvos']
+---
+
+The standard URL API is available on all Expo-supported platforms.
+
+## Installation
+
+This API is part of the `expo` package. Refer to the [browser and server runtime support](https://caniuse.com/textencoder) for web and Node.js.
+
+## Usage
+
+`TextEncoder` and `TextDecoder` are available globally without needing to import them.
+
+```js
+// [104, 101, 108, 111]
+const hello = new TextEncoder().encode('hello');
+
+// "hello"
+const text = new TextDecoder().decode(hello);
+```
+
+## TextEncoder
+
+The `TextEncoder` API is included in the Hermes engine.
+
+## TextDecoder
+
+The `TextDecoder` API is not spec compliant on native platforms. Only the `utf8` encoding is supported. If you need support for more encoding, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
