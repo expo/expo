@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update `commander` dependency.
+
 ## 3.5.2 - 2024-05-29
 
 ### 🎉 New features
