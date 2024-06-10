@@ -10,7 +10,6 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   bin,
-  setupTestProjectAsync,
   setupTestProjectWithOptionsAsync,
 } from './utils';
 
@@ -44,7 +43,7 @@ it('runs `npx expo lint --help`', async () => {
 it(
   'runs `npx expo lint` to install lint in a project',
   async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank-51', {
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
       reuseExisting: false,
     });
     // `npx expo install expo-sms`
@@ -81,6 +80,7 @@ it(
       'App.js',
       'app.json',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
     ]);
 
@@ -93,7 +93,7 @@ it(
 it(
   'runs `npx expo customize .eslintrc.js` to install lint in a project',
   async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank-51', {
+    const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
       reuseExisting: false,
     });
     // `npx expo install expo-sms`
@@ -130,6 +130,7 @@ it(
       'App.js',
       'app.json',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
     ]);
 
