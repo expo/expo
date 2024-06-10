@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing URI encoding for S3-compatible bundle loading.
+
 ### 💡 Others
 
 ## 3.2.1 — 2024-04-23
