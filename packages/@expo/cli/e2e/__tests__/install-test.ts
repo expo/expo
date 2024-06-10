@@ -10,7 +10,7 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   bin,
-  setupTestProjectAsync,
+  setupTestProjectWithOptionsAsync,
   installAsync,
 } from './utils';
 
@@ -64,7 +64,10 @@ it('runs `npx expo install --help`', async () => {
 it(
   'runs `npx expo install expo-sms`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-install', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-install', 'with-blank', {
+      sdkVersion: '51.0.0',
+      reuseExisting: false,
+    });
     // `npx expo install expo-sms`
     await execa('node', [bin, 'install', 'expo-sms'], { cwd: projectRoot });
 
@@ -84,7 +87,7 @@ it(
 
     // Added expected package
     const pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~11.4.0');
+    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
     expect(pkg.devDependencies).toEqual({
       '@babel/core': '^7.20.0',
     });
@@ -106,7 +109,10 @@ it(
 it(
   'runs `npx expo install --check` fails',
   async () => {
-    const projectRoot = await setupTestProjectAsync('install-check-fail', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
+      sdkVersion: '51.0.0',
+      reuseExisting: false,
+    });
     await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
@@ -120,12 +126,12 @@ it(
     } catch (e) {
       const error = e as ExecaError;
       expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~5\.\d\.\d/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
     }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
+    ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
 
     // Check doesn't fix packages
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
@@ -140,7 +146,10 @@ it(
 it(
   'runs `npx expo install --fix` fails',
   async () => {
-    const projectRoot = await setupTestProjectAsync('install-fix-fail', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
+      sdkVersion: '51.0.0',
+      reuseExisting: false,
+    });
     await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
     await execa('node', [bin, 'install', '--fix', 'expo-sms'], { cwd: projectRoot });
@@ -154,7 +163,7 @@ it(
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
     let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~11.4.0');
+    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
 
     // Didn't fix expo-auth-session since we didn't pass it in
     expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
@@ -167,7 +176,7 @@ it(
 
     // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~5.0.2');
+    expect(pkgDependencies['expo-auth-session']).toBe('~5.5.2');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
@@ -176,7 +185,14 @@ it(
 it(
   'runs `npx expo install expo@<version> --fix`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('install-expo-canary-fix', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'install-expo-canary-fix',
+      'with-blank',
+      {
+        sdkVersion: '51.0.0',
+        reuseExisting: false,
+      }
+    );
     const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
     // Add a package that requires "fixing" when using canary

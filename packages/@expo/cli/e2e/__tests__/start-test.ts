@@ -13,9 +13,9 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
   ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -112,14 +112,17 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank-51', {
+        sdkVersion: '51.0.0',
+      });
+
       await fs.remove(path.join(projectRoot, '.expo'));
 
       const promise = execa('node', [bin, 'start'], {
         cwd: projectRoot,
         env: {
           ...process.env,
-          EXPO_USE_FAST_RESOLVER: 'true',
+          // EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
 
@@ -180,7 +183,7 @@ describe('server', () => {
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('51.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 

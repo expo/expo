@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -12,7 +12,7 @@ import {
   execute,
   projectRoot,
   getRoot,
-  setupTestProjectAsync,
+  setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
 } from './utils';
 
@@ -30,13 +30,22 @@ function getTemplatePath() {
   return results[0];
 }
 
+let cachedTemplatePath: string | null = null;
+
 async function ensureTemplatePathAsync() {
-  let templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
+  // let templatePath = getTemplatePath();
+  if (cachedTemplatePath) return cachedTemplatePath;
   await execa('npm', ['pack'], { cwd: templateFolder });
 
-  templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
+  cachedTemplatePath = getTemplatePath();
+
+  const tmpTemplate = path.join(projectRoot, 'template.tgz');
+  // Move to tmp directory
+  await fs.rename(cachedTemplatePath, tmpTemplate);
+
+  cachedTemplatePath = tmpTemplate;
+
+  if (cachedTemplatePath) return cachedTemplatePath;
 
   throw new Error('Could not find template tarball');
 }
@@ -169,7 +178,9 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 it(
   'runs `npx expo prebuild`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank-51', {
+      sdkVersion: '51.0.0',
+    });
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
@@ -277,7 +288,13 @@ it(
 it(
   'runs `npx expo prebuild --template <github-url>`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('github-template-prebuild', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'github-template-prebuild',
+      'with-blank-51',
+      {
+        sdkVersion: '51.0.0',
+      }
+    );
 
     const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
     const expoSdkVersion = semver.minVersion(expoPackage)?.major;
@@ -328,10 +345,9 @@ it(
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
         "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.java",
-        "android/app/src/main/java/com/example/minimal/MainApplication.java",
+        "android/app/src/main/java/com/example/minimal/MainActivity.kt",
+        "android/app/src/main/java/com/example/minimal/MainApplication.kt",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -348,7 +364,6 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
-        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",

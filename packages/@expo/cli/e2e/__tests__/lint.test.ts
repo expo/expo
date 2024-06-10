@@ -10,7 +10,6 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   bin,
-  setupTestProjectAsync,
   setupTestProjectWithOptionsAsync,
 } from './utils';
 
