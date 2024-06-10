@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `ExpoResponse` using incorrect object. ([#29154](https://github.com/expo/expo/pull/29154) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix the Vercel adapter's `writeHead` call in the `respond` helper failing to pass raw headers
+- Fix the Vercel adapter's `writeHead` call in the `respond` helper failing to pass raw headers ([#29616](https://github.com/expo/expo/pull/29616) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
