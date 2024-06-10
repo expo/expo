@@ -214,6 +214,7 @@ const general = [
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/customizing-links.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
