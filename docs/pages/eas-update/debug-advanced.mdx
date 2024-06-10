@@ -200,7 +200,7 @@ Inside our project's app config (**app.json**/**app.config.json**), the URL we c
 
 This `url` is EAS' "https://u.expo.dev" domain, followed by the project's ID on EAS servers. If we go to the URL directly, we'll see an error about missing a header. We can view a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production` and a platform of `android`, the full URL we could visit would be similar to this:
 
-```
+```text
 https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production&platform=android
 ```
 
