@@ -74,9 +74,12 @@ Consider the following project structure:
   ]}
 />
 
-In this project, the **\_layout.web.js** file is used as a layout on the web and **\_layout.js** is used on all other platform. The **index.js** file is used as the home page for all platforms. The **about.web.js** file is used as the about page for the web and **about.js** file is used on all other platforms.
+In the above file structure:
+- **\_layout.web.js** file is used as a layout on the web and **\_layout.js** is used on all other platforms.
+- **index.js** file is used as the home page for all platforms.
+- **about.web.js** file is used as the about page for the web, and the **about.js** file is used on all other platforms.
 
-> **info** Always provide a file without a platform extension to ensure every platform has a default implementation.
+> **info** Providing a route file without a platform-specific extension is required to ensure every platform has a default implementation.
 
 ## Dynamic routes
 
