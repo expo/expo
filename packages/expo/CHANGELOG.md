@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add minimal `TextDecoder` support to native client platforms.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -20,4 +20,5 @@ function install(name, getValue) {
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 //# sourceMappingURL=runtime.native.js.map

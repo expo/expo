@@ -24,3 +24,5 @@ function install(name: string, getValue: () => any) {
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+
+install('TextDecoder', () => require('./TextDecoder').TextDecoder);
