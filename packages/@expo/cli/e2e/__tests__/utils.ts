@@ -188,30 +188,12 @@ export async function setupTestProjectWithOptionsAsync(
   }: {
     sdkVersion?: string;
     reuseExisting?: boolean;
-  }
+  } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
     reuseExisting,
-    fixtureName,
-  });
-
-  // Many of the factors in this test are based on the expected SDK version that we're testing against.
-  const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe(sdkVersion);
-  return projectRoot;
-}
-
-export async function setupTestProjectAsync(
-  name: string,
-  fixtureName: string,
-  sdkVersion: string = '49.0.0'
-): Promise<string> {
-  // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
-  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
-    dirName: name,
-    reuseExisting: testingLocally,
     fixtureName,
   });
 
