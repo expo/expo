@@ -122,7 +122,7 @@ describe('server', () => {
         cwd: projectRoot,
         env: {
           ...process.env,
-          // EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
 
@@ -191,7 +191,12 @@ describe('server', () => {
       expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundle = await fetch(manifest.launchAsset.url).then((res) => res.text());
+      const bundleRequest = await fetch(manifest.launchAsset.url);
+      if (!bundleRequest.ok) {
+        console.error(await bundleRequest.text());
+        throw new Error('Failed to fetch bundle');
+      }
+      const bundle = await bundleRequest.text();
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');
