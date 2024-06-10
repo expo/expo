@@ -121,7 +121,7 @@ export const testRouter = {
   },
   /** Update the current route query params and assert the new pathname */
   setParams(params: Record<string, string>, path?: string) {
-    router.setParams<'/test'>(params);
+    router.setParams(params);
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }
