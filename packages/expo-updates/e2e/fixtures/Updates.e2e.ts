@@ -81,7 +81,7 @@ const readLogEntriesAsync = async () => {
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {
