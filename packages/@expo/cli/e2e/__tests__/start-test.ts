@@ -112,7 +112,7 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank-51');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
 
       await fs.remove(path.join(projectRoot, '.expo'));
 

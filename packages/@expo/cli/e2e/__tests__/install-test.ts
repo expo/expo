@@ -88,7 +88,7 @@ it(
     const pkgDependencies = pkg.dependencies as Record<string, string>;
     expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
     expect(pkg.devDependencies).toEqual({
-      '@babel/core': '^7.20.0',
+      '@babel/core': '^7.19.3',
     });
 
     // Added new packages
@@ -99,7 +99,13 @@ it(
       'react-native',
     ]);
 
-    expect(files).toStrictEqual(['App.js', 'app.json', 'bun.lockb', 'package.json']);
+    expect(files).toStrictEqual([
+      'App.js',
+      'app.json',
+      'bun.lockb',
+      'metro.config.js',
+      'package.json',
+    ]);
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

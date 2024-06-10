@@ -7,6 +7,6 @@
     "react-native": "0.74.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.19.3"
   }
 }

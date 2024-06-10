@@ -178,7 +178,7 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 it(
   'runs `npx expo prebuild`',
   async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank-51');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
@@ -275,6 +275,7 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
+        "metro.config.js",
         "package.json",
       ]
     `);
@@ -288,7 +289,7 @@ it(
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'github-template-prebuild',
-      'with-blank-51'
+      'with-blank'
     );
 
     const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
@@ -390,6 +391,7 @@ it(
         "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/githubtemplateprebuild.xcodeproj/xcshareddata/xcschemes/githubtemplateprebuild.xcscheme",
+        "metro.config.js",
         "package.json",
       ]
     `);

@@ -95,6 +95,7 @@ it(
       'app.json',
       'babel.config.js',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
       'public/index.html',
       'public/serve.json',

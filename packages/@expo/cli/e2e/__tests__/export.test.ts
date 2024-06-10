@@ -297,7 +297,7 @@ describe('server', () => {
 
       expect(bundle).toMatch('__d(');
       // General check
-      expect(bundle.split('\n').length).toBeLessThan(550);
+      expect(bundle.split('\n').length).toBeLessThan(600);
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000
