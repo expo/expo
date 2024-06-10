@@ -3,7 +3,7 @@ export type StaticRoutes = ExpoRouter.__routes extends {
 } ? ExpoRouter.__routes['StaticRoutes'] : string;
 export type DynamicRoutes<T extends string> = ExpoRouter.__routes<T> extends {
     DynamicRoutes: any;
-} ? T extends ExpoRouter.__routes<infer _>['DynamicRoutes'] ? T : string : string;
+} ? T extends ExpoRouter.__routes<infer _>['DynamicRoutes'] ? T : never : string;
 export type DynamicRouteTemplate = ExpoRouter.__routes extends {
     DynamicRouteTemplate: string;
 } ? ExpoRouter.__routes['DynamicRouteTemplate'] : string;

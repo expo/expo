@@ -10,7 +10,7 @@ export type DynamicRoutes<T extends string> =
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       T extends ExpoRouter.__routes<infer _>['DynamicRoutes']
       ? T
-      : string
+      : never
     : string;
 export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTemplate: string }
   ? // @ts-expect-error
