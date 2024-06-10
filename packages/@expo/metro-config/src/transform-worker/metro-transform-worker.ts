@@ -337,7 +337,7 @@ async function transformJS(
         // release. It should be made non-optional in ConfigT or removed in
         // future.
         // @ts-expect-error: Not on types yet (Metro 0.80.9).
-        config.unstable_renameRequire === false,
+        config.unstable_renameRequire === false
       ));
     }
   }
