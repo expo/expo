@@ -19,4 +19,7 @@ describe(`encodes special characters relevant for S3`, () => {
   it('encodes various characters of pathnames', () => {
     expect(buildUrlForBundle('/+!"#$&\'()*+,:;=@')).toMatchSnapshot();
   });
+  it('encodes other special characters of pathnames', () => {
+    expect(buildUrlForBundle('/é')).toBe('/%C3%A9');
+  });
 });
