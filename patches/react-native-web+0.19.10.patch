@@ -1,557 +1,30 @@
-diff --git a/node_modules/react-native-web/dist/cjs/exports/View/index.js b/node_modules/react-native-web/dist/cjs/exports/View/index.js
-index d1b39a9..f492dee 100644
---- a/node_modules/react-native-web/dist/cjs/exports/View/index.js
-+++ b/node_modules/react-native-web/dist/cjs/exports/View/index.js
-@@ -1,3 +1,4 @@
-+"use client";
- "use strict";
- 
- var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
-diff --git a/node_modules/react-native-web/dist/cjs/index.js b/node_modules/react-native-web/dist/cjs/index.js
-index b696270..f9ae1fc 100644
---- a/node_modules/react-native-web/dist/cjs/index.js
-+++ b/node_modules/react-native-web/dist/cjs/index.js
-@@ -1,3 +1,4 @@
-+"use client";
- "use strict";
- 
- var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
-diff --git a/node_modules/react-native-web/dist/cjs/modules/AssetRegistry/index.js b/node_modules/react-native-web/dist/cjs/modules/AssetRegistry/index.js
-deleted file mode 100644
-index 09cf56f..0000000
---- a/node_modules/react-native-web/dist/cjs/modules/AssetRegistry/index.js
-+++ /dev/null
-@@ -1,23 +0,0 @@
--"use strict";
--
--exports.__esModule = true;
--exports.getAssetByID = getAssetByID;
--exports.registerAsset = registerAsset;
--/**
-- * Copyright (c) Nicolas Gallagher.
-- *
-- * This source code is licensed under the MIT license found in the
-- * LICENSE file in the root directory of this source tree.
-- *
-- * 
-- */
--
--var assets = [];
--function registerAsset(asset) {
--  // `push` returns new array length, so the first asset will
--  // get id 1 (not 0) to make the value truthy
--  return assets.push(asset);
--}
--function getAssetByID(assetId) {
--  return assets[assetId - 1];
--}
-\ No newline at end of file
-diff --git a/node_modules/react-native-web/dist/exports/ActivityIndicator/index.js b/node_modules/react-native-web/dist/exports/ActivityIndicator/index.js
-index c41cb55..0581937 100644
---- a/node_modules/react-native-web/dist/exports/ActivityIndicator/index.js
-+++ b/node_modules/react-native-web/dist/exports/ActivityIndicator/index.js
-@@ -1,3 +1,4 @@
-+"use client"
- import _extends from "@babel/runtime/helpers/extends";
- import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
- var _excluded = ["animating", "color", "hidesWhenStopped", "size", "style"];
 diff --git a/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js b/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js
-index 0892f56..6606e94 100644
+index 0892f56..9fa481f 100644
 --- a/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js
 +++ b/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js
-@@ -8,6 +8,8 @@
-  * 
-  */
- 
-+'use client';
-+
- import * as React from 'react';
- import StyleSheet from '../StyleSheet';
- import View from '../View';
-diff --git a/node_modules/react-native-web/dist/exports/CheckBox/index.js b/node_modules/react-native-web/dist/exports/CheckBox/index.js
-index 8a9a9db..1c3842a 100644
---- a/node_modules/react-native-web/dist/exports/CheckBox/index.js
-+++ b/node_modules/react-native-web/dist/exports/CheckBox/index.js
 @@ -1,3 +1,4 @@
-+'use client'
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
- import _extends from "@babel/runtime/helpers/extends";
- import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
-diff --git a/node_modules/react-native-web/dist/exports/Image/index.js b/node_modules/react-native-web/dist/exports/Image/index.js
-index 95355d5..31712df 100644
---- a/node_modules/react-native-web/dist/exports/Image/index.js
-+++ b/node_modules/react-native-web/dist/exports/Image/index.js
-@@ -1,7 +1,21 @@
--import _objectSpread from "@babel/runtime/helpers/objectSpread2";
--import _extends from "@babel/runtime/helpers/extends";
--import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
--var _excluded = ["aria-label", "blurRadius", "defaultSource", "draggable", "onError", "onLayout", "onLoad", "onLoadEnd", "onLoadStart", "pointerEvents", "source", "style"];
-+'use client';
-+import _objectSpread from '@babel/runtime/helpers/objectSpread2';
-+import _extends from '@babel/runtime/helpers/extends';
-+import _objectWithoutPropertiesLoose from '@babel/runtime/helpers/objectWithoutPropertiesLoose';
-+var _excluded = [
-+  'aria-label',
-+  'blurRadius',
-+  'defaultSource',
-+  'draggable',
-+  'onError',
-+  'onLayout',
-+  'onLoad',
-+  'onLoadEnd',
-+  'onLoadStart',
-+  'pointerEvents',
-+  'source',
-+  'style',
-+];
++"use client"
  /**
   * Copyright (c) Nicolas Gallagher.
   * Copyright (c) Meta Platforms, Inc. and affiliates.
-@@ -29,23 +43,38 @@ var IDLE = 'IDLE';
- var _filterId = 0;
- var svgDataUriPattern = /^(data:image\/svg\+xml;utf8,)(.*)/;
- function createTintColorSVG(tintColor, id) {
--  return tintColor && id != null ? /*#__PURE__*/React.createElement("svg", {
--    style: {
--      position: 'absolute',
--      height: 0,
--      visibility: 'hidden',
--      width: 0
--    }
--  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("filter", {
--    id: "tint-" + id,
--    suppressHydrationWarning: true
--  }, /*#__PURE__*/React.createElement("feFlood", {
--    floodColor: "" + tintColor,
--    key: tintColor
--  }), /*#__PURE__*/React.createElement("feComposite", {
--    in2: "SourceAlpha",
--    operator: "atop"
--  })))) : null;
-+  return tintColor && id != null
-+    ? /*#__PURE__*/ React.createElement(
-+        'svg',
-+        {
-+          style: {
-+            position: 'absolute',
-+            height: 0,
-+            visibility: 'hidden',
-+            width: 0,
-+          },
-+        },
-+        /*#__PURE__*/ React.createElement(
-+          'defs',
-+          null,
-+          /*#__PURE__*/ React.createElement(
-+            'filter',
-+            {
-+              id: 'tint-' + id,
-+              suppressHydrationWarning: true,
-+            },
-+            /*#__PURE__*/ React.createElement('feFlood', {
-+              floodColor: '' + tintColor,
-+              key: tintColor,
-+            }),
-+            /*#__PURE__*/ React.createElement('feComposite', {
-+              in2: 'SourceAlpha',
-+              operator: 'atop',
-+            })
-+          )
-+        )
-+      )
-+    : null;
- }
- function extractNonStandardStyleProps(style, blurRadius, filterId, tintColorProp) {
-   var flatStyle = StyleSheet.flatten(style);
-@@ -54,10 +83,16 @@ function extractNonStandardStyleProps(style, blurRadius, filterId, tintColorProp
-     shadowOffset = flatStyle.shadowOffset,
-     tintColor = flatStyle.tintColor;
-   if (flatStyle.resizeMode) {
--    warnOnce('Image.style.resizeMode', 'Image: style.resizeMode is deprecated. Please use props.resizeMode.');
-+    warnOnce(
-+      'Image.style.resizeMode',
-+      'Image: style.resizeMode is deprecated. Please use props.resizeMode.'
-+    );
-   }
-   if (flatStyle.tintColor) {
--    warnOnce('Image.style.tintColor', 'Image: style.tintColor is deprecated. Please use props.tintColor.');
-+    warnOnce(
-+      'Image.style.tintColor',
-+      'Image: style.tintColor is deprecated. Please use props.tintColor.'
-+    );
-   }
- 
-   // Add CSS filters
-@@ -68,16 +103,16 @@ function extractNonStandardStyleProps(style, blurRadius, filterId, tintColorProp
-     filters.push(filter);
-   }
-   if (blurRadius) {
--    filters.push("blur(" + blurRadius + "px)");
-+    filters.push('blur(' + blurRadius + 'px)');
-   }
-   if (shadowOffset) {
-     var shadowString = createBoxShadowValue(flatStyle);
-     if (shadowString) {
--      filters.push("drop-shadow(" + shadowString + ")");
-+      filters.push('drop-shadow(' + shadowString + ')');
-     }
-   }
-   if ((tintColorProp || tintColor) && filterId != null) {
--    filters.push("url(#tint-" + filterId + ")");
-+    filters.push('url(#tint-' + filterId + ')');
-   }
-   if (filters.length > 0) {
-     _filter = filters.join(' ');
-@@ -91,14 +126,17 @@ function resolveAssetDimensions(source) {
-       _width = _getAssetByID.width;
-     return {
-       height: _height,
--      width: _width
-+      width: _width,
-     };
-+  } else if (source && Array.isArray(source.scales)) {
-+    // get the URI from the packager
-+    return source;
-   } else if (source != null && !Array.isArray(source) && typeof source === 'object') {
-     var _height2 = source.height,
-       _width2 = source.width;
-     return {
-       height: _height2,
--      width: _width2
-+      width: _width2,
-     };
-   }
- }
-@@ -108,20 +146,39 @@ function resolveAssetUri(source) {
-     // get the URI from the packager
-     var asset = getAssetByID(source);
-     if (asset == null) {
--      throw new Error("Image: asset with ID \"" + source + "\" could not be found. Please check the image source or packager.");
-+      throw new Error(
-+        'Image: asset with ID "' +
-+          source +
-+          '" could not be found. Please check the image source or packager.'
-+      );
-     }
-     var scale = asset.scales[0];
-     if (asset.scales.length > 1) {
-       var preferredScale = PixelRatio.get();
-       // Get the scale which is closest to the preferred scale
--      scale = asset.scales.reduce((prev, curr) => Math.abs(curr - preferredScale) < Math.abs(prev - preferredScale) ? curr : prev);
-+      scale = asset.scales.reduce((prev, curr) =>
-+        Math.abs(curr - preferredScale) < Math.abs(prev - preferredScale) ? curr : prev
-+      );
-     }
--    var scaleSuffix = scale !== 1 ? "@" + scale + "x" : '';
--    uri = asset ? asset.httpServerLocation + "/" + asset.name + scaleSuffix + "." + asset.type : '';
-+    var scaleSuffix = scale !== 1 ? '@' + scale + 'x' : '';
-+    uri = asset ? asset.httpServerLocation + '/' + asset.name + scaleSuffix + '.' + asset.type : '';
-   } else if (typeof source === 'string') {
-     uri = source;
-   } else if (source && typeof source.uri === 'string') {
-     uri = source.uri;
-+  } else if (source && Array.isArray(source.scales)) {
-+    // get the URI from the packager
-+    var asset = source;
-+    var scale = asset.scales[0];
-+    if (asset.scales.length > 1) {
-+      var preferredScale = PixelRatio.get();
-+      // Get the scale which is closest to the preferred scale
-+      scale = asset.scales.reduce((prev, curr) =>
-+        Math.abs(curr - preferredScale) < Math.abs(prev - preferredScale) ? curr : prev
-+      );
-+    }
-+    var scaleSuffix = scale !== 1 ? '@' + scale + 'x' : '';
-+    uri = asset ? asset.httpServerLocation + '/' + asset.name + scaleSuffix + '.' + asset.type : '';
-   }
-   if (uri) {
-     var match = uri.match(svgDataUriPattern);
-@@ -130,12 +187,12 @@ function resolveAssetUri(source) {
-       var prefix = match[1],
-         svg = match[2];
-       var encodedSvg = encodeURIComponent(svg);
--      return "" + prefix + encodedSvg;
-+      return '' + prefix + encodedSvg;
-     }
-   }
-   return uri;
- }
--var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-+var Image = /*#__PURE__*/ React.forwardRef((props, ref) => {
-   var ariaLabel = props['aria-label'],
-     blurRadius = props.blurRadius,
-     defaultSource = props.defaultSource,
-@@ -151,7 +208,9 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-     rest = _objectWithoutPropertiesLoose(props, _excluded);
-   if (process.env.NODE_ENV !== 'production') {
-     if (props.children) {
--      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.');
-+      throw new Error(
-+        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
-+      );
-     }
-   }
-   var _React$useState = React.useState(() => {
-@@ -173,8 +232,13 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-   var hiddenImageRef = React.useRef(null);
-   var filterRef = React.useRef(_filterId++);
-   var requestRef = React.useRef(null);
--  var shouldDisplaySource = state === LOADED || state === LOADING && defaultSource == null;
--  var _extractNonStandardSt = extractNonStandardStyleProps(style, blurRadius, filterRef.current, props.tintColor),
-+  var shouldDisplaySource = state === LOADED || (state === LOADING && defaultSource == null);
-+  var _extractNonStandardSt = extractNonStandardStyleProps(
-+      style,
-+      blurRadius,
-+      filterRef.current,
-+      props.tintColor
-+    ),
-     _resizeMode = _extractNonStandardSt[0],
-     filter = _extractNonStandardSt[1],
-     _tintColor = _extractNonStandardSt[2];
-@@ -183,17 +247,19 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-   var selectedSource = shouldDisplaySource ? source : defaultSource;
-   var displayImageUri = resolveAssetUri(selectedSource);
-   var imageSizeStyle = resolveAssetDimensions(selectedSource);
--  var backgroundImage = displayImageUri ? "url(\"" + displayImageUri + "\")" : null;
-+  var backgroundImage = displayImageUri ? 'url("' + displayImageUri + '")' : null;
-   var backgroundSize = getBackgroundSize();
- 
-   // Accessibility image allows users to trigger the browser's image context menu
--  var hiddenImage = displayImageUri ? createElement('img', {
--    alt: ariaLabel || '',
--    style: styles.accessibilityImage$raw,
--    draggable: draggable || false,
--    ref: hiddenImageRef,
--    src: displayImageUri
--  }) : null;
-+  var hiddenImage = displayImageUri
-+    ? createElement('img', {
-+        alt: ariaLabel || '',
-+        style: styles.accessibilityImage$raw,
-+        draggable: draggable || false,
-+        ref: hiddenImageRef,
-+        src: displayImageUri,
-+      })
-+    : null;
-   function getBackgroundSize() {
-     if (hiddenImageRef.current != null && (resizeMode === 'center' || resizeMode === 'repeat')) {
-       var _hiddenImageRef$curre = hiddenImageRef.current,
-@@ -205,7 +271,7 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-         var scaleFactor = Math.min(1, _width3 / naturalWidth, _height3 / naturalHeight);
-         var x = Math.ceil(scaleFactor * naturalWidth);
-         var y = Math.ceil(scaleFactor * naturalHeight);
--        return x + "px " + y + "px";
-+        return x + 'px ' + y + 'px';
-       }
-     }
-   }
-@@ -226,27 +292,31 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-       if (onLoadStart) {
-         onLoadStart();
-       }
--      requestRef.current = ImageLoader.load(uri, function load(e) {
--        updateState(LOADED);
--        if (onLoad) {
--          onLoad(e);
--        }
--        if (onLoadEnd) {
--          onLoadEnd();
--        }
--      }, function error() {
--        updateState(ERRORED);
--        if (onError) {
--          onError({
--            nativeEvent: {
--              error: "Failed to load resource " + uri + " (404)"
--            }
--          });
--        }
--        if (onLoadEnd) {
--          onLoadEnd();
-+      requestRef.current = ImageLoader.load(
-+        uri,
-+        function load(e) {
-+          updateState(LOADED);
-+          if (onLoad) {
-+            onLoad(e);
-+          }
-+          if (onLoadEnd) {
-+            onLoadEnd();
-+          }
-+        },
-+        function error() {
-+          updateState(ERRORED);
-+          if (onError) {
-+            onError({
-+              nativeEvent: {
-+                error: 'Failed to load resource ' + uri + ' (404)',
-+              },
-+            });
-+          }
-+          if (onLoadEnd) {
-+            onLoadEnd();
-+          }
-         }
--      });
-+      );
-     }
-     function abortPendingRequest() {
-       if (requestRef.current != null) {
-@@ -256,26 +326,43 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
-     }
-     return abortPendingRequest;
-   }, [uri, requestRef, updateState, onError, onLoad, onLoadEnd, onLoadStart]);
--  return /*#__PURE__*/React.createElement(View, _extends({}, rest, {
--    "aria-label": ariaLabel,
--    onLayout: handleLayout,
--    pointerEvents: pointerEvents,
--    ref: ref,
--    style: [styles.root, hasTextAncestor && styles.inline, imageSizeStyle, style, styles.undo,
--    // TEMP: avoid deprecated shadow props regression
--    // until Image refactored to use createElement.
--    {
--      boxShadow: null
--    }]
--  }), /*#__PURE__*/React.createElement(View, {
--    style: [styles.image, resizeModeStyles[resizeMode], {
--      backgroundImage,
--      filter
--    }, backgroundSize != null && {
--      backgroundSize
--    }],
--    suppressHydrationWarning: true
--  }), hiddenImage, createTintColorSVG(tintColor, filterRef.current));
-+  return /*#__PURE__*/ React.createElement(
-+    View,
-+    _extends({}, rest, {
-+      'aria-label': ariaLabel,
-+      onLayout: handleLayout,
-+      pointerEvents: pointerEvents,
-+      ref: ref,
-+      style: [
-+        styles.root,
-+        hasTextAncestor && styles.inline,
-+        imageSizeStyle,
-+        style,
-+        styles.undo,
-+        // TEMP: avoid deprecated shadow props regression
-+        // until Image refactored to use createElement.
-+        {
-+          boxShadow: null,
-+        },
-+      ],
-+    }),
-+    /*#__PURE__*/ React.createElement(View, {
-+      style: [
-+        styles.image,
-+        resizeModeStyles[resizeMode],
-+        {
-+          backgroundImage,
-+          filter,
-+        },
-+        backgroundSize != null && {
-+          backgroundSize,
-+        },
-+      ],
-+      suppressHydrationWarning: true,
-+    }),
-+    hiddenImage,
-+    createTintColorSVG(tintColor, filterRef.current)
-+  );
- });
- Image.displayName = 'Image';
- 
-@@ -294,10 +381,10 @@ var styles = StyleSheet.create({
-   root: {
-     flexBasis: 'auto',
-     overflow: 'hidden',
--    zIndex: 0
-+    zIndex: 0,
-   },
-   inline: {
--    display: 'inline-flex'
-+    display: 'inline-flex',
-   },
-   undo: {
-     // These styles are converted to CSS filters applied to the
-@@ -310,45 +397,53 @@ var styles = StyleSheet.create({
-     tintColor: null,
-     // These styles are not supported
-     overlayColor: null,
--    resizeMode: null
-+    resizeMode: null,
-   },
--  image: _objectSpread(_objectSpread({}, StyleSheet.absoluteFillObject), {}, {
--    backgroundColor: 'transparent',
--    backgroundPosition: 'center',
--    backgroundRepeat: 'no-repeat',
--    backgroundSize: 'cover',
--    height: '100%',
--    width: '100%',
--    zIndex: -1
--  }),
--  accessibilityImage$raw: _objectSpread(_objectSpread({}, StyleSheet.absoluteFillObject), {}, {
--    height: '100%',
--    opacity: 0,
--    width: '100%',
--    zIndex: -1
--  })
-+  image: _objectSpread(
-+    _objectSpread({}, StyleSheet.absoluteFillObject),
-+    {},
-+    {
-+      backgroundColor: 'transparent',
-+      backgroundPosition: 'center',
-+      backgroundRepeat: 'no-repeat',
-+      backgroundSize: 'cover',
-+      height: '100%',
-+      width: '100%',
-+      zIndex: -1,
-+    }
-+  ),
-+  accessibilityImage$raw: _objectSpread(
-+    _objectSpread({}, StyleSheet.absoluteFillObject),
-+    {},
-+    {
-+      height: '100%',
-+      opacity: 0,
-+      width: '100%',
-+      zIndex: -1,
-+    }
-+  ),
- });
- var resizeModeStyles = StyleSheet.create({
-   center: {
--    backgroundSize: 'auto'
-+    backgroundSize: 'auto',
-   },
-   contain: {
--    backgroundSize: 'contain'
-+    backgroundSize: 'contain',
-   },
-   cover: {
--    backgroundSize: 'cover'
-+    backgroundSize: 'cover',
-   },
-   none: {
-     backgroundPosition: '0',
--    backgroundSize: 'auto'
-+    backgroundSize: 'auto',
-   },
-   repeat: {
-     backgroundPosition: '0',
-     backgroundRepeat: 'repeat',
--    backgroundSize: 'auto'
-+    backgroundSize: 'auto',
-   },
-   stretch: {
--    backgroundSize: '100% 100%'
--  }
-+    backgroundSize: '100% 100%',
-+  },
- });
- export default ImageWithStatics;
-\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/FlatList/index.js b/node_modules/react-native-web/dist/exports/FlatList/index.js
+index b547e8f..fec93c9 100644
+--- a/node_modules/react-native-web/dist/exports/FlatList/index.js
++++ b/node_modules/react-native-web/dist/exports/FlatList/index.js
+@@ -1,3 +1,4 @@
++"use client"
+ /**
+  * Copyright (c) Nicolas Gallagher.
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+diff --git a/node_modules/react-native-web/dist/exports/Image/index.js b/node_modules/react-native-web/dist/exports/Image/index.js
+index 95355d5..c372985 100644
+--- a/node_modules/react-native-web/dist/exports/Image/index.js
++++ b/node_modules/react-native-web/dist/exports/Image/index.js
+@@ -1,3 +1,4 @@
++"use client"
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
 diff --git a/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js b/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js
 index d8182d5..6a3c552 100644
 --- a/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js
@@ -562,23 +35,15 @@ index d8182d5..6a3c552 100644
  import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
  var _excluded = ["behavior", "contentContainerStyle", "keyboardVerticalOffset"];
 diff --git a/node_modules/react-native-web/dist/exports/Modal/index.js b/node_modules/react-native-web/dist/exports/Modal/index.js
-index d5df021..182300b 100644
+index d5df021..b5e2e26 100644
 --- a/node_modules/react-native-web/dist/exports/Modal/index.js
 +++ b/node_modules/react-native-web/dist/exports/Modal/index.js
-@@ -1,3 +1,4 @@
+@@ -1,3 +1,5 @@
 +"use client"
++
  import _extends from "@babel/runtime/helpers/extends";
  import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
  var _excluded = ["animationType", "children", "onDismiss", "onRequestClose", "onShow", "transparent", "visible"];
-diff --git a/node_modules/react-native-web/dist/exports/Picker/index.js b/node_modules/react-native-web/dist/exports/Picker/index.js
-index 7d764ce..5467f2d 100644
---- a/node_modules/react-native-web/dist/exports/Picker/index.js
-+++ b/node_modules/react-native-web/dist/exports/Picker/index.js
-@@ -1,3 +1,4 @@
-+"use client"
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
- import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
- var _excluded = ["children", "enabled", "onValueChange", "selectedValue", "style", "testID", "itemStyle", "mode", "prompt"];
 diff --git a/node_modules/react-native-web/dist/exports/Pressable/index.js b/node_modules/react-native-web/dist/exports/Pressable/index.js
 index fd72143..1fadd0d 100644
 --- a/node_modules/react-native-web/dist/exports/Pressable/index.js
@@ -589,21 +54,29 @@ index fd72143..1fadd0d 100644
   * Copyright (c) Meta Platforms, Inc. and affiliates.
   *
 diff --git a/node_modules/react-native-web/dist/exports/ScrollView/index.js b/node_modules/react-native-web/dist/exports/ScrollView/index.js
-index 63a2220..2f59e16 100644
+index 63a2220..9981f07 100644
 --- a/node_modules/react-native-web/dist/exports/ScrollView/index.js
 +++ b/node_modules/react-native-web/dist/exports/ScrollView/index.js
-@@ -1,3 +1,5 @@
+@@ -1,3 +1,4 @@
 +"use client"
-+
  import _objectSpread from "@babel/runtime/helpers/objectSpread2";
  import _extends from "@babel/runtime/helpers/extends";
  import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+diff --git a/node_modules/react-native-web/dist/exports/SectionList/index.js b/node_modules/react-native-web/dist/exports/SectionList/index.js
+index f9c6016..7d34a54 100644
+--- a/node_modules/react-native-web/dist/exports/SectionList/index.js
++++ b/node_modules/react-native-web/dist/exports/SectionList/index.js
+@@ -1,3 +1,4 @@
++"use client"
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
 diff --git a/node_modules/react-native-web/dist/exports/Switch/index.js b/node_modules/react-native-web/dist/exports/Switch/index.js
-index 38b96ed..edf8174 100644
+index 38b96ed..ad4feb1 100644
 --- a/node_modules/react-native-web/dist/exports/Switch/index.js
 +++ b/node_modules/react-native-web/dist/exports/Switch/index.js
 @@ -1,3 +1,4 @@
-+'use client'
++"use client"
  import _objectSpread from "@babel/runtime/helpers/objectSpread2";
  import _extends from "@babel/runtime/helpers/extends";
  import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
@@ -662,147 +135,42 @@ index b74ce35..d318adc 100644
   * Copyright (c) Meta Platforms, Inc. and affiliates.
   *
 diff --git a/node_modules/react-native-web/dist/exports/View/index.js b/node_modules/react-native-web/dist/exports/View/index.js
-index c812d77..d6fc5a7 100644
+index c812d77..0e9f7d7 100644
 --- a/node_modules/react-native-web/dist/exports/View/index.js
 +++ b/node_modules/react-native-web/dist/exports/View/index.js
-@@ -1,3 +1,4 @@
+@@ -1,3 +1,5 @@
 +"use client"
++
  import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
  var _excluded = ["hrefAttrs", "onLayout", "onMoveShouldSetResponder", "onMoveShouldSetResponderCapture", "onResponderEnd", "onResponderGrant", "onResponderMove", "onResponderReject", "onResponderRelease", "onResponderStart", "onResponderTerminate", "onResponderTerminationRequest", "onScrollShouldSetResponder", "onScrollShouldSetResponderCapture", "onSelectionChangeShouldSetResponder", "onSelectionChangeShouldSetResponderCapture", "onStartShouldSetResponder", "onStartShouldSetResponderCapture"];
  /**
-@@ -50,11 +51,14 @@ var View = /*#__PURE__*/React.forwardRef((props, forwardedRef) => {
-     onStartShouldSetResponderCapture = props.onStartShouldSetResponderCapture,
-     rest = _objectWithoutPropertiesLoose(props, _excluded);
-   if (process.env.NODE_ENV !== 'production') {
--    React.Children.toArray(props.children).forEach(item => {
--      if (typeof item === 'string') {
--        console.error("Unexpected text node: " + item + ". A text node cannot be a child of a <View>.");
--      }
--    });
-+    // Skip parsing RSC errors as this will prevent the error from surfacing in the renderer.
-+    if (!props.children || !('$$typeof' in props.children)) {
-+      React.Children.toArray(props.children).forEach(item => {
-+        if (typeof item === 'string') {
-+          console.error("Unexpected text node: " + item + ". A text node cannot be a child of a <View>.");
-+        }
-+      });
-+    }
-   }
-   var hasTextAncestor = React.useContext(TextAncestorContext);
-   var hostRef = React.useRef(null);
+diff --git a/node_modules/react-native-web/dist/exports/VirtualizedList/index.js b/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
+index efdcaef..d973e85 100644
+--- a/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
++++ b/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
+@@ -1,3 +1,4 @@
++"use client"
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
 diff --git a/node_modules/react-native-web/dist/exports/render/index.js b/node_modules/react-native-web/dist/exports/render/index.js
-index bf707a7..68c34fc 100644
+index bf707a7..fd56f04 100644
 --- a/node_modules/react-native-web/dist/exports/render/index.js
 +++ b/node_modules/react-native-web/dist/exports/render/index.js
-@@ -6,6 +6,7 @@
+@@ -1,3 +1,4 @@
++"use client"
+ /**
+  * Copyright (c) Nicolas Gallagher.
   *
-  * 
-  */
-+'use client';
- 
- import { hydrate as domLegacyHydrate, render as domLegacyRender } from 'react-dom';
- import { createRoot as domCreateRoot, hydrateRoot as domHydrateRoot } from 'react-dom/client';
-diff --git a/node_modules/react-native-web/dist/exports/useColorScheme/index.js b/node_modules/react-native-web/dist/exports/useColorScheme/index.js
-index 733d29e..e917134 100644
---- a/node_modules/react-native-web/dist/exports/useColorScheme/index.js
-+++ b/node_modules/react-native-web/dist/exports/useColorScheme/index.js
-@@ -8,6 +8,8 @@
-  * 
-  */
- 
-+'use client';
-+
- import * as React from 'react';
- import Appearance from '../Appearance';
- export default function useColorScheme() {
-diff --git a/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js b/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
-index d6b8342..545c56b 100644
---- a/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
-+++ b/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
-@@ -8,6 +8,7 @@
-  * 
-  */
- 
-+'use client';
- 'use strict';
- 
- import Dimensions from '../Dimensions';
-diff --git a/node_modules/react-native-web/dist/modules/AssetRegistry/index.js b/node_modules/react-native-web/dist/modules/AssetRegistry/index.js
-deleted file mode 100644
-index c332fc9..0000000
---- a/node_modules/react-native-web/dist/modules/AssetRegistry/index.js
-+++ /dev/null
-@@ -1,18 +0,0 @@
--/**
-- * Copyright (c) Nicolas Gallagher.
-- *
-- * This source code is licensed under the MIT license found in the
-- * LICENSE file in the root directory of this source tree.
-- *
-- * 
-- */
--
--var assets = [];
--export function registerAsset(asset) {
--  // `push` returns new array length, so the first asset will
--  // get id 1 (not 0) to make the value truthy
--  return assets.push(asset);
--}
--export function getAssetByID(assetId) {
--  return assets[assetId - 1];
--}
-\ No newline at end of file
-diff --git a/node_modules/react-native-web/dist/modules/AssetRegistry/index.js.flow b/node_modules/react-native-web/dist/modules/AssetRegistry/index.js.flow
-deleted file mode 100644
-index f43f4df..0000000
---- a/node_modules/react-native-web/dist/modules/AssetRegistry/index.js.flow
-+++ /dev/null
-@@ -1,23 +0,0 @@
--/**
-- * Copyright (c) Nicolas Gallagher.
-- *
-- * This source code is licensed under the MIT license found in the
-- * LICENSE file in the root directory of this source tree.
-- *
-- * @flow
-- */
--
--export type PackagerAsset = {
--  __packager_asset: boolean,
--  fileSystemLocation: string,
--  httpServerLocation: string,
--  width: ?number,
--  height: ?number,
--  scales: Array<number>,
--  hash: string,
--  name: string,
--  type: string,
--};
--const assets: Array<PackagerAsset> = [];
--declare export function registerAsset(asset: PackagerAsset): number;
--declare export function getAssetByID(assetId: number): PackagerAsset;
-\ No newline at end of file
 diff --git a/node_modules/react-native-web/dist/modules/UnimplementedView/index.js b/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
-index bbcafe4..51a0d1d 100644
+index bbcafe4..a22afde 100644
 --- a/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
 +++ b/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
-@@ -13,12 +13,10 @@ import React from 'react';
+@@ -1,3 +1,4 @@
++"use client"
  /**
-  * Common implementation for a simple stubbed view.
-  */
--class UnimplementedView extends React.Component {
--  render() {
--    return /*#__PURE__*/React.createElement(View, {
--      style: [unimplementedViewStyles, this.props.style]
--    }, this.props.children);
--  }
-+function UnimplementedView({ style, children }) {
-+  return /*#__PURE__*/React.createElement(View, {
-+    style: [unimplementedViewStyles, style]
-+  }, children);
- }
- var unimplementedViewStyles = process.env.NODE_ENV !== 'production' ? {
-   alignSelf: 'flex-start',
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
 diff --git a/node_modules/react-native-web/dist/modules/useLocale/index.js b/node_modules/react-native-web/dist/modules/useLocale/index.js
 index 2c4e233..c809c21 100644
 --- a/node_modules/react-native-web/dist/modules/useLocale/index.js
@@ -812,98 +180,3 @@ index 2c4e233..c809c21 100644
  /**
   * Copyright (c) Nicolas Gallagher.
   *
-diff --git a/node_modules/react-native-web/dist/modules/useResponderEvents/index.js b/node_modules/react-native-web/dist/modules/useResponderEvents/index.js
-index aa5a238..db74ed8 100644
---- a/node_modules/react-native-web/dist/modules/useResponderEvents/index.js
-+++ b/node_modules/react-native-web/dist/modules/useResponderEvents/index.js
-@@ -1,3 +1,4 @@
-+"use client"
- /**
-  * Copyright (c) Nicolas Gallagher
-  *
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
-index c04f503..ef7a02e 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
-@@ -8,6 +8,7 @@
-  * @format
-  */
- 
-+'use client'
- 'use strict';
- 
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/FlatList/index.js b/node_modules/react-native-web/dist/vendor/react-native/FlatList/index.js
-index f392ca2..fbcc13a 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/FlatList/index.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/FlatList/index.js
-@@ -1,3 +1,4 @@
-+"use client"
- import _extends from "@babel/runtime/helpers/extends";
- import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/SectionList/index.js b/node_modules/react-native-web/dist/vendor/react-native/SectionList/index.js
-index 6d591c0..b798235 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/SectionList/index.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/SectionList/index.js
-@@ -1,3 +1,4 @@
-+"use client"
- /**
-  * Copyright (c) Meta Platforms, Inc. and affiliates.
-  *
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
-index 196028a..4be14a0 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
-@@ -1,3 +1,4 @@
-+"use client"
- /**
-  * Copyright (c) Meta Platforms, Inc. and affiliates.
-  *
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
-index 813b005..2512274 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
-@@ -1,3 +1,4 @@
-+"use client"
- import _extends from "@babel/runtime/helpers/extends";
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
- /**
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
-index b69965b..5f7a876 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
-@@ -1,3 +1,4 @@
-+"use client"
- import _objectSpread from "@babel/runtime/helpers/objectSpread2";
- /**
-  * Copyright (c) Meta Platforms, Inc. and affiliates.
-diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedSectionList/index.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedSectionList/index.js
-index 551a8ab..60546a2 100644
---- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedSectionList/index.js
-+++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedSectionList/index.js
-@@ -1,3 +1,4 @@
-+
- import _extends from "@babel/runtime/helpers/extends";
- import _createForOfIteratorHelperLoose from "@babel/runtime/helpers/createForOfIteratorHelperLoose";
- import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
-diff --git a/node_modules/react-native-web/src/modules/AssetRegistry/index.js b/node_modules/react-native-web/src/modules/AssetRegistry/index.js
-index 69d1ec4..7135294 100644
---- a/node_modules/react-native-web/src/modules/AssetRegistry/index.js
-+++ b/node_modules/react-native-web/src/modules/AssetRegistry/index.js
-@@ -16,12 +16,14 @@ export type PackagerAsset = {
-   scales: Array<number>,
-   hash: string,
-   name: string,
--  type: string
-+  type: string,
- };
- 
- const assets: Array<PackagerAsset> = [];
- 
- export function registerAsset(asset: PackagerAsset): number {
-+  console.log('registerAsset.wut');
-+
-   // `push` returns new array length, so the first asset will
-   // get id 1 (not 0) to make the value truthy
-   return assets.push(asset);

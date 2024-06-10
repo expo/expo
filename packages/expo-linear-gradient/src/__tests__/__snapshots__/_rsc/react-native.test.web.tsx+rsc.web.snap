@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ActivityIndicator to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ActivityIndicator","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"aria-valuemax":1,"aria-valuemin":0,"ref":"$undefined","role":"progressbar","style":[{"alignItems":"center","justifyContent":"center"},"$undefined"],"children":["$","$L2",null,{"children":["$","svg",null,{"height":"100%","viewBox":"0 0 32 32","width":"100%","children":[["$","circle",null,{"cx":"16","cy":"16","fill":"none","r":"14","strokeWidth":"4","style":{"stroke":"#1976D2","opacity":0.2}},"$1"],["$","circle",null,{"cx":"16","cy":"16","fill":"none","r":"14","strokeWidth":"4","style":{"stroke":"#1976D2","strokeDasharray":80,"strokeDashoffset":60}},"$1"]]},"$1"],"style":[{"width":20,"height":20},{"animationDuration":"0.75s","animationKeyframes":[{"0%":{"transform":"rotate(0deg)"},"100%":{"transform":"rotate(360deg)"}}],"animationTimingFunction":"linear","animationIterationCount":"infinite"},false,false]},"$1"]},"$1"]"
+`;
+
+exports[`renders Button to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/TouchableOpacity/index.js",[],""]
+3:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+1:{"name":"Button","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"accessibilityLabel":"$undefined","accessibilityRole":"button","disabled":"$undefined","focusable":true,"onPress":"$undefined","ref":"$undefined","style":[{"backgroundColor":"#2196F3","borderRadius":2},"$undefined","$undefined"],"testID":"$undefined","children":["$","$L3",null,{"style":[{"color":"#fff","fontWeight":"500","padding":8,"textAlign":"center","textTransform":"uppercase"},"$undefined"],"children":"button"},"$1"]},"$1"]"
+`;
+
+exports[`renders Image to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Image/index.js",[],""]
+0:["$","$L1",null,{"source":{"uri":"https://github.com/evanbacon.png"}},null]"
+`;
+
+exports[`renders ImageBackground to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+3:I["../../node_modules/react-native-web/dist/exports/Image/index.js",[],""]
+1:{"name":"ImageBackground","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"ref":"$undefined","style":{},"children":[["$","$L3",null,{"ref":"$undefined","style":[{"width":"$undefined","height":"$undefined","zIndex":-1},{"position":"absolute","left":0,"right":0,"top":0,"bottom":0},"$undefined"]},"$1"],"$undefined"]},"$1"]"
+`;
+
+exports[`renders InputAccessoryView to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/modules/UnimplementedView/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders KeyboardAvoidingView to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Modal to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Modal/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Pressable to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Pressable/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SafeAreaView to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"SafeAreaView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"ref":"$undefined","style":[{"paddingTop":"env(safe-area-inset-top)","paddingRight":"env(safe-area-inset-right)","paddingBottom":"env(safe-area-inset-bottom)","paddingLeft":"env(safe-area-inset-left)"},"$undefined"]},"$1"]"
+`;
+
+exports[`renders ScrollView to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/ScrollView/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders StatusBar to RSC 1`] = `
+"1:{"name":"StatusBar","env":"Server","owner":null}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders Switch to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Switch/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Text to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Text to RSC 2`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":"Hello"},null]"
+`;
+
+exports[`renders Text to RSC 3`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":"Hello"},null]"
+`;
+
+exports[`renders TextInput to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/TextInput/index.js",[],""]
+0:["$","$L1",null,{"value":"Text Input"},null]"
+`;
+
+exports[`renders View to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders touchable TouchableHighlight to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/TouchableHighlight/index.js",[],""]
+2:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":["$","$L2",null,{"children":"TouchableHighlight"},null]},null]"
+`;
+
+exports[`renders touchable TouchableNativeFeedback to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/modules/UnimplementedView/index.js",[],""]
+2:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":["$","$L2",null,{"children":"TouchableNativeFeedback"},null]},null]"
+`;
+
+exports[`renders touchable TouchableOpacity to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/TouchableOpacity/index.js",[],""]
+2:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":["$","$L2",null,{"children":"TouchableOpacity"},null]},null]"
+`;
+
+exports[`renders touchable TouchableWithoutFeedback to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/TouchableWithoutFeedback/index.js",[],""]
+2:I["../../node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:["$","$L1",null,{"children":["$","$L2",null,{"children":"TouchableWithoutFeedback"},null]},null]"
+`;

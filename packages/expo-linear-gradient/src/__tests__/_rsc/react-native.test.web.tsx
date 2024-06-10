@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import {
   AccessibilityInfo,
@@ -65,12 +64,12 @@ import {
   // createElement,
   findNodeHandle,
   processColor,
-  // render,
+  render,
   // unmountComponentAtNode,
-  // useColorScheme,
-  // useLocaleContext,
-  // useWindowDimensions,
-} from 'react-native';
+  useColorScheme,
+  useLocaleContext,
+  useWindowDimensions,
+} from 'react-native-web';
 
 it(`can use utility functions`, () => {
   expect(findNodeHandle()).toBe(undefined);
@@ -135,6 +134,14 @@ it(`renders Text to RSC`, async () => {
 it(`renders Text to RSC`, async () => {
   await expect(<Text>Hello</Text>).toMatchFlightSnapshot();
 });
+
+it('runs imperative functions', () => {
+  // render()
+  // unmountComponentAtNode,
+  // useColorScheme()
+  // useLocaleContext()
+  // useWindowDimensions()
+})
 
 it(`doesn't fail when importing all of react-native-web`, async () => {
   // Use this syntax to circumvent the babel plugin that rewrites clean imports.
