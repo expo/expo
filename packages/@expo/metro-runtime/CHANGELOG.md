@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing URI encoding for S3-compatible bundle loading.
+- Fix missing URI encoding for S3-compatible bundle loading. ([#29606](https://github.com/expo/expo/pull/29606) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
