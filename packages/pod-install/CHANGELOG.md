@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `commander` dependency.
+
 ## 0.2.2 — 2024-04-24
 
 _This version does not introduce any user-facing changes._

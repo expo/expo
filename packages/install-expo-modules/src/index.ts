@@ -122,7 +122,9 @@ Do you want to install the Expo CLI integration?`;
 }
 
 async function runAsync() {
-  const { projectRoot, platformAndroid, platformIos } = await normalizeProjectRootAsync(__dirname);
+  const { projectRoot, platformAndroid, platformIos } = await normalizeProjectRootAsync(
+    process.cwd()
+  );
 
   const {
     expoSdkVersion: sdkVersion,
