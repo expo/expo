@@ -14,6 +14,7 @@ import {
 } from './Template';
 import { createEntryResolver } from './createFileTransform';
 import { env } from './utils/env';
+import { fetch } from './utils/fetch';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
 const pipeline = promisify(Stream.pipeline);

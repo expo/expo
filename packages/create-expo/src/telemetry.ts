@@ -155,6 +155,7 @@ export async function flushAsync() {
     }),
   };
   try {
+    // Note(cedric): try to use the global fetch instance, but silently fail if its disabled in Node 18
     await fetch(analyticsEndpoint, request);
   } catch {
     // supress errors - likely due to network connectivity or endpoint health

@@ -1,6 +1,7 @@
 import type { Endpoints } from '@octokit/types';
 import { Readable } from 'stream';
 
+import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
 import { createGlobFilter } from '../createFileTransform';
 
