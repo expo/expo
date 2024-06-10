@@ -198,31 +198,38 @@ export async function instantiateMetroAsync(
       watchFolders: metroConfig.watchFolders,
     });
 
-  // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
-  replaceMiddlewareWith(
-    middleware as ConnectServer,
-    securityHeadersMiddleware,
-    createCorsMiddleware(exp)
-  );
+  let debugWebsocketEndpoints: {
+    [path: string]: import('ws').WebSocketServer;
+  } = {};
 
-  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+  if (!isExporting) {
+    // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
+    replaceMiddlewareWith(
+      middleware as ConnectServer,
+      securityHeadersMiddleware,
+      createCorsMiddleware(exp)
+    );
 
-  // TODO: We can probably drop this now.
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // @ts-expect-error: can't mutate readonly config
-  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
-    if (customEnhanceMiddleware) {
-      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
-    }
-    return middleware.use(metroMiddleware);
-  };
+    prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
-  middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
+    // TODO: We can probably drop this now.
+    const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+    // @ts-expect-error: can't mutate readonly config
+    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+      if (customEnhanceMiddleware) {
+        metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
+      }
+      return middleware.use(metroMiddleware);
+    };
 
-  // Initialize all React Native debug features
-  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
-  prependMiddleware(middleware, debugMiddleware);
-  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+    middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
+
+    // Initialize all React Native debug features
+    const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);
+    debugWebsocketEndpoints = options.debugWebsocketEndpoints;
+    prependMiddleware(middleware, debugMiddleware);
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+  }
 
   // Attach Expo Atlas if enabled
   const atlas = await attachAtlasAsync({

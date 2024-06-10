@@ -55,7 +55,9 @@ export const runServer = async (
     watch,
   });
 
-  assert(typeof (middleware as any).use === 'function');
+  if (!mockServer) {
+    assert(typeof (middleware as any).use === 'function');
+  }
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
