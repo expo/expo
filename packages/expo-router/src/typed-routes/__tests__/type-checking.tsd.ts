@@ -101,7 +101,6 @@ describe('router.push()', () => {
     it('can accept a ANY relative url', () => {
       // We only type-check absolute urls
       expectType<void>(router.push('./this/work/but/is/not/valid'));
-      router.push('/animals/[...animal]');
     });
     it('works for dynamic urls', () => {
       expectType<void>(router.push('/colors/blue'));

@@ -6,6 +6,6 @@ export async function generateStaticParams() {
 }
 
 export default function Post() {
-  const params = useGlobalSearchParams<'/[post]'>();
+  const params = useGlobalSearchParams();
   return <Text>Post: {params.post}</Text>;
 }

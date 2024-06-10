@@ -5,6 +5,7 @@ import { RequireContext } from '../types';
 
 // /[param1] - Match [param1]
 const SLUG = /\[.+?\]/g;
+const CATCH_ALL = /\[\.\.\..+?\]/g;
 
 export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const staticRoutes = new Set<string>();
@@ -30,12 +31,9 @@ export * from 'expo-router';
 declare module 'expo-router' {
   export namespace ExpoRouter {
     export interface __routes<T extends string = string> {
-      StaticRoutes:
-        | ${setToUnionType(staticRoutes)};
-      DynamicRoutes:
-        | ${setToUnionType(dynamicRoutes)};
-      DynamicRouteTemplate:
-        | ${setToUnionType(dynamicRouteContextKeys)};
+      StaticRoutes: ${setToUnionType(staticRoutes)};
+      DynamicRoutes: ${setToUnionType(dynamicRoutes)};
+      DynamicRouteTemplate: ${setToUnionType(dynamicRouteContextKeys)};
     }
   }
 }
@@ -82,7 +80,9 @@ function addRouteNode(
   if (routeNode.dynamic) {
     for (const path of generateCombinations(routePath)) {
       dynamicRouteContextKeys.add(path);
-      dynamicRoutes.add(`${path.replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`);
+      dynamicRoutes.add(
+        `${path.replaceAll(CATCH_ALL, '${string}').replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`
+      );
     }
   } else {
     for (const combination of generateCombinations(routePath)) {
@@ -99,7 +99,7 @@ const setToUnionType = <T>(set: Set<T>) => {
     ? [...set]
         .sort()
         .map((s) => `\`${s}\``)
-        .join('\n        | ')
+        .join(' | ')
     : 'never';
 };
 
