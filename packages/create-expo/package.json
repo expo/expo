@@ -22,7 +22,7 @@
     "template"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=18.13.0"
   },
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
