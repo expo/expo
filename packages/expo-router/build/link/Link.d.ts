@@ -63,8 +63,8 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
     className?: string;
     onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 }
-export interface LinkComponent<T extends string | object> {
-    (props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+export interface LinkComponent {
+    <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
     resolveHref: (href: Href) => string;
 }
@@ -83,5 +83,5 @@ export declare function Redirect({ href }: {
  * @param props.children Child elements to render the content.
  * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
-export declare const Link: LinkComponent<any>;
+export declare const Link: LinkComponent;
 //# sourceMappingURL=Link.d.ts.map

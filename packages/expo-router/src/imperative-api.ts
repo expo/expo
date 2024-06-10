@@ -7,11 +7,11 @@ export type Router = {
   /** If there's history that supports invoking the `back` function. */
   canGoBack: () => boolean;
   /** Navigate to the provided href using a push operation if possible. */
-  push: (href: Href) => void;
+  push: <T extends string | object>(href: Href<T>) => void;
   /** Navigate to the provided href. */
-  navigate: (href: Href) => void;
+  navigate: <T extends string | object>(href: Href<T>) => void;
   /** Navigate to route without appending to the history. */
-  replace: (href: Href) => void;
+  replace: <T extends string | object>(href: Href<T>) => void;
   /** Navigate to a screen with a stack lower than the current screen. Using the provided count if possible, otherwise 1. */
   dismiss: (count?: number) => void;
   /** Navigate to first screen within the lowest stack. */
