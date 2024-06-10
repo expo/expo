@@ -17,12 +17,16 @@ function encodeBundlePath(filename: string): string {
   if (typeof window === 'undefined') {
     return encodeURI(filename);
   }
-  const url = new URL(filename, window.location.origin);
-  url.pathname = url.pathname.replace(
-    /[+!"#$&'()*+,:;=?@]/g,
-    (match) => `%${match.charCodeAt(0).toString(16)}`,
-  );
-  return url.toString();
+  const encode = (pathname: string): string =>
+    pathname.replace(/[+!"#$&'()*+,:;=?@]/g, (match) => `%${match.charCodeAt(0).toString(16)}`);
+  if (filename.match(/^https?:\/\//)) {
+    const url = new URL(filename, window.location.origin);
+    url.pathname = encode(url.pathname);
+    return url.toString();
+  } else {
+    const [pathname, query] = filename.split('?');
+    return query ? `${encode(pathname)}?${query}` : encode(pathname);
+  }
 }
 
 /**
