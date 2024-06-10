@@ -3,9 +3,10 @@ import { getRoutes } from '../getRoutes';
 import { isTypedRoute, removeSupportedExtensions } from '../matchers';
 import { RequireContext } from '../types';
 
+// /[...param1]/ - Match [...param1]
+const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 const SLUG = /\[.+?\]/g;
-const CATCH_ALL = /\[\.\.\..+?\]/g;
 
 export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const staticRoutes = new Set<string>();

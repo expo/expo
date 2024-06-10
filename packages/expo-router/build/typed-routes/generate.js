@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTypedRoutesDeclarationFile = void 0;
 const getRoutes_1 = require("../getRoutes");
 const matchers_1 = require("../matchers");
+// /[...param1]/ - Match [...param1]
+const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 const SLUG = /\[.+?\]/g;
-const CATCH_ALL = /\[\.\.\..+?\]/g;
 function getTypedRoutesDeclarationFile(ctx) {
     const staticRoutes = new Set();
     const dynamicRoutes = new Set();
