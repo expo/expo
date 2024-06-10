@@ -211,7 +211,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             // @ts-expect-error: not on type.
-            unstable_renameRequire: true,
+            unstable_renameRequire: false,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')

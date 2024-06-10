@@ -24,6 +24,7 @@ import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
+import { ExpoConfig } from '@expo/config';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -41,6 +42,7 @@ type Options = {
   reactCompiler: boolean;
   maxWorkers?: number;
   isExporting: boolean;
+  exp?: ExpoConfig;
 };
 
 type HtmlRequestLocation = {
@@ -134,7 +136,15 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
 export async function exportFromServerAsync(
   projectRoot: string,
   devServer: MetroBundlerDevServer,
-  { outputDir, baseUrl, exportServer, includeSourceMaps, routerRoot, files = new Map() }: Options
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    includeSourceMaps,
+    routerRoot,
+    files = new Map(),
+    exp,
+  }: Options
 ): Promise<ExportAssetMap> {
   Log.log(
     `Static rendering is enabled. ` +
@@ -148,6 +158,7 @@ export async function exportFromServerAsync(
     outputDir,
     baseUrl,
     files,
+    exp,
   });
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
