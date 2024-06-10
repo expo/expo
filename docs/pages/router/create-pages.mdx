@@ -58,7 +58,7 @@ The above example matches the `/` route in the app and the browser. Files named 
 
 ## Platform specific extensions
 
-> **warning** Platform-specific extensions were added in Expo Router `3.x.x`. If you are using an older version of the library, follow instructions from [Platform-specific modules](/router/advanced/platform-specific-modules).
+> **warning** Platform-specific extensions were added in Expo Router `3.5.x`. If you are using an older version of the library, follow instructions from [Platform-specific modules](/router/advanced/platform-specific-modules).
 
 Metro bundler's platform-specific extensions (for example, **.ios.js** or **.native.ts**) are supported in the **app** directory only if a **non-platform version** also exists. This ensures that routes are universal across platforms for deep linking.
 
@@ -75,6 +75,7 @@ Consider the following project structure:
 />
 
 In the above file structure:
+
 - **\_layout.web.js** file is used as a layout on the web and **\_layout.js** is used on all other platforms.
 - **index.js** file is used as the home page for all platforms.
 - **about.web.js** file is used as the about page for the web, and the **about.js** file is used on all other platforms.
