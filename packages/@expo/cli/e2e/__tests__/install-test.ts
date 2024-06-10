@@ -2,7 +2,7 @@
 import JsonFile from '@expo/json-file';
 import execa, { ExecaError } from 'execa';
 import * as fs from 'fs/promises';
-import * as klawSync from 'klaw-sync';
+import klawSync from 'klaw-sync';
 import * as path from 'path';
 
 import {
