@@ -11,7 +11,7 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
     let permissions = CNContactStore.authorizationStatus(for: .contacts)
 
     switch permissions {
-    case .authorized:
+    case .authorized, .limited:
       status = EXPermissionStatusGranted
     case .denied, .restricted:
       status = EXPermissionStatusDenied

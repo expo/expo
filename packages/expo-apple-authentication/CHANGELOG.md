@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Handle new error code on `iOS` 18.
 
 ## 6.4.1 — 2024-04-23
 
