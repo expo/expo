@@ -30,8 +30,10 @@ import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MediaSourceFactory
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -41,10 +43,11 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import java.io.File
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, LifecycleEventListener {
+class AudioModule : Module(), LifecycleEventListener {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
@@ -55,10 +58,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
   private var appIsPaused = false
   private var staysActiveInBackground = false
   private var audioEnabled = true
-  private var focusAcquired = false
-  private var shouldDuckAudio = false
   private var audioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS
-  private var isDuckingAudio = false
   private var shouldRouteThroughEarpiece = false
 
   private enum class AudioInterruptionMode {
@@ -71,19 +71,28 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      val uiManager = appContext.legacyModule<UIManager>()
+      uiManager?.registerLifecycleEventListener(this@AudioModule)
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-      shouldDuckAudio = mode.shouldDuckAudio ?: false
-
+      staysActiveInBackground = mode.shouldPlayInBackground
+      shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
+      if (shouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true)
+      }
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
       audioEnabled = enabled
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-        audioManager.abandonAudioFocusRequest(AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_LOSS).build())
-      } else {
-        audioManager.abandonAudioFocus(this@AudioModule)
+      if (!enabled) {
+        appContext.mainQueue.launch {
+          players.values.forEach {
+            if (it.player.isPlaying) {
+              it.player.pause()
+            }
+          }
+        }
       }
     }
 
@@ -93,6 +102,11 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
     AsyncFunction("getRecordingPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
+    }
+
+    OnDestroy {
+      val uiManager = appContext.legacyModule<UIManager>()
+      uiManager?.unregisterLifecycleEventListener(this@AudioModule)
     }
 
     Class(AudioPlayer::class) {
@@ -105,7 +119,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
           DefaultDataSource.Factory(context, this)
         }
 
-        val mediaSource = buildMediaSourceFactory(factory, Uri.parse(source.uri))
+        val mediaSource = buildMediaSourceFactory(factory, MediaItem.fromUri(source.uri))
         runBlocking(appContext.mainQueue.coroutineContext) {
           val player = AudioPlayer(
             context,
@@ -198,6 +212,10 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
       }
 
       Function("play") { ref: AudioPlayer ->
+        if (!audioEnabled) {
+          Log.e(TAG, "Could not convert string to JSONObject")
+          return@Function
+        }
         appContext.mainQueue.launch {
           ref.player.play()
         }
@@ -275,7 +293,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
       Function("stop") { ref: AudioRecorder ->
         checkRecordingPermission()
-        return@Function ref.stopRecording()
+        ref.stopRecording()
       }
 
       Function("getStatus") { ref: AudioRecorder ->
@@ -364,9 +382,8 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
     if (deviceInfo == null) {
       // If no preferred device is found, set it to the first built-in input we can find
-      val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-      for (i in audioDevices.indices) {
-        val availableDeviceInfo = audioDevices[i]
+      val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+      for (availableDeviceInfo in audioDevices) {
         val type = availableDeviceInfo.type
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
           deviceInfo = availableDeviceInfo
@@ -396,11 +413,12 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
   private fun buildMediaSourceFactory(
     factory: DataSource.Factory,
-    uri: Uri
+    mediaItem: MediaItem
   ): MediaSource {
+    val uri = mediaItem.localConfiguration?.uri
     var newUri = uri
     try {
-      if (uri.scheme == null) {
+      if (uri?.scheme == null) {
         val resourceId: Int = context.resources?.getIdentifier(uri.toString(), "raw", context.packageName)
           ?: 0
         newUri = Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).path(resourceId.toString()).build()
@@ -408,14 +426,14 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
     } catch (e: Exception) {
       Log.e("AudioModule", "Error reading raw resource from ExoPlayer", e)
     }
-    val source = when (val type = retrieveStreamType(newUri)) {
+    val source = when (val type = retrieveStreamType(newUri!!)) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
       else -> throw IllegalStateException("Unsupported type: $type");
     }
-    return source.createMediaSource(MediaItem.fromUri(uri))
+    return source.createMediaSource(mediaItem)
   }
 
   private fun checkRecordingPermission() {
@@ -441,41 +459,47 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
     return map
   }
 
-  override fun onAudioFocusChange(focusChange: Int) {
-    when (focusChange) {
-      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-        if (shouldDuckAudio) {
-          isDuckingAudio = true
-          focusAcquired = true
-//          updateDuckStatusForAllPlayersPlaying()
-          return
-        }
-        isDuckingAudio = false
-        focusAcquired = false
-        for (player in players.values) {
-          player.player.playWhenReady = false
-        }
-      }
-
-      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> {
-        isDuckingAudio = false
-        focusAcquired = false
-        for (player in players.values) {
-          player.player.playWhenReady = false
-        }
-      }
-
-      AudioManager.AUDIOFOCUS_GAIN -> {
-        isDuckingAudio = false
-        focusAcquired = true
-      }
-    }
-  }
+//  override fun onAudioFocusChange(focusChange: Int) {
+//    when (focusChange) {
+//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+//        if (shouldDuckAudio) {
+//          isDuckingAudio = true
+//          focusAcquired = true
+////          updateDuckStatusForAllPlayersPlaying()
+//          return
+//        }
+//        isDuckingAudio = false
+//        focusAcquired = false
+//        for (player in players.values) {
+//          player.player.playWhenReady = false
+//        }
+//      }
+//
+//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> {
+//        isDuckingAudio = false
+//        focusAcquired = false
+//        for (player in players.values) {
+//          player.player.playWhenReady = false
+//        }
+//      }
+//
+//      AudioManager.AUDIOFOCUS_GAIN -> {
+//        isDuckingAudio = false
+//        focusAcquired = true
+//      }
+//    }
+//  }
 
   override fun onHostResume() {
     if (appIsPaused) {
       appIsPaused = false
       if (!staysActiveInBackground) {
+        for (player in players.values) {
+          if (player.isPaused) {
+            player.isPaused = false
+            player.ref.play()
+          }
+        }
         if (shouldRouteThroughEarpiece) {
           updatePlaySoundThroughEarpiece(true)
         }
@@ -485,9 +509,13 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
 
   override fun onHostPause() {
     if (!appIsPaused) {
+      appIsPaused = true
       if (!staysActiveInBackground) {
         for (player in players.values) {
-          player.player.playWhenReady = false
+          if (player.player.isPlaying) {
+            player.isPaused = true
+            player.ref.pause()
+          }
         }
       }
     }
@@ -500,35 +528,7 @@ class AudioModule : Module(), AudioManager.OnAudioFocusChangeListener, Lifecycle
     }
   }
 
-  private fun requestAudioFocus() {
-    if (!audioEnabled) {
-      throw AudioFocusNotAcquiredException()
-    }
-
-    if (appIsPaused && !staysActiveInBackground) {
-      throw AudioFocusException()
-    }
-
-    if (focusAcquired) {
-      return
-    }
-
-    val audioFocusRequest = if (audioInterruptionMode == AudioInterruptionMode.DO_NOT_MIX
-    ) {
-      AudioManager.AUDIOFOCUS_GAIN
-    } else {
-      AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-    }
-
-    val result: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      audioManager.requestAudioFocus(AudioFocusRequest.Builder(audioFocusRequest).build())
-    } else {
-      audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, audioFocusRequest);
-    }
-
-    focusAcquired = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    if (!focusAcquired) {
-      throw AudioFocusFailedException()
-    }
+  companion object {
+    val TAG: String = AudioModule::class.java.simpleName
   }
 }

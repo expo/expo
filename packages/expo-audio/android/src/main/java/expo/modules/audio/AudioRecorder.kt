@@ -20,19 +20,18 @@ class AudioRecorder(
   val context: Context,
   appContext: AppContext,
   private val options: RecordingOptions
-) : SharedObject(appContext), MediaRecorder.OnErrorListener, MediaRecorder.OnInfoListener {
+) : SharedObject(appContext),
+  MediaRecorder.OnErrorListener,
+  MediaRecorder.OnInfoListener {
   private var filePath: String? = null
   private var meteringEnabled = false
   private var durationAlreadyRecorded = 0L
 
+  val recorder = createRecorder(options)
   val id = UUID.randomUUID().toString()
   var uri: String? = null
   var uptime = 0L
   var isRecording = false
-
-  private var _recorder: MediaRecorder? = null
-
-  val recorder: MediaRecorder get() = _recorder ?: createRecorder(options)
 
   private fun getAudioRecorderLevels(): Int {
     if (!meteringEnabled) {
@@ -44,61 +43,65 @@ class AudioRecorder(
     } else (20 * ln(amplitude.toDouble() / 32767.0)).toInt()
   }
 
-  private fun createRecorder(options: RecordingOptions): MediaRecorder {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      MediaRecorder(context)
+  private fun createRecorder(options: RecordingOptions) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    MediaRecorder(context)
+  } else {
+    MediaRecorder()
+  }.apply {
+    setAudioSource(MediaRecorder.AudioSource.DEFAULT)
+    setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+    if (options.audioEncoder != null) {
+      setAudioEncoder(options.audioEncoder.toMediaEncoding())
     } else {
-      MediaRecorder()
-    }.apply {
-      setAudioSource(MediaRecorder.AudioSource.DEFAULT)
-      setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-      if (options.audioEncoder != null) {
-        setAudioEncoder(options.audioEncoder.toMediaEncoding())
-      } else {
-        setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-      }
-
-      options.sampleRate?.let {
-        this.setAudioSamplingRate(it.toInt())
-      }
-      options.numberOfChannels?.let {
-        this.setAudioChannels(it.toInt())
-      }
-      options.bitRate?.let {
-        this.setAudioEncodingBitRate(it.toInt())
-      }
-      options.maxFileSize?.let {
-        this.setMaxFileSize(it.toLong())
-      }
-      setOnErrorListener(this@AudioRecorder)
-      setOnInfoListener(this@AudioRecorder)
-      setOutputFile(filePath)
-      uri = filePath
-      prepare()
+      setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
     }
+
+    options.sampleRate?.let {
+      this.setAudioSamplingRate(it.toInt())
+    }
+    options.numberOfChannels?.let {
+      this.setAudioChannels(it.toInt())
+    }
+    options.bitRate?.let {
+      this.setAudioEncodingBitRate(it.toInt())
+    }
+    options.maxFileSize?.let {
+      this.setMaxFileSize(it.toLong())
+    }
+
+    val filename = "recording-${UUID.randomUUID()}${options.extension}"
+    try {
+      val directory = File(context.cacheDir.toString() + File.separator + "Audio")
+      ensureDirExists(directory)
+      filePath = "$directory${File.separator}$filename"
+    } catch (e: IOException) {
+      // This only occurs in the case that the scoped path is not in this experience's scope,
+      // which is never true.
+    }
+    setOnErrorListener(this@AudioRecorder)
+    setOnInfoListener(this@AudioRecorder)
+    setOutputFile(filePath)
+    uri = filePath
+    prepare()
   }
 
   override fun deallocate() {
-    _recorder = null
     recorder.release()
   }
 
   fun stopRecording(): Bundle {
-    isRecording = false
     recorder.stop()
-    _recorder = null
+    isRecording = false
     return getAudioRecorderStatus()
   }
 
-  fun getAudioRecorderStatus(): Bundle {
-    val map = Bundle()
-    map.putBoolean("canRecord", true)
-    map.putBoolean("isRecording", isRecording)
-    map.putLong("durationMillis", getAudioRecorderDurationMillis())
+  fun getAudioRecorderStatus() = Bundle().apply {
+    putBoolean("canRecord", true)
+    putBoolean("isRecording", isRecording)
+    putLong("durationMillis", getAudioRecorderDurationMillis())
     if (meteringEnabled) {
-      map.putInt("metering", getAudioRecorderLevels())
+      putInt("metering", getAudioRecorderLevels())
     }
-    return map
   }
 
   private fun getAudioRecorderDurationMillis(): Long {

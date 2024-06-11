@@ -1,8 +1,11 @@
 package expo.modules.audio
 
 import android.content.Context
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.kotlin.AppContext
@@ -26,20 +29,22 @@ class AudioPlayer(
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      addMediaSource(source)
+      setMediaSource(source)
+      setAudioAttributes(AudioAttributes.DEFAULT, true)
       prepare()
     },
   appContext
 ) {
-  val player = ref
   val id = UUID.randomUUID().toString()
+  val player = ref
   var preservesPitch = false
-  var isMuted = false
+  var isPaused = false
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
 
   init {
     addPlayerListeners()
+    player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     playerScope.launch {
       while (isActive) {
         sendPlayerUpdate()
@@ -48,20 +53,23 @@ class AudioPlayer(
     }
   }
 
-  val requiresAudioFocus get() = player.isPlaying || (shouldPlayerPlay && !isMuted);
-  private val shouldPlayerPlay get() = player.playbackParameters.speed > 0.0
-
   private fun addPlayerListeners() {
     player.addListener(object : Player.Listener {
       override fun onIsPlayingChanged(isPlaying: Boolean) {
         playerScope.launch {
-          sendPlayerUpdate(mapOf("isPlaying" to isPlaying))
+          sendPlayerUpdate(mapOf("playing" to isPlaying))
         }
       }
 
       override fun onIsLoadingChanged(isLoading: Boolean) {
         playerScope.launch {
           sendPlayerUpdate(mapOf("isLoaded" to isLoading))
+        }
+      }
+
+      override fun onPlaybackStateChanged(playbackState: Int) {
+        playerScope.launch {
+          sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
         }
       }
     })

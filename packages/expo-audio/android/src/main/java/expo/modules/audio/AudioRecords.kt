@@ -6,7 +6,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
 class AudioSource(
-  @Field val uri: String? = null,
+  @Field val uri: String,
   @Field val headers: Map<String, String>?
 ) : Record
 
@@ -15,7 +15,7 @@ class AudioMode(
   @Field val interruptionMode: InterruptionMode = InterruptionMode.MIX_WITH_OTHERS,
   @Field val allowsRecording: Boolean = true,
   @Field val shouldPlayInBackground: Boolean = true,
-  @Field val shouldDuckAudio: Boolean?
+  @Field val shouldRouteThroughEarpiece: Boolean?
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {
