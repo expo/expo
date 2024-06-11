@@ -1,7 +1,7 @@
 ---
 title: Encoding
 description: Standard TextEncoder and TextDecoder APIs available on all Expo-supported platforms.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-51/packages/expo'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
 packageName: 'expo'
 platforms: ['android', 'ios', 'web', 'tvos']
 ---
@@ -26,8 +26,8 @@ const text = new TextDecoder().decode(hello);
 
 ## TextEncoder
 
-The `TextEncoder` API is included in the Hermes engine.
+The `TextEncoder` API is included in the Hermes engine. See the source code here: [facebook/hermes > TextEncoder.cpp](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
 
 ## TextDecoder
 
-The `TextDecoder` API is not spec-compliant on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
+The `TextDecoder` API is not [spec-compliant](https://encoding.spec.whatwg.org/#textdecoder) on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
