@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Provide more image metadata in the result object.
+- [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
