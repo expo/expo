@@ -42,7 +42,7 @@ data class ImageResult(
 // region Module functions
 
 /**
- * Gets the image format from the base64 encoded image string by checking the prefix of 
+ * Gets the image format from the base64 encoded image string by checking the prefix of
  * the base64
  *
  * @param base64Image base64 encoded image string
