@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Automatically detect dev servers running on localhost with adb reverse. ([#29625](https://github.com/expo/expo/pull/29625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
