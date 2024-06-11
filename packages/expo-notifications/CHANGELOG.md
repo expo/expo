@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] adjust logic in handling responses when app in background or killed ([#29659](https://github.com/expo/expo/pull/29659) by [@douglowder](https://github.com/douglowder)))
+- [Android] Fix setBadgeCount() when badge count is 0. ([#29657](https://github.com/expo/expo/pull/29657) by [@douglowder](https://github.com/douglowder))
 - [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
 - Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
 - [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
