@@ -821,7 +821,7 @@ export async function addExistingGroupToContainerAsync(
 /**
  * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
- * @param containerId The container you to add membership to. Only used on iOS.
+ * @param containerId @tag-ios The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
  * @example
  * ```js
