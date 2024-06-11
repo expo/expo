@@ -27,7 +27,7 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
       className={mergeClasses(
         'flex flex-col gap-8',
         title && 'pt-10 mt-10 border-t border-default',
-        !title && 'pt-2'
+        !title && 'pt-5'
       )}>
       {title && (previousPage || nextPage) && (
         <div
