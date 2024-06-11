@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Changed the react client reference collection property to be a string.
+- Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.7 - 2024-06-05
 
