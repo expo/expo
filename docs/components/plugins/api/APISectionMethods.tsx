@@ -6,9 +6,7 @@ import {
   AccessorDefinitionData,
   MethodDefinitionData,
   MethodParamData,
-  MethodSignatureData,
   PropData,
-  TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
@@ -72,64 +70,68 @@ export const renderMethod = (
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
-  return signatures.map(
-    ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => {
-      const returnComment = getTagData('returns', comment);
-      return (
-        <div
-          key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-          css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-          <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} />
-          <HeaderComponent>
-            <MONOSPACE
-              weight="medium"
-              css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
-              className="wrap-anywhere">
-              {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-            </MONOSPACE>
-          </HeaderComponent>
-          {parameters && parameters.length > 0 && (
-            <>
-              {renderParams(parameters, sdkVersion)}
-              <br />
-            </>
-          )}
-          <CommentTextBlock
-            comment={comment}
-            includePlatforms={false}
-            afterContent={
-              resolveTypeName(type, sdkVersion) !== 'undefined' ? (
-                <>
-                  <div
-                    className={mergeClasses(
-                      'flex flex-row gap-2 items-start',
-                      !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
-                    )}>
-                    <div className="flex flex-row gap-2 items-center">
-                      <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
-                      <CALLOUT tag="span" theme="secondary" weight="medium">
-                        Returns:
-                      </CALLOUT>
-                    </div>
-                    <CALLOUT>
-                      <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+  return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
+    const returnComment = getTagData('returns', comment);
+    return (
+      <div
+        key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
+        css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+        <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} />
+        <HeaderComponent>
+          <MONOSPACE
+            weight="medium"
+            css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
+            className="wrap-anywhere">
+            {getMethodName(
+              method as MethodDefinitionData,
+              apiName,
+              name,
+              parameters,
+              typeParameter
+            )}
+          </MONOSPACE>
+        </HeaderComponent>
+        {parameters && parameters.length > 0 && (
+          <>
+            {renderParams(parameters, sdkVersion)}
+            <br />
+          </>
+        )}
+        <CommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={
+            type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
+              <>
+                <div
+                  className={mergeClasses(
+                    'flex flex-row gap-2 items-start',
+                    !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
+                  )}>
+                  <div className="flex flex-row gap-2 items-center">
+                    <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+                    <CALLOUT tag="span" theme="secondary" weight="medium">
+                      Returns:
                     </CALLOUT>
                   </div>
-                  {returnComment ? (
-                    <div className="flex flex-col mt-1.5 mb-1 pl-6">
-                      <CommentTextBlock comment={{ summary: returnComment.content }} />
-                    </div>
-                  ) : undefined}
-                </>
-              ) : undefined
-            }
-          />
-          {}
-        </div>
-      );
-    }
-  );
+                  <CALLOUT>
+                    <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+                  </CALLOUT>
+                </div>
+                {returnComment ? (
+                  <div className="flex flex-col mt-1.5 mb-1 pl-6">
+                    <CommentTextBlock comment={{ summary: returnComment.content }} />
+                  </div>
+                ) : undefined}
+              </>
+            ) : undefined
+          }
+        />
+        {}
+      </div>
+    );
+  });
 };
 
 const APISectionMethods = ({

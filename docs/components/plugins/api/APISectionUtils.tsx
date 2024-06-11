@@ -21,6 +21,7 @@ import {
   MethodSignatureData,
   PropData,
   TypeDefinitionData,
+  TypeParameterData,
   TypePropertyDataFlags,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
@@ -59,6 +60,7 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  TypeParameter = 131072,
   Accessor = 262144,
   TypeAlias = 2097152,
   TypeAlias_Legacy = 4194304,
@@ -392,14 +394,14 @@ export const resolveTypeName = (
             ))}
             <span className="text-quaternary">)</span>{' '}
             <span className="text-quaternary">{'=>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       } else {
         return (
           <>
             <span className="text-quaternary">{'() =>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       }
@@ -686,14 +688,26 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
 
+export function getTypeParametersNames(typeParameters?: TypeParameterData[]) {
+  if (typeParameters?.length) {
+    return `<${typeParameters.map(param => param.name).join(', ')}>`;
+  }
+  return '';
+}
+
 export const getMethodName = (
   method: MethodDefinitionData,
   apiName?: string,
   name?: string,
-  parameters?: MethodParamData[]
+  parameters?: MethodParamData[],
+  typeParameters?: TypeParameterData[]
 ) => {
   const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
-  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  const methodName =
+    ((apiName && `${apiName}.`) ?? '') +
+    (method.name || name) +
+    getTypeParametersNames(typeParameters);
+
   if (!isProperty) {
     return `${methodName}(${parameters ? listParams(parameters) : ''})`;
   }
