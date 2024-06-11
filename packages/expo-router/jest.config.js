@@ -37,7 +37,7 @@ const config = withWatchPlugins({
 });
 
 const tsdProject = {
-  displayName: { name: 'Types', color: 'blue' },
+  displayName: { name: 'TSD', color: 'blue' },
   runner: 'jest-runner-tsd',
   testMatch: ['<rootDir>/src/typed-routes/__tests__/*.tsd.ts'],
   rootDir: path.resolve(__dirname),
@@ -45,10 +45,19 @@ const tsdProject = {
   setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
 };
 
-if (process.env.CI || process.env.EXPORT_ROUTER_JEST_TSD === 'tsd') {
-  // Add the TSD project and disable watch plugins as they do not work with `jest-runner-tsd`
+/*
+ * In CI, or using `yarn test:tsd` add the TSD project.
+ *
+ * `jest-runner-tsd` is incompatible with `jest-watch-select-projects` so we need to disable it.
+ *
+ * If you wish to run only the tsd project, you can use the following command:
+ *
+ * `yarn test:tsd --selectProjects TSD`
+ *
+ */
+if (process.env.CI || process.env.EXPORT_ROUTER_JEST_TSD) {
   projects.push(tsdProject);
-  config.watchPlugins = [];
+  config.watchPlugins = ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'];
 }
 
 module.exports = config;
