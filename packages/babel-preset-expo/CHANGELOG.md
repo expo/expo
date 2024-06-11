@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Changed the react client reference collection property to be a string.
+
 ## 11.0.7 - 2024-06-05
 
 ### 💡 Others

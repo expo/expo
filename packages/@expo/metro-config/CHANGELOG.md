@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added support for bundling assets in React Server mode.
 - Disable require rename. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
 
