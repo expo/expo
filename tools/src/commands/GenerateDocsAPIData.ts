@@ -22,22 +22,12 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
-  expo: ['Expo.ts', 'expo'],
+  expo: [['Expo.ts', 'types.ts'], 'expo'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
-  'expo-auth-session': [
-    [
-      'AuthRequest.ts',
-      'AuthSession.ts',
-      'Discovery.ts',
-      'Errors.ts',
-      'Fetch.ts',
-      'TokenRequest.ts',
-      'providers/Provider.types.ts',
-    ],
-  ],
+  'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
@@ -87,7 +77,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-random': ['Random.ts'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],

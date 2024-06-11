@@ -8,7 +8,7 @@ import { FileTree } from '~/ui/components/FileTree';
 
 import { Terminal } from '~/ui/components/Snippet';
 
-As your project grows, it can be helpful to move all of the directories containing application code into a single **src** directory. Expo Router supports this out of the box.
+As your project grows, it can be helpful to move all the directories containing application code into a single **src** directory. Expo Router supports this out of the box.
 
 <FileTree
   files={['src/app/_layout.js', 'src/app/index.js', 'src/components/button.js', 'package.json']}
@@ -16,9 +16,13 @@ As your project grows, it can be helpful to move all of the directories containi
 
 Simply move your **app** directory to **src/app** and restart the development server.
 
-<Terminal
-  cmd={['$ npx expo start', '', '# Or export for production', '$ npx expo export']}
-/>
+{/* prettier-ignore */}
+<Terminal cmd={[
+  '$ npx expo start',
+  '',
+  '# Or export for production',
+  '$ npx expo export'
+]} />
 
 **Notes**:
 
@@ -40,7 +44,7 @@ You can dangerously customize the root directory using the Expo Router Config Pl
     [
       "expo-router",
       {
-        "root": "./src/routes",
+        "root": "./src/routes"
       }
     ]
   ]

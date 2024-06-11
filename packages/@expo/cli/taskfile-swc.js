@@ -1,5 +1,5 @@
 // Based on Next.js swc taskr file.
-// https://github.com/vercel/next.js/blob/5378db8f807dbb9ff0993662f0a39d0f6cba2452/packages/next/taskfile-swc.js
+// https://github.com/vercel/next.js/blob/9d1ae19af360367e53c0f5a570e261e94cc8e59b/packages/next/taskfile-swc.js
 
 const path = require('path');
 const assert = require('assert');
@@ -18,7 +18,7 @@ module.exports = function (task) {
         },
         env: {
           targets: {
-            node: '12.13.0',
+            node: '16.8.0',
           },
         },
         jsc: {

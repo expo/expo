@@ -1,50 +1,73 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 @objc(ExpoFabricView)
-public class ExpoFabricView: ExpoFabricViewObjC {
+open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    A weak reference to the app context associated with this view.
-   The app context is injected into the class when making its copy in runtime,
+   The app context is injected into the class after the context is initialized.
    see the `makeClass` static function.
    */
-  weak var appContext: AppContext? { __injectedAppContext() }
+  public weak var appContext: AppContext? { ExpoFabricView.appContextFromClass() }
 
   /**
-   Name of the module associated with this view. Injected by `makeClass` static function.
+   The view definition that setup from `ExpoFabricView.create()`.
    */
-  lazy var moduleName: String = __injectedModuleName()
-
-  /**
-   Returns a holder of the module associated with this view.
-   */
-  private var moduleHolder: ModuleHolder? {
-    return appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
-  }
+  private var viewDefinition: AnyViewDefinition?
 
   /**
    A dictionary of prop objects that contain prop setters.
    */
-  lazy var viewManagerPropDict: [String: AnyViewProp]? = moduleHolder?.definition.view?.propsDict()
+  lazy var viewManagerPropDict: [String: AnyViewProp]? = viewDefinition?.propsDict()
 
   // MARK: - Initializers
 
-  /**
-   The default initializer for all native views. It is called by Fabric.
-   */
+  // swiftlint:disable unavailable_function
   @objc
   public init() {
-    super.init(frame: .zero)
-    initializeContentView()
+    // For derived views, their initializer should be replaced by the 'class_replaceMethod'.
+    fatalError("Unsupported direct init() call for ExpoFabricView.")
+  }
+  // swiftlint:enable unavailable_function
+
+  @objc
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
   }
 
-  required init?(coder: NSCoder) {
+  required public init(appContext: AppContext? = nil) {
+    super.init(frame: .zero)
+  }
+
+  /**
+   The view creator expected to be called for derived ExpoFabricView, the `viewDefinition` and event dispatchers will be setup from here.
+
+   NOTE: We swizzle the initializers, e.g. `ViewManagerAdapter_ExpoImage.new()` to `ImageView.init(appContext:)`
+   and we also need viewDefintion (or moduleName) for the `installEventDispatchers()`.
+   Swizzling ExpoFabricView doesn't give us chance to inject iMethod or iVar of ImageView and pass the moduleName.
+   Alternatively, we try to add a dedicated `ExpoFabricView.create()` and passing viewDefinition into the class.
+   That's not a perfect implementation but turns out to be the only way to get the viewDefinition (or moduleName).
+   The example call flow would be:
+   `ViewManagerAdapter_ExpoImage.new()` -> `ViewDefinition.createView()` -> `ExpoFabricView.create()` ->
+   `ImageView.init(appContext:)` -> `ExpoFabricView.init(appContext:)` -> `view.viewDefinition = viewDefinition` here
+   */
+  internal static func create(viewType: ExpoFabricView.Type, viewDefinition: AnyViewDefinition, appContext: AppContext) -> ExpoFabricView {
+    let view = viewType.init(appContext: appContext)
+    view.viewDefinition = viewDefinition
+    assert(appContext == view.appContext)
+    view.installEventDispatchers()
+    return view
+  }
+
+  // Mark the required init as unavailable so that subclasses can avoid overriding it.
+  @available(*, unavailable)
+  public required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
   // MARK: - ExpoFabricViewInterface
 
   public override func updateProps(_ props: [String: Any]) {
-    guard let view = contentView, let context = appContext, let propsDict = viewManagerPropDict else {
+    guard let context = appContext, let propsDict = viewManagerPropDict else {
       return
     }
     for (key, prop) in propsDict {
@@ -53,7 +76,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
       // Adding `throws` keyword to the function results in different
       // method signature in Objective-C. Maybe just call `RCTLogError`?
-      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: context)
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: self, appContext: context)
     }
   }
 
@@ -61,10 +84,10 @@ public class ExpoFabricView: ExpoFabricViewObjC {
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
   public override func viewDidUpdateProps() {
-    guard let view = contentView, let viewDefinition = moduleHolder?.definition.view else {
+    guard let viewDefinition else {
       return
     }
-    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+    viewDefinition.callLifecycleMethods(withType: .didUpdateProps, forView: self)
   }
 
   /**
@@ -74,58 +97,14 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     return viewManagerPropDict?.index(forKey: name) != nil
   }
 
-  /**
-   The function that is called by Fabric when the view is unmounted and is being enqueued for recycling.
-   It can also be called on app reload, so be careful to wipe out any dependencies specific to the currently running AppContext.
-   */
-  public override func prepareForRecycle() {
-    super.prepareForRecycle()
-
-    // Unmount the proper view
-    contentView = nil
-  }
-
-  /**
-   An integer that is used to identify `UIView` objects.
-   Fabric sets this property to the corresponding React tag
-   when the view is mounted or `0` when it's enqueued for recycling.
-   */
-  public override var tag: Int {
-    didSet {
-      // The content view needs to be recreated when
-      // the recycled view is about to be mounted again.
-      if tag != 0 && contentView == nil {
-        initializeContentView()
-      }
-    }
-  }
-
   // MARK: - Privates
-
-  /**
-   Creates the content view using the associated view module.
-   */
-  private func initializeContentView() {
-    guard let appContext = appContext else {
-      fatalError(Exceptions.AppContextLost().reason)
-    }
-    guard let view = moduleHolder?.definition.view?.createView(appContext: appContext) else {
-      fatalError("Cannot create a view from module '\(moduleName)'")
-    }
-    // Setting the content view automatically adds the view as a subview.
-    contentView = view
-    installEventDispatchers()
-  }
 
   /**
    Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.
    */
   private func installEventDispatchers() {
-    guard let view = contentView, let moduleHolder = moduleHolder else {
-      return
-    }
-    moduleHolder.definition.view?.eventNames.forEach { eventName in
-      installEventDispatcher(forEvent: eventName, onView: view) { [weak self] (body: [String: Any]) in
+    viewDefinition?.eventNames.forEach { eventName in
+      installEventDispatcher(forEvent: eventName, onView: self) { [weak self] (body: [String: Any]) in
         if let self = self {
           self.dispatchEvent(eventName, payload: body)
         } else {
@@ -147,20 +126,17 @@ public class ExpoFabricView: ExpoFabricViewObjC {
    */
   @objc
   public static func makeViewClass(forAppContext appContext: AppContext, className: String) -> AnyClass? {
+    let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
     if let viewClass = viewClassesRegistry[className] {
-      // When requested for a new class, make sure to update the injected app context.
-      // We assume that the module name doesn't change, since it's based on the class name.
-      inject(appContext: appContext, toViewClass: viewClass)
+      inject(appContext: appContext)
+      injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
       return viewClass
     }
     guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
       fatalError("Cannot allocate a Fabric view class for '\(className)'")
     }
-
-    inject(appContext: appContext, toViewClass: viewClass)
-
-    let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
-    inject(moduleName: moduleName, toViewClass: viewClass)
+    inject(appContext: appContext)
+    injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
 
     // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
     viewClassesRegistry[className] = viewClass
@@ -168,17 +144,34 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     return viewClass
   }
 
-  internal static func inject(appContext: AppContext, toViewClass viewClass: AnyClass) {
+  internal static func inject(appContext: AppContext) {
     // Keep it weak so we don't leak the app context.
     weak var weakAppContext = appContext
     let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
     let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
-    class_replaceMethod(viewClass, #selector(__injectedAppContext), appContextBlockImp, "@@:")
+    class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
   }
 
-  internal static func inject(moduleName: String, toViewClass viewClass: AnyClass) {
-    let moduleNameBlock: @convention(block) () -> String = { moduleName }
-    let moduleNameBlockImp: IMP = imp_implementationWithBlock(moduleNameBlock)
-    class_replaceMethod(viewClass, #selector(__injectedModuleName), moduleNameBlockImp, "@@:")
+  internal static func injectInitializer(appContext: AppContext, moduleName: String, toViewClass viewClass: AnyClass) {
+    // The default initializer for native views. It will be called by Fabric.
+    let newBlock: @convention(block) () -> Any = {[weak appContext] in
+      guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
+        fatalError(Exceptions.AppContextLost().reason)
+      }
+      guard let view = moduleHolder.definition.view?.createView(appContext: appContext) else {
+        fatalError("Cannot create a view from module '\(moduleName)'")
+      }
+      _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
+      return view
+    }
+    let newBlockImp: IMP = imp_implementationWithBlock(newBlock)
+    class_replaceMethod(object_getClass(viewClass), Selector("new"), newBlockImp, "@@:")
   }
+
+  // swiftlint:disable unavailable_function
+  @objc
+  private dynamic static func appContextFromClass() -> AppContext? {
+    fatalError("The AppContext must be injected in the 'ExpoFabricView' class")
+  }
+  // swiftlint:enable unavailable_function
 }

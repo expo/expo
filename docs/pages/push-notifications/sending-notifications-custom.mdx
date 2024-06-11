@@ -189,7 +189,7 @@ There are two types of Firebase Cloud Messaging messages: [notification and data
 
 If you send a message of type **notification** instead of **data** directly through Firebase, you won't know if a user interacted with the notification (no `onNotificationResponse` event available), and you won't be able to parse the notification payload for any data in your notification event-related listeners.
 
-> Using notification-type messages may have upsides when you need a configuration option that has not been exposed by `expo-notifications` yet. In general, it may lead to less predictable situations than using only data-type messages and it's not our responsibility that you'll have to go to Google to report issues.
+> Using notification-type messages may have upsides when you need a configuration option that has not been exposed by `expo-notifications` yet. In general, it may lead to less predictable situations than using only data-type messages, and it's not our responsibility that you'll have to go to Google to report issues.
 
 Below is an example of each type using Node.js Firebase Admin SDK to send data-type messages instead of notification-type:
 

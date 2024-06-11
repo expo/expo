@@ -1,16 +1,7 @@
-import { DynamicConvention, RouteNode } from './Route';
-import { RequireContext } from './types';
-export type Options = {
-    ignore?: RegExp[];
-    preserveApiRoutes?: boolean;
-    ignoreRequireErrors?: boolean;
-    ignoreEntryPoints?: boolean;
-    internal_stripLoadRoute?: boolean;
-    skipGenerated?: boolean;
-    importMode?: string;
-    platformRoutes?: boolean;
-    platform?: string;
-};
+import type { RouteNode } from './Route';
+import { type Options as OptionsCore } from './getRoutesCore';
+import type { RequireContext } from './types';
+export type Options = Omit<OptionsCore, 'getSystemRoute'>;
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -25,12 +16,5 @@ export type Options = {
  */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-export declare function getIgnoreList(options?: Options): RegExp[];
-/**
- * Generates a set of strings which have the router array syntax extrapolated.
- *
- * /(a,b)/(c,d)/e.tsx => new Set(['a/c/e.tsx', 'a/d/e.tsx', 'b/c/e.tsx', 'b/d/e.tsx'])
- */
-export declare function extrapolateGroups(key: string, keys?: Set<string>): Set<string>;
-export declare function generateDynamic(path: string): DynamicConvention[] | null;
+export { generateDynamic, extrapolateGroups, getIgnoreList } from './getRoutesCore';
 //# sourceMappingURL=getRoutes.d.ts.map

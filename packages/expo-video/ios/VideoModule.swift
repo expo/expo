@@ -6,8 +6,11 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
-    Function("isPictureInPictureSupported") {
-      return AVPictureInPictureController.isPictureInPictureSupported()
+    Function("isPictureInPictureSupported") { () -> Bool in
+      if #available(iOS 13.4, tvOS 14.0, *) {
+        return AVPictureInPictureController.isPictureInPictureSupported()
+      }
+      return false
     }
 
     View(VideoView.self) {
@@ -22,6 +25,10 @@ public final class VideoModule: Module {
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
         view.playerViewController.showsPlaybackControls = nativeControls ?? true
+        #if os(tvOS)
+        view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
+        view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
+        #endif
       }
 
       Prop("contentFit") { (view, contentFit: VideoContentFit?) in
@@ -40,11 +47,15 @@ public final class VideoModule: Module {
       }
 
       Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
       }
 
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true
+        #endif
       }
 
       Prop("requiresLinearPlayback") { (view, requiresLinearPlayback: Bool?) in
@@ -56,7 +67,9 @@ public final class VideoModule: Module {
       }
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+        #if !os(tvOS)
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+        #endif
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -134,6 +147,10 @@ public final class VideoModule: Module {
       }
       .set { (player, playbackRate: Float) in
         player.playbackRate = playbackRate
+      }
+
+      Property("isLive") { player -> Bool in
+        return player.pointer.currentItem?.duration.isIndefinite ?? false
       }
 
       Property("preservesPitch") { player -> Bool in

@@ -65,6 +65,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   />
   <GridItem title="Imgur" protocol={['OAuth 2']} image={ASSETS.imgur} />
   <GridItem title="Keycloak" protocol={['OAuth 2', 'OpenID']} image={ASSETS.keycloak} />
+  <GridItem title="Logto" protocol={['OAuth 2', 'OpenID']} image={ASSETS.logto} />
   <GridItem title="Okta" protocol={['OAuth 2', 'OpenID']} image={ASSETS.okta} />
   <GridItem title="Reddit" protocol={['OAuth 2']} image={ASSETS.reddit} />
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
@@ -1378,6 +1379,55 @@ export default function App() {
 
 </Box>
 {/* End Keycloak */}
+
+{/* Start Logto */}
+
+<Box
+  name="Logto"
+  createUrl="https://docs.logto.io/quick-starts/expo/"
+  image={ASSETS.logto}
+>
+
+| Website                                                     | Provider | PKCE      | Auto Discovery |
+| ----------------------------------------------------------- | -------- | --------- | -------------- |
+| [Get Your Config](https://docs.logto.io/quick-starts/expo/) | OpenID   | Supported | Available      |
+
+- For native platforms, a Private-Use native URI scheme is required for `redirectUri`. See [OAuth2 spec](https://datatracker.ietf.org/doc/html/rfc8252#section-8.4) for more details.
+- For web platform, a `http(s)://` scheme is required for `redirectUri`.
+
+{/* prettier-ignore */}
+```jsx Auth code
+import { LogtoProvider, useLogto } from "@logto/rn";
+
+// Use `useLogto()` hook to sign in and sign out
+const Content = () => {
+  const { signIn, signOut, isAuthenticated } = useLogto();
+
+  return isAuthenticated ? (
+    <Button title="Sign Out" onPress={signOut} />
+  ) : (
+    <Button title="Sign In" onPress={async () => signIn(redirectUri)} />
+  );
+};
+
+// Wrap your page component with `LogtoProvider`
+const App = () => {
+  const logtoConfig = {
+    appId: "YOUR_APP",
+    endpoint: "YOUR_LOGTO_ENDPOINT",
+  };
+
+  return (
+    <LogtoProvider config={logtoConfig}>
+      <Content />
+    </LogtoProvider>
+  );
+};
+```
+
+</Box>
+
+{/* End Logto */}
 
 <Box
   name="Okta"

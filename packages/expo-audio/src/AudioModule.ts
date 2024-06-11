@@ -1,2 +1,4 @@
 import { requireNativeModule } from 'expo-modules-core';
-export default requireNativeModule('ExpoAudio');
+
+import { AudioModule } from './AudioModule.types';
+export default requireNativeModule<AudioModule>('ExpoAudio');

@@ -51,6 +51,7 @@ function getExpoDependencyChunks({
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-video',
           ],
         ]
       : []),
@@ -341,8 +342,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.1-0',
-        '@react-native-tvos/config-tv': '^0.0.9',
+        'react-native': 'npm:react-native-tvos@~0.74.2-0',
+        '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
         install: {
@@ -704,9 +705,6 @@ export async function initAsync(
     stdio: 'inherit',
   });
 
-  // Applying patches for 3rd party dependencies
-  await patchReactNativeAsync(projectRoot);
-
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
@@ -894,24 +892,4 @@ export async function setupUpdatesDevClientE2EAppAsync(
     path.resolve(dirName, '..', 'fixtures', 'Updates-dev-client.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
-}
-
-/**
- * Apply temporary fix from https://github.com/facebook/react-native/pull/44402
- */
-export async function patchReactNativeAsync(projectRoot: string) {
-  const packageJson = require(path.join(projectRoot, 'package.json'));
-  let postInstallScript = packageJson.scripts?.postinstall ?? '';
-  const reactNativeRoot = path.join(projectRoot, 'node_modules', 'react-native');
-  const reactNativeVersion = require(path.join(reactNativeRoot, 'package.json')).version;
-  if (reactNativeVersion === '0.74.1') {
-    if (postInstallScript !== '') {
-      postInstallScript += ' && ';
-    }
-    postInstallScript +=
-      'curl -sL https://patch-diff.githubusercontent.com/raw/facebook/react-native/pull/44402.diff \
-| patch -p3 -d node_modules/react-native';
-  }
-  packageJson.scripts.postinstall = postInstallScript;
-  await fs.writeFile(path.join(projectRoot, 'package.json'), JSON.stringify(packageJson, null, 2));
 }

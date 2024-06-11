@@ -69,7 +69,8 @@ const screens = [
   'Permissions',
   'Print',
   'Random',
-  'Recording',
+  'Recording (expo-av)',
+  'Recording (expo-audio)',
   'SMS',
   'NavigationBar',
   'SafeAreaContext',
@@ -84,6 +85,7 @@ const screens = [
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',
+  'Video Thumbnails',
   'ViewShot',
   'WebBrowser',
 ];

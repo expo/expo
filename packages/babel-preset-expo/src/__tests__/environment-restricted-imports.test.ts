@@ -105,7 +105,6 @@ describe('forbidden server imports', () => {
       return babel.transform(
         src,
         getOpts({
-          // @ts-expect-error
           isReactServer: undefined,
         })
       );

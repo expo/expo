@@ -48,12 +48,13 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### How to read from environment variables
 
-- <YesIcon small /> **Every environment variable must be statically referenced as a property of `process.env`
-  using JavaScript's dot notation for it to be inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY`
-  is valid and will be inlined.
+- <YesIcon small /> **Every environment variable must be statically referenced as a property of
+  `process.env` using JavaScript's dot notation for it to be inlined.** For example, the expression
+  `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
 
-- <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
-  or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not be inlined.
+- <NoIcon small /> **Alternative versions of the expression are not supported**. For example,
+  `process.env['EXPO_PUBLIC_KEY']` or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not
+  be inlined.
 
 ### Using multiple .env files to define separate environments
 
@@ -82,7 +83,7 @@ If you're experiencing issues with environment variables, you can try disabling 
 
 ### EAS Build
 
-[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables.mdx) for more information.
+[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables/) for more information.
 
 ### EAS Update
 
@@ -112,7 +113,7 @@ Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ### From babel-plugin-transform-inline-environment-variables
 
-Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside of an **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
+Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside a **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - const apiUrl = process.env.API_URL;

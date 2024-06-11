@@ -58,11 +58,20 @@ const home = [
     makePage('get-started/next-steps.mdx'),
   ]),
   makeSection('Develop', [
+    makePage('develop/tools.mdx'),
+    makeGroup(
+      'Navigation',
+      [
+        makePage('develop/file-based-routing.mdx'),
+        makePage('develop/dynamic-routes.mdx'),
+        makePage('develop/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
     makeGroup(
       'User interface',
       [
-        makePage('develop/user-interface/splash-screen.mdx'),
-        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),
@@ -153,6 +162,7 @@ const general = [
       'Bundling',
       [
         makePage('guides/customizing-metro.mdx'),
+        makePage('guides/react-compiler.mdx'),
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),
@@ -354,7 +364,6 @@ const general = [
       makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [

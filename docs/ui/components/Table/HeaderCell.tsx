@@ -8,15 +8,21 @@ import { convertAlign } from './utils';
 
 type HeaderCellProps = PropsWithChildren<{
   align?: TextAlign | 'char';
+  size?: 'md' | 'sm';
 }>;
 
-export const HeaderCell = ({ children, align = 'left' }: HeaderCellProps) => (
-  <th css={[tableHeadersCellStyle, { textAlign: convertAlign(align) }]}>{children}</th>
+export const HeaderCell = ({ children, align = 'left', size = 'md' }: HeaderCellProps) => (
+  <th
+    css={[
+      tableHeadersCellStyle,
+      { textAlign: convertAlign(align), fontSize: size === 'sm' ? '0.75rem' : '0.875rem' },
+    ]}>
+    {children}
+  </th>
 );
 
 const tableHeadersCellStyle = css({
   padding: spacing[4],
-  fontSize: '0.875rem',
   fontWeight: 500,
   color: theme.text.secondary,
   verticalAlign: 'middle',

@@ -22,7 +22,7 @@ export function convertNativeProps(props) {
 }
 export function ensureNativeProps(props) {
     const newProps = convertNativeProps(props);
-    newProps.barcodeScannerEnabled = !!newProps.onBarcodeScanned;
+    newProps.barcodeScannerEnabled = !!props?.onBarcodeScanned;
     newProps.flashMode = props?.flash ?? 'off';
     newProps.mute = props?.mute ?? false;
     newProps.autoFocus = props?.autofocus ?? 'off';

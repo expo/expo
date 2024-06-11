@@ -257,7 +257,12 @@ async function transformJS(file, { config, options, projectRoot }) {
         }
         else {
             // TODO: Replace this with a cheaper transform that doesn't require AST.
-            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
+            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix, 
+            // TODO: This config is optional to allow its introduction in a minor
+            // release. It should be made non-optional in ConfigT or removed in
+            // future.
+            // @ts-expect-error: Not on types yet (Metro 0.80.9).
+            config.unstable_renameRequire === false));
         }
     }
     const reserved = [];
@@ -323,6 +328,16 @@ async function transformAsset(file, context) {
 async function transformJSWithBabel(file, context) {
     const { babelTransformerPath } = context.config;
     const transformer = require(babelTransformerPath);
+    // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
+    // a malformed state. For now, we'll enable the experimental import support which compiles import statements
+    // outside of the standard Babel process.
+    if (!context.options.experimentalImportSupport) {
+        const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
+        if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+            // @ts-expect-error: readonly.
+            context.options.experimentalImportSupport = true;
+        }
+    }
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));

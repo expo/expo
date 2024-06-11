@@ -42,19 +42,19 @@
     "cross-spawn": "^7.0.3",
     "debug": "^4.3.4",
     "download-tarball": "^2.0.0",
-    "ejs": "^3.1.7",
+    "ejs": "^3.1.10",
     "find-up": "^5.0.0",
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^11.2.0",
     "getenv": "^1.0.0",
     "github-username": "^6.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
-    "validate-npm-package-name": "^4.0.0"
+    "validate-npm-package-name": "^5.0.1"
   },
   "devDependencies": {
-    "@types/ejs": "^3.1.0",
+    "@types/ejs": "^3.1.5",
     "@types/find-up": "^4.0.0",
-    "@types/prompts": "^2.0.14",
-    "expo-module-scripts": "^3.0.0"
+    "@types/prompts": "^2.4.9",
+    "expo-module-scripts": "^3.4.1"
   }
 }

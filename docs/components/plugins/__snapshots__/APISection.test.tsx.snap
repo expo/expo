@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -91,7 +91,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <span
@@ -117,7 +117,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </code>
     </p>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -128,7 +128,7 @@ available via the provided properties.
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       You should only attempt to render this if 
@@ -164,7 +164,7 @@ a warning in development mode (
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The properties of this component extend from 
@@ -218,14 +218,14 @@ button.
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
     <blockquote
-      class="css-zknray-Callout"
+      class="!mb-3.5 css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
@@ -254,7 +254,7 @@ not appear on the screen.
         class="css-1ohc0ia-Callout"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -277,51 +277,58 @@ for more details.
         </p>
       </div>
     </blockquote>
-    <h2
-      class="group css-13sdfl0-TextComponent"
-      data-heading="true"
-    >
-      <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
-        href="#props"
-        id="props"
+    <div>
+      <p
+        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        data-text="true"
       >
         <span
-          class="inline"
+          class="group css-11zd19b-TextComponent"
+          data-text="true"
         >
-          Props
+          <a
+            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            href="#appleauthenticationbuttonprops"
+            id="appleauthenticationbuttonprops"
+          >
+            <span
+              class="inline"
+            >
+              AppleAuthenticationButtonProps
+            </span>
+            <svg
+              aria-label="permalink"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
         </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h2>
+      </p>
+    </div>
     <div
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -336,7 +343,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 buttonStyle
@@ -344,7 +351,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -369,7 +376,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -391,14 +398,14 @@ for more details.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The Apple-defined color scheme to use to display the button.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -413,7 +420,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 buttonType
@@ -421,7 +428,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -446,7 +453,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -468,14 +475,14 @@ for more details.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -490,7 +497,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 cornerRadius
@@ -498,7 +505,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -523,7 +530,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -545,7 +552,7 @@ for more details.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The border radius to use when rendering the button. This works similarly to
@@ -560,7 +567,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -575,7 +582,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 onPress
@@ -583,7 +590,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -608,7 +615,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -636,7 +643,7 @@ for more details.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The method to call when the user presses the button. You should call 
@@ -656,7 +663,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -671,7 +678,7 @@ in here.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 style
@@ -679,7 +686,7 @@ in here.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -704,7 +711,7 @@ in here.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -784,7 +791,7 @@ in here.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The custom style to apply to the button. Should not include 
@@ -805,8 +812,8 @@ in here.
 properties.
         </p>
       </div>
-      <h3
-        class="group css-nikr5x-TextComponent"
+      <h4
+        class="group css-1725pab-TextComponent"
         data-heading="true"
       >
         <a
@@ -821,7 +828,7 @@ properties.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -844,7 +851,7 @@ properties.
             />
           </svg>
         </a>
-      </h3>
+      </h4>
       <ul
         class="css-118jp6n-TextComponent"
       >
@@ -910,7 +917,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -970,17 +977,17 @@ properties.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -1013,7 +1020,7 @@ properties.
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The unique identifier for the user whose credential state you'd like to check.
@@ -1038,7 +1045,7 @@ This should come from the user field of an
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
@@ -1077,7 +1084,7 @@ This should come from the user field of an
         
 
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -1091,21 +1098,14 @@ This should come from the user field of an
 
       </div>
     </blockquote>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1124,6 +1124,17 @@ This should come from the user field of an
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -1155,31 +1166,34 @@ This should come from the user field of an
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A promise that fulfills with an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationcredentialstate"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        <code
-          class="css-qyuze8-TextComponent"
-          data-text="true"
+        A promise that fulfills with an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationcredentialstate"
         >
-          AppleAuthenticationCredentialState
-        </code>
-      </a>
-      
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            AppleAuthenticationCredentialState
+          </code>
+        </a>
+        
 value depending on the state of the credential.
-    </p>
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -1227,26 +1241,19 @@ value depending on the state of the credential.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Determine if the current device's operating system supports Apple authentication.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1265,6 +1272,17 @@ value depending on the state of the credential.
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -1291,32 +1309,35 @@ value depending on the state of the credential.
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A promise that fulfills with 
-      <code
-        class="css-qyuze8-TextComponent"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
-        true
-      </code>
-       if the system supports Apple authentication, and 
-      <code
-        class="css-qyuze8-TextComponent"
-        data-text="true"
-      >
-        false
-      </code>
-       otherwise.
-    </p>
+        A promise that fulfills with 
+        <code
+          class="css-qyuze8-TextComponent"
+          data-text="true"
+        >
+          true
+        </code>
+         if the system supports Apple authentication, and 
+        <code
+          class="css-qyuze8-TextComponent"
+          data-text="true"
+        >
+          false
+        </code>
+         otherwise.
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -1376,17 +1397,17 @@ value depending on the state of the credential.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -1424,7 +1445,7 @@ value depending on the state of the credential.
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An 
@@ -1448,27 +1469,20 @@ value depending on the state of the credential.
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An operation that refreshes the logged-in user’s credentials.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1487,6 +1501,17 @@ Calling this method will show the sign in modal before actually refreshing the u
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -1518,39 +1543,42 @@ Calling this method will show the sign in modal before actually refreshing the u
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A promise that fulfills with an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationcredential"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
+        A promise that fulfills with an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationcredential"
+        >
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            AppleAuthenticationCredential
+          </code>
+        </a>
+        
+object after a successful authentication, and rejects with 
         <code
           class="css-qyuze8-TextComponent"
           data-text="true"
         >
-          AppleAuthenticationCredential
+          ERR_REQUEST_CANCELED
         </code>
-      </a>
-      
-object after a successful authentication, and rejects with 
-      <code
-        class="css-qyuze8-TextComponent"
-        data-text="true"
-      >
-        ERR_REQUEST_CANCELED
-      </code>
-       if the user cancels the
+         if the user cancels the
 refresh operation.
-    </p>
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -1610,17 +1638,17 @@ refresh operation.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -1664,7 +1692,7 @@ refresh operation.
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An optional 
@@ -1688,7 +1716,7 @@ refresh operation.
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
@@ -1697,7 +1725,7 @@ present a modal to the user over your app and allow them to sign in.
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       You can request access to the user's full name and email address in this method, which allows you
@@ -1707,7 +1735,7 @@ of these options at runtime.
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
@@ -1735,21 +1763,14 @@ You can use
        to identify
 the user, since this remains the same for apps released by the same developer.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1768,6 +1789,17 @@ the user, since this remains the same for apps released by the same developer.
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -1799,39 +1831,42 @@ the user, since this remains the same for apps released by the same developer.
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A promise that fulfills with an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationcredential"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
+        A promise that fulfills with an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationcredential"
+        >
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            AppleAuthenticationCredential
+          </code>
+        </a>
+        
+object after a successful authentication, and rejects with 
         <code
           class="css-qyuze8-TextComponent"
           data-text="true"
         >
-          AppleAuthenticationCredential
+          ERR_REQUEST_CANCELED
         </code>
-      </a>
-      
-object after a successful authentication, and rejects with 
-      <code
-        class="css-qyuze8-TextComponent"
-        data-text="true"
-      >
-        ERR_REQUEST_CANCELED
-      </code>
-       if the user cancels the
+         if the user cancels the
 sign-in operation.
-    </p>
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -1891,17 +1926,17 @@ sign-in operation.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -1939,7 +1974,7 @@ sign-in operation.
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An 
@@ -1963,7 +1998,7 @@ sign-in operation.
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An operation that ends the authenticated session.
@@ -1972,7 +2007,7 @@ Calling this method will show the sign in modal before actually signing the user
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
@@ -2003,21 +2038,14 @@ from using
       </a>
        methods.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -2036,6 +2064,17 @@ from using
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -2067,36 +2106,39 @@ from using
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A promise that fulfills with an 
-      <a
-        class="css-1na8e0o-A"
-        href="#appleauthenticationcredential"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
+        A promise that fulfills with an 
+        <a
+          class="css-1na8e0o-A"
+          href="#appleauthenticationcredential"
+        >
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            AppleAuthenticationCredential
+          </code>
+        </a>
+        
+object after a successful authentication, and rejects with 
         <code
           class="css-qyuze8-TextComponent"
           data-text="true"
         >
-          AppleAuthenticationCredential
+          ERR_REQUEST_CANCELED
         </code>
-      </a>
-      
-object after a successful authentication, and rejects with 
-      <code
-        class="css-qyuze8-TextComponent"
-        data-text="true"
-      >
-        ERR_REQUEST_CANCELED
-      </code>
-       if the user cancels the
+         if the user cancels the
 sign-out operation.
-    </p>
+      </p>
+    </div>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
@@ -2139,7 +2181,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -2199,19 +2241,14 @@ sign-out operation.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
-            </th>
-            <th
-              class="css-14twqd4-HeaderCell"
-            >
-              Description
             </th>
           </tr>
         </thead>
@@ -2244,35 +2281,19 @@ sign-out operation.
                 void
               </code>
             </td>
-            <td
-              class="css-zstkv9-Cell"
-            >
-              <span
-                class="text-quaternary"
-              >
-                -
-              </span>
-            </td>
           </tr>
         </tbody>
       </table>
     </div>
     <br />
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start mb-3.5"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -2291,20 +2312,25 @@ sign-out operation.
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
-          <a
-            class="css-1na8e0o-A"
-            href="#subscription"
-          >
-            Subscription
-          </a>
+          EventSubscription
         </code>
-      </li>
-    </ul>
-    <br />
+      </p>
+    </div>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
@@ -2347,7 +2373,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -2395,7 +2421,7 @@ sign-out operation.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The object type returned from a successful call to 
@@ -2439,7 +2465,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-zknray-Callout"
+      class="!mb-3.5 css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
@@ -2468,7 +2494,7 @@ which contains all of the pertinent user and credential information.
         class="css-1ohc0ia-Callout"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -2504,17 +2530,17 @@ for more details.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -2557,7 +2583,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2608,7 +2634,7 @@ the app's server counterpart. Unlike
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The user's email address. Might not be present if you didn't request the 
@@ -2666,7 +2692,7 @@ an Apple domain.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The user's name. May be 
@@ -2732,7 +2758,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2770,7 +2796,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A value that indicates whether the user appears to the system to be a real person.
@@ -2813,7 +2839,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that your app provided as 
@@ -2870,7 +2896,7 @@ will be
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -2885,7 +2911,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -2933,7 +2959,7 @@ developers.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
@@ -2959,17 +2985,17 @@ may be
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -3233,7 +3259,7 @@ may be
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -3281,7 +3307,7 @@ may be
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3300,7 +3326,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-zknray-Callout"
+      class="!mb-3.5 css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3329,7 +3355,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="css-1ohc0ia-Callout"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -3365,17 +3391,17 @@ for more details.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -3420,7 +3446,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3484,7 +3510,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3540,7 +3566,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -3588,7 +3614,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3607,7 +3633,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-zknray-Callout"
+      class="!mb-3.5 css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3636,7 +3662,7 @@ None of these options are required.
         class="css-1ohc0ia-Callout"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -3672,17 +3698,17 @@ for more details.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -3721,7 +3747,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -3776,7 +3802,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3840,7 +3866,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3864,7 +3890,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -3912,7 +3938,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3931,7 +3957,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-zknray-Callout"
+      class="!mb-3.5 css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3960,7 +3986,7 @@ You must include the ID string of the user to sign out.
         class="css-1ohc0ia-Callout"
       >
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -3996,17 +4022,17 @@ for more details.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -4045,7 +4071,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4101,7 +4127,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -4148,6 +4174,12 @@ OAuth 2.0 protocol
         </svg>
       </a>
     </h3>
+    <p
+      class="mb-3.5 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      A subscription object that allows to conveniently remove an event listener from the emitter.
+    </p>
     <div
       class="css-1uyflf8-Table"
     >
@@ -4161,17 +4193,17 @@ OAuth 2.0 protocol
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -4194,13 +4226,18 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span
                   class="text-quaternary"
                 >
-                  () =&gt;
+                  (
+                </span>
+                <span
+                  class="text-quaternary"
+                >
+                  ) =&gt;
                 </span>
                  
                 void
@@ -4210,10 +4247,11 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                A method to unsubscribe the listener.
+                Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
               </p>
             </td>
           </tr>
@@ -4262,7 +4300,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -4313,7 +4351,7 @@ OAuth 2.0 protocol
         </a>
       </h3>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An enum whose values control which pre-defined color scheme to use when rendering an 
@@ -4331,10 +4369,15 @@ OAuth 2.0 protocol
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationButtonStyle Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationButtonStyle Values
+        </span>
       </p>
     </div>
     <div
@@ -4392,7 +4435,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.WHITE ＝ 0
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         White button with black text.
@@ -4453,7 +4496,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         White button with a black outline and black text.
@@ -4514,7 +4557,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.BLACK ＝ 2
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         Black button with white text.
@@ -4522,7 +4565,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -4573,7 +4616,7 @@ OAuth 2.0 protocol
         </a>
       </h3>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An enum whose values control which pre-defined text to use when rendering an 
@@ -4591,10 +4634,15 @@ OAuth 2.0 protocol
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationButtonType Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationButtonType Values
+        </span>
       </p>
     </div>
     <div
@@ -4652,7 +4700,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Sign in with Apple"
@@ -4713,7 +4761,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.CONTINUE ＝ 1
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Continue with Apple"
@@ -4722,45 +4770,49 @@ OAuth 2.0 protocol
     <div
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
-      <span
-        class="inline-flex items-center mb-2 css-1yjys1n-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row items-center mb-2"
       >
         <span
-          class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
+          class="inline-flex items-center css-1yjys1n-TextComponent"
           data-text="true"
         >
-          Only for:
-           
-        </span>
-        <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
-        >
-          <svg
-            class="icon-xs text-palette-blue12"
-            fill="none"
-            role="img"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g
-              id="apple-custom-icon"
-            >
-              <path
-                d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
-                fill="currentColor"
-                id="Vector"
-              />
-            </g>
-          </svg>
           <span
-            class="css-1q9zso2-PlatformTag"
+            class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
+            data-text="true"
           >
-            iOS 13.2+
+            Only for:
+             
           </span>
-        </div>
-        <br />
-      </span>
+          <div
+            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+          >
+            <svg
+              class="icon-xs text-palette-blue12"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="apple-custom-icon"
+              >
+                <path
+                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="css-1q9zso2-PlatformTag"
+            >
+              iOS 13.2+
+            </span>
+          </div>
+          <br />
+        </span>
+      </div>
       <h4
         class="group css-1725pab-TextComponent"
         data-heading="true"
@@ -4813,7 +4865,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Sign up with Apple"
@@ -4821,7 +4873,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -4872,7 +4924,7 @@ OAuth 2.0 protocol
         </a>
       </h3>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An enum whose values specify state of the credential when checked with 
@@ -4890,7 +4942,7 @@ OAuth 2.0 protocol
         .
       </p>
       <blockquote
-        class="css-zknray-Callout"
+        class="!mb-3.5 css-zknray-Callout"
         data-testid="callout-container"
       >
         <div
@@ -4919,7 +4971,7 @@ OAuth 2.0 protocol
           class="css-1ohc0ia-Callout"
         >
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             <strong
@@ -4943,10 +4995,15 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationCredentialState Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationCredentialState Values
+        </span>
       </p>
     </div>
     <div
@@ -5171,7 +5228,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -5222,10 +5279,15 @@ for more details.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationOperation Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationOperation Values
+        </span>
       </p>
     </div>
     <div
@@ -5283,7 +5345,7 @@ for more details.
         AppleAuthenticationOperation.IMPLICIT ＝ 0
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An operation that depends on the particular kind of credential provider.
@@ -5456,7 +5518,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -5507,7 +5569,7 @@ for more details.
         </a>
       </h3>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An enum whose values specify scopes you can request when calling 
@@ -5558,7 +5620,7 @@ for more details.
           
 
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             Note that it is possible that you will not be granted all of the scopes which you request.
@@ -5569,7 +5631,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="css-zknray-Callout"
+        class="!mb-3.5 css-zknray-Callout"
         data-testid="callout-container"
       >
         <div
@@ -5598,7 +5660,7 @@ You will still need to handle null values for any fields you request.
           class="css-1ohc0ia-Callout"
         >
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             <strong
@@ -5622,10 +5684,15 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationScope Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationScope Values
+        </span>
       </p>
     </div>
     <div
@@ -5740,7 +5807,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -5791,13 +5858,13 @@ for more details.
         </a>
       </h3>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="css-zknray-Callout"
+        class="!mb-3.5 css-zknray-Callout"
         data-testid="callout-container"
       >
         <div
@@ -5826,7 +5893,7 @@ for more details.
           class="css-1ohc0ia-Callout"
         >
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             <strong
@@ -5850,10 +5917,15 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        AppleAuthenticationUserDetectionStatus Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          AppleAuthenticationUserDetectionStatus Values
+        </span>
       </p>
     </div>
     <div
@@ -5911,7 +5983,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The system does not support this determination and there is no data.
@@ -5972,7 +6044,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The system has not determined whether the user might be a real person.
@@ -6033,7 +6105,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The user appears to be a real person.
@@ -6086,7 +6158,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <div
       class="css-1avgxs7-APISectionDeprecationNote"
@@ -6121,7 +6193,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           class="css-1ohc0ia-Callout"
         >
           <p
-            class="mb-4 css-1kfqm4n-TextComponent"
+            class="mb-3.5 css-1kfqm4n-TextComponent"
             data-text="true"
           >
             <strong
@@ -6211,7 +6283,7 @@ for more details.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <span
@@ -6247,51 +6319,58 @@ for more details.
         </span>
       </code>
     </p>
-    <h2
-      class="group css-13sdfl0-TextComponent"
-      data-heading="true"
-    >
-      <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
-        href="#props"
-        id="props"
+    <div>
+      <p
+        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        data-text="true"
       >
         <span
-          class="inline"
+          class="group css-11zd19b-TextComponent"
+          data-text="true"
         >
-          Props
+          <a
+            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            href="#barcodescannerprops"
+            id="barcodescannerprops"
+          >
+            <span
+              class="inline"
+            >
+              BarCodeScannerProps
+            </span>
+            <svg
+              aria-label="permalink"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
         </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h2>
+      </p>
+    </div>
     <div
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -6306,7 +6385,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 barCodeTypes
@@ -6314,7 +6393,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -6339,7 +6418,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6361,7 +6440,7 @@ for more details.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           An array of bar code types. Usage: 
@@ -6393,7 +6472,7 @@ minimize battery usage.
         
 
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           For example: 
@@ -6407,7 +6486,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -6422,7 +6501,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6430,7 +6509,7 @@ minimize battery usage.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -6455,7 +6534,7 @@ minimize battery usage.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6482,7 +6561,7 @@ minimize battery usage.
           </code>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
@@ -6529,7 +6608,7 @@ provided with an
             
 
             <p
-              class="mb-4 css-1kfqm4n-TextComponent"
+              class="mb-3.5 css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <strong
@@ -6561,7 +6640,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-uj1dnj"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
           class="group css-nikr5x-TextComponent"
@@ -6576,7 +6655,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-s0csg4-TextComponent"
+                class="wrap-anywhere css-1odgxmq-TextComponent"
                 data-text="true"
               >
                 type
@@ -6584,7 +6663,7 @@ data has been retrieved.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -6609,7 +6688,7 @@ data has been retrieved.
           </a>
         </h3>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6663,7 +6742,7 @@ data has been retrieved.
           </span>
         </p>
         <p
-          class="mb-4 css-1kfqm4n-TextComponent"
+          class="mb-3.5 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Camera facing. Use one of 
@@ -6698,8 +6777,8 @@ Same as
           .
         </p>
       </div>
-      <h3
-        class="group css-nikr5x-TextComponent"
+      <h4
+        class="group css-1725pab-TextComponent"
         data-heading="true"
       >
         <a
@@ -6714,7 +6793,7 @@ Same as
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+            class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6737,7 +6816,7 @@ Same as
             />
           </svg>
         </a>
-      </h3>
+      </h4>
       <ul
         class="css-118jp6n-TextComponent"
       >
@@ -6803,7 +6882,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -6863,19 +6942,14 @@ Same as
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
-            </th>
-            <th
-              class="css-14twqd4-HeaderCell"
-            >
-              Description
             </th>
           </tr>
         </thead>
@@ -6926,22 +7000,13 @@ Same as
                 </span>
               </code>
             </td>
-            <td
-              class="css-zstkv9-Cell"
-            >
-              <span
-                class="text-quaternary"
-              >
-                -
-              </span>
-            </td>
           </tr>
         </tbody>
       </table>
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Check or request permissions for the barcode scanner.
@@ -6961,95 +7026,14 @@ This uses both
       </code>
        to interact with the permissions.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start mb-3.5"
     >
-      Example
-    </p>
-    <pre>
-      <pre
-        class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
-        data-text="true"
-      >
-        <code
-          class="css-dpez7n-Code"
-        >
-          <span
-            class="token keyword"
-          >
-            const
-          </span>
-           
-          <span
-            class="token punctuation"
-          >
-            [
-          </span>
-          permissionResponse
-          <span
-            class="token punctuation"
-          >
-            ,
-          </span>
-           requestPermission
-          <span
-            class="token punctuation"
-          >
-            ]
-          </span>
-           
-          <span
-            class="token operator"
-          >
-            =
-          </span>
-           BarCodeScanner
-          <span
-            class="token punctuation"
-          >
-            .
-          </span>
-          <span
-            class="token function"
-          >
-            usePermissions
-          </span>
-          <span
-            class="token punctuation"
-          >
-            (
-          </span>
-          <span
-            class="token punctuation"
-          >
-            )
-          </span>
-          <span
-            class="token punctuation"
-          >
-            ;
-          </span>
-          
-
-        </code>
-      </pre>
-    </pre>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
-    >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7068,6 +7052,17 @@ This uses both
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -7137,9 +7132,109 @@ This uses both
           </span>
           ]
         </code>
-      </li>
-    </ul>
-    <br />
+      </p>
+    </div>
+    <div
+      class="mb-3.5"
+    >
+      <p
+        class="!mt-1 css-1xg9efr-BoxSectionHeader"
+        data-text="true"
+      >
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          <svg
+            class="icon-sm text-icon-secondary"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="code-square-01-outline-icon"
+            >
+              <path
+                d="M14.5 15L17.5 12L14.5 9M9.5 9L6.5 12L9.5 15M7.8 21H16.2C17.8802 21 18.7202 21 19.362 20.673C19.9265 20.3854 20.3854 19.9265 20.673 19.362C21 18.7202 21 17.8802 21 16.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21Z"
+                id="Icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </g>
+          </svg>
+          Example
+        </span>
+      </p>
+      <pre
+        class="relative max-h-[unset] last:mb-0 css-1r21cuo-Code"
+        data-text="true"
+      >
+        <code
+          class="css-dpez7n-Code"
+        >
+          <span
+            class="token keyword"
+          >
+            const
+          </span>
+           
+          <span
+            class="token punctuation"
+          >
+            [
+          </span>
+          permissionResponse
+          <span
+            class="token punctuation"
+          >
+            ,
+          </span>
+           requestPermission
+          <span
+            class="token punctuation"
+          >
+            ]
+          </span>
+           
+          <span
+            class="token operator"
+          >
+            =
+          </span>
+           BarCodeScanner
+          <span
+            class="token punctuation"
+          >
+            .
+          </span>
+          <span
+            class="token function"
+          >
+            usePermissions
+          </span>
+          <span
+            class="token punctuation"
+          >
+            (
+          </span>
+          <span
+            class="token punctuation"
+          >
+            )
+          </span>
+          <span
+            class="token punctuation"
+          >
+            ;
+          </span>
+          
+
+        </code>
+      </pre>
+    </div>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
@@ -7182,7 +7277,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -7230,26 +7325,19 @@ This uses both
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Checks user's permissions for accessing the camera.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7268,6 +7356,17 @@ This uses both
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -7299,30 +7398,33 @@ This uses both
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      Return a promise that fulfills to an object of type 
-      <a
-        class="css-1na8e0o-A"
-        href="#permissionresponse"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        <code
-          class="css-qyuze8-TextComponent"
-          data-text="true"
+        Return a promise that fulfills to an object of type 
+        <a
+          class="css-1na8e0o-A"
+          href="#permissionresponse"
         >
-          PermissionResponse
-        </code>
-      </a>
-      .
-    </p>
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            PermissionResponse
+          </code>
+        </a>
+        .
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -7370,7 +7472,7 @@ This uses both
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
@@ -7378,7 +7480,7 @@ This uses both
     
 
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       On iOS this will require apps to specify the 
@@ -7397,21 +7499,14 @@ This uses both
       </code>
       .
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7430,6 +7525,17 @@ This uses both
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -7461,30 +7567,33 @@ This uses both
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      Return a promise that fulfills to an object of type 
-      <a
-        class="css-1na8e0o-A"
-        href="#permissionresponse"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        <code
-          class="css-qyuze8-TextComponent"
-          data-text="true"
+        Return a promise that fulfills to an object of type 
+        <a
+          class="css-1na8e0o-A"
+          href="#permissionresponse"
         >
-          PermissionResponse
-        </code>
-      </a>
-      .
-    </p>
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
+          >
+            PermissionResponse
+          </code>
+        </a>
+        .
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -7544,17 +7653,17 @@ This uses both
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -7587,7 +7696,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 URL to get the image from.
@@ -7626,7 +7735,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An array of bar code types. Defaults to all supported bar code types on
@@ -7666,7 +7775,7 @@ the platform.
                   
 
                   <p
-                    class="mb-4 css-1kfqm4n-TextComponent"
+                    class="mb-3.5 css-1kfqm4n-TextComponent"
                     data-text="true"
                   >
                     <strong
@@ -7687,26 +7796,19 @@ the platform.
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Scan bar codes from the image given by the URL.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7725,6 +7827,17 @@ the platform.
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -7757,24 +7870,27 @@ the platform.
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      A possibly empty array of objects of the 
-      <code
-        class="css-qyuze8-TextComponent"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
-        BarCodeScannerResult
-      </code>
-       shape, where the type
+        A possibly empty array of objects of the 
+        <code
+          class="css-qyuze8-TextComponent"
+          data-text="true"
+        >
+          BarCodeScannerResult
+        </code>
+         shape, where the type
 refers to the bar code type that was scanned and the data is the information encoded in the bar
 code.
-    </p>
+      </p>
+    </div>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
@@ -7817,7 +7933,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -7865,16 +7981,21 @@ code.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-wrgtfc-BoxSectionHeader"
+      class="css-1xg9efr-BoxSectionHeader"
       data-text="true"
     >
-      PermissionResponse Properties
+      <span
+        class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        PermissionResponse Properties
+      </span>
     </p>
     <div
       class="css-1uyflf8-Table"
@@ -7889,17 +8010,17 @@ code.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -7932,7 +8053,7 @@ code.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -7972,7 +8093,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -8005,7 +8126,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -8043,7 +8164,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -8096,7 +8217,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8156,17 +8277,17 @@ in order to enable/disable the permission.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -8204,7 +8325,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The origin point of the bounding box.
@@ -8242,7 +8363,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The size of the bounding box.
@@ -8254,7 +8375,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8302,11 +8423,18 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-1kfqm4n-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
+      <span
+        class="css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        Type:
+         
+      </span>
       <code
-        class="css-ite7ne-TextComponent"
+        class="text-default css-ite7ne-TextComponent"
         data-text="true"
       >
         <a
@@ -8317,8 +8445,13 @@ in order to enable/disable the permission.
         </a>
       </code>
        
-      extended by
-      :
+      <span
+        class="css-1ac5bb0-TextComponent"
+        data-text="true"
+      >
+        extended by
+        :
+      </span>
     </p>
     <br />
     <div
@@ -8334,17 +8467,17 @@ in order to enable/disable the permission.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -8394,7 +8527,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8454,17 +8587,17 @@ in order to enable/disable the permission.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -8513,7 +8646,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8561,7 +8694,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -8580,17 +8713,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -8623,7 +8756,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -8663,7 +8796,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -8682,7 +8815,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8744,19 +8877,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-190f936-Row"
             >
               <th
-                class="css-14twqd4-HeaderCell"
+                class="css-17s7rsv-HeaderCell"
               >
                 Name
               </th>
               <th
-                class="css-14twqd4-HeaderCell"
+                class="css-17s7rsv-HeaderCell"
               >
                 Type
-              </th>
-              <th
-                class="css-14twqd4-HeaderCell"
-              >
-                Description
               </th>
             </tr>
           </thead>
@@ -8788,15 +8916,6 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                   </a>
                 </code>
               </td>
-              <td
-                class="css-zstkv9-Cell"
-              >
-                <span
-                  class="text-quaternary"
-                >
-                  -
-                </span>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -8804,7 +8923,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -8864,17 +8983,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -8912,7 +9031,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -8975,7 +9094,7 @@ For some types, they will represent the area used by the scanner.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Corner points of the bounding box.
@@ -9031,7 +9150,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The parsed information encoded in the bar code.
@@ -9064,7 +9183,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The barcode type.
@@ -9076,7 +9195,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -9136,17 +9255,17 @@ you don't get this value.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -9179,7 +9298,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The height value.
@@ -9212,7 +9331,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The width value.
@@ -9224,7 +9343,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -9276,7 +9395,7 @@ you don't get this value.
       data-text="true"
     >
       <span
-        class="css-oecriz-TextComponent"
+        class="css-1mm9j88-TextComponent"
         data-text="true"
       >
         Literal Type:
@@ -9285,11 +9404,16 @@ you don't get this value.
       multiple types
     </p>
     <p
-      class="css-1kfqm4n-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
-      Acceptable values are:
-       
+      <span
+        class="css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        Acceptable values are:
+         
+      </span>
       <span>
         <code
           class="css-ite7ne-TextComponent"
@@ -9355,7 +9479,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -9406,10 +9530,15 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        PermissionStatus Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          PermissionStatus Values
+        </span>
       </p>
     </div>
     <div
@@ -9467,7 +9596,7 @@ you don't get this value.
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has denied the permission.
@@ -9528,7 +9657,7 @@ you don't get this value.
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has granted the permission.
@@ -9589,7 +9718,7 @@ you don't get this value.
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.
@@ -9642,7 +9771,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -9690,26 +9819,19 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Checks user's permissions for accessing pedometer.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start mb-3.5"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -9728,6 +9850,17 @@ exports[`APISection expo-pedometer 1`] = `
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -9759,52 +9892,55 @@ exports[`APISection expo-pedometer 1`] = `
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
-    <span
-      class="inline-flex items-center mb-2 css-1yjys1n-TextComponent"
-      data-text="true"
+    <div
+      class="flex flex-row items-center mb-2"
     >
       <span
-        class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
+        class="inline-flex items-center css-1yjys1n-TextComponent"
         data-text="true"
       >
-        Only for:
-         
-      </span>
-      <div
-        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
-      >
-        <svg
-          class="icon-xs text-palette-blue12"
-          fill="none"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="apple-custom-icon"
-          >
-            <path
-              d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
-              fill="currentColor"
-              id="Vector"
-            />
-          </g>
-        </svg>
         <span
-          class="css-1q9zso2-PlatformTag"
+          class="!text-inherit !font-medium css-1ibdfwu-TextComponent"
+          data-text="true"
         >
-          iOS
+          Only for:
+           
         </span>
-      </div>
-      <br />
-    </span>
+        <div
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+        >
+          <svg
+            class="icon-xs text-palette-blue12"
+            fill="none"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="apple-custom-icon"
+            >
+              <path
+                d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                fill="currentColor"
+                id="Vector"
+              />
+            </g>
+          </svg>
+          <span
+            class="css-1q9zso2-PlatformTag"
+          >
+            iOS
+          </span>
+        </div>
+        <br />
+      </span>
+    </div>
     <h3
       class="group css-nikr5x-TextComponent"
       data-heading="true"
@@ -9863,17 +9999,17 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -9913,7 +10049,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A date indicating the start of the range over which to measure steps.
@@ -9953,7 +10089,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A date indicating the end of the range over which to measure steps.
@@ -9965,26 +10101,19 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Get the step count between two dates.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -10003,6 +10132,17 @@ exports[`APISection expo-pedometer 1`] = `
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -10034,91 +10174,94 @@ exports[`APISection expo-pedometer 1`] = `
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      Returns a promise that fulfills with a 
-      <a
-        class="css-1na8e0o-A"
-        href="#pedometerresult"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        <code
-          class="css-qyuze8-TextComponent"
-          data-text="true"
+        Returns a promise that fulfills with a 
+        <a
+          class="css-1na8e0o-A"
+          href="#pedometerresult"
         >
-          PedometerResult
-        </code>
-      </a>
-      .
-    </p>
-    
-
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      As 
-      <a
-        class="css-1na8e0o-A"
-        href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        Apple documentation states
-      </a>
-      :
-    </p>
-    
-
-    <blockquote
-      class="css-zknray-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-7jywx8-Callout"
-      >
-        <svg
-          class="icon-sm text-icon-default"
-          fill="currentColor"
-          role="img"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="info-circle-solid-icon"
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
           >
-            <path
-              clip-rule="evenodd"
-              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
-              fill-rule="evenodd"
-              id="Solid"
-            />
-          </g>
-        </svg>
-      </div>
-      <div
-        class="css-1ohc0ia-Callout"
+            PedometerResult
+          </code>
+        </a>
+        .
+      </p>
+      
+
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
       >
-        
-
-        <p
-          class="mb-4 css-1kfqm4n-TextComponent"
-          data-text="true"
+        As 
+        <a
+          class="css-1na8e0o-A"
+          href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
+          rel="noopener noreferrer"
+          target="_blank"
         >
-          Only the past seven days worth of data is stored and available for you to retrieve. Specifying
-a start date that is more than seven days in the past returns only the available data.
-        </p>
-        
+          Apple documentation states
+        </a>
+        :
+      </p>
+      
 
-      </div>
-    </blockquote>
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-7jywx8-Callout"
+        >
+          <svg
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="info-circle-solid-icon"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
+          </svg>
+        </div>
+        <div
+          class="css-1ohc0ia-Callout"
+        >
+          
+
+          <p
+            class="mb-3.5 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            Only the past seven days worth of data is stored and available for you to retrieve. Specifying
+a start date that is more than seven days in the past returns only the available data.
+          </p>
+          
+
+        </div>
+      </blockquote>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -10166,26 +10309,19 @@ a start date that is more than seven days in the past returns only the available
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Returns whether the pedometer is enabled on the device.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -10204,6 +10340,17 @@ a start date that is more than seven days in the past returns only the available
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -10230,26 +10377,29 @@ a start date that is more than seven days in the past returns only the available
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
     >
-      Returns a promise that fulfills with a 
-      <code
-        class="css-qyuze8-TextComponent"
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
-        boolean
-      </code>
-      , indicating whether the pedometer is
+        Returns a promise that fulfills with a 
+        <code
+          class="css-qyuze8-TextComponent"
+          data-text="true"
+        >
+          boolean
+        </code>
+        , indicating whether the pedometer is
 available on this device.
-    </p>
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -10297,26 +10447,19 @@ available on this device.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Asks the user to grant permissions for accessing pedometer.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start mb-3.5"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -10335,6 +10478,17 @@ available on this device.
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
@@ -10366,12 +10520,11 @@ available on this device.
             &gt;
           </span>
         </code>
-      </li>
-    </ul>
-    <br />
+      </p>
+    </div>
   </div>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -10431,17 +10584,17 @@ available on this device.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -10479,7 +10632,7 @@ available on this device.
               class="css-zstkv9-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A callback that is invoked when new step count data is available. The callback is
@@ -10504,26 +10657,19 @@ provided with a single argument that is
     </div>
     <br />
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Subscribe to pedometer updates.
     </p>
-    <p
-      class="css-wrgtfc-BoxSectionHeader"
-      data-text="true"
+    <div
+      class="flex flex-row gap-2 items-start"
     >
-      Returns
-    </p>
-    <ul
-      class="!list-none !ml-0 css-118jp6n-TextComponent"
-    >
-      <li
-        class="css-1hxzfrf-TextComponent"
-        data-text="true"
+      <div
+        class="flex flex-row gap-2 items-center"
       >
         <svg
-          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
+          class="inline-block icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -10542,46 +10688,121 @@ provided with a single argument that is
             />
           </g>
         </svg>
+        <span
+          class="css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="css-1yjys1n-TextComponent"
+        data-text="true"
+      >
         <code
           class="[&>span]:!text-inherit css-ite7ne-TextComponent"
           data-text="true"
         >
-          <a
-            class="css-1na8e0o-A"
-            href="#subscription"
+          EventSubscription
+        </code>
+      </p>
+    </div>
+    <div
+      class="flex flex-col mt-1.5 mb-1 pl-6"
+    >
+      <p
+        class="mb-3.5 css-1kfqm4n-TextComponent"
+        data-text="true"
+      >
+        Returns a 
+        <a
+          class="css-1na8e0o-A"
+          href="#subscription"
+        >
+          <code
+            class="css-qyuze8-TextComponent"
+            data-text="true"
           >
             Subscription
-          </a>
-        </code>
-      </li>
-    </ul>
-    <br />
-    <p
-      class="mb-4 css-1kfqm4n-TextComponent"
-      data-text="true"
-    >
-      Returns a 
-      <a
-        class="css-1na8e0o-A"
-        href="#subscription"
-      >
+          </code>
+        </a>
+         that enables you to call
+
         <code
           class="css-qyuze8-TextComponent"
           data-text="true"
         >
-          Subscription
+          remove()
         </code>
-      </a>
-       that enables you to call
+         when you would like to unsubscribe the listener.
+      </p>
+      
 
-      <code
-        class="css-qyuze8-TextComponent"
-        data-text="true"
+      <blockquote
+        class="css-zknray-Callout"
+        data-testid="callout-container"
       >
-        remove()
-      </code>
-       when you would like to unsubscribe the listener.
-    </p>
+        <div
+          class="css-7jywx8-Callout"
+        >
+          <svg
+            class="icon-sm text-icon-default"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="info-circle-solid-icon"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                fill-rule="evenodd"
+                id="Solid"
+              />
+            </g>
+          </svg>
+        </div>
+        <div
+          class="css-1ohc0ia-Callout"
+        >
+          
+
+          <p
+            class="mb-3.5 css-1kfqm4n-TextComponent"
+            data-text="true"
+          >
+            Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
+
+            <a
+              class="css-1na8e0o-A"
+              href="https://developer.android.com/health-and-fitness/guides/health-connect"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <code
+                class="css-qyuze8-TextComponent"
+                data-text="true"
+              >
+                Health Connect API
+              </code>
+            </a>
+            .
+On iOS, the 
+            <code
+              class="css-qyuze8-TextComponent"
+              data-text="true"
+            >
+              getStepCountAsync
+            </code>
+             method can be used to get the step count between two dates.
+          </p>
+          
+
+        </div>
+      </blockquote>
+    </div>
   </div>
   <h2
     class="group css-13sdfl0-TextComponent"
@@ -10624,7 +10845,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-uj1dnj"
+    class="css-1vwg38e"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -10672,16 +10893,21 @@ provided with a single argument that is
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-wrgtfc-BoxSectionHeader"
+      class="css-1xg9efr-BoxSectionHeader"
       data-text="true"
     >
-      PermissionResponse Properties
+      <span
+        class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        PermissionResponse Properties
+      </span>
     </p>
     <div
       class="css-1uyflf8-Table"
@@ -10696,17 +10922,17 @@ provided with a single argument that is
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -10739,7 +10965,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -10779,7 +11005,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -10812,7 +11038,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -10850,7 +11076,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -10903,7 +11129,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -10963,17 +11189,17 @@ in order to enable/disable the permission.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -11006,7 +11232,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Number of steps taken between the given dates.
@@ -11018,7 +11244,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -11067,7 +11293,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Callback function providing event result as an argument.
@@ -11086,19 +11312,14 @@ in order to enable/disable the permission.
               class="css-190f936-Row"
             >
               <th
-                class="css-14twqd4-HeaderCell"
+                class="css-17s7rsv-HeaderCell"
               >
                 Name
               </th>
               <th
-                class="css-14twqd4-HeaderCell"
+                class="css-17s7rsv-HeaderCell"
               >
                 Type
-              </th>
-              <th
-                class="css-14twqd4-HeaderCell"
-              >
-                Description
               </th>
             </tr>
           </thead>
@@ -11130,15 +11351,6 @@ in order to enable/disable the permission.
                   </a>
                 </code>
               </td>
-              <td
-                class="css-zstkv9-Cell"
-              >
-                <span
-                  class="text-quaternary"
-                >
-                  -
-                </span>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -11146,7 +11358,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -11198,7 +11410,7 @@ in order to enable/disable the permission.
       data-text="true"
     >
       <span
-        class="css-oecriz-TextComponent"
+        class="css-1mm9j88-TextComponent"
         data-text="true"
       >
         Literal Type:
@@ -11207,17 +11419,22 @@ in order to enable/disable the permission.
       multiple types
     </p>
     <p
-      class="mb-4 css-1kfqm4n-TextComponent"
+      class="mb-3.5 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Permission expiration time. Currently, all permissions are granted permanently.
     </p>
     <p
-      class="css-1kfqm4n-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
-      Acceptable values are:
-       
+      <span
+        class="css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        Acceptable values are:
+         
+      </span>
       <span>
         <code
           class="css-ite7ne-TextComponent"
@@ -11243,7 +11460,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-1fultt1"
+    class="css-15gi84a"
   >
     <h3
       class="group css-nikr5x-TextComponent"
@@ -11290,6 +11507,12 @@ in order to enable/disable the permission.
         </svg>
       </a>
     </h3>
+    <p
+      class="mb-3.5 css-1kfqm4n-TextComponent"
+      data-text="true"
+    >
+      A subscription object that allows to conveniently remove an event listener from the emitter.
+    </p>
     <div
       class="css-1uyflf8-Table"
     >
@@ -11303,17 +11526,17 @@ in order to enable/disable the permission.
             class="css-190f936-Row"
           >
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Name
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Type
             </th>
             <th
-              class="css-14twqd4-HeaderCell"
+              class="css-17s7rsv-HeaderCell"
             >
               Description
             </th>
@@ -11336,13 +11559,18 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="[&>span]:!text-inherit css-ite7ne-TextComponent"
+                class="css-ite7ne-TextComponent"
                 data-text="true"
               >
                 <span
                   class="text-quaternary"
                 >
-                  () =&gt;
+                  (
+                </span>
+                <span
+                  class="text-quaternary"
+                >
+                  ) =&gt;
                 </span>
                  
                 void
@@ -11352,10 +11580,11 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="mb-4 css-1kfqm4n-TextComponent"
+                class="mb-3.5 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
-                A method to unsubscribe the listener.
+                Removes an event listener for which the subscription has been created.
+After calling this function, the listener will no longer receive any events from the emitter.
               </p>
             </td>
           </tr>
@@ -11404,7 +11633,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="!p-0 css-1fultt1"
+    class="!p-0 css-15gi84a"
   >
     <div
       class="px-5 pt-4"
@@ -11455,10 +11684,15 @@ in order to enable/disable the permission.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-wrgtfc-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
         data-text="true"
       >
-        PermissionStatus Values
+        <span
+          class="text-inherit flex flex-row gap-2 items-center css-1mm9j88-TextComponent"
+          data-text="true"
+        >
+          PermissionStatus Values
+        </span>
       </p>
     </div>
     <div
@@ -11516,7 +11750,7 @@ in order to enable/disable the permission.
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has denied the permission.
@@ -11577,7 +11811,7 @@ in order to enable/disable the permission.
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has granted the permission.
@@ -11638,7 +11872,7 @@ in order to enable/disable the permission.
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="mb-4 css-1kfqm4n-TextComponent"
+        class="mb-3.5 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.

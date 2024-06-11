@@ -119,7 +119,7 @@ export class PlatformManager<
     const installedExpo = await deviceManager.ensureExpoGoAsync(sdkVersion);
 
     deviceManager.activateWindowAsync();
-    await deviceManager.openUrlAsync(url);
+    await deviceManager.openUrlAsync(url, { appId: deviceManager.getExpoGoAppId() });
 
     await logEventAsync('Open Url on Device', {
       platform: this.props.platform,
@@ -142,6 +142,7 @@ export class PlatformManager<
     let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
     debug(`Opening project in custom runtime: ${url} -- %O`, props);
     // TODO: It's unclear why we do application id validation when opening with a URL
+    // NOTE: But having it enables us to allow the deep link to directly open on iOS simulators without the modal.
     const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
@@ -167,7 +168,10 @@ export class PlatformManager<
 
     deviceManager.logOpeningUrl(url);
     await deviceManager.activateWindowAsync();
-    await deviceManager.openUrlAsync(url);
+
+    await deviceManager.openUrlAsync(url, {
+      appId: applicationId,
+    });
 
     return {
       url,

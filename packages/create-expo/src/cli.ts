@@ -32,6 +32,7 @@ async function run() {
   }
 
   if (args['--help']) {
+    const nameWithoutCreate = CLI_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
       chalk`npx ${CLI_NAME} {cyan <path>} [options]`,
@@ -46,20 +47,20 @@ async function run() {
       chalk`
     {gray To choose a template pass in the {bold --template} arg:}
 
-    {gray $} npm create expo-app {cyan --template}
+    {gray $} npm create ${nameWithoutCreate} {cyan --template}
 
     {gray To choose an Expo example pass in the {bold --example} arg:}
 
-    {gray $} npm create expo-app {cyan --example}
-    {gray $} npm create expo-app {cyan --example with-router}
+    {gray $} npm create ${nameWithoutCreate} {cyan --example}
+    {gray $} npm create ${nameWithoutCreate} {cyan --example with-router}
 
     {gray The package manager used for installing}
     {gray node modules is based on how you invoke the CLI:}
 
-    {bold  npm:} {cyan npm create expo-app}
-    {bold yarn:} {cyan yarn create expo-app}
-    {bold pnpm:} {cyan pnpm create expo-app}
-    {bold  bun:} {cyan bunx create-expo-app}
+    {bold  npm:} {cyan npm create ${nameWithoutCreate}}
+    {bold yarn:} {cyan yarn create ${nameWithoutCreate}}
+    {bold pnpm:} {cyan pnpm create ${nameWithoutCreate}}
+    {bold  bun:} {cyan bun create ${nameWithoutCreate}}
     `
     );
   }

@@ -1,4 +1,5 @@
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import { DiscoveryDocument } from './Discovery';
 export declare enum CodeChallengeMethod {
     /**
      * The default and recommended method for transforming the code verifier.
@@ -79,7 +80,7 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
 /**
  * Represents an OAuth authorization request as JSON.
  */
-export interface AuthRequestConfig {
+export type AuthRequestConfig = {
     /**
      * Specifies what is returned from the authorization server.
      *
@@ -149,5 +150,6 @@ export interface AuthRequestConfig {
      * @default true
      */
     usePKCE?: boolean;
-}
+};
+export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 //# sourceMappingURL=AuthRequest.types.d.ts.map
