@@ -17,6 +17,8 @@ import { fromRawMappings } from 'metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
 
+jest.unmock('resolve-from');
+
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: JsOutput, contents: string) => {
   const map = fromRawMappings([output.data]).toMap();
