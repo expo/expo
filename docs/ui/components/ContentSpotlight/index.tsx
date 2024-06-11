@@ -43,7 +43,7 @@ export function ContentSpotlight({
 
   const getInitialMarginBottom = (spaceAfter: ContentSpotlightProps['spaceAfter']) => {
     if (typeof spaceAfter === 'undefined') {
-      return 'mb-4';
+      return 'mb-2';
     } else if (typeof spaceAfter === 'number') {
       return `mb-${spaceAfter}`;
     } else if (spaceAfter) {
