@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `tar` dependency.
+
 ## 3.0.0 — 2024-06-10
 
 ### 🛠 Breaking changes
