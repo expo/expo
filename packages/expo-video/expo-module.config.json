@@ -1,5 +1,5 @@
 {
-  "platforms": ["ios", "android"],
+  "platforms": ["apple", "android"],
   "ios": {
     "modules": ["VideoModule"]
   },
