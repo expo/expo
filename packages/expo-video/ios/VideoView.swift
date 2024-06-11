@@ -12,7 +12,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
 
+  #if os(tvOS)
   var wasPlaying: Bool = false
+  #endif
   var isFullscreen: Bool = false
   var isInPictureInPicture = false
   #if os(tvOS)
