@@ -296,9 +296,7 @@ class ContactsModule : Module() {
     AsyncFunction("updateGroupName") { groupName: String?, groupId: String? ->
       ensurePermissions()
 
-      var targetGroup = getGroupById(groupId)
-
-      if (targetGroup != null) {
+      if (getGroupById(groupId) != null) {
         val resolver: ContentResolver = context.contentResolver
         val contentValues = ContentValues().apply {
           put(ContactsContract.Groups.TITLE, groupName)
@@ -322,9 +320,7 @@ class ContactsModule : Module() {
     AsyncFunction("addExistingContactToGroupAsync") { contactId: String?, groupId: String? ->
       ensurePermissions()
 
-      var targetGroup = getGroupById(groupId)
-
-      if (targetGroup != null) {
+      if (getGroupById(groupId) != null) {
         val contentValues = ContentValues().apply {
           put(ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID, contactId)
           put(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
@@ -340,9 +336,7 @@ class ContactsModule : Module() {
     AsyncFunction("removeContactFromGroupAsync") { contactId: String?, groupId: String? ->
       ensurePermissions()
 
-      var targetGroup = getGroupById(groupId)
-
-      if (targetGroup != null) {
+      if (getGroupById(groupId) != null) {
         val selection = "${ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID} = ? AND " +
                 "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?"
         val selectionArgs = arrayOf(contactId, groupId)
