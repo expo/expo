@@ -121,7 +121,10 @@ export function microBundle({
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
       if (visited.has(absPath)) {
-        modules.get(absPath)?.inverseDependencies.add(parent?.path);
+        modules.get(absPath)?.inverseDependencies.add(
+          // @ts-expect-error
+          parent?.path
+        );
         continue;
       }
       visited.add(absPath);

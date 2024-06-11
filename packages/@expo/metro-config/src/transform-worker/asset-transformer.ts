@@ -23,7 +23,16 @@ const buildClientReferenceRequire = template.statement(
 );
 
 export async function transform(
-  { filename, options }: BabelTransformerArgs,
+  {
+    filename,
+    options,
+  }: {
+    filename: string;
+    options: Pick<
+      BabelTransformerArgs['options'],
+      'platform' | 'projectRoot' | 'customTransformOptions' | 'publicPath'
+    >;
+  },
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
 ): Promise<{
@@ -33,8 +42,6 @@ export async function transform(
   options ??= options || {
     platform: '',
     projectRoot: '',
-    inlineRequires: false,
-    minify: false,
   };
 
   const absolutePath = path.resolve(options.projectRoot, filename);
