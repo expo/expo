@@ -261,7 +261,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const resolvedMainModuleName =
-      mainModuleName ?? '.' + path.sep + resolveMainModuleName(this.projectRoot, { platform });
+      // The `./` appears in incorrect (as path.sep is standard) but this is actually needed for Metro on Windows.
+      mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
+
     return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
