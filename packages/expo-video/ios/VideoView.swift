@@ -87,8 +87,11 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       playerViewController.perform(selectorToForceFullScreenMode, with: true, with: nil)
     } else {
       #if os(tvOS)
-      // For TV, save the currently playing state, and present the view controller normally
-      wasPlaying = player?.pointer.timeControlStatus == .playing
+      // For TV, save the currently playing state,
+      // remove the view controller from its superview,
+      // and present the view controller normally
+      wasPlaying = player?.isPlaying == true
+      self.playerViewController.view.removeFromSuperview()
       self.reactViewController().present(self.playerViewController, animated: true)
       isFullscreen = true
       #endif
@@ -135,13 +138,18 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   // TV actually presents the playerViewController, so it implements the view controller
   // dismissal delegate methods
   public func playerViewControllerWillBeginDismissalTransition(_ playerViewController: AVPlayerViewController) {
+    // Start an appearance transition
     self.playerViewController.beginAppearanceTransition(true, animated: true)
   }
 
   public func playerViewControllerDidEndDismissalTransition(_ playerViewController: AVPlayerViewController) {
     self.isFullscreen = false
+    // Reset the bounds of the view controller and add it back to our view
     self.playerViewController.view.frame = self.bounds
+    addSubview(self.playerViewController.view)
+    // End the appearance transition
     self.playerViewController.endAppearanceTransition()
+    // Ensure playing state is preserved
     if wasPlaying {
       self.player?.pointer.play()
     } else {
@@ -149,6 +157,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
   #endif
+
   #if !os(tvOS)
   public func playerViewController(
     _ playerViewController: AVPlayerViewController,
