@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Provide more image metadata in the result object.
+
 ### 💡 Others
 
 ## 15.0.5 — 2024-05-15
