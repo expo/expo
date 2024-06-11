@@ -417,6 +417,7 @@ export class Chunk {
                   ) {
                     return output.data.reactClientReference;
                   }
+                  return undefined;
                 });
               })
               .flat()

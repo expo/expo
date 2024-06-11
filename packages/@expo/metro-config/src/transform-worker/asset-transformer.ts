@@ -17,16 +17,19 @@ import url from 'node:url';
 
 import { getUniversalAssetData } from './getAssets';
 
-// import type {AssetDataFiltered, AssetDataWithoutFiles} from '../Assets';
-// import type {File} from '@babel/types';
-
-// import babylon from '@babel/parser';
+// Register client components for assets in server component environments.
+const buildClientReferenceRequire = template.statement(
+  `module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`
+);
 
 export async function transform(
   { filename, options }: BabelTransformerArgs,
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
-) {
+): Promise<{
+  ast: import('@babel/core').ParseResult;
+  reactClientReference?: string;
+}> {
   options ??= options || {
     platform: '',
     projectRoot: '',
@@ -37,19 +40,18 @@ export async function transform(
   const absolutePath = path.resolve(options.projectRoot, filename);
 
   if (options.customTransformOptions?.environment === 'react-server') {
-    // Register client components for assets in server component environments.
-    const buildRequire = template.statement(
-      `module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`
-    );
     const clientReference = url.pathToFileURL(absolutePath).href;
     return {
-      ast: t.file(
-        t.program([
-          buildRequire({
-            FILE_PATH: JSON.stringify(clientReference),
-          }),
-        ])
-      ),
+      ast: {
+        ...t.file(
+          t.program([
+            buildClientReferenceRequire({
+              FILE_PATH: JSON.stringify(clientReference),
+            }),
+          ])
+        ),
+        errors: [],
+      },
       reactClientReference: clientReference,
     };
   }
@@ -66,48 +68,3 @@ export async function transform(
     ast: generateAssetCodeFileAst(assetRegistryPath, data),
   };
 }
-
-// const assetPropertyBlockList = new Set(['files', 'fileSystemLocation', 'path']);
-
-// function generateAssetCodeFileAst(
-//   assetRegistryPath: string,
-//   assetDescriptor: AssetDataWithoutFiles,
-// ): File {
-//   const properDescriptor = filterObject(
-//     assetDescriptor,
-//     assetPropertyBlockList,
-//   );
-
-//   // {...}
-//   const descriptorAst = babylon.parseExpression(
-//     JSON.stringify(properDescriptor),
-//   );
-//   const t = babelTypes;
-
-//   // require('AssetRegistry').registerAsset({...})
-//   const buildRequire = template.statement(`
-//     'use client'
-//     module.exports = require(ASSET_REGISTRY_PATH).registerAsset(DESCRIPTOR_AST)
-//   `);
-
-//   return t.file(
-//     t.program([
-//       buildRequire({
-//         ASSET_REGISTRY_PATH: t.stringLiteral(assetRegistryPath),
-//         DESCRIPTOR_AST: descriptorAst,
-//       }),
-//     ]),
-//   );
-// }
-
-// function filterObject(
-//   object: AssetDataWithoutFiles,
-//   blockList: Set<string>,
-// ): AssetDataFiltered {
-//   const copied = {...object};
-//   for (const key of blockList) {
-//     // $FlowFixMe[prop-missing]
-//     delete copied[key];
-//   }
-//   return copied;
-// }

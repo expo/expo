@@ -8,10 +8,12 @@ export type SerialAsset = {
   type: 'css' | 'js' | 'map' | 'json';
 
   metadata: {
+    hmrId?: string;
     isAsync?: boolean;
     modulePaths?: string[];
     paths?: Record<string, Record<string, string>>;
     // React client reference from the static babel pass.
     reactClientReferences?: string[];
-  } & Record<string, boolean | string | string[]>;
+    requires?: string[];
+  };
 };
