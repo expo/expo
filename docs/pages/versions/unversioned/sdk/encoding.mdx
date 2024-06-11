@@ -17,7 +17,7 @@ This API is part of the `expo` package. Refer to the [browser and server runtime
 `TextEncoder` and `TextDecoder` are available globally without needing to import them.
 
 ```js
-// [104, 101, 108, 111]
+// [104, 101, 108, 108, 111]
 const hello = new TextEncoder().encode('hello');
 
 // "hello"
@@ -30,4 +30,4 @@ The `TextEncoder` API is included in the Hermes engine.
 
 ## TextDecoder
 
-The `TextDecoder` API is not spec compliant on native platforms. Only the `utf8` encoding is supported. If you need support for more encoding, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
+The `TextDecoder` API is not spec-compliant on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
