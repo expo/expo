@@ -50,7 +50,7 @@ export async function transform(
           }),
         ])
       ),
-      clientReferences: [clientReference],
+      reactClientReference: clientReference,
     };
   }
 

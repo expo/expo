@@ -406,15 +406,22 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
         paths: jsCode.paths,
-        clientReferences: [
+        reactClientReferences: [
           ...new Set(
             [...this.deps]
               .map((module) => {
-                return module.output.map((output) => output.data.clientReferences).flat();
+                return module.output.map((output) => {
+                  if (
+                    'reactClientReference' in output.data &&
+                    typeof output.data.reactClientReference === 'string'
+                  ) {
+                    return output.data.reactClientReference;
+                  }
+                });
               })
               .flat()
           ),
-        ],
+        ].filter((value) => typeof value === 'string') as string[],
       },
       source: jsCode.code,
     };

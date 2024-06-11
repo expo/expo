@@ -61,7 +61,7 @@ interface JSFile extends BaseFile {
   readonly ast?: ParseResult | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
-  readonly clientReferences: string[];
+  readonly reactClientReference?: string;
 }
 
 interface JSONFile extends BaseFile {
@@ -81,7 +81,7 @@ interface TransformResponse {
 
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
-    readonly clientReferences: string[];
+    readonly reactClientReference?: string;
   };
 };
 
@@ -411,7 +411,7 @@ async function transformJS(
         lineCount: countLines(code),
         map,
         functionMap: file.functionMap,
-        clientReferences: file.clientReferences,
+        reactClientReference: file.reactClientReference,
       },
       type: file.type,
     },
@@ -442,7 +442,7 @@ async function transformAsset(
     type: 'js/module/asset',
     ast: result.ast,
     functionMap: null,
-    clientReferences: result.clientReferences ?? [],
+    reactClientReference: result.reactClientReference,
   };
 
   return transformJS(jsFile, context);
@@ -483,7 +483,7 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
-    clientReferences: transformResult.metadata?.clientReferences ?? [],
+    reactClientReference: transformResult.metadata?.reactClientReference,
   };
 
   return await transformJS(jsFile, context);
@@ -517,7 +517,7 @@ async function transformJSON(
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount: countLines(code), map, functionMap: null, clientReferences: [] },
+      data: { code, lineCount: countLines(code), map, functionMap: null },
       type: jsType,
     },
   ];
@@ -606,7 +606,6 @@ export async function transform(
     code: sourceCode,
     type: options.type === 'script' ? 'js/script' : 'js/module',
     functionMap: null,
-    clientReferences: [],
   };
 
   return transformJSWithBabel(file, context);

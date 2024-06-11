@@ -39,9 +39,9 @@ declare module 'metro-babel-transformer' {
     transform: (args: BabelTransformerArgs) => {
       ast: Ast;
       metadata?: BabelFileMetadata & {
+        reactClientReference?: string;
         metro?: {
           functionMap?: FBSourceFunctionMap | null;
-          reactClientReference?: string;
         };
       };
       code?: string | null;

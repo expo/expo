@@ -11,7 +11,7 @@ export type SerialAsset = {
     isAsync?: boolean;
     modulePaths?: string[];
     paths?: Record<string, Record<string, string>>;
-    // React client references from the static babel pass.
-    clientReferences?: string[];
+    // React client reference from the static babel pass.
+    reactClientReferences?: string[];
   } & Record<string, boolean | string | string[]>;
 };
