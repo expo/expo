@@ -62,7 +62,10 @@ export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
   ...props: SerializerParameters
-): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
+): Promise<{
+  artifacts: SerialAsset[] | null;
+  assets: AssetData[];
+}> {
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
@@ -173,7 +176,10 @@ export async function graphToSerialAssetsAsync(
     publicPath,
   })) as AssetData[];
 
-  return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
+  return {
+    artifacts: [...jsAssets, ...cssDeps],
+    assets: metroAssets,
+  };
 }
 
 export class Chunk {
@@ -224,7 +230,7 @@ export class Chunk {
           },
           sourceMapUrl: undefined,
           debugId: undefined,
-        });
+        }).code;
   }
 
   private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
@@ -258,7 +264,7 @@ export class Chunk {
       ...options,
     });
 
-    return bundleToString(jsSplitBundle).code;
+    return { code: bundleToString(jsSplitBundle).code, paths: jsSplitBundle.paths };
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
@@ -399,8 +405,18 @@ export class Chunk {
         // Provide a list of module paths that can be used for matching chunks to routes.
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
+        paths: jsCode.paths,
+        clientReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => output.data.clientReferences).flat();
+              })
+              .flat()
+          ),
+        ],
       },
-      source: jsCode,
+      source: jsCode.code,
     };
 
     const assets: SerialAsset[] = [jsAsset];
