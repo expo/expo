@@ -1,3 +1,4 @@
+'use client';
 import { useRef, useMemo, useEffect } from 'react';
 /**
  * Returns a shared object, which is automatically cleaned up when the component is unmounted.

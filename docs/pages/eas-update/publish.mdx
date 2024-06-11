@@ -1,7 +1,7 @@
 ---
 title: How to publish an update
 sidebar_title: Publish an update
-description: Learn how to publish an update to a specific branch with EAS Update.
+description: Learn how to publish an update using EAS Update.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -9,6 +9,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { LayersTwo02Icon } from '@expo/styleguide-icons';
 
 Publishing an update allows:
+
 - Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
 - [Sharing a preview version of an app](/review/overview/) using internal distribution
 
@@ -30,7 +31,7 @@ For this example, the command to publish an update with the `development` branch
 
 <Terminal cmd={['$ eas update --branch development --message "Fixes typo"']} />
 
-The above command runs `npx expo export` behind the scenes to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS servers.
+The above command runs `npx expo export` behind the scenes to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
 
 <BoxLink
   title="In-depth guide on how EAS Update works"
@@ -39,14 +40,14 @@ The above command runs `npx expo export` behind the scenes to generate a **dist*
   Icon={LayersTwo02Icon}
 />
 
-## Test a published update
+## Testing a published update
 
-After the update is uploaded to EAS, you can use one of the following methods to test the update:
+After the update is uploaded to EAS Update, you can use one of the following methods to test the update:
 
-- [Use the Extensions tab in a development build](/eas-update/expo-dev-client/)
-- [Expo Orbit to install and launch the update](/review/with-orbit/)
-- Implement a custom strategy with [Updates API](/versions/latest/sdk/updates/) and [app config](/versions/latest/config/app/#updates) to load updates in the app programmatically
-- Manually test the update by force closing and reopening your build up to two times to download and view the update
+- Use the Extensions tab in a [development build](/eas-update/expo-dev-client/) to load the update.
+- Use [Expo Orbit](/review/with-orbit/) to install and launch the update in a development build.
+- Implement a custom strategy with [Updates API](/versions/latest/sdk/updates/) and [app config](/versions/latest/config/app/#updates) to load updates in the app programmatically.
+- Manually test the update by force closing and reopening a release build of your app up to two times to download and apply the update.
 
 > Updates for non-development builds (preview or production) are automatically downloaded to the device when the app starts up and makes a request for any new updates.
 

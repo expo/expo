@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fix empty splash config resulting in build error. ([#29497](https://github.com/expo/expo/pull/29497) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
+
+## 7.0.5 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
 
 ## 7.0.4 — 2024-05-16
 

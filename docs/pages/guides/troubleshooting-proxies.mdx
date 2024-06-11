@@ -37,7 +37,7 @@ To run this in the local iOS Simulator while on your corporate Wi-Fi network, a 
 7. Same for Secure Web Proxy (HTTPS). _Be sure to fill in the same proxy, username, and password address_ fields.
 8. In the text area for `Bypass external proxies for the following hosts:` enter:
 
-   ```
+   ```text
    localhost
    *.local
    ```
@@ -64,7 +64,7 @@ npm, git, Brew, Curl, and any other command line applications need proxy access 
 
 Open `~/.npmrc` and set:
 
-```ini
+```ini .npmrc
 http_proxy=http://localhost:8888
 https_proxy=http://localhost:8888
 ```
@@ -73,7 +73,7 @@ https_proxy=http://localhost:8888
 
 Open `~/.gitconfig` and set
 
-```ini
+```ini .gitconfig
 [http]
   proxy = http://localhost:8888
 [https]

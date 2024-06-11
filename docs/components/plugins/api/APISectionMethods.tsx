@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
@@ -14,7 +15,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getMethodName,
-  getTagNamesList,
   renderParams,
   resolveTypeName,
   STYLES_APIBOX,
@@ -23,9 +23,10 @@ import {
   TypeDocKind,
   getH3CodeWithBaseNestingLevel,
   getTagData,
-  BoxSectionHeader,
+  getAllTagData,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
+import { ELEMENT_SPACING } from '~/components/plugins/api/styles';
+import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -80,7 +81,7 @@ export const renderMethod = (
           css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} />
-          <HeaderComponent tags={getTagNamesList(comment)}>
+          <HeaderComponent>
             <MONOSPACE
               weight="medium"
               css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
@@ -94,22 +95,37 @@ export const renderMethod = (
               <br />
             </>
           )}
-          <CommentTextBlock comment={comment} includePlatforms={false} />
-          {resolveTypeName(type, sdkVersion) !== 'undefined' && (
-            <>
-              <BoxSectionHeader text="Returns" />
-              <UL className="!list-none !ml-0">
-                <LI>
-                  <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
-                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-                </LI>
-              </UL>
-              <>
-                <br />
-                {returnComment && <CommentTextBlock comment={{ summary: returnComment.content }} />}
-              </>
-            </>
-          )}
+          <CommentTextBlock
+            comment={comment}
+            includePlatforms={false}
+            afterContent={
+              resolveTypeName(type, sdkVersion) !== 'undefined' ? (
+                <>
+                  <div
+                    className={mergeClasses(
+                      'flex flex-row gap-2 items-start',
+                      !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
+                    )}>
+                    <div className="flex flex-row gap-2 items-center">
+                      <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+                      <CALLOUT tag="span" theme="secondary" weight="medium">
+                        Returns:
+                      </CALLOUT>
+                    </div>
+                    <CALLOUT>
+                      <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+                    </CALLOUT>
+                  </div>
+                  {returnComment ? (
+                    <div className="flex flex-col mt-1.5 mb-1 pl-6">
+                      <CommentTextBlock comment={{ summary: returnComment.content }} />
+                    </div>
+                  ) : undefined}
+                </>
+              ) : undefined
+            }
+          />
+          {}
         </div>
       );
     }

@@ -1,12 +1,11 @@
-import { Asset } from 'expo-asset';
-import { Audio } from 'expo-av';
+import { setIsAudioActiveAsync } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
+import AudioModeSelector from './AudioModeSelector.ios';
 import Player from './AudioPlayer';
 import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
-import AudioModeSelector from '../AV/AudioModeSelector.android';
 
 export default function AudioScreen(props: any) {
   React.useLayoutEffect(() => {
@@ -15,13 +14,11 @@ export default function AudioScreen(props: any) {
     });
   });
 
-  const setAudioActive = (active: boolean) => () => Audio.setIsEnabledAsync(active);
-
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Audio state</HeadingText>
-      <ListButton title="Activate Audio" onPress={() => setAudioActive(true)} />
-      <ListButton title="Deactivate Audio" onPress={() => setAudioActive(false)} />
+      <ListButton title="Activate Audio" onPress={() => setIsAudioActiveAsync(true)} />
+      <ListButton title="Deactivate Audio" onPress={() => setIsAudioActiveAsync(false)} />
       <HeadingText>Audio mode</HeadingText>
       <AudioModeSelector />
       <HeadingText>HTTP player</HeadingText>
@@ -32,10 +29,7 @@ export default function AudioScreen(props: any) {
         style={styles.player}
       />
       <HeadingText>Local asset player</HeadingText>
-      <Player
-        source={Asset.fromModule(require('../../../assets/sounds/polonez.mp3'))}
-        style={styles.player}
-      />
+      <Player source={require('../../../assets/sounds/polonez.mp3')} style={styles.player} />
     </ScrollView>
   );
 }

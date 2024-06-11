@@ -332,7 +332,12 @@ async function transformJS(
         importDefault,
         importAll,
         dependencyMapName,
-        config.globalPrefix
+        config.globalPrefix,
+        // TODO: This config is optional to allow its introduction in a minor
+        // release. It should be made non-optional in ConfigT or removed in
+        // future.
+        // @ts-expect-error: Not on types yet (Metro 0.80.9).
+        config.unstable_renameRequire === false
       ));
     }
   }
@@ -437,6 +442,17 @@ async function transformJSWithBabel(
 ): Promise<TransformResponse> {
   const { babelTransformerPath } = context.config;
   const transformer: BabelTransformer = require(babelTransformerPath);
+
+  // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
+  // a malformed state. For now, we'll enable the experimental import support which compiles import statements
+  // outside of the standard Babel process.
+  if (!context.options.experimentalImportSupport) {
+    const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
+    if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+      // @ts-expect-error: readonly.
+      context.options.experimentalImportSupport = true;
+    }
+  }
 
   const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap

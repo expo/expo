@@ -25,8 +25,8 @@ public final class FontLoaderModule: Module {
 
       // The real font name might be different than it's been requested by the user,
       // so we save the provided name as an alias.
-      if let fullName = font.fullName as? String {
-        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFamilyName: fullName)
+      if let postScriptName = font.postScriptName as? String {
+        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFamilyName: postScriptName)
       }
     }
   }

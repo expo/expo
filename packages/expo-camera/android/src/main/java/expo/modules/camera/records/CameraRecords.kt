@@ -66,7 +66,7 @@ data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>
 ) : Record
 
-enum class BarcodeType(val value: String) : Enumerable {
+enum class BarcodeType(private val value: String) : Enumerable {
   AZTEC("aztec"),
   EAN13("ean13"),
   EAN8("ean8"),
@@ -79,7 +79,8 @@ enum class BarcodeType(val value: String) : Enumerable {
   ITF14("itf14"),
   CODABAR("codabar"),
   CODE128("code128"),
-  UPCA("upc_a");
+  UPCA("upc_a"),
+  UNKNOWN("unknown");
 
   fun mapToBarcode() = when (this) {
     AZTEC -> Barcode.FORMAT_AZTEC
@@ -95,5 +96,29 @@ enum class BarcodeType(val value: String) : Enumerable {
     CODABAR -> Barcode.FORMAT_CODABAR
     CODE128 -> Barcode.FORMAT_CODE_128
     UPCA -> Barcode.FORMAT_UPC_A
+    UNKNOWN -> Barcode.FORMAT_UNKNOWN
+  }
+
+  companion object {
+    fun mapFormatToString(format: Int): String {
+      val result = when (format) {
+        Barcode.FORMAT_AZTEC -> AZTEC
+        Barcode.FORMAT_EAN_13 -> EAN13
+        Barcode.FORMAT_EAN_8 -> EAN8
+        Barcode.FORMAT_QR_CODE -> QR
+        Barcode.FORMAT_PDF417 -> PDF417
+        Barcode.FORMAT_UPC_E -> UPCE
+        Barcode.FORMAT_DATA_MATRIX -> DATAMATRIX
+        Barcode.FORMAT_CODE_39 -> CODE39
+        Barcode.FORMAT_CODE_93 -> CODE93
+        Barcode.FORMAT_ITF -> ITF14
+        Barcode.FORMAT_CODABAR -> CODABAR
+        Barcode.FORMAT_CODE_128 -> CODE128
+        Barcode.FORMAT_UPC_A -> UPCA
+        else -> UNKNOWN
+      }
+
+      return result.value
+    }
   }
 }

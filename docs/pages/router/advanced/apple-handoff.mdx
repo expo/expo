@@ -136,6 +136,7 @@ The `expo-router/head` component supports the following meta tags:
 
 You may want to switch the values between platforms, for that you can use **Platform.select**:
 
+{/* prettier-ignore */}
 ```jsx app/index.tsx
 import Head from 'expo-router/head';
 
@@ -190,7 +191,7 @@ In the application, ensure you are not rendering the `<Head />` element conditio
 
 Ensure you can access the Ngrok URL (for example, via the browser), before installing the app on your device. If you can't access the URL, the OS will not be able to find the file and handoff will not work.
 
-`npx expo run:ios` and Xcode will both codesign your app when associated domains is setup, this is required for handoff and universal links to work.
+`npx expo run:ios` and Xcode will both codesign your app when associated domains is set up, this is required for handoff and universal links to work.
 
 Handoff between your Mac and iPhone/iPad is not supported in the Expo Go app. You must build and install your app on your device.
 
