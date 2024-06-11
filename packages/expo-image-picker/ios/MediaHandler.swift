@@ -521,8 +521,8 @@ private struct ImageUtils {
 
     let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
 
-    if metadata != nil {
-      let exif = ImageUtils.readExifFrom(imageMetadata: metadata!)
+    if let metadata {
+      let exif = ImageUtils.readExifFrom(imageMetadata: metadata)
       return completion(exif)
     }
 
@@ -565,18 +565,15 @@ private struct ImageUtils {
     var exif: ExifInfo = imageMetadata[kCGImagePropertyExifDictionary as String] as? ExifInfo ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
-    let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
-    if gps != nil {
-      gps!.forEach { key, value in
+    if let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
+      gps.forEach { key, value in
         exif["GPS\(key)"] = value
       }
     }
 
-    // Inject orientation into exif
-    let orientationKey = kCGImagePropertyOrientation as String
-    let orientationValue = imageMetadata[orientationKey]
-    if orientationValue != nil {
-      exif[orientationKey] = orientationValue
+    if let tiff = imageMetadata[kCGImagePropertyTIFFDictionary as String] as? [String: Any] {
+      // Inject tiff data (make, model, resolution...)
+      exif.merge(tiff) { current, _ in current }
     }
 
     return exif

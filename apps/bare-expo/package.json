@@ -10,7 +10,7 @@
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
     "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
-    "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
+    "edit:ios": "xed ./ios/BareExpo.xcworkspace",
     "start": "expo start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
