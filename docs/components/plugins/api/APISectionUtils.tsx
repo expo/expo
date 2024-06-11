@@ -763,7 +763,8 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <div key={'example-' + index} className={ELEMENT_SPACING}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="flex mb-1">
+        <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
+          <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>
       ) : (
