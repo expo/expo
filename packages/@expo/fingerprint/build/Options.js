@@ -80,6 +80,7 @@ async function normalizeOptionsAsync(projectRoot, options) {
         hashAlgorithm: 'sha1',
         ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
         sourceSkips: SourceSkips_1.SourceSkips.None,
+        enableReactImportsPatcher: true,
         // Options from config
         ...config,
         // Explicit options

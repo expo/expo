@@ -9,6 +9,8 @@ const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
 const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
+const stream_1 = require("stream");
+const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const Path_1 = require("../utils/Path");
 const Predicates_1 = require("../utils/Predicates");
 const Profile_1 = require("../utils/Profile");
@@ -90,7 +92,17 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
             }
             let resolved = false;
             const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
-            const stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath));
+            let stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath));
+            if (options.enableReactImportsPatcher &&
+                options.platforms.includes('ios') &&
+                (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))) {
+                const transform = new ReactImportsPatcher_1.ReactImportsPatchTransform();
+                stream = (0, stream_1.pipeline)(stream, transform, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
+            }
             stream.on('close', () => {
                 if (!resolved) {
                     const hex = hasher.digest('hex');

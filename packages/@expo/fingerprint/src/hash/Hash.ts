@@ -3,7 +3,9 @@ import { createReadStream } from 'fs';
 import fs from 'fs/promises';
 import pLimit from 'p-limit';
 import path from 'path';
+import { pipeline, type Readable } from 'stream';
 
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
   DebugInfoDir,
   DebugInfoFile,
@@ -124,7 +126,19 @@ export async function createFileHashResultsAsync(
 
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
-      const stream = createReadStream(path.join(projectRoot, filePath));
+      let stream: Readable = createReadStream(path.join(projectRoot, filePath));
+      if (
+        options.enableReactImportsPatcher &&
+        options.platforms.includes('ios') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
+      ) {
+        const transform = new ReactImportsPatchTransform();
+        stream = pipeline(stream, transform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
       stream.on('close', () => {
         if (!resolved) {
           const hex = hasher.digest('hex');
