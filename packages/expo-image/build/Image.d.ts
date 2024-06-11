@@ -4,6 +4,7 @@ export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
     containerViewRef: any;
     constructor(props: any);
+    getAnimatableRef: () => any;
     /**
      * Preloads images at the given URLs that can be later used in the image view.
      * Preloaded images are cached to the memory and disk by default, so make sure

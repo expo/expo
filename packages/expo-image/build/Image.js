@@ -12,20 +12,16 @@ export class Image extends React.PureComponent {
         super(props);
         this.nativeViewRef = createSnapshotFriendlyRef();
         this.containerViewRef = createSnapshotFriendlyRef();
-        if (Platform.OS === 'web') {
-            // Define a getter/setter for the style property to make it work with reanimated on web
-            Object.defineProperty(this, 'style', {
-                get: () => {
-                    return this.containerViewRef.current.style;
-                },
-                set: (value) => {
-                    if (this.containerViewRef.current) {
-                        this.containerViewRef.current.style = value;
-                    }
-                },
-            });
-        }
     }
+    // Reanimated support on web
+    getAnimatableRef = () => {
+        if (Platform.OS === 'web') {
+            return this.containerViewRef.current;
+        }
+        else {
+            return this;
+        }
+    };
     static async prefetch(urls, options) {
         let cachePolicy = 'memory-disk';
         let headers;
