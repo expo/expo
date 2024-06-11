@@ -22,6 +22,10 @@ module.exports = {
   ],
   ...getExpoTheme(
     {
+      screens: {
+        '2xl': '1500px',
+        '2xl-gutters': '1572px',
+      },
       backgroundImage: theme => ({
         'default-fade': `linear-gradient(to bottom, ${theme('backgroundColor.default')}, transparent)`,
         'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,

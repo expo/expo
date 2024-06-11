@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowRightIcon, ArrowUpRightIcon, Users02Icon, AtSignIcon } from '@expo/styleguide-icons';
+import { type PropsWithChildren } from 'react';
 
 import { TALKS, Talk } from '~/public/static/talks';
 import { HeaderDescription } from '~/ui/components/Home';
@@ -23,17 +24,26 @@ export function Talks() {
           See more talks
         </Button>
       </div>
-      <div
-        className={mergeClasses(
-          'inline-grid w-full grid-cols-4 gap-8 my-4',
-          'max-xl-gutters:grid-cols-2',
-          'max-sm-gutters:grid-cols-1'
-        )}>
+      <TalkGridWrapper>
         {TALKS.filter(talk => talk.home).map(talk => (
           <TalkGridCell key={talk.videoId} {...talk} />
         ))}
-      </div>
+      </TalkGridWrapper>
     </>
+  );
+}
+
+export function TalkGridWrapper({ children }: PropsWithChildren) {
+  return (
+    <div
+      className={mergeClasses(
+        'inline-grid w-full grid-cols-4 gap-8 my-4',
+        'max-2xl-gutters:grid-cols-3',
+        'max-xl-gutters:grid-cols-2',
+        'max-sm-gutters:grid-cols-1'
+      )}>
+      {children}
+    </div>
   );
 }
 
