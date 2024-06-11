@@ -80,7 +80,7 @@ export function TalkGridCell({
                 : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
             })`,
           }}
-          className="border-b border-b-default bg-cover bg-center h-[138px]"
+          className="border-b border-b-default bg-cover bg-center h-[138px] max-sm-gutters:h-[168px]"
         />
         <div className="flex justify-between items-center bg-default min-h-[30px] px-4 py-3 gap-1">
           <LABEL className="block leading-normal">{title}</LABEL>

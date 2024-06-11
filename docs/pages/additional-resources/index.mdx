@@ -61,6 +61,6 @@ The following resources are useful for learning about Expo tooling and services.
 
 <TalkGridWrapper>
   {PODCASTS.map(podcast => (
-    <TalkGridCell key={podcast.videoId} {...podcast} />
+    <TalkGridCell key={podcast.videoId ?? podcast.event} {...podcast} />
   ))}
 </TalkGridWrapper>
