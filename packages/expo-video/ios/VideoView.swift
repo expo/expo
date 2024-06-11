@@ -14,6 +14,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   var isFullscreen: Bool = false
   var isInPictureInPicture = false
+  #if os(tvOS)
+  let startPictureInPictureAutomatically = false
+  #else
   var startPictureInPictureAutomatically = false {
     didSet {
       if #available(iOS 14.2, *) {
@@ -21,12 +24,15 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       }
     }
   }
+  #endif
 
   var allowPictureInPicture: Bool = false {
     didSet {
       // PiP requires `.playback` audio session category in `.moviePlayback` mode
-      VideoManager.shared.setAppropriateAudioSessionOrWarn()
-      playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
+      if #available(iOS 13.4, tvOS 14.0, *) {
+        VideoManager.shared.setAppropriateAudioSessionOrWarn()
+          playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
+      }
     }
   }
 
@@ -40,7 +46,10 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   lazy var supportsPictureInPicture: Bool = {
-    return AVPictureInPictureController.isPictureInPictureSupported()
+    if #available(iOS 13.4, tvOS 14.0, *) {
+      return AVPictureInPictureController.isPictureInPictureSupported()
+    }
+    return false
   }()
 
   public required init(appContext: AppContext? = nil) {
@@ -53,7 +62,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     playerViewController.view.backgroundColor = .clear
     // Now playing is managed by the `NowPlayingManager`
+    #if !os(tvOS)
     playerViewController.updatesNowPlayingInfoCenter = false
+    #endif
 
     addSubview(playerViewController.view)
   }
@@ -71,6 +82,13 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
     if playerViewController.responds(to: selectorToForceFullScreenMode) {
       playerViewController.perform(selectorToForceFullScreenMode, with: true, with: nil)
+    } else {
+      #if os(tvOS)
+      // For TV, present the view controller normally
+      DispatchQueue.main.async {
+        self.reactViewController().present(self.playerViewController, animated: true)
+      }
+      #endif
     }
   }
 
@@ -110,6 +128,24 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   // MARK: - AVPlayerViewControllerDelegate
 
+  public func playerViewControllerShouldDismiss(_ playerViewController: AVPlayerViewController) -> Bool {
+    // TV presents the player view controller on enterFullscreen(),
+    // so set the fullscreen value back to false on dismiss
+    #if os(tvOS)
+    self.isFullscreen = false
+    let layer = self.playerViewController.view.layer
+
+    layer.frame = CGRect(
+      x: 0,
+      y: 0,
+      width: layer.frame.width,
+      height: layer.frame.height
+    )
+    #endif
+    return true
+  }
+  
+  #if !os(tvOS)
   public func playerViewController(
     _ playerViewController: AVPlayerViewController,
     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
@@ -134,6 +170,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       }
     }
   }
+  #endif
 
   public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
     isInPictureInPicture = true
@@ -146,6 +183,10 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   public override func didMoveToWindow() {
+    // TV is doing a normal view controller present, so we should not execute
+    // this code
+    #if !os(tvOS)
     playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
+    #endif
   }
 }
