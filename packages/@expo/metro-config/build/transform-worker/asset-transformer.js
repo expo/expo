@@ -45,12 +45,10 @@ const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template_1.default.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
-async function transform({ filename, options }, assetRegistryPath, assetDataPlugins) {
+async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
         projectRoot: '',
-        inlineRequires: false,
-        minify: false,
     };
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
     if (options.customTransformOptions?.environment === 'react-server') {
