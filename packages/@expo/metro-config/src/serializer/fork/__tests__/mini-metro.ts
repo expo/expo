@@ -53,6 +53,7 @@ export function microBundle({
     inlineSourceMaps?: boolean;
     hot?: boolean;
     splitChunks?: boolean;
+    reactServer?: boolean;
   };
 }): [
   string,
@@ -124,6 +125,7 @@ export function microBundle({
           bytecode: options.hermes,
           baseUrl: options.baseUrl,
           engine: options.hermes ? 'hermes' : undefined,
+          environment: options.reactServer ? 'react-server' : undefined,
         },
       },
     },
