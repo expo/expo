@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Reduce side-effects and imports.
+
 ## 0.4.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
