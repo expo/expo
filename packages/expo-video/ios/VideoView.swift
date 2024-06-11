@@ -144,7 +144,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     #endif
     return true
   }
-  
+ 
   #if !os(tvOS)
   public func playerViewController(
     _ playerViewController: AVPlayerViewController,
