@@ -14,6 +14,8 @@
 
 - [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
 
+- [Web] Fix default behavior for `nativeControls` to match documentation. ([#29667](https://github.com/expo/expo/pull/29667) by [@nahn20](https://github.com/nahn20))
+
 ### 💡 Others
 
 ## 1.1.10 - 2024-05-29
