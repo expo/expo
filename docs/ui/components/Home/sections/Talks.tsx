@@ -51,44 +51,42 @@ export function TalkGridCell({
   className,
 }: TalkGridCellProps) {
   return (
-    <div>
-      <A
-        openInNewTab
-        href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
-        className={mergeClasses(
-          'flex flex-col h-full min-h-[266px] overflow-hidden relative border border-default rounded-lg bg-default justify-between',
-          '[&_h2]:!my-0 [&_h3]:!mt-0',
-          'hocus:shadow-sm',
-          className
-        )}
-        isStyled>
-        <div>
-          <div
-            style={{
-              backgroundImage: `url(${
-                thumbnail
-                  ? `/static/thumbnails/${thumbnail}`
-                  : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-              })`,
-            }}
-            className="border-b border-b-default bg-cover bg-center h-[138px]"
-          />
-          <div className="flex justify-between items-center bg-default min-h-[30px] px-4 py-3 gap-1">
-            <LABEL className="block leading-normal">{title}</LABEL>
-            <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
-          </div>
+    <A
+      openInNewTab
+      href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
+      className={mergeClasses(
+        'flex flex-col h-full min-h-[266px] overflow-hidden relative border border-default rounded-lg bg-default justify-between',
+        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'hocus:shadow-sm',
+        className
+      )}
+      isStyled>
+      <div>
+        <div
+          style={{
+            backgroundImage: `url(${
+              thumbnail
+                ? `/static/thumbnails/${thumbnail}`
+                : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+            })`,
+          }}
+          className="border-b border-b-default bg-cover bg-center h-[138px]"
+        />
+        <div className="flex justify-between items-center bg-default min-h-[30px] px-4 py-3 gap-1">
+          <LABEL className="block leading-normal">{title}</LABEL>
+          <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
         </div>
-        <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
-          <CALLOUT theme="secondary" className="flex gap-2 items-center">
-            <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
-            {description}
-          </CALLOUT>
-          <CALLOUT theme="secondary" className="flex gap-2 items-center">
-            <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
-            {event}
-          </CALLOUT>
-        </div>
-      </A>
-    </div>
+      </div>
+      <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
+          {description}
+        </CALLOUT>
+        <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
+          {event}
+        </CALLOUT>
+      </div>
+    </A>
   );
 }

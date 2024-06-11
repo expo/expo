@@ -19,7 +19,7 @@ export function LearnMore() {
             Expo’s Snack lets you try Expo with zero local setup.
           </P>
           <HomeButton
-            className="bg-palette-orange11 border-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11 hocus:opacity-80"
+            className="bg-palette-orange11 border-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11"
             href="https://snack.expo.dev/"
             target="_blank"
             rightSlot={<ArrowUpRightIcon className="text-palette-orange3 icon-md" />}>
@@ -33,7 +33,7 @@ export function LearnMore() {
             Answers to common questions about Expo, EAS, and React Native.
           </P>
           <HomeButton
-            className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
+            className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11"
             href="/faq"
             rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
             Read
@@ -46,7 +46,7 @@ export function LearnMore() {
             Get answers to your questions and get advice from the Expo team.
           </P>
           <HomeButton
-            className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
+            className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11"
             href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
             rightSlot={<ArrowUpRightIcon className="text-palette-yellow2 icon-md" />}>
             Register
@@ -63,7 +63,7 @@ export function LearnMore() {
             on the Expo Community Discord.
           </P>
           <HomeButton
-            className="bg-palette-purple11 border-palette-purple11 text-palette-purple2 hocus:bg-palette-purple11 hocus:opacity-80"
+            className="bg-palette-purple11 border-palette-purple11 text-palette-purple2 hocus:bg-palette-purple11"
             href="https://chat.expo.dev"
             rightSlot={<ArrowUpRightIcon className="text-palette-gray2 icon-md" />}>
             Go to Discord

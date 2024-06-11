@@ -46,7 +46,7 @@ export function QuickStart() {
             Create a universal Android, iOS, and web app
           </RawH2>
           <HomeButton
-            className="hocus:bg-button-primary hocus:opacity-80"
+            className="hocus:bg-button-primary"
             href="/tutorial/introduction/"
             rightSlot={<ArrowRightIcon className="icon-md" />}>
             Start Tutorial

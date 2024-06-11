@@ -5,6 +5,7 @@ import {
   NotificationMessageDuotoneIcon,
   ArrowRightIcon,
 } from '@expo/styleguide-icons';
+import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';
 import { RawH3, A, LABEL } from '~/ui/components/Text';
@@ -50,7 +51,7 @@ export function ExploreAPIs() {
 }
 
 type APIGridCellProps = {
-  icon?: string | JSX.Element;
+  icon?: ReactNode;
   title?: string;
   link?: string;
   className?: string;
@@ -58,22 +59,22 @@ type APIGridCellProps = {
 
 function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
   return (
-    <div>
-      <A
-        href={link}
-        className={mergeClasses(
-          'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition',
-          '[&_h2]:!my-0 [&_h3]:!mt-0',
-          'hocus:shadow-sm',
-          className
-        )}
-        isStyled>
-        <div className="flex min-h-[142px] justify-center items-center">{icon}</div>
-        <LABEL className="flex justify-between items-center bg-default min-h-[30px] p-4">
-          {title}
-          <ArrowRightIcon className="text-icon-secondary" />
-        </LABEL>
-      </A>
-    </div>
+    <A
+      href={link}
+      className={mergeClasses(
+        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group',
+        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'hocus:shadow-sm',
+        className
+      )}
+      isStyled>
+      <div className="flex min-h-[142px] justify-center items-center transition-transform group-hover:scale-105">
+        {icon}
+      </div>
+      <LABEL className="flex justify-between items-center bg-default min-h-[30px] p-4">
+        {title}
+        <ArrowRightIcon className="text-icon-secondary" />
+      </LABEL>
+    </A>
   );
 }

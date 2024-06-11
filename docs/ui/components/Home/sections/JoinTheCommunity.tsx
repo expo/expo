@@ -6,6 +6,7 @@ import {
   XLogoIcon,
   ArrowUpRightIcon,
 } from '@expo/styleguide-icons';
+import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';
 import { RawH3, P, A } from '~/ui/components/Text';
@@ -59,7 +60,7 @@ export function JoinTheCommunity() {
 }
 
 type CommunityGridCellProps = {
-  icon?: string | JSX.Element;
+  icon?: ReactNode;
   title?: string;
   link?: string;
   className?: string;
@@ -78,32 +79,30 @@ function CommunityGridCell({
   shouldLeakReferrer,
 }: CommunityGridCellProps) {
   return (
-    <div>
-      <A
-        href={link}
+    <A
+      href={link}
+      className={mergeClasses(
+        'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg',
+        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'hocus:shadow-sm',
+        className
+      )}
+      shouldLeakReferrer={shouldLeakReferrer}
+      isStyled>
+      <div
         className={mergeClasses(
-          'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg',
-          '[&_h2]:!my-0 [&_h3]:!mt-0',
-          'hocus:shadow-sm',
-          className
-        )}
-        shouldLeakReferrer={shouldLeakReferrer}
-        isStyled>
-        <div
-          className={mergeClasses(
-            'size-12 inline-flex justify-center items-center rounded-lg mr-4',
-            iconClassName
-          )}>
-          {icon}
-        </div>
-        <div className="grow">
-          <P weight="medium">{title}</P>
-          <P theme="secondary" className="!text-xs">
-            {description}
-          </P>
-        </div>
-        <ArrowUpRightIcon className="text-icon-secondary self-center ml-1.5" />
-      </A>
-    </div>
+          'size-12 inline-flex justify-center items-center rounded-lg mr-4',
+          iconClassName
+        )}>
+        {icon}
+      </div>
+      <div className="grow">
+        <P weight="medium">{title}</P>
+        <P theme="secondary" className="!text-xs">
+          {description}
+        </P>
+      </div>
+      <ArrowUpRightIcon className="text-icon-secondary self-center ml-1.5" />
+    </A>
   );
 }

@@ -1,11 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
 import { type PropsWithChildren } from 'react';
 
-type CellContainerProps = PropsWithChildren<{
+type GridContainerProps = PropsWithChildren<{
   className?: string;
 }>;
 
-export function GridContainer({ children, className }: CellContainerProps) {
+export function GridContainer({ children, className }: GridContainerProps) {
   return (
     <div
       className={mergeClasses(
