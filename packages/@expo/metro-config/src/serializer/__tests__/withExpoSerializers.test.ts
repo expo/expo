@@ -586,7 +586,7 @@ describe('serializes', () => {
   // Serialize to a split bundle
   async function serializeSplitAsync(
     fs: Record<string, string>,
-    options: { reactServer?: boolean } = {}
+    options: { isReactServer?: boolean } = {}
   ) {
     return await serializeTo({
       fs,
@@ -1014,56 +1014,39 @@ describe('serializes', () => {
           'other.js': '"use client"; export const foo = true',
         },
         {
-          reactServer: true,
+          isReactServer: true,
         }
       );
 
       expect(artifacts.map((art) => art.filename)).toEqual([
-        '_expo/static/js/web/index-196fcd3cca881bdfc33c7baf67d7ef5a.js',
+        '_expo/static/js/web/index-052296ff29736d0de884b8998010f6a0.js',
       ]);
 
-      expect(artifacts).toMatchInlineSnapshot(`
-        [
-          {
-            "filename": "_expo/static/js/web/index-196fcd3cca881bdfc33c7baf67d7ef5a.js",
-            "metadata": {
-              "isAsync": false,
-              "modulePaths": [
-                "/app/index.js",
-                "/app/other.js",
-              ],
-              "paths": {},
-              "reactClientReferences": [],
-              "requires": [],
-            },
-            "originFilename": "index.js",
-            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+      // Split bundle
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: ['/app/index.js', '/app/other.js'],
+        paths: {},
+        reactClientReferences: ['file:///app/other.js'],
+        requires: [],
+      });
+
+      expect(artifacts[0].source).toMatchInlineSnapshot(`
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
           _$$_REQUIRE(dependencyMap[0], "./other.js");
         },"/app/index.js",["/app/other.js"]);
         __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-          "use client";
-
           Object.defineProperty(exports, '__esModule', {
             value: true
           });
-          const foo = true;
+          const proxy = _$$_REQUIRE(dependencyMap[0], "react-server-dom-webpack/server").createClientModuleProxy("file:///app/other.js");
+          module.exports = proxy;
+          const foo = proxy["foo"];
           exports.foo = foo;
-        },"/app/other.js",[]);
-        TEST_RUN_MODULE("/app/index.js");",
-            "type": "js",
-          },
-        ]
+        },"/app/other.js",["/app/node_modules/react-server-dom-webpack/server/index.js"]);
+        TEST_RUN_MODULE("/app/index.js");"
       `);
-
-      // Split bundle
-      expect(artifacts.length).toBe(5);
-      expect(artifacts[1].metadata).toEqual({
-        isAsync: true,
-        modulePaths: ['/app/(foo)/index.js'],
-        requires: [],
-        paths: {},
-        reactClientReferences: [],
-      });
     });
   });
 });

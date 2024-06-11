@@ -5,7 +5,7 @@ import CountingSet from 'metro/src/lib/CountingSet';
 import countLines from 'metro/src/lib/countLines';
 import * as path from 'path';
 
-export const projectRoot = '/app/';
+export const projectRoot = '/app';
 
 function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
@@ -21,24 +21,41 @@ export function microBundle({
   fs,
   entry,
   resolve = (from, id) => {
-    for (const ext of ['', '.js', '.ts', '.tsx']) {
-      const next = path.join(path.dirname(from), id) + ext;
-      if (fs[next]) {
-        return next;
+    const fullFs = {
+      ...preModulesFs,
+      ...fs,
+    };
+    for (const index of ['index', '']) {
+      for (const ext of ['', '.js', '.ts', '.tsx']) {
+        let next = path.join(path.dirname(from), id);
+        if (index) {
+          next = path.join(next, index);
+        }
+        next += ext;
+        if (fullFs[next]) {
+          return next;
+        }
       }
     }
-    if (id === 'expo-mock/async-require' && !fs['expo-mock/async-require']) {
-      fs['expo-mock/async-require'] = `
+    if (id === 'expo-mock/async-require' && !fullFs['expo-mock/async-require']) {
+      fullFs['expo-mock/async-require'] = `
                 module.exports = () => 'MOCK'
             `;
       return 'expo-mock/async-require';
     }
+    if (id === 'react-server-dom-webpack/server' && !fullFs['react-server-dom-webpack/server']) {
+      fullFs['react-server-dom-webpack/server'] = `
+                module.exports = () => 'MOCK'
+            `;
+      return 'react-server-dom-webpack/server';
+    }
 
     throw new Error(
-      `Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`
+      `Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fullFs).join(', ')}`
     );
   },
   options = {},
+  preModulesFs = {},
 }: {
   fs: Record<string, string>;
   entry?: string;
@@ -50,26 +67,52 @@ export function microBundle({
     output?: 'static';
     hermes?: boolean;
     sourceMaps?: boolean;
+    sourceUrl?: string;
+    isServer?: boolean;
+    isReactServer?: boolean;
     inlineSourceMaps?: boolean;
     hot?: boolean;
     splitChunks?: boolean;
-    reactServer?: boolean;
   };
+  preModulesFs?: Record<string, string>;
 }): [
   string,
   readonly Module<MixedOutput>[],
   ReadOnlyGraph<MixedOutput>,
   SerializerOptions<MixedOutput>,
 ] {
+  const fullFs = {
+    'react-server-dom-webpack/server': ``,
+    'expo-mock/async-require': `
+    module.exports = () => 'MOCK'
+`,
+    ...preModulesFs,
+    ...fs,
+  };
   if (!entry) {
-    entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/));
+    entry = Object.keys(fullFs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/));
     if (!entry) {
       throw new Error(
-        'No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', ')
+        'No entrypoint found and cannot infer one from the mock fs: ' +
+          Object.keys(fullFs).join(', ')
       );
     }
   }
 
+  const caller = {
+    name: 'metro',
+    bundler: 'metro',
+    platform: options.platform ?? 'web',
+    baseUrl: options.baseUrl,
+
+    // Empower the babel preset to know the env it's bundling for.
+    // Metro automatically updates the cache to account for the custom transform options.
+    isServer: options.isServer,
+    isReactServer: options.isReactServer,
+    routerRoot: '/',
+    isDev: options.dev,
+    projectRoot,
+  };
   const modules = new Map<string, Module>();
   const visited = new Set<string>();
 
@@ -82,11 +125,14 @@ export function microBundle({
         continue;
       }
       visited.add(absPath);
-      const code = fs[id];
-      if (!code) {
+      const code = fullFs[id];
+      if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      const module = parseModule(id, code);
+      const module = parseModule(id, code, {
+        ...caller,
+        isNodeModule: !!id.match(/node_modules/),
+      });
       modules.set(absPath, module);
 
       if (parent?.path) {
@@ -108,7 +154,7 @@ export function microBundle({
     // entryPoint: string,
     absEntry,
     // preModules: readonly Module<MixedOutput>[],
-    [],
+    Object.entries(preModulesFs).map(([id, code]) => parseModule(id, code)),
     // graph: ReadOnlyGraph<MixedOutput>,
     {
       dependencies: modules,
@@ -125,7 +171,7 @@ export function microBundle({
           bytecode: options.hermes,
           baseUrl: options.baseUrl,
           engine: options.hermes ? 'hermes' : undefined,
-          environment: options.reactServer ? 'react-server' : undefined,
+          environment: options.isReactServer ? 'react-server' : undefined,
         },
       },
     },
@@ -147,6 +193,7 @@ export function microBundle({
         : undefined,
       asyncRequireModulePath: 'expo-mock/async-require',
 
+      sourceUrl: options.sourceUrl,
       createModuleId(filePath) {
         return filePath as unknown as number;
       },
@@ -173,7 +220,8 @@ export function microBundle({
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export function parseModule(
   relativeFilePath: string,
-  code: string
+  code: string,
+  caller: Record<string, string | boolean | null | undefined> = {}
 ): Module<{ type: string; data: { lineCount: number; code: string } }> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const filename = absoluteFilePath;
@@ -198,14 +246,22 @@ export function parseModule(
   };
 
   // @ts-ignore
-  ast = babel.transformFromAstSync(ast, '', {
+  const file = babel.transformFromAstSync(ast, '', {
     ast: true,
     babelrc: false,
     code: false,
     configFile: false,
     comments: true,
     filename,
-    plugins: [[metroTransformPlugins.importExportPlugin, babelPluginOpts]],
+    plugins: [
+      require('babel-preset-expo/build/client-module-proxy-plugin').reactClientReferencesPlugin,
+      [metroTransformPlugins.importExportPlugin, babelPluginOpts],
+    ],
+    caller: {
+      name: 'metro',
+      serverRoot: projectRoot,
+      ...caller,
+    },
     sourceMaps: false,
     // Not-Cloning the input AST here should be safe because other code paths above this call
     // are mutating the AST as well and no code is depending on the original AST.
@@ -213,12 +269,16 @@ export function parseModule(
     // either because one of the plugins is doing something funky or Babel messes up some caches.
     // Make sure to test the above mentioned case before flipping the flag back to false.
     cloneInputAst: true,
-  }).ast!;
+  });
+
+  // @ts-ignore
+  ast = file?.ast!;
 
   const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
 
   let dependencyMapName = null;
-  let dependencies = null;
+  let dependencies: Dependency[] | null = null;
+  // @ts-expect-error
   ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
     unstable_allowRequireContext: true,
     allowOptionalDependencies: true,
@@ -230,14 +290,16 @@ export function parseModule(
     dependencyMapName: 'dependencyMap',
   }));
 
+  if (!dependencies) throw new Error('dependencies not found');
+
   ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
 
-  const output = babel.transformFromAstSync(ast, code, {
+  const output = babel.transformFromAstSync(ast!, code, {
     code: true,
     ast: false,
     babelrc: false,
     configFile: false,
-  }).code!;
+  })!.code!;
 
   return {
     getSource() {
@@ -245,8 +307,12 @@ export function parseModule(
     },
     path: absoluteFilePath,
     dependencies: toDependencyMap(
+      // @ts-expect-error
       ...dependencies.map((dep) => ({
-        absolutePath: mockAbsolutePath(dep.name),
+        absolutePath: mockAbsolutePath(
+          // @ts-expect-error
+          dep.name
+        ),
         data: dep,
       }))
     ),
@@ -256,6 +322,8 @@ export function parseModule(
         data: {
           code: output,
           lineCount: countLines(output),
+          // @ts-expect-error
+          reactClientReference: file?.metadata?.reactClientReference,
         },
         type: 'js/module',
       },
