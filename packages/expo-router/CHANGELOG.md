@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `client-only` and `server-only` dependencies.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
