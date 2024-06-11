@@ -12,6 +12,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
 
+  var wasPlaying: Bool = false
   var isFullscreen: Bool = false
   var isInPictureInPicture = false
   #if os(tvOS)
@@ -84,10 +85,10 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       playerViewController.perform(selectorToForceFullScreenMode, with: true, with: nil)
     } else {
       #if os(tvOS)
-      // For TV, present the view controller normally
-      DispatchQueue.main.async {
-        self.reactViewController().present(self.playerViewController, animated: true)
-      }
+      // For TV, save the currently playing state, and present the view controller normally
+      wasPlaying = player?.pointer.timeControlStatus == .playing
+      self.reactViewController().present(self.playerViewController, animated: true)
+      isFullscreen = true
       #endif
     }
   }
@@ -128,23 +129,24 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   // MARK: - AVPlayerViewControllerDelegate
 
-  public func playerViewControllerShouldDismiss(_ playerViewController: AVPlayerViewController) -> Bool {
-    // TV presents the player view controller on enterFullscreen(),
-    // so set the fullscreen value back to false on dismiss
-    #if os(tvOS)
-    self.isFullscreen = false
-    let layer = self.playerViewController.view.layer
-
-    layer.frame = CGRect(
-      x: 0,
-      y: 0,
-      width: layer.frame.width,
-      height: layer.frame.height
-    )
-    #endif
-    return true
+  #if os(tvOS)
+  // TV actually presents the playerViewController, so it implements the view controller
+  // dismissal delegate methods
+  public func playerViewControllerWillBeginDismissalTransition(_ playerViewController: AVPlayerViewController) {
+    self.playerViewController.beginAppearanceTransition(true, animated: true)
   }
- 
+
+  public func playerViewControllerDidEndDismissalTransition(_ playerViewController: AVPlayerViewController) {
+    self.isFullscreen = false
+    self.playerViewController.view.frame = self.bounds
+    self.playerViewController.endAppearanceTransition()
+    if wasPlaying {
+      self.player?.pointer.play()
+    } else {
+      self.player?.pointer.pause()
+    }
+  }
+  #endif
   #if !os(tvOS)
   public func playerViewController(
     _ playerViewController: AVPlayerViewController,
