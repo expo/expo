@@ -145,7 +145,14 @@ const ENCODING_MAP: { heading: string; encodings: Encoding[] }[] = [
   {
     encodings: [
       {
-        labels: ['unicode-1-1-utf-8', 'utf-8', 'utf8'],
+        labels: [
+          'unicode-1-1-utf-8',
+          'unicode11utf8',
+          'unicode20utf8',
+          'utf-8',
+          'utf8',
+          'x-unicode20utf8',
+        ],
         name: 'UTF-8',
       },
     ],

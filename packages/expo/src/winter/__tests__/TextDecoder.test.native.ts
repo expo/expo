@@ -24,6 +24,24 @@ describe('TextDecoder', () => {
     expect(new TextDecoder('utf-8', { ignoreBOM: true }).ignoreBOM).toBe(true);
   });
 
+  describe(`supports utf8 labels`, () => {
+    [
+      'unicode-1-1-utf-8',
+      'unicode11utf8',
+      'unicode20utf8',
+      'utf-8',
+      'utf8',
+      'x-unicode20utf8',
+      // Always trim and lowercase the label
+      '  UTF-8  ',
+      ' X-uNIcode20utF8',
+    ].forEach((label) => {
+      it(`should return utf-8 for label ${label}`, () => {
+        expect(new TextDecoder(label).encoding).toBe('utf-8');
+      });
+    });
+  });
+
   // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/test/test-misc.js#L49C1-L64C16
   it(`handles bad data`, () => {
     [
