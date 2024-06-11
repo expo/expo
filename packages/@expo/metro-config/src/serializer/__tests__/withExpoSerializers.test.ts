@@ -1048,5 +1048,31 @@ describe('serializes', () => {
         TEST_RUN_MODULE("/app/index.js");"
       `);
     });
+    it(`bundles with multiple client references`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+            import './other.js'
+            import './second.js'
+          `,
+          'other.js': '"use client"; export const foo = true',
+          'second.js': '"use client"; require("./third.js"); export const foo = true',
+          // This won't be included since we're bundling in RS-mode.
+          'third.js': 'export const foo = true',
+        },
+        {
+          isReactServer: true,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: ['/app/index.js', '/app/other.js', '/app/second.js'],
+        paths: {},
+        reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        requires: [],
+      });
+    });
   });
 });
