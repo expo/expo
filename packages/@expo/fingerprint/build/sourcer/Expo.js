@@ -23,7 +23,8 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     let config;
     let expoConfig;
     let loadedModules = [];
-    const ignoredFile = await createTempIgnoredFileAsync(options);
+    const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
+    const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
     try {
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: __dirname });
         const stdoutJson = JSON.parse(stdout);
@@ -42,6 +43,12 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
             console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
         }
         return [];
+    }
+    finally {
+        try {
+            await promises_1.default.rm(tmpDir, { recursive: true });
+        }
+        catch { }
     }
     // external files in config
     const isAndroid = options.platforms.includes('android');
@@ -148,9 +155,8 @@ function normalizeExpoConfig(config, options) {
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
  */
-async function createTempIgnoredFileAsync(options) {
-    await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
-    const ignoredFile = path_1.default.join(os_1.default.tmpdir(), '.fingerprintignore');
+async function createTempIgnoredFileAsync(tmpDir, options) {
+    const ignoredFile = path_1.default.join(tmpDir, '.fingerprintignore');
     await promises_1.default.writeFile(ignoredFile, options.ignorePaths.join('\n'));
     return ignoredFile;
 }

@@ -86,13 +86,14 @@ export async function normalizeOptionsAsync(
     platforms: ['android', 'ios'],
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
     sourceSkips: SourceSkips.None,
     enableReactImportsPatcher: true,
     // Options from config
     ...config,
     // Explicit options
     ...options,
+    // These options are computed by both default and explicit options, so we put them last.
+    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }
 
