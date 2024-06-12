@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
