@@ -14,7 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix resolving the main entry file Expo Router static export on Windows
+- Fix resolving the main entry file Expo Router static export on Windows ([#29670](https://github.com/expo/expo/pull/29670) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
