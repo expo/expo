@@ -79,13 +79,15 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
 );
 
 /**
- * Replaces `Module.someFunction(arguments: argType)` with `someFunction()`
+ * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
 const trimCodedTitle = (str: string) => {
   if (!str.includes('...')) {
     const dotIdx = str.indexOf('.');
     if (dotIdx > 0) str = str.substring(dotIdx + 1);
   }
+
+  str = str.replace(/<.+>/g, '');
 
   const parIdx = str.indexOf('(');
   if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
