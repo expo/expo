@@ -88,7 +88,11 @@ jobs:
         working-directory: packages/@expo/cli
 
   web:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -113,7 +117,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
+        env:
+          YARN_IGNORE_SCRIPTS: true
       
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
