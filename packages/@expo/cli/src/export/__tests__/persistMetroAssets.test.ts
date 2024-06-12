@@ -59,7 +59,7 @@ describe(persistMetroAssetsAsync, () => {
     it(`adds files to persist without writing to disk`, async () => {
       const files = new Map();
 
-      await persistMetroAssetsAsync(assets, {
+      await persistMetroAssetsAsync('/', assets, {
         outputDirectory: '/output',
         platform: 'ios',
         files,
@@ -79,7 +79,7 @@ describe(persistMetroAssetsAsync, () => {
     });
 
     it(`writes files that match virtual output`, async () => {
-      await persistMetroAssetsAsync(assets, {
+      await persistMetroAssetsAsync('/', assets, {
         outputDirectory: '/output',
         platform: 'ios',
       });

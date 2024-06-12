@@ -24,6 +24,7 @@ function cleanAssetCatalog(catalogDir: string): void {
 }
 
 export async function persistMetroAssetsAsync(
+  projectRoot: string,
   assets: readonly AssetData[],
   {
     platform,
@@ -79,24 +80,29 @@ export async function persistMetroAssetsAsync(
 
   const batches: Record<string, string> = {};
 
-  async function write(src: string, dest: string) {
-    if (files) {
-      const data = await fs.promises.readFile(src);
-      files.set(dest, {
-        contents: data,
-        targetDomain: platform === 'web' ? 'client' : undefined,
-      });
-    } else {
-      batches[src] = path.join(outputDirectory, dest);
-    }
-  }
-
   for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
     for (let idx = 0; idx < asset.scales.length; idx++) {
       const scale = asset.scales[idx];
       if (validScales.has(scale)) {
-        await write(asset.files[idx], getAssetLocalPath(asset, { platform, scale, baseUrl }));
+        const src = asset.files[idx];
+        const dest = getAssetLocalPath(asset, { platform, scale, baseUrl });
+        if (files) {
+          const assetId =
+            'fileSystemLocation' in asset
+              ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
+                (asset.type ? '.' + asset.type : '')
+              : undefined;
+
+          const data = await fs.promises.readFile(src);
+          files.set(dest, {
+            contents: data,
+            assetId,
+            targetDomain: platform === 'web' ? 'client' : undefined,
+          });
+        } else {
+          batches[src] = path.join(outputDirectory, dest);
+        }
       }
     }
   }
