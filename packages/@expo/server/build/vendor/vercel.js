@@ -59,7 +59,7 @@ function convertRequest(req, res) {
 exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
-    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
+    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
     if (expoRes.body) {
         await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
     }

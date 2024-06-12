@@ -103,7 +103,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         return
       }
 
-      let cancelButtonTitle = options.cancelButtonTitle != nil ? options.cancelButtonTitle : "Cancel"
+      let cancelButtonTitle = options.cancelButtonTitle ?? "Cancel"
+      controller.setCloseButton(title: cancelButtonTitle)
       controller.contactStore = contactStore
       controller.delegate = delegate
 

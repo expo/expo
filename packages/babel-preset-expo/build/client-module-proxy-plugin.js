@@ -101,10 +101,7 @@ function reactClientReferencesPlugin() {
                 path.pushContainer('body', core_1.template.ast(proxyModule.join('\n')));
                 assertExpoMetadata(state.file.metadata);
                 // Save the client reference in the metadata.
-                if (!state.file.metadata.clientReferences) {
-                    state.file.metadata.clientReferences ??= [];
-                }
-                state.file.metadata.clientReferences.push(outputKey);
+                state.file.metadata.reactClientReference = outputKey;
                 // Store the proxy export names for testing purposes.
                 state.file.metadata.proxyExports = [...proxyExports];
             },

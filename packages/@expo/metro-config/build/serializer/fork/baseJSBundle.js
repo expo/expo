@@ -136,6 +136,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
             id,
             typeof code === 'number' ? code : code.src,
         ]),
+        paths: Object.fromEntries(mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length).map(([id, code]) => [id, code.paths])),
     };
 }
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;

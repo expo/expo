@@ -226,9 +226,9 @@ export abstract class BundlerDevServer {
     ) {
       await this._startTunnelAsync();
     }
-    await this.startDevSessionAsync();
 
     if (!options.isExporting) {
+      await this.startDevSessionAsync();
       this.watchConfig();
     }
   }

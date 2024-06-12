@@ -5,7 +5,13 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -63,7 +69,9 @@ it('runs `npx expo customize --help`', async () => {
 it(
   'runs `npx expo customize`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-customize', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-customize', 'with-blank', {
+      reuseExisting: false,
+    });
     // `npx expo customize index.html serve.json babel.config.js`
     await execa(
       'node',
@@ -87,6 +95,7 @@ it(
       'app.json',
       'babel.config.js',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
       'public/index.html',
       'public/serve.json',
@@ -99,7 +108,13 @@ it(
 it(
   'runs `npx expo customize tsconfig.json`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typescript',
+      'with-router',
+      {
+        reuseExisting: false,
+      }
+    );
 
     // `npx expo typescript
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
@@ -121,7 +136,11 @@ it(
 it(
   'runs `npx expo customize tsconfig.json` on a partially setup project',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typescript-partial',
+      'with-router',
+      { reuseExisting: false }
+    );
 
     const existingTsConfig = {
       extends: 'custom-package',

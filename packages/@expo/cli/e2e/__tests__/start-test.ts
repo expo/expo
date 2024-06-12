@@ -13,9 +13,9 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
   ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -112,7 +112,8 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+
       await fs.remove(path.join(projectRoot, '.expo'));
 
       const promise = execa('node', [bin, 'start'], {
@@ -180,7 +181,7 @@ describe('server', () => {
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('51.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 
@@ -188,7 +189,12 @@ describe('server', () => {
       expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundle = await fetch(manifest.launchAsset.url).then((res) => res.text());
+      const bundleRequest = await fetch(manifest.launchAsset.url);
+      if (!bundleRequest.ok) {
+        console.error(await bundleRequest.text());
+        throw new Error('Failed to fetch bundle');
+      }
+      const bundle = await bundleRequest.text();
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');

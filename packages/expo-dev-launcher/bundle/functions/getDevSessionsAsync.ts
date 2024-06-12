@@ -3,12 +3,6 @@ import { Platform } from 'react-native';
 import { restClient, restClientWithTimeout } from '../apiClient';
 import { DevSession } from '../types';
 
-// TODO -- move this into context / make it settable via JS
-const baseAddress = Platform.select({
-  ios: 'http://localhost',
-  android: 'http://10.0.2.2',
-});
-
 const statusPage = 'status';
 const portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002];
 
@@ -35,16 +29,26 @@ export async function getDevSessionsAsync({
     devSessions = devSessions.concat(sessions);
   }
 
-  if (!devSessions.length && !isDevice) {
-    const localPackagers = await getLocalPackagersAsync();
+  if (
+    !devSessions.length &&
+    // Android physical devices can connect to localhost via adb reverse
+    (!isDevice || (isDevice && Platform.OS === 'android'))
+  ) {
+    const localPackagers = await getLocalPackagersAsync(isDevice);
     devSessions = devSessions.concat(localPackagers);
   }
 
   return devSessions;
 }
 
-export async function getLocalPackagersAsync(): Promise<DevSession[]> {
+export async function getLocalPackagersAsync(isDevice: boolean): Promise<DevSession[]> {
   const onlineDevSessions: DevSession[] = [];
+
+  // TODO -- move this into context / make it settable via JS
+  const baseAddress = Platform.select({
+    ios: 'http://localhost',
+    android: isDevice ? 'http://localhost' : 'http://10.0.2.2',
+  });
 
   await Promise.all(
     portsToCheck.map(async (port) => {

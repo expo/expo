@@ -19,10 +19,21 @@ class ModuleHolder<T : Module>(val module: T) {
 
   val name get() = definition.name
 
+  private var wasInitialized = false
+
+  val safeJSObject: JavaScriptModuleObject?
+    get() = if (wasInitialized) {
+      jsObject
+    } else {
+      null
+    }
+
   /**
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
+    wasInitialized = true
+
     trace("$name.jsObject") {
       val appContext = module.appContext
       val jniDeallocator = appContext.jniDeallocator
