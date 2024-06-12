@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - `diffFingerprints()` and `diffFingerprintChangesAsync()` have new output structure. ([#29709](https://github.com/expo/expo/pull/29709) by [@kudo](https://github.com/kudo))
+- This version includes fingerprint result breaking changes because `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun` is enabled by default. ([#29679](https://github.com/expo/expo/pull/29679) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
@@ -13,6 +14,7 @@
 - Fixed `diffFingerprints()` missing some items when the second fingerprint has fewer items than the first fingerprint. ([#29709](https://github.com/expo/expo/pull/29709) by [@kudo](https://github.com/kudo))
 - Fixed Expo config sourcer using incorrect `cwd` by ([#29810](https://github.com/expo/expo/pull/29810) by [@a-gierczak](https://github.com/a-gierczak))
 - Introduced `enableReactImportsPatcher` to fix inconsistent fingerprint hash between workflows. ([#29660](https://github.com/expo/expo/pull/29660) by [@kudo](https://github.com/kudo))
+- Introduced `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun` to fix inconsistent fingerprint for expo-updates. ([#29679](https://github.com/expo/expo/pull/29679) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
