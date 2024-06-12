@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Reduce side-effects and imports. ([#29647](https://github.com/expo/expo/pull/29647) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.4.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
