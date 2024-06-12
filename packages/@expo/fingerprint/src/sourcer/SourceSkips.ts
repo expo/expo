@@ -32,5 +32,5 @@ export enum SourceSkips {
   // package.json scripts if android and ios items do not contain "run".
   // Because prebuild will change the scripts in package.json,
   // this is useful to generate a consistent fingerprint before and after prebuild.
-  PackageJsonScriptsIfNotContainRun = 1 << 8,
+  PackageJsonAndroidAndIosScriptsIfNotContainRun = 1 << 8,
 }

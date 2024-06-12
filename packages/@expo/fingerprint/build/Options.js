@@ -71,7 +71,7 @@ exports.DEFAULT_IGNORE_PATHS = [
         'write-file-atomic',
     ].join(',')}}/**/*`,
 ];
-exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonScriptsIfNotContainRun;
+exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     return {

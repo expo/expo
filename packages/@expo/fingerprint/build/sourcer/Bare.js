@@ -111,7 +111,7 @@ function stripRncliAutolinkingAbsolutePaths(dependency, root) {
     }
 }
 function normalizePackageJsonScriptSources(scripts, options) {
-    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonScriptsIfNotContainRun) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun) {
         // Replicate the behavior of `expo prebuild`
         if (!scripts.android?.includes('run')) {
             delete scripts.android;

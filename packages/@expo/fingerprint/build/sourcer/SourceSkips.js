@@ -27,6 +27,6 @@ var SourceSkips;
     // package.json scripts if android and ios items do not contain "run".
     // Because prebuild will change the scripts in package.json,
     // this is useful to generate a consistent fingerprint before and after prebuild.
-    SourceSkips[SourceSkips["PackageJsonScriptsIfNotContainRun"] = 256] = "PackageJsonScriptsIfNotContainRun";
+    SourceSkips[SourceSkips["PackageJsonAndroidAndIosScriptsIfNotContainRun"] = 256] = "PackageJsonAndroidAndIosScriptsIfNotContainRun";
 })(SourceSkips || (exports.SourceSkips = SourceSkips = {}));
 //# sourceMappingURL=SourceSkips.js.map

@@ -76,7 +76,7 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
-export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonScriptsIfNotContainRun;
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 
 export async function normalizeOptionsAsync(
   projectRoot: string,
