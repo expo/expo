@@ -76,6 +76,8 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonScriptsIfNotContainRun;
+
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
@@ -86,7 +88,7 @@ export async function normalizeOptionsAsync(
     platforms: ['android', 'ios'],
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
-    sourceSkips: SourceSkips.None,
+    sourceSkips: DEFAULT_SOURCE_SKIPS,
     enableReactImportsPatcher: true,
     // Options from config
     ...config,

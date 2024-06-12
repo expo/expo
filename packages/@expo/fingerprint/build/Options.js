@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeOptionsAsync = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.normalizeOptionsAsync = exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -71,6 +71,7 @@ exports.DEFAULT_IGNORE_PATHS = [
         'write-file-atomic',
     ].join(',')}}/**/*`,
 ];
+exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     return {
@@ -78,7 +79,7 @@ async function normalizeOptionsAsync(projectRoot, options) {
         platforms: ['android', 'ios'],
         concurrentIoLimit: os_1.default.cpus().length,
         hashAlgorithm: 'sha1',
-        sourceSkips: SourceSkips_1.SourceSkips.None,
+        sourceSkips: exports.DEFAULT_SOURCE_SKIPS,
         enableReactImportsPatcher: true,
         // Options from config
         ...config,

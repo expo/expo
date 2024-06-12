@@ -9,6 +9,7 @@ const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 async function getBareAndroidSourcesAsync(projectRoot, options) {
@@ -49,7 +50,7 @@ async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
         results.push({
             type: 'contents',
             id,
-            contents: JSON.stringify(packageJson.scripts),
+            contents: normalizePackageJsonScriptSources(packageJson.scripts, options),
             reasons: [id],
         });
     }
@@ -108,5 +109,17 @@ function stripRncliAutolinkingAbsolutePaths(dependency, root) {
             platformData[key] = value?.startsWith?.(dependencyRoot) ? path_1.default.relative(root, value) : value;
         }
     }
+}
+function normalizePackageJsonScriptSources(scripts, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonScriptsIfNotContainRun) {
+        // Replicate the behavior of `expo prebuild`
+        if (!scripts.android?.includes('run')) {
+            delete scripts.android;
+        }
+        if (!scripts.ios?.includes('run')) {
+            delete scripts.ios;
+        }
+    }
+    return JSON.stringify(scripts);
 }
 //# sourceMappingURL=Bare.js.map

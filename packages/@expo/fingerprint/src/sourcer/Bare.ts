@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
@@ -55,7 +56,7 @@ export async function getPackageJsonScriptSourcesAsync(
     results.push({
       type: 'contents',
       id,
-      contents: JSON.stringify(packageJson.scripts),
+      contents: normalizePackageJsonScriptSources(packageJson.scripts, options),
       reasons: [id],
     });
   }
@@ -117,4 +118,20 @@ function stripRncliAutolinkingAbsolutePaths(dependency: any, root: string): void
       platformData[key] = value?.startsWith?.(dependencyRoot) ? path.relative(root, value) : value;
     }
   }
+}
+
+function normalizePackageJsonScriptSources(
+  scripts: Record<string, string>,
+  options: NormalizedOptions
+): string {
+  if (options.sourceSkips & SourceSkips.PackageJsonScriptsIfNotContainRun) {
+    // Replicate the behavior of `expo prebuild`
+    if (!scripts.android?.includes('run')) {
+      delete scripts.android;
+    }
+    if (!scripts.ios?.includes('run')) {
+      delete scripts.ios;
+    }
+  }
+  return JSON.stringify(scripts);
 }
