@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoLinking.d.ts","sourceRoot":"","sources":["../src/ExpoLinking.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,cAAc,CAAC;AACvC,eAAe,OAAO,CAAC"}
+{"version":3,"file":"ExpoLinking.d.ts","sourceRoot":"","sources":["../src/ExpoLinking.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAE,MAAM,sDAAsD,CAAC;AAEpF,KAAK,eAAe,GAAG;IACrB,aAAa,IAAI,MAAM,GAAG,IAAI,CAAC;IAC/B,eAAe,IAAI,IAAI,CAAC;CACzB,CAAC;AAEF,QAAA,MAAM,WAAW;yBACqB,MAAM,KAAK,IAAI;EAAG,CAAC;AAEzD,eAAe,WAAW,CAAC"}
