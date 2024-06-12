@@ -63,7 +63,7 @@
     "@expo/cli": "0.18.17",
     "@expo/config": "9.0.1",
     "@expo/config-plugins": "8.0.5",
-    "@expo/metro-config": "0.18.5",
+    "@expo/metro-config": "0.18.6",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~11.0.9",
     "expo-asset": "~10.0.8",
