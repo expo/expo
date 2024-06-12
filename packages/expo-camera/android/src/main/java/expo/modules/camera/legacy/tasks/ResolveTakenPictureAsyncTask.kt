@@ -220,7 +220,7 @@ class ResolveTakenPictureAsyncTask(
 
   private fun decodeBitmap(imageData: ByteArray, orientation: Int, exif: Boolean, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
-    return if (orientation != ExifInterface.ORIENTATION_UNDEFINED && !exif) {
+    return if (!exif) {
       decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
     } else {
       BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)
