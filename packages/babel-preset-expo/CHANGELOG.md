@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
+- Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.0.7 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
 
 ## 11.0.6 — 2024-05-13
 

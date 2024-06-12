@@ -90,7 +90,7 @@
 /packages/expo-updates                          @wschurman @douglowder
 /packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
-/packages/expo-video                            @tsapeta @aleqsio
+/packages/expo-video                            @tsapeta @aleqsio @behenate
 /packages/expo-web-browser                      @tsapeta
 /packages/expo                                  @ide @tsapeta @brentvatne
 /packages/jest-expo-puppeteer                   @ide @EvanBacon

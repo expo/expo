@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 51.0.2 — 2024-05-16

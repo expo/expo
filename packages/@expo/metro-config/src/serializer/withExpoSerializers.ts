@@ -140,6 +140,35 @@ export function createDefaultExportCustomSerializer(
       ).code;
     }
 
+    const getEnsuredMaps = () => {
+      bundleMap ??= sourceMapString(
+        [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
+        {
+          // TODO: Surface this somehow.
+          excludeSource: false,
+          // excludeSource: options.serializerOptions?.excludeSource,
+          processModuleFilter: options.processModuleFilter,
+          shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+        }
+      );
+
+      return bundleMap;
+    };
+
+    if (!bundleMap && options.sourceUrl) {
+      const url = isJscSafeUrl(options.sourceUrl)
+        ? toNormalUrl(options.sourceUrl)
+        : options.sourceUrl;
+      const parsed = new URL(url, 'http://expo.dev');
+      // Is dev server request for source maps...
+      if (parsed.pathname.endsWith('.map')) {
+        return {
+          code: bundleCode,
+          map: getEnsuredMaps(),
+        };
+      }
+    }
+
     if (isPossiblyDev) {
       if (bundleMap == null) {
         return bundleCode;
@@ -152,18 +181,7 @@ export function createDefaultExportCustomSerializer(
 
     // Exports....
 
-    if (!bundleMap) {
-      bundleMap = sourceMapString(
-        [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
-        {
-          // TODO: Surface this somehow.
-          excludeSource: false,
-          // excludeSource: options.serializerOptions?.excludeSource,
-          processModuleFilter: options.processModuleFilter,
-          shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-        }
-      );
-    }
+    bundleMap ??= getEnsuredMaps();
 
     if (enableDebugId) {
       const mutateSourceMapWithDebugId = (sourceMap: string) => {

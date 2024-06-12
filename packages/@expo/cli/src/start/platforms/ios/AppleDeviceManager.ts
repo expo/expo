@@ -184,14 +184,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     );
   }
 
-  async openUrlAsync(url: string) {
+  async openUrlAsync(url: string, options: { appId?: string } = {}) {
     // Non-compliant URLs will be treated as application identifiers.
     if (!validateUrl(url, { requireProtocol: true })) {
       return await this.launchApplicationIdAsync(url);
     }
 
     try {
-      await SimControl.openUrlAsync(this.device, { url });
+      await SimControl.openUrlAsync(this.device, { url, appId: options.appId });
     } catch (error: any) {
       // 194 means the device does not conform to a given URL, in this case we'll assume that the desired app is not installed.
       if (error.status === 194) {
@@ -212,6 +212,10 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     await ensureSimulatorAppRunningAsync(this.device);
     // TODO: Focus the individual window
     await osascript.execAsync(`tell application "Simulator" to activate`);
+  }
+
+  getExpoGoAppId(): string {
+    return EXPO_GO_BUNDLE_IDENTIFIER;
   }
 
   async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {

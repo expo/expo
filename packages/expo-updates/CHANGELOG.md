@@ -8,18 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- Fix data race in `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Change from kapt to ksp for room. ([#29055](https://github.com/expo/expo/pull/29055) by [@wschurman](https://github.com/wschurman))
 - [Android] Upgrade dependencies and remove unused ones. Change multipart parser to okhttp. ([#29060](https://github.com/expo/expo/pull/29060) by [@wschurman](https://github.com/wschurman))
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
+- Improved stability of E2E testing. ([#29402](https://github.com/expo/expo/pull/29402) by [@kudo](https://github.com/kudo))
 
-## 0.25.14 — 2024-05-16
+## 0.25.15 — 2024-05-29
 
 ### 🐛 Bug fixes
 
 - Fixed launch crash when using fingerprint runtime version policy on Android with expo-dev-client. ([#28912](https://github.com/expo/expo/pull/28912) by [@kudo](https://github.com/kudo))
+
+## 0.25.14 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
 
 ## 0.25.13 — 2024-05-15
 

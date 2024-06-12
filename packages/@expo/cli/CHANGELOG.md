@@ -6,9 +6,36 @@
 
 ### 🎉 New features
 
+- Add `.eslintrc.js` to `expo customize`. ([#29570](https://github.com/expo/expo/pull/29570) by [@EvanBacon](https://github.com/EvanBacon))
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
+- Support passing `--port 0` to use any free port. ([#29466](https://github.com/expo/expo/pull/29466) by [@EvanBacon](https://github.com/EvanBacon))
+- Deep link to simulators without prompting for permissions first. ([#29468](https://github.com/expo/expo/pull/29468) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
+- Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
+- Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
+
+## 0.18.15 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Fixed broken React DevTools since SDK 51. ([#29181](https://github.com/expo/expo/pull/29181) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 0.18.14 — 2024-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 0.18.13 — 2024-05-16
 

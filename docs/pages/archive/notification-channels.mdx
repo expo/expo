@@ -48,9 +48,9 @@ Notifications.presentLocalNotificationAsync({
 });
 ```
 
-Expo will then present your notification to the user through the `chat-messages` channel, respecting all of the user's settings for that channel.
+Expo will then present your notification to the user through the `chat-messages` channel, respecting all the user's settings for that channel.
 
-If you create a notification and do not specify a `channelId`, Expo will automatically create a 'Default' channel for you and present the notification through that channel. If, however, you specify a `channelId` that has not yet been created on the device, **the notification will not be shown on Android 8+ devices.** Therefore, it's important to plan ahead and make sure that you create all of the channels you may need before sending out notifications.
+If you create a notification and do not specify a `channelId`, Expo will automatically create a 'Default' channel for you and present the notification through that channel. If, however, you specify a `channelId` that has not yet been created on the device, **the notification will not be shown on Android 8+ devices.** Therefore, it's important to plan ahead and make sure that you create all the channels you may need before sending out notifications.
 
 On devices with Android 7 and below, which don't support notification channels, Expo will remember the relevant settings you created the channel with (in this case, `sound: true`) and apply them directly to the individual notification before presenting it to the user.
 

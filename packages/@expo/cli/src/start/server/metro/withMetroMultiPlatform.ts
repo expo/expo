@@ -49,28 +49,43 @@ function withWebPolyfills(
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualEnvVarId = `\0polyfill:environment-variables`;
+
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualEnvVarId,
+      (() => {
+        return `//`;
+      })()
+    );
+
     const virtualModuleId = `\0polyfill:external-require`;
 
-    const contents = (() => {
-      if (ctx.platform === 'web') {
-        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
-      } else {
-        // Wrap in try/catch to support Android.
-        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
-      }
-    })();
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
       virtualModuleId,
-      contents
+      (() => {
+        if (ctx.platform === 'web') {
+          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+        } else {
+          // Wrap in try/catch to support Android.
+          return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+        }
+      })()
     );
 
     if (ctx.platform === 'web') {
-      return [virtualModuleId];
+      return [
+        virtualModuleId,
+        virtualEnvVarId,
+        // Ensure that the error-guard polyfill is included in the web polyfills to
+        // make metro-runtime work correctly.
+        // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
+        require.resolve('@react-native/js-polyfills/error-guard'),
+      ];
     }
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId];
+    return [...polyfills, virtualModuleId, virtualEnvVarId];
   };
 
   return {
@@ -359,20 +374,6 @@ export function withExtendedResolver(
       return null;
     },
 
-    // HACK(EvanBacon):
-    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-    // to fail to load. This is a temporary workaround until we can fix this upstream.
-    // https://github.com/facebook/react-native/pull/38628
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (platform !== 'web' && moduleName === 'event-target-shim') {
-        debug('For event-target-shim to use js:', context.originModulePath);
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve('event-target-shim/dist/event-target-shim.js');
-      }
-
-      return null;
-    },
-
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -561,6 +562,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    if (isReactCanaryEnabled) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
+    }
   }
 
   // @ts-expect-error

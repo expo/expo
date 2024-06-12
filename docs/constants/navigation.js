@@ -162,6 +162,7 @@ const general = [
       'Bundling',
       [
         makePage('guides/customizing-metro.mdx'),
+        makePage('guides/react-compiler.mdx'),
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),
@@ -363,7 +364,6 @@ const general = [
       makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
