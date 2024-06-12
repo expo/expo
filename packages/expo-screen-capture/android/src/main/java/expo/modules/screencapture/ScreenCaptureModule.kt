@@ -17,8 +17,10 @@ const val eventName = "onScreenshot"
 class ScreenCaptureModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+  private val safeCurrentActivity
+    get() = appContext.currentActivity
   private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = safeCurrentActivity ?: throw Exceptions.MissingActivity()
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
   private var screenshotEventEmitter: ScreenshotEventEmitter? = null
   private var isRegistered = false
@@ -78,7 +80,7 @@ class ScreenCaptureModule : Module() {
       screenshotEventEmitter?.onHostDestroy()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback?.let {
-          currentActivity.unregisterScreenCaptureCallback(it)
+          safeCurrentActivity?.unregisterScreenCaptureCallback(it)
         }
       }
     }
