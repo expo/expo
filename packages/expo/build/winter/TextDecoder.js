@@ -4,18 +4,18 @@
 // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/lib/encoding.js#L1
 /**
  * Checks if a number is within a specified range.
- * @param {number} a The number to test.
- * @param {number} min The minimum value in the range, inclusive.
- * @param {number} max The maximum value in the range, inclusive.
- * @returns {boolean} True if a is within the range.
+ * @param a The number to test.
+ * @param min The minimum value in the range, inclusive.
+ * @param max The maximum value in the range, inclusive.
+ * @returns `true` if a passed number is within the specified range.
  */
 function inRange(a, min, max) {
     return min <= a && a <= max;
 }
 /**
  * Converts an array of code points to a string.
- * @param {number[]} codePoints Array of code points.
- * @returns {string} The string representation.
+ * @param codePoints Array of code points.
+ * @returns The string representation of given array.
  */
 function codePointsToString(codePoints) {
     let s = '';
@@ -276,6 +276,7 @@ class UTF8Decoder {
     }
 }
 // 8.1 Interface TextDecoder
+// @docsMissing
 export class TextDecoder {
     _encoding;
     _ignoreBOM;
