@@ -1,13 +1,15 @@
 import '@expo/server/install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-import fs from 'fs';
-import path from 'path';
-import { URL } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
-const debug = require('debug')('expo:server') as typeof console.log;
+const debug =
+  process.env.NODE_ENV === 'development'
+    ? (require('debug')('expo:server') as typeof console.log)
+    : () => {};
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   // TODO: JSON Schema for validation

@@ -269,12 +269,12 @@ class VideoModule : Module() {
         } else {
           VideoSource(source.get(String::class))
         }
-        val mediaItem = videoSource.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
-          ref.videoSource = videoSource
-          ref.player.setMediaItem(mediaItem)
+          ref.uncommittedSource = videoSource
+          if (VideoManager.isVideoPlayerAttachedToView(ref)) {
+            ref.prepare()
+          }
         }
       }
 

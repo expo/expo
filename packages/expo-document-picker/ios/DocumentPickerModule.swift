@@ -164,7 +164,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     case "image/*":
       return UTType.image
     case "video/*":
-      return UTType.video
+      return UTType.movie
     case "audio/*":
       return UTType.audio
     case "text/*":

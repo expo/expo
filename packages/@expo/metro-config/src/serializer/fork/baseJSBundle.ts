@@ -23,6 +23,12 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
+  paths: Record<
+    // Module ID
+    string,
+    // Split paths { moduleId: URL }
+    Record<string, string>
+  >;
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
@@ -195,5 +201,13 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
+    paths: Object.fromEntries(
+      (
+        mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length) as [
+          string,
+          { src: string; paths: Record<string, string> },
+        ][]
+      ).map(([id, code]) => [id, code.paths])
+    ),
   };
 }

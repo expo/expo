@@ -203,7 +203,7 @@ export async function exportFromServerAsync(
   if (resources.assets) {
     // TODO: Collect files without writing to disk.
     // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
-    await persistMetroAssetsAsync(resources.assets, {
+    await persistMetroAssetsAsync(projectRoot, resources.assets, {
       files,
       platform,
       outputDirectory: outputDir,
