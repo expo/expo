@@ -19,6 +19,10 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     if let value = value as? InnerType {
       return value
     }
+    // Sometimes conversion from Double to Float will fail due to precision losses. We can accept them though.
+    if let value = value as? Double, wraps(Float.self) {
+      return Float(value)
+    }
     // Raw types are always non-optional, but they may receive `nil` values.
     // Let's throw more specific error in this case.
     if Optional.isNil(value) {
