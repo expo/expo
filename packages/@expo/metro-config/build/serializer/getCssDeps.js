@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFileName = exports.fileNameFromContents = exports.getCssSerialAssets = exports.filterJsModules = void 0;
+exports.fileNameFromContents = exports.getCssSerialAssets = exports.filterJsModules = void 0;
 const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
 const path_1 = __importDefault(require("path"));
 const css_1 = require("../transform-worker/css");
@@ -69,11 +69,15 @@ function getCssMetadata(module) {
 function fileNameFromContents({ filepath, src }) {
     // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
     const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
-    return getFileName(decoded) + '-' + (0, hash_1.hashString)(src);
+    return safeFileName(getFileName(decoded)) + '-' + (0, hash_1.hashString)(src);
 }
 exports.fileNameFromContents = fileNameFromContents;
+// See: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+// Certain characters are URL-unsafe and should be avoided as part of output filenames
+function safeFileName(module) {
+    return module.replace(/[\0-\32\127&$@=;:+,?{}^%`[\]"'<>~|#]/g, '_');
+}
 function getFileName(module) {
     return path_1.default.basename(module).replace(/\.[^.]+$/, '');
 }
-exports.getFileName = getFileName;
 //# sourceMappingURL=getCssDeps.js.map

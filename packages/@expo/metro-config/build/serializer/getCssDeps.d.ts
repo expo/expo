@@ -30,5 +30,4 @@ export declare function fileNameFromContents({ filepath, src }: {
     filepath: string;
     src: string;
 }): string;
-export declare function getFileName(module: string): string;
 export {};
