@@ -1,6 +1,10 @@
 import { vol } from 'memfs';
 
-import { createFingerprintAsync, diffFingerprintChangesAsync } from '../Fingerprint';
+import {
+  createFingerprintAsync,
+  diffFingerprintsWithOp,
+  diffFingerprintChangesAsync,
+} from '../Fingerprint';
 import type { Fingerprint } from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 
@@ -258,5 +262,101 @@ describe(diffFingerprintChangesAsync, () => {
         },
       ]
     `);
+  });
+});
+
+describe(diffFingerprintsWithOp, () => {
+  it('should return diff from new items', () => {
+    const fingerprint1: Fingerprint = {
+      sources: [
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+      ],
+      hash: '111',
+    };
+    const fingerprint2: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+        { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' },
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+      ],
+      hash: '222',
+    };
+    expect(diffFingerprintsWithOp(fingerprint1, fingerprint2)).toEqual([
+      {
+        op: 'added',
+        source: { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+      },
+      { op: 'added', source: { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' } },
+    ]);
+  });
+
+  it('should return diff from deleted items', () => {
+    const fingerprint1: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+        { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' },
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+      ],
+      hash: '111',
+    };
+    const fingerprint2: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+      ],
+      hash: '222',
+    };
+    expect(diffFingerprintsWithOp(fingerprint1, fingerprint2)).toEqual([
+      {
+        op: 'removed',
+        source: { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' },
+      },
+    ]);
+  });
+
+  it('should return diff from new items - same array size with added/removed ops', () => {
+    const fingerprint1: Fingerprint = {
+      sources: [
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+        { type: 'contents', id: 'contents2', contents: '2', reasons: [''], hash: 'contents2' },
+        { type: 'contents', id: 'contents3', contents: '3', reasons: [''], hash: 'contents3' },
+      ],
+      hash: '111',
+    };
+    const fingerprint2: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+        { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' },
+        { type: 'contents', id: 'contents1', contents: '1', reasons: [''], hash: 'contents1' },
+      ],
+      hash: '222',
+    };
+    expect(diffFingerprintsWithOp(fingerprint1, fingerprint2)).toEqual([
+      {
+        op: 'added',
+        source: { type: 'file', filePath: 'ios/Podfile', reasons: [''], hash: 'file1' },
+      },
+      { op: 'added', source: { type: 'dir', filePath: 'android', reasons: [''], hash: 'dir1' } },
+      {
+        op: 'removed',
+        source: {
+          type: 'contents',
+          id: 'contents2',
+          contents: '2',
+          reasons: [''],
+          hash: 'contents2',
+        },
+      },
+      {
+        op: 'removed',
+        source: {
+          type: 'contents',
+          id: 'contents3',
+          contents: '3',
+          reasons: [''],
+          hash: 'contents3',
+        },
+      },
+    ]);
   });
 });
