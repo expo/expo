@@ -189,6 +189,32 @@ describe(withExtendedResolver, () => {
       platform
     );
   });
+  it(`resolves to expo-asset/build/resolveAssetSource on web`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      'react-native/Libraries/Image/resolveAssetSource',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.objectContaining({
+        mainFields: ['browser', 'module', 'main'],
+        preferNativePlatform: false,
+      }),
+      'expo-asset/build/resolveAssetSource',
+      platform
+    );
+  });
 
   describe('development aliases', () => {
     [
