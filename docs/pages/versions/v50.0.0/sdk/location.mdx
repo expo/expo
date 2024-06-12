@@ -17,6 +17,7 @@ import {
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { PlatformTag } from '~/ui/components/Tag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -107,8 +108,8 @@ Learn how to configure the native projects in the [installation instructions in 
 To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
-- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](/versions/v50.0.0/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 
 ### Geofencing methods
 
