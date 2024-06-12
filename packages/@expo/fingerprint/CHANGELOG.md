@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Introduced `diffFingerprintsWithOp()` and fixed incorrect result from `diffFingerprints()` in some cases. ([#29709](https://github.com/expo/expo/pull/29709) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.9.0 — 2024-06-05
