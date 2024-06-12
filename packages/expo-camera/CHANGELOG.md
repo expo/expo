@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, return the correct orientation in the exif data. ([#29681](https://github.com/expo/expo/pull/29681) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.10 — 2024-05-29
