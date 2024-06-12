@@ -40,7 +40,9 @@ class AudioRecorder(
     val amplitude: Int = recorder.maxAmplitude
     return if (amplitude == 0) {
       -160
-    } else (20 * ln(amplitude.toDouble() / 32767.0)).toInt()
+    } else {
+      (20 * ln(amplitude.toDouble() / 32767.0)).toInt()
+    }
   }
 
   private fun createRecorder(options: RecordingOptions) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -118,23 +120,29 @@ class AudioRecorder(
       MEDIA_ERROR_SERVER_DIED -> "The media server has crashed"
       else -> "An unknown recording error occurred"
     }
-    sendEvent("onRecordingStatusUpdate", mapOf(
-      "isFinished" to true,
-      "hasError" to true,
-      "error" to error,
-      "url" to null
-    ))
+    sendEvent(
+      "onRecordingStatusUpdate",
+      mapOf(
+        "isFinished" to true,
+        "hasError" to true,
+        "error" to error,
+        "url" to null
+      )
+    )
   }
 
   override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
     when (what) {
       MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
         recorder.stop()
-        sendEvent("onRecordingStatusUpdate", mapOf(
-          "isFinished" to true,
-          "hasError" to true,
-          "url" to Uri.fromFile(filePath?.let { File(it) }).toString()
-        ))
+        sendEvent(
+          "onRecordingStatusUpdate",
+          mapOf(
+            "isFinished" to true,
+            "hasError" to true,
+            "url" to Uri.fromFile(filePath?.let { File(it) }).toString()
+          )
+        )
       }
     }
   }

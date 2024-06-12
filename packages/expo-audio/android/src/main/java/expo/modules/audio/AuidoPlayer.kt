@@ -2,10 +2,8 @@ package expo.modules.audio
 
 import android.content.Context
 import androidx.media3.common.AudioAttributes
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.kotlin.AppContext
@@ -75,7 +73,7 @@ class AudioPlayer(
     })
   }
 
-    private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) = withContext(Dispatchers.Main) {
+  private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) = withContext(Dispatchers.Main) {
     val isMuted = player.volume == 0f
     val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
     val isLoaded = player.playbackState == Player.STATE_READY

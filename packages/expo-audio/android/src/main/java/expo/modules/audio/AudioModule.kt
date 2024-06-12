@@ -6,7 +6,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
-import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
@@ -30,7 +29,6 @@ import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.MediaSourceFactory
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
@@ -43,7 +41,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
-import java.io.File
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -63,7 +60,7 @@ class AudioModule : Module(), LifecycleEventListener {
 
   private enum class AudioInterruptionMode {
     DO_NOT_MIX,
-    DUCK_OTHERS,
+    DUCK_OTHERS
   }
 
   override fun definition() = ModuleDefinition {
@@ -431,7 +428,7 @@ class AudioModule : Module(), LifecycleEventListener {
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
-      else -> throw IllegalStateException("Unsupported type: $type");
+      else -> throw IllegalStateException("Unsupported type: $type")
     }
     return source.createMediaSource(mediaItem)
   }
@@ -458,37 +455,6 @@ class AudioModule : Module(), LifecycleEventListener {
     map.putString("uid", deviceInfo.id.toString())
     return map
   }
-
-//  override fun onAudioFocusChange(focusChange: Int) {
-//    when (focusChange) {
-//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-//        if (shouldDuckAudio) {
-//          isDuckingAudio = true
-//          focusAcquired = true
-////          updateDuckStatusForAllPlayersPlaying()
-//          return
-//        }
-//        isDuckingAudio = false
-//        focusAcquired = false
-//        for (player in players.values) {
-//          player.player.playWhenReady = false
-//        }
-//      }
-//
-//      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS -> {
-//        isDuckingAudio = false
-//        focusAcquired = false
-//        for (player in players.values) {
-//          player.player.playWhenReady = false
-//        }
-//      }
-//
-//      AudioManager.AUDIOFOCUS_GAIN -> {
-//        isDuckingAudio = false
-//        focusAcquired = true
-//      }
-//    }
-//  }
 
   override fun onHostResume() {
     if (appIsPaused) {
