@@ -28,7 +28,7 @@ import {
   getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, DEMI, P, CODE, MONOSPACE, CALLOUT } from '~/ui/components/Text';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -143,7 +143,10 @@ const renderType = (
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
-              <CALLOUT theme="secondary">
+              <CALLOUT>
+                <SPAN theme="secondary" weight="medium">
+                  Type:{' '}
+                </SPAN>
                 {type.types
                   .filter(type =>
                     ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
@@ -154,7 +157,9 @@ const renderType = (
                       {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
-                {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
+                <SPAN theme="secondary">
+                  {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
+                </SPAN>
               </CALLOUT>
               <br />
             </>
@@ -178,16 +183,16 @@ const renderType = (
             </MONOSPACE>
           </H3Code>
           <CALLOUT className="mb-3">
-            <CALLOUT tag="span" theme="secondary" weight="medium">
+            <SPAN theme="secondary" weight="medium">
               Literal Type:{' '}
-            </CALLOUT>
+            </SPAN>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          <P>
-            <CALLOUT tag="span" theme="secondary" weight="medium">
+          <CALLOUT>
+            <SPAN theme="secondary" weight="medium">
               Acceptable values are:{' '}
-            </CALLOUT>
+            </SPAN>
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
@@ -200,7 +205,7 @@ const renderType = (
                 )}
               </span>
             ))}
-          </P>
+          </CALLOUT>
         </div>
       );
     }
@@ -217,10 +222,12 @@ const renderType = (
             {name}
           </MONOSPACE>
         </H3Code>
-        <P className="mb-3">
-          <DEMI theme="secondary">Type: </DEMI>
+        <CALLOUT className="mb-3">
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-        </P>
+        </CALLOUT>
         <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
@@ -235,10 +242,12 @@ const renderType = (
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <P>
-          <DEMI theme="secondary">Type: </DEMI>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
           <CODE>{type.name}</CODE>
-        </P>
+        </CALLOUT>
       </div>
     );
   } else if (type.type === 'conditional' && type.checkType) {
@@ -252,15 +261,19 @@ const renderType = (
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <P>
-          <DEMI theme="secondary">Generic: </DEMI>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Generic:{' '}
+          </SPAN>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
-        </P>
-        <P>
-          <DEMI theme="secondary">Type: </DEMI>
+        </CALLOUT>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
           <CODE>
             {type.checkType.name}
             {typeParameter && (
@@ -271,7 +284,7 @@ const renderType = (
             {' : '}
             {type.falseType && resolveTypeName(type.falseType, sdkVersion)}
           </CODE>
-        </P>
+        </CALLOUT>
       </div>
     );
   } else if (type.type === 'templateLiteral' && type.tail) {
@@ -293,9 +306,9 @@ const renderType = (
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <P>
+        <CALLOUT>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
-        </P>
+        </CALLOUT>
       </div>
     );
   }

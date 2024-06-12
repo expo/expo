@@ -62,13 +62,12 @@ function isFlipTransition(transition) {
         transition?.effect === 'flip-from-left' ||
         transition?.effect === 'flip-from-right');
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, containerViewRef, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
-    const containerRef = React.useRef(null);
-    const selectedSource = useSourceSelection(source, responsivePolicy, containerRef, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
+    const selectedSource = useSourceSelection(source, responsivePolicy, containerViewRef, isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null);
     const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
     const initialNode = placeholder?.[0]?.uri
         ? [
@@ -98,7 +97,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }} className={className} cachePolicy={cachePolicy} priority={priority} contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }} hashPlaceholderContentPosition={contentPosition} hashPlaceholderStyle={imageHashStyle} accessibilityLabel={props.accessibilityLabel}/>),
     ];
-    return (<View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+    return (<View ref={containerViewRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>

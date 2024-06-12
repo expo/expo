@@ -62,6 +62,7 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   ExpoMetroOptions,
+  convertPathToModuleSpecifier,
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
@@ -168,7 +169,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                   typeof source === 'string' && source.startsWith(this.projectRoot)
                     ? path.relative(this.projectRoot, source)
                     : source;
-                return source.split(path.sep).join('/');
+                return convertPathToModuleSpecifier(source);
               }),
               sourcesContent: new Array(parsedMap.sources.length).fill(null),
               names: parsedMap.names,
@@ -261,7 +262,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const resolvedMainModuleName =
-      mainModuleName ?? '.' + path.sep + resolveMainModuleName(this.projectRoot, { platform });
+      mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
     return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
@@ -476,7 +477,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const opts: ExpoMetroOptions = {
       // TODO: Possibly issues with using an absolute path here...
-      mainModuleName: filePath,
+      mainModuleName: convertPathToModuleSpecifier(filePath),
       lazy: false,
       asyncRoutes: false,
       inlineSourceMap: false,
@@ -545,8 +546,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    if (!opts.mainModuleName.startsWith(path.sep)) {
-      opts.mainModuleName = '.' + path.sep + opts.mainModuleName;
+    if (!opts.mainModuleName.startsWith('/')) {
+      opts.mainModuleName = './' + opts.mainModuleName;
     }
 
     const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
@@ -629,105 +630,108 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions,
       {
         isExporting: !!options.isExporting,
+        exp,
       }
     );
 
-    const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
+    if (!options.isExporting) {
+      const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
-    // Important that we noop source maps for context modules as soon as possible.
-    prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
+      // Important that we noop source maps for context modules as soon as possible.
+      prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
 
-    // We need the manifest handler to be the first middleware to run so our
-    // routes take precedence over static files. For example, the manifest is
-    // served from '/' and if the user has an index.html file in their project
-    // then the manifest handler will never run, the static middleware will run
-    // and serve index.html instead of the manifest.
-    // https://github.com/expo/expo/issues/13114
-    prependMiddleware(middleware, manifestMiddleware.getHandler());
+      // We need the manifest handler to be the first middleware to run so our
+      // routes take precedence over static files. For example, the manifest is
+      // served from '/' and if the user has an index.html file in their project
+      // then the manifest handler will never run, the static middleware will run
+      // and serve index.html instead of the manifest.
+      // https://github.com/expo/expo/issues/13114
+      prependMiddleware(middleware, manifestMiddleware.getHandler());
 
-    middleware.use(
-      new InterstitialPageMiddleware(this.projectRoot, {
-        // TODO: Prevent this from becoming stale.
-        scheme: options.location.scheme ?? null,
-      }).getHandler()
-    );
-    middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
-    middleware.use(
-      new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
-    );
+      middleware.use(
+        new InterstitialPageMiddleware(this.projectRoot, {
+          // TODO: Prevent this from becoming stale.
+          scheme: options.location.scheme ?? null,
+        }).getHandler()
+      );
+      middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
+      middleware.use(
+        new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
+      );
 
-    const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-      onDeepLink: getDeepLinkHandler(this.projectRoot),
-      getLocation: ({ runtime }) => {
-        if (runtime === 'custom') {
-          return this.urlCreator?.constructDevClientUrl();
-        } else {
-          return this.urlCreator?.constructUrl({
-            scheme: 'exp',
-          });
-        }
-      },
-    });
-    middleware.use(deepLinkMiddleware.getHandler());
+      const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
+        onDeepLink: getDeepLinkHandler(this.projectRoot),
+        getLocation: ({ runtime }) => {
+          if (runtime === 'custom') {
+            return this.urlCreator?.constructDevClientUrl();
+          } else {
+            return this.urlCreator?.constructUrl({
+              scheme: 'exp',
+            });
+          }
+        },
+      });
+      middleware.use(deepLinkMiddleware.getHandler());
 
-    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+      middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
-    // Append support for redirecting unhandled requests to the index.html page on web.
-    if (this.isTargetingWeb()) {
-      // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
-      middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+      // Append support for redirecting unhandled requests to the index.html page on web.
+      if (this.isTargetingWeb()) {
+        // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
+        middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
-      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+        // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+        middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
-      if (useServerRendering) {
-        middleware.use(
-          createRouteHandlerMiddleware(this.projectRoot, {
-            appDir,
-            routerRoot,
-            config,
-            ...config.exp.extra?.router,
-            bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
-            getStaticPageAsync: (pathname) => {
-              return this.getStaticPageAsync(pathname);
+        if (useServerRendering) {
+          middleware.use(
+            createRouteHandlerMiddleware(this.projectRoot, {
+              appDir,
+              routerRoot,
+              config,
+              ...config.exp.extra?.router,
+              bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
+              getStaticPageAsync: (pathname) => {
+                return this.getStaticPageAsync(pathname);
+              },
+            })
+          );
+
+          observeAnyFileChanges(
+            {
+              metro,
+              server,
             },
-          })
-        );
-
-        observeAnyFileChanges(
-          {
-            metro,
-            server,
-          },
-          (events) => {
-            if (exp.web?.output === 'server') {
-              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-              // aggressively to ensure we always have the latest. The only caching we really get here is for
-              // cases where the user is making subsequent requests to the same API route without changing anything.
-              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-              // up for a lot of the overhead.
-              this.invalidateApiRouteCache();
-            } else if (!hasWarnedAboutApiRoutes()) {
-              for (const event of events) {
-                if (
-                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
-                  // API Routes are not enabled in the project.
-                  event.metadata?.type !== 'd' &&
-                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
-                  event.filePath.startsWith(appDir) &&
-                  isApiRouteConvention(event.filePath)
-                ) {
-                  warnInvalidWebOutput();
+            (events) => {
+              if (exp.web?.output === 'server') {
+                // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+                // aggressively to ensure we always have the latest. The only caching we really get here is for
+                // cases where the user is making subsequent requests to the same API route without changing anything.
+                // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+                // up for a lot of the overhead.
+                this.invalidateApiRouteCache();
+              } else if (!hasWarnedAboutApiRoutes()) {
+                for (const event of events) {
+                  if (
+                    // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                    // API Routes are not enabled in the project.
+                    event.metadata?.type !== 'd' &&
+                    // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                    event.filePath.startsWith(appDir) &&
+                    isApiRouteConvention(event.filePath)
+                  ) {
+                    warnInvalidWebOutput();
+                  }
                 }
               }
             }
-          }
-        );
-      } else {
-        // This MUST run last since it's the fallback.
-        middleware.use(
-          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
-        );
+          );
+        } else {
+          // This MUST run last since it's the fallback.
+          middleware.use(
+            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          );
+        }
       }
     }
     // Extend the close method to ensure that we clean up the local info.
@@ -1201,7 +1205,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
   ) {
     assert(this.metro, 'cannot invoke resolveRelativePathAsync without metro instance');
-    return await this.metro._resolveRelativePath(moduleId, {
+    return await this.metro._resolveRelativePath(convertPathToModuleSpecifier(moduleId), {
       relativeTo: 'server',
       resolverOptions,
       transformOptions,

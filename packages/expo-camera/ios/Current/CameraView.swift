@@ -470,7 +470,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
       let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
-        with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
+        with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
       updatedExif[kCGImagePropertyExifPixelYDimension] = width

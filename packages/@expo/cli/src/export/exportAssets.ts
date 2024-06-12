@@ -3,8 +3,8 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import type { Asset, ExportAssetMap, BundleOutput } from './saveAssets';
+import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
+import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
@@ -137,7 +137,7 @@ export async function exportAssetsAsync(
   if (web) {
     // Save assets like a typical bundler, preserving the file paths on web.
     // TODO: Update React Native Web to support loading files from asset hashes.
-    await persistMetroAssetsAsync(web.assets, {
+    await persistMetroAssetsAsync(projectRoot, web.assets, {
       files,
       platform: 'web',
       outputDirectory: outputDir,
@@ -145,7 +145,7 @@ export async function exportAssetsAsync(
     });
   }
 
-  const assets: Asset[] = uniqBy(
+  const assets: BundleAssetWithFileHashes[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
   );
@@ -176,11 +176,7 @@ export async function exportAssetsAsync(
 
     // Add assets to copy.
     filteredAssets.forEach((asset) => {
-      const assetId =
-        'fileSystemLocation' in asset
-          ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
-            (asset.type ? '.' + asset.type : '')
-          : undefined;
+      const assetId = getAssetIdForLogGrouping(projectRoot, asset);
 
       asset.files.forEach((fp: string, index: number) => {
         const hash = asset.fileHashes[index];

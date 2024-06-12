@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support `location.reload()` in native production builds. ([#29572](https://github.com/expo/expo/pull/29572) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

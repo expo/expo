@@ -56,6 +56,7 @@ it(`can create a micro Metro graph fixture`, () => {
       console.log(foo);
     });",
                   "lineCount": 4,
+                  "reactClientReference": undefined,
                 },
                 "type": "js/module",
               },
@@ -79,6 +80,7 @@ it(`can create a micro Metro graph fixture`, () => {
       exports.foo = foo;
     });",
                   "lineCount": 7,
+                  "reactClientReference": undefined,
                 },
                 "type": "js/module",
               },
@@ -94,6 +96,7 @@ it(`can create a micro Metro graph fixture`, () => {
             "baseUrl": undefined,
             "bytecode": undefined,
             "engine": undefined,
+            "environment": undefined,
           },
           "dev": true,
           "hot": false,
@@ -112,13 +115,14 @@ it(`can create a micro Metro graph fixture`, () => {
         "inlineSourceMap": undefined,
         "modulesOnly": false,
         "processModuleFilter": [Function],
-        "projectRoot": "/app/",
+        "projectRoot": "/app",
         "runBeforeMainModule": [],
         "runModule": true,
         "serializerOptions": undefined,
-        "serverRoot": "/app/",
+        "serverRoot": "/app",
         "shouldAddToIgnoreList": [Function],
         "sourceMapUrl": undefined,
+        "sourceUrl": undefined,
       },
     ]
   `);

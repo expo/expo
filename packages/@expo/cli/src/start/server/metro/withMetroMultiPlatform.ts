@@ -169,6 +169,7 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
 
@@ -562,6 +563,10 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    if (isReactCanaryEnabled) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
+    }
   }
 
   // @ts-expect-error

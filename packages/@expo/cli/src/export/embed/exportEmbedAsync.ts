@@ -75,7 +75,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
     options.assetsDest
-      ? persistMetroAssetsAsync(assets, {
+      ? persistMetroAssetsAsync(projectRoot, assets, {
           platform: options.platform,
           outputDirectory: options.assetsDest,
           iosAssetCatalogDirectory: options.assetCatalogDest,

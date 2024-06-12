@@ -61,7 +61,7 @@ export const VideoView = forwardRef((props, ref) => {
             }
         };
     }, [props.player]);
-    return (<video controls={props.nativeControls} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{
+    return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{
             ...mapStyles(props.style),
             objectFit: props.contentFit,
         }} ref={(newRef) => {

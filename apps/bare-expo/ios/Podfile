@@ -16,7 +16,6 @@ install! 'cocoapods',
   :incremental_installation => true,
   :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-inhibit_all_warnings!
 
 prepare_react_native_project!
 
