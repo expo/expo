@@ -24,11 +24,13 @@ class ExpoLinkingModule : Module() {
       initialURL = null
       return@Function null
     }
+
     OnStartObserving {
       onURLReceived = {
         this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to parseExpoLink(it)))
       }
     }
+
     OnStopObserving {
       onURLReceived = null
     }
@@ -38,7 +40,6 @@ class ExpoLinkingModule : Module() {
     if (url == null) {
       return null
     }
-    // Parse the URL and return the parsed URL
     return url.toString()
   }
 }
