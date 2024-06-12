@@ -279,8 +279,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Opening a URL-Specified Resource
 
   open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-    return subscribers.contains { subscriber in
-      return subscriber.application?(app, open: url, options: options) ?? false
+    return subscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(app, open: url, options: options) ?? false || result
     }
   }
 
