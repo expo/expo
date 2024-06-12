@@ -8,6 +8,7 @@ const expo_router_plugin_1 = require("./expo-router-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
+const unwrap_rsc_hooks_1 = require("./unwrap-rsc-hooks");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -108,8 +109,8 @@ function babelPresetExpo(api, options = {}) {
     if (isProduction) {
         inlines['process.env.NODE_ENV'] = 'production';
         inlines['__DEV__'] = false;
-        inlines['Platform.OS'] = platform;
     }
+    inlines['Platform.OS'] = platform;
     if (process.env.NODE_ENV !== 'test') {
         inlines['process.env.EXPO_BASE_URL'] = baseUrl;
     }
@@ -149,6 +150,7 @@ function babelPresetExpo(api, options = {}) {
     // users who are bundling using the client-only system.
     if (isReactServer) {
         extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
+        extraPlugins.push(unwrap_rsc_hooks_1.unwrapRscHooks);
         extraPlugins.push(restricted_react_api_plugin_1.environmentRestrictedReactAPIsPlugin);
     }
     // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.

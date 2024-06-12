@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unwrap RSC hooks folds useMemo from direct react import 1`] = `
+"import { useMemo } from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
+export default function App() {
+  const foo = function () {
+    {
+      return 650;
+    }
+  }();
+  return /*#__PURE__*/_jsx("div", {
+    children: "Hey"
+  });
+}"
+`;
+
+exports[`unwrap RSC hooks folds useMemo from direct react import with external function 1`] = `
+"import { useMemo } from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
+function baz() {
+  return 650;
+}
+export default function App() {
+  const foo = baz();
+  return /*#__PURE__*/_jsx("div", {
+    children: "Hey"
+  });
+}"
+`;
+
+exports[`unwrap RSC hooks folds useMemo from react import 1`] = `
+"import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
+export default function App() {
+  const foo = function () {
+    {
+      return 650;
+    }
+  }();
+  return /*#__PURE__*/_jsx("div", {
+    children: "Hey"
+  });
+}"
+`;

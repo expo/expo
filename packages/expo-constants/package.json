@@ -4,6 +4,17 @@
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
+  "exports": {
+    ".": {
+      "react-server": "./build/Constants.react-server.js",
+      "default": "./build/Constants.js"
+    },
+    "./package.json": "./package.json",
+    "./build/Constants.js": "./build/Constants.js",
+    "./build/Constants.types.js": "./build/Constants.types.js",
+    "./build/ExponentConstants.js": "./build/ExponentConstants.js",
+    "./build/ExponentConstants.web.js": "./build/ExponentConstants.web.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

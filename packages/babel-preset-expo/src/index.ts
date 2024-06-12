@@ -20,6 +20,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
+import { unwrapRscHooks } from './unwrap-rsc-hooks';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -228,8 +229,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (isProduction) {
     inlines['process.env.NODE_ENV'] = 'production';
     inlines['__DEV__'] = false;
-    inlines['Platform.OS'] = platform;
   }
+  inlines['Platform.OS'] = platform;
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
@@ -280,6 +281,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // users who are bundling using the client-only system.
   if (isReactServer) {
     extraPlugins.push(reactClientReferencesPlugin);
+
+    extraPlugins.push(unwrapRscHooks);
 
     extraPlugins.push(environmentRestrictedReactAPIsPlugin);
   }

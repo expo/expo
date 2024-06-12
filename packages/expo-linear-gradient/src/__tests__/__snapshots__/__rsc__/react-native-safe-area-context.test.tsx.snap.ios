@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders safe area context to RSC 1`] = `
+"1:I["../../node_modules/react-native-safe-area-context/lib/commonjs/index.js",[],"SafeAreaProvider"]
+2:I["../../node_modules/react-native-safe-area-context/lib/commonjs/index.js",[],"SafeAreaView"]
+0:["$","$L1",null,{"children":["$","$L2",null,{},null]},null]"
+`;

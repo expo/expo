@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`foo 1`] = `
+{
+  "hostname": null,
+  "path": null,
+  "queryParams": {},
+  "scheme": "exp",
+}
+`;

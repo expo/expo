@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders StatusBar to RSC 1`] = `
+"1:{"name":"StatusBar","env":"Server","owner":null}
+0:D"$1"
+0:null"
+`;

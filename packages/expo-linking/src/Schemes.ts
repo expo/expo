@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-modules-core';
 
 const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 
@@ -94,6 +94,8 @@ export function hasConstantsManifest(): boolean {
 
 // @docsMissing
 export function resolveScheme(options: { scheme?: string; isSilent?: boolean }): string {
+  if (typeof window === 'undefined') return '';
+
   if (
     Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
     !hasConstantsManifest()

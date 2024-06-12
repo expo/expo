@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-modules-core';
 const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 // @docsMissing
 export function hasCustomScheme() {
@@ -80,6 +80,8 @@ export function hasConstantsManifest() {
 }
 // @docsMissing
 export function resolveScheme(options) {
+    if (typeof window === 'undefined')
+        return '';
     if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
         !hasConstantsManifest()) {
         throw new Error(`expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`);

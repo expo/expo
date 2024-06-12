@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders FullWindowOverlay to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders InnerScreen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.web.tsx",[],"InnerScreen"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.web.tsx",[],"NativeScreen"]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreenContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeScreenNavigationContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeSearchBar to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders NativeSearchBarCommands to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders Screen to RSC 1`] = `
+"1:I["../../node_modules/react-native-screens/src/components/Screen.web.tsx",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenContainer to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders ScreenStackHeaderBackButtonImage to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+3:I["../../node_modules/react-native-web/dist/exports/Image/index.js",[],""]
+1:{"name":"ScreenStackHeaderBackButtonImage","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{"children":["$","$L3",null,{"resizeMode":"center","fadeDuration":0},"$1"]},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderCenterView to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ScreenStackHeaderCenterView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderConfig to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ScreenStackHeaderConfig","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderLeftView to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ScreenStackHeaderLeftView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderRightView to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ScreenStackHeaderRightView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderSearchBarView to RSC 1`] = `
+"2:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+1:{"name":"ScreenStackHeaderSearchBarView","env":"Server","owner":null}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders ScreenStackHeaderSubview to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders SearchBar to RSC 1`] = `
+"1:I["../../node_modules/react-native-web/dist/exports/View/index.js",[],""]
+0:["$","$L1",null,{},null]"
+`;

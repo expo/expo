@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @jest-environment jsdom
  */

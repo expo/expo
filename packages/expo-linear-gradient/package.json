@@ -19,9 +19,6 @@
     "expo",
     "gradient"
   ],
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",

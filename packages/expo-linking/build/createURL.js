@@ -5,7 +5,7 @@ function getHostUri() {
     if (Constants.expoConfig?.hostUri) {
         return Constants.expoConfig.hostUri;
     }
-    else if (!hasCustomScheme()) {
+    else if (!hasCustomScheme() && Constants.linkingUri) {
         // we're probably not using up-to-date xdl, so just fake it for now
         // we have to remove the /--/ on the end since this will be inserted again later
         return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -67,6 +67,8 @@ function ensureLeadingSlash(input, shouldAppend) {
  * @return A URL string which points to your app with the given deep link information.
  */
 export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false } = {}) {
+    if (typeof window === 'undefined')
+        return '';
     const resolvedScheme = resolveScheme({ scheme });
     let hostUri = getHostUri() || '';
     if (hasCustomScheme() && isExpoHosted()) {

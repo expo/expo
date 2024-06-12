@@ -1,0 +1,62 @@
+diff --git a/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.js b/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.js
+index 7b817c7..0dc07ca 100644
+--- a/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.js
++++ b/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.js
+@@ -1,4 +1,5 @@
+ "use strict";
++"use client";
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.web.js b/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.web.js
+index 96f4fe5..7758ecd 100644
+--- a/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.web.js
++++ b/node_modules/react-native-svg/lib/commonjs/ReactNativeSVG.web.js
+@@ -1,5 +1,6 @@
+ "use strict";
+ 
++
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+diff --git a/node_modules/react-native-svg/lib/commonjs/index.js b/node_modules/react-native-svg/lib/commonjs/index.js
+index da09d90..69d6f7c 100644
+--- a/node_modules/react-native-svg/lib/commonjs/index.js
++++ b/node_modules/react-native-svg/lib/commonjs/index.js
+@@ -1,4 +1,5 @@
+ "use strict";
++"use client";
+ 
+ Object.defineProperty(exports, "__esModule", {
+   value: true
+diff --git a/node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js b/node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js
+index 71ce009..f9afeb6 100644
+--- a/node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js
++++ b/node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js
+@@ -1,3 +1,5 @@
++"use client";
++
+ import * as React from 'react';
+ import {
+ // @ts-ignore it is not seen in exports
+diff --git a/node_modules/react-native-svg/lib/module/index.js b/node_modules/react-native-svg/lib/module/index.js
+index 51c9476..53c1892 100644
+--- a/node_modules/react-native-svg/lib/module/index.js
++++ b/node_modules/react-native-svg/lib/module/index.js
+@@ -1,3 +1,5 @@
++"use client"
++
+ export * from './ReactNativeSVG';
+ export { default } from './ReactNativeSVG';
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/node_modules/react-native-svg/src/index.ts b/node_modules/react-native-svg/src/index.ts
+index f7a207f..85e6c37 100644
+--- a/node_modules/react-native-svg/src/index.ts
++++ b/node_modules/react-native-svg/src/index.ts
+@@ -1,3 +1,5 @@
++"use client";
++
+ export * from './ReactNativeSVG';
+ 
+ export { default } from './ReactNativeSVG';
