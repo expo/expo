@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add native `getLinkingURL` and `clearLinkingURL` functions.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
