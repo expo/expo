@@ -9,12 +9,12 @@ on:
   workflow_dispatch: {}
   push:
     paths:
-      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr.yml'
       - '.github/workflows/docs-pr-destroy.yml'
   pull_request:
     paths:
       - 'docs/**'
-      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr.yml'
       - '.github/workflows/docs-pr-destroy.yml'
     types:
       - opened
@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docs-pr-deploy:
+  docs-pr:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
@@ -55,6 +55,23 @@ jobs:
         run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🏗️ Build Docs website
+        run: yarn export-preview
+        timeout-minutes: 20
+        env:
+          AWS_BUCKET: 'docs.expo.dev-pr-${{ github.event.pull_request.number }}'
+      - name: 🔗 Lint pages links
+        working-directory: docs
+        run: yarn lint-links --quiet
+      - name: ✅ Test links (legacy)
+        working-directory: docs
+        run: |
+          yarn export-server &
+          while ! nc -z localhost 8000; do
+            sleep 1
+          done
+          yarn test-links http://127.0.0.1:8000
+        timeout-minutes: 3
       - name: 🪣 Set up docs preview bucket
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         env:
@@ -73,23 +90,6 @@ jobs:
 
           # Set up static website hosting
           aws s3 website s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}/ --index-document index.html
-      - name: 🏗️ Build Docs website for deploy
-        run: yarn export-preview
-        timeout-minutes: 20
-        env:
-          AWS_BUCKET: 'docs.expo.dev-pr-${{ github.event.pull_request.number }}'
-      - name: 🔗 Lint pages links
-        working-directory: docs
-        run: yarn lint-links --quiet
-      - name: ✅ Test links (legacy)
-        working-directory: docs
-        run: |
-          yarn export-server &
-          while ! nc -z localhost 8000; do
-            sleep 1
-          done
-          yarn test-links http://127.0.0.1:8000
-        timeout-minutes: 3
       - name: 🚀 Deploy Docs website
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         env:
