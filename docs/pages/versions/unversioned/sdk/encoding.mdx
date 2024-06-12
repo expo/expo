@@ -14,7 +14,7 @@ This API is part of the `expo` package. Refer to the [browser and server runtime
 
 ## Usage
 
-`TextEncoder` and `TextDecoder` are available globally without needing to import them.
+`TextEncoder` and `TextDecoder` are available globally without any need to import them.
 
 ```js
 // [104, 101, 108, 108, 111]
@@ -26,7 +26,7 @@ const text = new TextDecoder().decode(hello);
 
 ## TextEncoder
 
-The `TextEncoder` API is included in the Hermes engine. See the source code here: [facebook/hermes > TextEncoder.cpp](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
+The `TextEncoder` API is included in the Hermes engine. See the [source code in TextEncoder.cpp inside the Hermes GitHub repository](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
 
 ## TextDecoder
 
