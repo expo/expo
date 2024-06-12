@@ -78,7 +78,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
 
   return (
     <video
-      controls={props.nativeControls}
+      controls={props.nativeControls ?? true}
       controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
       crossOrigin="anonymous"
       style={{
