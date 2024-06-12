@@ -361,7 +361,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
       }
 
-      var requestedFlashMode = self.flashMode.toDeviceFlashMode()
+      let requestedFlashMode = self.flashMode.toDeviceFlashMode()
       if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
         photoSettings.flashMode = requestedFlashMode
       }

@@ -63,7 +63,7 @@ internal func installEventDispatcher<ViewType>(forEvent eventName: String, onVie
     return isEventDispatcherWithName($0, eventName)
   }
 
-  if var eventDispatcher = child?.value as? EventDispatcher {
+  if let eventDispatcher = child?.value as? EventDispatcher {
     eventDispatcher.handler = handler
   } else if let view = view as? UIView, view.responds(to: Selector(eventName)) {
     // This is to handle events in legacy views written in Objective-C.

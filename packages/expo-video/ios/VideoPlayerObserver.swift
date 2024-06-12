@@ -155,7 +155,7 @@ class VideoPlayerObserver {
     playbackLikelyToKeepUpObserver?.invalidate()
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
-    NotificationCenter.default.removeObserver(playerItemObserver)
+    NotificationCenter.default.removeObserver(playerItemObserver as Any)
   }
 
   // MARK: - VideoPlayerObserverDelegate

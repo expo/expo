@@ -109,6 +109,6 @@ public class CellularModule: Module {
       }
       return providers.values.first
     }
-    return netinfo.subscriberCellularProvider
+    return netinfo.serviceSubscriberCellularProviders?.first?.value
   }
 }

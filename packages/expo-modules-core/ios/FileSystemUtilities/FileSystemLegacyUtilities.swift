@@ -75,6 +75,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   }
 
   @objc
+  @discardableResult
   public func ensureDirExists(withPath path: String) -> Bool {
     let url = URL(fileURLWithPath: path)
     return FileSystemUtilities.ensureDirExists(at: url)

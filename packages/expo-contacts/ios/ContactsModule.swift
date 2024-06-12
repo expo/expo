@@ -27,7 +27,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       let keys = contactKeysToFetch(from: options.fields)
       let payload = fetchContactsData(options: options, keys: keys, isWriting: true)
 
-      if let error = payload["error"] {
+      if payload["error"] != nil {
         throw FailedToFetchContactsException()
       }
 
@@ -167,7 +167,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       let saveRequest = CNSaveRequest()
       let keysToFetch = contactKeysToFetch(from: nil)
 
-      if var contact = try getContact(with: identifier, keysToFetch: keysToFetch) {
+      if let contact = try getContact(with: identifier, keysToFetch: keysToFetch) {
         let group = try group(with: groupId)
         saveRequest.addMember(contact, to: group)
         try executeSaveRequest(saveRequest)
@@ -210,7 +210,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     AsyncFunction("updateGroupNameAsync") { (groupName: String, groupId: String) in
       let saveRequest = CNSaveRequest()
       let group = try group(with: groupId)
-      guard var mutatbleGroup = group as? CNMutableGroup else {
+      guard let mutatbleGroup = group as? CNMutableGroup else {
         return
       }
       mutatbleGroup.name = groupName
@@ -230,7 +230,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
     AsyncFunction("createGroupAsync") { (name: String, containerId: String) -> String in
       let saveRequest = CNSaveRequest()
-      var group = CNMutableGroup()
+      let group = CNMutableGroup()
       group.name = name
       saveRequest.add(group, toContainerWithIdentifier: containerId)
       try executeSaveRequest(saveRequest)
@@ -382,7 +382,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   }
 
   private func serializeContactPayload(payload: [String: Any], keys: [String], options: ContactsQuery) throws -> [String: Any]? {
-    if let error = payload["error"] {
+    if payload["error"] != nil {
       return nil
     }
     var mutablePayload = payload
@@ -411,7 +411,6 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
   private func group(with identifier: String) throws -> CNGroup {
     let predicate = CNGroup.predicateForGroups(withIdentifiers: [identifier])
-    var error: NSError?
 
     do {
       let groups = try contactStore.groups(matching: predicate)
@@ -562,13 +561,13 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       predicate = CNContact.predicateForContacts(withIdentifiers: [containerId])
     }
 
-    var descriptors = getDescriptors(for: keys, isWriting: isWriting)
+    let descriptors = getDescriptors(for: keys, isWriting: isWriting)
     return queryContacts(with: predicate, keys: descriptors, options: options)
   }
 
   private func queryContacts(with predicate: NSPredicate?, keys: [CNKeyDescriptor], options: ContactsQuery) -> [String: Any] {
-    var pageOffset = options.pageOffset ?? 0
-    var pageSize = options.pageSize ?? 0
+    let pageOffset = options.pageOffset ?? 0
+    let pageSize = options.pageSize ?? 0
 
     let fetchRequest = buildFetchRequest(sort: options.sort, keys: keys)
     fetchRequest.predicate = predicate
@@ -579,9 +578,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
 
     var currentIndex = 0
-    var error: NSError
     var response = [CNContact]()
-    var endIndex = pageOffset + pageSize
+    let endIndex = pageOffset + pageSize
 
     do {
       try contactStore.enumerateContacts(with: fetchRequest) { contact, _ in
