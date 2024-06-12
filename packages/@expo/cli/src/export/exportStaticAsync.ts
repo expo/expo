@@ -394,6 +394,7 @@ async function exportApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     includeSourceMaps,
+    platform: 'web',
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

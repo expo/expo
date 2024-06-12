@@ -7,7 +7,7 @@
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import { StackFrame } from 'stacktrace-parser';
+import { parse, StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
@@ -156,9 +156,7 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
     return;
   }
 
-  const { LogBoxLog, parseErrorStack } = require(
-    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-  );
+  const { LogBoxLog } = require(resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate'));
 
   const stack = parseErrorStack(error.stack);
 
@@ -195,9 +193,7 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
   symbolicate: (type: string, callback: () => void) => void;
   codeFrame: CodeFrame;
 } {
-  const { LogBoxLog, parseErrorStack } = require(
-    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-  );
+  const { LogBoxLog } = require(resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate'));
 
   // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
   let stack;
@@ -313,4 +309,21 @@ export async function getErrorOverlayHtmlAsync({
 
   const htmlWithJs = html.replace('</body>', `<script src=${errorOverlayEntry}></script></body>`);
   return htmlWithJs;
+}
+
+function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
+  if (stack == null) {
+    return [];
+  }
+  if (Array.isArray(stack)) {
+    return stack;
+  }
+
+  return parse(stack).map((frame) => {
+    // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
+    return {
+      ...frame,
+      column: frame.column != null ? frame.column - 1 : null,
+    };
+  });
 }
