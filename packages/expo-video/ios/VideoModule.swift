@@ -167,8 +167,8 @@ public final class VideoModule: Module {
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 
-      Property("status") { player -> PlayerStatus in
-        return player.status
+      Property("status") { player in
+        return player.status.rawValue
       }
 
       Property("volume") { player -> Float in

@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
+- [iOS] Fix player status property always returning `undefined` on iOS. ([#29505](https://github.com/expo/expo/pull/29505) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
