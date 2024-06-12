@@ -50,7 +50,8 @@ public final class ImageModule: Module {
       }
 
       Prop("blurRadius") { (view, blurRadius: Double?) in
-        view.blurRadius = blurRadius ?? .zero
+        let radius = blurRadius ?? .zero
+        view.blurRadius = radius / 2.0
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in
