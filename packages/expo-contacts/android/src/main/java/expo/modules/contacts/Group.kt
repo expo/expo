@@ -4,8 +4,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract.Groups
-import android.provider.ContactsContract.CommonDataKinds
-import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.text.TextUtils
 import java.text.ParseException
 

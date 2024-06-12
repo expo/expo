@@ -338,7 +338,7 @@ class ContactsModule : Module() {
 
       if (getGroupById(groupId) != null) {
         val selection = "${ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID} = ? AND " +
-                "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?"
+          "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?"
         val selectionArgs = arrayOf(contactId, groupId)
         val uri: Uri = ContactsContract.Data.CONTENT_URI
         val rowsDeleted = resolver.delete(uri, selection, selectionArgs)

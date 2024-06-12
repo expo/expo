@@ -467,7 +467,7 @@ export type FormOptions = {
 };
 /**
  * Used to query native contact groups.
-*/
+ */
 export type GroupQuery = {
     /**
      * Query the group with a matching ID.
