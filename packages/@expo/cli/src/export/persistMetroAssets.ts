@@ -88,16 +88,10 @@ export async function persistMetroAssetsAsync(
         const src = asset.files[idx];
         const dest = getAssetLocalPath(asset, { platform, scale, baseUrl });
         if (files) {
-          const assetId =
-            'fileSystemLocation' in asset
-              ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
-                (asset.type ? '.' + asset.type : '')
-              : undefined;
-
           const data = await fs.promises.readFile(src);
           files.set(dest, {
             contents: data,
-            assetId,
+            assetId: getAssetIdForLogGrouping(projectRoot, asset),
             targetDomain: platform === 'web' ? 'client' : undefined,
           });
         } else {
@@ -110,6 +104,16 @@ export async function persistMetroAssetsAsync(
   if (!files) {
     await copyInBatchesAsync(batches);
   }
+}
+
+export function getAssetIdForLogGrouping(
+  projectRoot: string,
+  asset: Partial<Pick<AssetData, 'fileSystemLocation' | 'name' | 'type'>>
+): string | undefined {
+  return 'fileSystemLocation' in asset && asset.fileSystemLocation != null && asset.name != null
+    ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
+        (asset.type ? '.' + asset.type : '')
+    : undefined;
 }
 
 function writeImageSet(imageSet: ImageSet): void {
