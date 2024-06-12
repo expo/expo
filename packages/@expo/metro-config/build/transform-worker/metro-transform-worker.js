@@ -118,6 +118,8 @@ class InvalidRequireCallError extends Error {
     }
 }
 async function transformJS(file, { config, options, projectRoot }) {
+    // const targetEnv = options.customTransformOptions?.environment;
+    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -243,6 +245,9 @@ async function transformJS(file, { config, options, projectRoot }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
+                // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+                // This requires a patch to Metro collectDeps.
+                // allowArbitraryImport: isServerEnv,
             };
             ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
         }
@@ -299,6 +304,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 lineCount: (0, countLines_1.default)(code),
                 map,
                 functionMap: file.functionMap,
+                reactClientReference: file.reactClientReference,
             },
             type: file.type,
         },
@@ -318,6 +324,7 @@ async function transformAsset(file, context) {
         type: 'js/module/asset',
         ast: result.ast,
         functionMap: null,
+        reactClientReference: result.reactClientReference,
     };
     return transformJS(jsFile, context);
 }
@@ -348,6 +355,7 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        reactClientReference: transformResult.metadata?.reactClientReference,
     };
     return await transformJS(jsFile, context);
 }
