@@ -53,12 +53,6 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
   // This is used only for sending events and keeping the reference to the video source for the
   // VideoManager, which holds weak references. Changing this will not affect the player.
   var videoSource: VideoSource? = source
-    set(videoSource) {
-      if (field != videoSource) {
-        sendEventOnJSThread("sourceChange", videoSource, field)
-      }
-      field = videoSource
-    }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
@@ -124,7 +118,9 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
       val newVideoSource = VideoManager.getVideoSourceFromMediaItem(mediaItem)
+      val oldVideoSource = this@VideoPlayer.videoSource
       this@VideoPlayer.videoSource = newVideoSource
+      sendEventOnJSThread("sourceChange", newVideoSource, oldVideoSource)
       this@VideoPlayer.duration = 0f
       this@VideoPlayer.isLive = false
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
