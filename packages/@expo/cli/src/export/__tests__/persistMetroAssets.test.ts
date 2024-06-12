@@ -71,6 +71,12 @@ describe(persistMetroAssetsAsync, () => {
         'assets/input/asset@3x.png',
       ]);
 
+      expect(files.get('assets/input/asset.png')).toEqual({
+        assetId: expect.stringContaining('input/asset.png'),
+        contents: expect.any(Buffer),
+        targetDomain: undefined,
+      });
+
       expect(Object.keys(vol.toJSON())).toEqual([
         '/input/a.png',
         '/input/a@2x.png',
