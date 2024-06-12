@@ -1,3 +1,4 @@
+import { ensureNativeModulesAreInstalled } from 'expo-modules-core/build/ensureNativeModulesAreInstalled';
 import { useMemo } from 'react';
 
 import type {
@@ -27,10 +28,13 @@ export function getSourceUri(source: VideoSource): string | null {
   return source?.uri ?? null;
 }
 
-export default class VideoPlayerWeb
-  extends globalThis.expo.SharedObject<VideoPlayerEvents>
-  implements VideoPlayer
-{
+const getVideoPlayerEventObject = (): typeof globalThis.expo.SharedObject<VideoPlayerEvents> => {
+  ensureNativeModulesAreInstalled();
+  return globalThis.expo.SharedObject as typeof globalThis.expo.SharedObject<VideoPlayerEvents>;
+};
+const VideoPlayerEventObject = getVideoPlayerEventObject();
+
+export default class VideoPlayerWeb extends VideoPlayerEventObject implements VideoPlayer {
   constructor(source: VideoSource) {
     super();
     this.src = source;

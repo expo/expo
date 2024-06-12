@@ -1,7 +1,8 @@
 import type { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
-export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
+declare const VideoPlayerEventObject: typeof globalThis.expo.SharedObject<VideoPlayerEvents>;
+export default class VideoPlayerWeb extends VideoPlayerEventObject implements VideoPlayer {
     constructor(source: VideoSource);
     src: VideoSource;
     _mountedVideos: Set<HTMLVideoElement>;
@@ -42,4 +43,5 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     _addListeners(video: HTMLVideoElement): void;
 }
+export {};
 //# sourceMappingURL=VideoPlayer.web.d.ts.map
