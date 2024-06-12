@@ -20,6 +20,7 @@ function mapStyles(style) {
 export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
     const mediaNodeRef = useRef(null);
+    const hasToSetupAudioContext = useRef(false);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
      * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -39,42 +40,68 @@ export const VideoView = forwardRef((props, ref) => {
             document.exitFullscreen();
         },
     }));
-    useEffect(() => {
+    function mountAudioNodes() {
         const audioContext = audioContextRef.current;
         const zeroGainNode = zeroGainNodeRef.current;
         const mediaNode = mediaNodeRef.current;
-        if (videoRef.current) {
-            props.player?.mountVideoView(videoRef.current);
-        }
         if (audioContext && zeroGainNode && mediaNode) {
             props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
         }
         else {
             console.warn("Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player.");
         }
+    }
+    function unmountAudioNodes() {
+        const audioContext = audioContextRef.current;
+        const mediaNode = mediaNodeRef.current;
+        if (audioContext && mediaNode && videoRef.current) {
+            props.player.unmountAudioNode(videoRef.current, audioContext, mediaNode);
+        }
+    }
+    function maybeSetupAudioContext() {
+        if (!hasToSetupAudioContext.current ||
+            !navigator.userActivation.hasBeenActive ||
+            !videoRef.current) {
+            return;
+        }
+        const audioContext = createAudioContext();
+        unmountAudioNodes();
+        audioContextRef.current = audioContext;
+        zeroGainNodeRef.current = createZeroGainNode(audioContextRef.current);
+        mediaNodeRef.current = audioContext
+            ? audioContext.createMediaElementSource(videoRef.current)
+            : null;
+        mountAudioNodes();
+        hasToSetupAudioContext.current = false;
+    }
+    useEffect(() => {
+        if (videoRef.current) {
+            props.player?.mountVideoView(videoRef.current);
+        }
+        mountAudioNodes();
         return () => {
             if (videoRef.current) {
                 props.player?.unmountVideoView(videoRef.current);
             }
-            if (videoRef.current && audioContext && mediaNode) {
-                props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
-            }
+            unmountAudioNodes();
         };
     }, [props.player]);
     return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{
             ...mapStyles(props.style),
             objectFit: props.contentFit,
+        }} onPlay={() => {
+            maybeSetupAudioContext();
+        }} 
+    // The player can autoplay when muted, unmuting by a user should create the audio context
+    onVolumeChange={() => {
+            maybeSetupAudioContext();
         }} ref={(newRef) => {
             // This is called with a null value before `player.unmountVideoView` is called,
             // we can't assign null to videoRef if we want to unmount it from the player.
             if (newRef && !newRef.isEqualNode(videoRef.current)) {
                 videoRef.current = newRef;
-                const audioContext = createAudioContext();
-                audioContextRef.current = audioContext;
-                zeroGainNodeRef.current = createZeroGainNode(audioContextRef.current);
-                mediaNodeRef.current = audioContext
-                    ? audioContext.createMediaElementSource(newRef)
-                    : null;
+                hasToSetupAudioContext.current = true;
+                maybeSetupAudioContext();
             }
         }} src={getSourceUri(props.player?.src) ?? ''}/>);
 });

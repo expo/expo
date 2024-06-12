@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `AudioContext` being created before user interaction causing playback issues. ([#29695](https://github.com/expo/expo/pull/29695) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 1.2.0 - 2024-06-20
