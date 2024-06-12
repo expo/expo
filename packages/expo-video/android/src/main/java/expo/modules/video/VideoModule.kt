@@ -271,7 +271,7 @@ class VideoModule : Module() {
         }
 
         appContext.mainQueue.launch {
-          ref.videoSource = videoSource
+          ref.uncommittedSource = videoSource
           if (VideoManager.isVideoPlayerAttachedToView(ref)) {
             ref.prepare()
           }

@@ -50,9 +50,14 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
       field = value
     }
 
-  // This is used only for sending events and keeping the reference to the video source for the
-  // VideoManager, which holds weak references. Changing this will not affect the player.
-  var videoSource: VideoSource? = source
+  var uncommittedSource: VideoSource? = source
+  private var lastLoadedSource: VideoSource? = null
+    set(value) {
+      if (field != value && value != null) {
+        sendEventOnJSThread("sourceChange", value, field)
+      }
+      field = value
+    }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
@@ -117,10 +122,6 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      val newVideoSource = VideoManager.getVideoSourceFromMediaItem(mediaItem)
-      val oldVideoSource = this@VideoPlayer.videoSource
-      this@VideoPlayer.videoSource = newVideoSource
-      sendEventOnJSThread("sourceChange", newVideoSource, oldVideoSource)
       this@VideoPlayer.duration = 0f
       this@VideoPlayer.isLive = false
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
@@ -218,7 +219,8 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
       player.removeListener(playerListener)
       player.release()
     }
-    videoSource = null
+    uncommittedSource = null
+    lastLoadedSource = null
   }
 
   override fun deallocate() {
@@ -233,11 +235,12 @@ class VideoPlayer(context: Context, appContext: AppContext, source: VideoSource?
   }
 
   fun prepare() {
-    videoSource?.let { videoSource ->
+    uncommittedSource?.let { videoSource ->
       val mediaItem = videoSource.toMediaItem()
-      VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
       player.setMediaItem(mediaItem)
       player.prepare()
+      lastLoadedSource = videoSource
+      uncommittedSource = null
     } ?: run {
       player.removeMediaItem(0)
       player.prepare()
