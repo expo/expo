@@ -211,7 +211,7 @@ class ExpoCameraView(
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-    
+
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
