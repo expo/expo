@@ -765,9 +765,9 @@ describe('serializes', () => {
     expect(artifacts.map((art) => art.filename)).toEqual([
       '_expo/static/js/web/index-7dc6e73b19cad01f360b7d820c351f6c.js',
       '_expo/static/js/web/index-c054379d08b2cfa157d6fc1caa8f4802.js',
-      '_expo/static/js/web/[foo]-8da94e949dff8f4bf13e6e6c77d68d3f.js',
-      '_expo/static/js/web/{foo}-8da94e949dff8f4bf13e6e6c77d68d3f.js',
-      '_expo/static/js/web/+foo-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/_foo_-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/_foo_-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/_foo-8da94e949dff8f4bf13e6e6c77d68d3f.js',
     ]);
 
     // Split bundle
