@@ -32,6 +32,9 @@ class JavaScriptModuleObject(
     jniDeallocator.addReference(this)
   }
 
+  val isValid: Boolean
+    get() = mHybridData.isValid
+
   fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
     val constants = definition.constantsProvider()
     val convertedConstants = Arguments.makeNativeMap(constants)

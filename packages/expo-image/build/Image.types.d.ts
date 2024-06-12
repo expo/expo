@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
@@ -306,6 +306,7 @@ export interface ImageNativeProps extends ImageProps {
     transition?: ImageTransition | null;
     autoplay?: boolean;
     nativeViewRef?: React.RefObject<ExpoImage>;
+    containerViewRef?: React.RefObject<View>;
 }
 /**
  * A value that represents the relative position of a single axis.

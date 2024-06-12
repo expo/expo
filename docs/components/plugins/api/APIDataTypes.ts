@@ -156,6 +156,8 @@ export type MethodSignatureData = {
   parameters: MethodParamData[];
   comment: CommentData;
   type: TypeDefinitionData;
+  kind?: TypeDocKind;
+  typeParameter?: TypeParameterData[];
 };
 
 // Properties section
@@ -209,10 +211,10 @@ export type TypeDeclarationContentData = {
   comment?: CommentData;
 };
 
-export type TypeSignaturesData = {
-  name?: string;
-  comment?: CommentData;
-  parameters?: MethodParamData[];
-  type: TypeDefinitionData;
-  kind?: TypeDocKind;
+export type TypeSignaturesData = Partial<MethodSignatureData>;
+
+export type TypeParameterData = {
+  name: string;
+  kind: TypeDocKind;
+  variant: string;
 };

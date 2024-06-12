@@ -278,15 +278,16 @@ for more details.
       </div>
     </blockquote>
     <div>
-      <div
-        class="css-1mhr9hc-APISectionProps"
+      <p
+        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        data-text="true"
       >
-        <h4
-          class="group css-1725pab-TextComponent"
-          data-heading="true"
+        <span
+          class="group css-11zd19b-TextComponent"
+          data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -320,8 +321,8 @@ for more details.
               />
             </svg>
           </a>
-        </h4>
-      </div>
+        </span>
+      </p>
     </div>
     <div
       class="[&>*:last-child]:!mb-0"
@@ -6319,15 +6320,16 @@ for more details.
       </code>
     </p>
     <div>
-      <div
-        class="css-1mhr9hc-APISectionProps"
+      <p
+        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        data-text="true"
       >
-        <h4
-          class="group css-1725pab-TextComponent"
-          data-heading="true"
+        <span
+          class="group css-11zd19b-TextComponent"
+          data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
             href="#barcodescannerprops"
             id="barcodescannerprops"
           >
@@ -6361,8 +6363,8 @@ for more details.
               />
             </svg>
           </a>
-        </h4>
-      </div>
+        </span>
+      </p>
     </div>
     <div
       class="[&>*:last-child]:!mb-0"
@@ -8421,9 +8423,16 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-1ac5bb0-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
+      <span
+        class="css-1mm9j88-TextComponent"
+        data-text="true"
+      >
+        Type:
+         
+      </span>
       <code
         class="text-default css-ite7ne-TextComponent"
         data-text="true"
@@ -8436,8 +8445,13 @@ in order to enable/disable the permission.
         </a>
       </code>
        
-      extended by
-      :
+      <span
+        class="css-1ac5bb0-TextComponent"
+        data-text="true"
+      >
+        extended by
+        :
+      </span>
     </p>
     <br />
     <div
@@ -9390,7 +9404,7 @@ you don't get this value.
       multiple types
     </p>
     <p
-      class="css-1kfqm4n-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
       <span
@@ -11411,7 +11425,7 @@ in order to enable/disable the permission.
       Permission expiration time. Currently, all permissions are granted permanently.
     </p>
     <p
-      class="css-1kfqm4n-TextComponent"
+      class="css-1yjys1n-TextComponent"
       data-text="true"
     >
       <span

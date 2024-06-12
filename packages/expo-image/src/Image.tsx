@@ -1,4 +1,4 @@
-import { createSnapshotFriendlyRef } from 'expo-modules-core';
+import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -11,11 +11,21 @@ let loggedDefaultSourceDeprecationWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
-
+  containerViewRef;
   constructor(props) {
     super(props);
     this.nativeViewRef = createSnapshotFriendlyRef();
+    this.containerViewRef = createSnapshotFriendlyRef();
   }
+
+  // Reanimated support on web
+  getAnimatableRef = () => {
+    if (Platform.OS === 'web') {
+      return this.containerViewRef.current;
+    } else {
+      return this;
+    }
+  };
 
   /**
    * Preloads images at the given URLs that can be later used in the image view.
@@ -169,6 +179,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         nativeViewRef={this.nativeViewRef}
+        containerViewRef={this.containerViewRef}
       />
     );
   }

@@ -8,6 +8,7 @@
 
 - Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
+- Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
 

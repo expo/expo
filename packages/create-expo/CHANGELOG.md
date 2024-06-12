@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.0 — 2024-06-10
+
+### 🛠 Breaking changes
+
 - Bump minimum required Node version to `18.13.0`. ([#29422](https://github.com/expo/expo/pull/29422) by [@byCedric](https://github.com/byCedric))
 - Removed `node-fetch` in favor of Node's built-in `fetch`. ([#29422](https://github.com/expo/expo/pull/29422) by [@byCedric](https://github.com/byCedric))
 
