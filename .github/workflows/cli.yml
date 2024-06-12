@@ -117,7 +117,14 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
+        if: ${{ runner.os != 'Windows' }}
         run: yarn install --prefer-offline --frozen-lockfile
+        env:
+          YARN_IGNORE_SCRIPTS: true
+
+      - name: 🧶 Install node modules in root dir (Windows network fix)
+        if: ${{ runner.os == 'Windows' }}
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 100000
         env:
           YARN_IGNORE_SCRIPTS: true
       
