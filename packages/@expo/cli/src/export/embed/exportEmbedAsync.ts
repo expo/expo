@@ -128,7 +128,9 @@ export async function exportEmbedBundleAndAssetsAsync(
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
       {
-        sourceMapUrl,
+        // TODO(cedric): temporarily disable the incorrect source map basename generation.
+        // This unblocks people from issue #29656 while we can revalidate this later.
+        // sourceMapUrl,
         unstable_transformProfile: (options.unstableTransformProfile ||
           (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
       }
