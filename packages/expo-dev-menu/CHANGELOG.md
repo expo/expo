@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client.
+- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
