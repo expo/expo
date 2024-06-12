@@ -100,7 +100,6 @@ public class AudioModule: Module {
 
       Property("playing") { player in
         player.playing
-
       }
 
       Property("mute") { player in
