@@ -93,11 +93,13 @@ JSIContext::JSIContext(jni::alias_ref<jhybridobject> jThis)
   : javaPart_(jni::make_global(jThis)) {}
 
 JSIContext::~JSIContext() {
-  unbindJSIContext(runtimeHolder->get());
-  // The runtime would be deallocated automatically.
-  // However, we need to enforce the order of deallocations.
-  // The runtime has to be deallocated before the JNI part.
-  runtimeHolder.reset();
+  if (runtimeHolder) {
+    unbindJSIContext(runtimeHolder->get());
+    // The runtime would be deallocated automatically.
+    // However, we need to enforce the order of deallocations.
+    // The runtime has to be deallocated before the JNI part.
+    runtimeHolder.reset();
+  }
 }
 
 void JSIContext::installJSI(
