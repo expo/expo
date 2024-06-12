@@ -219,22 +219,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
-    const { mode, minify, isExporting } = this.instanceMetroOptions;
-    assert(
-      mode != null && isExporting != null,
-      'The server must be started before calling ssrLoadModule.'
-    );
-
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js',
-        {
-          minify,
-          mode,
-          isExporting,
-        }
+        'expo-router/node/render.js'
       );
 
     const { exp } = getConfig(this.projectRoot);
@@ -257,13 +246,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
   } = {}) {
-    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
+        reactCompiler != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticResourcesAsync.'
     );
@@ -278,7 +268,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify,
       environment: 'client',
-      serializerOutput: 'static',
       serializerIncludeMaps: includeSourceMaps,
       mainModuleName: resolvedMainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
@@ -286,16 +275,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       isExporting,
       routerRoot,
+      reactCompiler,
       bytecode: false,
     });
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
+        reactCompiler != null &&
         routerRoot != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
@@ -307,6 +299,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       mode,
       environment: 'client',
+      reactCompiler,
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
@@ -355,12 +348,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<T> {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
-    return await evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
+    return evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
   private async metroImportAsArtifactsAsync(
     filePath: string,
-    specificOptions: Partial<ExpoMetroOptions> = {}
+    specificOptions: Partial<Omit<ExpoMetroOptions, 'serializerOutput'>> = {}
   ) {
     const results = await this.ssrLoadModuleContents(filePath, {
       serializerOutput: 'static',
@@ -496,15 +489,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode: 'development',
       //
       ...this.instanceMetroOptions,
+
+      // Mostly disable compiler in SSR bundles.
+      reactCompiler: false,
       baseUrl,
       routerRoot,
       isExporting,
+
       ...specificOptions,
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     const scriptContents = wrapBundle(bundle);
+
     if (map) {
       debug('Registering SSR source map for:', filename);
       cachedSourceMaps.set(filename, { url: this.projectRoot, map });
@@ -552,6 +550,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
+
     return {
       artifacts: output.artifacts!,
       assets: output.assets!,
@@ -589,10 +588,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
-  getExpoLineOptions() {
-    return this.instanceMetroOptions;
-  }
-
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -605,6 +600,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
+    const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
@@ -613,6 +609,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       mode,
       routerRoot,
+      reactCompiler,
       minify: options.minify,
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
@@ -632,105 +629,108 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions,
       {
         isExporting: !!options.isExporting,
+        exp,
       }
     );
 
-    const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
+    if (!options.isExporting) {
+      const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
-    // Important that we noop source maps for context modules as soon as possible.
-    prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
+      // Important that we noop source maps for context modules as soon as possible.
+      prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
 
-    // We need the manifest handler to be the first middleware to run so our
-    // routes take precedence over static files. For example, the manifest is
-    // served from '/' and if the user has an index.html file in their project
-    // then the manifest handler will never run, the static middleware will run
-    // and serve index.html instead of the manifest.
-    // https://github.com/expo/expo/issues/13114
-    prependMiddleware(middleware, manifestMiddleware.getHandler());
+      // We need the manifest handler to be the first middleware to run so our
+      // routes take precedence over static files. For example, the manifest is
+      // served from '/' and if the user has an index.html file in their project
+      // then the manifest handler will never run, the static middleware will run
+      // and serve index.html instead of the manifest.
+      // https://github.com/expo/expo/issues/13114
+      prependMiddleware(middleware, manifestMiddleware.getHandler());
 
-    middleware.use(
-      new InterstitialPageMiddleware(this.projectRoot, {
-        // TODO: Prevent this from becoming stale.
-        scheme: options.location.scheme ?? null,
-      }).getHandler()
-    );
-    middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
-    middleware.use(
-      new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
-    );
+      middleware.use(
+        new InterstitialPageMiddleware(this.projectRoot, {
+          // TODO: Prevent this from becoming stale.
+          scheme: options.location.scheme ?? null,
+        }).getHandler()
+      );
+      middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
+      middleware.use(
+        new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
+      );
 
-    const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-      onDeepLink: getDeepLinkHandler(this.projectRoot),
-      getLocation: ({ runtime }) => {
-        if (runtime === 'custom') {
-          return this.urlCreator?.constructDevClientUrl();
-        } else {
-          return this.urlCreator?.constructUrl({
-            scheme: 'exp',
-          });
-        }
-      },
-    });
-    middleware.use(deepLinkMiddleware.getHandler());
+      const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
+        onDeepLink: getDeepLinkHandler(this.projectRoot),
+        getLocation: ({ runtime }) => {
+          if (runtime === 'custom') {
+            return this.urlCreator?.constructDevClientUrl();
+          } else {
+            return this.urlCreator?.constructUrl({
+              scheme: 'exp',
+            });
+          }
+        },
+      });
+      middleware.use(deepLinkMiddleware.getHandler());
 
-    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+      middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
-    // Append support for redirecting unhandled requests to the index.html page on web.
-    if (this.isTargetingWeb()) {
-      // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
-      middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+      // Append support for redirecting unhandled requests to the index.html page on web.
+      if (this.isTargetingWeb()) {
+        // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
+        middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
-      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+        // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+        middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
-      if (useServerRendering) {
-        middleware.use(
-          createRouteHandlerMiddleware(this.projectRoot, {
-            appDir,
-            routerRoot,
-            config,
-            ...config.exp.extra?.router,
-            bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
-            getStaticPageAsync: (pathname) => {
-              return this.getStaticPageAsync(pathname);
+        if (useServerRendering) {
+          middleware.use(
+            createRouteHandlerMiddleware(this.projectRoot, {
+              appDir,
+              routerRoot,
+              config,
+              ...config.exp.extra?.router,
+              bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
+              getStaticPageAsync: (pathname) => {
+                return this.getStaticPageAsync(pathname);
+              },
+            })
+          );
+
+          observeAnyFileChanges(
+            {
+              metro,
+              server,
             },
-          })
-        );
-
-        observeAnyFileChanges(
-          {
-            metro,
-            server,
-          },
-          (events) => {
-            if (exp.web?.output === 'server') {
-              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-              // aggressively to ensure we always have the latest. The only caching we really get here is for
-              // cases where the user is making subsequent requests to the same API route without changing anything.
-              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-              // up for a lot of the overhead.
-              this.invalidateApiRouteCache();
-            } else if (!hasWarnedAboutApiRoutes()) {
-              for (const event of events) {
-                if (
-                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
-                  // API Routes are not enabled in the project.
-                  event.metadata?.type !== 'd' &&
-                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
-                  event.filePath.startsWith(appDir) &&
-                  isApiRouteConvention(event.filePath)
-                ) {
-                  warnInvalidWebOutput();
+            (events) => {
+              if (exp.web?.output === 'server') {
+                // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+                // aggressively to ensure we always have the latest. The only caching we really get here is for
+                // cases where the user is making subsequent requests to the same API route without changing anything.
+                // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+                // up for a lot of the overhead.
+                this.invalidateApiRouteCache();
+              } else if (!hasWarnedAboutApiRoutes()) {
+                for (const event of events) {
+                  if (
+                    // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                    // API Routes are not enabled in the project.
+                    event.metadata?.type !== 'd' &&
+                    // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                    event.filePath.startsWith(appDir) &&
+                    isApiRouteConvention(event.filePath)
+                  ) {
+                    warnInvalidWebOutput();
+                  }
                 }
               }
             }
-          }
-        );
-      } else {
-        // This MUST run last since it's the fallback.
-        middleware.use(
-          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
-        );
+          );
+        } else {
+          // This MUST run last since it's the fallback.
+          middleware.use(
+            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          );
+        }
       }
     }
     // Extend the close method to ensure that we clean up the local info.
@@ -886,7 +886,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const htmlServerError = await getErrorOverlayHtmlAsync({
             error,
             projectRoot: this.projectRoot,
-            routerRoot: this.getExpoLineOptions().routerRoot!,
+            routerRoot: this.instanceMetroOptions.routerRoot!,
           });
 
           return new Response(htmlServerError, {

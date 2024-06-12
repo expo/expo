@@ -5,6 +5,7 @@ description: Learn how to submit your app to the Google Play Store from your com
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 This guide outlines how to submit your app to the Google Play Store from your own computer and from CI.
 
@@ -26,11 +27,13 @@ Before using `eas submit -p android` for uploading your builds, you have to uplo
 
 For more information, see [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission).
 
-## 1. Build a standalone app
+<Step label="1">
+## Build a standalone app
 
 You'll need a native app binary signed for store submission. You can either use [EAS Build](/build/introduction.mdx) or do it on your own.
-
-## 2. Start the submission
+</Step>
+<Step label="2">
+## Start the submission
 
 To submit the binary to the Play Store, run `eas submit -p android` from inside your project directory. The command will lead you step by step through the process of submitting the app. See the [Configuration with eas.json](./eas-json.mdx) page to learn how to pre-configure your submission.
 
@@ -54,6 +57,7 @@ The command will perform the following steps:
 - Unless `serviceAccountKeyPath` is provided in **eas.json**, you will be prompted for the path to your Google Services JSON key.
 - The summary of provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on Google Play Console. If something goes wrong, an appropriate message is displayed on the screen.
+</Step>
 
 ## Submitting your app using CI
 

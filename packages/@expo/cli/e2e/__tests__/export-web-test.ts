@@ -6,7 +6,13 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -56,7 +62,7 @@ it('runs `npx expo export:web --help`', async () => {
 it(
   'runs `npx expo export:web`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-export-web', 'with-web');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export-web', 'with-web');
     // `npx expo export:web`
     await execa('node', [bin, 'export:web'], {
       cwd: projectRoot,

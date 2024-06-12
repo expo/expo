@@ -81,10 +81,10 @@ export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
+    exp,
     isExporting,
     getMetroBundler,
-  }: { exp?: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
+  }: { exp: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
@@ -132,6 +132,10 @@ export async function loadMetroConfigAsync(
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
+  if (exp.experiments?.reactCompiler) {
+    Log.warn(`Experimental React Compiler is enabled.`);
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
@@ -159,7 +163,12 @@ export async function loadMetroConfigAsync(
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
   options: Omit<LoadOptions, 'logger'>,
-  { isExporting }: { isExporting: boolean }
+  {
+    isExporting,
+    exp = getConfig(metroBundler.projectRoot, {
+      skipSDKVersionRequirement: true,
+    }).exp,
+  }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;
@@ -167,11 +176,6 @@ export async function instantiateMetroAsync(
   messageSocket: MessageSocket;
 }> {
   const projectRoot = metroBundler.projectRoot;
-
-  // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
-  const { exp } = getConfig(projectRoot, {
-    skipSDKVersionRequirement: true,
-  });
 
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
@@ -194,31 +198,38 @@ export async function instantiateMetroAsync(
       watchFolders: metroConfig.watchFolders,
     });
 
-  // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
-  replaceMiddlewareWith(
-    middleware as ConnectServer,
-    securityHeadersMiddleware,
-    createCorsMiddleware(exp)
-  );
+  let debugWebsocketEndpoints: {
+    [path: string]: import('ws').WebSocketServer;
+  } = {};
 
-  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+  if (!isExporting) {
+    // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
+    replaceMiddlewareWith(
+      middleware as ConnectServer,
+      securityHeadersMiddleware,
+      createCorsMiddleware(exp)
+    );
 
-  // TODO: We can probably drop this now.
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // @ts-expect-error: can't mutate readonly config
-  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
-    if (customEnhanceMiddleware) {
-      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
-    }
-    return middleware.use(metroMiddleware);
-  };
+    prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
-  middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
+    // TODO: We can probably drop this now.
+    const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+    // @ts-expect-error: can't mutate readonly config
+    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+      if (customEnhanceMiddleware) {
+        metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
+      }
+      return middleware.use(metroMiddleware);
+    };
 
-  // Initialize all React Native debug features
-  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
-  prependMiddleware(middleware, debugMiddleware);
-  middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+    middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
+
+    // Initialize all React Native debug features
+    const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);
+    debugWebsocketEndpoints = options.debugWebsocketEndpoints;
+    prependMiddleware(middleware, debugMiddleware);
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+  }
 
   // Attach Expo Atlas if enabled
   const atlas = await attachAtlasAsync({

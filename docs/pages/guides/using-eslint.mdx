@@ -94,16 +94,20 @@ You can lint your code manually from the command line with the `expo lint` scrip
 
 Running the above command will run the `lint` script from **package.json**.
 
-```sh
-# Example output for npx expo lint command
-> npm run eslint .
-$ /app/node_modules/.bin/eslint .
-
-/app/components/HelloWave.tsx
-  22:6 warning React Hook useEffect has a missing dependency: 'rotateAnimation'. Either include it or remove the dependency array react-hooks/exhaustive-deps
-
-✖ 1 problem (0 errors, 1 warning)
-```
+<Terminal
+  cmd={[
+    '# Example output for npx expo lint command',
+    '',
+    '$ npm run eslint .',
+    '/app/node_modules/.bin/eslint .',
+    '',
+    '/app/components/HelloWave.tsx',
+    '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
+    '       Either include it or remove the dependency array react-hooks/exhaustive-deps',
+    '',
+    '✖ 1 problem (0 errors, 1 warning)',
+  ]}
+/>
 
 </Tab>
 

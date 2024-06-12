@@ -45,7 +45,16 @@ class KModuleEventEmitterWrapper(
 
   private fun emitNative(eventName: String, eventBody: ReadableNativeMap?) {
     val appContext = moduleHolder.module.appContext
-    moduleHolder.jsObject.emitEvent(appContext.jsiInterop, eventName, eventBody)
+    val jsObject = moduleHolder.safeJSObject ?: return
+    try {
+      jsObject.emitEvent(appContext.jsiInterop, eventName, eventBody)
+    } catch (e: Exception) {
+      // If the jsObject is valid, we should throw an exception.
+      // Otherwise, we should ignore it.
+      if (jsObject.isValid) {
+        throw e
+      }
+    }
   }
 
   private fun checkIfEventWasExported(eventName: String) {

@@ -9,6 +9,7 @@ import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.graphics.drawable.ColorDrawable
 import android.hardware.camera2.CameraCharacteristics
+import android.media.AudioManager
 import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
@@ -209,11 +210,16 @@ class ExpoCameraView(
   }
 
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
+    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureStarted() {
-          MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
+          if (volume != 0) {
+            MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
+          }
           if (!animateShutter) {
             return
           }

@@ -56,9 +56,8 @@ The `createIconSet` method returns a custom font based on the `glyphMap` where t
 
 In the example below, the `glyphMap` object is defined and then passed as the first argument to the `createIconSet` method. The second argument `fontFamily` is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
 
-```jsx
+```jsx createIconSet example
 import * as React from 'react';
-import * as Font from 'expo-font';
 import { createIconSet } from '@expo/vector-icons';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };
@@ -136,7 +135,7 @@ The `createIconSetFromFontello` method is used to create a custom font based on 
 
 It follows a similar configuration as `createIconSetFromIcoMoon` as shown in the example:
 
-```js
+```js Fontello Icons
 // Import the createIconSetFromFontello method
 import { createIconSetFromFontello } from '@expo/vector-icons';
 
@@ -155,7 +154,12 @@ You can use the `Image` component from [Expo Image](/versions/latest/sdk/image/)
 <Tabs>
 
 <Tab label="Expo Image">
-
+<SnackInline
+  label='Usage with Expo Image'
+  dependencies={['expo-image']}
+  files={{
+    'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
+  }}>
 ```jsx collapseHeight=440
 import { Image } from 'expo-image';
 import { View, StyleSheet } from 'react-native';
@@ -176,16 +180,16 @@ const styles = StyleSheet.create({
   },
 });
 ```
+</SnackInline>
 
 </Tab>
 
 <Tab label="React Native Image">
 <SnackInline
-label='Icon images'
-files={{
+  label='Usage with React Native Image'
+  files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
-
 ```jsx
 import { Image, View, StyleSheet } from 'react-native';
 
@@ -205,7 +209,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
 </SnackInline>
 
 </Tab>
