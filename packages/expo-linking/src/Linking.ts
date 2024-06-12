@@ -88,6 +88,7 @@ export async function getInitialURL(): Promise<string | null> {
 export function getLinkingURL(): string | null {
   return ExpoLinking.getLinkingURL();
 }
+
 /**
  * Clear the URL that was used to launch the app if it was launched by a link.
  * @return The URL string that launched your app, or `null`.
