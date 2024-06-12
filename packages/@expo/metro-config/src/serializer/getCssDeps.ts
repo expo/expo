@@ -121,6 +121,6 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
   return getFileName(decoded) + '-' + hashString(src);
 }
 
-export function getFileName(module: string) {
+function getFileName(module: string) {
   return path.basename(module).replace(/\.[^.]+$/, '');
 }
