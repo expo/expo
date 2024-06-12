@@ -70,6 +70,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+  var launchUrl: String? = null
 
   //region helpers
 
@@ -223,7 +224,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       testInterceptor.overrideSettings()
         ?: DevMenuPreferencesHandle(reactContext)
       ).also {
-      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
         it.isOnboardingFinished = true
       }
     }.also {

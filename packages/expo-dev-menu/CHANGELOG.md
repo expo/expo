@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client.
+
 ### 💡 Others
 
 ## 5.0.14 — 2024-05-09
