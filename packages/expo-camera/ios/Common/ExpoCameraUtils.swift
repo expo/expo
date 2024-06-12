@@ -97,7 +97,7 @@ struct ExpoCameraUtils {
       return "unknown"
     }
   }
-  
+
   static func toExifOrientation(orientation: UIImage.Orientation) -> Int {
     switch orientation {
     case .up:
