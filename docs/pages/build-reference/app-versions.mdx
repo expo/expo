@@ -105,7 +105,7 @@ We recommend updating `version` field after a new build goes live in the store, 
 
 You can also configure your project so that the source of truth for project versions is the local project source code itself. Add `{ "cli": { "appVersionSource": "local" } }` in your **eas.json**. In this case, EAS does not write to the project, it reads the values and builds projects as they are.
 
-> **warning** The "remote" version source as a default behaviour has been introduced in `eas-cli` version `10.0.0`. If you are using an older version of CLI, you **don't need to specify the version source explicitly to "local"**.
+> **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `10.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
 
 You may opt in to auto incrementing versions locally with the `autoIncrement` option on a build profile, but it comes with some limitations.
 
