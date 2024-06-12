@@ -87,8 +87,8 @@
   "devDependencies": {
     "@react-navigation/drawer": "^6.5.0",
     "@testing-library/jest-native": "^5.4.2",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/react-native": "^12.0.1",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^12.5.1",
     "tsd": "^0.28.1",
     "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
     "immer": "^8"

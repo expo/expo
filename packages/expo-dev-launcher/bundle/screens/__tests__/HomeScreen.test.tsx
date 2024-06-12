@@ -40,12 +40,18 @@ describe('<HomeScreen />', () => {
 
   test('displays instructions on starting DevSession when none are found', async () => {
     const { getByText } = renderHomeScreen({ initialDevSessions: [] });
-    await waitFor(() => getByText(devSessionInstructionsRegex));
+
+    await act(async () => {
+      await waitFor(() => getByText(devSessionInstructionsRegex));
+    });
   });
 
   test('displays refetch button', async () => {
     const { getByText } = renderHomeScreen();
-    await waitFor(() => getByText(refetchDevSessionsRegex));
+
+    await act(async () => {
+      await waitFor(() => getByText(refetchDevSessionsRegex));
+    });
   });
 
   test('fetching local DevSessions on mount', async () => {
@@ -71,11 +77,13 @@ describe('<HomeScreen />', () => {
     expect(() => getByText(fakeDevSessions[0].description)).toThrow();
     expect(getDevSessionsAsync).not.toHaveBeenCalled();
 
-    await refetch();
-    expect(getByText(fetchingDevSessionsRegex));
-    expect(getDevSessionsAsync).toHaveBeenCalled();
+    await act(async () => {
+      await refetch();
+      expect(getByText(fetchingDevSessionsRegex));
+      expect(getDevSessionsAsync).toHaveBeenCalled();
 
-    await waitFor(() => getByText(fakeDevSessions[0].description));
+      await waitFor(() => getByText(fakeDevSessions[0].description));
+    });
   });
 
   test('refetching enabled after polling is completed', async () => {
@@ -155,10 +163,10 @@ describe('<HomeScreen />', () => {
   });
 
   test('navigate to user profile', async () => {
-    const { getByA11yLabel } = renderHomeScreen();
+    const { getByLabelText } = renderHomeScreen();
     expect(fakeNavigation.navigate).not.toHaveBeenCalled();
 
-    const button = getByA11yLabel(/to user profile/i);
+    const button = getByLabelText(/to user profile/i);
 
     await act(async () => {
       fireEvent.press(button);

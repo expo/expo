@@ -43,7 +43,7 @@
     "@react-navigation/native": "6.0.13",
     "@react-navigation/stack": "6.3.2",
     "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^8.0.0",
+    "@testing-library/react-native": "^12.5.1",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~11.0.0",
     "date-fns": "^2.28.0",

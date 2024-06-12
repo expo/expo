@@ -57,13 +57,13 @@ describe('<UserProfileScreen />', () => {
 
   test('login button starts oauth session and fetches user profile', async () => {
     const sessionSecret = '321';
-    const { getByA11yLabel, getByText } = renderProfileScreen({ sessionSecret });
+    const { getByLabelText, getByText } = renderProfileScreen({ sessionSecret });
 
     expect(startAuthSessionAsync).not.toHaveBeenCalled();
     expect(getUserProfileAsync).not.toHaveBeenCalled();
 
     await act(async () => {
-      const loginButton = getByA11yLabel(/log in/i);
+      const loginButton = getByLabelText(/log in/i);
 
       expect(() => getByText(fakeAccounts[0].ownerUserActor!.username)).toThrow();
 
@@ -83,13 +83,13 @@ describe('<UserProfileScreen />', () => {
   });
 
   test('signup button starts oauth session and fetches user profile', async () => {
-    const { getByA11yLabel, getByText } = renderProfileScreen();
+    const { getByLabelText, getByText } = renderProfileScreen();
 
     expect(startAuthSessionAsync).not.toHaveBeenCalled();
     expect(getUserProfileAsync).not.toHaveBeenCalled();
 
     await act(async () => {
-      const signupButton = getByA11yLabel(/sign up/i);
+      const signupButton = getByLabelText(/sign up/i);
 
       expect(() => getByText(fakeAccounts[0].ownerUserActor!.username)).toThrow();
 
@@ -108,25 +108,25 @@ describe('<UserProfileScreen />', () => {
   });
 
   test('back button navigates to previous screen', async () => {
-    const { getByA11yLabel } = renderProfileScreen();
+    const { getByLabelText } = renderProfileScreen();
 
     expect(mockNavigation.goBack).not.toHaveBeenCalled();
 
     await act(async () => {
-      fireEvent.press(getByA11yLabel(/go back/i));
+      fireEvent.press(getByLabelText(/go back/i));
       expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
     });
   });
 
   test('displays multiple accounts', async () => {
-    const { getByA11yLabel, getByText } = renderProfileScreen();
+    const { getByLabelText, getByText } = renderProfileScreen();
 
     fakeAccounts.forEach((account) => {
       expect(() => getByText(account.ownerUserActor!.username)).toThrow();
     });
 
     await act(async () => {
-      const loginButton = getByA11yLabel(/log in/i);
+      const loginButton = getByLabelText(/log in/i);
       fireEvent.press(loginButton);
 
       await waitFor(() => getByText(fakeAccounts[0].ownerUserActor!.username));
@@ -138,9 +138,9 @@ describe('<UserProfileScreen />', () => {
   });
 
   test('pressing an account changes the selected account', async () => {
-    const { getByA11yLabel, getByText, getByTestId } = renderProfileScreen();
+    const { getByLabelText, getByText, getByTestId } = renderProfileScreen();
 
-    const loginButton = getByA11yLabel(/log in/i);
+    const loginButton = getByLabelText(/log in/i);
 
     await act(async () => {
       fireEvent.press(loginButton);
@@ -155,10 +155,10 @@ describe('<UserProfileScreen />', () => {
   });
 
   test('logout', async () => {
-    const { getByA11yLabel, getByText } = renderProfileScreen();
+    const { getByLabelText, getByText } = renderProfileScreen();
 
     await act(async () => {
-      const loginButton = getByA11yLabel(/log in/i);
+      const loginButton = getByLabelText(/log in/i);
       fireEvent.press(loginButton);
 
       const logoutButton = await waitFor(() => getByText(/log out/i));
@@ -167,7 +167,7 @@ describe('<UserProfileScreen />', () => {
       fireEvent.press(logoutButton);
 
       await waitFor(() => getByText(/are you sure you want to log out/i));
-      const button = getByA11yLabel(/log out/i);
+      const button = getByLabelText(/log out/i);
 
       fireEvent.press(button);
       expect(setSessionAsync).toHaveBeenCalledTimes(1);

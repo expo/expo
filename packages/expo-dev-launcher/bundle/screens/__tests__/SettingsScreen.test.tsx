@@ -22,15 +22,17 @@ describe('<SettingsScreen />', () => {
       showsAtLaunch: false,
     };
 
-    const { getByA11yLabel, findAllByA11yState } = render(<SettingsScreen />, {
+    const { getByLabelText, findAllByRole } = render(<SettingsScreen />, {
       initialAppProviderProps: { initialDevMenuPreferences: testPreferences },
     });
 
-    const showsAtLaunchButton = getByA11yLabel(/toggle showing menu/i);
-    expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
+    await act(async () => {
+      const showsAtLaunchButton = getByLabelText(/toggle showing menu/i);
+      expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
-    const activeCheckmarks = await findAllByA11yState({ checked: true });
-    expect(activeCheckmarks.length).toEqual(2);
+      const activeCheckmarks = await findAllByRole('button', { checked: true });
+      expect(activeCheckmarks.length).toEqual(2);
+    });
   });
 
   test('shows the correct settings on mount 2', async () => {
@@ -40,15 +42,17 @@ describe('<SettingsScreen />', () => {
       showsAtLaunch: true,
     };
 
-    const { getByA11yLabel, findAllByA11yState } = render(<SettingsScreen />, {
+    const { getByLabelText, findAllByRole } = render(<SettingsScreen />, {
       initialAppProviderProps: { initialDevMenuPreferences: testPreferences },
     });
 
-    const showsAtLaunchButton = getByA11yLabel(/toggle showing menu/i);
-    expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
+    await act(async () => {
+      const showsAtLaunchButton = getByLabelText(/toggle showing menu/i);
+      expect(showsAtLaunchButton.props.value).toBe(testPreferences.showsAtLaunch);
 
-    const activeCheckmarks = await findAllByA11yState({ checked: true });
-    expect(activeCheckmarks.length).toEqual(1);
+      const activeCheckmarks = await findAllByRole('button', { checked: true });
+      expect(activeCheckmarks.length).toEqual(1);
+    });
   });
 
   test('toggling shake device', async () => {
@@ -90,17 +94,17 @@ describe('<SettingsScreen />', () => {
   });
 
   test('toggling show menu at launch press', async () => {
-    const { getByA11yLabel } = render(<SettingsScreen />);
+    const { getByLabelText } = render(<SettingsScreen />);
 
     await act(async () => {
-      const toggle = getByA11yLabel(/toggle showing menu at launch/i);
+      const toggle = getByLabelText(/toggle showing menu at launch/i);
       fireEvent.press(toggle);
       expect(setMenuPreferencesAsync).toHaveBeenCalledTimes(1);
       expect(setMenuPreferencesAsync).toHaveBeenLastCalledWith({ showsAtLaunch: true });
     });
 
     await act(async () => {
-      const toggle = getByA11yLabel(/toggle showing menu at launch/i);
+      const toggle = getByLabelText(/toggle showing menu at launch/i);
       fireEvent.press(toggle);
 
       expect(setMenuPreferencesAsync).toHaveBeenCalledTimes(2);
@@ -141,7 +145,7 @@ describe('<SettingsScreen />', () => {
     getByText(fakeSDKVersion);
   });
 
-  test('copies app info to clipboard', () => {
+  test('copies app info to clipboard', async () => {
     const fakeRTV = 'TESTING FAKE RTV';
     const fakeSDKVersion = 'TESTING FAKE SDKVersion';
 
@@ -159,7 +163,10 @@ describe('<SettingsScreen />', () => {
     expect(copyToClipboardAsync).not.toHaveBeenCalled();
 
     const button = getByText(/tap to copy all/i);
-    fireEvent.press(button);
+
+    await act(async () => {
+      fireEvent.press(button);
+    });
 
     expect(copyToClipboardAsync).toHaveBeenCalled();
     expect(copyToClipboardAsync).toHaveBeenLastCalledWith(

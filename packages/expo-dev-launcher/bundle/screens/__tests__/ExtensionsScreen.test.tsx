@@ -100,11 +100,11 @@ describe.skip('<ExtensionsScreen />', () => {
       },
     });
 
-    const { getByA11yLabel } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByLabelText } = render(<ExtensionsScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      await waitFor(() => getByA11yLabel(/log in/i));
-      await waitFor(() => getByA11yLabel(/sign up/i));
+      await waitFor(() => getByLabelText(/log in/i));
+      await waitFor(() => getByLabelText(/sign up/i));
     });
   });
 
