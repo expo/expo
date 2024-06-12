@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed reload crash on Android. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.12.14 — 2024-06-06

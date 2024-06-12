@@ -7,6 +7,7 @@ import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -160,9 +161,9 @@ object UpdatesUtils {
     }
   }
 
-  fun sendEventToAppContext(
+  fun sendEvent(
+    eventEmitter: EventEmitter?,
     shouldEmitJsEvents: Boolean,
-    weakAppContext: WeakReference<AppContext>?,
     logger: UpdatesLogger,
     eventName: String,
     eventType: String,
@@ -176,24 +177,19 @@ object UpdatesUtils {
       logger.error("Could not emit $eventName $eventType event; no subscribers registered.", UpdatesErrorCode.JSRuntimeError)
       return
     }
-    val appContext = weakAppContext?.get() ?: run {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no app context was found.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-    val updatesModule = appContext.registry.getModule("ExpoUpdates") ?: run {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no ExpoUpdates module was found.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-    val eventEmitter = appContext.eventEmitter(updatesModule) ?: run {
+    if (eventEmitter == null) {
       eventsToSendToJS.add(Pair(eventName, eventParams))
       logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
       return
     }
 
     logger.info("Emitted event: name = $eventName, type = $eventType")
-    eventEmitter.emit(eventName, eventParams)
+    try {
+      eventEmitter.emit(eventName, eventParams)
+    } catch (e: Exception) {
+      logger.error("Could not emit $eventName $eventType event; ${e.message}", UpdatesErrorCode.JSRuntimeError)
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+    }
   }
 
   fun sendQueuedEventsToAppContext(

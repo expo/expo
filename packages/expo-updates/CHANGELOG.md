@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Improved stability of E2E testing. ([#29402](https://github.com/expo/expo/pull/29402) by [@kudo](https://github.com/kudo))
+- Improved JS event performance on Android and stability of E2E testing. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
 
 ## 0.25.16 — 2024-06-06
 

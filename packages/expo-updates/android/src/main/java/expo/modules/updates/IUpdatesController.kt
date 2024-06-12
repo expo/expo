@@ -5,6 +5,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
@@ -44,6 +45,11 @@ interface IUpdatesController {
    * The [AppContext] assigned from [UpdatesModule]
    */
   var appContext: WeakReference<AppContext>?
+
+  /**
+   * The [EventEmitter] assigned from [UpdatesModule]
+   */
+  var eventEmitter: EventEmitter?
 
   fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager)
 
