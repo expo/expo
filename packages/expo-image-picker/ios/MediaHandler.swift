@@ -237,7 +237,7 @@ internal struct MediaHandler {
     itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
       do {
         guard error == nil,
-              let videoUrl = url else {
+        let videoUrl = url else {
           return completion(index, .failure(FailedToReadVideoException().causedBy(error)))
         }
 

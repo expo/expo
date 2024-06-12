@@ -45,7 +45,7 @@ public class CalendarModule: Module {
       guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
         throw DefaultCalendarNotFoundException()
       }
-      return serializeCalendar(calendar: defaultCalendar) as [String : Any]
+      return serializeCalendar(calendar: defaultCalendar) as [String: Any]
     }
 
     AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in

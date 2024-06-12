@@ -66,7 +66,7 @@ public class AssetModule: Module {
       promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       return
     }
-  
+
     guard fileSystem.permissions(forURI: localUrl).contains(EXFileSystemPermissionFlags.write) else {
       promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       return
