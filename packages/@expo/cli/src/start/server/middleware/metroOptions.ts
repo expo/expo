@@ -298,3 +298,15 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 }
+
+/**
+ * Convert all path separators to `/`, including on Windows.
+ * Metro asumes that all module specifiers are posix paths.
+ * References to directories can still be Windows-style paths in Metro.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script
+ * @see https://github.com/facebook/metro/pull/1286
+ */
+export function convertPathToModuleSpecifier(pathLike: string) {
+  return pathLike.replaceAll('\\', '/');
+}
