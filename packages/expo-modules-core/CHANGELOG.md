@@ -17,9 +17,12 @@
 - [Android] Fixed converting from `null` to `Record` sometimes didn't work as expected. ([#29508](https://github.com/expo/expo/pull/29508) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `No implementation found for com.facebook.jni.HybridData expo.modules.kotlin.jni.JavaScriptModuleObject.initHybrid`. ([#29513](https://github.com/expo/expo/pull/29513) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+- [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
+- Fixed reload crash on Android. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
 - Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
 - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
