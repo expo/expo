@@ -3,11 +3,7 @@ import { palette } from '@expo/styleguide-base';
 
 export const OfficeHoursImage = () => (
   <svg
-    style={{
-      position: 'absolute',
-      right: 8,
-      bottom: 8,
-    }}
+    className="absolute right-2 bottom-2"
     width="119"
     height="119"
     viewBox="0 0 119 119"
