@@ -86,7 +86,7 @@ While your app is open, you can react to URL changes within your `_layout` files
 - **global**: Add the logic to your root `_layout` file
 - **localized**: Add a `_layout` file to an existing directory (or create a new (group directory)[/router/layouts/#groups])
 
-```tsx app/_layout.tts
+```tsx app/_layout.ts
 import { Slot, Redirect } from 'expo-router';
 
 export default function RootLayout() {
@@ -111,7 +111,7 @@ In native apps, an alternative method to rewrite a URL is to handle it within th
 
 Below is a basic example of how to send navigation events to an external service, such as an analytics or logging service. Please consult with your provider for specific instructions.
 
-```tsx app/_layout.tts
+```tsx app/_layout.ts
 import ThirdPartyService from 'third-party-sdk';
 import { Slot, usePathname } from 'expo-router';
 
@@ -147,6 +147,6 @@ If you want a URL to be initially evaluated by the user's browser, write the add
 
 This approach is effective for directing users to external websites or Universal Links for other apps.
 
-```tts
+```ts
 <Link href="/router/introduction" />
 ```
