@@ -1,5 +1,7 @@
 import ExpoModulesCore
 
+let onURLReceivedNotification = Notification.Name("onURLReceived")
+
 public class ExpoLinkingModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLinking")
@@ -7,13 +9,12 @@ public class ExpoLinkingModule: Module {
     Events("onURLReceived")
 
     OnStartObserving("onURLReceived") {
-      ExpoLinkingRegistry.shared.onURLReceived = { url in
-        self.sendEvent("onURLReceived", ["url": url.absoluteString])
-      }
+      NotificationCenter.default.addObserver(self, selector: #selector(handleURLReceivedNotification), name: onURLReceivedNotification, object: nil)
     }
 
     OnStopObserving("onURLReceived") {
-      ExpoLinkingRegistry.shared.onURLReceived = nil
+      NotificationCenter.default.removeObserver(self)
+//      ExpoLinkingRegistry.shared.onURLReceived = nil
     }
 
     Function("getLinkingURL") {
@@ -23,5 +24,12 @@ public class ExpoLinkingModule: Module {
     Function("clearLinkingURL") {
       ExpoLinkingRegistry.shared.initialURL = nil
     }
+  }
+  
+  @objc func handleURLReceivedNotification(_ notification: Notification) {
+    guard let url = notification.userInfo?["url"] else {
+      return
+    }
+    self.sendEvent("onURLReceived", ["url": url])
   }
 }
