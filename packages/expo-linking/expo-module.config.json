@@ -10,7 +10,7 @@
       "ExpoLinkingModule"
     ],
     "appDelegateSubscribers": [
-      "ExpoLinkingAppLifecycleDelegate"
+      "LinkingAppDelegateSubscriber"
     ]
   },
   "android": {

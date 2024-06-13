@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-class ExpoLinkingApplicationLifecycleListener : ReactActivityLifecycleListener {
+class LinkingReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
     onReceiveURL(activity?.intent?.data)
   }
