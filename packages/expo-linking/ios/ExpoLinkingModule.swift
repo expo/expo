@@ -13,8 +13,8 @@ public class ExpoLinkingModule: Module {
     }
 
     OnStopObserving("onURLReceived") {
+      // swiftlint:disable:next notification_center_detachment
       NotificationCenter.default.removeObserver(self)
-//      ExpoLinkingRegistry.shared.onURLReceived = nil
     }
 
     Function("getLinkingURL") {
