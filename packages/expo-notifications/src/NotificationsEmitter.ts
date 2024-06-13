@@ -2,6 +2,7 @@ import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-co
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
 const emitter = new EventEmitter(NotificationsEmitterModule);
@@ -86,7 +87,10 @@ export function addNotificationResponseReceivedListener(
 ): Subscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
-    listener
+    (response: NotificationResponse) => {
+      const mappedResponse = mapNotificationResponse(response);
+      listener(mappedResponse);
+    }
   );
 }
 
