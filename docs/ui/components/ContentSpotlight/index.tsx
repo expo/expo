@@ -1,7 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { type CSSProperties } from 'react';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import { LightboxImage } from './LightboxImage';
@@ -19,9 +18,8 @@ type ContentSpotlightProps = {
   file?: string;
   caption?: string;
   controls?: any;
-  spaceAfter?: boolean | number;
   loop?: boolean;
-  style?: CSSProperties;
+  maxWidth?: number;
   containerClassName?: string;
 };
 
@@ -32,34 +30,22 @@ export function ContentSpotlight({
   file,
   caption,
   controls,
-  spaceAfter,
   loop = true,
-  style,
+  maxWidth,
   containerClassName,
 }: ContentSpotlightProps) {
   const isYouTubeDomain = (url?: string) => {
     return url ? YOUTUBE_DOMAINS.some(domain => url.includes(domain)) : false;
   };
 
-  const getInitialMarginBottom = (spaceAfter: ContentSpotlightProps['spaceAfter']) => {
-    if (typeof spaceAfter === 'undefined') {
-      return 'mb-2';
-    } else if (typeof spaceAfter === 'number') {
-      return `mb-${spaceAfter}`;
-    } else if (spaceAfter) {
-      return 'mb-12';
-    }
-    return 'mb-0';
-  };
-
-  const [hover, setHover] = useState(false);
   const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
   const isVideo = !!(url || file);
+  const maxWidthClass = maxWidth && `max-w-[${maxWidth}px]`;
 
   return (
     <figure
       className={mergeClasses(
-        'text-center py-2.5 my-5 rounded-lg',
+        'text-center py-2.5 my-5 rounded-lg cursor-pointer',
         containerClassName,
         !isVideo && 'bg-subtle'
       )}
@@ -67,58 +53,50 @@ export function ContentSpotlight({
         if (typeof controls === 'undefined' && !forceShowControls) {
           setForceShowControls(true);
         }
-      }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={hover ? { cursor: 'pointer' } : undefined}>
+      }}>
       {src ? (
         <LightboxImage
           src={src}
           alt={alt}
-          style={style}
-          className="inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80"
+          className={mergeClasses(
+            'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
+            maxWidthClass
+          )}
         />
       ) : isVideo ? (
         <VisibilitySensor partialVisibility>
           {({ isVisible }: { isVisible: boolean }) => (
-            <div className={getInitialMarginBottom(spaceAfter)}>
-              <div className="relative w-full h-[400px] bg-palette-black rounded-lg overflow-hidden">
-                <ReactPlayer
-                  url={isVisible ? url || `/static/videos/${file}` : undefined}
-                  className="react-player"
-                  width={PLAYER_WIDTH}
-                  height={PLAYER_HEIGHT}
-                  style={{
-                    outline: 'none',
-                    backgroundColor: '#000',
-                  }}
-                  muted
-                  playing={isVisible && !!file}
-                  controls={typeof controls === 'undefined' ? forceShowControls : controls}
-                  playsinline
-                  loop={loop}
-                />
-                <div
-                  className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
-                    isVisible ? 'opacity-0' : 'opacity-70'
-                  } md:hidden`}
-                />
-              </div>
+            <div className="relative w-full h-[400px] bg-palette-black rounded-lg overflow-hidden">
+              <ReactPlayer
+                url={isVisible ? url || `/static/videos/${file}` : undefined}
+                className="react-player"
+                width={PLAYER_WIDTH}
+                height={PLAYER_HEIGHT}
+                muted
+                playing={isVisible && !!file}
+                controls={typeof controls === 'undefined' ? forceShowControls : controls}
+                playsinline
+                loop={loop}
+              />
+              <div
+                className={mergeClasses(
+                  'pointer-events-none absolute inset-0 transition-opacity duration-500 md:hidden',
+                  isVisible ? 'opacity-0' : 'opacity-70'
+                )}
+              />
             </div>
           )}
         </VisibilitySensor>
       ) : null}
       {caption && (
         <figcaption
-          className={`mt-[14px] text-secondary text-center text-xs px-8 py-2 ${
-            isVideo ? 'bg-transparent' : ''
-          }`}
-          style={hover ? { cursor: 'auto' } : undefined}>
+          className={mergeClasses(
+            'mt-3.5 text-secondary text-center text-xs px-8 py-2 cursor-text',
+            isVideo && 'bg-transparent'
+          )}>
           {caption}
         </figcaption>
       )}
     </figure>
   );
 }
-
-export default ContentSpotlight;
