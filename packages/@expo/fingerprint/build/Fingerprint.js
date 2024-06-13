@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffFingerprints = exports.diffFingerprintsWithOp = exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
+exports.diffFingerprints = exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
 const Dedup_1 = require("./Dedup");
 const Options_1 = require("./Options");
 const Sort_1 = require("./Sort");
@@ -40,7 +40,7 @@ exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
  * Differentiate two fingerprints with operation type.
  * The implementation is assumed that the sources are sorted.
  */
-function diffFingerprintsWithOp(fingerprint1, fingerprint2) {
+function diffFingerprints(fingerprint1, fingerprint2) {
     let index1 = 0;
     let index2 = 0;
     const diff = [];
@@ -73,14 +73,6 @@ function diffFingerprintsWithOp(fingerprint1, fingerprint2) {
         ++index2;
     }
     return diff;
-}
-exports.diffFingerprintsWithOp = diffFingerprintsWithOp;
-/**
- * Differentiate two fingerprints and returns the changed sources.
- * We keep this for backward compatibility.
- */
-function diffFingerprints(fingerprint1, fingerprint2) {
-    return diffFingerprintsWithOp(fingerprint1, fingerprint2).map(({ source }) => source);
 }
 exports.diffFingerprints = diffFingerprints;
 //# sourceMappingURL=Fingerprint.js.map

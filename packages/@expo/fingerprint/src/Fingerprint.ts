@@ -1,10 +1,5 @@
 import { dedupSources } from './Dedup';
-import type {
-  Fingerprint,
-  FingerprintDiffItem,
-  FingerprintSource,
-  Options,
-} from './Fingerprint.types';
+import type { Fingerprint, FingerprintDiffItem, Options } from './Fingerprint.types';
 import { normalizeOptionsAsync } from './Options';
 import { compareSource, sortSources } from './Sort';
 import { createFingerprintFromSourcesAsync } from './hash/Hash';
@@ -42,7 +37,7 @@ export async function diffFingerprintChangesAsync(
   fingerprint: Fingerprint,
   projectRoot: string,
   options?: Options
-): Promise<FingerprintSource[]> {
+): Promise<FingerprintDiffItem[]> {
   const newFingerprint = await createFingerprintAsync(projectRoot, options);
   if (fingerprint.hash === newFingerprint.hash) {
     return [];
@@ -54,7 +49,7 @@ export async function diffFingerprintChangesAsync(
  * Differentiate two fingerprints with operation type.
  * The implementation is assumed that the sources are sorted.
  */
-export function diffFingerprintsWithOp(
+export function diffFingerprints(
   fingerprint1: Fingerprint,
   fingerprint2: Fingerprint
 ): FingerprintDiffItem[] {
@@ -92,15 +87,4 @@ export function diffFingerprintsWithOp(
   }
 
   return diff;
-}
-
-/**
- * Differentiate two fingerprints and returns the changed sources.
- * We keep this for backward compatibility.
- */
-export function diffFingerprints(
-  fingerprint1: Fingerprint,
-  fingerprint2: Fingerprint
-): FingerprintSource[] {
-  return diffFingerprintsWithOp(fingerprint1, fingerprint2).map(({ source }) => source);
 }
