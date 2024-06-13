@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Resolve module specifiers to posix paths for Metro. ([#29696](https://github.com/expo/expo/pull/29696) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
 
 ## 0.18.18 — 2024-06-12

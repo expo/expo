@@ -17,7 +17,6 @@ import {
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
-  convertPathToModuleSpecifier,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
@@ -78,7 +77,7 @@ export function resolveMainModuleName(
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
-  return convertPathToModuleSpecifier(stripExtension(entryPoint, 'js'));
+  return stripExtension(entryPoint, 'js');
 }
 
 /** Info about the computer hosting the dev server. */

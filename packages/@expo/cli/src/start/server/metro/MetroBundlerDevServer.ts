@@ -62,7 +62,6 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   ExpoMetroOptions,
-  convertPathToModuleSpecifier,
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
@@ -169,7 +168,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                   typeof source === 'string' && source.startsWith(this.projectRoot)
                     ? path.relative(this.projectRoot, source)
                     : source;
-                return convertPathToModuleSpecifier(source);
+                return source.split(path.sep).join('/');
               }),
               sourcesContent: new Array(parsedMap.sources.length).fill(null),
               names: parsedMap.names,
@@ -262,7 +261,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const platform = 'web';
 
     const resolvedMainModuleName =
-      mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
+      mainModuleName ?? '.' + path.sep + resolveMainModuleName(this.projectRoot, { platform });
     return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
@@ -477,7 +476,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const opts: ExpoMetroOptions = {
       // TODO: Possibly issues with using an absolute path here...
-      mainModuleName: convertPathToModuleSpecifier(filePath),
+      mainModuleName: filePath,
       lazy: false,
       asyncRoutes: false,
       inlineSourceMap: false,
@@ -546,8 +545,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    if (!opts.mainModuleName.startsWith('/')) {
-      opts.mainModuleName = './' + opts.mainModuleName;
+    if (!opts.mainModuleName.startsWith(path.sep)) {
+      opts.mainModuleName = '.' + path.sep + opts.mainModuleName;
     }
 
     const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
@@ -1202,7 +1201,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
   ) {
     assert(this.metro, 'cannot invoke resolveRelativePathAsync without metro instance');
-    return await this.metro._resolveRelativePath(convertPathToModuleSpecifier(moduleId), {
+    return await this.metro._resolveRelativePath(moduleId, {
       relativeTo: 'server',
       resolverOptions,
       transformOptions,
