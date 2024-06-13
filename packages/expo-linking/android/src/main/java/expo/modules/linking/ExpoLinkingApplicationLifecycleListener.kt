@@ -21,6 +21,6 @@ class ExpoLinkingApplicationLifecycleListener : ReactActivityLifecycleListener {
       return
     }
     ExpoLinkingModule.initialURL = url
-    ExpoLinkingModule.onURLReceived?.let { it(url) }
+    ExpoLinkingModule.onURLReceivedObservers.forEach { it -> it(url) }
   }
 }

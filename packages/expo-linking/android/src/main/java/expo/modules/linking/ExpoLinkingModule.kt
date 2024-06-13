@@ -8,8 +8,10 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class ExpoLinkingModule : Module() {
   companion object {
     var initialURL: Uri? = null
-    var onURLReceived: ((Uri?) -> Unit)? = null
+    var onURLReceivedObservers: MutableSet<((Uri?) -> Unit)> = mutableSetOf()
   }
+
+  private var onURLReceivedObserver: ((Uri?) -> Unit)? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoLinking")
@@ -25,14 +27,16 @@ class ExpoLinkingModule : Module() {
       return@Function null
     }
 
-    OnStartObserving {
-      onURLReceived = {
-        this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to it?.toString()))
+    OnStartObserving("onURLReceived") {
+      val observer = { uri: Uri? ->
+        this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to uri?.toString()))
       }
+      onURLReceivedObservers.add(observer)
+      onURLReceivedObserver = observer
     }
 
-    OnStopObserving {
-      onURLReceived = null
+    OnStopObserving("onURLReceived") {
+      onURLReceivedObservers.remove(onURLReceivedObserver)
     }
   }
 }
