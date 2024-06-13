@@ -40,11 +40,6 @@ export declare function getInitialURL(): Promise<string | null>;
  */
 export declare function getLinkingURL(): string | null;
 /**
- * Clear the URL that was used to launch the app if it was launched by a link.
- * @return The URL string that launched your app, or `null`.
- */
-export declare function clearLinkingURL(): void;
-/**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
  * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.

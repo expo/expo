@@ -79,13 +79,6 @@ export async function getInitialURL() {
 export function getLinkingURL() {
     return ExpoLinking.getLinkingURL();
 }
-/**
- * Clear the URL that was used to launch the app if it was launched by a link.
- * @return The URL string that launched your app, or `null`.
- */
-export function clearLinkingURL() {
-    return ExpoLinking.clearLinkingURL();
-}
 // @needsAudit
 /**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)

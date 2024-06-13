@@ -22,10 +22,6 @@ class ExpoLinkingModule : Module() {
       initialURL?.toString()
     }
 
-    Function<Unit>("clearLinkingURL") {
-      initialURL = null
-    }
-
     OnStartObserving("onURLReceived") {
       val observer = { uri: Uri? ->
         this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to uri?.toString()))

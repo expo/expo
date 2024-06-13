@@ -4,7 +4,6 @@ type ExppLinkingModuleEvents = {
 };
 declare class ExpoLinkingNativeModule extends NativeModule<ExppLinkingModuleEvents> {
     getLinkingURL(): string | null;
-    clearLinkingURL(): void;
 }
 declare const ExpoLinking: ExpoLinkingNativeModule;
 export default ExpoLinking;

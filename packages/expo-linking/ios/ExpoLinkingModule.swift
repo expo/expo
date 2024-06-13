@@ -20,10 +20,6 @@ public class ExpoLinkingModule: Module {
     Function("getLinkingURL") {
       return ExpoLinkingRegistry.shared.initialURL?.absoluteString
     }
-
-    Function("clearLinkingURL") {
-      ExpoLinkingRegistry.shared.initialURL = nil
-    }
   }
 
   @objc func handleURLReceivedNotification(_ notification: Notification) {
