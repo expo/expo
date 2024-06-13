@@ -145,7 +145,6 @@ export async function exportAppAsync(
             engine: isHermes ? 'hermes' : undefined,
             serializerIncludeMaps: sourceMaps,
             bytecode: bytecode && isHermes,
-            reactCompiler: !!exp.experiments?.reactCompiler,
           });
 
           bundles[platform] = bundle;
@@ -249,7 +248,6 @@ export async function exportAppAsync(
         baseUrl,
         includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        reactCompiler: !!exp.experiments?.reactCompiler,
         exportServer,
         maxWorkers,
         isExporting: true,

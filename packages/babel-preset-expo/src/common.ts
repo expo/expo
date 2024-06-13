@@ -1,4 +1,3 @@
-import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'path';
 
 export function hasModule(name: string): boolean {
@@ -13,8 +12,7 @@ export function hasModule(name: string): boolean {
 }
 
 /** Determine which bundler is being used. */
-export function getBundler(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getBundler(caller: any) {
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;
   if (
@@ -30,8 +28,7 @@ export function getBundler(caller?: any) {
   return 'metro';
 }
 
-export function getPlatform(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getPlatform(caller: any) {
   if (!caller) return null;
   if (caller.platform) return caller.platform;
   const bundler = getBundler(caller);
@@ -43,8 +40,7 @@ export function getPlatform(caller?: any) {
   return caller.platform;
 }
 
-export function getPossibleProjectRoot(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getPossibleProjectRoot(caller: any) {
   if (!caller) return null;
   if (caller.projectRoot) return caller.projectRoot;
   // unknown
@@ -52,56 +48,42 @@ export function getPossibleProjectRoot(caller?: any) {
 }
 
 /** If bundling for a react-server target. */
-export function getIsReactServer(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
+export function getIsReactServer(caller: any): boolean {
   return caller?.isReactServer ?? false;
 }
 
-function assertExpoBabelCaller(caller?: any): asserts caller is ExpoBabelCaller | undefined {}
-
-export function getIsDev(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getIsDev(caller: any) {
   if (caller?.isDev != null) return caller.isDev;
 
   // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 
-export function getIsFastRefreshEnabled(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getIsFastRefreshEnabled(caller: any) {
   if (!caller) return false;
   return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 
-export function getIsProd(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getIsProd(caller: any) {
   if (caller?.isDev != null) return caller.isDev === false;
 
   // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 
-export function getIsNodeModule(caller?: any): boolean {
+export function getIsNodeModule(caller: any): boolean {
   return caller?.isNodeModule ?? false;
 }
 
-export function getBaseUrl(caller?: any): string {
-  assertExpoBabelCaller(caller);
+export function getBaseUrl(caller: any): string {
   return caller?.baseUrl ?? '';
 }
 
-export function getReactCompiler(caller?: any) {
-  assertExpoBabelCaller(caller);
-  return caller?.supportsReactCompiler ?? false;
-}
-
-export function getIsServer(caller?: any) {
-  assertExpoBabelCaller(caller);
+export function getIsServer(caller: any) {
   return caller?.isServer ?? false;
 }
 
-export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
-  assertExpoBabelCaller(caller);
+export function getExpoRouterAbsoluteAppRoot(caller: any): string {
   const rootModuleId = caller?.routerRoot ?? './app';
   if (path.isAbsolute(rootModuleId)) {
     return rootModuleId;
@@ -111,8 +93,7 @@ export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   return path.join(projectRoot, rootModuleId);
 }
 
-export function getInlineEnvVarsEnabled(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
+export function getInlineEnvVarsEnabled(caller: any): boolean {
   const isWebpack = getBundler(caller) === 'webpack';
   const isDev = getIsDev(caller);
   const isServer = getIsServer(caller);
@@ -123,8 +104,7 @@ export function getInlineEnvVarsEnabled(caller?: any): boolean {
   return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
 
-export function getAsyncRoutes(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
+export function getAsyncRoutes(caller: any): boolean {
   const isServer = getIsServer(caller);
   if (isServer) {
     return false;

@@ -78,7 +78,7 @@ export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) 
                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
               } else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
                 path.replaceWith(
-                  t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot))
+                  t.stringLiteral(getExpoRouterAppRoot(possibleProjectRoot, routerAbsoluteRoot))
                 );
               }
             }

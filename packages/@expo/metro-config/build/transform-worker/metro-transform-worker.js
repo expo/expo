@@ -323,16 +323,6 @@ async function transformAsset(file, context) {
 async function transformJSWithBabel(file, context) {
     const { babelTransformerPath } = context.config;
     const transformer = require(babelTransformerPath);
-    // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
-    // a malformed state. For now, we'll enable the experimental import support which compiles import statements
-    // outside of the standard Babel process.
-    if (!context.options.experimentalImportSupport) {
-        const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
-        if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
-            // @ts-expect-error: readonly.
-            context.options.experimentalImportSupport = true;
-        }
-    }
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));

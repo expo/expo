@@ -27,7 +27,6 @@ module.exports = {
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
     reactCanary: process.env.EXPO_E2E_RSC,
-    reactCompiler: process.env.E2E_ROUTER_COMPILER,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',

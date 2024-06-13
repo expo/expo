@@ -7,11 +7,9 @@ import {
   getInlineEnvVarsEnabled,
   getIsDev,
   getIsFastRefreshEnabled,
-  getIsNodeModule,
   getIsProd,
   getIsReactServer,
   getIsServer,
-  getReactCompiler,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
@@ -42,57 +40,6 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
-  /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
-  'react-compiler'?:
-    | false
-    | {
-        // TODO: Add full types and doc blocks.
-        enableUseMemoCachePolyfill?: boolean;
-        compilationMode?: 'infer' | 'strict';
-        panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
-        logger?: any;
-        environment?: {
-          customHooks?: unknown;
-          enableResetCacheOnSourceFileChanges?: boolean;
-          enablePreserveExistingMemoizationGuarantees?: boolean;
-          /** @default true */
-          validatePreserveExistingMemoizationGuarantees?: boolean;
-          enableForest?: boolean;
-          enableUseTypeAnnotations?: boolean;
-          /** @default true */
-          enableReactiveScopesInHIR?: boolean;
-          /** @default true */
-          validateHooksUsage?: boolean;
-          validateRefAccessDuringRender?: boolean;
-          /** @default true */
-          validateNoSetStateInRender?: boolean;
-          validateMemoizedEffectDependencies?: boolean;
-          validateNoCapitalizedCalls?: string[] | null;
-          /** @default true */
-          enableAssumeHooksFollowRulesOfReact?: boolean;
-          /** @default true */
-          enableTransitivelyFreezeFunctionExpressions: boolean;
-          enableEmitFreeze?: unknown;
-          enableEmitHookGuards?: unknown;
-          enableEmitInstrumentForget?: unknown;
-          assertValidMutableRanges?: boolean;
-          enableChangeVariableCodegen?: boolean;
-          enableMemoizationComments?: boolean;
-          throwUnknownException__testonly?: boolean;
-          enableTreatFunctionDepsAsConditional?: boolean;
-          /** Automatically enabled when reanimated plugin is added. */
-          enableCustomTypeDefinitionForReanimated?: boolean;
-          /** @default `null` */
-          hookPattern?: string | null;
-        };
-        gating?: unknown;
-        noEmit?: boolean;
-        runtimeModule?: string | null;
-        eslintSuppressionRules?: unknown | null;
-        flowSuppressions?: boolean;
-        ignoreUseNoForget?: boolean;
-      };
-
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
   minifyTypeofWindow?: boolean;
 };
@@ -122,11 +69,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
-  const isNodeModule = api.caller(getIsNodeModule);
   const isServer = api.caller(getIsServer);
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
-  const isReactCompilerEnabled = api.caller(getReactCompiler);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
@@ -171,33 +116,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const lazyImportsOption = platformOptions?.lazyImports;
 
   const extraPlugins: PluginItem[] = [];
-
-  // Add compiler as soon as possible to prevent other plugins from modifying the code.
-  if (
-    isReactCompilerEnabled &&
-    // Don't run compiler on node modules, it can only safely be run on the user's code.
-    !isNodeModule &&
-    // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
-    // NOTE: We might want to allow running it to prevent hydration errors.
-    !isServerEnv &&
-    // Give users the ability to opt-out of the feature, per-platform.
-    platformOptions['react-compiler'] !== false
-  ) {
-    extraPlugins.push([
-      require('babel-plugin-react-compiler'),
-      {
-        runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
-        // enableUseMemoCachePolyfill: true,
-        // compilationMode: 'infer',
-        environment: {
-          enableResetCacheOnSourceFileChanges: !isProduction,
-          ...(platformOptions['react-compiler']?.environment ?? {}),
-        },
-        panicThreshold: isDev ? undefined : 'NONE',
-        ...platformOptions['react-compiler'],
-      },
-    ]);
-  }
 
   if (engine !== 'hermes') {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all

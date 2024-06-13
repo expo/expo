@@ -73,14 +73,7 @@ function withWebPolyfills(
     );
 
     if (ctx.platform === 'web') {
-      return [
-        virtualModuleId,
-        virtualEnvVarId,
-        // Ensure that the error-guard polyfill is included in the web polyfills to
-        // make metro-runtime work correctly.
-        // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-        require.resolve('@react-native/js-polyfills/error-guard'),
-      ];
+      return [virtualModuleId, virtualEnvVarId];
     }
 
     // Generally uses `rn-get-polyfills`

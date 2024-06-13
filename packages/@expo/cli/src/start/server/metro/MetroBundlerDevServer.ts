@@ -219,11 +219,22 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
+    const { mode, minify, isExporting } = this.instanceMetroOptions;
+    assert(
+      mode != null && isExporting != null,
+      'The server must be started before calling ssrLoadModule.'
+    );
+
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js'
+        'expo-router/node/render.js',
+        {
+          minify,
+          mode,
+          isExporting,
+        }
       );
 
     const { exp } = getConfig(this.projectRoot);
@@ -246,14 +257,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
   } = {}) {
-    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
-        reactCompiler != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticResourcesAsync.'
     );
@@ -268,6 +278,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify,
       environment: 'client',
+      serializerOutput: 'static',
       serializerIncludeMaps: includeSourceMaps,
       mainModuleName: resolvedMainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
@@ -275,19 +286,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       isExporting,
       routerRoot,
-      reactCompiler,
       bytecode: false,
     });
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const { mode, isExporting, baseUrl, routerRoot, asyncRoutes } = this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
-        reactCompiler != null &&
         routerRoot != null &&
         asyncRoutes != null,
       'The server must be started before calling getStaticPageAsync.'
@@ -299,7 +307,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       mode,
       environment: 'client',
-      reactCompiler,
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
@@ -348,12 +355,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<T> {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
-    return evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
+    return await evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
   private async metroImportAsArtifactsAsync(
     filePath: string,
-    specificOptions: Partial<Omit<ExpoMetroOptions, 'serializerOutput'>> = {}
+    specificOptions: Partial<ExpoMetroOptions> = {}
   ) {
     const results = await this.ssrLoadModuleContents(filePath, {
       serializerOutput: 'static',
@@ -489,20 +496,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode: 'development',
       //
       ...this.instanceMetroOptions,
-
-      // Mostly disable compiler in SSR bundles.
-      reactCompiler: false,
       baseUrl,
       routerRoot,
       isExporting,
-
       ...specificOptions,
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     const scriptContents = wrapBundle(bundle);
-
     if (map) {
       debug('Registering SSR source map for:', filename);
       cachedSourceMaps.set(filename, { url: this.projectRoot, map });
@@ -550,7 +552,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
-
     return {
       artifacts: output.artifacts!,
       assets: output.assets!,
@@ -588,6 +589,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  getExpoLineOptions() {
+    return this.instanceMetroOptions;
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -600,7 +605,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
-    const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
@@ -609,7 +613,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       baseUrl,
       mode,
       routerRoot,
-      reactCompiler,
       minify: options.minify,
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
@@ -883,7 +886,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const htmlServerError = await getErrorOverlayHtmlAsync({
             error,
             projectRoot: this.projectRoot,
-            routerRoot: this.instanceMetroOptions.routerRoot!,
+            routerRoot: this.getExpoLineOptions().routerRoot!,
           });
 
           return new Response(htmlServerError, {

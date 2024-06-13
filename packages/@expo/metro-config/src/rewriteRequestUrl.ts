@@ -81,12 +81,6 @@ export function getRewriteRequestUrl(projectRoot: string) {
           getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
         );
       }
-      if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
-        ensured.searchParams.set(
-          'transform.reactCompiler',
-          String(!!exp.experiments?.reactCompiler)
-        );
-      }
 
       if (!ensured.searchParams.has('transform.engine')) {
         const isHermesEnabled = isEnableHermesManaged(exp, platform);

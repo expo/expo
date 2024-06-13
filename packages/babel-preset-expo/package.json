@@ -5,8 +5,7 @@
   "main": "build/index.js",
   "files": [
     "build",
-    "lazy-imports-blacklist.js",
-    "react-compiler-runtime.js"
+    "lazy-imports-blacklist.js"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -49,7 +48,6 @@
     "@babel/preset-typescript": "^7.23.0",
     "@babel/preset-react": "^7.22.15",
     "@react-native/babel-preset": "0.74.84",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-592953e-20240517",
     "babel-plugin-react-native-web": "~0.19.10",
     "react-refresh": "^0.14.2"
   },

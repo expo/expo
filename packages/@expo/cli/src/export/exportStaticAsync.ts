@@ -38,7 +38,6 @@ type Options = {
   entryPoint?: string;
   clear: boolean;
   routerRoot: string;
-  reactCompiler: boolean;
   maxWorkers?: number;
   isExporting: boolean;
 };
