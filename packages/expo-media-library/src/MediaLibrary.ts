@@ -140,7 +140,10 @@ export type AssetInfo = Asset & {
   orientation?: number;
 };
 
-// @docsMissing
+/**
+ * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
+ * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * */
 export type MediaSubtype =
   | 'depthEffect'
   | 'hdr'

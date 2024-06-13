@@ -16,21 +16,20 @@ func stringify(mediaType: PHAssetMediaType) -> String {
 }
 
 func stringifyMedia(mediaSubtypes: PHAssetMediaSubtype) -> [String] {
-  var subtypes = [String]()
-  var subtypesDict: [String: PHAssetMediaSubtype] = [
-    "hdr": PHAssetMediaSubtype.photoHDR,
-    "panorama": PHAssetMediaSubtype.photoPanorama,
-    "stream": PHAssetMediaSubtype.videoStreamed,
-    "timelapse": PHAssetMediaSubtype.videoTimelapse,
-    "screenshot": PHAssetMediaSubtype.photoScreenshot,
-    "highFrameRate": PHAssetMediaSubtype.videoHighFrameRate
+  let subtypesDict: [String: PHAssetMediaSubtype] = [
+    "hdr": .photoHDR,
+    "panorama": .photoPanorama,
+    "stream": .videoStreamed,
+    "timelapse": .videoTimelapse,
+    "screenshot": .photoScreenshot,
+    "highFrameRate": .videoHighFrameRate,
+    "livePhoto": .photoLive,
+    "depthEffect": .photoDepthEffect
   ]
 
-  subtypesDict["livePhoto"] = PHAssetMediaSubtype.photoLive
-  subtypesDict["depthEffect"] = PHAssetMediaSubtype.photoDepthEffect
-
+  var subtypes = [String]()
   for (subtype, value) in subtypesDict where mediaSubtypes.contains(value) {
-    subtypes.append(subtype as String)
+    subtypes.append(subtype)
   }
   return subtypes
 }
