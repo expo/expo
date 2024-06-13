@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, correct image orientation when `exif` is set to true in `takePictureAsync`. ([#29712](https://github.com/expo/expo/pull/29712) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.11 — 2024-06-13
