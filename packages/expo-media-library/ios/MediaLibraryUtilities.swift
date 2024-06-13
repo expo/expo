@@ -103,7 +103,6 @@ func assetIdFromLocalId(localId: String) -> String? {
 }
 
 func assetUriForLocalId(localId: String) -> String {
-  let assetId = assetIdFromLocalId(localId: localId)
   return String(format: "ph://\(localId)")
 }
 
@@ -346,7 +345,7 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   let fetchOptions = PHFetchOptions()
   var predicates: [NSPredicate] = []
   var response = [String: Any?]()
-  var assets: [[String: Any]] = []
+  var assets: [[String: Any?]] = []
 
   var cursor: PHAsset?
   if let after = options.after {

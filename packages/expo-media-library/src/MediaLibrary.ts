@@ -67,7 +67,7 @@ export type Asset = {
    */
   filename: string;
   /**
-   * URI that points to the asset. `assets://*` (iOS), `file://*` (Android)
+   * URI that points to the asset. `ph://*` (iOS), `file://*` (Android)
    */
   uri: string;
   /**
