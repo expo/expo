@@ -59,8 +59,7 @@ fun Contact?.toBundle(keys: Set<String>): Bundle {
 }
 
 fun List<Group>?.toBundle(): Bundle {
-  val keys = setOf("groupId", "groupName")
-  val data = this?.map { it.toMap(keys) } ?: emptyList()
+  val data = this?.map { it.toMap() } ?: emptyList()
 
   return Bundle().apply {
     putParcelableArrayList("data", ArrayList(data))
@@ -68,8 +67,7 @@ fun List<Group>?.toBundle(): Bundle {
 }
 
 fun Group?.toBundle(): Bundle {
-  val keys = setOf("groupId", "groupName")
-  val serializedGroup = this?.toMap(keys)
+  val serializedGroup = this?.toMap()
   val data = serializedGroup?.let { listOf(it) } ?: emptyList()
 
   return Bundle().apply {

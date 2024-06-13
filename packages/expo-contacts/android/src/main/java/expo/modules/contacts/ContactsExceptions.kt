@@ -21,4 +21,3 @@ class ContactUpdateException : CodedException("Given contact couldn't be updated
 class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for contact")
 
 class GroupNotFoundException : CodedException("Couldn't find group")
-

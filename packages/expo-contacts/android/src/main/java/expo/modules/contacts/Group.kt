@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract.Groups
-import android.text.TextUtils
 import java.text.ParseException
 
 class Group(var groupId: String) {
@@ -16,7 +15,7 @@ class Group(var groupId: String) {
 
   // convert to react native object
   @Throws(ParseException::class)
-  fun toMap(fieldSet: Set<String>): Bundle {
+  fun toMap(): Bundle {
     val group = Bundle().apply {
       putString("groupId", groupId)
 
