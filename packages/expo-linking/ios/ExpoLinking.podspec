@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name           = 'ExpoCalendar'
+  s.name           = 'ExpoLinking'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']

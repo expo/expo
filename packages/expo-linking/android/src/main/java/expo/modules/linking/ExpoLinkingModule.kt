@@ -17,7 +17,7 @@ class ExpoLinkingModule : Module() {
     Events("onURLReceived")
 
     Function("getLinkingURL") {
-      parseExpoLink(initialURL)
+      initialURL?.toString()
     }
 
     Function("clearLinkingURL") {
@@ -27,19 +27,12 @@ class ExpoLinkingModule : Module() {
 
     OnStartObserving {
       onURLReceived = {
-        this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to parseExpoLink(it)))
+        this@ExpoLinkingModule.sendEvent("onURLReceived", bundleOf("url" to it?.toString()))
       }
     }
 
     OnStopObserving {
       onURLReceived = null
     }
-  }
-
-  private fun parseExpoLink(url: Uri?): String? {
-    if (url == null) {
-      return null
-    }
-    return url.toString()
   }
 }

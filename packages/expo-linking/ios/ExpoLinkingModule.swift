@@ -8,27 +8,20 @@ public class ExpoLinkingModule: Module {
 
     OnStartObserving("onURLReceived") {
       ExpoLinkingRegistry.shared.onURLReceived = { url in
-        self.sendEvent("onURLReceived", ["url": self.parseExpoLink(url)])
+        self.sendEvent("onURLReceived", ["url": url.absoluteString])
       }
     }
 
-    OnStopObserving {
+    OnStopObserving("onURLReceived") {
       ExpoLinkingRegistry.shared.onURLReceived = nil
     }
 
     Function("getLinkingURL") {
-      return parseExpoLink(ExpoLinkingRegistry.shared.initialURL)
+      return ExpoLinkingRegistry.shared.initialURL?.absoluteString
     }
 
     Function("clearLinkingURL") {
       ExpoLinkingRegistry.shared.initialURL = nil
     }
-  }
-
-  func parseExpoLink(_ url: URL?) -> String? {
-    guard let url = url else {
-      return nil
-    }
-    return url.absoluteString
   }
 }
