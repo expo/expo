@@ -1,12 +1,13 @@
-import { requireNativeModule } from 'expo-modules-core';
-import { NativeModule } from 'expo-modules-core/build/ts-declarations/NativeModule';
+import { requireNativeModule, NativeModule } from 'expo-modules-core';
 
-type ExpoLinkingType = {
-  getLinkingURL(): string | null;
-  clearLinkingURL(): void;
+type ExppLinkingModuleEvents = {
+  onURLReceived(url: string): void;
 };
 
-const ExpoLinking = requireNativeModule('ExpoLinking') as ExpoLinkingType &
-  NativeModule<{ onURLReceived: (url: string) => void }>;
+declare class ExpoLinkingNativeModule extends NativeModule<ExppLinkingModuleEvents> {
+  getLinkingURL(): string | null;
+  clearLinkingURL(): void;
+}
 
+const ExpoLinking = requireNativeModule<ExpoLinkingNativeModule>('ExpoLinking');
 export default ExpoLinking;

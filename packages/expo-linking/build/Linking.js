@@ -2,7 +2,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import ExpoLinking from './ExpoLinking';
-import NativeLinking from './RNLinking';
+import RNLinking from './RNLinking';
 import { parse } from './createURL';
 import { validateURL } from './validateURL';
 // @needsAudit
@@ -16,7 +16,7 @@ import { validateURL } from './validateURL';
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type, handler) {
-    return NativeLinking.addEventListener(type, handler);
+    return RNLinking.addEventListener(type, handler);
 }
 // @needsAudit
 /**
@@ -27,7 +27,7 @@ export function addEventListener(type, handler) {
  * @return A promise that resolves with `ParsedURL` object.
  */
 export async function parseInitialURLAsync() {
-    const initialUrl = await NativeLinking.getInitialURL();
+    const initialUrl = await RNLinking.getInitialURL();
     if (!initialUrl) {
         return {
             scheme: null,
@@ -47,7 +47,7 @@ export async function parseInitialURLAsync() {
  */
 export async function sendIntent(action, extras) {
     if (Platform.OS === 'android') {
-        return await NativeLinking.sendIntent(action, extras);
+        return await RNLinking.sendIntent(action, extras);
     }
     throw new UnavailabilityError('Linking', 'sendIntent');
 }
@@ -59,8 +59,8 @@ export async function openSettings() {
     if (Platform.OS === 'web') {
         throw new UnavailabilityError('Linking', 'openSettings');
     }
-    if (NativeLinking.openSettings) {
-        return await NativeLinking.openSettings();
+    if (RNLinking.openSettings) {
+        return await RNLinking.openSettings();
     }
     await openURL('app-settings:');
 }
@@ -70,7 +70,7 @@ export async function openSettings() {
  * @return The URL string that launched your app, or `null`.
  */
 export async function getInitialURL() {
-    return (await NativeLinking.getInitialURL()) ?? null;
+    return (await RNLinking.getInitialURL()) ?? null;
 }
 /**
  * Get the URL that was used to launch the app if it was launched by a link.
@@ -97,7 +97,7 @@ export function clearLinkingURL() {
  */
 export async function openURL(url) {
     validateURL(url);
-    return await NativeLinking.openURL(url);
+    return await RNLinking.openURL(url);
 }
 // @needsAudit
 /**
@@ -112,7 +112,7 @@ export async function openURL(url) {
  */
 export async function canOpenURL(url) {
     validateURL(url);
-    return await NativeLinking.canOpenURL(url);
+    return await RNLinking.canOpenURL(url);
 }
 // @needsAudit
 /**
