@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Web] Fix blurhash not working and causing fetches to `blurhash:/` uri. ([#27587](https://github.com/expo/expo/pull/27587) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Fixed `blurRadius` not working. Also made the effect render more consistently across platforms. ([#29678](https://github.com/expo/expo/pull/29678) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
