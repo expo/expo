@@ -39,74 +39,73 @@ describe('<HomeScreen />', () => {
   });
 
   test('displays instructions on starting DevSession when none are found', async () => {
-    const { getByText } = renderHomeScreen({ initialDevSessions: [] });
+    const { findByText } = renderHomeScreen({ initialDevSessions: [] });
 
-    await act(async () => {
-      await waitFor(() => getByText(devSessionInstructionsRegex));
-    });
+    await findByText(devSessionInstructionsRegex);
   });
 
   test('displays refetch button', async () => {
-    const { getByText } = renderHomeScreen();
+    const { findByText } = renderHomeScreen();
 
-    await act(async () => {
-      await waitFor(() => getByText(refetchDevSessionsRegex));
-    });
+    await findByText(refetchDevSessionsRegex);
   });
 
   test('fetching local DevSessions on mount', async () => {
     mockGetDevSessionsAsync.mockResolvedValue(fakeDevSessions);
 
-    const { getByText, queryByText } = renderHomeScreen({
+    const { findByText, queryByText } = renderHomeScreen({
       initialDevSessions: [],
     });
 
     expect(queryByText(fakeLocalDevSession.description)).toBe(null);
 
-    await waitFor(() => getByText(fakeLocalDevSession.description));
-    await waitFor(() => getByText(fakeLocalDevSession2.description));
+    await findByText(fakeLocalDevSession.description);
+    await findByText(fakeLocalDevSession2.description);
   });
 
   test('refetching local DevSessions on button press', async () => {
-    const { getByText, refetch } = renderHomeScreen({
+    const { findByText, queryByText, refetch } = renderHomeScreen({
       initialDevSessions: [],
     });
 
     mockGetDevSessionsAsync.mockClear();
     mockGetDevSessionsResponse([fakeDevSessions[0]]);
-    expect(() => getByText(fakeDevSessions[0].description)).toThrow();
+    expect(queryByText(fakeDevSessions[0].description)).toBe(null);
     expect(getDevSessionsAsync).not.toHaveBeenCalled();
 
     await act(async () => {
       await refetch();
-      expect(getByText(fetchingDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalled();
-
-      await waitFor(() => getByText(fakeDevSessions[0].description));
     });
+
+    await findByText(fetchingDevSessionsRegex);
+    expect(getDevSessionsAsync).toHaveBeenCalled();
+
+    await findByText(fakeDevSessions[0].description);
   });
 
   test('refetching enabled after polling is completed', async () => {
     const testPollAmount = 8;
 
-    const { getByText } = renderHomeScreen({
+    const { findByText } = renderHomeScreen({
       pollInterval: 1,
       pollAmount: testPollAmount,
       initialDevSessions: [],
     });
 
+    const regexButton = await findByText(refetchDevSessionsRegex);
+    expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount);
+
     await act(async () => {
-      await waitFor(() => getByText(refetchDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount);
-      fireEvent.press(getByText(refetchDevSessionsRegex));
+      fireEvent.press(regexButton);
     });
 
     // ensure button is disabled when fetching
     await act(async () => {
-      fireEvent.press(getByText(fetchingDevSessionsRegex));
-      await waitFor(() => getByText(refetchDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount * 2);
+      fireEvent.press(await findByText(fetchingDevSessionsRegex));
     });
+
+    await findByText(refetchDevSessionsRegex);
+    expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount * 2);
   });
 
   test('select dev session by entered url', async () => {

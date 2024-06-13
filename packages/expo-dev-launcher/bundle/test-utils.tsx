@@ -11,7 +11,7 @@ type AppProviderOptions = {
 };
 
 export function render(
-  component: React.ReactElement<any>,
+  component: React.ReactElement,
   options: RenderOptions & AppProviderOptions = {}
 ) {
   const { initialAppProviderProps = {}, ...renderOptions } = options;
