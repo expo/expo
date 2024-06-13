@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] fix: `getFreeDiskStorageAsync` returns result that's closer to the value reported by the system.
 - Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))
 
 ### 💡 Others
