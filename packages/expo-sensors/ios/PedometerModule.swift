@@ -39,7 +39,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.getPermissionUsingRequesterClass(
+      permissionsManager.getPermissionUsingRequesterClass(
         EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
@@ -50,7 +50,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.askForPermission(
+      permissionsManager.askForPermission(
         usingRequesterClass: EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
@@ -61,7 +61,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.register([EXMotionPermissionRequester()])
+      permissionsManager.register([EXMotionPermissionRequester()])
     }
 
     OnStartObserving {
