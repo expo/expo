@@ -10,25 +10,29 @@ Bundle performance varies for different platforms. For example, web browsers don
 
 ## Analyzing bundle size
 
+> Available only for **SDK 51 and above**.
+
 The libraries used in a project influence the size of the production JavaScript bundle. Starting from **Expo SDK 51**, you can use [Expo Atlas](https://github.com/expo/expo-atlas#readme) to visualize the production bundle and identify which libraries contribute to the bundle size.
 
 ### Using Atlas with `expo start`
 
-You can use Expo Atlas with the local development server. This method allows Atlas to update whenever you change any code within your project. 
+You can use Expo Atlas with the local development server. This method allows Atlas to update whenever you change any code in your project. 
 
-Once your app is up and running on Android, iOS, and/or web, you can open Atlas through the [dev tools plugin menu](/debugging/devtools-plugins/#using-a-dev-tools-plugin) using <kbd>shift</kbd> + <kbd>m</kbd>.
+Once your app is running using the local development server on Android, iOS, and/or web, you can open Atlas through the [dev tools plugin menu](/debugging/devtools-plugins/#using-a-dev-tools-plugin) using <kbd>shift</kbd> + <kbd>m</kbd>.
 
 <Terminal cmd={[
   '# Start the local development server with Atlas',
   '$ EXPO_UNSTABLE_ATLAS=true npx expo start',
-  '',
-  '# Optionally, run the local development server in production mode',
-  '$ EXPO_UNSTABLE_ATLAS=true npx expo start --no-dev', 
 ]} />
 
-> **Changing development mode to production**
->
-> Expo starts in development mode by default. Development mode may turn off optimizations that are enabled in production mode. You can also start the local development server in production mode, which provides a more accurate representation of the production bundle size.
+#### Changing development mode to production
+
+By default, Expo starts the local development server in [development mode](/workflow/development-mode/#development-mode). Development mode disables some optimizations that are enabled in [production mode](/workflow/development-mode/#production-mode). You can also start the local development server in production mode to get a more accurate representation of the production bundle size:
+
+<Terminal cmd={[
+  '# Run the local development server in production mode',
+  '$ EXPO_UNSTABLE_ATLAS=true npx expo start --no-dev', 
+]} />
 
 ### Using Atlas with `expo export`
 
@@ -42,7 +46,7 @@ You can also use Expo Atlas when generating a production bundle for your app or 
   '$ npx expo-atlas .expo/atlas.jsonl',
 ]} />
 
-You can also specify the platforms you want to analyze, using the `--platform` flag. Atlas will gather the data for the exported platforms only.
+You can also specify the platforms you want to analyze using the `--platform` option. Atlas will gather the data for the exported platforms only.
 
 ## Lighthouse
 
