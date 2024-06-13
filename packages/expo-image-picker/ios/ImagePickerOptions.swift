@@ -155,6 +155,17 @@ internal enum MediaType: String, Enumerable {
       return [kUTTypeImage as String, kUTTypeMovie as String]
     }
   }
+  
+  func requiresMicrophonePermission() -> Bool {
+    switch self {
+    case .images:
+      return false
+    case .videos:
+      return true
+    case .all:
+      return true
+    }
+  }
 
   @available(iOS 14, *)
   func toPickerFilter() -> PHPickerFilter {
