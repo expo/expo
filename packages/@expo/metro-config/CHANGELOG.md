@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+- Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
