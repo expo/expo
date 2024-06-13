@@ -9,6 +9,7 @@ import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.graphics.drawable.ColorDrawable
 import android.hardware.camera2.CameraCharacteristics
+import android.media.AudioManager
 import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
