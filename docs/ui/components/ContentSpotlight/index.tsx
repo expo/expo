@@ -37,7 +37,6 @@ export function ContentSpotlight({
   const isYouTubeDomain = (url?: string) => {
     return url ? YOUTUBE_DOMAINS.some(domain => url.includes(domain)) : false;
   };
-
   const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
   const isVideo = !!(url || file);
   const maxWidthClass = maxWidth && `max-w-[${maxWidth}px]`;
