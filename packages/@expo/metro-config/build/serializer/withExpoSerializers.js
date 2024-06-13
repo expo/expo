@@ -84,6 +84,29 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 debugId,
             })).code;
         }
+        const getEnsuredMaps = () => {
+            bundleMap ??= (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+                // TODO: Surface this somehow.
+                excludeSource: false,
+                // excludeSource: options.serializerOptions?.excludeSource,
+                processModuleFilter: options.processModuleFilter,
+                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+            });
+            return bundleMap;
+        };
+        if (!bundleMap && options.sourceUrl) {
+            const url = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
+                ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
+                : options.sourceUrl;
+            const parsed = new URL(url, 'http://expo.dev');
+            // Is dev server request for source maps...
+            if (parsed.pathname.endsWith('.map')) {
+                return {
+                    code: bundleCode,
+                    map: getEnsuredMaps(),
+                };
+            }
+        }
         if (isPossiblyDev) {
             if (bundleMap == null) {
                 return bundleCode;
@@ -94,15 +117,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             };
         }
         // Exports....
-        if (!bundleMap) {
-            bundleMap = (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
-                // TODO: Surface this somehow.
-                excludeSource: false,
-                // excludeSource: options.serializerOptions?.excludeSource,
-                processModuleFilter: options.processModuleFilter,
-                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-            });
-        }
+        bundleMap ??= getEnsuredMaps();
         if (enableDebugId) {
             const mutateSourceMapWithDebugId = (sourceMap) => {
                 // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
