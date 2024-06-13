@@ -19,7 +19,7 @@ type ContentSpotlightProps = {
   caption?: string;
   controls?: any;
   loop?: boolean;
-  maxWidthClass?: string;
+  className?: string;
   containerClassName?: string;
 };
 
@@ -31,7 +31,7 @@ export function ContentSpotlight({
   caption,
   controls,
   loop = true,
-  maxWidthClass,
+  className,
   containerClassName,
 }: ContentSpotlightProps) {
   const isYouTubeDomain = (url?: string) => {
@@ -39,7 +39,6 @@ export function ContentSpotlight({
   };
   const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
   const isVideo = !!(url || file);
-  // const maxWidthClass = maxWidth && `max-w-[${maxWidth}px]`;
 
   return (
     <figure
@@ -59,7 +58,7 @@ export function ContentSpotlight({
           alt={alt}
           className={mergeClasses(
             'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
-            maxWidthClass
+            className
           )}
         />
       ) : isVideo ? (
