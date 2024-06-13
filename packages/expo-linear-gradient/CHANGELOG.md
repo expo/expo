@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- The colors prop now requires at least two values. Passing an empty array or an array with one value will fail to typecheck. ([#27820](https://github.com/expo/expo/pull/27820) by [@navignaw](https://github.com/navignaw))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
