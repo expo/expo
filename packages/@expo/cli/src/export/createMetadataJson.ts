@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { BundleOutput } from './saveAssets';
+import { BundleOutput } from './fork-bundleAsync';
 
 export type BundlePlatform = 'android' | 'ios';
 

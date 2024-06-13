@@ -27,8 +27,8 @@ import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
+import { BundleAssetWithFileHashes } from '../fork-bundleAsync';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { BundleAssetWithFileHashes } from '../saveAssets';
 
 const debug = require('debug')('expo:export:embed');
 

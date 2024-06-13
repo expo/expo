@@ -23,7 +23,7 @@ import path from 'path';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
 import { MetroPrivateServer, assertMetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -34,7 +34,8 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
+import { BundleAssetWithFileHashes } from '../../../export/fork-bundleAsync';
+import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { env } from '../../../utils/env';
@@ -265,7 +266,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         baseUrl != null &&
         routerRoot != null &&
         asyncRoutes != null,
-      'The server must be started before calling getStaticResourcesAsync.'
+      'The server must be started before calling getStaticPageAsync.'
     );
 
     const platform = 'web';
@@ -350,7 +351,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Set when the server is started.
   private instanceMetroOptions: Partial<ExpoMetroOptions> = {};
 
-  private async ssrLoadModule<T extends Record<string, any>>(
+  async ssrLoadModule<T extends Record<string, any>>(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<T> {
@@ -389,7 +390,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = {}
   ) {
     const { baseUrl } = this.instanceMetroOptions;
-    assert(baseUrl != null, 'The server must be started before calling metroLoadModuleContents.');
+    assert(baseUrl != null, 'The server must be started before calling ssrLoadModuleContents.');
 
     const opts: ExpoMetroOptions = {
       // TODO: Possibly issues with using an absolute path here...
@@ -533,7 +534,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
-      'The server must be started before calling legacySinglePageExportBundleAsync.'
+      'The server must be started before calling ssrLoadModuleContents.'
     );
 
     const opts: ExpoMetroOptions = {
@@ -840,24 +841,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath);
       } catch (error: any) {
-        const appDir = this.instanceMetroOptions?.routerRoot
-          ? path.join(this.projectRoot, this.instanceMetroOptions!.routerRoot!)
-          : undefined;
-        const relativePath = appDir ? path.relative(appDir, filePath) : filePath;
-
-        // Expected errors: invalid syntax, missing resolutions.
-        // Wrap with command error for better error messages.
-        const err = new CommandError(
-          'API_ROUTE',
-          chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
-        );
-
-        for (const key in error) {
-          // @ts-expect-error
-          err[key] = error[key];
+        if (error instanceof Error) {
+          await logMetroErrorAsync({ error, projectRoot: this.projectRoot });
         }
-
-        throw err;
+        throw error;
       } finally {
         // pendingRouteOperations.delete(filepath);
       }
@@ -909,10 +896,61 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.pendingRouteOperations.clear();
   }
 
+  private getMetroRevision(
+    resolvedEntryFilePath: string,
+    {
+      graphOptions,
+      transformOptions,
+      resolverOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+      graphOptions: {
+        shallow: boolean;
+        lazy: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'Metro server must be running to bundle directly.');
+    const config = this.metro._config;
+
+    const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
+      unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
+      resolverOptions,
+      shallow: graphOptions.shallow,
+      lazy: graphOptions.lazy,
+    });
+    return this.metro.getBundler().getRevisionByGraphId(graphId);
+  }
+
+  private async resolveRelativePathAsync(
+    moduleId: string,
+    {
+      resolverOptions,
+      transformOptions,
+    }: {
+      transformOptions: TransformInputOptions;
+      resolverOptions: {
+        customResolverOptions: CustomResolverOptions;
+        dev: boolean;
+      };
+    }
+  ) {
+    assert(this.metro, 'cannot invoke resolveRelativePathAsync without metro instance');
+    return await this.metro._resolveRelativePath(moduleId, {
+      relativeTo: 'server',
+      resolverOptions,
+      transformOptions,
+    });
+  }
+
   // Direct Metro access
 
   // Emulates the Metro dev server .bundle endpoint without having to go through a server.
-  private async _bundleDirectAsync(
+  async _bundleDirectAsync(
     resolvedEntryFilePath: string,
     {
       transformOptions,
@@ -1158,57 +1196,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ((entryPoint, preModules, graph, options) =>
         bundleToString(baseJSBundle(entryPoint, preModules, graph, options)).code)
     );
-  }
-
-  private getMetroRevision(
-    resolvedEntryFilePath: string,
-    {
-      graphOptions,
-      transformOptions,
-      resolverOptions,
-    }: {
-      transformOptions: TransformInputOptions;
-      resolverOptions: {
-        customResolverOptions: CustomResolverOptions;
-        dev: boolean;
-      };
-      graphOptions: {
-        shallow: boolean;
-        lazy: boolean;
-      };
-    }
-  ) {
-    assert(this.metro, 'Metro server must be running to bundle directly.');
-    const config = this.metro._config;
-
-    const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
-      unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
-      resolverOptions,
-      shallow: graphOptions.shallow,
-      lazy: graphOptions.lazy,
-    });
-    return this.metro.getBundler().getRevisionByGraphId(graphId);
-  }
-
-  private async resolveRelativePathAsync(
-    moduleId: string,
-    {
-      resolverOptions,
-      transformOptions,
-    }: {
-      transformOptions: TransformInputOptions;
-      resolverOptions: {
-        customResolverOptions: CustomResolverOptions;
-        dev: boolean;
-      };
-    }
-  ) {
-    assert(this.metro, 'cannot invoke resolveRelativePathAsync without metro instance');
-    return await this.metro._resolveRelativePath(moduleId, {
-      relativeTo: 'server',
-      resolverOptions,
-      transformOptions,
-    });
   }
 }
 

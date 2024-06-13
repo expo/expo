@@ -7,30 +7,11 @@
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import fs from 'fs';
-import Metro from 'metro';
 import path from 'path';
 import prettyBytes from 'pretty-bytes';
 
+import { BundleAssetWithFileHashes } from './fork-bundleAsync';
 import { Log } from '../log';
-
-export type BundleOptions = {
-  entryPoint: string;
-  platform: 'android' | 'ios' | 'web';
-  dev?: boolean;
-  minify?: boolean;
-  bytecode: boolean;
-  sourceMapUrl?: string;
-  sourcemaps?: boolean;
-};
-
-export type BundleAssetWithFileHashes = Metro.AssetData & {
-  fileHashes: string[]; // added by the hashAssets asset plugin
-};
-
-export type BundleOutput = {
-  artifacts: SerialAsset[];
-  assets: readonly BundleAssetWithFileHashes[];
-};
 
 export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 
