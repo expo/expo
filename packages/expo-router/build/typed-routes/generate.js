@@ -90,7 +90,7 @@ function generateCombinations(pathname) {
             return;
         }
         const group = groups[currentIndex];
-        const withoutGroup = currentPath.replace(group, '');
+        const withoutGroup = currentPath.replace(`/${group}`, '');
         generate(currentIndex + 1, withoutGroup);
         generate(currentIndex + 1, currentPath);
     }

@@ -82,20 +82,13 @@ it('allows spaces in the filename', () => {
 });
 
 it('expands groups', () => {
-  const generated = getGeneratedRoutes(inMemoryContext({ '(a,b,c)/test': () => null }));
-
-  expect(generated).toEqual({
-    staticRoutes: ['/(a)/test', '/(b)/test', '/(c)/test', '/_sitemap', '/test'],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
-  });
-});
-
-it('expands groups', () => {
   const generated = getGeneratedRoutes(
     inMemoryContext({
       '(a,b,c)/apple': () => null,
       '(a,b)/(e,f)/banana': () => null,
+      'test/(red,blue)/index': () => null,
+      'test/(red,blue)/color': () => null,
+      'test/(red,blue)/folder/(green)/page': () => null,
     })
   );
 
@@ -115,6 +108,18 @@ it('expands groups', () => {
       '/_sitemap',
       '/apple',
       '/banana',
+      '/test',
+      '/test/(blue)',
+      '/test/(blue)/color',
+      '/test/(blue)/folder/(green)/page',
+      '/test/(blue)/folder/page',
+      '/test/(red)',
+      '/test/(red)/color',
+      '/test/(red)/folder/(green)/page',
+      '/test/(red)/folder/page',
+      '/test/color',
+      '/test/folder/(green)/page',
+      '/test/folder/page',
     ],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
