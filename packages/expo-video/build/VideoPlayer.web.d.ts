@@ -4,6 +4,7 @@ export declare function getSourceUri(source: VideoSource): string | null;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
     constructor(source: VideoSource);
     src: VideoSource;
+    previousSrc: VideoSource;
     _mountedVideos: Set<HTMLVideoElement>;
     _audioNodes: Set<MediaElementAudioSourceNode>;
     playing: boolean;

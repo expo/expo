@@ -19,6 +19,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
     }
     src = null;
+    previousSrc = null;
     _mountedVideos = new Set();
     _audioNodes = new Set();
     playing = false;
@@ -57,9 +58,6 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this._volume = value;
     }
     get volume() {
-        this._mountedVideos.forEach((video) => {
-            this._volume = video.volume;
-        });
         return this._volume;
     }
     set loop(value) {
@@ -140,13 +138,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this._mountedVideos.forEach((video) => {
             video.play();
         });
-        this.playing = true;
     }
     pause() {
         this._mountedVideos.forEach((video) => {
             video.pause();
         });
-        this.playing = false;
     }
     replace(source) {
         this._mountedVideos.forEach((video) => {
@@ -162,6 +158,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
                 video.load();
             }
         });
+        // TODO @behenate: this won't work when we add support for playlists
+        this.previousSrc = this.src;
+        this.src = source;
         this.playing = true;
     }
     seekBy(seconds) {
@@ -193,18 +192,21 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     }
     _addListeners(video) {
         video.onplay = () => {
+            this.emit('playingChange', true, this.playing);
             this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
+            this.emit('playingChange', false, this.playing);
             this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
+            this.emit('volumeChange', { volume: video.volume, isMuted: video.muted }, { volume: this.volume, isMuted: this.muted });
             this.volume = video.volume;
             this.muted = video.muted;
         };
@@ -223,24 +225,38 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             });
         };
         video.onratechange = () => {
+            this.emit('playbackRateChange', video.playbackRate, this.playbackRate);
             this._mountedVideos.forEach((mountedVideo) => {
-                if (mountedVideo === video || mountedVideo.playbackRate === video.playbackRate)
+                if (mountedVideo.playbackRate === video.playbackRate)
                     return;
                 this._playbackRate = video.playbackRate;
                 mountedVideo.playbackRate = video.playbackRate;
             });
+            this._playbackRate = video.playbackRate;
         };
         video.onerror = () => {
+            const errorMessage = video.error?.message ?? 'Unknown player error';
+            this.emit('statusChange', 'error', this._status, {
+                message: errorMessage,
+            });
             this._status = 'error';
         };
-        video.onloadeddata = () => {
+        video.oncanplay = () => {
+            this.emit('statusChange', 'readyToPlay', this._status);
             this._status = 'readyToPlay';
             if (this.playing && video.paused) {
                 video.play();
             }
         };
         video.onwaiting = () => {
+            this.emit('statusChange', 'loading', this._status);
             this._status = 'loading';
+        };
+        video.onended = () => {
+            this.emit('playToEnd');
+        };
+        video.onloadstart = () => {
+            this.emit('sourceChange', this.src, this.previousSrc);
         };
     }
 }
