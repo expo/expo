@@ -22,9 +22,8 @@ class ExpoLinkingModule : Module() {
       initialURL?.toString()
     }
 
-    Function("clearLinkingURL") {
+    Function<Unit>("clearLinkingURL") {
       initialURL = null
-      return@Function null
     }
 
     OnStartObserving("onURLReceived") {
