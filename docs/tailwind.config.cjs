@@ -22,10 +22,6 @@ module.exports = {
   ],
   ...getExpoTheme(
     {
-      screens: {
-        '2xl': '1500px',
-        '2xl-gutters': '1572px',
-      },
       backgroundImage: theme => ({
         'default-fade': `linear-gradient(to bottom, ${theme('backgroundColor.default')}, transparent)`,
         'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,
@@ -35,16 +31,6 @@ module.exports = {
         'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
         appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
       }),
-      fontSize: {
-        inherit: [
-          'inherit',
-          {
-            lineHeight: 'inherit',
-            letterSpacing: 'inherit',
-            fontWeight: 'inherit',
-          },
-        ],
-      },
       keyframes: {
         fadeIn: {
           '0%': {
