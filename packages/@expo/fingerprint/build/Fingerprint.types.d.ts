@@ -22,6 +22,19 @@ export interface Fingerprint {
      */
     hash: string;
 }
+export interface FingerprintDiffItem {
+    /**
+     * The operation type of the diff item.
+     */
+    op: 'added' | 'removed' | 'changed';
+    /**
+     * The source of the diff item.
+     *   - When type is 'added', the source is the new source.
+     *   - When type is 'removed', the source is the old source.
+     *   - When type is 'changed', the source is the new source.
+     */
+    source: FingerprintSource;
+}
 export type Platform = 'android' | 'ios';
 export interface Options {
     /**
