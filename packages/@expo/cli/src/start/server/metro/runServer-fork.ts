@@ -29,13 +29,7 @@ export const runServer = async (
     waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions,
-  {
-    mockServer,
-  }: {
-    // Use a mock server object instead of creating a real server, this is used in export cases where we want to reuse codepaths but not actually start a server.
-    mockServer: boolean;
-  }
+  }: RunServerOptions
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
   // await earlyPortCheck(host, config.server.port);
 
@@ -65,41 +59,24 @@ export const runServer = async (
   } else {
     httpServer = http.createServer(serverApp);
   }
-
-  httpServer.on('error', (error) => {
-    if ('code' in error && error.code === 'EADDRINUSE') {
-      // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
-      // about the process before throwing.
-      const info = getRunningProcess(config.server.port);
-      if (info) {
-        Log.error(
-          `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
-        );
-      }
-    }
-
-    if (onError) {
-      onError(error);
-    }
-    end();
-  });
-
-  // Disable any kind of automatic timeout behavior for incoming
-  // requests in case it takes the packager more than the default
-  // timeout of 120 seconds to respond to a request.
-  httpServer.timeout = 0;
-
-  httpServer.on('close', () => {
-    end();
-  });
-
-  if (mockServer) {
-    return { server: httpServer, metro: metroServer };
-  }
-
   return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
     httpServer.on('error', (error) => {
+      if ('code' in error && error.code === 'EADDRINUSE') {
+        // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
+        // about the process before throwing.
+        const info = getRunningProcess(config.server.port);
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      }
+
+      if (onError) {
+        onError(error);
+      }
       reject(error);
+      end();
     });
 
     httpServer.listen(config.server.port, host, () => {
@@ -130,6 +107,15 @@ export const runServer = async (
       });
 
       resolve({ server: httpServer, metro: metroServer });
+    });
+
+    // Disable any kind of automatic timeout behavior for incoming
+    // requests in case it takes the packager more than the default
+    // timeout of 120 seconds to respond to a request.
+    httpServer.timeout = 0;
+
+    httpServer.on('close', () => {
+      end();
     });
   });
 };

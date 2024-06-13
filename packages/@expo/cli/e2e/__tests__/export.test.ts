@@ -6,7 +6,14 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 import { sync as globSync } from 'glob';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  setupTestProjectAsync,
+  bin,
+  ensurePortFreeAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -40,6 +47,7 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
+  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {

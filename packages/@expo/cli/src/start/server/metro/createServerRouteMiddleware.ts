@@ -10,6 +10,7 @@ import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
+import { ForwardHtmlError } from './MetroBundlerDevServer';
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
 import { warnInvalidWebOutput } from './router';
@@ -73,6 +74,14 @@ export function createRouteHandlerMiddleware(
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+          if (error instanceof ForwardHtmlError) {
+            return new Response(error.html, {
+              status: error.statusCode,
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            });
+          }
 
           try {
             return new Response(

@@ -16,7 +16,7 @@ describe('exports with single-page', () => {
 
   beforeAll(
     async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+      await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',

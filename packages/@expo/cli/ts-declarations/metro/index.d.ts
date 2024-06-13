@@ -211,11 +211,6 @@ declare module 'metro/src/lib/createWebsocketServer' {
 declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
   import type { Module } from 'metro';
 
-  export function sourceMapGeneratorNonBlocking(
-    modules: readonly Module<any>[],
-    options: SourceMapGeneratorOptions
-  ): Promise<any>;
-
   export type SourceMapGeneratorOptions = {
     excludeSource: boolean;
     processModuleFilter: (module: Module) => boolean;
@@ -227,7 +222,7 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
   import type { Module } from 'metro';
 
   function sourceMapString(
-    modules: readonly Array<Module<any>>,
+    modules: readonly Array<Module>,
     options: SourceMapGeneratorOptions
   ): string;
 
@@ -392,11 +387,6 @@ declare module 'metro/src/lib/getAppendScripts' {
 
 declare module 'metro/src/IncrementalBundler' {
   import type OriginalIncrementalBundler from 'metro/src/IncrementalBundler.d';
-  import { Graph } from 'metro/src/DeltaBundler';
-
-  export type RevisionId = string;
-
-  export type OutputGraph = Graph<void>;
 
   // Overrides the `IncrementalBundler.getDependencies` returned type for inconsistent
   // ReadOnlyDependencies<void> <-> ReadOnlyDependencies<> type.

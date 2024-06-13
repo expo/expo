@@ -5,12 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
-import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
-import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
@@ -18,16 +15,14 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
-import { DevServerManager } from '../../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
-import { BundleAssetWithFileHashes } from '../fork-bundleAsync';
+import { getAssets } from '../fork-bundleAsync';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 const debug = require('debug')('expo:export:embed');
@@ -84,82 +79,6 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ]);
 }
 
-export async function exportEmbedBundleAndAssetsAsync(
-  projectRoot: string,
-  options: Options
-): Promise<{
-  bundle: Awaited<ReturnType<Server['build']>>;
-  assets: readonly BundleAssetWithFileHashes[];
-}> {
-  const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
-    minify: options.minify,
-    mode: options.dev ? 'development' : 'production',
-    port: 8081,
-    isExporting: true,
-    location: {},
-    resetDevServer: options.resetCache,
-    maxWorkers: options.maxWorkers,
-  });
-
-  const devServer = devServerManager.getDefaultDevServer();
-  assert(devServer instanceof MetroBundlerDevServer);
-
-  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
-  const isHermes = isEnableHermesManaged(exp, options.platform);
-
-  let sourceMapUrl = options.sourcemapOutput;
-  if (sourceMapUrl && !options.sourcemapUseAbsolutePath) {
-    sourceMapUrl = path.basename(sourceMapUrl);
-  }
-
-  try {
-    const bundles = await devServer.legacySinglePageExportBundleAsync(
-      {
-        splitChunks: false,
-        mainModuleName: options.entryFile,
-        platform: options.platform,
-        minify: options.minify,
-        mode: options.dev ? 'development' : 'production',
-        engine: isHermes ? 'hermes' : undefined,
-        serializerIncludeMaps: !!sourceMapUrl,
-        // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-        bytecode: false,
-        // source map inline
-      },
-      {
-        sourceMapUrl,
-        unstable_transformProfile: (options.unstableTransformProfile ||
-          (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
-      }
-    );
-
-    return {
-      bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source.toString(),
-        // Can be optional when source maps aren't enabled.
-        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
-      },
-      assets: bundles.assets,
-    };
-  } catch (error: any) {
-    if (isError(error)) {
-      // Log using Xcode error format so the errors are picked up by xcodebuild.
-      // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
-        // If the error is about to be presented in Xcode, strip the ansi characters from the message.
-        if ('message' in error && isExecutingFromXcodebuild()) {
-          error.message = stripAnsi(error.message) as string;
-        }
-        logMetroErrorInXcode(projectRoot, error);
-      }
-    }
-    throw error;
-  } finally {
-    devServerManager.stopAsync();
-  }
-}
-
-// Exports for expo-updates
 export async function createMetroServerAndBundleRequestAsync(
   projectRoot: string,
   options: Pick<
@@ -213,9 +132,8 @@ export async function createMetroServerAndBundleRequestAsync(
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
+      bytecode: isHermes,
       isExporting: true,
-      // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-      bytecode: false,
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||
@@ -229,6 +147,57 @@ export async function createMetroServerAndBundleRequestAsync(
   return { server, bundleRequest };
 }
 
+export async function exportEmbedBundleAndAssetsAsync(
+  projectRoot: string,
+  options: Options
+): Promise<{
+  bundle: Awaited<ReturnType<Server['build']>>;
+  assets: Awaited<ReturnType<typeof getAssets>>;
+}> {
+  const { server, bundleRequest } = await createMetroServerAndBundleRequestAsync(
+    projectRoot,
+    options
+  );
+
+  try {
+    const bundle = await exportEmbedBundleAsync(server, bundleRequest, projectRoot, options);
+    const assets = await exportEmbedAssetsAsync(server, bundleRequest, projectRoot, options);
+    return { bundle, assets };
+  } finally {
+    server.end();
+  }
+}
+
+export async function exportEmbedBundleAsync(
+  server: Server,
+  bundleRequest: BundleOptions,
+  projectRoot: string,
+  options: Pick<Options, 'platform'>
+) {
+  try {
+    return await profile(
+      server.build.bind(server),
+      'metro-bundle'
+    )({
+      ...bundleRequest,
+      bundleType: 'bundle',
+    });
+  } catch (error: any) {
+    if (isError(error)) {
+      // Log using Xcode error format so the errors are picked up by xcodebuild.
+      // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
+      if (options.platform === 'ios') {
+        // If the error is about to be presented in Xcode, strip the ansi characters from the message.
+        if ('message' in error && isExecutingFromXcodebuild()) {
+          error.message = stripAnsi(error.message) as string;
+        }
+        logMetroErrorInXcode(projectRoot, error);
+      }
+    }
+    throw error;
+  }
+}
+
 export async function exportEmbedAssetsAsync(
   server: Server,
   bundleRequest: BundleOptions,
@@ -236,30 +205,9 @@ export async function exportEmbedAssetsAsync(
   options: Pick<Options, 'platform'>
 ) {
   try {
-    const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
+    return await getAssets(server, {
       ...bundleRequest,
       bundleType: 'todo',
-    });
-
-    assertMetroPrivateServer(server);
-
-    const dependencies = await server._bundler.getDependencies(
-      [entryFile],
-      transformOptions,
-      resolverOptions,
-      { onProgress, shallow: false, lazy: false }
-    );
-
-    const config = server._config;
-
-    return getMetroAssets(dependencies, {
-      processModuleFilter: config.serializer.processModuleFilter,
-      assetPlugins: config.transformer.assetPlugins,
-      platform: transformOptions.platform!,
-      // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
-      // behavior.
-      projectRoot: config.projectRoot, // this._getServerRootDir(),
-      publicPath: config.transformer.publicPath,
     });
   } catch (error: any) {
     if (isError(error)) {
