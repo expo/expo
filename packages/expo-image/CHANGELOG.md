@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed blur radius not working. Additionally, appearance of the effect is now more consistent across platforms. For iOS, you may need to increase the `blurRadius` prop value to get the same effect as previously. ([#29678](https://github.com/expo/expo/pull/29678) by [@vonovak](https://github.com/vonovak))
 - Fixed `tintColor` not working on Safari browsers. ([#29169](https://github.com/expo/expo/pull/29169) by [@bradleyayers](https://github.com/bradleyayers))
 
 ### 💡 Others
