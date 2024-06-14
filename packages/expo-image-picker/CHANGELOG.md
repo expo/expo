@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support removing microphone permissions through config plugin. ([#29749](https://github.com/expo/expo/pull/29749) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.5 — 2024-05-15

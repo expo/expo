@@ -156,6 +156,17 @@ internal enum MediaType: String, EnumArgument {
     }
   }
 
+  func requiresMicrophonePermission() -> Bool {
+    switch self {
+    case .images:
+      return false
+    case .videos:
+      return true
+    case .all:
+      return true
+    }
+  }
+
   @available(iOS 14, *)
   func toPickerFilter() -> PHPickerFilter {
     // TODO: (barthap) Maybe add support for live photos
