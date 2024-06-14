@@ -20,7 +20,7 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     let cameraUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCameraUsageDescription")
     if cameraUsageDescription == nil {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either 'NSCameraUsageDescription', video services will fail. \
+      This app is missing 'NSCameraUsageDescription', video services will fail. \
       Ensure this key exists in the app's Info.plist
       """))
       systemStatus = AVAuthorizationStatus.denied
