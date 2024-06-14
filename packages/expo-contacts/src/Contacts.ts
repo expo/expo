@@ -258,7 +258,7 @@ export type Contact = {
   /**
    * Full name with proper format.
    */
-  name: string;
+  name?: string;
   /**
    * Given name.
    */
