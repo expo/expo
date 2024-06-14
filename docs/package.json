@@ -23,10 +23,6 @@
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
   },
-  "resolutions": {
-    "string-width": "^4.2.3",
-    "wrap-ansi": "^7.0.0"
-  },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@expo/styleguide": "^8.2.2",
