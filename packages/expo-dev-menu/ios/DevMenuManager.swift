@@ -10,13 +10,12 @@ class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
       return closure()
-    } else {
-      var result: T?
-      DispatchQueue.main.sync {
-        result = closure()
-      }
-      return result!
     }
+  var result: T?
+  DispatchQueue.main.sync {
+    result = closure()
+  }
+  return result!
   }
 }
 
@@ -232,7 +231,6 @@ open class DevMenuManager: NSObject {
     return UIUserInterfaceStyle.unspecified
   }
 
-
   // MARK: private
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
@@ -297,20 +295,20 @@ open class DevMenuManager: NSObject {
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
   public var registeredCallbacks: [Callback] = []
-  
+
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
     guard let bridge = currentBridge else {
       return nil
     }
-    
+
     let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
     guard let devSettings = devDelegate.devSettings else {
       return nil
     }
-    
+
     return devDelegate
   }
-  
+
   func reload() {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.reload()
@@ -330,7 +328,7 @@ open class DevMenuManager: NSObject {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleRemoteDebugging()
   }
-  
+
   func openJSInspector() {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.openJSInspector()

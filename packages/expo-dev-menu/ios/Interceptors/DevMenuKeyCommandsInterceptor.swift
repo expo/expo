@@ -44,7 +44,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
     if self is UITextField || self is UITextView || String(describing: type(of: self)) == "WKContentView" {
       return []
     }
-    
+
     var keyCommands = [
       UIKeyCommand(input: "r", modifierFlags: [], action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:))),
       UIKeyCommand(input: "i", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:))),
@@ -58,19 +58,19 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
-      if (key.input == "r" && key.modifierFlags == []) {
+      if key.input == "r" && key.modifierFlags == [] {
         DevMenuManager.shared.reload()
         DevMenuManager.shared.closeMenu()
         return
       }
-      
-      if (key.input == "i" && key.modifierFlags == .command) {
+
+      if key.input == "i" && key.modifierFlags == .command {
         DevMenuManager.shared.toggleInspector()
         DevMenuManager.shared.closeMenu()
         return
       }
-      
-      if (key.input == "p" && key.modifierFlags == .command) {
+
+      if key.input == "p" && key.modifierFlags == .command {
         DevMenuManager.shared.togglePerformanceMonitor()
         DevMenuManager.shared.closeMenu()
         return
