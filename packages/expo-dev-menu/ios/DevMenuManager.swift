@@ -15,6 +15,7 @@ class Dispatch {
   DispatchQueue.main.sync {
     result = closure()
   }
+  // swiftlint:disable:next force_unwrapping
   return result!
   }
 }

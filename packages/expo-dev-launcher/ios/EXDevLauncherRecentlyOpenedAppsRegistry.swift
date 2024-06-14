@@ -24,6 +24,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
 
     // reloading the same url - update the old entry w/ any new fields instead of creating a new one
     if let previousMatchingEntry = appRegistry[url] {
+      // swiftlint:disable:next force_cast
       appEntry = previousMatchingEntry as! [String: Any]
     }
 

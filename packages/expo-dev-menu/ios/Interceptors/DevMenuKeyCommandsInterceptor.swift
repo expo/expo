@@ -58,7 +58,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
-      if key.input == "r" && key.modifierFlags == [] {
+      if key.input == "r" && key.modifierFlags.isEmpty {
         DevMenuManager.shared.reload()
         DevMenuManager.shared.closeMenu()
         return
