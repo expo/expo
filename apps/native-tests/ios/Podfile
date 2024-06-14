@@ -12,6 +12,8 @@ install! 'cocoapods',
   :deterministic_uuids => false
 
 target 'NativeTests' do
+  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface/ios'
+
   # add this manually, because it has UITests too
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 

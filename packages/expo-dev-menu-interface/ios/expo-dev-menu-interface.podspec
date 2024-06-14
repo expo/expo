@@ -16,7 +16,6 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.source_files   = '**/*.{h,m,swift}'
   s.preserve_paths = '**/*.{h,m,swift}'
-  s.exclude_files  = 'Tests/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenuInterface'
 
