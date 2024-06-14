@@ -146,7 +146,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
 
   private func checkMicrophonePermissions() throws {
-    guard let microphoneUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription") else {
+    guard Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription") != nil else {
       throw MissingMicrophonePermissionException()
     }
   }
