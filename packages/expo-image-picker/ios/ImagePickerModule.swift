@@ -118,7 +118,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
 
     picker.mediaTypes = options.mediaTypes.toArray()
-    
+
     if options.mediaTypes.requiresMicrophonePermission() && sourceType == .camera {
       do {
         try checkMicrophonePermissions()
@@ -127,7 +127,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
         return
       }
     }
-    
+
     picker.videoExportPreset = options.videoExportPreset.toAVAssetExportPreset()
     picker.videoQuality = options.videoQuality.toQualityType()
     picker.videoMaximumDuration = options.videoMaxDuration
@@ -144,7 +144,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     presentPickerUI(picker, pickingContext: pickingContext)
   }
-  
+
   private func checkMicrophonePermissions() throws {
     let microphoneUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
     if microphoneUsageDescription == nil {

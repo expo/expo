@@ -155,7 +155,7 @@ internal enum MediaType: String, Enumerable {
       return [kUTTypeImage as String, kUTTypeMovie as String]
     }
   }
-  
+
   func requiresMicrophonePermission() -> Bool {
     switch self {
     case .images:
