@@ -26,11 +26,4 @@ Pod::Spec.new do |s|
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
-
-  s.test_spec 'Tests' do |test_spec|
-    test_spec.platform     = :ios, '13.4'
-    test_spec.source_files = 'Tests/**/*.{h,m,swift}'
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
-  end
 end
