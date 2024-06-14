@@ -3,17 +3,7 @@
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Platform,
-  StatusBar,
-  useWindowDimensions,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar } from 'react-native';
 
 import { Pressable } from './Pressable';
 import { RouteNode } from '../Route';
@@ -43,50 +33,31 @@ export function getNavOptions(): NativeStackNavigationOptions {
       // @ts-expect-error: mistyped
       borderBottomColor: '#323232',
     },
+    animation: 'default',
   };
 }
 
 export function Sitemap() {
-  const { top, bottom } = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
   return (
     <View style={styles.container}>
       {!hasViewControllerBasedStatusBarAppearance && <StatusBar barStyle="light-content" />}
-      <View
-        style={[
-          styles.main,
-          {
-            minWidth: Math.min(960, width * 0.9),
-          },
-        ]}>
-        <ScrollView
-          contentContainerStyle={[
-            styles.scroll,
-            {
-              paddingTop: top + 12,
-              paddingBottom: bottom + 12,
-            },
-          ]}
-          style={{ flex: 1 }}>
-          <FileSystemView />
-        </ScrollView>
-      </View>
+      <Text role="heading" aria-level={1} style={styles.title}>
+        Sitemap
+      </Text>
+      <ScrollView contentContainerStyle={[styles.scroll]}>
+        <FileSystemView />
+      </ScrollView>
     </View>
   );
 }
 
 function FileSystemView() {
   const routes = useExpoRouter().getSortedRoutes();
-
-  return (
-    <>
-      {routes.map((child) => (
-        <View key={child.contextKey} style={styles.itemContainer}>
-          <FileItem route={child} />
-        </View>
-      ))}
-    </>
-  );
+  return routes.map((route) => (
+    <View key={route.contextKey} style={styles.itemContainer}>
+      <FileItem route={route} />
+    </View>
+  ));
 }
 
 function FileItem({
@@ -111,13 +82,13 @@ function FileItem({
     return (
       '/' +
       segments
-        .map((v) => {
+        .map((segment) => {
           // add an extra layer of entropy to the url for deep dynamic routes
-          if (matchDeepDynamicRouteName(v)) {
-            return v + '/' + Date.now();
+          if (matchDeepDynamicRouteName(segment)) {
+            return segment + '/' + Date.now();
           }
           // index must be erased but groups can be preserved.
-          return v === 'index' ? '' : v;
+          return segment === 'index' ? '' : segment;
         })
         .filter(Boolean)
         .join('/')
@@ -131,11 +102,11 @@ function FileItem({
       return segments[segments.length - 2] + '/' + segments[segments.length - 1];
     }
 
-    const segmentCount = route.route.split('/').length;
+    const routeSegmentsCount = route.route.split('/').length;
 
     // Join the segment count in reverse order
     // This presents files without layout routes as children with all relevant segments.
-    return segments.slice(-segmentCount).join('/');
+    return segments.slice(-routeSegmentsCount).join('/');
   }, [route]);
 
   const info = isInitial ? 'Initial' : route.generated ? 'Virtual' : '';
@@ -152,12 +123,11 @@ function FileItem({
               router.back();
             }
           }}
-          style={{ flex: 1, display: 'flex' }}
           disabled={disabled}
           asChild
           // Ensure we replace the history so you can't go back to this page.
           replace>
-          <Pressable style={{ flex: 1 }}>
+          <Pressable>
             {({ pressed, hovered }) => (
               <View
                 style={[
@@ -166,7 +136,7 @@ function FileItem({
                     paddingLeft: INDENT + level * INDENT,
                     backgroundColor: hovered ? 'rgba(255,255,255,0.1)' : 'transparent',
                   },
-                  pressed && { backgroundColor: '#323232' },
+                  pressed && { backgroundColor: 'rgba(255,255,255,0.15)' },
                   disabled && { opacity: 0.4 },
                 ]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -216,22 +186,34 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
-  main: {
-    marginHorizontal: 'auto',
-    flex: 1,
-
-    alignItems: 'stretch',
+  title: {
+    color: 'white',
+    fontSize: 36,
+    marginVertical: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   scroll: {
-    paddingHorizontal: 12,
-    // flex: 1,
-    // paddingTop: top + 12,
-    alignItems: 'stretch',
+    paddingHorizontal: '5%',
+    ...Platform.select({
+      ios: {
+        paddingBottom: 24,
+      },
+      web: {
+        width: '100%',
+        maxWidth: 960,
+        marginHorizontal: 'auto',
+        paddingBottom: 24,
+      },
+      default: {
+        paddingBottom: 12,
+      },
+    }),
   },
   itemContainer: {
     borderWidth: 1,
     borderColor: '#323232',
-    borderRadius: 19,
+    borderRadius: 12,
     marginBottom: 12,
     overflow: 'hidden',
   },
@@ -249,5 +231,5 @@ const styles = StyleSheet.create({
   },
   filename: { color: 'white', fontSize: 20, marginLeft: 12 },
   virtual: { textAlign: 'right', color: 'white' },
-  image: { width: 24, height: 24, resizeMode: 'contain' },
+  image: { width: 24, height: 24, resizeMode: 'contain', opacity: 0.6 },
 });
