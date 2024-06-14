@@ -18,11 +18,10 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     var systemStatus: AVAuthorizationStatus
     var status: EXPermissionStatus
     let cameraUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCameraUsageDescription")
-    let microphoneUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
-    if cameraUsageDescription == nil || microphoneUsageDescription == nil {
+    if cameraUsageDescription == nil {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either 'NSCameraUsageDescription' or 'NSMicrophoneUsageDescription', so audio/video services will fail. \
-      Ensure both of these keys exist in app's Info.plist.
+      This app is missing 'NSCameraUsageDescription', video services will fail. \
+      Ensure this key exists in the app's Info.plist
       """))
       systemStatus = AVAuthorizationStatus.denied
     } else {
