@@ -3,7 +3,6 @@ package expo.modules.kotlin.jni
 import com.facebook.jni.HybridData
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeMap
-import com.facebook.react.bridge.ReadableNativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.objects.ObjectDefinitionData
@@ -89,8 +88,6 @@ class JavaScriptModuleObject(
   external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, ownerClass: Class<*>?, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
-
-  external fun emitEvent(jsiContext: JSIContext, eventName: String, eventBody: ReadableNativeMap?)
 
   @Throws(Throwable::class)
   protected fun finalize() {
