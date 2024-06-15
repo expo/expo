@@ -4,7 +4,7 @@ description: A guide on using @react-native-google-signin/google-signin library 
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides different ways, such as Firebase and Google API, to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports various authentication methods (standard, server-side validation, and offline access). You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/).
 
@@ -87,10 +87,10 @@ For iOS, if you use Google API instead of Firebase, you'll need to generate an O
 
 After you have created the iOS client id, you'll also need to provide the iOS URL scheme value in the app config. You can find the value in the Google API console under **API and Services** > **Credentials** > **OAuth 2.0 Client IDs** > **name of your iOS client id** > **Additional information** > **iOS URL scheme**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Getting iOS URL scheme value from Google API console."
   src="/static/images/guides/ios-url-scheme.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Then, add the iOS URL scheme value in the app config under [`ios.infoPlist`](/versions/latest/config/app/#infoplist) as shown below:

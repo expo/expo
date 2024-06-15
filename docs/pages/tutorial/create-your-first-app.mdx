@@ -4,7 +4,7 @@ description: In this tutorial, learn how to create a new Expo project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { A } from '~/ui/components/Text';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -83,10 +83,10 @@ To see the web app in action, press <kbd>w</kbd> in the terminal. It will open t
 
 Once it is running on all platforms, the project should look like this:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running on all platforms"
   src="/static/images/tutorial/01-app-running-on-all-platforms.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 The text displayed on the app's screen above can be found in the **App.js** file which is at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.

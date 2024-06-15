@@ -5,7 +5,7 @@ description: Learn about using custom fonts, supported font formats for each pla
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 Both Android and iOS and most desktop operating systems come with their own set of platform fonts. However, if you want to inject some more brand personality into your app, a well-picked font can go a long way.
@@ -163,11 +163,7 @@ Inter Black is very bold and dark and pretty distinctive so you should be able t
 
 When you load it on your device, you'll see something like this:
 
-<ImageSpotlight
-  alt="Enter a name of your new organization."
-  src="/static/images/font-example-custom-font.jpg"
-  style={{ maxWidth: 305 }}
-/>
+<ContentSpotlight src="/static/images/font-example-custom-font.jpg" className="max-w-[305px]" />
 
 To create a new project including this example, run in your terminal:
 

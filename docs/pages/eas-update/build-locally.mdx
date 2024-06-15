@@ -4,7 +4,7 @@ sidebar_title: Build locally
 description: Learn how to use EAS Update directly with a local build environment.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -189,10 +189,11 @@ Then build and run the app again:
 
 The app should appear as in the screenshot below.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running for the first time"
   src="/static/images/eas-update/getting-started-before-update.png"
-  style={{maxHeight: 600, width: 'auto'}}/>
+  className="max-w-[280px]"
+  />
 </Step>
 
 <Step label="7">
@@ -214,10 +215,10 @@ Once the update is built and uploaded to EAS and the command completes, force cl
 
 The app should now appear as shown in the screenshot below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running update after being restarted twice"
   src="/static/images/eas-update/getting-started-after-update.png"
-  style={{ maxHeight: 600, width: 'auto' }}
+  className="max-w-[280px]"
 />
 
 </Step>

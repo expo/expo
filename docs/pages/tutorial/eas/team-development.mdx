@@ -6,7 +6,6 @@ description: Learn how to use the EAS Update to send OTA updates and share previ
 
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
@@ -125,17 +124,17 @@ By default, EAS will map branches and channels with the same name, if no other m
 
 After the update is published, the CLI will prompt us with information about it.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="EAS Update published successfully with CLI prompt"
   src="/static/images/tutorial/eas/update-01.png"
 />
 
 Click on the **Website link** to see the Update on the Expo dashboard under **Updates**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Expo dashboard shows the latest published update for the development build"
   src="/static/images/tutorial/eas/update-02.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>

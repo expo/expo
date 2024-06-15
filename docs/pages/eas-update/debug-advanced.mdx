@@ -4,7 +4,7 @@ sidebar_title: Advanced
 description: Learn advanced strategies on how to debug EAS Update.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 After verifying our EAS Update configuration in our [basic guide](/eas-update/debug), we can move on to more advanced debugging strategies. The following sections describe common classes of problems and strategies on how to tackle them.
@@ -73,7 +73,7 @@ In each, we expect to see configuration for the EAS Update URL and the runtime v
 
 If we aren't using EAS Build, this section will walk through debugging the state of EAS Update in our project. We'll need to look at multiple spots in the system. Below is a diagram of how EAS Update works and the spots that are useful to inspect when finding the root cause of an issue. In the sections following, we'll inspect and verify these spots and more.
 
-<ImageSpotlight alt="Map of debugging spots" src="/static/images/eas-update/debug-map.png" />
+<ContentSpotlight alt="Map of debugging spots" src="/static/images/eas-update/debug-map.png" />
 
 #### Verify build configuration
 
@@ -103,10 +103,10 @@ There is a link that is defined by the developer between a channel and a branch.
 
 The [Channels page](https://expo.dev/accounts/[account]/projects/[project]/channels) will display the channel to branch mapping if it exists.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Linked branches on the Channels page"
   src="/static/images/eas-update/channels-linked-branches.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 If the channel is not linked to the branch we expect, we can change the link with:
@@ -128,10 +128,10 @@ To inspect which updates are on a branch, we can go to the [Branches page](https
 
 The Branch Detail page will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="List of updates on the Branch Detail page"
   src="/static/images/eas-update/branch-update-list.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 ## Debugging EAS Update
@@ -160,7 +160,7 @@ As for all requests, we expect to see either `200` response codes, or `304` if n
 
 Below is a screenshot showing the request of a successful update manifest request:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Successful manifest request"
   src="/static/images/eas-update/network-request.png"
 />
@@ -222,7 +222,7 @@ As for all requests, we expect to see either `200` response codes, or `304` if n
 
 Below is a screenshot showing the request of a successful update manifest request:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Successful manifest request"
   src="/static/images/eas-update/network-request.png"
 />
@@ -292,7 +292,7 @@ We are not able to publish an update, or parts of our update are not being publi
 
 When we publish an update with EAS Update, it creates a **/dist** folder in the root of our project locally, which includes the assets that were uploaded as a part of the update.
 
-<ImageSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
+<ContentSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
 
 ### Viewing all assets included in an update
 

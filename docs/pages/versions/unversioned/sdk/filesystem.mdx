@@ -8,7 +8,7 @@ platforms: ['android', 'ios', 'tvos']
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
@@ -19,7 +19,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 `expo-file-system` provides access to a file system stored locally on the device. It is also capable of uploading and downloading files from network URLs.
 
 <Collapsible summary="Diagram explaining how expo-file-system interacts with different resources">
-  <ImageSpotlight
+  <ContentSpotlight
     alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
     src="/static/images/sdk/file-system/file-system-diagram.png"
     containerClassName="bg-palette-white"

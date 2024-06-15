@@ -5,7 +5,7 @@ description: Learn about the process of triggering builds from a GitHub reposito
 ---
 
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
@@ -28,7 +28,7 @@ To use this functionality, we need to connect our GitHub account:
 <ImageSpotlight
   alt="Linked GitHub account shows in Expo dashboard"
   src="/static/images/tutorial/eas/github-01.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>
@@ -45,7 +45,7 @@ To enable triggering builds from a GitHub repository, we need to connect it to o
 <ImageSpotlight
   alt="List of GitHub repositories to connect to the project in Expo dashboard"
   src="/static/images/tutorial/eas/github-02.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Click **Connect** for the project repository.
@@ -99,7 +99,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 <ImageSpotlight
   alt="Creating a label in a GitHub PR"
   src="/static/images/tutorial/eas/github-04.png"
-  style={{ maxWidth: 320 }}
+  className="max-w-[320px]"
 />
 
 - Click **Create pull request** button to create the PR. The Expo GitHub app will start the process of creating a development build.
@@ -109,7 +109,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 <ImageSpotlight
   alt="Builds triggered in the Expo dashboard for Android and iOS platforms"
   src="/static/images/tutorial/eas/github-06.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - If we check the details of an individual build, we can see under **Created by** that the build is created by the GitHub app.
@@ -117,7 +117,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 <ImageSpotlight
   alt="Individual build details in the Expo dashboard"
   src="/static/images/tutorial/eas/github-07.png"
-  style={{ maxWidth: 760 }}
+  className="max-w-[760px]"
 />
 
 </Step>
