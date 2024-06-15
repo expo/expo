@@ -14,7 +14,7 @@ jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
   ),
 }));
 
-describe('updates support', () => {
+describe('updates managed support', () => {
   jest.setTimeout(600000);
   const tmpDir = require('temp-dir');
   const projectName = 'fingerprint-e2e-updates';
@@ -60,7 +60,9 @@ describe('updates support', () => {
       stdio: 'ignore',
       cwd: projectRoot,
     });
-    const fingerprintHash1 = await createProjectHashAsync(projectRoot);
+    const fingerprintHash1 = await createProjectHashAsync(projectRoot, {
+      ignorePaths: ['android/**/*', 'ios/**/*'],
+    });
     await spawnAsync('npx', ['expo', 'prebuild'], {
       stdio: 'ignore',
       cwd: projectRoot,

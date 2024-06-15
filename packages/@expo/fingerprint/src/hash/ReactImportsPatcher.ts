@@ -9,7 +9,7 @@ interface Options {
 
   /**
    * A function that transforms a chunk of data. Exposing this for testing purposes.
-   * @default The `patchChunk`
+   * @default `patchChunk`
    */
   transformFn?: (chunk: string) => string;
 }
