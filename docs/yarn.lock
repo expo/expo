@@ -475,30 +475,30 @@
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.8.tgz#093f6099598f4765a04cb67b38d259a4e7fa4cb3"
-  integrity sha512-jqbgMgz1C15p82dBL3Cgg6K49nS+kxAP4gIlD06hRVCgYA9y0z8Xy7uc9ulb2ZE69vtxCv783QPXMSdEBlybiA==
+"@expo/styleguide-icons@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.9.tgz#bc80d8aba0e956c392e6c1c2ca692069fec95a3d"
+  integrity sha512-+z037gXZZWbhj47brp8p47a9qDw7rO//Hf7XtAuYUOMY3YmqSAMc0JsMTQ5GvdggoWnOQNZjOnmFwiEQfJI2MA==
   dependencies:
-    tailwind-merge "^2.2.0"
+    tailwind-merge "^2.3.0"
 
-"@expo/styleguide-search-ui@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.4.tgz#146b33aa5b01a65066f8a2048852ffc7dd3c3f21"
-  integrity sha512-YkUYs9ccAiHssM5sfL4d1YKVG0YN4fmcfYHuY7uauNSx/kCb2pyk+rc4dIRy0eJhn1xpLNoRkQx7h9PkO6CDJw==
+"@expo/styleguide-search-ui@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.5.tgz#2494099b539199aa859ca06ef2506949160c597b"
+  integrity sha512-7UuhAqt/1wwU71Ll8NcJu3ktQ5Y4ruH3JEr2iGgjaR+gAq1DkjcCMQ+waDeI/Bp5IW0MM5WyOITJZNrkCAaRzw==
   dependencies:
-    "@expo/styleguide" "^8.2.2"
-    "@expo/styleguide-icons" "^1.0.8"
+    "@expo/styleguide" "^8.2.3"
+    "@expo/styleguide-icons" "^1.0.9"
     cmdk "^0.2.0"
     lodash.groupby "^4.6.0"
 
-"@expo/styleguide@^8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.2.tgz#b4e7b8a57db756eb823d92a3aa958b6167e5b7b5"
-  integrity sha512-Qt+j3pCI5DiIZZcQZlWWkiIk/Q2/RATlZuJJgJ/yj84A46u8VZH9dStluMppCsC/hWsr+/Dl+GDSTefie4Zb/Q==
+"@expo/styleguide@^8.2.3":
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.3.tgz#e671110ccb78de128cd6c038cd771934b00f9983"
+  integrity sha512-sKDopCgUXwJDEAksULApmxT+muoZLhXaBj8VACDxL+bWUQJHQiXbe7+H3tL+kNy2O/eYxjKb/3eeGBKhwrhUwA==
   dependencies:
     "@expo/styleguide-base" "^1.0.1"
-    tailwind-merge "^2.2.0"
+    tailwind-merge "^2.3.0"
 
 "@floating-ui/core@^0.7.3":
   version "0.7.3"
@@ -4177,10 +4177,10 @@ eslint-plugin-react@^7.34.1:
     semver "^6.3.1"
     string.prototype.matchall "^4.0.11"
 
-eslint-plugin-tailwindcss@^3.17.0:
-  version "3.17.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.17.0.tgz#d2c77a727067fc797c9f67d5df66608b79cd4732"
-  integrity sha512-Ofl7tNh57a3W8BKHstKZSkD2gSCEkw54ycwZ958IK9zUR8TiNYdp8b0WGoLWLeyOAbeF1VPVJFBnlkJeIM2kVg==
+eslint-plugin-tailwindcss@^3.17.3:
+  version "3.17.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.17.3.tgz#0cb4cf03a4415dca10389459cae34ecdbc84511b"
+  integrity sha512-DVMVVUFQ+lPraRSuUk2I41XMnusXT6b3WaQZYlUHduULnERaqe9sNfmpRY1IyxlzmKoQxSbZ8IHRhl9ePo8PeA==
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.4.4"
@@ -9362,17 +9362,17 @@ synckit@^0.8.6:
     "@pkgr/core" "^0.1.0"
     tslib "^2.6.2"
 
-tailwind-merge@^2.2.0:
+tailwind-merge@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-2.3.0.tgz#27d2134fd00a1f77eca22bcaafdd67055917d286"
   integrity sha512-vkYrLpIP+lgR0tQCG6AP7zZXCTLc1Lnv/CCRT3BqJ9CZ3ui2++GPaGb1x/ILsINIMSYqqvrpqjUFsMNLlW99EA==
   dependencies:
     "@babel/runtime" "^7.24.1"
 
-tailwindcss@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.3.tgz#be48f5283df77dfced705451319a5dffb8621519"
-  integrity sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==
+tailwindcss@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.4.tgz#351d932273e6abfa75ce7d226b5bf3a6cb257c05"
+  integrity sha512-ZoyXOdJjISB7/BcLTR6SEsLgKtDStYyYZVLsUtWChO4Ps20CBad7lfJKVDiejocV4ME1hLmyY0WJE3hSDcmQ2A==
   dependencies:
     "@alloc/quick-lru" "^5.2.0"
     arg "^5.0.2"
