@@ -3,13 +3,13 @@
 import { Transform, type TransformCallback } from 'stream';
 interface Options {
     /**
-     * If true, only the first chunk will be transformed.
-     * @default true given the first chunk is usually good enough for imports.
+     * Length of the file portion containing headers to transform.
+     * @default ReactImportsPatchTransform.DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM
      */
-    onlyTransformFirstChunk?: boolean;
+    lengthOfFilePortionContainingHeadersToTransform?: number;
     /**
      * A function that transforms a chunk of data. Exposing this for testing purposes.
-     * @default The `patchChunk`
+     * @default `patchChunk`
      */
     transformFn?: (chunk: string) => string;
 }
@@ -17,9 +17,10 @@ interface Options {
  * A transform stream that patches React import statements in Objective-C files.
  */
 export declare class ReactImportsPatchTransform extends Transform {
-    private chunkIndex;
-    private readonly onlyTransformFirstChunk;
+    private readLength;
+    private readonly lengthOfFilePortionContainingHeadersToTransform;
     private readonly transformFn;
+    private static DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM;
     constructor(options?: Options);
     _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void;
 }

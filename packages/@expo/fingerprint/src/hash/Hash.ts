@@ -126,7 +126,9 @@ export async function createFileHashResultsAsync(
 
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
-      let stream: Readable = createReadStream(path.join(projectRoot, filePath));
+      let stream: Readable = createReadStream(path.join(projectRoot, filePath), {
+        highWaterMark: 1024,
+      });
       if (
         options.enableReactImportsPatcher &&
         options.platforms.includes('ios') &&

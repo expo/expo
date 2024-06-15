@@ -6,20 +6,33 @@ const stream_1 = require("stream");
  * A transform stream that patches React import statements in Objective-C files.
  */
 class ReactImportsPatchTransform extends stream_1.Transform {
-    chunkIndex = 0;
-    onlyTransformFirstChunk;
+    readLength = 0;
+    lengthOfFilePortionContainingHeadersToTransform;
     transformFn;
+    static DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM = 16 * 1024; // 16KB
     constructor(options) {
         super();
-        this.onlyTransformFirstChunk = options?.onlyTransformFirstChunk ?? true;
+        this.lengthOfFilePortionContainingHeadersToTransform =
+            options?.lengthOfFilePortionContainingHeadersToTransform ??
+                ReactImportsPatchTransform.DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM;
         this.transformFn = options?.transformFn ?? patchChunk;
     }
     _transform(chunk, _encoding, callback) {
-        const result = this.onlyTransformFirstChunk && this.chunkIndex > 0
-            ? chunk.toString()
-            : this.transformFn(chunk.toString());
+        const remainingLength = this.lengthOfFilePortionContainingHeadersToTransform - this.readLength;
+        let result;
+        if (remainingLength <= 0) {
+            result = chunk.toString();
+        }
+        else if (remainingLength >= chunk.length) {
+            result = this.transformFn(chunk.toString());
+        }
+        else {
+            const portionToTransform = chunk.slice(0, remainingLength).toString();
+            const portionToLeave = chunk.slice(remainingLength).toString();
+            result = this.transformFn(portionToTransform) + portionToLeave;
+        }
         this.push(result);
-        ++this.chunkIndex;
+        this.readLength += chunk.length;
         callback();
     }
 }

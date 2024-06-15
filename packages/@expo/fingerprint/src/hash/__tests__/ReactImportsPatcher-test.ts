@@ -95,32 +95,34 @@ describe(patchChunk, () => {
 });
 
 describe(ReactImportsPatchTransform, () => {
-  it('should transform the first chunk by default', async () => {
+  it('should transform the first 16KB by default', async () => {
     const transformFn = jest.fn().mockImplementation((chunk) => chunk);
     const transform = new ReactImportsPatchTransform({ transformFn });
     const callback = jest.fn();
-    transform._transform(Buffer.from('chunk1'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk2'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk3'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk4'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk5'), 'utf-8', callback);
-    expect(callback).toHaveBeenCalledTimes(5);
-    expect(transformFn).toHaveBeenCalledTimes(1);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    expect(callback).toHaveBeenCalledTimes(6);
+    expect(transformFn).toHaveBeenCalledTimes(4);
   });
 
-  it('should transform the all chunks when `onlyTransformFirstChunk=false`', async () => {
+  it('should transform with given `lengthOfFilePortionContainingHeadersToTransform` bytes', async () => {
     const transformFn = jest.fn().mockImplementation((chunk) => chunk);
     const transform = new ReactImportsPatchTransform({
       transformFn,
-      onlyTransformFirstChunk: false,
+      lengthOfFilePortionContainingHeadersToTransform: 8 * 1024,
     });
     const callback = jest.fn();
-    transform._transform(Buffer.from('chunk1'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk2'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk3'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk4'), 'utf-8', callback);
-    transform._transform(Buffer.from('chunk5'), 'utf-8', callback);
-    expect(callback).toHaveBeenCalledTimes(5);
-    expect(transformFn).toHaveBeenCalledTimes(5);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    transform._transform(Buffer.alloc(4 * 1024).fill(' '), 'utf-8', callback);
+    expect(callback).toHaveBeenCalledTimes(6);
+    expect(transformFn).toHaveBeenCalledTimes(2);
   });
 });

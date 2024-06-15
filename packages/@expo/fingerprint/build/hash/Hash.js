@@ -92,7 +92,9 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
             }
             let resolved = false;
             const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
-            let stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath));
+            let stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath), {
+                highWaterMark: 1024,
+            });
             if (options.enableReactImportsPatcher &&
                 options.platforms.includes('ios') &&
                 (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))) {

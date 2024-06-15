@@ -2,10 +2,10 @@ import { Transform, type TransformCallback } from 'stream';
 
 interface Options {
   /**
-   * If true, only the first chunk will be transformed.
-   * @default true given the first chunk is usually good enough for imports.
+   * Length of the file portion containing headers to transform.
+   * @default ReactImportsPatchTransform.DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM
    */
-  onlyTransformFirstChunk?: boolean;
+  lengthOfFilePortionContainingHeadersToTransform?: number;
 
   /**
    * A function that transforms a chunk of data. Exposing this for testing purposes.
@@ -18,23 +18,33 @@ interface Options {
  * A transform stream that patches React import statements in Objective-C files.
  */
 export class ReactImportsPatchTransform extends Transform {
-  private chunkIndex: number = 0;
-  private readonly onlyTransformFirstChunk: boolean;
+  private readLength: number = 0;
+  private readonly lengthOfFilePortionContainingHeadersToTransform: number;
   private readonly transformFn: (chunk: string) => string;
+  private static DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM = 16 * 1024; // 16KB
 
   constructor(options?: Options) {
     super();
-    this.onlyTransformFirstChunk = options?.onlyTransformFirstChunk ?? true;
+    this.lengthOfFilePortionContainingHeadersToTransform =
+      options?.lengthOfFilePortionContainingHeadersToTransform ??
+      ReactImportsPatchTransform.DEFAULT_LENGTH_OF_FILE_PORTION_CONTAINING_HEADERS_TO_TRANSFORM;
     this.transformFn = options?.transformFn ?? patchChunk;
   }
 
   _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void {
-    const result =
-      this.onlyTransformFirstChunk && this.chunkIndex > 0
-        ? chunk.toString()
-        : this.transformFn(chunk.toString());
+    const remainingLength = this.lengthOfFilePortionContainingHeadersToTransform - this.readLength;
+    let result: string;
+    if (remainingLength <= 0) {
+      result = chunk.toString();
+    } else if (remainingLength >= chunk.length) {
+      result = this.transformFn(chunk.toString());
+    } else {
+      const portionToTransform = chunk.slice(0, remainingLength).toString();
+      const portionToLeave = chunk.slice(remainingLength).toString();
+      result = this.transformFn(portionToTransform) + portionToLeave;
+    }
     this.push(result);
-    ++this.chunkIndex;
+    this.readLength += chunk.length;
     callback();
   }
 }
