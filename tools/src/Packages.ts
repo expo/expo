@@ -300,19 +300,6 @@ export class Package {
   }
 
   /**
-   * Checks whether package has any native code (iOS, Android, C++).
-   */
-  async isNativeModuleAsync(): Promise<boolean> {
-    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
-    for (const dir of dirs) {
-      if (await fs.pathExists(dir)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Checks whether the package contains native unit tests on the given platform.
    */
   async hasNativeTestsAsync(platform: Platform): Promise<boolean> {
