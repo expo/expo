@@ -31,7 +31,7 @@ export const Footer = ({
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
-  const isExpoPackage = packageName && packageName.startsWith('expo-');
+  const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
 
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
