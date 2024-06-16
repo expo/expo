@@ -50,6 +50,8 @@ export default function Route() {
 
 Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
 
+For dynamic routes, both the route parameters and the search parameters are returned.
+
 Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
@@ -74,6 +76,8 @@ export default function Route() {
 <APIBox header="useLocalSearchParams">
 
 Returns the URL search parameters for the contextually selected route. Refer to the [local versus global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more information.
+
+For dynamic routes, both the route parameters and the search parameters are returned.
 
 <FileTree files={['app/_layout.tsx', 'app/[first]/home.tsx', 'app/[second]/shop.tsx']} />
 
@@ -174,6 +178,12 @@ export default function Route() {
   const pathname = usePathname();
   /* @end */
 
+  // Extract the user parameter from the pathname
+  const user = pathname.split('/').filter(Boolean).pop();
+
+  return <Text>User: {user}</Text>;
+}
+
   return <Text>User: {user}</Text>;
 }
 ```
@@ -195,7 +205,11 @@ export default function Route() {
   const segments = useSegments();
   /* @end */
 
-  return <Text>Hello</Text>;
+  // Extract the user parameter from the segments
+  const user = segments[segments.length - 1]; // Assuming the user parameter is the last segment
+
+  return <Text>User: {user}</Text>;
+}
 }
 ```
 
@@ -209,7 +223,10 @@ export default function Route() {
   const segments = useSegments<['profile'] | ['profile', '[user]']>();
   /* @end */
 
-  return </>
+  // Extract the user parameter from the segments
+  const user = segments[1]; // Assuming the structure is ['profile', 'user']
+
+  return <Text>User: {user}</Text>;
 }
 ```
 

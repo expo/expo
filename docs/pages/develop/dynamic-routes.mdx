@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
 
 ## Access parameters from dynamic segments
 
-Dynamic segments of a URL are accessible with a [search parameter](/router/reference/search-parameters/) in the route component. For example, you can use the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook which returns the search parameters for the selected route.
+Dynamic segments of a URL are accessible with a [route parameter](/router/reference/url-parameters/) in the route component. For example, you can use the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook which returns the URL parameters for the selected route.
 
 ```tsx app/(home)/details/[id].tsx|collapseHeight=300
 import { useLocalSearchParams } from 'expo-router';
