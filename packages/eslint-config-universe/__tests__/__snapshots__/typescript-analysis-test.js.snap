@@ -6,33 +6,8 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": [
-    {
-      "column": 10,
-      "endColumn": 46,
-      "endLine": 11,
-      "line": 11,
-      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
-      "messageId": "preferOptionalChain",
-      "nodeType": "LogicalExpression",
-      "ruleId": "@typescript-eslint/prefer-optional-chain",
-      "severity": 1,
-      "suggestions": [
-        {
-          "desc": "Change to an optional chain.",
-          "fix": {
-            "range": [
-              138,
-              174,
-            ],
-            "text": "foo?.a?.b?.c",
-          },
-          "messageId": "optionalChainSuggest",
-        },
-      ],
-    },
-  ],
-  "source": "type T = {
+  "messages": [],
+  "output": "type T = {
   a?: {
     b?: {
       c: string;
@@ -41,12 +16,33 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   };
 };
 
+type T2 = {
+  a?: {
+    b: {
+      c: string;
+      method?: () => void;
+    };
+  };
+};
+
 export function myFunc(foo: T | null) {
-  return foo && foo.a && foo.a.b && foo.a.b.c;
-}",
+  return foo?.a?.b?.c;
+}
+
+export function myFunc2(foo: T2 | null) {
+  return foo?.a?.b.method && foo.a.b.method();
+}
+",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
-  "warningCount": 1,
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
+  "warningCount": 0,
 }
 `;
 
@@ -59,12 +55,12 @@ exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
   "messages": [
     {
       "column": 1,
-      "endColumn": 2,
-      "endLine": 6,
+      "endColumn": 21,
+      "endLine": 4,
       "line": 4,
-      "message": "For-in loops over arrays are forbidden. Use for-of or array.forEach instead.",
+      "message": "For-in loops over arrays skips holes, returns indices as strings, and may visit the prototype chain or other enumerable properties. Use a more robust iteration method such as for-of or array.forEach instead.",
       "messageId": "forInViolation",
-      "nodeType": "ForInStatement",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-for-in-array",
       "severity": 2,
     },
@@ -77,7 +73,14 @@ for (const b in arr) {
 }
 export { sum };",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -121,7 +124,14 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 1,
 }
 `;
@@ -149,7 +159,14 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
   throw 3;
 }",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/only-throw-error",
+      ],
+      "ruleId": "@typescript-eslint/no-throw-literal",
+    },
+  ],
   "warningCount": 1,
 }
 `;

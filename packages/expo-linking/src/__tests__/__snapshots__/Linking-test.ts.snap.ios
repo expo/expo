@@ -95,7 +95,7 @@ exports[`parse parses "custom://?hello=bar" 1`] = `
 }
 `;
 
-exports[`parse parses "exp://127.0.0.1:19000/" 1`] = `
+exports[`parse parses "exp://127.0.0.1:8081/" 1`] = `
 {
   "hostname": "127.0.0.1",
   "path": "",
@@ -104,7 +104,7 @@ exports[`parse parses "exp://127.0.0.1:19000/" 1`] = `
 }
 `;
 
-exports[`parse parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `
+exports[`parse parses "exp://127.0.0.1:8081/--/test/path?query=param" 1`] = `
 {
   "hostname": "127.0.0.1",
   "path": "--/test/path",
@@ -115,7 +115,7 @@ exports[`parse parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `
 }
 `;
 
-exports[`parse parses "exp://127.0.0.1:19000?query=param" 1`] = `
+exports[`parse parses "exp://127.0.0.1:8081?query=param" 1`] = `
 {
   "hostname": "127.0.0.1",
   "path": null,

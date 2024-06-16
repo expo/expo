@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -14,13 +14,12 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -29,7 +28,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -38,15 +36,15 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-12
-    timeout-minutes: 60
+    runs-on: macos-14
+    timeout-minutes: 75
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.1
-        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
+      - name: 🔨 Switch to Xcode 14.3.1
+        run: sudo xcode-select --switch /Applications/Xcode_14.3.1.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
@@ -57,6 +55,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -72,7 +71,9 @@ jobs:
         run: pod install
         working-directory: apps/native-tests/ios
       - name: 🧪 Run native iOS unit tests
-        timeout-minutes: 45
+        timeout-minutes: 60
         env:
           FASTLANE_SKIP_UPDATE_CHECK: '1'
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
         run: expotools native-unit-tests --platform ios

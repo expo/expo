@@ -12,6 +12,10 @@ const TemplateEvaluator_1 = __importDefault(require("./TemplateEvaluator"));
 const TemplateFile_1 = require("./TemplateFile");
 const Utils_1 = require("./Utils");
 class TemplateProject {
+    config;
+    name;
+    platform;
+    configFilePath;
     constructor(config, name, platform, configFilePath) {
         this.config = config;
         this.name = name;

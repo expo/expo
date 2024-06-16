@@ -1,10 +1,10 @@
 import React, { ComponentType, forwardRef } from 'react';
 import { StyleSheet, Platform } from 'react-native';
 
+import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
 import View, { ViewProps } from '../primitives/View';
-import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.p, style]} ref={ref} />;
@@ -71,6 +71,7 @@ export const Span = Text;
 
 const styles = StyleSheet.create({
   p: {
+    // @ts-ignore
     marginVertical: em(1),
   },
   b: {
@@ -84,13 +85,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   pre: {
+    // @ts-ignore
     marginVertical: em(1),
   },
   blockQuote: {
+    // @ts-ignore
     marginVertical: em(1),
   },
   br: {
     width: 0,
+    // @ts-ignore
     height: em(0.5),
   },
   s: {

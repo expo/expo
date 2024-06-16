@@ -1,8 +1,13 @@
-import { AuthRequestConfig } from '../AuthRequest.types';
-import { AuthRequest, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 import { ProviderAuthRequestConfig } from './Provider.types';
+import { AuthRequest } from '../AuthRequest';
+import { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
+import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import { DiscoveryDocument } from '../Discovery';
 export declare const discovery: DiscoveryDocument;
-export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
+/**
+ * @deprecated See [Facebook authentication](/guides/facebook-authentication/).
+ */
+export type FacebookAuthRequestConfig = ProviderAuthRequestConfig & {
     /**
      * Expo web client ID for use in the browser.
      */
@@ -15,11 +20,7 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
      * Android native client ID for use in development builds and bare workflow.
      */
     androidClientId?: string;
-    /**
-     * Proxy client ID for use when testing with Expo Go on Android and iOS.
-     */
-    expoClientId?: string;
-}
+};
 /**
  * Extends [`AuthRequest`](#authrequest) and accepts [`FacebookAuthRequest`](#facebookauthrequest) in the constructor.
  */

@@ -7,7 +7,7 @@ type SessionData = {
   // These fields are potentially used by Expo CLI.
   userId: string;
   username: string;
-  currentConnection: 'Username-Password-Authentication';
+  currentConnection: 'Username-Password-Authentication' | 'Browser-Flow-Authentication';
 };
 
 export type UserSettingsData = {

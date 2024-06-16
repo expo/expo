@@ -1,8 +1,8 @@
 import Debug from 'debug';
 
+import { InfoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withInfoPlist } from '../plugins/ios-plugins';
-import { InfoPlist } from './IosConfig.types';
 
 const debug = Debug('expo:config-plugins:ios:permissions');
 
@@ -33,7 +33,7 @@ export function applyPermissions<Defaults extends Record<string, string> = Recor
  * @param action
  */
 export function createPermissionsPlugin<
-  Defaults extends Record<string, string> = Record<string, string>
+  Defaults extends Record<string, string> = Record<string, string>,
 >(defaults: Defaults, name?: string) {
   const withIosPermissions: ConfigPlugin<Record<keyof Defaults, string | undefined | false>> = (
     config,

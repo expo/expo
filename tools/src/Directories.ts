@@ -6,8 +6,8 @@ export function getExpoRepositoryRootDir(): string {
   return process.env.EXPO_ROOT_DIR || path.join(__dirname, '..', '..');
 }
 
-export function getExpoHomeJSDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'home');
+export function getExpoGoDir(): string {
+  return path.join(getAppsDir(), 'expo-go');
 }
 
 export function getExpotoolsDir(): string {
@@ -22,12 +22,12 @@ export function getPackagesDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'packages');
 }
 
-export function getIosDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'ios');
+export function getExpoGoIosDir(): string {
+  return path.join(getExpoGoDir(), 'ios');
 }
 
-export function getAndroidDir(): string {
-  return path.join(getExpoRepositoryRootDir(), 'android');
+export function getExpoGoAndroidDir(): string {
+  return path.join(getExpoGoDir(), 'android');
 }
 
 export function getTemplatesDir(): string {
@@ -39,7 +39,7 @@ export function getReactNativeSubmoduleDir(): string {
 }
 
 export function getVersionedReactNativeIosDir(): string {
-  return path.join(getIosDir(), 'versioned-react-native');
+  return path.join(getExpoGoIosDir(), 'versioned-react-native');
 }
 
 export function getAppsDir(): string {

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<translate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fromYDelta="100%"
-    android:toYDelta="0%"
-    android:duration="@android:integer/config_mediumAnimTime" />  <!--we use
-        rns_no_animation_medium.xml as the other animation for this transition since we want both of
-        them to end at the same time. Remember to change duration in both files when modifying it-->

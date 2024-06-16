@@ -1,7 +1,6 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
-import qs, { ParsedQs } from 'qs';
 
 export class SessionUrlProvider {
   private static readonly BASE_URL = `https://auth.expo.io`;
@@ -30,7 +29,7 @@ export class SessionUrlProvider {
       // Return nothing in SSR envs
       return '';
     }
-    const queryString = qs.stringify({
+    const queryString = new URLSearchParams({
       authUrl,
       returnUrl,
     });
@@ -49,9 +48,7 @@ export class SessionUrlProvider {
     }
 
     const legacyExpoProjectFullName =
-      options.projectNameForProxy ||
-      Constants.expoConfig?.originalFullName ||
-      Constants.__unsafeNoWarnManifest?.id;
+      options.projectNameForProxy || Constants.expoConfig?.originalFullName;
 
     if (!legacyExpoProjectFullName) {
       let nextSteps = '';
@@ -67,7 +64,7 @@ export class SessionUrlProvider {
 
       if (Constants.manifest2) {
         nextSteps =
-          ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+          ' Prefer AuthRequest in combination with an Expo Development Client build of your application.' +
           ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
       }
 
@@ -84,7 +81,7 @@ export class SessionUrlProvider {
     return redirectUrl;
   }
 
-  private static getHostAddressQueryParams(): ParsedQs | undefined {
+  private static getHostAddressQueryParams(): Record<string, string> | undefined {
     let hostUri: string | undefined = Constants.expoConfig?.hostUri;
     if (
       !hostUri &&
@@ -106,7 +103,10 @@ export class SessionUrlProvider {
 
     const uriParts = hostUri?.split('?');
     try {
-      return qs.parse(uriParts?.[1]);
+      return Object.fromEntries(
+        // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+        new URLSearchParams(uriParts?.[1])
+      );
     } catch {}
 
     return undefined;

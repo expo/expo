@@ -13,7 +13,7 @@ export type AnimationManagerNode = [
   key: string,
   renderFunction: (
     renderProps: NonNullable<Callbacks>
-  ) => (className: string, style: React.CSSProperties) => React.ReactElement
+  ) => (className: string, style: React.CSSProperties) => React.ReactElement,
 ];
 
 const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [

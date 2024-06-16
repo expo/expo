@@ -1,5 +1,5 @@
-import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import { DiscoveryDocument } from './Discovery';
 export declare enum CodeChallengeMethod {
     /**
      * The default and recommended method for transforming the code verifier.
@@ -72,22 +72,6 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
      */
     url?: string;
     /**
-     * Should the authentication request use the Expo proxy service `auth.expo.io`.
-     * @default false
-     * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
-     */
-    useProxy?: boolean;
-    /**
-     * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
-     */
-    projectNameForProxy?: string;
-    /**
-     * URL options to be used when creating the redirect URL for the auth proxy.
-     */
-    proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & {
-        path?: string;
-    };
-    /**
      * Features to use with `window.open()`.
      * @platform web
      */
@@ -96,7 +80,7 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
 /**
  * Represents an OAuth authorization request as JSON.
  */
-export interface AuthRequestConfig {
+export type AuthRequestConfig = {
     /**
      * Specifies what is returned from the authorization server.
      *
@@ -166,5 +150,6 @@ export interface AuthRequestConfig {
      * @default true
      */
     usePKCE?: boolean;
-}
+};
+export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 //# sourceMappingURL=AuthRequest.types.d.ts.map

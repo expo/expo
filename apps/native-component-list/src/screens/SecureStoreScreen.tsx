@@ -46,11 +46,11 @@ function SecureStoreView() {
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean | undefined>();
 
-  const _toggleAuth = async () => {
+  const toggleAuth = async () => {
     setRequireAuth(!requireAuth);
   };
 
-  const _setValue = async (value: string, key: string) => {
+  async function storeValueAsync(value: string, key: string) {
     try {
       await SecureStore.setItemAsync(key, value, {
         keychainService: service,
@@ -63,9 +63,24 @@ function SecureStoreView() {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
-  const _getValue = async (key: string) => {
+  function storeValue(value: string, key: string) {
+    try {
+      SecureStore.setItem(key, value, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
+      Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
+        { text: 'OK', onPress: () => {} },
+      ]);
+    } catch (e) {
+      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+    }
+  }
+
+  async function getValueAsync(key: string) {
     try {
       const fetchedValue = await SecureStore.getItemAsync(key, {
         keychainService: service,
@@ -78,16 +93,31 @@ function SecureStoreView() {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
-  const _deleteValue = async (key: string) => {
+  function getValue(key: string) {
+    try {
+      const fetchedValue = SecureStore.getItem(key, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
+      Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
+        { text: 'OK', onPress: () => {} },
+      ]);
+    } catch (e) {
+      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+    }
+  }
+
+  async function deleteValue(key: string) {
     try {
       await SecureStore.deleteItemAsync(key, { keychainService: service });
       Alert.alert('Success!', 'Value deleted', [{ text: 'OK', onPress: () => {} }]);
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -112,15 +142,27 @@ function SecureStoreView() {
         value={service}
         onChangeText={setService}
       />
-      <View style={styles.authToggleContainer}>
-        <Text>Requires authentication:</Text>
-        <Switch value={requireAuth} onValueChange={_toggleAuth} />
-      </View>
-      {value && key && (
-        <ListButton onPress={() => _setValue(value, key)} title="Store value with key" />
+      <Text style={{ marginBottom: 10 }}>
+        Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
+      </Text>
+      {SecureStore.canUseBiometricAuthentication() && (
+        <View style={styles.authToggleContainer}>
+          <Text>Requires authentication:</Text>
+          <Switch value={requireAuth} onValueChange={toggleAuth} />
+        </View>
       )}
-      {key && <ListButton onPress={() => _getValue(key)} title="Get value with key" />}
-      {key && <ListButton onPress={() => _deleteValue(key)} title="Delete value with key" />}
+      {value && key && (
+        <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />
+      )}
+      {key && <ListButton onPress={() => getValueAsync(key)} title="Get value with key" />}
+      {value && key && (
+        <ListButton
+          onPress={() => storeValue(value, key)}
+          title="Store value with key synchronously"
+        />
+      )}
+      {key && <ListButton onPress={() => getValue(key)} title="Get value with key synchronously" />}
+      {key && <ListButton onPress={() => deleteValue(key)} title="Delete value with key" />}
     </ScrollView>
   );
 }

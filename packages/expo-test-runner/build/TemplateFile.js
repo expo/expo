@@ -29,6 +29,9 @@ const path_1 = require("path");
 const Paths_1 = require("./Paths");
 const Platform_1 = require("./Platform");
 class TemplateFile {
+    template;
+    platform;
+    shouldBeEvaluated;
     constructor(template, platform = Platform_1.Platform.Both, shouldBeEvaluated = false) {
         this.template = template;
         this.platform = platform;
@@ -48,6 +51,9 @@ class TemplateFile {
 }
 exports.TemplateFile = TemplateFile;
 class UserFile {
+    userFilePath;
+    platform;
+    shouldBeEvaluated;
     constructor(userFilePath, platform = Platform_1.Platform.Both, shouldBeEvaluated = false) {
         this.userFilePath = userFilePath;
         this.platform = platform;
@@ -67,6 +73,7 @@ class UserFile {
 }
 exports.UserFile = UserFile;
 class TemplateFilesFactory {
+    template;
     constructor(template) {
         this.template = template;
     }

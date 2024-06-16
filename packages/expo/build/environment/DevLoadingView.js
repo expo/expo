@@ -1,4 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
+// Prevent pulling in all of expo-modules-core on web
+import { LegacyEventEmitter } from 'expo-modules-core/build/LegacyEventEmitter';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
 import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
@@ -10,7 +11,7 @@ export default function DevLoadingView() {
     const translateY = useRef(new Animated.Value(0)).current;
     const emitter = useMemo(() => {
         try {
-            return new EventEmitter(DevLoadingViewNativeModule);
+            return new LegacyEventEmitter(DevLoadingViewNativeModule);
         }
         catch (error) {
             throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
@@ -55,13 +56,21 @@ export default function DevLoadingView() {
     if (!isDevLoading && !isAnimating) {
         return null;
     }
-    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
-        React.createElement(View, { style: styles.banner },
-            React.createElement(View, { style: styles.contentContainer },
-                React.createElement(View, { style: { flexDirection: 'row' } },
-                    React.createElement(Text, { style: styles.text }, message)),
-                React.createElement(View, { style: { flex: 1 } },
-                    React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
+    return (<Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]}>
+      <View style={styles.banner}>
+        <View style={styles.contentContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.text}>{message}</Text>
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text style={styles.subtitle}>
+              {isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Animated.View>);
 }
 const styles = StyleSheet.create({
     animatedContainer: {
@@ -70,6 +79,7 @@ const styles = StyleSheet.create({
             web: 'fixed',
             default: 'absolute',
         }),
+        pointerEvents: 'none',
         bottom: 0,
         left: 0,
         right: 0,

@@ -1,9 +1,9 @@
+import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { Changelog, ChangelogChanges } from '../Changelogs';
 import { GitLog, GitFileLog, GitDirectory } from '../Git';
 import { PackageViewType } from '../Npm';
 import { Package } from '../Packages';
 import { PackagesGraphNode } from '../packages-graph';
-import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 
 /**
  * Command's options.
@@ -17,18 +17,20 @@ export type CommandOptions = {
   skipRepoChecks: boolean;
   dry: boolean;
   force: boolean;
+  canary: boolean;
   deps: boolean;
 
   /* exclusive options that affect what the command does */
   listUnpublished: boolean;
   grantAccess: boolean;
   checkIntegrity: boolean;
+  assignSdkTag: boolean;
 };
 
 /**
  * CommandOptions without options that aren't backupable or just don't matter when restoring a backup.
  */
-export type BackupableOptions = Pick<CommandOptions, typeof BACKUPABLE_OPTIONS_FIELDS[number]>;
+export type BackupableOptions = Pick<CommandOptions, (typeof BACKUPABLE_OPTIONS_FIELDS)[number]>;
 
 /**
  * Represents command's backup data.
@@ -65,6 +67,11 @@ export type PublishState = {
    * Whether the package was requested to be published (was listed in command's arguments).
    */
   isRequested?: boolean;
+
+  /**
+   * Name of the tarball the package was packed to.
+   */
+  packageTarballFilename?: string;
 };
 
 export type BaseParcel<State> = {

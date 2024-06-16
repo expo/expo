@@ -13,7 +13,7 @@ public typealias AppLauncherCompletionBlock = (_ error: Error?, _ success: Bool)
 public protocol AppLauncher {
   @objc var launchedUpdate: Update? { get }
   @objc var launchAssetUrl: URL? { get }
-  @objc var assetFilesMap: [String: Any]? { get }
+  @objc var assetFilesMap: [String: String]? { get }
 
   @objc func isUsingEmbeddedAssets() -> Bool
 }

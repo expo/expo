@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { promisify } from 'util';
 import type webpack from 'webpack';
 
+import { formatWebpackMessages } from './formatWebpackMessages';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { formatWebpackMessages } from './formatWebpackMessages';
 
 /** Run the `webpack` compiler and format errors/warnings. */
 export async function compileAsync(compiler: webpack.Compiler) {

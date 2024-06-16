@@ -1,8 +1,8 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { AndroidManifest, ManifestActivity } from './Manifest';
 import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 import { addWarningAndroid } from '../utils/warnings';
-import { AndroidManifest, ManifestActivity } from './Manifest';
 
 export type IntentFilterProps = {
   actions: string[];

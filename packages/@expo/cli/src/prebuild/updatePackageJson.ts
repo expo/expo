@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { intersects as semverIntersects, Range as SemverRange } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
@@ -11,10 +12,8 @@ import { logNewSection } from '../utils/ora';
 export type DependenciesMap = { [key: string]: string | number };
 
 export type DependenciesModificationResults = {
-  /** Indicates that new values were added to the `dependencies` object in the `package.json`. */
-  hasNewDependencies: boolean;
-  /** Indicates that new values were added to the `devDependencies` object in the `package.json`. */
-  hasNewDevDependencies: boolean;
+  /** A list of new values were added to the `dependencies` object in the `package.json`. */
+  changedDependencies: string[];
 };
 
 /** Modifies the `package.json` with `modifyPackageJson` and format/displays the results. */
@@ -22,19 +21,17 @@ export async function updatePackageJSONAsync(
   projectRoot: string,
   {
     templateDirectory,
+    templatePkg = getPackageJson(templateDirectory),
     pkg,
     skipDependencyUpdate,
   }: {
     templateDirectory: string;
+    templatePkg?: PackageJSONConfig;
     pkg: PackageJSONConfig;
     skipDependencyUpdate?: string[];
   }
 ): Promise<DependenciesModificationResults> {
-  const updatingPackageJsonStep = logNewSection(
-    'Updating your package.json scripts, dependencies, and main file'
-  );
-
-  const templatePkg = getPackageJson(templateDirectory);
+  const updatingPackageJsonStep = logNewSection('Updating package.json');
 
   const results = modifyPackageJson(projectRoot, {
     templatePkg,
@@ -42,15 +39,20 @@ export async function updatePackageJSONAsync(
     skipDependencyUpdate,
   });
 
-  await fs.promises.writeFile(
-    path.resolve(projectRoot, 'package.json'),
-    // Add new line to match the format of running yarn.
-    // This prevents the `package.json` from changing when running `prebuild --no-install` multiple times.
-    JSON.stringify(pkg, null, 2) + '\n'
-  );
+  const hasChanges = results.changedDependencies.length || results.scriptsChanged;
+
+  // NOTE: This is effectively bundler caching and subject to breakage if the inputs don't match the mutations.
+  if (hasChanges) {
+    await fs.promises.writeFile(
+      path.resolve(projectRoot, 'package.json'),
+      // Add new line to match the format of running yarn.
+      // This prevents the `package.json` from changing when running `prebuild --no-install` multiple times.
+      JSON.stringify(pkg, null, 2) + '\n'
+    );
+  }
 
   updatingPackageJsonStep.succeed(
-    'Updated package.json and added index.js entry point for iOS and Android'
+    'Updated package.json' + (hasChanges ? '' : chalk.dim(` | no changes`))
   );
 
   return results;
@@ -60,7 +62,7 @@ export async function updatePackageJSONAsync(
  * Make required modifications to the `package.json` file as a JSON object.
  *
  * 1. Update `package.json` `scripts`.
- * 2. Update `package.json` `dependencies` and `devDependencies`.
+ * 2. Update `package.json` `dependencies` (not `devDependencies`).
  * 3. Update `package.json` `main`.
  *
  * @param projectRoot The root directory of the project.
@@ -78,29 +80,26 @@ function modifyPackageJson(
   }: {
     templatePkg: PackageJSONConfig;
     pkg: PackageJSONConfig;
+    /** @deprecated Required packages are not overwritten, only added when missing */
     skipDependencyUpdate?: string[];
   }
 ) {
-  updatePkgScripts({ pkg });
+  const scriptsChanged = updatePkgScripts({ pkg });
 
   // TODO: Move to `npx expo-doctor`
-  return updatePkgDependencies(projectRoot, {
-    pkg,
-    templatePkg,
-    skipDependencyUpdate,
-  });
+  return {
+    scriptsChanged,
+    ...updatePkgDependencies(projectRoot, {
+      pkg,
+      templatePkg,
+      skipDependencyUpdate,
+    }),
+  };
 }
 
 /**
- * Update package.json dependencies by combining the dependencies in the project we are ejecting
- * with the dependencies in the template project. Does the same for devDependencies.
- *
- * - The template may have some dependencies beyond react/react-native/react-native-unimodules,
- *   for example RNGH and Reanimated. We should prefer the version that is already being used
- *   in the project for those, but swap the react/react-native/react-native-unimodules versions
- *   with the ones in the template.
- * - The same applies to expo-updates -- since some native project configuration may depend on the
- *   version, we should always use the version of expo-updates in the template.
+ * Update `package.json` dependencies by combining the `dependencies` in the
+ * project we are creating with the dependencies in the template project.
  *
  * > Exposed for testing.
  */
@@ -113,45 +112,65 @@ export function updatePkgDependencies(
   }: {
     pkg: PackageJSONConfig;
     templatePkg: PackageJSONConfig;
+    /** @deprecated Required packages are not overwritten, only added when missing */
     skipDependencyUpdate?: string[];
   }
 ): DependenciesModificationResults {
-  if (!pkg.devDependencies) {
-    pkg.devDependencies = {};
-  }
-  const { dependencies, devDependencies } = templatePkg;
+  const { dependencies } = templatePkg;
+  // The default values come from the bare-minimum template's package.json.
+  // Users can change this by using different templates with the `--template` flag.
+  // The main reason for allowing the changing of dependencies would be to include
+  // dependencies that are required for the native project to build. For example,
+  // it does not need to include dependencies that are used in the JS-code only.
   const defaultDependencies = createDependenciesMap(dependencies);
-  const defaultDevDependencies = createDependenciesMap(devDependencies);
+
+  // NOTE: This is a hack to ensure this doesn't trigger an extraneous change in the `package.json`
+  // it isn't required for anything in the `ios` and `android` folders.
+  delete defaultDependencies['expo-status-bar'];
+  // NOTE: Expo splash screen is installed by default in the template but the config plugin also lives in prebuild-config
+  // so we can delete it to prevent an extraneous change in the `package.json`.
+  delete defaultDependencies['expo-splash-screen'];
 
   const combinedDependencies: DependenciesMap = createDependenciesMap({
     ...defaultDependencies,
     ...pkg.dependencies,
   });
 
-  const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
-    (depKey) => !!defaultDependencies[depKey]
-  );
+  // These dependencies are only added, not overwritten from the project
+  const requiredDependencies = [
+    // TODO: This is no longer required because it's this same package.
+    'expo',
+    // TODO: Drop this somehow.
+    'react-native',
+  ].filter((depKey) => !!defaultDependencies[depKey]);
 
   const symlinkedPackages: string[] = [];
+  const nonRecommendedPackages: string[] = [];
 
   for (const dependenciesKey of requiredDependencies) {
-    if (
-      // If the local package.json defined the dependency that we want to overwrite...
-      pkg.dependencies?.[dependenciesKey]
-    ) {
-      if (
-        // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
-        isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })
-      ) {
+    // If the local package.json defined the dependency that we want to overwrite...
+    if (pkg.dependencies?.[dependenciesKey]) {
+      // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
+      if (isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })) {
         // If the package is in the project's package.json and it's symlinked, then skip overwriting it.
         symlinkedPackages.push(dependenciesKey);
         continue;
       }
+
+      // Do not modify manually skipped dependencies
       if (skipDependencyUpdate.includes(dependenciesKey)) {
         continue;
       }
+
+      // Warn users for outdated dependencies when prebuilding
+      const hasRecommendedVersion = versionRangesIntersect(
+        pkg.dependencies[dependenciesKey],
+        String(defaultDependencies[dependenciesKey])
+      );
+      if (!hasRecommendedVersion) {
+        nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
+      }
     }
-    combinedDependencies[dependenciesKey] = defaultDependencies[dependenciesKey];
   }
 
   if (symlinkedPackages.length) {
@@ -162,30 +181,32 @@ export function updatePkgDependencies(
     );
   }
 
-  const combinedDevDependencies: DependenciesMap = createDependenciesMap({
-    ...defaultDevDependencies,
-    ...pkg.devDependencies,
-  });
+  if (nonRecommendedPackages.length) {
+    Log.warn(
+      `\u203A Using current versions instead of recommended ${nonRecommendedPackages
+        .map((pkg) => chalk.bold(pkg))
+        .join(', ')}.`
+    );
+  }
 
   // Only change the dependencies if the normalized hash changes, this helps to reduce meaningless changes.
   const hasNewDependencies =
     hashForDependencyMap(pkg.dependencies) !== hashForDependencyMap(combinedDependencies);
-  const hasNewDevDependencies =
-    hashForDependencyMap(pkg.devDependencies) !== hashForDependencyMap(combinedDevDependencies);
   // Save the dependencies
+  let changedDependencies: string[] = [];
   if (hasNewDependencies) {
+    changedDependencies = diffKeys(combinedDependencies, pkg.dependencies ?? {}).sort();
     // Use Object.assign to preserve the original order of dependencies, this makes it easier to see what changed in the git diff.
     pkg.dependencies = Object.assign(pkg.dependencies ?? {}, combinedDependencies);
   }
-  if (hasNewDevDependencies) {
-    // Same as with dependencies
-    pkg.devDependencies = Object.assign(pkg.devDependencies ?? {}, combinedDevDependencies);
-  }
 
   return {
-    hasNewDependencies,
-    hasNewDevDependencies,
+    changedDependencies,
   };
+}
+
+function diffKeys(a: Record<string, any>, b: Record<string, any>): string[] {
+  return Object.keys(a).filter((key) => a[key] !== b[key]);
 }
 
 /**
@@ -219,21 +240,22 @@ export function createDependenciesMap(dependencies: any): DependenciesMap {
 
 /**
  * Update package.json scripts - `npm start` should default to `expo
- * start --dev-client` rather than `expo start` after ejecting, for example.
+ * start --dev-client` rather than `expo start` after prebuilding, for example.
  */
 function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
+  let hasChanged = false;
   if (!pkg.scripts) {
     pkg.scripts = {};
   }
-  if (!pkg.scripts.start?.includes('--dev-client')) {
-    pkg.scripts.start = 'expo start --dev-client';
-  }
   if (!pkg.scripts.android?.includes('run')) {
     pkg.scripts.android = 'expo run:android';
+    hasChanged = true;
   }
   if (!pkg.scripts.ios?.includes('run')) {
     pkg.scripts.ios = 'expo run:ios';
+    hasChanged = true;
   }
+  return hasChanged;
 }
 
 function normalizeDependencyMap(deps: DependenciesMap): string[] {
@@ -251,4 +273,16 @@ export function hashForDependencyMap(deps: DependenciesMap = {}): string {
 export function createFileHash(contents: string): string {
   // this doesn't need to be secure, the shorter the better.
   return crypto.createHash('sha1').update(contents).digest('hex');
+}
+
+/**
+ * Determine if two semver ranges are overlapping or intersecting.
+ * This is a safe version of `semver.intersects` that does not throw.
+ */
+function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | SemverRange) {
+  try {
+    return semverIntersects(rangeA, rangeB);
+  } catch {
+    return false;
+  }
 }

@@ -1,5 +1,4 @@
 jest.mock('@expo/devcert');
-jest.mock('@expo/dev-server');
 jest.mock('@expo/image-utils');
 jest.mock('@expo/osascript');
 jest.mock('@expo/rudder-sdk-node');

@@ -6,10 +6,10 @@ import EXManifests
 @testable import EXUpdates
 
 class UpdatesDatabaseSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    var manifest: NewManifest!
+    var manifest: ExpoUpdatesManifest!
     var config: UpdatesConfig!
     
     beforeEach {
@@ -27,15 +27,16 @@ class UpdatesDatabaseSpec : ExpoSpec {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
       
-      manifest = NewManifest(rawManifestJSON: [
+      manifest = ExpoUpdatesManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
         "createdAt": "2020-11-11T00:17:54.797Z",
         "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
       ])
 
-      config = UpdatesConfig.config(fromDictionary: [
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
+      config = try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ])
     }
     
@@ -49,8 +50,8 @@ class UpdatesDatabaseSpec : ExpoSpec {
     
     describe("foreign keys") {
       it("throws upon foreign key error") {
-        let update = NewUpdate.update(
-          withNewManifest: manifest,
+        let update = ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: config,
           database: db
@@ -103,8 +104,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\""
         )
         
         db.databaseQueue.sync {
@@ -114,8 +114,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-2\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-2\""
         )
         
         db.databaseQueue.sync {
@@ -133,8 +132,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\""
         )
         
         db.databaseQueue.sync {
@@ -144,8 +142,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "",
-          manifestSignature: nil
+          manifestFiltersRaw: ""
         )
         
         db.databaseQueue.sync {
@@ -163,8 +160,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData1 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: "branch-name=\"rollout-1\"",
-          manifestSignature: nil
+          manifestFiltersRaw: "branch-name=\"rollout-1\""
         )
         
         db.databaseQueue.sync {
@@ -174,8 +170,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         let responseHeaderData2 = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         db.databaseQueue.sync {
@@ -200,13 +195,13 @@ class UpdatesDatabaseSpec : ExpoSpec {
           return asset
         }
         
-        let manifest1 = NewManifest(rawManifestJSON: [
+        let manifest1 = ExpoUpdatesManifest(rawManifestJSON: [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f196",
           "createdAt": "2020-11-11T00:17:54.797Z",
           "launchAsset": ["url": "https://url.to/bundle1.js", "contentType": "application/javascript"]
         ])
-        let manifest2 = NewManifest(rawManifestJSON: [
+        let manifest2 = ExpoUpdatesManifest(rawManifestJSON: [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f197",
           "createdAt": "2020-11-11T00:17:55.797Z",
@@ -222,14 +217,14 @@ class UpdatesDatabaseSpec : ExpoSpec {
         asset2.filename = "same-filename.png"
         asset3.filename = "same-filename.png"
         
-        let update1 = NewUpdate.update(
-          withNewManifest: manifest1,
+        let update1 = ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest1,
           extensions: [:],
           config: config,
           database: db
         )
-        let update2 = NewUpdate.update(
-          withNewManifest: manifest2,
+        let update2 = ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest2,
           extensions: [:],
           config: config,
           database: db

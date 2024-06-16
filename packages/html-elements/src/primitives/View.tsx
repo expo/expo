@@ -1,13 +1,8 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  AccessibilityRole,
-  StyleProp,
-  View as NativeView,
-  ViewStyle as NativeViewStyle,
-} from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 
-import { createSafeStyledView } from '../css/createSafeStyledView';
 import { createDevView } from './createDevView';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -106,7 +101,7 @@ export interface WebViewStyle {
   /** @platform web */
   touchAction?: string;
   /** @platform web */
-  transformOrigin?: string;
+  transformOrigin?: string | (string | number)[];
   /** @platform web */
   transitionDelay?: string;
   /** @platform web */
@@ -129,21 +124,9 @@ export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
-
-  accessibilityRole?:
-    | 'list'
-    | 'listitem'
-    | 'complementary'
-    | 'contentinfo'
-    | 'region'
-    | 'navigation'
-    | 'main'
-    | 'article'
-    | 'banner'
-    | AccessibilityRole;
 };
 
-export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
+export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style'>;
 
 let View = NativeView as ComponentType<ViewProps>;
 

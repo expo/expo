@@ -3,9 +3,9 @@ import chalk from 'chalk';
 import path from 'path';
 
 import * as Log from '../log';
-import { directoryExistsAsync } from '../utils/dir';
+import { directoryExistsSync } from '../utils/dir';
 
-export async function validateTemplatePlatforms({
+export function validateTemplatePlatforms({
   templateDirectory,
   platforms,
 }: {
@@ -15,7 +15,7 @@ export async function validateTemplatePlatforms({
   const existingPlatforms: ModPlatform[] = [];
 
   for (const platform of platforms) {
-    if (await directoryExistsAsync(path.join(templateDirectory, platform))) {
+    if (directoryExistsSync(path.join(templateDirectory, platform))) {
       existingPlatforms.push(platform);
     } else {
       Log.warn(

@@ -13,6 +13,14 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animated styles',
+    route: 'image/animated-styles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimatedStyles'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},
@@ -70,10 +78,24 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Static responsiveness using srcSet',
+    route: 'image/srcset',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSrcSetScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {
       return optionalRequire(() => require('./ImageTransitionsScreen'));
+    },
+  },
+  {
+    name: 'Tinting',
+    route: 'image/tinting',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTintingScreen'));
     },
   },
   {

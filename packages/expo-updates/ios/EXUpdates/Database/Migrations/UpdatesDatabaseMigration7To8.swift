@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 import Foundation
-import SQLite3
+import sqlite3
 
 internal final class UpdatesDatabaseMigration7To8: UpdatesDatabaseMigration {
   private(set) var filename: String = "expo-v7.db"

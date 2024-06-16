@@ -6,6 +6,7 @@ import Foundation
 import SystemConfiguration
 import CommonCrypto
 import Reachability
+import ExpoModulesCore
 
 internal extension Array where Element: Equatable {
   mutating func remove(_ element: Element) {
@@ -18,8 +19,125 @@ internal extension Array where Element: Equatable {
 @objc(EXUpdatesUtils)
 @objcMembers
 public final class UpdatesUtils: NSObject {
-  private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesUtilsErrorDomain = "EXUpdatesUtils"
+
+  // MARK: - Public methods
+
+  // Refactored to a common method used by both UpdatesUtils and ErrorRecovery
+  public static func updatesApplicationDocumentsDirectory() -> URL {
+    let fileManager = FileManager.default
+#if os(tvOS)
+    let applicationDocumentsDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).last!
+#else
+    let applicationDocumentsDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).last!
+#endif
+    return applicationDocumentsDirectory
+  }
+
+  public static func initializeUpdatesDirectory() throws -> URL {
+    let fileManager = FileManager.default
+    let applicationDocumentsDirectory = UpdatesUtils.updatesApplicationDocumentsDirectory()
+    let updatesDirectory = applicationDocumentsDirectory.appendingPathComponent(".expo-internal")
+    let updatesDirectoryPath = updatesDirectory.path
+
+    var isDir = ObjCBool(false)
+    let exists = fileManager.fileExists(atPath: updatesDirectoryPath, isDirectory: &isDir)
+
+    if exists {
+      if !isDir.boolValue {
+        throw NSError(
+          domain: EXUpdatesUtilsErrorDomain,
+          code: 1005,
+          userInfo: [
+            NSLocalizedDescriptionKey: "Failed to create the Updates Directory; a file already exists with the required directory name"
+          ]
+        )
+      }
+    } else {
+      try fileManager.createDirectory(atPath: updatesDirectoryPath, withIntermediateDirectories: true)
+    }
+    return updatesDirectory
+  }
+
+  // MARK: - Internal methods
+
+  public static func defaultNativeStateMachineContextJson() -> [String: Any?] {
+    return UpdatesStateContext().json
+  }
+
+  internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
+    func isConnectedToWifi() -> Bool {
+      do {
+        return try Reachability().connection == .wifi
+      } catch {
+        return false
+      }
+    }
+
+    switch config.checkOnLaunch {
+    case .Always:
+      return true
+    case .WifiOnly:
+      return isConnectedToWifi()
+    case .Never:
+      return false
+    case .ErrorRecoveryOnly:
+      // check will happen later on if there's an error
+      return false
+    }
+  }
+
+  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase, logger: UpdatesLogger) -> [String: String] {
+    var assetFilesMap: [String: String] = [:]
+    let embeddedManifest: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+    let embeddedAssets = embeddedManifest?.assets() ?? []
+
+    // Prepopulate with embedded assets
+    for asset in embeddedAssets {
+      if let assetKey = asset.key,
+        !asset.isLaunchAsset {
+        let absolutePath = path(forBundledAsset: asset)
+        let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
+        logger.debug(message: message)
+        assetFilesMap[assetKey] = absolutePath
+      }
+    }
+
+    return assetFilesMap
+  }
+
+  internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
+    guard let mainBundleDir = asset.mainBundleDir else {
+      return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
+    }
+    return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
+  }
+
+  internal static func path(forBundledAsset asset: UpdateAsset) -> String? {
+    guard let mainBundleDir = asset.mainBundleDir else {
+      return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type)
+    }
+    return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
+  }
+
+  /**
+   Purges entries in the expo-updates log file that are older than 1 day
+   */
+  internal static func purgeUpdatesLogsOlderThanOneDay() {
+    UpdatesLogReader().purgeLogEntries { error in
+      if let error = error {
+        NSLog("UpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
+      }
+    }
+  }
+
+  internal static func isNativeDebuggingEnabled() -> Bool {
+#if EX_UPDATES_NATIVE_DEBUG
+    return true
+#else
+    return false
+#endif
+  }
 
   internal static func runBlockOnMainThread(_ block: @escaping () -> Void) {
     if Thread.isMainThread {
@@ -52,102 +170,6 @@ public final class UpdatesUtils: NSObject {
       .replacingOccurrences(of: "+", with: "-") // replace "+" character w/ "-"
       .replacingOccurrences(of: "/", with: "_") // replace "/" character w/ "_"
   }
-
-  public static func initializeUpdatesDirectory() throws -> URL {
-    let fileManager = FileManager.default
-    let applicationDocumentsDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).last!
-    let updatesDirectory = applicationDocumentsDirectory.appendingPathComponent(".expo-internal")
-    let updatesDirectoryPath = updatesDirectory.path
-
-    var isDir = ObjCBool(false)
-    let exists = fileManager.fileExists(atPath: updatesDirectoryPath, isDirectory: &isDir)
-
-    if exists {
-      if !isDir.boolValue {
-        throw NSError(
-          domain: EXUpdatesUtilsErrorDomain,
-          code: 1005,
-          userInfo: [
-            NSLocalizedDescriptionKey: "Failed to create the Updates Directory; a file already exists with the required directory name"
-          ]
-        )
-      }
-    } else {
-      try fileManager.createDirectory(atPath: updatesDirectoryPath, withIntermediateDirectories: true)
-    }
-    return updatesDirectory
-  }
-
-  internal static func sendEvent(toBridge bridge: RCTBridge?, withType eventType: String, body: [AnyHashable: Any]) {
-    guard let bridge = bridge else {
-      NSLog("EXUpdates: Could not emit %@ event. Did you set the bridge property on the controller singleton?", eventType)
-      return
-    }
-
-    var mutableBody = body
-    mutableBody["type"] = eventType
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [EXUpdatesEventName, mutableBody])
-  }
-
-  internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
-    func isConnectedToWifi() -> Bool {
-      do {
-        return try Reachability().connection == .wifi
-      } catch {
-        return false
-      }
-    }
-
-    switch config.checkOnLaunch {
-    case .Always:
-      return true
-    case .WifiOnly:
-      return isConnectedToWifi()
-    case .Never:
-      return false
-    case .ErrorRecoveryOnly:
-      // check will happen later on if there's an error
-      return false
-    }
-  }
-
-  internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
-    // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
-    // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
-    // the developer in JS that they need to configure one of these values
-    return config.runtimeVersion ?? config.sdkVersion ?? "1"
-  }
-
-  internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
-    guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
-    }
-    return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
-  }
-
-  internal static func path(forBundledAsset asset: UpdateAsset) -> String? {
-    guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type)
-    }
-    return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
-  }
-
-  /**
-   Purges entries in the expo-updates log file that are older than 1 day
-   */
-  internal static func purgeUpdatesLogsOlderThanOneDay() {
-    UpdatesLogReader().purgeLogEntries { error in
-      if let error = error {
-        NSLog("UpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
-      }
-    }
-  }
-
-  internal static func isNativeDebuggingEnabled() -> Bool {
-    #if EX_UPDATES_NATIVE_DEBUG
-    return true
-    #else
-    return false
-    #endif
-  }
 }
+
+// swiftlint:enable force_unwrapping

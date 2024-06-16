@@ -18,7 +18,7 @@ The legacy Expo CLI can be installed as a global npm package on your development
 
 Not versioning the CLI with your project lowers backwards compatibility, and makes it harder to use your project in continuous environments like GitHub Actions. To combat this, we moved to using a versioned CLI in SDK 46.
 
-## Checking CLI Version
+## Checking CLI version
 
 To check the current version of the global Expo CLI you are using, use the `--version` option.
 
@@ -70,14 +70,14 @@ You will find a list of all commands derived from the latest version of Expo CLI
 
 Alias: `expo i`
 
-| Option                  | Description                                                                                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (e.g. "expo-template-bare-minimum") that includes an Expo project template. |
-| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                            |
-| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                               |
-| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                       |
-| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                 |
-| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                       |
+| Option                  | Description                                                                                                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (for example, "expo-template-bare-minimum") that includes an Expo project template. |
+| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                                    |
+| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                                       |
+| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                               |
+| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                         |
+| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                               |
 
 </Collapsible>
 
@@ -141,30 +141,29 @@ Alias: `expo add`
 
 Alias: `expo r`
 
-| Option                                  | Description                                                                                                    |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `-s, --send-to [dest]`                  | An email address to send a link to                                                                             |
-| `-c, --clear`                           | Clear the Metro bundler cache                                                                                  |
-| `--max-workers [num]`                   | Maximum number of tasks to allow Metro to spawn.                                                               |
-| `--no-dev`                              | Turn development mode off                                                                                      |
-| `--minify`                              | Minify code                                                                                                    |
-| `--https`                               | To start webpack with https protocol                                                                           |
-| `--force-manifest-type [manifest-type]` | Override auto detection of manifest type                                                                       |
-| `-p, --port [port]`                     | Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000                    |
-| `--dev-client`                          | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]`                     | Custom URI protocol to use with a development build                                                            |
-| `-a, --android`                         | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
-| `-w, --web`                             | Opens your app in a web browser                                                                                |
-| `-m, --host [mode]`                     | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel`                              | Same as --host tunnel                                                                                          |
-| `--lan`                                 | Same as --host lan                                                                                             |
-| `--localhost`                           | Same as --host localhost                                                                                       |
-| `--offline`                             | Allows this command to run while offline                                                                       |
-| `--dev`                                 | Deprecated: Dev mode is used by default                                                                        |
-| `--no-minify`                           | Deprecated: Minify is disabled by default                                                                      |
-| `--no-https`                            | Deprecated: https is disabled by default                                                                       |
-| `--config [file]`                       | Deprecated: Use app.config.js to switch config files instead.                                                  |
+| Option                 | Description                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
+| `-s, --send-to [dest]` | An email address to send a link to                                                                             |
+| `-c, --clear`          | Clear the Metro bundler cache                                                                                  |
+| `--max-workers [num]`  | Maximum number of tasks to allow Metro to spawn.                                                               |
+| `--no-dev`             | Turn development mode off                                                                                      |
+| `--minify`             | Minify code                                                                                                    |
+| `--https`              | To start webpack with https protocol                                                                           |     |
+| `-p, --port [port]`    | Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000                    |
+| `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
+| `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
+| `-w, --web`            | Opens your app in a web browser                                                                                |
+| `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
+| `--tunnel`             | Same as --host tunnel                                                                                          |
+| `--lan`                | Same as --host lan                                                                                             |
+| `--localhost`          | Same as --host localhost                                                                                       |
+| `--offline`            | Allows this command to run while offline                                                                       |
+| `--dev`                | Deprecated: Dev mode is used by default                                                                        |
+| `--no-minify`          | Deprecated: Minify is disabled by default                                                                      |
+| `--no-https`           | Deprecated: https is disabled by default                                                                       |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </Collapsible>
 
@@ -172,28 +171,27 @@ Alias: `expo r`
 
 Alias: `expo web`
 
-| Option                                  | Description                                                                                                    |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `--no-dev`                              | Turn development mode off                                                                                      |
-| `--minify`                              | Minify code                                                                                                    |
-| `--https`                               | To start webpack with https protocol                                                                           |
-| `--force-manifest-type [manifest-type]` | Override auto detection of manifest type                                                                       |
-| `-p, --port [port]`                     | Port to start the webpack bundler on. Default: 19006                                                           |
-| `-s, --send-to [dest]`                  | An email address to send a link to                                                                             |
-| `--dev-client`                          | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]`                     | Custom URI protocol to use with a development build                                                            |
-| `-a, --android`                         | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
-| `-w, --web`                             | Opens your app in a web browser                                                                                |
-| `-m, --host [mode]`                     | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel`                              | Same as --host tunnel                                                                                          |
-| `--lan`                                 | Same as --host lan                                                                                             |
-| `--localhost`                           | Same as --host localhost                                                                                       |
-| `--offline`                             | Allows this command to run while offline                                                                       |
-| `--dev`                                 | Deprecated: Dev mode is used by default                                                                        |
-| `--no-minify`                           | Deprecated: Minify is disabled by default                                                                      |
-| `--no-https`                            | Deprecated: https is disabled by default                                                                       |
-| `--config [file]`                       | Deprecated: Use app.config.js to switch config files instead.                                                  |
+| Option                 | Description                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
+| `--no-dev`             | Turn development mode off                                                                                      |
+| `--minify`             | Minify code                                                                                                    |
+| `--https`              | To start webpack with https protocol                                                                           |     |
+| `-p, --port [port]`    | Port to start the webpack bundler on. Default: 19006                                                           |
+| `-s, --send-to [dest]` | An email address to send a link to                                                                             |
+| `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
+| `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
+| `-w, --web`            | Opens your app in a web browser                                                                                |
+| `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
+| `--tunnel`             | Same as --host tunnel                                                                                          |
+| `--lan`                | Same as --host lan                                                                                             |
+| `--localhost`          | Same as --host localhost                                                                                       |
+| `--offline`            | Allows this command to run while offline                                                                       |
+| `--dev`                | Deprecated: Dev mode is used by default                                                                        |
+| `--no-minify`          | Deprecated: Minify is disabled by default                                                                      |
+| `--no-https`           | Deprecated: https is disabled by default                                                                       |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </Collapsible>
 
@@ -311,7 +309,7 @@ Alias: `expo update`
 
 </Collapsible>
 
-<Collapsible summary={<><h4>expo eject</h4>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
+<Collapsible summary={<><h4>expo eject</h4>Create native Android and iOS project files. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
 
 | Option                               | Description                                                           |
 | ------------------------------------ | --------------------------------------------------------------------- |
@@ -322,7 +320,7 @@ Alias: `expo update`
 
 </Collapsible>
 
-<Collapsible summary={<><h4>expo prebuild</h4>Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
+<Collapsible summary={<><h4>expo prebuild</h4>Create native Android and iOS project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
 
 | Option                                    | Description                                                                             |
 | ----------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -339,6 +337,8 @@ Alias: `expo update`
 ---
 
 ### Publish
+
+> SDK 49 will be the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
 
 <Collapsible summary={<><h4>expo publish</h4>Deploy a project to Expo hosting</>}>
 
@@ -391,7 +391,7 @@ Alias: `expo ph`
 | `-c, --release-channel [name]`  | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
 | `--count [number-of-logs]`      | Number of logs to view, maximum 100, default 5.                                                      |
 | `-p, --platform [android\|ios]` | Filter by platform, android or ios. Defaults to both platforms.                                      |
-| `-s, --sdk-version [version]`   | Filter by SDK version e.g. 35.0.0                                                                    |
+| `-s, --sdk-version [version]`   | Filter by SDK version. For example, 35.0.0                                                           |
 | `-r, --raw`                     | Produce some raw output.                                                                             |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.                                        |
 
@@ -700,7 +700,7 @@ Alias: `expo ui`
 
 {/* END GENERATED BLOCK. DO NOT MODIFY MANUALLY. */}
 
-## Expo CLI Migration
+## Expo CLI migration
 
 In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `expo` package. Below is a migration guide showing where the legacy `expo-cli` commands live now.
 
@@ -768,7 +768,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 | `expo upload:android`            | `eas submit -p android` | Moved to `eas-cli` |
 | `expo upload:ios`                | `eas submit -p ios`     | Moved to `eas-cli` |
 
-### Other Notes
+### Other notes
 
 - Dev Tools UI has been deprecated in favor of the CLI's Terminal UI, Flipper, and Remote Debugging.
 - `npx expo install` now supports installing the correct version of `react-native`, `react`, `react-dom` automatically.
@@ -776,7 +776,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 - Dropped the deprecated `--config` argument across all commands. Use `app.config.js` instead.
 - No longer shipping `adb` in the CLI. Users must manually install `adb` to interact with connected Android devices.
 - Experimental `$EXPO_USE_APPLE_DEVICE` feature (`expo run:ios -d`) is now the default behavior. Global `ios-deploy` package is no longer required.
-- `npx expo export` works like `expo export --experimental-bundle`, i.e. exports for `eas update` and not `expo publish`. [PR](https://github.com/expo/expo/pull/17034).
+- `npx expo export` works like `expo export --experimental-bundle` which is exports for `eas update` and not `expo publish`. [PR](https://github.com/expo/expo/pull/17034).
   - Dropped arguments: `--public-url`, `--asset-url`, `--merge-src-url`, `--merge-src-dir`, `-t, --target`, `--experimental-bundle`, `--config`, `-q, --quiet`
   - Dropped aliases for `--dump-assetmap` (`-d`) and `--dump-sourcemap` (`-s`).
   - Dropped warning about clearing `dist` folder that is shown between runs, this is akin to all other bundler commands across web tooling.

@@ -43,6 +43,54 @@ describe(patchFileAsync, () => {
 `);
   });
 
+  it('should transform double-quoted import which is indented', async () => {
+    const headerSet = new Set(['RCTBridge.h']);
+    mockFsReadFile.mockResolvedValue(`\
+  #if __has_include("RCTBridge.h")
+    #import "RCTBridge.h"
+  #elif __has_include("React/RCTBridge.h")
+    #import "React/RCTBridge.h"
+  #else
+    #import <React/RCTBridge.h>
+  #endif
+`);
+
+    await patchFileAsync(headerSet, 'someFile.h', /* dryRun */ false);
+    expect(mockFsWriteFile.mock.calls[0][1]).toBe(`\
+  #if __has_include(<React/RCTBridge.h>)
+    #import <React/RCTBridge.h>
+  #elif __has_include(<React/RCTBridge.h>)
+    #import <React/RCTBridge.h>
+  #else
+    #import <React/RCTBridge.h>
+  #endif
+`);
+  });
+
+  it('should transform double-quoted import which has trailing spaces', async () => {
+    const headerSet = new Set(['RCTBridge.h']);
+    mockFsReadFile.mockResolvedValue(`\
+#if __has_include("RCTBridge.h")${' '}
+  #import "RCTBridge.h"${'  '}
+#elif __has_include("React/RCTBridge.h")${'   '}  
+  #import "React/RCTBridge.h"${'    '}
+#else
+  #import <React/RCTBridge.h>  
+#endif
+`);
+
+    await patchFileAsync(headerSet, 'someFile.h', /* dryRun */ false);
+    expect(mockFsWriteFile.mock.calls[0][1]).toBe(`\
+#if __has_include(<React/RCTBridge.h>)${' '}
+  #import <React/RCTBridge.h>${'  '}
+#elif __has_include(<React/RCTBridge.h>)${'   '}  
+  #import <React/RCTBridge.h>${'    '}
+#else
+  #import <React/RCTBridge.h>  
+#endif
+`);
+  });
+
   it('should not transform non-React-Core headers', async () => {
     const headerSet = new Set(['UIView+React.h']);
     mockFsReadFile.mockResolvedValue(`\

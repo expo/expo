@@ -20,6 +20,7 @@ object ModulePriorities {
     // {key} to {value}
     // key: full qualified class name
     // value: priority value, the higher value takes precedence
-    "expo.modules.updates.UpdatesPackage" to 10,
+    "expo.modules.splashscreen.SplashScreenPackage" to 11,
+    "expo.modules.updates.UpdatesPackage" to 10
   )
 }

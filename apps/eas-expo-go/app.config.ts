@@ -46,10 +46,23 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
       },
     },
   },
+  'publish-client': {
+    ...base,
+    slug: 'release-expo-go',
+    name: 'Expo Go',
+    extra: {
+      eas: {
+        projectId: '79a64298-2d61-42ae-9cc9-b2a358d6869e',
+      },
+    },
+  },
 };
 
 const buildType = process.env.EAS_BUILD_PROFILE;
-assert(buildType && mapBuildProfileToConfig[buildType]);
+assert(
+  buildType && mapBuildProfileToConfig[buildType],
+  'Set EAS_BUILD_PROFILE=release-client to run an eas-cli command in this directory against the release project.'
+);
 
 const config = mapBuildProfileToConfig[buildType];
 export default config;

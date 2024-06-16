@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import qs from 'qs';
 
 export type Headers = Record<string, string> & {
   'Content-Type': string;
@@ -46,7 +45,7 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
 
   if (fetchRequest.body) {
     if (fetchRequest.method?.toUpperCase() === 'POST') {
-      request.body = qs.stringify(fetchRequest.body);
+      request.body = new URLSearchParams(fetchRequest.body).toString();
     } else {
       for (const key of Object.keys(fetchRequest.body)) {
         url.searchParams.append(key, fetchRequest.body[key]);

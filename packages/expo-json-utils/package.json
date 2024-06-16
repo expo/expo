@@ -1,6 +1,6 @@
 {
   "name": "expo-json-utils",
-  "version": "0.6.0",
+  "version": "0.13.1",
   "description": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
   "main": "index.js",
   "keywords": [
@@ -18,5 +18,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template"
+  "homepage": "https://docs.expo.dev"
 }

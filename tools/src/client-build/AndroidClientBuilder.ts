@@ -1,18 +1,18 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ANDROID_DIR } from '../Constants';
+import { ClientBuilder, ClientBuildFlavor, Platform, S3Client } from './types';
+import { EXPO_GO_ANDROID_DIR } from '../Constants';
 import logger from '../Logger';
 import { androidAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
-import { ClientBuilder, ClientBuildFlavor, Platform, S3Client } from './types';
 
 export default class AndroidClientBuilder implements ClientBuilder {
   platform: Platform = 'android';
 
   getAppPath(): string {
     return path.join(
-      ANDROID_DIR,
+      EXPO_GO_ANDROID_DIR,
       'app',
       'build',
       'outputs',
@@ -47,13 +47,11 @@ export default class AndroidClientBuilder implements ClientBuilder {
   async uploadBuildAsync(s3Client: S3Client, appVersion: string) {
     const file = fs.createReadStream(this.getAppPath());
 
-    await s3Client
-      .putObject({
-        Bucket: 'exp-android-apks',
-        Key: `Exponent-${appVersion}.apk`,
-        Body: file,
-        ACL: 'public-read',
-      })
-      .promise();
+    await s3Client.putObject({
+      Bucket: 'exp-android-apks',
+      Key: `Exponent-${appVersion}.apk`,
+      Body: file,
+      ACL: 'public-read',
+    });
   }
 }

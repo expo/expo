@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { asMock } from '../../../__tests__/asMock';
 import { DeviceABI, getDeviceABIsAsync } from '../../../start/platforms/android/adb';
 import { resolveInstallApkNameAsync } from '../resolveInstallApkName';
 
@@ -22,6 +21,7 @@ describe(resolveInstallApkNameAsync, () => {
         appName: 'app',
         buildType: 'debug',
         apkVariantDirectory: '/android/app/build/outputs/apk/debug',
+        architectures: '',
       }
     );
   it(`resolves an APK using cpu-less name`, async () => {
@@ -31,7 +31,7 @@ describe(resolveInstallApkNameAsync, () => {
       },
       '/'
     );
-    asMock(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64, DeviceABI.x86]);
+    jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64, DeviceABI.x86]);
     await expect(runCheck()).resolves.toBe('app-debug.apk');
   });
   it(`resolves an APK using universal cpu name`, async () => {
@@ -42,7 +42,7 @@ describe(resolveInstallApkNameAsync, () => {
       },
       '/'
     );
-    asMock(getDeviceABIsAsync).mockResolvedValueOnce([]);
+    jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([]);
     await expect(runCheck()).resolves.toBe('app-universal-debug.apk');
   });
   it(`resolves an APK using custom cpu name`, async () => {
@@ -54,7 +54,7 @@ describe(resolveInstallApkNameAsync, () => {
       },
       '/'
     );
-    asMock(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64]);
+    jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.arm64]);
     await expect(runCheck()).resolves.toBe('app-arm64-debug.apk');
   });
 });

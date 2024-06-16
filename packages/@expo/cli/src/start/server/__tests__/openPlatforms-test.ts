@@ -1,4 +1,3 @@
-import { asMock } from '../../../__tests__/asMock';
 import { AbortCommandError } from '../../../utils/errors';
 import { DevServerManager } from '../DevServerManager';
 import { openPlatformsAsync } from '../openPlatforms';
@@ -49,13 +48,13 @@ it(`opens web only`, async () => {
 
 it(`rethrows assertions`, async () => {
   const manager = createDevServerManager();
-  asMock(manager.getDefaultDevServer).mockImplementationOnce(
+  jest.mocked(manager.getDefaultDevServer).mockImplementationOnce(
     () =>
       ({
         async openPlatformAsync() {
           throw new Error('Failed');
         },
-      } as any)
+      }) as any
   );
   const options = {
     android: true,
@@ -71,7 +70,8 @@ it(`rethrows assertions`, async () => {
 
 it(`surfaces aborting`, async () => {
   const manager = createDevServerManager();
-  asMock(manager.getDefaultDevServer)
+  jest
+    .mocked(manager.getDefaultDevServer)
     .mockReturnValueOnce({
       async openPlatformAsync() {},
     } as any)
@@ -81,7 +81,7 @@ it(`surfaces aborting`, async () => {
           async openPlatformAsync() {
             throw new AbortCommandError();
           },
-        } as any)
+        }) as any
     );
   const options = {
     android: true,

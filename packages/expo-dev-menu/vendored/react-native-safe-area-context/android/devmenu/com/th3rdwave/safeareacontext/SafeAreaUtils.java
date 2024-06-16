@@ -17,23 +17,23 @@ import androidx.annotation.Nullable;
         return null;
       }
       return new EdgeInsets(
-          insets.getSystemWindowInsetTop(),
-          insets.getSystemWindowInsetRight(),
-          // System insets are more reliable to account for notches but the
-          // system inset for bottom includes the soft keyboard which we don't
-          // want to be consistent with iOS. Using the min value makes sure we
-          // never get the keyboard offset while still working with devices that
-          // hide the navigation bar.
-          Math.min(insets.getSystemWindowInsetBottom(), insets.getStableInsetBottom()),
-          insets.getSystemWindowInsetLeft());
+        insets.getSystemWindowInsetTop(),
+        insets.getSystemWindowInsetRight(),
+        // System insets are more reliable to account for notches but the
+        // system inset for bottom includes the soft keyboard which we don't
+        // want to be consistent with iOS. Using the min value makes sure we
+        // never get the keyboard offset while still working with devices that
+        // hide the navigation bar.
+        Math.min(insets.getSystemWindowInsetBottom(), insets.getStableInsetBottom()),
+        insets.getSystemWindowInsetLeft());
     } else {
       Rect visibleRect = new Rect();
       rootView.getWindowVisibleDisplayFrame(visibleRect);
       return new EdgeInsets(
-          visibleRect.top,
-          rootView.getWidth() - visibleRect.right,
-          rootView.getHeight() - visibleRect.bottom,
-          visibleRect.left);
+        visibleRect.top,
+        rootView.getWidth() - visibleRect.right,
+        rootView.getHeight() - visibleRect.bottom,
+        visibleRect.left);
     }
   }
 
@@ -54,10 +54,10 @@ import androidx.annotation.Nullable;
     Rect visibleRect = new Rect();
     view.getGlobalVisibleRect(visibleRect);
 
-    windowInsets.top = Math.max(windowInsets.top - visibleRect.top, 0);
-    windowInsets.left = Math.max(windowInsets.left - visibleRect.left, 0);
-    windowInsets.bottom = Math.max(Math.min(visibleRect.top + view.getHeight() - windowHeight, 0) + windowInsets.bottom, 0);
-    windowInsets.right = Math.max(Math.min(visibleRect.left + view.getWidth() - windowWidth, 0) + windowInsets.right, 0);
+    windowInsets.setTop(Math.max(windowInsets.getTop() - visibleRect.top, 0));
+    windowInsets.setLeft(Math.max(windowInsets.getLeft() - visibleRect.left, 0));
+    windowInsets.setBottom(Math.max(Math.min(visibleRect.top + view.getHeight() - windowHeight, 0) + windowInsets.getBottom(), 0));
+    windowInsets.setRight(Math.max(Math.min(visibleRect.left + view.getWidth() - windowWidth, 0) + windowInsets.getRight(), 0));
     return windowInsets;
   }
 

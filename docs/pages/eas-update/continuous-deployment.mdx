@@ -1,0 +1,49 @@
+---
+title: Continuous Deployment
+description: Learn how to use the fingerprint runtime version for continuous deployment in production and during development.
+---
+
+> **info** This is available in beta for SDK 51 and not yet considered stable. Use may result in unexpected system behavior.
+
+## Concepts
+
+### Fingerprint runtime versioning
+
+The [`fingerprint` runtime version policy](/eas-update/runtime-versions/#fingerprint-runtime-version-policy) uses the `@expo/fingerprint` package to generate a hash of your project when making a build or publishing an update, and then uses that hash as the runtime version. The hash is calculated based on dependencies, custom native code, native project files, and configuration, amongst other things.
+
+By automatically calculating the runtime version, you don't have to be concerned about native layer compatibility with the JavaScript application when deploying updates to builds.
+
+## Continuous Integration (CI) and Continuous Deployment (CD)
+
+CI/CD for a React Native project dictates that every JS change (update) is deployed to all compatible builds over-the-air, and new builds are created when the runtime changes.
+
+It can be accomplished by performing roughly these steps:
+
+1. Run application tests, abort if tests fail.
+2. Calculate fingerprint for relevant platforms using the `npx expo-updates fingerprint:generate` command.
+3. Check for EAS builds with a runtime version equal to the fingerprint (`eas build:list --runtimeVersion <fingerprint>`). Create a new build if none exists yet.
+   - (optional) Submit to app stores for full continuous deployment. This has not yet been tested and is not recommended.
+4. Run `eas update` to publish an update for the current commit.
+
+### GitHub Actions
+
+Expo provides a [GitHub Action](https://github.com/expo/expo-github-action/tree/main/continuous-deploy-fingerprint) for performing the steps mentioned in the previous section within a GitHub Actions workflow.
+
+## Debugging fingerprint inconsistencies
+
+If you notice different fingerprints being generated across different machines or environments, it may mean that unanticipated files are being included in the hash calculation. `@expo/fingerprint` has a predetermined set of files to include/exclude for hash calculation, but often your project setup may require additional excludes. For projects that include native directories (**android** and **ios**) this is more common.
+
+We provide tools for identifying which files are causing fingerprint inconsistencies and mechanisms to exclude those files from fingerprint calculations for your project.
+
+To identify differences in fingerprints on different machines or environments:
+
+- When running fingerprint generation commands on each machine/environment (`npx expo-updates fingerprint:generate`), pass `--debug` flag.
+- Diff outputs from those command runs to determine files causing the difference. These tools may be helpful:
+  - [JSON Pretty Print](https://jsonformatter.org/json-pretty-print) to format the output.
+  - [JSON Diff](https://www.jsondiff.com/) to compare the output and identify the files causing the discrepancies.
+
+To exclude files causing the differences, add them to the **.fingerprintignore** file as described in the [`@expo/fingerprint` README](https://www.npmjs.com/package/@expo/fingerprint).
+
+### Debugging with GitHub Actions
+
+Running the workflow in debug mode will automatically add the `--debug` flag to the commands run as part of the action, and the output will be available in the workflow run logs.

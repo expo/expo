@@ -85,6 +85,17 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
+  public func mostRecentApp() -> [String: Any]? {
+    let recentlyOpenedApps = self.recentlyOpenedApps()
+
+    if let mostRecentApp = recentlyOpenedApps.max(by: { ($0["timestamp"] as? Int64) ?? 0 < ($1["timestamp"] as? Int64) ?? 0 }) {
+      return mostRecentApp
+    }
+
+    return nil
+  }
+
+  @objc
   public func clearRegistry() {
     resetStorage()
   }

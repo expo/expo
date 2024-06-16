@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+
+group = 'host.exp.exponent'
+version = '1.1.9'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.video"
+  defaultConfig {
+    versionCode 1
+    versionName '1.1.9'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+
+  def androidxMedia3Version = "1.3.1"
+  implementation "androidx.media3:media3-session:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-hls:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
+
+  def fragment_version = "1.6.2"
+  implementation "androidx.fragment:fragment:$fragment_version"
+  implementation "androidx.fragment:fragment-ktx:$fragment_version"
+}

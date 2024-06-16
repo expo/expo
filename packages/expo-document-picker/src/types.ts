@@ -49,69 +49,47 @@ export type DocumentPickerAsset = {
    * @platform web
    */
   file?: File;
-  /**
-   * `FileList` object for the parity with web File API.
-   * @platform web
-   */
-  output?: FileList | null;
 };
 
-// @needsAudit @docsMissing
-export type DocumentPickerResult = {
-  /**
-   * Boolean flag which shows if request was canceled. If asset data have been returned this should
-   * always be `false`.
-   */
-  canceled: boolean;
-  type?: string;
-  /**
-   * Document original name.
-   */
-  name?: string;
-  /**
-   * Document size in bytes.
-   */
-  size?: number;
-  /**
-   * An array of picked assets or `null` when the request was canceled.
-   */
-  assets: DocumentPickerAsset[] | null;
-  /**
-   * An URI to the local document file.
-   */
-  uri?: string;
-  /**
-   * Document MIME type.
-   */
-  mimeType?: string;
-  /**
-   * Timestamp of last document modification.
-   */
-  lastModified?: number;
-  /**
-   * `File` object for the parity with web File API.
-   * @platform web
-   */
-  file?: File;
-  /**
-   * `FileList` object for the parity with web File API.
-   * @platform web
-   */
-  output?: FileList | null;
-} & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
+/**
+ * Type representing successful and canceled document pick result.
+ */
+export type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCanceledResult;
 
 /**
- * @hidden
+ * Type representing successful pick result.
  */
 export type DocumentPickerSuccessResult = {
+  /**
+   * If asset data have been returned this should always be `false`.
+   */
   canceled: false;
+  /**
+   * An array of picked assets.
+   */
   assets: DocumentPickerAsset[];
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
+  output?: FileList;
 };
 
 /**
- * @hidden
+ * Type representing canceled pick result.
  */
 export type DocumentPickerCanceledResult = {
+  /**
+   *  Always `true` when the request was canceled.
+   */
   canceled: true;
+  /**
+   *  Always `null` when the request was canceled.
+   */
   assets: null;
+  /**
+   * Always `null` when the request was canceled.
+   * @platform web
+   */
+  output?: null;
 };

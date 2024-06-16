@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Main } from './components/Main';
-import { Onboarding } from './components/Onboarding';
 import { Splash } from './components/Splash';
 import { AppInfo, DevSettings, MenuPreferences } from './native-modules/DevMenu';
 
@@ -27,8 +26,7 @@ export function App({
     <View style={{ flex: 1, direction: 'ltr' }}>
       <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
         <LoadInitialData loader={<Splash />}>
-          <Main registeredCallbacks={registeredCallbacks} />
-          <Onboarding isDevice={isDevice} />
+          <Main registeredCallbacks={registeredCallbacks} isDevice={isDevice} />
         </LoadInitialData>
       </AppProviders>
     </View>

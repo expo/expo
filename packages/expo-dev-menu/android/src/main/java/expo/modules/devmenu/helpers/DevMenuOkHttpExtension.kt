@@ -58,10 +58,10 @@ fun fetchGraphQL(url: Uri, query: String, authHeader: Pair<String, String>? = nu
       RequestBody.create(
         MediaType.parse("application/json"),
         "{\"query\": \"${
-        query
-          .trimIndent()
-          .replace("\n", "\\n")
-          .replace("\"", "\\\"")
+          query
+            .trimIndent()
+            .replace("\n", "\\n")
+            .replace("\"", "\\\"")
         }\"}"
       )
     )

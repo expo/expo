@@ -1,11 +1,11 @@
 import { View } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { loadFontsAsync } from '../native-modules/DevMenu';
 import { Splash } from './Splash';
+import { loadFontsAsync } from '../native-modules/DevMenu';
 
 type LoadInitialDataProps = {
-  children: React.ReactElement<any>[];
+  children: React.ReactElement<any> | React.ReactElement<any>[];
   loader?: React.ReactElement<any>;
 };
 

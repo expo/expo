@@ -1,4 +1,1 @@
-import * as React from 'react';
-import { Text } from 'react-native';
-
-export default () => <Text>Mask view is not implemented on web</Text>;
+export default () => <h1>Mask view is not implemented on web</h1>;

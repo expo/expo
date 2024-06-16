@@ -2,8 +2,8 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
@@ -22,11 +22,12 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
+  expo: [['Expo.ts', 'types.ts'], 'expo'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
-  'expo-auth-session': ['AuthSession.ts'],
+  'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
@@ -37,6 +38,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
+  'expo-camera-legacy': ['legacy/index.ts', 'expo-camera'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -44,6 +46,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['Contacts.ts'],
   'expo-crypto': ['Crypto.ts'],
+  'expo-dev-menu': [['DevMenu.ts', 'ExpoDevMenu.types.ts']],
+  'expo-dev-launcher': ['DevLauncher.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
@@ -56,7 +60,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-image': [['Image.tsx', 'Image.types.ts']],
   'expo-image-manipulator': ['ImageManipulator.ts'],
   'expo-image-picker': ['ImagePicker.ts'],
-  'expo-in-app-purchases': ['InAppPurchases.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
   'expo-keep-awake': ['index.ts'],
   'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -66,6 +69,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-localization': ['Localization.ts'],
   'expo-location': ['Location.ts'],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
+  'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
   'expo-navigation-bar': ['NavigationBar.ts'],
@@ -73,22 +77,24 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-random': ['Random.ts'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
   'expo-sharing': ['Sharing.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
-  'expo-splash-screen': ['SplashScreen.ts'],
+  'expo-splash-screen': ['index.ts'],
+  'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
   'expo-sqlite': ['index.ts'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
+  'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
   'expo-updates': ['index.ts'],
-  'expo-video': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
+  'expo-video': ['index.ts'],
+  'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
 };
@@ -99,11 +105,6 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
-  const app = new Application();
-
-  app.options.addReader(new TSConfigReader());
-  app.options.addReader(new TypeDocReader());
-
   const dataPath = path.join(
     EXPO_DIR,
     'docs',
@@ -130,19 +131,23 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  app.bootstrap({
-    entryPoints,
-    tsconfig: tsConfigPath,
-    disableSources: true,
-    hideGenerator: true,
-    excludePrivate: true,
-    excludeProtected: true,
-    skipErrorChecking: true,
-    excludeExternals: true,
-    pretty: !MINIFY_JSON,
-  });
+  const app = await Application.bootstrapWithPlugins(
+    {
+      entryPoints,
+      tsconfig: tsConfigPath,
+      disableSources: true,
+      hideGenerator: true,
+      excludePrivate: true,
+      excludeProtected: true,
+      skipErrorChecking: true,
+      excludeExternals: true,
+      jsDocCompatibility: false,
+      pretty: !MINIFY_JSON,
+    },
+    [new TSConfigReader(), new TypeDocReader()]
+  );
 
-  const project = app.convert();
+  const project = await app.convert();
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
@@ -158,16 +163,18 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const { readme, symbolIdMap, ...trimmedOutput } = output;
+
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(
-        output,
+        trimmedOutput,
         ({ key, node }) =>
           ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
+      await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);

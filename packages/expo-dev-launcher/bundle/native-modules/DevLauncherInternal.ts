@@ -1,4 +1,4 @@
-import { requireNativeModule, EventEmitter } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';
@@ -7,8 +7,7 @@ const DevLauncher =
   Platform.OS === 'ios'
     ? requireNativeModule('ExpoDevLauncherInternal')
     : NativeModules.EXDevLauncherInternal;
-const emitter =
-  Platform.OS === 'ios' ? new EventEmitter(DevLauncher) : new NativeEventEmitter(DevLauncher);
+const emitter = Platform.OS === 'ios' ? DevLauncher : new NativeEventEmitter(DevLauncher);
 
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
@@ -39,7 +38,7 @@ export async function consumeNavigationStateAsync() {
 
   try {
     navigationState = JSON.parse(serializedNavigationState);
-  } catch (error) {}
+  } catch {}
 
   // not necessary to await this as its effects are only applied on app launch
   clearNavigationStateAsync();

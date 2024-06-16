@@ -8,7 +8,10 @@ export type CameraPermissionResponse = PermissionResponse;
  */
 export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
-     * @platform ios
+     * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+     * - `'all'` if the user granted your app access to the whole photo library
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
+     * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
@@ -158,7 +161,7 @@ export declare enum UIImagePickerPresentationStyle {
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
      *
-     * @platform ios 13+
+     * @platform ios
      */
     AUTOMATIC = "automatic"
 }
@@ -232,13 +235,11 @@ export type ImagePickerAsset = {
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
      *
-     * @platform ios
      */
     fileName?: string | null;
     /**
      * File size of the picked image or video, in bytes.
      *
-     * @platform ios
      */
     fileSize?: number;
     /**
@@ -263,6 +264,10 @@ export type ImagePickerAsset = {
      * Length of the video in milliseconds or `null` if the asset is not a video.
      */
     duration?: number | null;
+    /**
+     * The MIME type of the selected asset or `null` if could not be determined.
+     */
+    mimeType?: string;
 };
 export type ImagePickerErrorResult = {
     /**
@@ -396,6 +401,7 @@ export type ImagePickerOptions = {
      * Setting the value to `0` sets the selection limit to the maximum that the system supports.
      *
      * @platform ios 14+
+     * @platform android
      * @default 0
      */
     selectionLimit?: number;
@@ -442,6 +448,12 @@ export type ImagePickerOptions = {
      * @platform ios 14+
      */
     preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
+    /**
+     * Uses the legacy image picker on Android. This will allow media to be selected from outside the users photo library.
+     * @platform android
+     * @default false
+     */
+    legacy?: boolean;
 };
 export type OpenFileBrowserOptions = {
     /**

@@ -2,14 +2,21 @@
 
 #import <Foundation/FoundationErrors.h>
 
+#import <ExpoModulesCore/EXSingletonModule.h>
+#import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
 
+#if !TARGET_OS_OSX
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
 static NSMutableDictionary<NSString *,NSArray<id<UIApplicationDelegate>> *> *subcontractorsForSelector;
 static dispatch_once_t onceToken;
+#endif
 
 @implementation EXLegacyAppDelegateWrapper
+
+// The legacy app delegate wrapper is not supported on macOS, but we keep it no-op for convenience.
+#if !TARGET_OS_OSX
 
 @synthesize window = _window;
 
@@ -215,7 +222,6 @@ static dispatch_once_t onceToken;
   }
 }
 
-
 #pragma mark - Subcontractors
 
 - (void)ensureSubcontractorsAreInitializedAndSorted {
@@ -259,5 +265,7 @@ static dispatch_once_t onceToken;
   
   return result;
 }
+
+#endif // !TARGET_OS_OSX
 
 @end

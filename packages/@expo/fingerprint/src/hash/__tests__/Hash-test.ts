@@ -4,7 +4,7 @@ import pLimit from 'p-limit';
 import path from 'path';
 
 import { HashSource } from '../../Fingerprint.types';
-import { normalizeOptions } from '../../Options';
+import { normalizeOptionsAsync } from '../../Options';
 import {
   createContentsHashResultsAsync,
   createDirHashResultsAsync,
@@ -23,21 +23,31 @@ describe(createFingerprintFromSourcesAsync, () => {
   });
 
   it('snapshot', async () => {
+    const filePath = 'assets/icon.png';
     vol.mkdirSync('/app');
-    vol.writeFileSync(path.join('/app', 'app.json'), '{}');
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync(path.join('/app', filePath), '{}');
 
     const sources: HashSource[] = [
       { type: 'contents', id: 'foo', contents: 'HelloWorld', reasons: ['foo'] },
-      { type: 'file', filePath: 'app.json', reasons: ['expoConfig'] },
+      { type: 'file', filePath, reasons: ['icon'] },
     ];
 
-    expect(await createFingerprintFromSourcesAsync(sources, '/app', normalizeOptions()))
-      .toMatchInlineSnapshot(`
+    expect(
+      await createFingerprintFromSourcesAsync(
+        sources,
+        '/app',
+        await normalizeOptionsAsync('/app', { debug: true })
+      )
+    ).toMatchInlineSnapshot(`
       {
-        "hash": "ec7d81780f735d5e289b27cdcc04a6c99d2621dc",
+        "hash": "ca7d58cd60289daa5cddcf99fcaa1d339bfc2c1a",
         "sources": [
           {
             "contents": "HelloWorld",
+            "debugInfo": {
+              "hash": "db8ac1c259eb89d4a131b253bacfca5f319d54f2",
+            },
             "hash": "db8ac1c259eb89d4a131b253bacfca5f319d54f2",
             "id": "foo",
             "reasons": [
@@ -46,10 +56,14 @@ describe(createFingerprintFromSourcesAsync, () => {
             "type": "contents",
           },
           {
-            "filePath": "app.json",
+            "debugInfo": {
+              "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
+              "path": "assets/icon.png",
+            },
+            "filePath": "assets/icon.png",
             "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
             "reasons": [
-              "expoConfig",
+              "icon",
             ],
             "type": "file",
           },
@@ -70,9 +84,38 @@ describe(createFingerprintSourceAsync, () => {
     const expectedResult = {
       ...source,
       hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
+      debugInfo: {
+        hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
+      },
     };
     expect(
-      await createFingerprintSourceAsync(source, pLimit(1), '/app', normalizeOptions())
+      await createFingerprintSourceAsync(
+        source,
+        pLimit(1),
+        '/app',
+        await normalizeOptionsAsync('/app', { debug: true })
+      )
+    ).toEqual(expectedResult);
+  });
+
+  it('does not include debug info when debug option is falsey', async () => {
+    const source: HashSource = {
+      type: 'contents',
+      id: 'foo',
+      contents: 'HelloWorld',
+      reasons: ['foo'],
+    };
+    const expectedResult = {
+      ...source,
+      hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
+    };
+    expect(
+      await createFingerprintSourceAsync(
+        source,
+        pLimit(1),
+        '/app',
+        await normalizeOptionsAsync('/app')
+      )
     ).toEqual(expectedResult);
   });
 });
@@ -81,7 +124,7 @@ describe(createContentsHashResultsAsync, () => {
   it('should return {id, hex} result', async () => {
     const id = 'foo';
     const contents = '{}';
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const result = await createContentsHashResultsAsync(
       {
         type: 'contents',
@@ -104,18 +147,32 @@ describe(createFileHashResultsAsync, () => {
   });
 
   it('should return {id, hex} result', async () => {
-    const filePath = 'app.json';
+    const filePath = 'assets/icon.png';
     const contents = '{}';
     const limiter = pLimit(1);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     vol.mkdirSync('/app');
+    vol.mkdirSync('/app/assets');
     vol.writeFileSync(path.join('/app', filePath), contents);
 
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
 
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
-    expect(result.id).toEqual(filePath);
-    expect(result.hex).toEqual(expectHex);
+    expect(result?.id).toEqual(filePath);
+    expect(result?.hex).toEqual(expectHex);
+  });
+
+  it('should ignore file if it is in options.ignorePaths', async () => {
+    const filePath = 'app.json';
+    const contents = '{}';
+    const limiter = pLimit(1);
+    const options = await normalizeOptionsAsync('/app', { debug: true });
+    options.ignorePaths = ['*.json'];
+    vol.mkdirSync('/app');
+    vol.writeFileSync(path.join('/app', filePath), contents);
+
+    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
+    expect(result).toBe(null);
   });
 });
 
@@ -126,7 +183,7 @@ describe(createDirHashResultsAsync, () => {
 
   it('should return {id, hex} result', async () => {
     const limiter = pLimit(3);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
@@ -140,9 +197,33 @@ describe(createDirHashResultsAsync, () => {
     expect(result?.hex).not.toBe('');
   });
 
+  it('should ignore dir if it is in options.ignorePaths', async () => {
+    const limiter = pLimit(3);
+    const options = await normalizeOptionsAsync('/app', { debug: true });
+    options.ignorePaths = ['ios/**/*', 'android/**/*'];
+    const volJSON = {
+      '/app/ios/Podfile': '...',
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+      '/app/android/build.gradle': '...',
+    };
+    vol.fromJSON(volJSON);
+
+    const fingerprint1 = await createDirHashResultsAsync('.', limiter, '/app', options);
+
+    vol.reset();
+    const volJSONIgnoreNativeProjects = {
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+    };
+    vol.fromJSON(volJSONIgnoreNativeProjects);
+    const fingerprint2 = await createDirHashResultsAsync('.', limiter, '/app', options);
+    expect(fingerprint1).toEqual(fingerprint2);
+  });
+
   it('should return stable result from sorted files', async () => {
     const limiter = pLimit(3);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',

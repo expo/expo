@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client-components",
-  "version": "1.4.0",
+  "version": "1.8.1",
   "description": "Shared JS components and configuration for expo-dev-client",
   "main": "src/index.ts",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
+  "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/styleguide-native": "^1.0.1",
     "expo-module-scripts": "^3.0.0"

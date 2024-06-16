@@ -1,11 +1,10 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
-import * as Utilities from '~/common/utilities';
+import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
@@ -13,52 +12,35 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import { PageMetadata } from '~/types/common';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { P } from '~/ui/components/Text';
 
-const STYLES_DOCUMENT = css`
-  background: ${theme.background.default};
-  margin: 0 auto;
-  padding: 40px 56px;
+export type DocPageProps = PropsWithChildren<PageMetadata>;
 
-  @media screen and (max-width: ${breakpoints.medium + 124}px) {
-    padding: 20px 16px 48px 16px;
-  }
-`;
-
-type Props = React.PropsWithChildren<{
-  title?: string;
-  description?: string;
-  sourceCodeUrl?: string;
-  tocVisible: boolean;
-  packageName?: string;
-  iconUrl?: string;
-  /** If the page should not show up in the Algolia Docsearch results */
-  hideFromSearch?: boolean;
-}>;
-
-const getCanonicalUrl = (path: string) => {
-  if (RoutesUtils.isReferencePath(path)) {
-    return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}`;
-  } else {
-    return `https://docs.expo.dev${path}`;
-  }
-};
-
-export default function DocumentationPage(props: Props) {
+export default function DocumentationPage({
+  title,
+  description,
+  packageName,
+  sourceCodeUrl,
+  iconUrl,
+  children,
+  hideFromSearch,
+  platforms,
+  hideTOC,
+}: DocPageProps) {
+  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
-  const pathname = router?.pathname ?? '/';
 
   const layoutRef = createRef<DocumentationNestedScrollLayout>();
   const sidebarRightRef = createRef<SidebarRightComponentType>();
 
-  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
-
+  const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
@@ -106,6 +88,19 @@ export default function DocumentationPage(props: Props) {
     />
   );
 
+  const flattenStructure = routes
+    .map(route => appendSectionToRoute(route))
+    .flat()
+    .map(route => (route?.type === 'page' ? route : appendSectionToRoute(route)))
+    .flat();
+
+  const pageIndex = flattenStructure.findIndex(page =>
+    isRouteActive(page, router?.asPath, router?.pathname)
+  );
+
+  const previousPage = flattenStructure[pageIndex - 1];
+  const nextPage = flattenStructure[pageIndex + 1];
+
   return (
     <DocumentationNestedScrollLayout
       ref={layoutRef}
@@ -113,48 +108,50 @@ export default function DocumentationPage(props: Props) {
       sidebar={sidebarElement}
       sidebarRight={sidebarRightElement}
       sidebarActiveGroup={sidebarActiveGroup}
-      tocVisible={props.tocVisible}
+      hideTOC={hideTOC ?? false}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
-      <Head title={props.title} description={props.description}>
-        {props.hideFromSearch !== true && (
+      <Head
+        title={title}
+        description={description}
+        canonicalUrl={
+          version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
+        }>
+        {hideFromSearch !== true && (
           <meta
             name="docsearch:version"
             content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
           />
         )}
-        {version === 'unversioned' ? (
-          (RoutesUtils.isPreviewPath(pathname) || RoutesUtils.isArchivePath(pathname)) && (
-            <meta name="robots" content="noindex" />
-          )
-        ) : (
-          <link rel="canonical" href={getCanonicalUrl(pathname)} />
-        )}
+        {(version === 'unversioned' ||
+          RoutesUtils.isPreviewPath(pathname) ||
+          RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
       </Head>
-      <div css={STYLES_DOCUMENT}>
-        {props.title && (
+      <div
+        className={mergeClasses(
+          'mx-auto py-10 px-14',
+          'max-lg-gutters:px-4 max-lg-gutters:pt-5 max-lg-gutters:pb-12'
+        )}>
+        {title && (
           <PageTitle
-            title={props.title}
-            sourceCodeUrl={props.sourceCodeUrl}
-            packageName={props.packageName}
-            iconUrl={props.iconUrl}
+            title={title}
+            description={description}
+            sourceCodeUrl={sourceCodeUrl}
+            packageName={packageName}
+            iconUrl={iconUrl}
           />
         )}
-        {props.description && (
-          <P theme="secondary" data-description="true">
-            {props.description}
-          </P>
-        )}
-        {props.title && <Separator />}
-        {props.children}
-        {props.title && (
-          <Footer
-            title={props.title}
-            sourceCodeUrl={props.sourceCodeUrl}
-            packageName={props.packageName}
-          />
-        )}
+        {platforms && <PagePlatformTags platforms={platforms} />}
+        {title && <Separator />}
+        {children}
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+        />
       </div>
     </DocumentationNestedScrollLayout>
   );

@@ -2,11 +2,11 @@ import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
+import ImagePickerAssetsList from './ImagePickerAssetsList';
 import FunctionDemo, {
   FunctionDescription,
   FunctionParameter,
 } from '../../components/FunctionDemo';
-import ImagePickerAssetsList from './ImagePickerAssetsList';
 
 const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
   {
@@ -36,6 +36,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       { name: 'quality', type: 'number', values: [0, 0.2, 0.7, 1.0] },
       { name: 'exif', type: 'boolean', initial: false },
       { name: 'base64', type: 'boolean', initial: false },
+      { name: 'legacy', type: 'boolean', initial: false },
       {
         name: 'videoExportPreset',
         type: 'enum',
@@ -127,7 +128,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'selectionLimit',
         type: 'number',
         values: [0, 1, 3],
-        platforms: ['ios'],
+        platforms: ['ios', 'android'],
       },
       {
         name: 'orderedSelection',

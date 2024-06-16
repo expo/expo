@@ -1,7 +1,7 @@
 import { WarningAggregator, withStringsXml } from '@expo/config-plugins';
 
-import { withAndroidUserInterfaceStyle } from '../withAndroidUserInterfaceStyle';
 import { compileMockModWithResultsAsync } from './mockMods';
+import { withAndroidUserInterfaceStyle } from '../withAndroidUserInterfaceStyle';
 
 jest.mock('@expo/config-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins');

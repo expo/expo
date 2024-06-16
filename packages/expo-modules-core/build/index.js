@@ -1,22 +1,28 @@
-import { DeviceEventEmitter } from 'react-native';
-import { EventEmitter } from './EventEmitter';
+import EventEmitter from './EventEmitter';
+import { LegacyEventEmitter } from './LegacyEventEmitter';
+import NativeModule from './NativeModule';
 import NativeModulesProxy from './NativeModulesProxy';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
-import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
+import SharedObject from './SharedObject';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
-export { default as deprecate } from './deprecate';
-export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, 
+import './web/index';
+export { default as uuid } from './uuid';
+export { NativeModulesProxy, Platform, requireNativeViewManager, 
+// Globals
+EventEmitter, SharedObject, NativeModule, 
 // Errors
-CodedError, UnavailabilityError, };
+CodedError, UnavailabilityError, 
+// Deprecated
+LegacyEventEmitter, };
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
-/**
- * @deprecated renamed to `DeviceEventEmitter`
- */
-export const RCTDeviceEventEmitter = DeviceEventEmitter;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
+export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
+export * from './reload';
 //# sourceMappingURL=index.js.map

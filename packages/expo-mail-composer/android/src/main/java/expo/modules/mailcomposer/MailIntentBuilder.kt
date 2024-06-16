@@ -67,7 +67,7 @@ class MailIntentBuilder(
 
   fun putAttachments(
     intentName: String,
-    application: Application,
+    application: Application
   ) = apply {
     try {
       options.attachments?.let { requestedAttachments ->

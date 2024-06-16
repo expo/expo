@@ -3,7 +3,7 @@ import * as PKCE from 'expo-auth-session/build/PKCE';
 
 export const name = 'AuthSession';
 
-// Open ID RP cert testing server http://openid.net/certification/rp_testing
+// Open ID RP cert testing server https://openid.net/certification/rp_testing
 // TODO(Bacon): Test exchanges
 // const testUri = "https://rp.certification.openid.net:8080/expo-auth-session/";
 

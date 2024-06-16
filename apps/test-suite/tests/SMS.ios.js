@@ -1,8 +1,6 @@
 import * as Device from 'expo-device';
 import * as SMS from 'expo-sms';
 
-import { expectMethodToThrowAsync } from '../TestUtils';
-import { isInteractive } from '../utils/Environment';
 import {
   loadAttachmentsAsync,
   cleanupAttachmentsAsync,
@@ -12,6 +10,8 @@ import {
   testSMSComposeWithNullRecipient,
   testSMSComposeWithUndefinedRecipient,
 } from './SMSCommon';
+import { expectMethodToThrowAsync } from '../TestUtils';
+import { isInteractive } from '../utils/Environment';
 
 export const name = 'SMS';
 

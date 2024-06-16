@@ -4,24 +4,20 @@ import { getExpoApiBaseUrl } from '../../../api/endpoint';
 import * as ProjectDevices from '../../project/devices';
 import { DevelopmentSession } from '../DevelopmentSession';
 
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
-
-jest.mock('../../../api/settings', () => ({
-  APISettings: {
-    isOffline: false,
-  },
-}));
 jest.mock('../../project/devices', () => ({
   getDevicesInfoAsync: jest.fn(),
 }));
 jest.mock('../../../api/user/user');
 
 describe(`startAsync`, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   it(`starts a dev session`, async () => {
     const err = jest.fn();
     const session = new DevelopmentSession('/', 'http://localhost:19001/', err);
 
-    asMock(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
+    jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }],
     });
 
@@ -56,7 +52,9 @@ describe(`startAsync`, () => {
     const err = jest.fn();
     const session = new DevelopmentSession('/', 'http://localhost:19001/', err);
 
-    asMock(ProjectDevices.getDevicesInfoAsync).mockRejectedValueOnce(new Error('predefined error'));
+    jest
+      .mocked(ProjectDevices.getDevicesInfoAsync)
+      .mockRejectedValueOnce(new Error('predefined error'));
 
     const exp = {
       name: 'my-app',
@@ -82,7 +80,7 @@ describe(`startAsync`, () => {
     const err = jest.fn();
     const session = new DevelopmentSession('/', 'http://localhost:19001/', err);
 
-    asMock(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
+    jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }],
     });
 

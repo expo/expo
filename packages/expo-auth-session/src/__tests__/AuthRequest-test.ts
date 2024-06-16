@@ -1,6 +1,6 @@
 import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
-import { buildQueryString, getQueryParams } from '../QueryParams';
+import { getQueryParams } from '../QueryParams';
 
 jest.mock('expo-crypto', () => ({
   getRandomBytes: jest.fn(() => ''),
@@ -108,7 +108,7 @@ it(`parses the server error into an AuthError`, () => {
     state: 'somn',
   });
 
-  const queryString = buildQueryString({ state: 'somn', error: 'invalid_request' });
+  const queryString = new URLSearchParams({ state: 'somn', error: 'invalid_request' }).toString();
   const results = request.parseReturnUrl(`https://demo.io?${queryString}`);
   if (results.type !== 'error' || !results.error) throw new Error('Invalid type for test');
 

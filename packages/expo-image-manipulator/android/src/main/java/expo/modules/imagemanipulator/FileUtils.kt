@@ -2,6 +2,7 @@ package expo.modules.imagemanipulator
 
 import android.content.Context
 import android.graphics.Bitmap.CompressFormat
+import android.os.Build
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -26,6 +27,12 @@ internal object FileUtils {
     return when (compressFormat) {
       CompressFormat.JPEG -> ".jpg"
       CompressFormat.PNG -> ".png"
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        CompressFormat.WEBP_LOSSY
+      } else {
+        @Suppress("DEPRECATION")
+        CompressFormat.WEBP
+      } -> ".webp"
       else -> ".jpg"
     }
   }

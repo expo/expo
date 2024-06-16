@@ -1,10 +1,10 @@
-import aws from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
 
 import { Platform } from '../ProjectVersions';
 
 export { Platform };
 
-export type S3Client = aws.S3;
+export type S3Client = S3;
 
 export interface ClientBuilder {
   platform: Platform;

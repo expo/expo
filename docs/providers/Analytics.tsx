@@ -4,7 +4,7 @@ import Script from 'next/script';
 import React, { PropsWithChildren, useEffect } from 'react';
 
 /** The global analytics measurement ID */
-const MEASUREMENT_ID = 'UA-107832480-3';
+const MEASUREMENT_ID = 'G-YKNPYCMLWY';
 
 type AnalyticsProps = PropsWithChildren<object>;
 
@@ -70,6 +70,16 @@ export function reportPageVote({ status }: { status: boolean }) {
   window?.gtag?.('event', status ? 'page_vote_up' : 'page_vote_down', {
     event_category: 'Page vote',
     value: window?.location.pathname,
+    // Use a non-interaction event to avoid affecting bounce rate.
+    non_interaction: true,
+    anonymize_ip: true,
+  });
+}
+
+export function reportEasTutorialCompleted() {
+  window?.gtag?.('event', 'eas_tutorial', {
+    event_category: 'EAS Tutorial Completed',
+    event_label: 'All chapters in EAS Tutorial completed',
     // Use a non-interaction event to avoid affecting bounce rate.
     non_interaction: true,
     anonymize_ip: true,

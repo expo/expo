@@ -36,8 +36,7 @@ function getPrebuildConfig(projectRoot, {
   platforms,
   bundleIdentifier,
   packageName,
-  autolinkedModules,
-  expoUsername
+  autolinkedModules
 }) {
   // let config: ExpoConfig;
   let {
@@ -53,19 +52,14 @@ function getPrebuildConfig(projectRoot, {
     }
     config._internal.autolinkedModules = autolinkedModules;
   }
-  const resolvedExpoUsername = typeof expoUsername === 'function' ? expoUsername(config) : // If the user didn't pass a username then fallback on the static cached username.
-  expoUsername !== null && expoUsername !== void 0 ? expoUsername : (0, _config().getAccountUsername)(config);
 
   // Add all built-in plugins first because they should take
   // priority over the unversioned plugins.
-  config = (0, _withDefaultPlugins().withVersionedExpoSDKPlugins)(config, {
-    expoUsername: resolvedExpoUsername
-  });
+  config = (0, _withDefaultPlugins().withVersionedExpoSDKPlugins)(config);
   config = (0, _withDefaultPlugins().withLegacyExpoPlugins)(config);
   if (platforms.includes('ios')) {
-    var _ref;
     if (!config.ios) config.ios = {};
-    config.ios.bundleIdentifier = (_ref = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : config.ios.bundleIdentifier) !== null && _ref !== void 0 ? _ref : `com.placeholder.appid`;
+    config.ios.bundleIdentifier = bundleIdentifier ?? config.ios.bundleIdentifier ?? `com.placeholder.appid`;
 
     // Add all built-in plugins
     config = (0, _withDefaultPlugins().withIosExpoPlugins)(config, {
@@ -73,9 +67,8 @@ function getPrebuildConfig(projectRoot, {
     });
   }
   if (platforms.includes('android')) {
-    var _ref2;
     if (!config.android) config.android = {};
-    config.android.package = (_ref2 = packageName !== null && packageName !== void 0 ? packageName : config.android.package) !== null && _ref2 !== void 0 ? _ref2 : `com.placeholder.appid`;
+    config.android.package = packageName ?? config.android.package ?? `com.placeholder.appid`;
 
     // Add all built-in plugins
     config = (0, _withDefaultPlugins().withAndroidExpoPlugins)(config, {

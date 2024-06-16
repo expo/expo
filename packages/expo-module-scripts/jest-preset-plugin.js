@@ -1,10 +1,14 @@
-const nodePreset = {
+/** @type {import('jest').Config} */
+module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   transform: {
     '^.+\\.[jt]sx?$': ['babel-jest', { configFile: require.resolve('./babel.config.base.js') }],
   },
-  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
+  watchPlugins: [
+    require.resolve('jest-watch-typeahead/filename'),
+    require.resolve('jest-watch-typeahead/testname'),
+  ],
+  // See: https://jestjs.io/docs/configuration#prettierpath-string
+  prettierPath: require.resolve('jest-snapshot-prettier'),
 };
-
-module.exports = nodePreset;

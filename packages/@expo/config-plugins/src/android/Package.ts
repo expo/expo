@@ -4,20 +4,14 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
+import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 import { ConfigPlugin } from '../Plugin.types';
-import { createAndroidManifestPlugin, withAppBuildGradle } from '../plugins/android-plugins';
+import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
-import { AndroidManifest } from './Manifest';
-import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
-
-export const withPackageManifest = createAndroidManifestPlugin(
-  setPackageInAndroidManifest,
-  'withPackageManifest'
-);
 
 export const withPackageGradle: ConfigPlugin = (config) => {
   return withAppBuildGradle(config, (config) => {
@@ -207,12 +201,18 @@ export async function renamePackageOnDiskForType({
     // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(path.join(projectRoot, 'android', 'app', 'BUCK'));
   }
+
+  const kotlinSanitizedPackageName = kotlinSanitized(packageName);
   // Replace all occurrences of the path in the project
   filesToUpdate.forEach((filepath: string) => {
     try {
       if (fs.lstatSync(filepath).isFile()) {
         let contents = fs.readFileSync(filepath).toString();
-        contents = contents.replace(new RegExp(currentPackageName!, 'g'), packageName);
+        if (path.extname(filepath) === '.kt') {
+          contents = replacePackageName(contents, currentPackageName, kotlinSanitizedPackageName);
+        } else {
+          contents = replacePackageName(contents, currentPackageName, packageName);
+        }
         if (['.h', '.cpp'].includes(path.extname(filepath))) {
           contents = contents.replace(
             new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'),
@@ -242,21 +242,6 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 
-export function setPackageInAndroidManifest(
-  config: Pick<ExpoConfig, 'android'>,
-  androidManifest: AndroidManifest
-) {
-  const packageName = getPackage(config);
-
-  if (packageName) {
-    androidManifest.manifest.$.package = packageName;
-  } else {
-    delete androidManifest.manifest.$.package;
-  }
-
-  return androidManifest;
-}
-
 export async function getApplicationIdAsync(projectRoot: string): Promise<string | null> {
   const buildGradlePath = getAppBuildGradleFilePath(projectRoot);
   if (!fs.existsSync(buildGradlePath)) {
@@ -269,9 +254,41 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
 }
 
 /**
+ * Replace the package name with the new package name, in the given source.
+ * This has to be limited to avoid accidentally replacing imports when the old package name overlaps.
+ */
+function replacePackageName(content: string, oldName: string, newName: string) {
+  const oldNameEscaped = oldName.replace(/\./g, '\\.');
+
+  return (
+    content
+      // Replace any quoted instances "com.old" -> "com.new"
+      .replace(new RegExp(`"${oldNameEscaped}"`, 'g'), `"${newName}"`)
+      // Replace special non-quoted instances, only when prefixed by package or namespace
+      .replace(new RegExp(`(package|namespace)(\\s+)${oldNameEscaped}`, 'g'), `$1$2${newName}`)
+      // Replace special import instances, without overlapping with other imports (trailing `.` to close it off)
+      .replace(new RegExp(`(import\\s+)${oldNameEscaped}\\.`, 'g'), `$1${newName}.`)
+  );
+}
+
+/**
  * Transform a java package name to java class descriptor,
  * e.g. `com.helloworld` -> `Lcom/helloworld`.
  */
 function transformJavaClassDescriptor(packageName: string) {
   return `L${packageName.replace(/\./g, '/')}`;
+}
+
+/**
+ * Make a package name safe to use in a kotlin file,
+ * e.g. is.pvin.hello -> `is`.pvin.hello
+ */
+export function kotlinSanitized(packageName: string) {
+  const stringsToWrap = ['is', 'in', 'as', 'fun'];
+
+  const parts = packageName.split('.');
+  const cleanParts = parts.map((part) => (stringsToWrap.includes(part) ? '`' + part + '`' : part));
+
+  const cleanName = cleanParts.join('.');
+  return cleanName;
 }

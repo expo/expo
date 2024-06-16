@@ -1,7 +1,6 @@
 import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
 import prompt, { confirmAsync } from './prompts';
@@ -12,7 +11,9 @@ import {
   getPackageNameWarningAsync,
   validateBundleId,
   validatePackage,
+  validatePackageWithWarning,
 } from './validateApplicationId';
+import * as Log from '../log';
 
 function getUsernameAsync(exp: ExpoConfig) {
   // TODO: Use XDL's UserManager
@@ -29,9 +30,10 @@ const NO_PACKAGE_MESSAGE = `Project must have a \`android.package\` set in the E
  * Prompted value will be validated against the App Store and a local regex.
  * If the project Expo config is a static JSON file, the bundle identifier will be updated in the config automatically.
  */
-export async function getOrPromptForBundleIdentifier(projectRoot: string): Promise<string> {
-  const { exp } = getConfig(projectRoot);
-
+export async function getOrPromptForBundleIdentifier(
+  projectRoot: string,
+  exp: ExpoConfig = getConfig(projectRoot).exp
+): Promise<string> {
   const current = exp.ios?.bundleIdentifier;
   if (current) {
     assertValidBundleId(current);
@@ -137,9 +139,10 @@ async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string |
  * Prompted value will be validated against the Play Store and a local regex.
  * If the project Expo config is a static JSON file, the package name will be updated in the config automatically.
  */
-export async function getOrPromptForPackage(projectRoot: string): Promise<string> {
-  const { exp } = getConfig(projectRoot);
-
+export async function getOrPromptForPackage(
+  projectRoot: string,
+  exp: ExpoConfig = getConfig(projectRoot).exp
+): Promise<string> {
   const current = exp.android?.package;
   if (current) {
     assertValidPackage(current);
@@ -164,7 +167,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
       name: 'packageName',
       initial: (await getRecommendedPackageNameAsync(exp)) ?? undefined,
       message: `What would you like your Android package name to be?`,
-      validate: validatePackage,
+      validate: validatePackageWithWarning,
     },
     {
       nonInteractiveHelp: NO_PACKAGE_MESSAGE,

@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -27,12 +27,6 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/embed').expoExportEmbed`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/export/embed/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
@@ -68,38 +62,61 @@ it('runs `npx expo export:embed --help`', async () => {
         --reset-cache                          Removes cached files
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
-        --generate-static-view-configs         Generate static view configs for Fabric components. If there are no Fabric components in the bundle or Fabric is disabled, this is just no-op.
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
         -h, --help                             Usage info
     "
   `);
 });
 
+function ensureTesterReady(fixtureName: string): string {
+  const root = path.join(__dirname, '../../../../../apps/router-e2e');
+  // Clear metro cache for the env var to be updated
+  // await fs.remove(path.join(root, "node_modules/.cache/metro"));
+
+  // @ts-ignore
+  process.env.E2E_ROUTER_SRC = fixtureName;
+
+  return root;
+}
+
 it(
   'runs `npx expo export:embed`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('ios-export-embed', 'with-assets');
-    fs.ensureDir(path.join(projectRoot, 'dist'));
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
     await execa(
       'node',
       [
         bin,
         'export:embed',
         '--entry-file',
-        './App.js',
+        path.join(projectRoot, './index.js'),
         '--bundle-output',
-        './dist/output.js',
+        `./${output}/output.js`,
         '--assets-dest',
-        'dist',
+        output,
         '--platform',
         'ios',
+        '--dev',
+        'false',
       ],
       {
         cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
       }
     );
 
-    const outputDir = path.join(projectRoot, 'dist');
+    const outputDir = path.join(projectRoot, 'dist-export-embed');
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
     // Posix path formatting is used to make paths the same across OSes.
@@ -114,10 +131,85 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
-      'assets/assets/font.ttf',
+      'assets/__e2e__/static-rendering/sweet.ttf',
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
       'assets/assets/icon.png',
-      'assets/assets/icon@2x.png',
       'output.js',
+    ]);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export:embed` with source maps',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-source-maps';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    await execa(
+      'node',
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        `./${output}/output.js.map`,
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'assets/__e2e__/static-rendering/sweet.ttf',
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'assets/assets/icon.png',
+      'output.js',
+      'output.js.map',
     ]);
   },
   // Could take 45s depending on how fast npm installs

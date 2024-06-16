@@ -51,7 +51,6 @@ function withBaseMod(config, {
   isIntrospective,
   saveToInternal
 }) {
-  var _config$_internal$isD, _config$_internal;
   if (!config.mods) {
     config.mods = {};
   }
@@ -75,7 +74,7 @@ function withBaseMod(config, {
   let debugTrace = '';
   // Use the possibly user defined value. Otherwise fallback to the env variable.
   // We support the env variable because user mods won't have _internal defined in time.
-  const isDebug = (_config$_internal$isD = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.isDebug) !== null && _config$_internal$isD !== void 0 ? _config$_internal$isD : EXPO_DEBUG;
+  const isDebug = config._internal?.isDebug ?? EXPO_DEBUG;
   if (isDebug) {
     // Get a stack trace via the Error API
     const stack = new Error().stack;
@@ -142,10 +141,9 @@ function getDebugPluginStackFromStackTrace(stacktrace) {
     }
   }
   const plugins = treeStackLines.map(first => {
-    var _ref, _first$match$1$trim, _first$match, _first$match$, _first$match2, _first$match2$;
     // Match the first part of the stack trace against the plugin naming convention
     // "with" followed by a capital letter.
-    return (_ref = (_first$match$1$trim = first === null || first === void 0 ? void 0 : (_first$match = first.match(/^(\bwith[A-Z].*?\b)/)) === null || _first$match === void 0 ? void 0 : (_first$match$ = _first$match[1]) === null || _first$match$ === void 0 ? void 0 : _first$match$.trim()) !== null && _first$match$1$trim !== void 0 ? _first$match$1$trim : first === null || first === void 0 ? void 0 : (_first$match2 = first.match(/\.(\bwith[A-Z].*?\b)/)) === null || _first$match2 === void 0 ? void 0 : (_first$match2$ = _first$match2[1]) === null || _first$match2$ === void 0 ? void 0 : _first$match2$.trim()) !== null && _ref !== void 0 ? _ref : null;
+    return first?.match(/^(\bwith[A-Z].*?\b)/)?.[1]?.trim() ?? first?.match(/\.(\bwith[A-Z].*?\b)/)?.[1]?.trim() ?? null;
   }).filter(Boolean).filter(plugin => {
     // redundant as all debug logs are captured in withBaseMod
     return !['withMod', 'withBaseMod', 'withExtendedMod'].includes(plugin);

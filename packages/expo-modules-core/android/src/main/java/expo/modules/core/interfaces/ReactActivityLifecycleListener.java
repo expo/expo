@@ -34,4 +34,9 @@ public interface ReactActivityLifecycleListener {
   default boolean onBackPressed() {
     return false;
   }
+
+  /**
+   * This method is called when the {@link Activity#setContentView} method is invoked on an Activity.
+   */
+  default void onContentChanged(Activity activity) {}
 }

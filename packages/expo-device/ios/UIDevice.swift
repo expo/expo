@@ -11,22 +11,20 @@ public extension UIDevice {
     var systemInfo = utsname()
     uname(&systemInfo)
     let machineMirror = Mirror(reflecting: systemInfo.machine)
-    let identifier = machineMirror.children.reduce("") { identifier, element in
+    return machineMirror.children.reduce("") { identifier, element in
       guard let value = element.value as? Int8, value != 0 else {
         return identifier
       }
       return identifier + String(UnicodeScalar(UInt8(value)))
     }
-
-    return identifier
   }()
 
-  // swiftlint:disable function_body_length closure_body_length
+  // swiftlint:disable closure_body_length
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
       let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: Date()).year
 
-      #if os(iOS)
+#if os(iOS)
       switch identifier {
       case "iPod7,1":
         return ExpoDeviceType(modelName: "iPod touch (6th generation)", deviceYearClass: 2015)
@@ -88,6 +86,14 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPhone 14 Pro", deviceYearClass: 2022)
       case "iPhone15,3":
         return ExpoDeviceType(modelName: "iPhone 14 Pro Max", deviceYearClass: 2022)
+      case "iPhone15,4":
+        return ExpoDeviceType(modelName: "iPhone 15", deviceYearClass: 2023)
+      case "iPhone15,5":
+        return ExpoDeviceType(modelName: "iPhone 15 Plus", deviceYearClass: 2023)
+      case "iPhone16,1":
+        return ExpoDeviceType(modelName: "iPhone 15 Pro", deviceYearClass: 2023)
+      case "iPhone16,2":
+        return ExpoDeviceType(modelName: "iPhone 15 Pro Max", deviceYearClass: 2023)
       case "iPhone8,4":
         return ExpoDeviceType(modelName: "iPhone SE", deviceYearClass: 2016)
       case "iPhone12,8":
@@ -104,6 +110,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad (8th generation)", deviceYearClass: 2020)
       case "iPad12,1", "iPad12,2":
         return ExpoDeviceType(modelName: "iPad (9th generation)", deviceYearClass: 2021)
+      case "iPad13,18", "iPad13,19":
+        return ExpoDeviceType(modelName: "iPad (10th generation)", deviceYearClass: 2022)
       case "iPad4,1", "iPad4,2", "iPad4,3":
         return ExpoDeviceType(modelName: "iPad Air", deviceYearClass: 2013)
       case "iPad5,3", "iPad5,4":
@@ -134,6 +142,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad Pro (11-inch) (2nd generation)", deviceYearClass: 2020)
       case "iPad13,4", "iPad13,5", "iPad13,6", "iPad13,7":
         return ExpoDeviceType(modelName: "iPad Pro (11-inch) (3rd generation)", deviceYearClass: 2021)
+      case "iPad14,3-A", "iPad14,3-B", "iPad14,4-A", "iPad14,4-B":
+        return ExpoDeviceType(modelName: "iPad Pro (11-inch) (4rd generation)", deviceYearClass: 2022)
       case "iPad6,7", "iPad6,8":
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (1st generation)", deviceYearClass: 2015)
       case "iPad7,1", "iPad7,2":
@@ -144,6 +154,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (4th generation)", deviceYearClass: 2020)
       case "iPad13,8", "iPad13,9", "iPad13,10", "iPad13,11":
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (5th generation)", deviceYearClass: 2021)
+      case "iPad14,5-A", "iPad14,5-B", "iPad14,6-A", "iPad14,6-B":
+        return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (6th generation)", deviceYearClass: 2022)
       case "AppleTV5,3":
         return ExpoDeviceType(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
       case "AppleTV6,2":
@@ -153,7 +165,7 @@ public extension UIDevice {
       default:
         return ExpoDeviceType(modelName: identifier, deviceYearClass: currentYear)
       }
-      #elseif os(tvOS)
+#elseif os(tvOS)
       switch identifier {
       case "AppleTV5,3":
         return ExpoDeviceType(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
@@ -162,14 +174,14 @@ public extension UIDevice {
       case "i386", "x86_64":
         return ExpoDeviceType(modelName: "Simulator tvOS", deviceYearClass: currentYear)
       default:
-        return identifier
+        return ExpoDeviceType(modelName: identifier, deviceYearClass: currentYear)
       }
-      #endif
+#endif
     }
 
     return mapToDevice(identifier: modelIdentifier)
   }()
-  // swiftlint:enable function_body_length closure_body_length
+  // swiftlint:enable closure_body_length
 
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
@@ -181,10 +193,8 @@ public extension UIDevice {
       return false
     }
 
-    let jailbroken = JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() ||
+    return JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() ||
     JailbreakHelper.doesSuspiciousSystemPathExist() || JailbreakHelper.canEditSystemFiles()
-
-    return jailbroken
   }
 }
 

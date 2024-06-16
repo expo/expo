@@ -1,0 +1,615 @@
+diff --git a/templates/expo-template-bare-minimum/.npmignore b/templates/expo-template-bare-minimum/.npmignore
+index 4e6ce00391..bc0b76356d 100644
+--- a/templates/expo-template-bare-minimum/.npmignore
++++ b/templates/expo-template-bare-minimum/.npmignore
+@@ -17,6 +17,7 @@ web-build/
+ HelloWorld.xcworkspace
+ Podfile.lock
+ ios/Pods
++ios/.xcode.env.local
+ android/.build
+ android/app/build
+ android/.gradle
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index 189390e7e3..7105aaaa3f 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -1,17 +1,7 @@
+ apply plugin: "com.android.application"
+ apply plugin: "com.facebook.react"
+ 
+-import com.android.build.OutputFile
+-
+ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+-def expoDebuggableVariants = ['debug']
+-// Override `debuggableVariants` for expo-updates debugging
+-if (System.getenv('EX_UPDATES_NATIVE_DEBUG') == "1") {
+-  react {
+-    expoDebuggableVariants = []
+-  }
+-}
+-
+ 
+ /**
+  * This is the configuration block to customize your React Native Android app.
+@@ -21,17 +11,20 @@ react {
+     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+     hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+-    debuggableVariants = expoDebuggableVariants
++    codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
++
++    // Use Expo CLI to bundle the app, this ensures the Metro config
++    // works correctly with Expo projects.
++    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
++    bundleCommand = "export:embed"
+ 
+     /* Folders */
+     //   The root of your project, i.e. where "package.json" lives. Default is '..'
+     // root = file("../")
+     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
+     // reactNativeDir = file("../node_modules/react-native")
+-    //   The folder where the react-native Codegen package is. Default is ../node_modules/react-native-codegen
+-    // codegenDir = file("../node_modules/react-native-codegen")
+-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
+-    // cliFile = file("../node_modules/react-native/cli.js")
++    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
++    // codegenDir = file("../node_modules/@react-native/codegen")
+ 
+     /* Variants */
+     //   The list of variants to that are debuggable. For those we're going to
+@@ -42,9 +35,7 @@ react {
+     /* Bundling */
+     //   A list containing the node command and its flags. Default is just 'node'.
+     // nodeExecutableAndArgs = ["node"]
+-    //
+-    //   The command to run when bundling. By default is 'bundle'
+-    // bundleCommand = "ram-bundle"
++
+     //
+     //   The path to the CLI configuration file. Default is empty.
+     // bundleConfig = file(../rn-cli.config.js)
+@@ -67,19 +58,6 @@ react {
+     // hermesFlags = ["-O", "-output-source-map"]
+ }
+ 
+-// Override `hermesEnabled` by `expo.jsEngine`
+-ext {
+-  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
+-}
+-
+-/**
+- * Set this to true to create four separate APKs instead of one,
+- * one for each native architecture. This is useful if you don't
+- * use App Bundles (https://developer.android.com/guide/app-bundle/)
+- * and want to have separate APKs to upload to the Play Store.
+- */
+-def enableSeparateBuildPerCPUArchitecture = false
+-
+ /**
+  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+  */
+@@ -98,16 +76,6 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
+  */
+ def jscFlavor = 'org.webkit:android-jsc:+'
+ 
+-/**
+- * Private function to get the list of Native Architectures you want to build.
+- * This reads the value from reactNativeArchitectures in your gradle.properties
+- * file and works together with the --active-arch-only flag of react-native run-android.
+- */
+-def reactNativeArchitectures() {
+-    def value = project.getProperties().get("reactNativeArchitectures")
+-    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+-}
+-
+ android {
+     ndkVersion rootProject.ext.ndkVersion
+ 
+@@ -120,15 +88,8 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
+-    }
+ 
+-    splits {
+-        abi {
+-            reset()
+-            enable enableSeparateBuildPerCPUArchitecture
+-            universalApk false  // If true, also generate a universal APK
+-            include (*reactNativeArchitectures())
+-        }
++        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+     }
+     signingConfigs {
+         debug {
+@@ -151,22 +112,6 @@ android {
+             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+         }
+     }
+-
+-    // applicationVariants are e.g. debug, release
+-    applicationVariants.all { variant ->
+-        variant.outputs.each { output ->
+-            // For each separate APK per architecture, set a unique version code as described here:
+-            // https://developer.android.com/studio/build/configure-apk-splits.html
+-            // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
+-            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+-            def abi = output.getFilter(OutputFile.ABI)
+-            if (abi != null) {  // null for the universal-debug, universal-release variants
+-                output.versionCodeOverride =
+-                        defaultConfig.versionCode * 1000 + versionCodes.get(abi)
+-            }
+-
+-        }
+-    }
+ }
+ 
+ // Apply static values from `gradle.properties` to the `android.packagingOptions`
+@@ -218,8 +163,6 @@ dependencies {
+         }
+     }
+ 
+-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+-
+     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+         exclude group:'com.squareup.okhttp3', module:'okhttp'
+diff --git a/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml
+index 99e38fc5f8..3ec2507bab 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml
+@@ -3,5 +3,5 @@
+ 
+     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+ 
+-    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" />
++    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
+ </manifest>
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 6536fc03ad..34a7ca8314 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -18,7 +18,7 @@
+     </intent>
+   </queries>
+ 
+-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
++  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
+     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
+index 7e2823fb6c..176fbf6a2a 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
+@@ -40,10 +40,7 @@ public class MainActivity extends ReactActivity {
+         this,
+         getMainComponentName(),
+         // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+-        DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+-        // If you opted-in for the New Architecture, we enable Concurrent React (i.e. React 18).
+-        DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
+-        ));
++        DefaultNewArchitectureEntryPoint.getFabricEnabled()));
+   }
+ 
+   /**
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
+index 31c2b288c1..e7f376902d 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
+@@ -8,6 +8,7 @@ import com.facebook.react.PackageList;
+ import com.facebook.react.ReactApplication;
+ import com.facebook.react.ReactNativeHost;
+ import com.facebook.react.ReactPackage;
++import com.facebook.react.config.ReactFeatureFlags;
+ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+ import com.facebook.react.defaults.DefaultReactNativeHost;
+ import com.facebook.soloader.SoLoader;
+@@ -37,7 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
+ 
+       @Override
+       protected String getJSMainModuleName() {
+-        return "index";
++        return ".expo/.virtual-metro-entry";
+       }
+ 
+       @Override
+@@ -60,11 +61,16 @@ public class MainApplication extends Application implements ReactApplication {
+   public void onCreate() {
+     super.onCreate();
+     SoLoader.init(this, /* native exopackage */ false);
++    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
++      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false;
++    }
+     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+       // If you opted-in for the New Architecture, we load the native entry point for this app.
+       DefaultNewArchitectureEntryPoint.load();
+     }
+-    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
++    if (BuildConfig.DEBUG) {
++      ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
++    }
+     ApplicationLifecycleDispatcher.onApplicationCreate(this);
+   }
+ 
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml
+index f35d996202..73b37e4d99 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml
+@@ -20,7 +20,7 @@
+        android:insetBottom="@dimen/abc_edit_text_inset_bottom_material">
+ 
+     <selector>
+-        <!-- 
++        <!--
+           This file is a copy of abc_edit_text_material (https://bit.ly/3k8fX7I).
+           The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
+           NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
+diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
+index e5fda82878..bf861dbf33 100644
+--- a/templates/expo-template-bare-minimum/android/build.gradle
++++ b/templates/expo-template-bare-minimum/android/build.gradle
+@@ -6,9 +6,7 @@ buildscript {
+         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
+         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
+         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
+-        if (findProperty('android.kotlinVersion')) {
+-            kotlinVersion = findProperty('android.kotlinVersion')
+-        }
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
+         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
+ 
+         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+@@ -19,7 +17,7 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies {
+-        classpath('com.android.tools.build:gradle:7.4.1')
++        classpath('com.android.tools.build:gradle:7.4.2')
+         classpath('com.facebook.react:react-native-gradle-plugin')
+     }
+ }
+diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
+index 9911ac4afd..240ca06cbf 100644
+--- a/templates/expo-template-bare-minimum/android/gradle.properties
++++ b/templates/expo-template-bare-minimum/android/gradle.properties
+@@ -26,7 +26,7 @@ android.useAndroidX=true
+ android.enableJetifier=true
+ 
+ # Version of flipper SDK to use with React Native
+-FLIPPER_VERSION=0.125.0
++FLIPPER_VERSION=0.182.0
+ 
+ # Use this property to specify which architecture you want to build.
+ # You can also override it from the CLI using
+@@ -40,9 +40,9 @@ reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+ # are providing them.
+ newArchEnabled=false
+ 
+-# The hosted JavaScript engine
+-# Supported values: expo.jsEngine = "hermes" | "jsc"
+-expo.jsEngine=hermes
++# Use this property to enable or disable the Hermes JS engine.
++# If set to false, you will be using JSC instead.
++hermesEnabled=true
+ 
+ # Enable GIF support in React Native images (~200 B increase)
+ expo.gif.enabled=true
+@@ -51,3 +51,6 @@ expo.webp.enabled=true
+ # Enable animated webp support (~3.4 MB increase)
+ # Disabled by default because iOS doesn't support animated webp
+ expo.webp.animated=false
++
++# Enable network inspector
++EX_DEV_CLIENT_NETWORK_INSPECTOR=true
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+index 8fad3f5a98..6ec1567a0f 100644
+--- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
++++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-7.5.1-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.0.1-all.zip
++networkTimeout=10000
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
+index 1dc416e7c1..d172e59a6e 100644
+--- a/templates/expo-template-bare-minimum/android/settings.gradle
++++ b/templates/expo-template-bare-minimum/android/settings.gradle
+@@ -7,4 +7,4 @@ apply from: new File(["node", "--print", "require.resolve('@react-native-communi
+ applyNativeModulesSettingsGradle(settings)
+ 
+ include ':app'
+-includeBuild(new File(["node", "--print", "require.resolve('react-native-gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
++includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
+diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
+index df57ba88a1..05647d55c7 100644
+--- a/templates/expo-template-bare-minimum/gitignore
++++ b/templates/expo-template-bare-minimum/gitignore
+@@ -1,55 +1,35 @@
+-# OSX
+-#
+-.DS_Store
++# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+ 
+-# Xcode
+-#
+-build/
+-*.pbxuser
+-!default.pbxuser
+-*.mode1v3
+-!default.mode1v3
+-*.mode2v3
+-!default.mode2v3
+-*.perspectivev3
+-!default.perspectivev3
+-xcuserdata
+-*.xccheckout
+-*.moved-aside
+-DerivedData
+-*.hmap
+-*.ipa
+-*.xcuserstate
+-project.xcworkspace
+-
+-# Android/IntelliJ
+-#
+-build/
+-.idea
+-.gradle
+-local.properties
+-*.iml
+-*.hprof
+-.cxx/
+-*.keystore
+-!debug.keystore
+-
+-# node.js
+-#
++# dependencies
+ node_modules/
+-npm-debug.log
+-yarn-error.log
+ 
+-# Bundle artifacts
+-*.jsbundle
++# Expo
++.expo/
++dist/
++web-build/
+ 
+-# CocoaPods
+-/ios/Pods/
++# Native
++*.orig.*
++*.jks
++*.p8
++*.p12
++*.key
++*.mobileprovision
+ 
+-# Temporary files created by Metro to check the health of the file watcher
++# Metro
+ .metro-health-check*
+ 
+-# Expo
+-.expo/
+-web-build/
+-dist/
++# debug
++npm-debug.*
++yarn-debug.*
++yarn-error.*
++
++# macOS
++.DS_Store
++*.pem
++
++# local env files
++.env*.local
++
++# typescript
++*.tsbuildinfo
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+index 98e6c2afea..7d3e30a627 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+@@ -17,7 +17,6 @@
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXFileReference section */
+-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+ 		13B07F961A680F5B00A75B9A /* HelloWorld.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorld.app; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = HelloWorld/AppDelegate.h; sourceTree = "<group>"; };
+ 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = HelloWorld/AppDelegate.mm; sourceTree = "<group>"; };
+@@ -49,7 +48,6 @@
+ 			isa = PBXGroup;
+ 			children = (
+ 				BB2F792B24A3F905000567C9 /* Supporting */,
+-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
+ 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+ 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
+ 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+@@ -214,7 +212,7 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 			shellPath = /bin/sh;
+-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" $PROJECT_ROOT ios relative | tail -n 1)\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
++			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios relative | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+ 		};
+ 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+ 			isa = PBXShellScriptBuildPhase;
+@@ -276,7 +274,7 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 			shellPath = /bin/sh;
+-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
++			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+ 			showEnvVarsInLog = 0;
+ 		};
+ /* End PBXShellScriptBuildPhase section */
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
+index 8cb5aef137..f8e88bbe0c 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
+@@ -19,22 +19,12 @@
+ - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+ {
+ #if DEBUG
+-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
++  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+ #else
+   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+ #endif
+ }
+ 
+-/// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
+-///
+-/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
+-/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
+-/// @return: `true` if the `concurrentRoot` feature is enabled. Otherwise, it returns `false`.
+-- (BOOL)concurrentRootEnabled
+-{
+-  return true;
+-}
+-
+ // Linking API
+ - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+   return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json
+index bf722cb92e..b93b7b2b0f 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json
+@@ -1,34 +1,9 @@
+ {
+   "images" : [
+     {
+-      "idiom" : "iphone",
+-      "size" : "29x29",
+-      "scale" : "2x"
+-    },
+-    {
+-      "idiom" : "iphone",
+-      "size" : "29x29",
+-      "scale" : "3x"
+-    },
+-    {
+-      "idiom" : "iphone",
+-      "size" : "40x40",
+-      "scale" : "2x"
+-    },
+-    {
+-      "idiom" : "iphone",
+-      "size" : "40x40",
+-      "scale" : "3x"
+-    },
+-    {
+-      "idiom" : "iphone",
+-      "size" : "60x60",
+-      "scale" : "2x"
+-    },
+-    {
+-      "idiom" : "iphone",
+-      "size" : "60x60",
+-      "scale" : "3x"
++      "idiom" : "universal",
++      "platform" : "ios",
++      "size" : "1024x1024"
+     }
+   ],
+   "info" : {
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+index 9f116db7f2..0a2a4dfa13 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+@@ -51,5 +51,7 @@
+ 	<false/>
+   <key>UIStatusBarStyle</key>
+   <string>UIStatusBarStyleDefault</string>
++  <key>CADisableMinimumFrameDurationOnPhone</key>
++  <true/>
+ </dict>
+ </plist>
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index e523ea5cac..2402cc34b2 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -1,12 +1,11 @@
+ require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+ require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+-require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+ 
+ require 'json'
+ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
+ 
+ ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
+-ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = '1' if podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'true'
++ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+ 
+ platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
+ install! 'cocoapods',
+@@ -62,8 +61,6 @@ target 'HelloWorld' do
+     react_native_post_install(
+       installer,
+       config[:reactNativePath],
+-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+-      # necessary for Mac Catalyst builds
+       :mac_catalyst_enabled => false
+     )
+     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile.properties.json b/templates/expo-template-bare-minimum/ios/Podfile.properties.json
+index b1bd45da51..de9f7b7524 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile.properties.json
++++ b/templates/expo-template-bare-minimum/ios/Podfile.properties.json
+@@ -1,3 +1,4 @@
+ {
+-  "expo.jsEngine": "hermes"
++  "expo.jsEngine": "hermes",
++  "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true"
+ }
+diff --git a/templates/expo-template-bare-minimum/metro.config.js b/templates/expo-template-bare-minimum/metro.config.js
+index 9430b0f9b6..07c9fce65d 100644
+--- a/templates/expo-template-bare-minimum/metro.config.js
++++ b/templates/expo-template-bare-minimum/metro.config.js
+@@ -1,4 +1,7 @@
+ // Learn more https://docs.expo.io/guides/customizing-metro
+ const { getDefaultConfig } = require('expo/metro-config');
+ 
+-module.exports = getDefaultConfig(__dirname);
++/** @type {import('expo/metro-config').MetroConfig} */
++const config = getDefaultConfig(__dirname);
++
++module.exports = config;
+diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
+index d1fcd513cc..a02dbebe41 100644
+--- a/templates/expo-template-bare-minimum/package.json
++++ b/templates/expo-template-bare-minimum/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "expo-template-bare-minimum",
+   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+-  "version": "48.0.21",
++  "version": "49.0.26",
+   "main": "index.js",
+   "scripts": {
+     "start": "expo start --dev-client",
+@@ -10,11 +10,11 @@
+     "web": "expo start --web"
+   },
+   "dependencies": {
+-    "expo": "~48.0.21",
+-    "expo-splash-screen": "~0.18.2",
+-    "expo-status-bar": "~1.4.4",
++    "expo": "~49.0.23",
++    "expo-splash-screen": "~0.20.5",
++    "expo-status-bar": "~1.6.0",
+     "react": "18.2.0",
+-    "react-native": "0.71.14"
++    "react-native": "0.72.12"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"

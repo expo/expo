@@ -7,9 +7,9 @@ import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { Alert, AppState } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isInteractive } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'Notifications';
 
@@ -304,7 +304,7 @@ export async function test(t) {
 
       t.it('presents a notification with attachments', async () => {
         const fileUri = FileSystem.documentDirectory + 'expo-notifications-test-image.jpg';
-        await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
+        await FileSystem.downloadAsync('https://placekitten.com/200/300', fileUri);
         await Notifications.presentNotificationAsync({
           title: 'Look at that kitten! ➡️',
           body: 'What a cutie!',
@@ -324,9 +324,8 @@ export async function test(t) {
 
       t.describe('getNotificationChannelAsync()', () => {
         t.it('returns null if there is no such channel', async () => {
-          const channel = await Notifications.getNotificationChannelAsync(
-            'non-existent-channel-id'
-          );
+          const channel =
+            await Notifications.getNotificationChannelAsync('non-existent-channel-id');
           t.expect(channel).toBe(null);
         });
 
@@ -496,9 +495,8 @@ export async function test(t) {
               testChannelGroupId,
               testChannelGroup
             );
-            const channel = await Notifications.getNotificationChannelGroupAsync(
-              testChannelGroupId
-            );
+            const channel =
+              await Notifications.getNotificationChannelGroupAsync(testChannelGroupId);
             await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
             t.expect(channel).toBeDefined();
           });

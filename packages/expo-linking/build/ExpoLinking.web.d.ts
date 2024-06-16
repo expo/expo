@@ -4,7 +4,7 @@ declare const _default: {
         remove(): void;
     };
     removeEventListener(type: 'url', listener: URLListener): void;
-    canOpenURL(url: string): Promise<boolean>;
+    canOpenURL(): Promise<boolean>;
     getInitialURL(): Promise<string>;
     openURL(url: string): Promise<void>;
 };

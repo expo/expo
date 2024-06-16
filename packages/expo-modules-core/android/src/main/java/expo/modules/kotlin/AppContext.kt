@@ -9,13 +9,16 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.JavaScriptContextProvider
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -24,10 +27,10 @@ import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -35,11 +38,14 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JNIDeallocator
-import expo.modules.kotlin.jni.JSIInteropModuleRegistry
+import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
+import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,10 +63,25 @@ class AppContext(
   val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
-  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
-  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  private var hostWasDestroyed = false
 
-  internal val sharedObjectRegistry = SharedObjectRegistry()
+  // We postpone creating the `JSIContext` to not load so files in unit tests.
+  internal lateinit var jsiInterop: JSIContext
+
+  /**
+   * The core module that defines the `expo` object in the global scope of the JS runtime.
+   *
+   * Note: in current implementation this module won't receive any events.
+   */
+  internal val coreModule = run {
+    val module = CoreModule()
+    module._appContext = this
+    ModuleHolder(module)
+  }
+
+  internal val sharedObjectRegistry = SharedObjectRegistry(this)
+
+  internal val classRegistry = ClassRegistry()
 
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }
@@ -106,7 +127,7 @@ class AppContext(
       addActivityEventListener(reactLifecycleDelegate)
 
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
-      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
@@ -116,30 +137,53 @@ class AppContext(
     }
   }
 
+  fun onCreate() = trace("AppContext.onCreate") {
+    registry.postOnCreate()
+  }
+
   /**
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() = synchronized<Unit>(this) {
-    try {
-      jsiInterop = JSIInteropModuleRegistry(this)
-      val reactContext = reactContextHolder.get() ?: return
-      val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return
-      val jsContextHolder = jsContextProvider.javaScriptContextRef
-      val catalystInstance = reactContext.catalystInstance ?: return
-      jsContextHolder
-        .takeIf { it != 0L }
-        ?.let {
-          jsiInterop.installJSI(
-            it,
-            jniDeallocator,
-            jsContextProvider.jsCallInvokerHolder,
-            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-          )
-          logger.info("✅ JSI interop was installed")
+  @OptIn(FrameworkAPI::class)
+  fun installJSIInterop() = synchronized(this) {
+    if (::jsiInterop.isInitialized) {
+      logger.warn("⚠️ JSI interop was already installed")
+      return
+    }
+
+    trace("AppContext.installJSIInterop") {
+      try {
+        jsiInterop = JSIContext()
+        val reactContext = reactContextHolder.get() ?: return@trace
+        val jsContextHolder = reactContext.javaScriptContextHolder?.get() ?: return@trace
+
+        val jsRuntimePointer = jsContextHolder.takeIf { it != 0L }.ifNull {
+          logger.error("❌ Cannot install JSI interop - JS runtime pointer is null")
+          return@trace
         }
-    } catch (e: Throwable) {
-      logger.error("❌ Cannot install JSI interop: $e", e)
+
+        @Suppress("DEPRECATION")
+        if (reactContext.isBridgeless) {
+          jsiInterop.installJSIForBridgeless(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.runtimeExecutor!!
+          )
+        } else {
+          jsiInterop.installJSI(
+            this,
+            jsRuntimePointer,
+            jniDeallocator,
+            reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl
+          )
+        }
+
+        logger.info("✅ JSI interop was installed")
+      } catch (e: Throwable) {
+        logger.error("❌ Cannot install JSI interop: $e", e)
+      }
     }
   }
 
@@ -217,12 +261,6 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the sensor manager from the legacy module registry
-   */
-  val sensor: SensorServiceInterface?
-    get() = legacyModule()
-
-  /**
    * Provides access to the task manager from the legacy module registry
    */
   val taskManager: TaskManagerInterface?
@@ -268,13 +306,14 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, reactContextHolder)
     }
 
-  internal val errorManager: ErrorManagerModule?
+  val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
-  internal fun onDestroy() {
+  internal fun onDestroy() = trace("AppContext.onDestroy") {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
+    coreModule.module._appContext = null
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
@@ -286,6 +325,12 @@ class AppContext(
     val activity = currentActivity
     check(activity is AppCompatActivity) {
       "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+    }
+
+    // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
+    if (hostWasDestroyed) {
+      hostWasDestroyed = false
+      registry.registerActivityContracts()
     }
 
     activityResultsManager.onHostResume(activity)
@@ -305,10 +350,13 @@ class AppContext(
       activityResultsManager.onHostDestroy(it)
     }
     registry.post(EventName.ACTIVITY_DESTROYS)
+    // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
+    // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
+    hostWasDestroyed = true
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
+    activityResultsManager.onActivityResult(requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
@@ -334,6 +382,22 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
+    val reactContext = reactContextHolder.get() ?: throw Exceptions.ReactContextLost()
+    val uiManager = UIManagerHelper.getUIManagerForReactTag(
+      reactContext,
+      UIManagerType.DEFAULT
+    ) as UIManagerModule
+
+    uiManager.addUIBlock {
+      block()
+    }
+  }
+
+  internal fun assertMainThread() {
+    Utils.assertMainThread()
+  }
+
   /**
    * Runs a code block on the JavaScript thread.
    */
@@ -346,6 +410,7 @@ class AppContext(
   override val currentActivity: Activity?
     get() {
       return activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
     }
 
 // endregion

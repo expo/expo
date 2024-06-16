@@ -27,9 +27,17 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
+#if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTAppSetupUtils.h>
+#else
+#import <React-RCTAppDelegate/RCTAppSetupUtils.h>
+#endif
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
+
+
 
 @implementation DevMenuRCTCxxBridge
 
@@ -62,7 +70,14 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT", @"ExpoBridgeModule", @"EXNativeModulesProxy", @"EXReactNativeEventEmitter"];
+  NSArray<NSString *> *allowedModules = @[
+    @"RCT",
+    @"ExpoBridgeModule",
+    @"EXNativeModulesProxy",
+    @"EXReactNativeEventEmitter",
+    @"ExpoModulesCore",
+    @"ViewManagerAdapter_"
+  ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
 
@@ -106,25 +121,16 @@
 
 @end
 
-@interface DevMenuRCTCxxBridgeDelegate () <RCTCxxBridgeDelegate>
+@interface DevClientAppDelegate (DevMenuRCTAppDelegate)
 
 @end
 
-@implementation DevMenuRCTCxxBridgeDelegate
+@implementation DevMenuRCTAppDelegate
 
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-  // Disable Hermes debugger to prevent Hermes debugger uses dev-menu
-  // as inspecting target.
-  auto installBindings = facebook::react::RCTJSIExecutorRuntimeInstaller(nullptr);
-  auto *hermesExecutorFactory = new facebook::react::HermesExecutorFactory(installBindings);
-  hermesExecutorFactory->setEnableDebugger(false);
-  std::unique_ptr<facebook::react::JSExecutorFactory> jsExecutorFactory(hermesExecutorFactory);
-  return std::move(jsExecutorFactory);
-#else
-  return nullptr;
-#endif
+  return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
 @end

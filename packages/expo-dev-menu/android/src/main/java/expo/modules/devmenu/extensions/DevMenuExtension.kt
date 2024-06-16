@@ -4,6 +4,8 @@ import android.util.Log
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.devsupport.HMRClient
+import com.facebook.react.module.annotations.ReactModule
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
@@ -15,9 +17,14 @@ import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 
+@ReactModule(name = "ExpoDevMenuExtensions")
 class DevMenuExtension(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
+
+  init {
+    DevMenuManager.registerExtensionInterface(this)
+  }
 
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface) = DevMenuItemsContainer.export {
     if (!settings.wasRunOnDevelopmentBridge()) {
@@ -25,13 +32,13 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
     }
 
     val manager = DevMenuManager
-    val reactInstanceManager = manager.getReactInstanceManager()
-    if (reactInstanceManager == null) {
-      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because the react instance manager isn't present.")
+    val reactHost = manager.getReactHost()
+    if (reactHost == null) {
+      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because the react instance isn't present.")
       return@export
     }
 
-    val devDelegate = DevMenuDevToolsDelegate(settings.manager, reactInstanceManager)
+    val devDelegate = DevMenuDevToolsDelegate(settings.manager, reactHost)
     val reactDevManager = devDelegate.reactDevManager
     val devSettings = devDelegate.devSettings
 
@@ -87,7 +94,20 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
       }
 
       val fastRefreshAction = {
-        devInternalSettings.isHotModuleReplacementEnabled = !devInternalSettings.isHotModuleReplacementEnabled
+        val nextEnabled = !devInternalSettings.isHotModuleReplacementEnabled
+        devInternalSettings.isHotModuleReplacementEnabled = nextEnabled
+
+        if (reactApplicationContext != null) {
+          if (nextEnabled) {
+            reactApplicationContext.getJSModule(HMRClient::class.java).enable()
+          } else {
+            reactApplicationContext.getJSModule(HMRClient::class.java).disable()
+          }
+        }
+        if (nextEnabled && !devInternalSettings.isJSDevModeEnabled) {
+          devInternalSettings.isJSDevModeEnabled = true
+          reactDevManager.handleReloadJS()
+        }
       }
 
       action("fast-refresh", fastRefreshAction) {

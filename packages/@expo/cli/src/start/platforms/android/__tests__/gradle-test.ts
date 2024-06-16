@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { AbortCommandError } from '../../../../utils/errors';
 import { assembleAsync, formatGradleArguments, installAsync, spawnGradleAsync } from '../gradle';
 
@@ -47,7 +46,7 @@ describe(assembleAsync, () => {
       variant: 'something',
       buildCache: true,
       appName: 'foobar',
-      port: 19000,
+      port: 8081,
     });
 
     expect(spawnAsync).toHaveBeenCalledWith(
@@ -60,7 +59,7 @@ describe(assembleAsync, () => {
         'test',
         '--configure-on-demand',
         '--build-cache',
-        '-PreactNativeDevServerPort=19000',
+        '-PreactNativeDevServerPort=8081',
       ],
       { cwd: '/android', stdio: 'inherit' }
     );
@@ -81,11 +80,11 @@ describe(assembleAsync, () => {
 
 describe(installAsync, () => {
   it(`installs`, async () => {
-    await installAsync('/android', { variant: 'something', appName: 'foobar', port: 19000 });
+    await installAsync('/android', { variant: 'something', appName: 'foobar', port: 8081 });
 
     expect(spawnAsync).toHaveBeenCalledWith(
       '/android/gradlew',
-      ['foobar:installSomething', '-PreactNativeDevServerPort=19000'],
+      ['foobar:installSomething', '-PreactNativeDevServerPort=8081'],
       { cwd: '/android', stdio: 'inherit' }
     );
   });
@@ -118,7 +117,7 @@ describe(spawnGradleAsync, () => {
 
   it(`throws a controlled abort error for ctrl+c`, async () => {
     mockPlatform('darwin');
-    asMock(spawnAsync).mockRejectedValueOnce({ status: 130 });
+    jest.mocked(spawnAsync).mockRejectedValueOnce({ status: 130 });
 
     await expect(
       spawnGradleAsync('/', {

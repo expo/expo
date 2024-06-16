@@ -187,7 +187,7 @@ export async function runWithSpinner<Result>(
   try {
     const result = await action(step);
 
-    if (succeedText) {
+    if (step.isSpinning && succeedText) {
       step.succeed(succeedText);
     }
     return result;

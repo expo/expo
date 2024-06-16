@@ -1,8 +1,6 @@
 declare class Env {
     /** Enable debug logging */
     get EXPO_DEBUG(): boolean;
-    /** Prevent disabling the `x_facebook_sources` non-standard sourcemap extension when `EXPO_USE_EXOTIC` is enabled. */
-    get EXPO_USE_FB_SOURCES(): boolean;
     /** Enable the experimental "exotic" mode. [Learn more](https://blog.expo.dev/drastically-faster-bundling-in-react-native-a54f268e0ed1). */
     get EXPO_USE_EXOTIC(): boolean;
     /** The React Metro port that's baked into react-native scripts and tools. */

@@ -13,6 +13,7 @@ type CalloutType = 'default' | 'warning' | 'error' | 'info';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
+  className?: string;
   icon?: ComponentType<any> | string;
 }>;
 
@@ -31,7 +32,7 @@ const extractType = (childrenArray: ReactNode[]) => {
   return false;
 };
 
-export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
+export const Callout = ({ type = 'default', icon, children, className }: CalloutProps) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
@@ -40,7 +41,10 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
   const Icon = icon || getCalloutIcon(finalType);
 
   return (
-    <blockquote css={[containerStyle, getCalloutColor(finalType)]} data-testid="callout-container">
+    <blockquote
+      css={[containerStyle, getCalloutColor(finalType)]}
+      className={className}
+      data-testid="callout-container">
       <div css={iconStyle}>
         {typeof icon === 'string' ? (
           icon
@@ -130,6 +134,7 @@ const iconStyle = css({
 const contentStyle = css({
   ...typography.fontSizes[16],
   color: theme.text.default,
+  width: '100%',
 
   '*:last-child': {
     marginBottom: 0,

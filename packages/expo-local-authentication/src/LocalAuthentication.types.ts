@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 export type LocalAuthenticationResult =
   | { success: true }
   | { success: false; error: string; warning?: string };
@@ -31,9 +33,44 @@ export enum SecurityLevel {
   SECRET = 1,
   /**
    * Indicates biometric authentication.
+   * @deprecated please use `BIOMETRIC_STRONG` or `BIOMETRIC_WEAK` instead.
+   * @hidden
    */
-  BIOMETRIC = 2,
+  BIOMETRIC = Platform.OS === 'android'
+    ? SecurityLevel.BIOMETRIC_WEAK
+    : SecurityLevel.BIOMETRIC_STRONG,
+  /**
+   * Indicates weak biometric authentication. For example, a 2D image-based face unlock.
+   * > There are currently no weak biometric authentication options on iOS.
+   */
+  BIOMETRIC_WEAK = 2,
+  /**
+   * Indicates strong biometric authentication. For example, a fingerprint scan or 3D face unlock.
+   */
+  BIOMETRIC_STRONG = 3,
 }
+
+Object.defineProperty(SecurityLevel, 'BIOMETRIC', {
+  get() {
+    const additionalMessage =
+      Platform.OS === 'android'
+        ? '. `SecurityLevel.BIOMETRIC` is currently an alias for `SecurityLevel.BIOMETRIC_WEAK` on Android, which might lead to unexpected behaviour.'
+        : '';
+    console.warn(
+      '`SecurityLevel.BIOMETRIC` has been deprecated. Please use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
+        additionalMessage
+    );
+    return Platform.OS === 'android'
+      ? SecurityLevel.BIOMETRIC_WEAK
+      : SecurityLevel.BIOMETRIC_STRONG;
+  },
+});
+
+/**
+ * Security level of the biometric authentication to allow.
+ * @platform android
+ */
+export type BiometricsSecurityLevel = 'weak' | 'strong';
 
 // @needsAudit
 export type LocalAuthenticationOptions = {
@@ -61,6 +98,14 @@ export type LocalAuthenticationOptions = {
    * @platform android
    */
   requireConfirmation?: boolean;
+  /**
+   * Sets the security class of biometric authentication to allow.
+   * `strong` allows only Android Class 3 biometrics. For example, a fingerprint or a 3D face scan.
+   * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3. For example, a camera-based face unlock.
+   * @platform android
+   * @default 'weak'
+   */
+  biometricsSecurityLevel?: BiometricsSecurityLevel;
   /**
    * Allows to customize the default `Use Passcode` label shown after several failed
    * authentication attempts. Setting this option to an empty string disables this button from

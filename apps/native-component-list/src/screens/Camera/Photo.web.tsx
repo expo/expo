@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -40,7 +40,7 @@ export default class Photo extends React.Component<
         onPress={this.toggleSelection}
         activeOpacity={1}>
         <Image style={styles.picture} source={{ uri }} />
-        {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
+        {this.state.selected && <Ionicons name="checkmark-circle" size={30} color="#4630EB" />}
       </TouchableOpacity>
     );
   }

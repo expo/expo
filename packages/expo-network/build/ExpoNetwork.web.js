@@ -11,17 +11,12 @@ export default {
         }
     },
     async getNetworkStateAsync() {
-        const type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
-        const isConnected = navigator.onLine;
-        const isInternetReachable = isConnected;
+        const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
         return {
-            type,
-            isConnected,
-            isInternetReachable,
+            type: isOnline ? NetworkStateType.UNKNOWN : NetworkStateType.NONE,
+            isConnected: isOnline,
+            isInternetReachable: isOnline,
         };
-    },
-    async getMacAddressAsync() {
-        return null;
     },
 };
 //# sourceMappingURL=ExpoNetwork.web.js.map

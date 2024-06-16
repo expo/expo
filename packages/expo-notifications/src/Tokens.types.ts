@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { type Platform } from 'expo-modules-core';
 
 // @docsMissing
 export interface NativeDevicePushToken {
@@ -11,17 +11,20 @@ export interface WebDevicePushToken {
   type: 'web';
   data: {
     endpoint: string;
-    keys: {
-      p256dh: string;
-      auth: string;
-    };
+    keys: WebDevicePushTokenKeys;
   };
 }
 
 // @docsMissing
-type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+export type WebDevicePushTokenKeys = {
+  p256dh: string;
+  auth: string;
+};
 
-type ImplicitlySupportedDevicePushToken = {
+// @docsMissing
+export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+
+export type ImplicitlySupportedDevicePushToken = {
   /**
    * Either `android`, `ios` or `web`.
    */
@@ -63,6 +66,7 @@ export interface ExpoPushToken {
   data: string;
 }
 
+// @needsAudit
 export interface ExpoPushTokenOptions {
   /**
    * Endpoint URL override.
@@ -76,7 +80,7 @@ export interface ExpoPushTokenOptions {
    * Request body override.
    */
   type?: string;
-  // @missingDocs
+  // @docsMissing
   deviceId?: string;
   /**
    * Makes sense only on iOS, where there are two push notification services: "sandbox" and "production".

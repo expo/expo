@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoGo.web.js","sourceRoot":"","sources":["../../src/environment/ExpoGo.web.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,iBAAiB;IAC/B,OAAO,KAAK,CAAC;AACf,CAAC;AAED,MAAM,UAAU,sBAAsB;IACpC,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["export function isRunningInExpoGo() {\n  return false;\n}\n\nexport function getExpoGoProjectConfig() {\n  return null;\n}\n"]}

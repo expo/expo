@@ -2,7 +2,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
 import { AuthenticationType, SecurityLevel, } from './LocalAuthentication.types';
-export { AuthenticationType, SecurityLevel };
+export { AuthenticationType, SecurityLevel, };
 // @needsAudit
 /**
  * Determine whether a face or fingerprint scanner is available on the device.

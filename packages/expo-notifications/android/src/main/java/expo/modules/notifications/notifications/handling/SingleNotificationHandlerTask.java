@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
-import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.interfaces.services.EventEmitter;
-
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
@@ -17,7 +15,7 @@ import expo.modules.notifications.service.NotificationsService;
 /**
  * A "task" responsible for managing response to a single notification.
  */
-/* package */ class SingleNotificationHandlerTask {
+public class SingleNotificationHandlerTask {
   /**
    * Name of the event asking the delegate for behavior.
    */
@@ -42,10 +40,16 @@ import expo.modules.notifications.service.NotificationsService;
 
   private Runnable mTimeoutRunnable = SingleNotificationHandlerTask.this::handleTimeout;
 
-  /* package */ SingleNotificationHandlerTask(Context context, Handler handler, ModuleRegistry moduleRegistry, Notification notification, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(
+    Context context,
+    EventEmitter eventEmitter,
+    Handler handler,
+    Notification notification,
+    NotificationsHandler delegate
+  ) {
     mContext = context;
     mHandler = handler;
-    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+    mEventEmitter = eventEmitter;
     mNotification = notification;
     mDelegate = delegate;
   }

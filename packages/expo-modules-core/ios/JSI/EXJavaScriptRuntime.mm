@@ -18,7 +18,9 @@
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/TestingSyncJSCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -27,18 +29,29 @@
 
 /**
  Initializes a runtime that is independent from React Native and its runtime initialization.
- This flow is mostly intended for tests. The JS call invoker is unavailable thus calling async functions is not supported.
- TODO: Implement the call invoker when it becomes necessary.
+ This flow is mostly intended for tests.
  */
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
     _runtime = facebook::hermes::makeHermesRuntime();
+
+    // This version of the Hermes uses a Promise implementation that is provided by the RN.
+    // The `setImmediate` function isn't defined, but is required by the Promise implementation.
+    // That's why we inject it here.
+    auto setImmediatePropName = jsi::PropNameID::forUtf8(*_runtime, "setImmediate");
+    _runtime->global().setProperty(
+      *_runtime, setImmediatePropName, jsi::Function::createFromHostFunction(*_runtime, setImmediatePropName, 1,
+        [](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+          args[0].asObject(rt).asFunction(rt).call(rt);
+          return jsi::Value::undefined();
+        })
+    );
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = nil;
+    _jsCallInvoker = std::make_shared<expo::TestingSyncJSCallInvoker>(_runtime);
   }
   return self;
 }
@@ -99,7 +112,20 @@
       if (error == nil) {
         return expo::convertObjCObjectToJSIValue(runtime, result);
       } else {
-        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+        // `expo::makeCodedError` doesn't work during unit tests, so we construct Error and add a code,
+        // instead of using the CodedError subclass.
+        jsi::String jsCode = expo::convertNSStringToJSIString(runtime, error.userInfo[@"code"]);
+        jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, error.userInfo[@"message"]);
+        jsi::Value error = runtime
+          .global()
+          .getProperty(runtime, "Error")
+          .asObject(runtime)
+          .asFunction(runtime)
+          .callAsConstructor(runtime, {
+            jsi::Value(runtime, jsMessage)
+          });
+        error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
+        throw jsi::JSError(runtime, jsi::Value(runtime, error));
       }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
@@ -135,21 +161,41 @@
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
     EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
+    // Returning something else than `this` is not supported in native constructors.
     constructor(caller, arguments);
+
+    return jsi::Value(runtime, thisValue);
   };
-  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], jsConstructor);
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
 {
-  std::shared_ptr<jsi::Object> object = expo::createObjectWithPrototype(*_runtime, [prototype getShared]);
+  std::shared_ptr<jsi::Object> object = std::make_shared<jsi::Object>(expo::common::createObjectWithPrototype(*_runtime, [prototype getShared].get()));
   return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
+}
+
+#pragma mark - Shared objects
+
+- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
+                                            constructor:(nonnull ClassConstructorBlock)constructor
+{
+  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
+    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
+
+    constructor(caller, arguments);
+    return jsi::Value(runtime, thisValue);
+  };
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::SharedObject::createClass(*_runtime, [name UTF8String], jsConstructor));
+  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 #pragma mark - Script evaluation
@@ -177,6 +223,19 @@
     }];
   }
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
+}
+
+#pragma mark - Runtime execution
+
+- (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
+{
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
+    block();
+  });
+#else
+  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
+#endif
 }
 
 #pragma mark - Private

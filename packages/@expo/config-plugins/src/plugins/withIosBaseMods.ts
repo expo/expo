@@ -5,6 +5,7 @@ import fs, { promises } from 'fs';
 import path from 'path';
 import xcode, { XcodeProject } from 'xcode';
 
+import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
 import { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Entitlements, Paths } from '../ios';
 import { ensureApplicationTargetEntitlementsFileConfigured } from '../ios/Entitlements';
@@ -14,7 +15,6 @@ import { getInfoPlistPathFromPbxproj } from '../ios/utils/getInfoPlistPath';
 import { fileExists } from '../utils/modules';
 import { sortObject } from '../utils/sortObject';
 import { addWarningIOS } from '../utils/warnings';
-import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
 
 const { readFile, writeFile } = promises;
 
@@ -48,11 +48,21 @@ function getInfoPlistTemplate() {
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
     UIStatusBarStyle: 'UIStatusBarStyleDefault',
+    CADisableMinimumFrameDurationOnPhone: true,
   };
 }
 
 const defaultProviders = {
   dangerous: provider<unknown>({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {};
+    },
+    async write() {},
+  }),
+  finalized: provider<unknown>({
     getFilePath() {
       return '';
     },
@@ -220,7 +230,7 @@ const defaultProviders = {
     async read(filePath, config) {
       let modResults: JSONObject;
       try {
-        if (fs.existsSync(filePath)) {
+        if (!config.modRequest.ignoreExistingNativeFiles && fs.existsSync(filePath)) {
           const contents = await readFile(filePath, 'utf8');
           assert(contents, 'Entitlements plist is empty');
           modResults = plist.parse(contents);
@@ -262,6 +272,20 @@ const defaultProviders = {
       }
 
       await writeFile(filePath, plist.build(sortObject(config.modResults)));
+    },
+  }),
+
+  podfile: provider<Paths.PodfileProjectFile>({
+    getFilePath({ modRequest: { projectRoot } }) {
+      return Paths.getPodfilePath(projectRoot);
+    },
+    // @ts-expect-error
+    async read(filePath) {
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath, { modResults: { contents } }) {
+      await writeFile(filePath, contents);
     },
   }),
 

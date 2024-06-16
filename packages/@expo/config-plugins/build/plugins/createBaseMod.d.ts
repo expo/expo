@@ -1,5 +1,5 @@
-import { ConfigPlugin, ExportedConfig, ExportedConfigWithProps, ModPlatform } from '../Plugin.types';
 import { BaseModOptions } from './withMod';
+import { ConfigPlugin, ExportedConfig, ExportedConfigWithProps, ModPlatform } from '../Plugin.types';
 export type ForwardedBaseModOptions = Partial<Pick<BaseModOptions, 'saveToInternal' | 'skipEmptyMod'>>;
 export type BaseModProviderMethods<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
     getFilePath: (config: ExportedConfigWithProps<ModType>, props: Props) => Promise<string> | string;

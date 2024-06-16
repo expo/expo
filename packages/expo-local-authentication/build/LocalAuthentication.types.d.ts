@@ -31,9 +31,25 @@ export declare enum SecurityLevel {
     SECRET = 1,
     /**
      * Indicates biometric authentication.
+     * @deprecated please use `BIOMETRIC_STRONG` or `BIOMETRIC_WEAK` instead.
+     * @hidden
      */
-    BIOMETRIC = 2
+    BIOMETRIC,
+    /**
+     * Indicates weak biometric authentication. For example, a 2D image-based face unlock.
+     * > There are currently no weak biometric authentication options on iOS.
+     */
+    BIOMETRIC_WEAK = 2,
+    /**
+     * Indicates strong biometric authentication. For example, a fingerprint scan or 3D face unlock.
+     */
+    BIOMETRIC_STRONG = 3
 }
+/**
+ * Security level of the biometric authentication to allow.
+ * @platform android
+ */
+export type BiometricsSecurityLevel = 'weak' | 'strong';
 export type LocalAuthenticationOptions = {
     /**
      * A message that is shown alongside the TouchID or FaceID prompt.
@@ -59,6 +75,14 @@ export type LocalAuthenticationOptions = {
      * @platform android
      */
     requireConfirmation?: boolean;
+    /**
+     * Sets the security class of biometric authentication to allow.
+     * `strong` allows only Android Class 3 biometrics. For example, a fingerprint or a 3D face scan.
+     * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3. For example, a camera-based face unlock.
+     * @platform android
+     * @default 'weak'
+     */
+    biometricsSecurityLevel?: BiometricsSecurityLevel;
     /**
      * Allows to customize the default `Use Passcode` label shown after several failed
      * authentication attempts. Setting this option to an empty string disables this button from

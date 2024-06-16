@@ -75,13 +75,14 @@ public enum UpdateStatus: Int {
 @objc(EXUpdatesUpdateError)
 public enum UpdateError: Int, Error {
   case invalidExpoProtocolVersion
+  case legacyManifestInstantiationInvalid
 }
 
 @objc(EXUpdatesUpdate)
 @objcMembers
 public class Update: NSObject {
   public let updateId: UUID
-  public let scopeKey: String
+  public let scopeKey: String?
   public var commitTime: Date
   public let runtimeVersion: String
   public let keep: Bool
@@ -103,7 +104,7 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,
-    scopeKey: String,
+    scopeKey: String?,
     commitTime: Date,
     runtimeVersion: String,
     keep: Bool,
@@ -128,7 +129,7 @@ public class Update: NSObject {
     self.isDevelopmentMode = isDevelopmentMode
   }
 
-  internal static func update(
+  public static func update(
     withManifest: [String: Any],
     responseHeaderData: ResponseHeaderData,
     extensions: [String: Any],
@@ -138,14 +139,10 @@ public class Update: NSObject {
     let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
-        config: config,
-        database: database
-      )
+      throw UpdateError.legacyManifestInstantiationInvalid
     case 0, 1:
-      return NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: withManifest),
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: withManifest),
         extensions: extensions,
         config: config,
         database: database
@@ -156,23 +153,15 @@ public class Update: NSObject {
   }
 
   public static func update(
-    withEmbeddedManifest: [String: Any],
+    withRawEmbeddedManifest: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase?
-  ) -> Update {
-    if withEmbeddedManifest["releaseId"] != nil {
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withEmbeddedManifest),
-        config: config,
-        database: database
-      )
-    } else {
-      return BareUpdate.update(
-        withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
-        config: config,
-        database: database
-      )
-    }
+  ) -> EmbeddedUpdate {
+    return EmbeddedUpdate.update(
+      withEmbeddedManifest: EmbeddedManifest(rawManifestJSON: withRawEmbeddedManifest),
+      config: config,
+      database: database
+    )
   }
 
   /**

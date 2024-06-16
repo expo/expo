@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { getInitialData } from '../functions/getInitialData';
 import { Splash } from './Splash';
+import { getInitialData } from '../functions/getInitialData';
 
 type LoadInitialDataProps = {
   children: React.ReactElement<any>;

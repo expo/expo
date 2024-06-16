@@ -1,54 +1,51 @@
-import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import BouncyBox from './GestureHandler/BouncyBox';
 import FancyButton from './GestureHandler/FancyButton';
 
-export default class GestureHandlerListScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Gesture Handler List',
-  };
+export default function GestureHandlerListScreen() {
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Text style={styles.title}>LongPressGestureHandler, TapGestureHandler</Text>
+      <Text style={styles.paragraph}>
+        You can single tap, double tap, or long press these buttons!
+      </Text>
+      <FancyButton
+        onSingleTap={() => alert('Single tap')}
+        onDoubleTap={() => alert('Double tap')}
+        onLongPress={() => alert('Long press')}>
+        <Text>Try this button out!</Text>
+      </FancyButton>
 
-  render() {
-    return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.title}>LongPressGestureHandler, TapGestureHandler</Text>
-        <Text style={styles.paragraph}>
-          You can single tap, double tap, or long press these buttons!
-        </Text>
-        <FancyButton
-          onSingleTap={() => alert('Single tap')}
-          onDoubleTap={() => alert('Double tap')}
-          onLongPress={() => alert('Long press')}>
-          <Text>Try this button out!</Text>
-        </FancyButton>
+      <View style={{ marginTop: 20 }} />
 
-        <View style={{ marginTop: 20 }} />
+      <FancyButton
+        onSingleTap={() => alert('Single tap #2!')}
+        onDoubleTap={() => alert('Double tap #2!')}
+        onLongPress={() => alert('Long press #2!')}>
+        <Text>A second fancy button!</Text>
+      </FancyButton>
 
-        <FancyButton
-          onSingleTap={() => alert('Single tap #2!')}
-          onDoubleTap={() => alert('Double tap #2!')}
-          onLongPress={() => alert('Long press #2!')}>
-          <Text>A second fancy button!</Text>
-        </FancyButton>
+      <View style={{ marginTop: 10 }} />
 
-        <View style={{ marginTop: 10 }} />
+      <Text style={styles.title}>PanGestureHandler, RotationGestureHandler</Text>
+      <Text style={styles.paragraph}>
+        You can drag it left and right, and also use two fingers to rotate it, and it'll bounce
+        back!
+      </Text>
 
-        <Text style={styles.title}>PanGestureHandler, RotationGestureHandler</Text>
-        <Text style={styles.paragraph}>
-          You can drag it left and right, and also use two fingers to rotate it, and it'll bounce
-          back!
-        </Text>
-
-        <BouncyBox />
-        <View style={{ marginTop: 20 }} />
-        <BouncyBox style={{ backgroundColor: 'orange' }} />
-        <View style={{ marginTop: 20 }} />
-      </ScrollView>
-    );
-  }
+      <BouncyBox />
+      <View style={{ marginTop: 20 }} />
+      <BouncyBox style={{ backgroundColor: 'orange' }} />
+      <View style={{ marginTop: 20 }} />
+    </ScrollView>
+  );
 }
+
+GestureHandlerListScreen.navigationOptions = {
+  title: 'Gesture Handler List',
+};
 
 const styles = StyleSheet.create({
   container: {

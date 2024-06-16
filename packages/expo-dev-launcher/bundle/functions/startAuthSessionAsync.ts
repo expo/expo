@@ -7,7 +7,7 @@ export async function startAuthSessionAsync(type: 'signup' | 'login') {
   const scheme = await getAuthSchemeAsync();
 
   const redirectBase = `${scheme}://auth`;
-  const authSessionURL = `${websiteOrigin}/${type}?app_redirect_uri=${encodeURIComponent(
+  const authSessionURL = `${websiteOrigin}/${type}?confirm_account=1&app_redirect_uri=${encodeURIComponent(
     redirectBase
   )}`;
 

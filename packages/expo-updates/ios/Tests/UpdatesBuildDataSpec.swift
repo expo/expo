@@ -7,20 +7,16 @@ import ExpoModulesTestCore
 import EXManifests
 
 class UpdatesBuildDataSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let scopeKey = "test"
 
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    var manifest: NewManifest!
+    var manifest: ExpoUpdatesManifest!
     var configChannelTestDictionary: [String: Any]!
     var configChannelTest: UpdatesConfig!
     var configChannelTestTwoDictionary: [String: Any]!
     var configChannelTestTwo: UpdatesConfig!
-    var configReleaseChannelTestDictionary: [String: Any]!
-    var configReleaseChannelTest: UpdatesConfig!
-    var configReleaseChannelTestTwoDictionary: [String: Any]!
-    var configReleaseChannelTestTwo: UpdatesConfig!
     
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
@@ -37,7 +33,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
       
-      manifest = NewManifest(rawManifestJSON: [
+      manifest = ExpoUpdatesManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
         "createdAt": "2020-11-11T00:17:54.797Z",
@@ -47,35 +43,23 @@ class UpdatesBuildDataSpec : ExpoSpec {
       configChannelTestDictionary = [
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"test"]
+        UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"test"],
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ]
-      configChannelTest = UpdatesConfig.config(fromDictionary: configChannelTestDictionary)
-      
+      configChannelTest = try! UpdatesConfig.config(fromDictionary: configChannelTestDictionary)
+
       configChannelTestTwoDictionary = [
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"testTwo"]
+        UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"testTwo"],
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ]
-      configChannelTestTwo = UpdatesConfig.config(fromDictionary: configChannelTestTwoDictionary)
+      configChannelTestTwo = try! UpdatesConfig.config(fromDictionary: configChannelTestTwoDictionary)
 
-      configReleaseChannelTestDictionary = [
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "test",
-      ]
-      configReleaseChannelTest = UpdatesConfig.config(fromDictionary: configReleaseChannelTestDictionary)
-      
-      configReleaseChannelTestTwoDictionary = [
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-        UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "testTwo",
-      ]
-      configReleaseChannelTestTwo = UpdatesConfig.config(fromDictionary: configReleaseChannelTestTwoDictionary)
-      
       // start every test with an update
       db.databaseQueue.sync {
-        let update = NewUpdate.update(
-          withNewManifest: manifest,
+        let update = ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
           config: configChannelTest,
           database: db
@@ -126,7 +110,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       it("no updates are cleared and build data is not set when build data is consistent with channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
@@ -140,27 +124,10 @@ class UpdatesBuildDataSpec : ExpoSpec {
         }
       }
       
-      it("works when build data is consistent with releaseChannel") {
-        db.databaseQueue.sync {
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configReleaseChannelTest.scopeKey!)
-        }
-        
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTest)
-        
-        db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
-          expect(
-            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest))
-          ) == true
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-        }
-      }
-      
       it("updates are cleared and build data is set when build data is inconsistent with channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo)
@@ -171,23 +138,6 @@ class UpdatesBuildDataSpec : ExpoSpec {
             NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configChannelTestTwo))
           ) == true
           expect(try! db.allUpdates(withConfig: configChannelTestTwo).count) == 0
-        }
-      }
-      
-      it("works build data is inconsistent release channel") {
-        db.databaseQueue.sync {
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configChannelTest.scopeKey!)
-        }
-        
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTestTwo)
-        
-        db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
-          expect(
-            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTestTwo))
-          ) == true
-          expect(try! db.allUpdates(withConfig: configReleaseChannelTestTwo).count) == 0
         }
       }
     }

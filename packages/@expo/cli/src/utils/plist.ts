@@ -2,8 +2,8 @@ import plist from '@expo/plist';
 import binaryPlist from 'bplist-parser';
 import fs from 'fs/promises';
 
-import * as Log from '../log';
 import { CommandError } from './errors';
+import * as Log from '../log';
 
 const CHAR_CHEVRON_OPEN = 60;
 const CHAR_B_LOWER = 98;

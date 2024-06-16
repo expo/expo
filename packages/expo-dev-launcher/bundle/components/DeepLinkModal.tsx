@@ -11,12 +11,12 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
+import { BaseModal } from './BaseModal';
+import { LoadAppErrorModal } from './LoadAppErrorModal';
 import { loadApp } from '../native-modules/DevLauncherInternal';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
 import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
-import { BaseModal } from './BaseModal';
-import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
   pendingDeepLink: string;
@@ -52,7 +52,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
 
         <Spacer.Vertical size="medium" />
 
-        <Button.ScaleOnPressContainer
+        <Button.FadeOnPressContainer
           bg="ghost"
           rounded="medium"
           border="ghost"
@@ -62,7 +62,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
               Go back
             </Button.Text>
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </View>
     </BaseModal>
   );
@@ -155,7 +155,7 @@ type PackagerRowProps = {
 function PackagerRow({ onPress, label }: PackagerRowProps) {
   return (
     <View rounded="medium">
-      <Button.ScaleOnPressContainer bg="default" onPress={onPress}>
+      <Button.FadeOnPressContainer bg="default" onPress={onPress}>
         <Row align="center" py="medium" px="small">
           <StatusIndicator size="small" status="success" />
           <Spacer.Horizontal size="small" />
@@ -163,7 +163,7 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <Spacer.Horizontal />
           <ChevronRightIcon />
         </Row>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
     </View>
   );
 }

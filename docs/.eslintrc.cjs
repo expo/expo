@@ -15,22 +15,22 @@ module.exports = {
     // https://github.com/emotion-js/emotion/issues/2878
     'react/no-unknown-property': ['error', { 'ignore': ['css'] }],
     'tailwindcss/classnames-order': 'off',
+    'tailwindcss/enforces-negative-arbitrary-values': 'warn',
+    'tailwindcss/enforces-shorthand': 'warn',
+    'tailwindcss/no-arbitrary-value': 'off',
     'tailwindcss/no-custom-classname': ['warn', {
-      'whitelist': [
+      callees: ['mergeClasses'],
+      whitelist: [
         'diff-.+',
-        'anchor-icon',
         'react-player',
-        'dark-theme'
-      ]
-    }]
-  },
-  settings: {
-    tailwindcss: {
+        'dark-theme',
+        'dialog-.+',
+        'terminal-snippet'
+      ],
       cssFiles: [
         "node_modules/@expo/styleguide/dist/global.css"
       ],
-      callees: ["mergeClasses"],
-      config: "tailwind.config.cjs",
-    }
+      classRegex: '^(confirmation|container|icon)?(c|C)lass(Name)?$',
+    }],
   }
 };

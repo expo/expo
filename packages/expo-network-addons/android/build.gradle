@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+
+group = 'expo.modules.networkaddons'
+version = '0.6.0'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.networkaddons"
+  defaultConfig {
+    versionCode 1
+    versionName "0.6.0"
+    consumerProguardFiles("proguard-rules.pro")
+  }
+}
+
+dependencies {
+  implementation("com.squareup.okhttp3:okhttp:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
+}

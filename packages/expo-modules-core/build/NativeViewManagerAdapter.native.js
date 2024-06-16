@@ -1,5 +1,8 @@
+// Copyright © 2024 650 Industries.
+'use client';
 import React from 'react';
-import { findNodeHandle, NativeModules, requireNativeComponent } from 'react-native';
+import { findNodeHandle, NativeModules } from 'react-native';
+import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 import { requireNativeModule } from './requireNativeModule';
 // To make the transition from React Native's `requireNativeComponent` to Expo's
 // `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
@@ -13,6 +16,22 @@ import { requireNativeModule } from './requireNativeModule';
  * A map that caches registered native components.
  */
 const nativeComponentsCache = new Map();
+/**
+ * Requires a React Native component using the static view config from an Expo module.
+ */
+function requireNativeComponent(viewName) {
+    return NativeComponentRegistry.get(viewName, () => {
+        const viewModuleName = viewName.replace('ViewManagerAdapter_', '');
+        const expoViewConfig = globalThis.expo?.getViewConfig(viewModuleName);
+        if (!expoViewConfig) {
+            console.warn('Unable to get the view config for %s', viewModuleName);
+        }
+        return {
+            uiViewClassName: viewName,
+            ...expoViewConfig,
+        };
+    });
+}
 /**
  * Requires a React Native component from cache if possible. This prevents
  * "Tried to register two views with the same name" errors on fast refresh, but
@@ -50,7 +69,7 @@ export function requireNativeViewManager(viewName) {
             this.nativeTag = findNodeHandle(this);
         }
         render() {
-            return React.createElement(ReactNativeComponent, { ...this.props });
+            return <ReactNativeComponent {...this.props}/>;
         }
     }
     try {

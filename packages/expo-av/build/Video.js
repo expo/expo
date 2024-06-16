@@ -8,6 +8,7 @@ import { ResizeMode, } from './Video.types';
 const _STYLES = StyleSheet.create({
     base: {
         overflow: 'hidden',
+        pointerEvents: 'box-none',
     },
     poster: {
         position: 'absolute',
@@ -206,7 +207,7 @@ class Video extends React.Component {
     };
     _renderPoster = () => {
         const PosterComponent = this.props.PosterComponent ?? Image;
-        return this.props.usePoster && this.state.showPoster ? (React.createElement(PosterComponent, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+        return this.props.usePoster && this.state.showPoster ? (<PosterComponent style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource}/>) : null;
     };
     render() {
         const source = getNativeSourceFromSource(this.props.source) || undefined;
@@ -261,9 +262,10 @@ class Video extends React.Component {
             onReadyForDisplay: this._nativeOnReadyForDisplay,
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
-        return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
-            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: nativeProps.videoStyle }),
-            this._renderPoster()));
+        return (<View style={nativeProps.style}>
+        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle}/>
+        {this._renderPoster()}
+      </View>);
     }
 }
 function omit(props, propNames) {

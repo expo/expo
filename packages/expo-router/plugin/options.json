@@ -1,0 +1,77 @@
+{
+    "title": "expo-router config plugin options",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/Props",
+    "definitions": {
+        "AsyncRouteOption": {
+            "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "development",
+                        "production"
+                    ]
+                },
+                {
+                    "type": "boolean"
+                }
+            ]
+        },
+        "Props": {
+            "type": "object",
+            "properties": {
+                "origin": {
+                    "description": "Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server.",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "headOrigin": {
+                    "description": "A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`.",
+                    "type": "string"
+                },
+                "root": {
+                    "description": "Changes the routes directory from `app` to another value. Defaults to `app`. Avoid using this property.",
+                    "type": "string"
+                },
+                "platformRoutes": {
+                    "description": "Enable or disable platform-specific routes. Defaults to `true`.",
+                    "type": "boolean"
+                },
+                "asyncRoutes": {
+                    "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/AsyncRouteOption"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "ios": {
+                                    "$ref": "#/definitions/AsyncRouteOption"
+                                },
+                                "android": {
+                                    "$ref": "#/definitions/AsyncRouteOption"
+                                },
+                                "web": {
+                                    "$ref": "#/definitions/AsyncRouteOption"
+                                },
+                                "default": {
+                                    "$ref": "#/definitions/AsyncRouteOption"
+                                }
+                            },
+                            "additionalProperties": true
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

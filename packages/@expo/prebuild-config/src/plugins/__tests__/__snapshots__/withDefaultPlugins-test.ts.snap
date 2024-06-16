@@ -279,10 +279,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -403,16 +399,12 @@ exports[`built-in plugins compiles mods 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -421,6 +413,7 @@ exports[`built-in plugins compiles mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -449,17 +442,13 @@ exports[`built-in plugins compiles mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -475,9 +464,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "val": [
           "foo",
         ],
-      },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
       },
     },
     "isTabletOnly": false,
@@ -511,6 +497,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -692,18 +679,6 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Version of flipper SDK to use with React Native",
-          },
-          {
-            "key": "FLIPPER_VERSION",
-            "type": "property",
-            "value": "0.125.0",
-          },
-          {
-            "type": "empty",
-          },
-          {
-            "type": "comment",
             "value": "Use this property to specify which architecture you want to build.",
           },
           {
@@ -752,16 +727,16 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "The hosted JavaScript engine",
+            "value": "Use this property to enable or disable the Hermes JS engine.",
           },
           {
             "type": "comment",
-            "value": "Supported values: expo.jsEngine = "hermes" | "jsc"",
+            "value": "If set to false, you will be using JSC instead.",
           },
           {
-            "key": "expo.jsEngine",
+            "key": "hermesEnabled",
             "type": "property",
-            "value": "hermes",
+            "value": "true",
           },
           {
             "type": "empty",
@@ -800,11 +775,34 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Enable network inspector",
+          },
+          {
+            "key": "EX_DEV_CLIENT_NETWORK_INSPECTOR",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use legacy packaging to compress native libraries in the resulting APK.",
+          },
+          {
+            "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
         ],
         "manifest": {
           "manifest": {
             "$": {
-              "package": "com.bacon.todo",
               "xmlns:android": "http://schemas.android.com/apk/res/android",
               "xmlns:tools": "http://schemas.android.com/tools",
             },
@@ -817,14 +815,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
                       "android:exported": "true",
-                      "android:label": "@string/app_name",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
@@ -926,12 +922,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "io.branch.sdk.BranchKey",
-                      "android:value": "MY_BRANCH_ANDROID_KEY",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "expo.modules.updates.ENABLED",
                       "android:value": "true",
                     },
@@ -946,6 +936,12 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -1097,6 +1093,12 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -1214,7 +1216,6 @@ exports[`built-in plugins introspects mods 1`] = `
       },
       "ios": {
         "entitlements": {
-          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -1225,8 +1226,10 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -1255,17 +1258,13 @@ exports[`built-in plugins introspects mods 1`] = `
           "ITSAppUsesNonExemptEncryption": true,
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
-            "NSAllowsArbitraryLoads": true,
-            "NSExceptionDomains": {
-              "localhost": {
-                "NSExceptionAllowsInsecureHTTPLoads": true,
-              },
-            },
+            "NSAllowsArbitraryLoads": false,
+            "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
-            "armv7",
+            "arm64",
           ],
           "UIRequiresFullScreen": true,
           "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -1282,11 +1281,9 @@ exports[`built-in plugins introspects mods 1`] = `
               "foo",
             ],
           },
-          "branch_key": {
-            "live": "MY_BRANCH_KEY",
-          },
         },
         "podfileProperties": {
+          "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
@@ -1563,10 +1560,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -1687,16 +1680,12 @@ exports[`built-in plugins introspects mods 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -1705,6 +1694,7 @@ exports[`built-in plugins introspects mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -1733,17 +1723,13 @@ exports[`built-in plugins introspects mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -1759,9 +1745,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "val": [
           "foo",
         ],
-      },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
       },
     },
     "isTabletOnly": false,
@@ -1795,6 +1778,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -1871,9 +1855,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
-            "key": "expo.jsEngine",
+            "key": "hermesEnabled",
             "type": "property",
-            "value": "hermes",
+            "value": "true",
           },
         ],
         "manifest": {
@@ -1999,8 +1983,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "io.branch.sdk.BranchKey",
-                      "android:value": "MY_BRANCH_ANDROID_KEY",
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -2165,6 +2149,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -2238,7 +2228,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       },
       "ios": {
         "entitlements": {
-          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -2249,8 +2238,10 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2305,9 +2296,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "val": [
               "foo",
             ],
-          },
-          "branch_key": {
-            "live": "MY_BRANCH_KEY",
           },
         },
         "podfileProperties": {
@@ -2541,10 +2529,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
       },
-      "expo-branch": {
-        "name": "expo-branch",
-        "version": "UNVERSIONED",
-      },
       "expo-contacts": {
         "name": "expo-contacts",
         "version": "UNVERSIONED",
@@ -2665,16 +2649,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "buildNumber": "6.5.0",
     "bundleIdentifier": "com.bacon.todo",
     "config": {
-      "branch": {
-        "apiKey": "MY_BRANCH_KEY",
-      },
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -2683,6 +2663,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2738,9 +2719,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "foo",
         ],
       },
-      "branch_key": {
-        "live": "MY_BRANCH_KEY",
-      },
     },
     "isTabletOnly": false,
     "requireFullScreen": true,
@@ -2773,6 +2751,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {

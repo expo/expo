@@ -44,14 +44,12 @@ Unversioned QA: Test in native-component-list.
 - Go to `apps/test-suite`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
 - Run `expo start` and test each module.
-- Run `expo start --force-manifest-type=expo-updates` and sanity check one or two modules (mainly just checking that project opens).
 
 ### 4. Inspecting native-component-list examples
 
 - Go to `apps/native-component-list`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
 - Run `expo start` and check every example, including React Native components.
-- Run `expo start --force-manifest-type=expo-updates` and sanity check one or two examples (mainly just checking that project opens).
 
 ### 5. Smoke test Expo Home
 
@@ -67,7 +65,6 @@ Unversioned QA: Test in native-component-list.
 
 - Run `expo init -t blank@sdk-x` for each supported SDK version.
 - Run `expo start` and ensure the project loads without crashing.
-- Run `expo start --force-manifest-type=expo-updates` and ensure the project loads without crashing.
 
 ## Development builds
 

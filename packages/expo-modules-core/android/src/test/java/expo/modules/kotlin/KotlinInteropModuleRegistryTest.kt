@@ -25,13 +25,14 @@ private class TestRecord : Record {
   lateinit var string: String
 }
 
-private class TestModule_1 : Module() {
+private class TestModule1 : Module() {
   override fun definition() = ModuleDefinition {
     Name("test-1")
     AsyncFunction("f1") {
       throw NullPointerException()
     }
-    AsyncFunction<Int, TestRecord>("f2") {
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    AsyncFunction<Int, TestRecord>("f2") { record ->
       throw NullPointerException()
     }
     Constants {
@@ -43,7 +44,7 @@ private class TestModule_1 : Module() {
   }
 }
 
-private class TestModule_2 : Module() {
+private class TestModule2 : Module() {
   override fun definition() = ModuleDefinition {
     Name("test-2")
     AsyncFunction("f1") {
@@ -60,8 +61,8 @@ private class TestModule_2 : Module() {
 private val provider = object : ModulesProvider {
   override fun getModulesList(): List<Class<out Module>> {
     return listOf(
-      TestModule_1::class.java,
-      TestModule_2::class.java
+      TestModule1::class.java,
+      TestModule2::class.java
     )
   }
 }
@@ -79,25 +80,6 @@ class KotlinInteropModuleRegistryTest {
   fun `should register modules from provider`() {
     interopModuleRegistry.hasModule("test-1")
     interopModuleRegistry.hasModule("test-2")
-  }
-
-  @Test
-  fun `should export constants`() {
-    Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
-      .containsAtLeast(
-        "test-1", mapOf("c1" to 123, "c2" to "123"),
-        "test-2", emptyMap<String, Any>()
-      )
-  }
-
-  @Test
-  fun `should export view manages`() {
-    val rnManagers = interopModuleRegistry.exportViewManagers()
-    val expoManagersNames = interopModuleRegistry.viewManagersMetadata().keys
-
-    Truth.assertThat(rnManagers).hasSize(1)
-    Truth.assertThat(rnManagers.first().name).isEqualTo("ViewManagerAdapter_test-2")
-    Truth.assertThat(expoManagersNames).containsExactly("test-2")
   }
 
   @Test

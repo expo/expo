@@ -1,4 +1,3 @@
-import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
@@ -32,7 +31,7 @@ const CanvasWrapper: React.FunctionComponent<
   ViewProps & {
     canvasRef: React.Ref<HTMLCanvasElement>;
   }
-> = ({ pointerEvents, children, ...props }) => {
+> = ({ pointerEvents, children, style, ...props }) => {
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
 
   const ref = React.useRef<View>(null);
@@ -56,7 +55,7 @@ const CanvasWrapper: React.FunctionComponent<
   function getSize(): { width: number; height: number } {
     if (size) {
       return size;
-    } else if (!ref.current || !Platform.isDOMAvailable) {
+    } else if (!ref.current || typeof window === 'undefined') {
       return { width: 0, height: 0 };
     }
     const element = getElement(ref.current);
@@ -99,11 +98,17 @@ const CanvasWrapper: React.FunctionComponent<
   }, [_canvasRef]);
 
   return (
-    <View {...props} pointerEvents="box-none" ref={ref} onLayout={onLayout}>
+    <View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
       <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill} />
       {children}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    pointerEvents: 'box-none',
+  },
+});
 
 export default CanvasWrapper;

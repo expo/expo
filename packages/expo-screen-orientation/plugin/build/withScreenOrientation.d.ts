@@ -15,7 +15,6 @@ type OrientationMasks = keyof typeof OrientationLock;
 interface ExpoConfigWithInitialOrientation extends ExpoConfig {
     initialOrientation?: OrientationMasks;
 }
-export declare function getInitialOrientation(config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>): OrientationMasks;
 export declare function setInitialOrientation(config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>, infoPlist: InfoPlist): InfoPlist;
 declare const _default: ConfigPlugin<void | {
     initialOrientation?: "DEFAULT" | "ALL" | "PORTRAIT" | "PORTRAIT_UP" | "PORTRAIT_DOWN" | "LANDSCAPE" | "LANDSCAPE_LEFT" | "LANDSCAPE_RIGHT" | undefined;

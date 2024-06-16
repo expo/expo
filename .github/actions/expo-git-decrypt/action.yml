@@ -18,7 +18,7 @@ runs:
     - name: 🍺 Install git-crypt on macOS
       if: ${{ runner.os == 'macOS' }}
       shell: bash
-      run: brew install git-crypt
+      run: brew install git-crypt || true
     - name: 🔓 Decrypt secrets if possible
       env:
         GIT_CRYPT_KEY_BASE64: ${{ inputs.key }}

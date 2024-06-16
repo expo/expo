@@ -1,6 +1,6 @@
 import { mergeClasses, SnackLogo } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import { useEffect, useRef, useState, PropsWithChildren } from 'react';
+import { useEffect, useRef, useState, PropsWithChildren, ReactElement, Children } from 'react';
 
 import { Snippet } from '../Snippet';
 import { SnippetAction } from '../SnippetAction';
@@ -12,6 +12,7 @@ import { cleanCopyValue } from '~/components/base/code';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
 const DEFAULT_PLATFORM = 'android';
 const { LATEST_VERSION } = versions;
@@ -26,6 +27,29 @@ type Props = PropsWithChildren<{
   buttonTitle?: string;
   contentHidden?: boolean;
 }>;
+
+function findPropInChildren(element: ReactElement, propToFind: string): string | null {
+  if (!element || typeof element !== 'object') return null;
+
+  if (element.props && element.props[propToFind]) {
+    return element.props[propToFind];
+  }
+
+  if (element.props && element.props.children) {
+    const children = element.props.children;
+
+    if (Array.isArray(children)) {
+      for (const child of Children.toArray(children)) {
+        const wantedProp: string | null = findPropInChildren(child as ReactElement, propToFind);
+        if (wantedProp) return wantedProp;
+      }
+    } else {
+      return findPropInChildren(children as ReactElement, propToFind);
+    }
+  }
+
+  return null;
+}
 
 export const SnackInline = ({
   dependencies = [],
@@ -73,6 +97,9 @@ export const SnackInline = ({
     return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
   };
 
+  const prismBlockClassName = findPropInChildren(children as ReactElement, 'className');
+  const codeLanguage = prismBlockClassName ? prismBlockClassName.split('-')[1] : 'jsx';
+
   return (
     <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
       <SnippetHeader title={label || 'Example'} Icon={SnackLogo}>
@@ -94,6 +121,7 @@ export const SnackInline = ({
                   code: getCode(),
                   files,
                   baseURL: getExamplesPath(),
+                  codeLanguage,
                 })
               )}
             />
@@ -105,6 +133,7 @@ export const SnackInline = ({
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>
+          <SettingsAction />
         </form>
       </SnippetHeader>
       <SnippetContent ref={contentRef} className={mergeClasses('p-0', contentHidden && 'hidden')}>

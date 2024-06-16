@@ -1,7 +1,7 @@
 import { PlatformTag } from './PlatformTag';
 
 import { PlatformName } from '~/types/common';
-import { BOLD } from '~/ui/components/Text';
+import { DEMI, CALLOUT } from '~/ui/components/Text';
 
 type PlatformTagsProps = {
   prefix?: string;
@@ -9,13 +9,19 @@ type PlatformTagsProps = {
 };
 
 export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
-  return platforms?.length ? (
-    <>
-      {prefix && <BOLD>{prefix}&ensp;</BOLD>}
-      {platforms.map(platform => {
-        return <PlatformTag key={platform} platform={platform} />;
-      })}
+  if (!platforms?.length) return null;
+
+  return (
+    <CALLOUT tag="span" className="inline-flex items-center">
+      {prefix && (
+        <DEMI theme="secondary" className="!text-inherit !font-medium">
+          {prefix}&ensp;
+        </DEMI>
+      )}
+      {platforms.map(platform => (
+        <PlatformTag key={platform} platform={platform} />
+      ))}
       {prefix && <br />}
-    </>
-  ) : null;
+    </CALLOUT>
+  );
 };

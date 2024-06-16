@@ -14,6 +14,13 @@ import com.bumptech.glide.module.AppGlideModule
 class ExpoImageAppGlideModule : AppGlideModule() {
   override fun applyOptions(context: Context, builder: GlideBuilder) {
     super.applyOptions(context, builder)
-    builder.setLogLevel(Log.ERROR)
+
+    builder.setLogLevel(
+      if (BuildConfig.ALLOW_GLIDE_LOGS) {
+        Log.VERBOSE
+      } else {
+        Log.ERROR
+      }
+    )
   }
 }

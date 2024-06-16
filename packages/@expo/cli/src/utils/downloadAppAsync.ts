@@ -4,11 +4,11 @@ import { Stream } from 'stream';
 import temporary from 'tempy';
 import { promisify } from 'util';
 
-import { createCachedFetch, fetchAsync } from '../api/rest/client';
-import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
+import { createCachedFetch, fetchAsync } from '../api/rest/client';
+import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 
 const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
 

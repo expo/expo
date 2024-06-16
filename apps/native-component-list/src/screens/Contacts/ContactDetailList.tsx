@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
 import {
   SectionList,
@@ -29,7 +29,7 @@ function ContactDetailListItem({ label, value, onPress }: DetailListItem) {
           <Text style={styles.title}>{label}</Text>
           <Text style={styles.link}>{value}</Text>
         </View>
-        {onPress && <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />}
+        {onPress && <Ionicons size={24} color={Colors.tabIconDefault} name="arrow-forward" />}
       </View>
     </TouchableHighlight>
   );

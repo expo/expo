@@ -6,7 +6,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class FunctionWithConvertiblesSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext()
     let functionName = "function"
 

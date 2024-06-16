@@ -1,6 +1,11 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
+import {
+  createParcelsForDependenciesOf,
+  createParcelsForGraphNodes,
+  loadRequestedParcels,
+} from './loadRequestedParcels';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
@@ -13,11 +18,6 @@ import {
   validateVersion,
 } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import {
-  createParcelsForDependenciesOf,
-  createParcelsForGraphNodes,
-  loadRequestedParcels,
-} from './loadRequestedParcels';
 
 const { green, cyan } = chalk;
 
@@ -30,6 +30,11 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     dependsOn: [loadRequestedParcels],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    // Skip this task for canary releases
+    if (options.canary) {
+      return;
+    }
+
     // A set of parcels to prompt for.
     const parcelsToSelect = new Set<Parcel>(parcels);
 

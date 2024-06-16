@@ -104,10 +104,13 @@ function ToastItem(props: StackItem<ToastStackItem>) {
     }
 
     if (status === 'settled') {
-      timerRef.current = setTimeout(() => {
-        pop();
-        timerRef.current = null;
-      }, toastProps?.durationMs || 2000);
+      timerRef.current = setTimeout(
+        () => {
+          pop();
+          timerRef.current = null;
+        },
+        toastProps?.durationMs || 2000
+      );
     }
 
     return () => {
@@ -148,9 +151,9 @@ function ToastItem(props: StackItem<ToastStackItem>) {
           transform: [{ translateY }],
         },
       ]}>
-      <Button.ScaleOnPressContainer onPress={pop}>
+      <Button.FadeOnPressContainer onPress={pop}>
         <Element {...props} />
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
     </Animated.View>
   );
 }

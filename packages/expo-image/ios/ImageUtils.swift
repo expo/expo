@@ -3,6 +3,15 @@
 import SDWebImage
 import ExpoModulesCore
 
+/**
+ An exception to throw when it its not possible to generate a blurhash for a given URL.
+ */
+public final class BlurhashGenerationException: Exception {
+  override public var reason: String {
+    "Unable to generate blurhash, make sure the image exists at the given URL"
+  }
+}
+
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:
@@ -49,7 +58,7 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
-func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, contentFit: ContentFit) -> CGSize {
+func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
@@ -94,18 +103,21 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  Resizes the animated image to fit in the given size and scale.
  */
 func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
-  // For animated images, the `images` member is non-nil and represents an array of animation frames.
-  if let images = image.images {
-    // Resize each animation frame separately.
-    let resizedImages = await concurrentMap(images) { image in
-      return resize(image: image, toSize: size, scale: scale)
-    }
+  // If there are no image frames, only resize the main image.
+  guard let images = image.images else {
+    return resize(image: image, toSize: size, scale: scale)
+  }
 
-    // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-    // so it should never happen in our case, but let's handle it gracefully.
-    if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
-      return animatedImage
-    }
+  // Resize all animated image frames.
+  let resizedImages = await concurrentMap(images) { image in
+    return resize(image: image, toSize: size, scale: scale)
+  }
+
+  // Create the new animated image with the resized frames.
+  // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
+  // so it should never happen in our case, but let's make sure to handle it gracefully.
+  if let newAnimatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
+    return newAnimatedImage
   }
   return resize(image: image, toSize: size, scale: scale)
 }

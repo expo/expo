@@ -20,12 +20,12 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A class that holds information about the exported function.
  */
-class MethodMetadata {
+class MethodMetadata : public std::enable_shared_from_this<MethodMetadata> {
 public:
   /**
    * Function name
@@ -35,10 +35,6 @@ public:
    * Whether this function takes owner
    */
   bool takesOwner;
-  /**
-   * Number of arguments
-   */
-  int args;
   /**
    * Whether this function is async
    */
@@ -51,7 +47,6 @@ public:
   MethodMetadata(
     std::string name,
     bool takesOwner,
-    int args,
     bool isAsync,
     jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
@@ -60,7 +55,6 @@ public:
   MethodMetadata(
     std::string name,
     bool takesOwner,
-    int args,
     bool isAsync,
     std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
@@ -75,12 +69,10 @@ public:
    * Transforms metadata to a jsi::Function.
    *
    * @param runtime
-   * @param moduleRegistry
    * @return shared ptr to the jsi::Function that wrapped the underlying Kotlin's function.
    */
   std::shared_ptr<jsi::Function> toJSFunction(
-    jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *moduleRegistry
+    jsi::Runtime &runtime
   );
 
   /**
@@ -88,7 +80,6 @@ public:
    */
   jsi::Value callSync(
     jsi::Runtime &rt,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
@@ -97,7 +88,6 @@ public:
   jni::local_ref<jobject> callJNISync(
     JNIEnv *env,
     jsi::Runtime &rt,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
@@ -117,18 +107,16 @@ private:
    */
   std::shared_ptr<jsi::Function> body = nullptr;
 
-  jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
+  jsi::Function toSyncFunction(jsi::Runtime &runtime);
 
-  jsi::Function toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
+  jsi::Function toAsyncFunction(jsi::Runtime &runtime);
 
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *moduleRegistry,
     jobjectArray globalArgs
   );
 
   jobjectArray convertJSIArgsToJNI(
-    JSIInteropModuleRegistry *moduleRegistry,
     JNIEnv *env,
     jsi::Runtime &rt,
     const jsi::Value &thisValue,

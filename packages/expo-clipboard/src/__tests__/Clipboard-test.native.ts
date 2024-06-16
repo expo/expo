@@ -1,10 +1,6 @@
 import * as Clipboard from '../Clipboard';
 import ExpoClipboard from '../ExpoClipboard';
 
-jest.mock('../ExpoClipboard', () => ({
-  setStringAsync: jest.fn(),
-}));
-
 describe('Clipboard', () => {
   it('getStringAsync', () => {
     expect(Clipboard.getStringAsync).toBeDefined();

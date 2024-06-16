@@ -10,7 +10,7 @@ import kotlin.reflect.KType
 
 class ListTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val listType: KType,
+  private val listType: KType
 ) : DynamicAwareTypeConverters<List<*>>(listType.isMarkedNullable) {
   private val elementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(listType.arguments.first().type) {

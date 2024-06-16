@@ -29,7 +29,7 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
 
     DispatchQueue.global(qos: .userInitiated).async {
       guard let url = url, let assetLocalIdentifier = assetLocalIdentifier(fromUrl: url) else {
-        let error = makeNSError(description: "Unable to obtain the asset identifier from the url: '\(url?.absoluteString)'")
+        let error = makeNSError(description: "Unable to obtain the asset identifier from the url: '\(String(describing: url?.absoluteString))'")
         completedBlock?(nil, nil, error, false)
         return
       }
@@ -77,12 +77,11 @@ private func assetLocalIdentifier(fromUrl url: URL) -> String? {
  Checks whether the app is authorized to read the Photo Library.
  */
 private func isPhotoLibraryStatusAuthorized() -> Bool {
-  if #available(iOS 14, *) {
+  if #available(iOS 14, tvOS 14, *) {
     let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
     return status == .authorized || status == .limited
-  } else {
-    return PHPhotoLibrary.authorizationStatus() == .authorized
   }
+  return PHPhotoLibrary.authorizationStatus() == .authorized
 }
 
 /**

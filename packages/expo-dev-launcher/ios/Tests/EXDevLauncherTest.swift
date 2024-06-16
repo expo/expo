@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevLauncher
 
 class EXDevLauncherTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("exported constants should contain correct fields") {
       let module = EXDevLauncher()
 

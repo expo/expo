@@ -1,16 +1,16 @@
 ---
 title: Create a modal
+description: In this tutorial, learn how to create a modal from React Native to select an image.
 ---
 
 import { SnackInline } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { A } from '~/ui/components/Text';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the <A href="/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component" openInNewTab>second chapter</A>,
+React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the [second chapter](/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component),
 we used `alert()` to display a placeholder when a button is pressed. That's how a modal component displays an overlay.
 
 In this chapter, we'll create a modal that shows an emoji picker list.
@@ -75,7 +75,7 @@ export default function App() {
   // ...
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       /* @info Based on the value of showAppOptions, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
       {showAppOptions ? (
         <View />
@@ -102,11 +102,10 @@ For now, when the value of `showAppOptions` is `true`, let's render an empty `<V
 
 Let's break down the layout of the option buttons we will implement in this chapter. The design looks like this:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of the layout of the buttons row."
   src="/static/images/tutorial/buttons-layout.jpg"
-  style={{ maxWidth: 480 }}
-  containerStyle={{ marginBottom: 10 }}
+  className="max-w-[480px]"
 />
 
 It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the modal and is styled differently than the other two buttons.
@@ -218,7 +217,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       {showAppOptions ? (
         /* @info Replace empty View component with this snippet to display App option buttons. */
         <View style={styles.optionsContainer}>
@@ -230,7 +229,7 @@ export default function App() {
         </View>
         /* @end */
       ) : (
-        /* ...rest of the code remains same */
+        // ...rest of the code remains same
       )}
       <StatusBar style="auto" />
     </View>
@@ -256,13 +255,12 @@ const styles = StyleSheet.create({
 
 In the above snippet, the `onReset()` function is called when the user presses the reset button. When this button is pressed, we'll show the image picker button again.
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Button options displayed after a image is selected."
   src="/static/images/tutorial/button-options.jpg"
-  style={{ maxWidth: 720 }}
-  containerStyle={{ marginBottom: 0 }}
+  className="max-w-[720px]"
 />
 
 </Step>
@@ -278,7 +276,7 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 - `children`: used later to display a list of emoji.
 
 {/* prettier-ignore */}
-```jsx EmojiPicker.js
+```jsx EmojiPicker.js|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -335,13 +333,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 50,
-    paddingVertical: 20,
-  },
 });
 ```
 
@@ -373,32 +364,7 @@ files={{
 
 export default function App() {
   /* @info Create a state variable.*/const [isModalVisible, setIsModalVisible] = useState(false);  /* @end */
-  /* @hide const [showAppOptions, setShowAppOptions] = useState(false); */
-  const [showAppOptions, setShowAppOptions] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setSelectedImage(result.uri);
-      setShowAppOptions(true);
-    } else {
-      alert("You did not select any image.");
-    }
-  };
-
-  const onReset = () => {
-    setShowAppOptions(false);
-  };
-  const onSaveImageAsync = async () => {
-    // we will implement this later
-  };
-  /* @end */
+  // ...rest of the code remains same
 
   /* @info Update functions to control the modal's visibility.*/
   const onAddSticker = () => {
@@ -412,7 +378,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */
+      {/* ...rest of the code remains same */}
       /* @info Render the EmojiPicker component at the bottom of the App component, just before the StatusBar. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* A list of emoji component will go here */}
@@ -428,11 +394,11 @@ export default function App() {
 
 Here is the result after this step:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="A modal working on all platforms"
   src="/static/images/tutorial/modal-creation.jpg"
-  style={{ maxWidth: 720 }}
-  containerStyle={{ marginBottom: 0 }}
+  className="max-w-[720px]"
+
 />
 
 </Step>
@@ -441,7 +407,7 @@ Here is the result after this step:
 
 ## Display a list of emoji
 
-Let's implement a horizontal list of emoji in the modal's content. We'll use is the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
+Let's implement a horizontal list of emoji in the modal's content. We'll use the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
 
 Create a file named **EmojiList.js** file in the **components** directory and add the following code:
 
@@ -463,20 +429,18 @@ export default function EmojiList({ onSelect, onCloseModal }) {
   return (
     <FlatList
       horizontal
-      showsHorizontalScrollIndicator={Platform.OS === 'web' ? true : false}
+      showsHorizontalScrollIndicator={Platform.OS === 'web'}
       data={emoji}
       contentContainerStyle={styles.listContainer}
-      renderItem={({ item, index }) => {
-        return (
-          <Pressable
-            onPress={() => {
-              onSelect(item);
-              onCloseModal();
-            }}>
-            <Image source={item} key={index} style={styles.image} />
-          </Pressable>
-        );
-      }}
+      renderItem={({ item, index }) => (
+        <Pressable
+          onPress={() => {
+            onSelect(item);
+            onCloseModal();
+          }}>
+          <Image source={item} key={index} style={styles.image} />
+        </Pressable>
+      )}
     />
   );
 }
@@ -509,7 +473,7 @@ The `horizontal` prop renders the list horizontally instead of vertically. The `
 Now, modify the `App` component. Import the `<EmojiList>` component and replace the comments where the `<EmojiPicker>` component is used with the following code snippet:
 
 {/* prettier-ignore */}
-```jsx App.js
+```jsx App.js|collapseHeight=440
 //...rest of the import statements remain same
 /* @info Import the EmojiList component.*/ import EmojiList from './components/EmojiList';/* @end */
 
@@ -521,7 +485,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* rest of the code remains unchanged */
+      {/* rest of the code remains unchanged */}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         /* @info Render the EmojiList component inside the EmojiPicker component. */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
@@ -530,15 +494,14 @@ export default function App() {
       <StatusBar style="auto" />
     </View>
   );
-  )
 }
 ```
 
 The `onSelect` prop on the `<EmojiList>` component selects the emoji and the `onCloseModal` prop closes the modal after emoji is selected.
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/emoji-picker.mp4" />
+<ContentSpotlight file="tutorial/emoji-picker.mp4" />
 
 </Step>
 
@@ -597,7 +560,7 @@ files={{
 {/* prettier-ignore */}
 ```jsx
 // ...rest of the import statements
-import EmojiSticker from './components/EmojiSticker';
+/* @info */import EmojiSticker from './components/EmojiSticker';/* @end */
 
 export default function App() {
   // ...rest of the code remains same
@@ -606,9 +569,9 @@ export default function App() {
     <View>
       <View style={styles.imageContainer}>
         <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
-        /* @info */{pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} /* @end */
+        /* @info */{pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}/* @end */
       </View>
-      /* ...rest of the code remains same*/
+      {/* ...rest of the code remains same */}
     </View>
   );
 }
@@ -616,9 +579,9 @@ export default function App() {
 
 </SnackInline>
 
-Let's take a look at our app on iOS, Android and the web:
+Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/select-emoji.mp4" />
+<ContentSpotlight file="tutorial/select-emoji.mp4" />
 
 </Step>
 

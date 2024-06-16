@@ -1,13 +1,29 @@
 #!/bin/bash
 
+export NODE_ENV=production
+export EXPO_USE_FAST_RESOLVER=1
+export EXPO_NO_TELEMETRY=1
+
+# Generate temporary app.json for `npx expo export:embed` and indicate that we want to use JSC bundling profile.
+# The reason to use JSC because the bundle should be compatible with both JSC and Hermes.
+cat > app.json <<EOF
+{
+  "expo": {
+    "jsEngine": "jsc"
+  }
+}
+EOF
+
 # iOS
 
-export NODE_ENV=production
+# Remove assets from previous build.
+rm -rf ios/assets/
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
     --dev false \
     --entry-file index.js \
+    --unstable-transform-profile default \
     --bundle-output ios/main.jsbundle \
     --assets-dest ios \
     --reset-cache
@@ -17,10 +33,17 @@ rm ios/assets/__node_modules/css-tree/package.json
 
 # Android
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+# Remove assets from previous build.
+rm -rf android/src/debug/res/
+
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform android \
     --dev false \
     --entry-file index.js \
+    --unstable-transform-profile default \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
-    --assets-dest android/src/debug/res \
-    --reset-cache
+    --assets-dest android/src/debug/res
+
+# Cleanup
+
+rm app.json

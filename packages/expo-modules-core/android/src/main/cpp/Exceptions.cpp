@@ -2,7 +2,7 @@
 
 #include "Exceptions.h"
 
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;

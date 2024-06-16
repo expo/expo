@@ -1,5 +1,5 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
+import { Button, mergeClasses } from '@expo/styleguide';
+import { ArrowCircleUpIcon, LayoutAlt03Icon } from '@expo/styleguide-icons';
 import * as React from 'react';
 
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
@@ -10,35 +10,13 @@ import withHeadingManager, {
 } from '~/components/page-higher-order/withHeadingManager';
 import { CALLOUT } from '~/ui/components/Text';
 
-const sidebarStyle = css({
-  padding: spacing[6],
-  width: 280,
-
-  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    width: '100%',
-  },
-});
-
-const sidebarTitleStyle = css({
-  marginBottom: spacing[2],
-  userSelect: 'none',
-});
-
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
-const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 10;
+const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 const isDynamicScrollAvailable = () => {
-  if (!history?.replaceState) {
-    return false;
-  }
-
-  if (window.matchMedia('(prefers-reduced-motion)').matches) {
-    return false;
-  }
-
-  return true;
+  return !window.matchMedia('(prefers-reduced-motion)').matches;
 };
 
 type Props = React.PropsWithChildren<{
@@ -51,6 +29,7 @@ type PropsWithHM = Props & { headingManager: HeadingManager };
 
 type State = {
   activeSlug: string | null;
+  showScrollTop: boolean;
 };
 
 class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
@@ -60,6 +39,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
   state = {
     activeSlug: null,
+    showScrollTop: false,
   };
 
   private slugScrollingTo: string | null = null;
@@ -72,6 +52,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
       if (!ref || !ref.current) {
         continue;
       }
+      this.setState({ showScrollTop: contentScrollPosition > 120 });
       if (
         ref.current.offsetTop >=
           contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
@@ -100,9 +81,21 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav css={sidebarStyle} data-sidebar>
-        <CALLOUT weight="medium" css={sidebarTitleStyle}>
-          On this page
+      <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
+        <CALLOUT
+          weight="medium"
+          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
+          <LayoutAlt03Icon className="icon-sm" /> On this page
+          <Button
+            theme="quaternary"
+            size="xs"
+            className={mergeClasses(
+              'ml-auto mr-2 px-2 transition-opacity duration-300',
+              !this.state.showScrollTop && 'opacity-0 pointer-events-none'
+            )}
+            onClick={e => this.handleTopClick(e)}>
+            <ArrowCircleUpIcon className="icon-sm text-icon-secondary" />
+          </Button>
         </CALLOUT>
         {displayedHeadings.map(heading => {
           const isActive = heading.slug === this.state.activeSlug;
@@ -143,22 +136,38 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     }
   };
 
-  private handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, heading: Heading) => {
-    if (!isDynamicScrollAvailable()) {
-      return;
-    }
-
+  private handleLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    { slug, ref }: Heading
+  ) => {
     event.preventDefault();
-    const { title, slug, ref } = heading;
 
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
-      behavior: 'smooth',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
+      behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - 28,
     });
-    history.replaceState(history.state, title, '#' + slug);
+
+    if (history?.replaceState) {
+      history.replaceState(history.state, '', '#' + slug);
+    }
+  };
+
+  private handleTopClick = (
+    event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    event.preventDefault();
+
+    this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
+      behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
+      top: 0,
+    });
+
+    if (history?.replaceState) {
+      history.replaceState(history.state, '', ' ');
+    }
   };
 }
 

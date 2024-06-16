@@ -1,6 +1,6 @@
 #include "EXGLNativeApi.h"
-#include "EXGLNativeContext.h"
 #include "EXGLContextManager.h"
+#include "EXGLNativeContext.h"
 
 using namespace expo::gl_cpp;
 
@@ -8,10 +8,20 @@ EXGLContextId EXGLContextCreate() {
   return ContextCreate();
 }
 
-void EXGLContextPrepare(void *jsiPtr, EXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
+void EXGLContextPrepare(
+    void *jsiPtr,
+    EXGLContextId exglCtxId,
+    std::function<void(void)> flushMethod) {
   auto [exglCtx, lock] = ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
+  }
+}
+
+void EXGLContextPrepareWorklet(EXGLContextId exglCtxId) {
+  auto [exglCtx, lock] = ContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->prepareWorkletContext();
   }
 }
 

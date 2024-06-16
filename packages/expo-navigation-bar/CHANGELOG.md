@@ -8,9 +8,88 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.0.5 - 2024-06-05
 
 ### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 3.0.4 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fix event listeners on Android. ([#28260](https://github.com/expo/expo/pull/28260) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 2.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.8.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 2.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate to Expo Modules API. ([#23933](https://github.com/expo/expo/pull/23933) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.4.1 — 2023-08-02
+
+### 🐛 Bug fixes
+
+- Fix support for importing on iOS. ([#23761](https://github.com/expo/expo/pull/23761) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 2.2.0 — 2023-05-08
 

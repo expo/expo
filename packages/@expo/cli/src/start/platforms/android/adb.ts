@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 import os from 'os';
 
+import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-import { ADBServer } from './ADBServer';
 
 const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
 
@@ -17,6 +18,8 @@ export enum DeviceABI {
   arm64 = 'arm64',
   x64 = 'x64',
   x86 = 'x86',
+  x8664 = 'x86_64',
+  arm64v8a = 'arm64-v8a',
   armeabiV7a = 'armeabi-v7a',
   armeabi = 'armeabi',
   universal = 'universal',
@@ -73,7 +76,16 @@ export async function isPackageInstalledAsync(
   androidPackage: string
 ): Promise<boolean> {
   const packages = await getServer().runAsync(
-    adbArgs(device.pid, 'shell', 'pm', 'list', 'packages', androidPackage)
+    adbArgs(
+      device.pid,
+      'shell',
+      'pm',
+      'list',
+      'packages',
+      '--user',
+      env.EXPO_ADB_USER,
+      androidPackage
+    )
   );
 
   const lines = packages.split(/\r?\n/);
@@ -184,7 +196,9 @@ export async function uninstallAsync(
   device: DeviceContext,
   { appId }: { appId: string }
 ): Promise<string> {
-  return await getServer().runAsync(adbArgs(device.pid, 'uninstall', appId));
+  return await getServer().runAsync(
+    adbArgs(device.pid, 'uninstall', '--user', env.EXPO_ADB_USER, appId)
+  );
 }
 
 /** Get package info from an app based on its Android package name. */
@@ -198,7 +212,9 @@ export async function getPackageInfoAsync(
 /** Install an app on a connected device. */
 export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
-  return await getServer().runAsync(adbArgs(device.pid, 'install', '-r', '-d', filePath));
+  return await getServer().runAsync(
+    adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath)
+  );
 }
 
 /** Format ADB args with process ID. */
@@ -207,6 +223,7 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
   if (pid) {
     args.push('-s', pid);
   }
+
   return args.concat(options);
 }
 
@@ -214,7 +231,16 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
 export async function getAttachedDevicesAsync(): Promise<Device[]> {
   const output = await getServer().runAsync(['devices', '-l']);
 
-  const splitItems = output.trim().replace(/\n$/, '').split(os.EOL);
+  const splitItems = output
+    .trim()
+    .replace(/\n$/, '')
+    .split(os.EOL)
+    // Filter ADB trace logs from the output, e.g.
+    // adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l
+    // 03-04 12:29:44.557 16415 16415 D adb     : commandline.cpp:1646 Using server socket: tcp:172.27.192.1:5037
+    // 03-04 12:29:44.557 16415 16415 D adb     : adb_client.cpp:160 _adb_connect: host:version
+    .filter((line) => !line.match(/\.cpp:[0-9]+/));
+
   // First line is `"List of devices attached"`, remove it
   // @ts-ignore: todo
   const attachedDevices: {

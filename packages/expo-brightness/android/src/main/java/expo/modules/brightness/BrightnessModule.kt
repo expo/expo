@@ -1,7 +1,6 @@
 package expo.modules.brightness
 
 import android.Manifest
-import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
 import expo.modules.core.errors.InvalidArgumentException
@@ -13,12 +12,17 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlin.math.roundToInt
 
+const val brightnessChangeEvent = "Expo.brightnessDidChange"
+
 class BrightnessModule : Module() {
   private val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")
+
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events(brightnessChangeEvent)
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.WRITE_SETTINGS)
@@ -34,7 +38,7 @@ class BrightnessModule : Module() {
       currentActivity.window.attributes = lp // must be done on UI thread
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBrightnessAsync") {
+    AsyncFunction<Float>("getBrightnessAsync") {
       val lp = currentActivity.window.attributes
       val brightness = if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
         // system brightness is not overridden by the current activity, so just resolve with it
@@ -46,14 +50,14 @@ class BrightnessModule : Module() {
       return@AsyncFunction brightness
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getSystemBrightnessAsync") {
+    AsyncFunction<Float>("getSystemBrightnessAsync") {
       return@AsyncFunction getSystemBrightness()
     }
 
     AsyncFunction("setSystemBrightnessAsync") { brightnessValue: Float ->
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(currentActivity)) {
+      if (!Settings.System.canWrite(currentActivity)) {
         throw BrightnessPermissionsException()
       }
       // manual mode must be set in order to change system brightness (sets the automatic mode off)
@@ -75,12 +79,12 @@ class BrightnessModule : Module() {
       currentActivity.window.attributes = lp // must be done on UI thread
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("isUsingSystemBrightnessAsync") {
+    AsyncFunction<Boolean>("isUsingSystemBrightnessAsync") {
       val lp = currentActivity.window.attributes
       return@AsyncFunction lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getSystemBrightnessModeAsync") {
+    AsyncFunction<Int>("getSystemBrightnessModeAsync") {
       val brightnessMode = Settings.System.getInt(
         currentActivity.contentResolver,
         Settings.System.SCREEN_BRIGHTNESS_MODE
@@ -91,7 +95,7 @@ class BrightnessModule : Module() {
     AsyncFunction("setSystemBrightnessModeAsync") { brightnessMode: Int ->
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(currentActivity)) {
+      if (!Settings.System.canWrite(currentActivity)) {
         throw BrightnessPermissionsException()
       }
       Settings.System.putInt(

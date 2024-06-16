@@ -1,4 +1,4 @@
-import { Picker, PickerProps } from '@react-native-picker/picker';
+import { Picker, PickerProps, PickerIOS } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Text, Button } from 'react-native';
@@ -18,6 +18,20 @@ export default function PickerScreen() {
           <GenericPicker itemStyle={{ fontWeight: 'bold', color: 'blue' }} />
         </Section>
       )}
+
+      {Platform.OS === 'ios' && (
+        <Section title="PickerIOS">
+          <GenericPickerIOS />
+        </Section>
+      )}
+
+      {
+        Platform.OS === 'ios' && (
+          <Section title="PickerIOS (override selected value color)">
+            <GenericPickerIOS selectionColor="rgba(200,100,100,.4)" />
+          </Section>
+        ) /* seems to only work with some color types (like rgba), see https://github.com/react-native-picker/picker/pull/474 */
+      }
 
       {Platform.OS !== 'ios' && (
         <Section title="Disabled">
@@ -108,6 +122,22 @@ function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
       <Text>Selected: {value}</Text>
 
       <Button title="Focus" onPress={() => pickerRef.current?.focus()} />
+    </>
+  );
+}
+function GenericPickerIOS(props: any) {
+  const [value, setValue] = React.useState<any>('java');
+
+  return (
+    <>
+      <PickerIOS {...props} selectedValue={value} onValueChange={(item) => setValue(item)}>
+        <Picker.Item label="Java" value="java" />
+        <Picker.Item label="JavaScript" value="js" />
+        <Picker.Item label="Objective C" value="objc" />
+        <Picker.Item label="Swift" value="swift" />
+        {props.children}
+      </PickerIOS>
+      <Text>Selected: {value}</Text>
     </>
   );
 }

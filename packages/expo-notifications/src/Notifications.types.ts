@@ -2,10 +2,8 @@ import type {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  Subscription,
+  EventSubscription,
 } from 'expo-modules-core';
-
-import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
 
 /**
  * An object represents a notification delivered by a push notification system.
@@ -58,7 +56,7 @@ export interface CalendarNotificationTrigger {
  * The region used to determine when the system sends the notification.
  * @platform ios
  */
-interface Region {
+export interface Region {
   type: string;
   /**
    * The identifier for the region object.
@@ -186,7 +184,7 @@ export interface YearlyNotificationTrigger {
  */
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
-  data: { [key: string]: string };
+  data: Record<string, string>;
   from: string | null;
   messageId: string | null;
   messageType: string | null;
@@ -255,12 +253,27 @@ export type ChannelAwareTriggerInput = {
   channelId: string;
 };
 
+// @docsMissing
+export type CalendarTriggerInputValue = {
+  timezone?: string;
+  year?: number;
+  month?: number;
+  weekday?: number;
+  weekOfMonth?: number;
+  weekOfYear?: number;
+  weekdayOrdinal?: number;
+  day?: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
+};
+
 /**
  * A trigger that will cause the notification to be delivered once or many times when the date components match the specified values.
  * Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
  * @platform ios
  */
-export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+export type CalendarTriggerInput = CalendarTriggerInputValue & {
   channelId?: string;
   repeats?: boolean;
 };
@@ -370,6 +383,7 @@ export type NotificationContent = {
    * Data associated with the notification, not displayed
    */
   data: Record<string, any>;
+  // @docsMissing
   sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (NotificationContentIos | NotificationContentAndroid);
 
@@ -409,6 +423,16 @@ export type NotificationContentIos = {
    * The value your app uses to determine which scene to display to handle the notification.
    */
   targetContentIdentifier?: string;
+  /*
+   * The notification’s importance and required delivery timing.
+   * Posible values:
+   * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
+   * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
+   * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
+   * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
+   * @platform ios 15+
+   */
+  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 
 // @docsMissing
@@ -509,9 +533,11 @@ export type NotificationContentInput = {
    */
   color?: string;
   /**
-   * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
-   * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
-   * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))
+   * If set to `false`, the notification will not be automatically dismissed when clicked.
+   * The setting will be used when the value is not provided or is invalid is set to `true`, and the notification
+   * will be dismissed automatically anyway. Corresponds directly to Android's `setAutoCancel` behavior.
+   *
+   * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
    * for more details.
    * @platform android
    */
@@ -522,12 +548,11 @@ export type NotificationContentInput = {
    */
   categoryIdentifier?: string;
   /**
-   * If set to `false`, the notification will not be automatically dismissed when clicked.
-   * the setting used when the value is not provided or is invalid is `true` (the notification
-   * will be dismissed automatically). Corresponds directly to Android's `setAutoCancel`
-   * behavior. In Firebase terms this property of a notification is called `sticky`.
+   * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
+   * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+   * In Firebase terms this property of a notification is called `sticky`.
    *
-   * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
+   * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))
    * and [Firebase documentation](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky)
    * for more details.
    * @platform android
@@ -538,6 +563,16 @@ export type NotificationContentInput = {
    * @platform ios
    */
   attachments?: NotificationContentAttachmentIos[];
+  /*
+   * The notification’s importance and required delivery timing.
+   * Posible values:
+   * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
+   * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
+   * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
+   * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
+   * @platform ios 15+
+   */
+  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 
 /**
@@ -682,4 +717,9 @@ export type NotificationCategoryOptions = {
   allowAnnouncement?: boolean;
 };
 
-export type { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export type {
+  EventSubscription as Subscription,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+};

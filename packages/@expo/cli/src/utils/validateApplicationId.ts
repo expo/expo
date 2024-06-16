@@ -1,14 +1,17 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { fetchAsync } from '../api/rest/client';
+import { env } from './env';
+import { memoize } from './fn';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
+import { fetchAsync } from '../api/rest/client';
+import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 
 const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
-const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
+const ANDROID_PACKAGE_REGEX = /^(?!.*\bnative\b)[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
 /** Validate an iOS bundle identifier. */
 export function validateBundleId(value: string): boolean {
@@ -17,8 +20,91 @@ export function validateBundleId(value: string): boolean {
 
 /** Validate an Android package name. */
 export function validatePackage(value: string): boolean {
-  return ANDROID_PACKAGE_REGEX.test(value);
+  return validatePackageWithWarning(value) === true;
 }
+
+/** Validate an Android package name and return the reason if invalid. */
+export function validatePackageWithWarning(value: string): true | string {
+  const parts = value.split('.');
+  for (const segment of parts) {
+    if (RESERVED_ANDROID_PACKAGE_NAME_SEGMENTS.includes(segment)) {
+      return `"${segment}" is a reserved Java keyword.`;
+    }
+  }
+  if (parts.length < 2) {
+    return `Package name must contain more than one segment, separated by ".", e.g. com.${value}`;
+  }
+  if (!ANDROID_PACKAGE_REGEX.test(value)) {
+    return 'Invalid characters in Android package name. Only alphanumeric characters, "." and "_" are allowed, and each "." must be followed by a letter or number.';
+  }
+
+  return true;
+}
+
+// https://en.wikipedia.org/wiki/List_of_Java_keywords
+// Running the following in the console and pruning the "Reserved Identifiers" section:
+// [...document.querySelectorAll('dl > dt > code')].map(node => node.innerText)
+const RESERVED_ANDROID_PACKAGE_NAME_SEGMENTS = [
+  // List of Java keywords
+  '_',
+  'abstract',
+  'assert',
+  'boolean',
+  'break',
+  'byte',
+  'case',
+  'catch',
+  'char',
+  'class',
+  'const',
+  'continue',
+  'default',
+  'do',
+  'double',
+  'else',
+  'enum',
+  'extends',
+  'final',
+  'finally',
+  'float',
+  'for',
+  'goto',
+  'if',
+  'implements',
+  'import',
+  'instanceof',
+  'int',
+  'interface',
+  'long',
+  'native',
+  'new',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'return',
+  'short',
+  'static',
+  'super',
+  'switch',
+  'synchronized',
+  'this',
+  'throw',
+  'throws',
+  'transient',
+  'try',
+  'void',
+  'volatile',
+  'while',
+  // Reserved words for literal values
+  'true',
+  'false',
+  'null',
+  // Unused
+  'const',
+  'goto',
+  'strictfp',
+];
 
 export function assertValidBundleId(value: string) {
   assert.match(
@@ -32,18 +118,15 @@ export function assertValidPackage(value: string) {
   assert.match(
     value,
     ANDROID_PACKAGE_REGEX,
-    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter.`
+    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is not allowed.`
   );
 }
 
-const cachedBundleIdResults: Record<string, string> = {};
-const cachedPackageNameResults: Record<string, string> = {};
-
-/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
-export async function getBundleIdWarningAsync(bundleId: string): Promise<string | null> {
-  // Prevent fetching for the same ID multiple times.
-  if (cachedBundleIdResults[bundleId]) {
-    return cachedBundleIdResults[bundleId];
+/** @private */
+export async function getBundleIdWarningInternalAsync(bundleId: string): Promise<string | null> {
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Apple bundle identifier reservation validation in offline-mode.');
+    return null;
   }
 
   if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
@@ -61,9 +144,7 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
     const json = await response.json();
     if (json.resultCount > 0) {
       const firstApp = json.results[0];
-      const message = formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
-      cachedBundleIdResults[bundleId] = message;
-      return message;
+      return formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
     }
   } catch (error: any) {
     debug(`Error checking bundle ID ${bundleId}: ${error.message}`);
@@ -72,11 +153,16 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
   return null;
 }
 
-/** Returns a warning message if an Android package name is potentially already in use. */
-export async function getPackageNameWarningAsync(packageName: string): Promise<string | null> {
-  // Prevent fetching for the same ID multiple times.
-  if (cachedPackageNameResults[packageName]) {
-    return cachedPackageNameResults[packageName];
+/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
+export const getBundleIdWarningAsync = memoize(getBundleIdWarningInternalAsync);
+
+/** @private */
+export async function getPackageNameWarningInternalAsync(
+  packageName: string
+): Promise<string | null> {
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Android package name reservation validation in offline-mode.');
+    return null;
   }
 
   if (!(await isUrlAvailableAsync('play.google.com'))) {
@@ -95,15 +181,13 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
     if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely
       // locate the app name and developer to match the iOS warning.
-      const message = `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
+      return `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
         learnMore(url)
       )}`;
-      cachedPackageNameResults[packageName] = message;
-      return message;
     }
   } catch (error: any) {
-    debug(`Error checking package name ${packageName}: ${error.message}`);
     // Error fetching play store data or the page doesn't exist.
+    debug(`Error checking package name ${packageName}: ${error.message}`);
   }
   return null;
 }
@@ -113,3 +197,6 @@ function formatInUseWarning(appName: string, author: string, id: string): string
     author
   )} is already using ${chalk.bold(id)}`;
 }
+
+/** Returns a warning message if an Android package name is potentially already in use. */
+export const getPackageNameWarningAsync = memoize(getPackageNameWarningInternalAsync);

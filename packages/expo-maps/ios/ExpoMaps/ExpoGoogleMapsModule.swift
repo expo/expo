@@ -26,7 +26,7 @@ public class ExpoGoogleMapsModule: Module {
       }
     }
 
-    ViewManager {
+    View(GoogleMapsView.self) {
       Events(
         "onMapPress",
         "onLongPress",
@@ -44,10 +44,6 @@ public class ExpoGoogleMapsModule: Module {
         "onLocationDotPress",
         "onLocationChange"
       )
-
-      View {
-        GoogleMapsView(sendEvent: self.sendEvent)
-      }
 
       Prop("showCompass") { (view: GoogleMapsView, enable: Bool) in
         view.setShowCompass(enable: enable)

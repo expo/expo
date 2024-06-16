@@ -1,34 +1,40 @@
-import 'expo/build/Expo.fx';
-import * as React from 'react';
+import '../Expo.fx';
 import { AppRegistry, Platform } from 'react-native';
-import { createRoot } from './createRoot';
+// @needsAudit
+/**
+ * Sets the initial React component to render natively in the app's root React Native view on Android, iOS, tvOS and the web.
+ *
+ * This method does the following:
+ * - Invokes React Native's `AppRegistry.registerComponent`.
+ * - Invokes React Native web's `AppRegistry.runApplication` on web to render to the root `index.html` file.
+ * - Polyfills the `process.nextTick` function globally.
+ * - Adds support for using the `fontFamily` React Native style with the `expo-font` package.
+ *
+ * This method also adds the following dev-only features that are removed in production bundles.
+ * - Adds the Fast Refresh and bundle splitting indicator to the app.
+ * - Asserts if the `expo-updates` package is misconfigured.
+ * - Asserts if `react-native` is not aliased to `react-native-web` when running in the browser.
+ * @param component The React component class that renders the rest of your app.
+ */
 export default function registerRootComponent(component) {
     let qualifiedComponent = component;
     if (process.env.NODE_ENV !== 'production') {
         const { withDevTools } = require('./withDevTools');
         qualifiedComponent = withDevTools(component);
     }
-    if (Platform.OS !== 'web') {
-        AppRegistry.registerComponent('main', () => qualifiedComponent);
-    }
-    else if (
+    AppRegistry.registerComponent('main', () => qualifiedComponent);
     // Skip querying the DOM if we're in a Node.js environment.
-    typeof document !== 'undefined') {
-        let tag = document.getElementById('root');
-        if (!tag) {
-            tag = document.getElementById('main');
-            if (process.env.NODE_ENV !== 'production') {
-                // This block will be removed in production
-                if (tag) {
-                    console.warn('Mounting the root React component to an HTML element with id "main" is deprecated. Use id "root" instead.');
-                }
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        const rootTag = document.getElementById('root');
+        if (process.env.NODE_ENV !== 'production') {
+            if (!rootTag) {
+                throw new Error('Required HTML element with id "root" was not found in the document HTML.');
             }
         }
-        if (!tag) {
-            throw new Error('Required HTML element with id "root" was not found in the document HTML. This is required for mounting the root React component.');
-        }
-        const rootTag = createRoot(tag);
-        rootTag.render(React.createElement(qualifiedComponent));
+        AppRegistry.runApplication('main', {
+            rootTag,
+            hydrate: process.env.EXPO_PUBLIC_USE_STATIC === '1',
+        });
     }
 }
 //# sourceMappingURL=registerRootComponent.js.map

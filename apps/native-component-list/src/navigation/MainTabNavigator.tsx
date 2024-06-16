@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors } from '../constants';
 import Screens from './MainNavigators';
 import createTabNavigator from './createTabNavigator';
+import { Colors } from '../constants';
 
 const Tab = createTabNavigator();
 

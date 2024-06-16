@@ -1,8 +1,8 @@
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { Platform } from 'react-native';
 
-import * as TestUtils from '../TestUtils';
 import { retryForStatus, waitFor } from './helpers';
+import * as TestUtils from '../TestUtils';
 
 export const name = 'Recording';
 

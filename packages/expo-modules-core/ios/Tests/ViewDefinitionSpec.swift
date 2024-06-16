@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class ViewDefinitionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("View") {
       it("creates a view") {
         let definition = View(UIImageView.self) {}
@@ -33,7 +33,7 @@ final class ViewDefinitionSpec: ExpoSpec {
         let textView = UITextView()
         let content = "hello"
         let definition = View(UITextView.self) {
-          // The type of `view` is inferred and equals to the type passed to `View` component.
+          // The type of `view` is inferred and equals to the type passed to `View`.
           Prop("content") { (view, _: String) in
             expect(view).to(beAKindOf(UITextView.self))
           }

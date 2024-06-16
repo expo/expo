@@ -6,6 +6,6 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
 class SystemUIPackage : Package {
   override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
-    return listOf(SystemUIReactActivityLifecycleListener(activityContext))
+    return listOf(SystemUIReactActivityLifecycleListener())
   }
 }

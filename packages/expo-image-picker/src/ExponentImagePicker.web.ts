@@ -14,10 +14,6 @@ const MediaTypeInput = {
 };
 
 export default {
-  get name(): string {
-    return 'ExponentImagePicker';
-  },
-
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
@@ -123,7 +119,7 @@ function openFileBrowserAsync({
   });
 }
 
-function readFile(targetFile: Blob, options: { base64: boolean }): Promise<ImagePickerAsset> {
+function readFile(targetFile: File, options: { base64: boolean }): Promise<ImagePickerAsset> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
@@ -136,11 +132,14 @@ function readFile(targetFile: Blob, options: { base64: boolean }): Promise<Image
       if (typeof uri === 'string') {
         const image = new Image();
         image.src = uri;
+
         image.onload = () => {
           resolve({
             uri,
             width: image.naturalWidth ?? image.width,
             height: image.naturalHeight ?? image.height,
+            mimeType: targetFile.type,
+            fileName: targetFile.name,
             // The blob's result cannot be directly decoded as Base64 without
             // first removing the Data-URL declaration preceding the
             // Base64-encoded data. To retrieve only the Base64 encoded string,

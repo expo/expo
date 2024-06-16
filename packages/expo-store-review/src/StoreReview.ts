@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
-import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
+import { Linking } from 'react-native';
 
 import StoreReview from './ExpoStoreReview';
 
@@ -9,12 +9,12 @@ import StoreReview from './ExpoStoreReview';
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will always resolve to `true`.
+ * - On iOS, it will resolve to `true` unless the app is distributed through TestFlight.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  return StoreReview.isAvailableAsync();
+  return StoreReview.isAvailableAsync?.() ?? false;
 }
 
 // @needsAudit
@@ -25,22 +25,21 @@ export async function isAvailableAsync(): Promise<boolean> {
  */
 export async function requestReview(): Promise<void> {
   if (StoreReview?.requestReview) {
-    await StoreReview.requestReview();
-    return;
+    return StoreReview.requestReview();
   }
   // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
   const url = storeUrl();
   if (url) {
     const supported = await Linking.canOpenURL(url);
     if (!supported) {
-      console.warn("Expo.StoreReview.requestReview(): Can't open store url: ", url);
+      console.warn("StoreReview.requestReview(): Can't open store url: ", url);
     } else {
       await Linking.openURL(url);
     }
   } else {
     // If the store URL is missing, let the dev know.
     console.warn(
-      "Expo.StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`"
+      "StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`"
     );
   }
 }

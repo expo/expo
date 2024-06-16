@@ -1,9 +1,9 @@
-import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
+import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 
 export function isBlurhashString(str: string): boolean {
-  return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
+  return /^(blurhash:\/)+[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
 }
 
 // Base64 strings will be recognized as blurhash by default (to keep compatibility),

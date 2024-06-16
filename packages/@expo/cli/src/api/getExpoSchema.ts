@@ -3,9 +3,9 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
+import { createCachedFetch } from './rest/client';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { createCachedFetch } from './rest/client';
 
 export type Schema = any;
 

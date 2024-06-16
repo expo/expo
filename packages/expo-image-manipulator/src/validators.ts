@@ -1,6 +1,7 @@
 import {
   Action,
   ActionCrop,
+  ActionExtent,
   ActionFlip,
   ActionResize,
   ActionRotate,
@@ -29,7 +30,7 @@ export function validateActions(actions: Action[]): void {
     if (typeof action !== 'object' || action === null) {
       throw new TypeError('Action must be an object');
     }
-    const supportedActionTypes = ['crop', 'flip', 'rotate', 'resize'];
+    const supportedActionTypes = ['crop', 'extent', 'flip', 'rotate', 'resize'];
     const actionKeys = Object.keys(action);
     if (actionKeys.length !== 1) {
       throw new TypeError(
@@ -43,6 +44,8 @@ export function validateActions(actions: Action[]): void {
 
     if (actionType === 'crop') {
       validateCropAction(action as ActionCrop);
+    } else if (actionType === 'extent') {
+      validateExtentAction(action as ActionExtent);
     } else if (actionType === 'flip') {
       validateFlipAction(action as ActionFlip);
     } else if (actionType === 'rotate') {
@@ -64,6 +67,22 @@ function validateCropAction(action: ActionCrop): void {
   if (!isValid) {
     throw new TypeError(
       'Crop action must be an object of shape { originX: number; originY: number; width: number; height: number }'
+    );
+  }
+}
+
+function validateExtentAction(action: ActionExtent): void {
+  const isValid =
+    typeof action.extent === 'object' &&
+    action.extent !== null &&
+    (action.extent.backgroundColor == null || typeof action.extent.backgroundColor === 'string') &&
+    (action.extent.originX == null || typeof action.extent.originX === 'number') &&
+    (action.extent.originY == null || typeof action.extent.originY === 'number') &&
+    typeof action.extent.width === 'number' &&
+    typeof action.extent.height === 'number';
+  if (!isValid) {
+    throw new TypeError(
+      'Extent action must be an object of shape { backgroundColor?: string; originX?: number; originY?: number; width: number; height: number }'
     );
   }
 }

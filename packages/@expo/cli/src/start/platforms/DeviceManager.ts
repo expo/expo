@@ -16,17 +16,24 @@ export abstract class DeviceManager<IDevice> {
 
   abstract startAsync(): Promise<IDevice>;
 
-  abstract getAppVersionAsync(applicationId: string): Promise<string | null>;
+  abstract getAppVersionAsync(
+    applicationId: string,
+    options?: { containerPath?: string }
+  ): Promise<string | null>;
 
   abstract installAppAsync(binaryPath: string): Promise<void>;
 
   abstract uninstallAppAsync(applicationId: string): Promise<void>;
 
-  abstract isAppInstalledAsync(applicationId: string): Promise<boolean>;
+  abstract isAppInstalledAndIfSoReturnContainerPathForIOSAsync(
+    applicationId: string
+  ): Promise<boolean | string>;
 
-  abstract openUrlAsync(url: string): Promise<void>;
+  abstract openUrlAsync(url: string, options?: { appId?: string }): Promise<void>;
 
   abstract activateWindowAsync(): Promise<void>;
 
-  abstract ensureExpoGoAsync(sdkVersion?: string): Promise<boolean>;
+  abstract ensureExpoGoAsync(sdkVersion: string): Promise<boolean>;
+
+  abstract getExpoGoAppId(): string;
 }

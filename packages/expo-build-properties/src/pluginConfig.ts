@@ -13,7 +13,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '13.0',
+    deploymentTarget: '13.4',
   },
 };
 
@@ -76,25 +76,140 @@ export interface PluginConfigTypeAndroid {
    */
   extraProguardRules?: string;
   /**
-   * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+   * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
    */
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 
   /**
-   * By default, Flipper is enabled with the version that comes bundled with `react-native`.
+   * Enable the Network Inspector.
    *
-   * Use this to change the [Flipper](https://fbflipper.com/) version when
-   * running your app on Android. You can set the `flipper` property to a
-   * semver string and specify an alternate Flipper version.
+   * @default true
    */
-  flipper?: string;
+  networkInspector?: boolean;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Add extra maven repositories to all gradle projects.
+   *
+   * Takes an array of objects or strings.
+   * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
+   *
+   * This adds the following code to **android/build.gradle**:
+   * ```groovy
+   * allprojects {
+   *  repositories {
+   *   maven {
+   *    url "https://foo.com/maven-releases"
+   *  }
+   * }
+   * ```
+   *
+   * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
+   * ```groovy
+   * allprojects {
+   *   repositories {
+   *     maven {
+   *       url "https://foo.com/maven-releases"
+   *       credentials {
+   *        username = "bar"
+   *        password = "baz"
+   *       }
+   *       authentication {
+   *        basic(BasicAuthentication)
+   *       }
+   *     }
+   *   }
+   * }
+   * ```
+   *
+   * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
+   *
+   * @hide For the implementation details,
+   * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
    */
-  unstable_networkInspector?: boolean;
+  extraMavenRepos?: (AndroidMavenRepository | string)[];
+  /**
+   * Indicates whether the app intends to use cleartext network traffic.
+   *
+   * @default false
+   *
+   * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
+   */
+  usesCleartextTraffic?: boolean;
+  /**
+   * Instructs the Android Gradle plugin to compress native libraries in the APK using the legacy packaging system.
+   *
+   * @default false
+   *
+   * @see [Android documentation](https://developer.android.com/build/releases/past-releases/agp-4-2-0-release-notes#compress-native-libs-dsl)
+   */
+  useLegacyPackaging?: boolean;
+  /**
+   * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
+   * by intent signature, or by provider authority.
+   *
+   *  @see [Android documentation](https://developer.android.com/guide/topics/manifest/queries-element)
+   */
+  manifestQueries?: PluginConfigTypeAndroidQueries;
 }
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepository {
+  /**
+   * The URL of the Maven repository.
+   */
+  url: string;
+  /**
+   * The credentials to use when accessing the Maven repository.
+   * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+   *
+   * @see The authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+   */
+  credentials?: AndroidMavenRepositoryCredentials;
+  /**
+   * The authentication scheme to use when accessing the Maven repository.
+   */
+  authentication?: 'basic' | 'digest' | 'header';
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryPasswordCredentials {
+  username: string;
+  password: string;
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryHttpHeaderCredentials {
+  name: string;
+  value: string;
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryAWSCredentials {
+  accessKey: string;
+  secretKey: string;
+  sessionToken?: string;
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export type AndroidMavenRepositoryCredentials =
+  | AndroidMavenRepositoryPasswordCredentials
+  | AndroidMavenRepositoryHttpHeaderCredentials
+  | AndroidMavenRepositoryAWSCredentials;
 
 /**
  * Interface representing available configuration for iOS native build properties.
@@ -115,32 +230,158 @@ export interface PluginConfigTypeIos {
   /**
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
-   *
-   * > You cannot use `useFrameworks` and `flipper` at the same time , and
-   * doing so will generate an error.
    */
   useFrameworks?: 'static' | 'dynamic';
 
   /**
-   * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-   * Debug mode. Setting `true` enables the default version of Flipper, while
-   * setting a semver string will enable a specific version of Flipper you've
-   * declared in your **package.json**. The default for this configuration is `false`.
+   * Enable the Network Inspector.
    *
-   * > You cannot use `flipper` at the same time as `useFrameworks`, and
-   * doing so will generate an error.
+   * @default true
    */
-  flipper?: boolean | string;
+  networkInspector?: boolean;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Add extra CocoaPods dependencies for all targets.
+   *
+   * This configuration is responsible for adding the new Pod entries to **ios/Podfile**.
+   *
+   * @example
+   * Creating entry in the configuration like below:
+   * ```json
+   * [
+   *   {
+   *     name: "Protobuf",
+   *     version: "~> 3.14.0",
+   *   }
+   * ]
+   * ```
+   * Will produce the following entry in the generated **ios/Podfile**:
+   * ```ruby
+   * pod 'Protobuf', '~> 3.14.0'
+   * ```
+   *
+   * @hide For the implementation details,
+   * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside `expo-build-properties`.
    */
-  unstable_networkInspector?: boolean;
+  extraPods?: ExtraIosPodDependency[];
+
+  /**
+   * Enable C++ compiler cache for iOS builds.
+   *
+   * This speeds up compiling C++ code by caching the results of previous compilations.
+   *
+   * @see [React Native's documentation on local caches](https://reactnative.dev/docs/build-speed#local-caches) and
+   * [Ccache documentation](https://ccache.dev/).
+   */
+  ccacheEnabled?: boolean;
+
+  /**
+   * Enable aggregation of Privacy Manifests (`PrivacyInfo.xcprivacy`) from
+   * CocoaPods resource bundles. If enabled, the manifests will be merged into a
+   * single file. If not enabled, developers will need to manually aggregate them.
+   *
+   * @see [Privacy manifests](https://docs.expo.dev/guides/apple-privacy/) guide
+   * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
+   */
+  privacyManifestAggregationEnabled?: boolean;
 }
 
 /**
- * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+ * Interface representing extra CocoaPods dependency.
+ * @see [Podfile syntax reference](https://guides.cocoapods.org/syntax/podfile.html#pod)
+ * @platform ios
+ */
+export interface ExtraIosPodDependency {
+  /**
+   * Name of the pod.
+   */
+  name: string;
+  /**
+   * Version of the pod.
+   * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
+   * @example
+   * ```
+   * ~> 0.1.2
+   * ```
+   */
+  version?: string;
+  /**
+   * Build configurations for which the pod should be installed.
+   * @example
+   * ```
+   * ['Debug', 'Release']
+   * ```
+   */
+  configurations?: string[];
+  /**
+   * Whether this pod should use modular headers.
+   */
+  modular_headers?: boolean;
+  /**
+   * Custom source to search for this dependency.
+   * @example
+   * ```
+   * https://github.com/CocoaPods/Specs.git
+   * ```
+   */
+  source?: string;
+  /**
+   * Custom local filesystem path to add the dependency.
+   * @example
+   * ```
+   * ~/Documents/AFNetworking
+   * ```
+   */
+  path?: string;
+  /**
+   * Custom podspec path.
+   * @example
+   * ```https://example.com/JSONKit.podspec```
+   */
+  podspec?: string;
+  /**
+   * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
+   * @example
+   * ```
+   * ['UnitTests', 'SomeOtherTests']
+   * ```
+   */
+  testspecs?: string[];
+  /**
+   * Use the bleeding edge version of a Pod.
+   *
+   * @example
+   * ```json
+   * {
+   *   "name": "AFNetworking",
+   *   "git": "https://github.com/gowalla/AFNetworking.git",
+   *   "tag": "0.7.0"
+   * }
+   * ```
+   *
+   * This acts like to add this pod dependency statement:
+   *
+   * ```rb
+   * pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
+   * ```
+   */
+  git?: string;
+  /**
+   * The git branch to fetch. See the {@link git} property for more information.
+   */
+  branch?: string;
+  /**
+   * The git tag to fetch. See the {@link git} property for more information.
+   */
+  tag?: string;
+  /**
+   * The git commit to fetch. See the {@link git} property for more information.
+   */
+  commit?: string;
+}
+
+/**
+ * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
  * @platform android
  */
 export interface PluginConfigTypeAndroidPackagingOptions {
@@ -162,6 +403,68 @@ export interface PluginConfigTypeAndroidPackagingOptions {
   doNotStrip?: string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface PluginConfigTypeAndroidQueries {
+  /**
+   * Specifies one or more apps that your app intends to access. These other apps might integrate with your app, or your app might use services that these other apps provide.
+   */
+  package?: string[];
+  /**
+   * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
+   * These intents have restrictions compared to typical intent filter signatures.
+   *
+   * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
+   */
+  intent?: PluginConfigTypeAndroidQueriesIntent[];
+  /**
+   * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
+   * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the `android:authorities` attribute.
+   */
+  provider?: string[];
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface PluginConfigTypeAndroidQueriesIntent {
+  /**
+   * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
+   */
+  action?: string;
+  /**
+   * A description of the data associated with the intent.
+   */
+  data?: PluginConfigTypeAndroidQueriesData;
+  /**
+   * Provides an additional way to characterize the activity handling the intent,
+   * usually related to the user gesture or location from which it's started.
+   */
+  category?: string | string[];
+}
+
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface PluginConfigTypeAndroidQueriesData {
+  /**
+   * Specify a URI scheme that is handled
+   */
+  scheme?: string;
+  /**
+   * Specify a URI authority host that is handled
+   */
+  host?: string;
+  /**
+   * Specify a MIME type that is handled
+   */
+  mimeType?: string;
+}
+
 const schema: JSONSchemaType<PluginConfigType> = {
   type: 'object',
   properties: {
@@ -179,11 +482,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
-        flipper: {
-          type: 'string',
-          nullable: true,
-        },
-
         packagingOptions: {
           type: 'object',
           properties: {
@@ -195,7 +493,98 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
 
-        unstable_networkInspector: { type: 'boolean', nullable: true },
+        networkInspector: { type: 'boolean', nullable: true },
+
+        extraMavenRepos: {
+          type: 'array',
+          items: {
+            type: ['string', 'object'],
+            anyOf: [
+              { type: 'string', nullable: false },
+              {
+                type: 'object',
+                required: ['url'],
+                properties: {
+                  url: { type: 'string', nullable: false },
+                  credentials: {
+                    type: 'object',
+                    oneOf: [
+                      {
+                        type: 'object',
+                        properties: {
+                          username: { type: 'string' },
+                          password: { type: 'string' },
+                        },
+                        required: ['username', 'password'],
+                        additionalProperties: false,
+                      },
+                      {
+                        type: 'object',
+                        properties: {
+                          name: { type: 'string' },
+                          value: { type: 'string' },
+                        },
+                        required: ['name', 'value'],
+                        additionalProperties: false,
+                      },
+                      {
+                        type: 'object',
+                        properties: {
+                          accessKey: { type: 'string' },
+                          secretKey: { type: 'string' },
+                          sessionToken: { type: 'string', nullable: true },
+                        },
+                        required: ['accessKey', 'secretKey'],
+                        additionalProperties: false,
+                      },
+                    ],
+                    nullable: true,
+                  },
+                  authentication: {
+                    type: 'string',
+                    enum: ['basic', 'digest', 'header'],
+                    nullable: true,
+                  },
+                },
+                additionalProperties: false,
+              },
+            ],
+          },
+          nullable: true,
+        },
+
+        usesCleartextTraffic: { type: 'boolean', nullable: true },
+
+        useLegacyPackaging: { type: 'boolean', nullable: true },
+
+        manifestQueries: {
+          type: 'object',
+          properties: {
+            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
+            intent: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  action: { type: 'string', nullable: true },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      scheme: { type: 'string', nullable: true },
+                      host: { type: 'string', nullable: true },
+                      mimeType: { type: 'string', nullable: true },
+                    },
+                    nullable: true,
+                  },
+                  category: { type: 'array', items: { type: 'string' }, nullable: true },
+                },
+              },
+              nullable: true,
+            },
+            provider: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
+          },
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -206,12 +595,32 @@ const schema: JSONSchemaType<PluginConfigType> = {
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
 
-        flipper: {
-          type: ['boolean', 'string'],
+        networkInspector: { type: 'boolean', nullable: true },
+        ccacheEnabled: { type: 'boolean', nullable: true },
+        privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
+
+        extraPods: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: { type: 'string' },
+              version: { type: 'string', nullable: true },
+              configurations: { type: 'array', items: { type: 'string' }, nullable: true },
+              modular_headers: { type: 'boolean', nullable: true },
+              source: { type: 'string', nullable: true },
+              path: { type: 'string', nullable: true },
+              podspec: { type: 'string', nullable: true },
+              testspecs: { type: 'array', items: { type: 'string' }, nullable: true },
+              git: { type: 'string', nullable: true },
+              branch: { type: 'string', nullable: true },
+              tag: { type: 'string', nullable: true },
+              commit: { type: 'string', nullable: true },
+            },
+          },
           nullable: true,
         },
-
-        unstable_networkInspector: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -283,12 +692,6 @@ export function validateConfig(config: any): PluginConfigType {
   }
 
   maybeThrowInvalidVersions(config);
-
-  // explicitly block using use_frameworks and Flipper in iOS
-  // https://github.com/facebook/flipper/issues/2414
-  if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
-    throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
-  }
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&

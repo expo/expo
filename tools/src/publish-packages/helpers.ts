@@ -4,17 +4,17 @@ import pick from 'lodash/pick';
 import npmPacklist from 'npm-packlist';
 import semver from 'semver';
 
-import * as Changelogs from '../Changelogs';
-import * as Formatter from '../Formatter';
-import { GitDirectory, GitFileLog, GitFileStatus } from '../Git';
-import logger from '../Logger';
-import { Package } from '../Packages';
 import {
   BACKUPABLE_OPTIONS_FIELDS,
   NATIVE_DIRECTORIES,
   RELEASE_TYPES_ASC_ORDER,
 } from './constants';
 import { BackupableOptions, CommandOptions, PackageGitLogs, Parcel, ReleaseType } from './types';
+import * as Changelogs from '../Changelogs';
+import * as Formatter from '../Formatter';
+import { GitDirectory, GitFileLog, GitFileStatus } from '../Git';
+import logger from '../Logger';
+import { Package } from '../Packages';
 
 const { green, cyan, magenta, gray, red } = chalk;
 
@@ -31,7 +31,7 @@ export function pickBackupableOptions(options: CommandOptions): BackupableOption
  * Whether tasks backup can be used to retry previous command invocation.
  */
 export async function shouldUseBackupAsync(options: CommandOptions): Promise<boolean> {
-  if (process.env.CI) {
+  if (process.env.CI || options.canary) {
     return false;
   }
   if (options.retry) {

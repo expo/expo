@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { Task } from './Task';
 import { readPodspecAsync } from '../../../CocoaPods';
 import { toRepoPath } from '../utils';
-import { Task } from './Task';
 
 type GenerateJsonFromPodspecSettings = {
   from: string;

@@ -13,6 +13,8 @@ export type ExpoConfigUpdates = Pick<
   'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'
 >;
 
+export const FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
+
 export function getExpoUpdatesPackageVersion(projectRoot: string): string | null {
   const expoUpdatesPackageJsonPath = resolveFrom.silent(projectRoot, 'expo-updates/package.json');
   if (!expoUpdatesPackageJsonPath || !fs.existsSync(expoUpdatesPackageJsonPath)) {
@@ -22,27 +24,8 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
-function shouldDefaultToClassicUpdates(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  return !!config.updates?.useClassicUpdates;
-}
-
-export function getUpdateUrl(
-  config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
-  username: string | null
-): string | null {
-  if (config.updates?.url) {
-    return config.updates?.url;
-  }
-
-  if (!shouldDefaultToClassicUpdates(config)) {
-    return null;
-  }
-
-  const user = typeof config.owner === 'string' ? config.owner : username;
-  if (!user) {
-    return null;
-  }
-  return `https://exp.host/@${user}/${config.slug}`;
+export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string | null {
+  return config.updates?.url ?? null;
 }
 
 export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
@@ -74,38 +57,11 @@ export function getNativeVersion(
   }
 }
 
-/**
- * Compute runtime version policies.
- * @return an expoConfig with only string valued platform specific runtime versions.
- */
-export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) => {
-  if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'ios');
-    if (runtimeVersion) {
-      config.ios = {
-        ...config.ios,
-        runtimeVersion,
-      };
-    }
-  }
-  if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'android');
-    if (runtimeVersion) {
-      config.android = {
-        ...config.android,
-        runtimeVersion,
-      };
-    }
-  }
-  delete config.runtimeVersion;
-  return config;
-};
-
-export function getRuntimeVersionNullable(
-  ...[config, platform]: Parameters<typeof getRuntimeVersion>
-): string | null {
+export async function getRuntimeVersionNullableAsync(
+  ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>
+): Promise<string | null> {
   try {
-    return getRuntimeVersion(config, platform);
+    return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
     if (boolish('EXPO_DEBUG', false)) {
       console.log(e);
@@ -114,53 +70,71 @@ export function getRuntimeVersionNullable(
   }
 }
 
-export function getRuntimeVersion(
+export async function getRuntimeVersionAsync(
+  projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
   },
   platform: 'android' | 'ios'
-): string | null {
+): Promise<string | null> {
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion) {
     return null;
   }
 
   if (typeof runtimeVersion === 'string') {
+    if (runtimeVersion === FINGERPRINT_RUNTIME_VERSION_SENTINEL) {
+      throw new Error(
+        `${FINGERPRINT_RUNTIME_VERSION_SENTINEL} is a reserved value for runtime version. To use a fingerprint runtime version, use the "fingerprint" runtime version policy.`
+      );
+    }
     return runtimeVersion;
-  } else if (runtimeVersion.policy === 'appVersion') {
+  } else if (!runtimeVersion.policy) {
+    throw new Error(
+      `"${runtimeVersion}" is not a valid runtime version. Only a string or a runtime version policy is supported.`
+    );
+  } else if (runtimeVersion.policy === 'fingerprint') {
+    return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
+  } else {
+    return await resolveRuntimeVersionPolicyAsync(runtimeVersion.policy, config, platform);
+  }
+}
+
+export async function resolveRuntimeVersionPolicyAsync(
+  policy: 'appVersion' | 'nativeVersion' | 'sdkVersion',
+  config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
+    android?: Pick<Android, 'versionCode'>;
+    ios?: Pick<IOS, 'buildNumber'>;
+  },
+  platform: 'android' | 'ios'
+): Promise<string> {
+  if (policy === 'appVersion') {
     return getAppVersion(config);
-  } else if (runtimeVersion.policy === 'nativeVersion') {
+  } else if (policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
-  } else if (runtimeVersion.policy === 'sdkVersion') {
+  } else if (policy === 'sdkVersion') {
     if (!config.sdkVersion) {
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
+  } else {
+    // fingerprint is resolvable only at build time (not in config plugin).
+    throw new Error(`"${policy}" is not a valid runtime version policy type.`);
   }
-
-  throw new Error(
-    `"${
-      typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
-  );
 }
 
 export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
 
-export function getUpdatesEnabled(
-  config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
-  username: string | null
-): boolean {
+export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
   // allow override of enabled property
   if (config.updates?.enabled !== undefined) {
     return config.updates.enabled;
   }
 
-  // enable if URL is set (which respects shouldDefaultToClassicUpdates)
-  return getUpdateUrl(config, username) !== null;
+  return getUpdateUrl(config) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

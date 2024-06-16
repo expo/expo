@@ -3,9 +3,6 @@ import { vol } from 'memfs';
 import { resolvePortAsync } from '../../utils/port';
 import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../utils/port');
 
 describe(resolveBundlerPropsAsync, () => {
@@ -17,7 +14,7 @@ describe(resolveBundlerPropsAsync, () => {
     ).rejects.toThrowError(/mutually exclusive arguments/);
   });
   it(`skips bundling if the port is busy`, async () => {
-    asMock(resolvePortAsync).mockResolvedValueOnce(null);
+    jest.mocked(resolvePortAsync).mockResolvedValueOnce(null);
 
     expect(await resolveBundlerPropsAsync('/', {})).toEqual({
       port: 8081,
@@ -35,7 +32,7 @@ describe(resolveBundlerPropsAsync, () => {
     });
   });
   it(`resolves default port`, async () => {
-    asMock(resolvePortAsync).mockResolvedValueOnce(19006);
+    jest.mocked(resolvePortAsync).mockResolvedValueOnce(19006);
 
     expect(
       await resolveBundlerPropsAsync('/', {

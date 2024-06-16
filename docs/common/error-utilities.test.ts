@@ -4,7 +4,7 @@ test('redirects old building-standalone-apps paths versioned path', () => {
   const redirectPath = '/versions/latest/distribution/building-standalone-apps/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/archive/classic-updates/building-standalone-apps/');
+  expect(newPath).toEqual('/archive/classic-builds/building-standalone-apps/');
 
   // The path with guides instead of distribution is very old
   expect(getRedirectPath('/versions/latest/guides/building-standalone-apps/')).toEqual(newPath);
@@ -53,10 +53,10 @@ test('adds forward slash to end of path', () => {
 });
 
 test('redirects old versions to latest', () => {
-  const redirectPath = '/versions/v32.0.0/sdk/admob/';
+  const redirectPath = '/versions/v32.0.0/sdk/camera/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/versions/latest/sdk/admob/');
+  expect(newPath).toEqual('/versions/latest/sdk/camera/');
 });
 
 test('redirects versionless SDK paths to new version', () => {

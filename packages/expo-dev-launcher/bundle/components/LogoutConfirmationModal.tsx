@@ -12,7 +12,7 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
 
       <Row>
         <View flex="1" grow="1">
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg="tertiary"
             rounded="medium"
             onPress={onLogoutPress}
@@ -22,13 +22,13 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
                 Log Out
               </Button.Text>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
 
         <Spacer.Horizontal size="medium" />
 
         <View flex="1" grow="1">
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg="ghost"
             border="ghost"
             rounded="medium"
@@ -38,7 +38,7 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
                 Nevermind
               </Button.Text>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
       </Row>
     </BaseModal>

@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoFaceDetector;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoFaceDetector');
 //# sourceMappingURL=ExpoFaceDetector.js.map

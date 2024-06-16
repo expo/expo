@@ -4,31 +4,30 @@ description: Learn how to add safe areas for your Expo project and other best pr
 ---
 
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Creating a safe area is a great way to ensure that your app's content is appropriately positioned around notches, status bars, home indicators, and other device and operating system interface elements.
 
 When the content on your app's screen is not positioned within the safe area, it can be obscured by the device's interface elements, as shown in the example below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Without defining a safe area, the content can be obscured by the device's interface elements."
   src="/static/images/safe-area/without-safe-area.png"
-  style={{ maxWidth: 540 }}
+  className="max-w-[540px]"
 />
 
 The content is positioned at the top of the screen in the above example. On Android, it is concealed by the status bar. On iOS, it is concealed by the rounder corners, the notch, and the status bar.
 
 ## Use `react-native-safe-area-context`
 
-[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for accessing device-safe area inset information for both Android and iOS. It also provides a SafeAreaView component that you can use in place of View to inset your views to account for safe areas automatically.
+[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for accessing device-safe area inset information for both Android and iOS. It also provides a `SafeAreaView` component that you can use in place of View to inset your views to account for safe areas automatically.
 
 Using the library, the result of the previous example changes as it displays the content inside a safe area, as shown below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="On using react-native-safe-area-context, the content is positioned within the safe area."
   src="/static/images/safe-area/with-safe-area.png"
-  style={{ maxWidth: 540 }}
+  className="max-w-[540px]"
 />
 
 ### Installation
@@ -79,7 +78,7 @@ Below is a minimal working example that uses the `useSafeAreaInsets` hook to app
 
 <SnackInline label="Using react-native-safe-area-context" dependencies={['react-native-safe-area-context']}>
 
-```jsx
+```jsx collapseHeight=320
 import { Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -110,11 +109,3 @@ By default, React Navigation supports safe areas and uses `react-native-safe-are
 ## Usage with web
 
 If you are targeting the web, you must set up `<SafeAreaProvider>` as described in the [hooks section](#use-usesafeareainsets-hook). If you are doing server-side rendering (SSR), we recommend checking out the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.
-
-## Next step
-
-<BoxLink
-  title="Fonts"
-  description="Learn more about different ways to import a custom font and use it in your app."
-  href="/develop/user-interface/fonts"
-/>

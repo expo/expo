@@ -3,10 +3,9 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-modules-core)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR} ${BOOST_VERSION}")
 
 string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
@@ -66,19 +65,12 @@ target_compile_options(CommonSettings INTERFACE
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
 
-# Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
-file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}/${ANDROID_ABI}")
-if (NOT LIBRN_DIR)
-    # If /${ANDROID_ABI} dir not found, then ${REACT_NATIVE_SO_DIR} is probably:
-    # ReactAndroid/build/react-ndk/exported
-    file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}")
-endif ()
-
 # tests
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
+    find_package(hermes-engine REQUIRED CONFIG)
+    set(JSEXECUTOR_LIB hermes-engine::libhermes)
   else()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()

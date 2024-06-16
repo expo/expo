@@ -1,31 +1,18 @@
 import { getLocalAssetUri } from '../LocalAssets';
 
-jest.mock('expo-constants', () => {
-  const Constants = jest.requireActual('expo-constants');
-  return {
-    ...Constants,
-    appOwnership: 'standalone',
-  };
-});
-
-jest.mock('expo-file-system', () => {
-  const FileSystem = jest.requireActual('expo-file-system');
-  return {
-    ...FileSystem,
-    bundleDirectory:
-      'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/',
-    bundledAssets: ['asset_test1', 'asset_test2.png'],
-  };
-});
+jest.mock('expo-modules-core');
 
 jest.mock('expo-modules-core', () => {
-  const UnimodulesCore = jest.requireActual('expo-modules-core');
+  const ExpoModulesCore = jest.requireActual('expo-modules-core');
   return {
-    ...UnimodulesCore,
-    NativeModulesProxy: {
-      ...UnimodulesCore.NativeModulesProxy,
-      ExpoUpdates: {
-        ...UnimodulesCore.NativeModulesProxy.ExpoUpdates,
+    ...ExpoModulesCore,
+    requireOptionalNativeModule: (moduleName) => {
+      if (moduleName !== 'ExpoUpdates') {
+        return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
+      }
+
+      return {
+        ...jest.requireActual('expo-modules-core').requireOptionalNativeModule('ExpoUpdates'),
         localAssets: {
           'test3.png':
             'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3.png',
@@ -34,7 +21,7 @@ jest.mock('expo-modules-core', () => {
           'file-hash':
             'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/file-hash',
         },
-      },
+      };
     },
   };
 });
@@ -77,20 +64,6 @@ describe('getLocalAssetUri', () => {
       const uri = getLocalAssetUri('test4', null);
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test4'
-      );
-    });
-
-    it(`returns a URI when an asset is bundled in the legacy location`, () => {
-      const uri = getLocalAssetUri('test1', null);
-      expect(uri).toBe(
-        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test1'
-      );
-    });
-
-    it(`returns a URI for an asset with the given hash and file extension`, () => {
-      const uri = getLocalAssetUri('test2', 'png');
-      expect(uri).toBe(
-        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test2.png'
       );
     });
 

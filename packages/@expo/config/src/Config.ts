@@ -26,6 +26,8 @@ import { getRootPackageJsonPath } from './resolvePackageJson';
 
 type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
 
+let hasWarnedAboutRootConfig = false;
+
 /**
  * If a config has an `expo` object then that will be used as the config.
  * This method reduces out other top level values if an `expo` object exists.
@@ -34,6 +36,26 @@ type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
  */
 function reduceExpoObject(config?: any): SplitConfigs {
   if (!config) return config === undefined ? null : config;
+
+  if (config.expo && !hasWarnedAboutRootConfig) {
+    const keys = Object.keys(config).filter((key) => key !== 'expo');
+    if (keys.length) {
+      hasWarnedAboutRootConfig = true;
+      const ansiYellow = (str: string) => `\u001B[33m${str}\u001B[0m`;
+      const ansiGray = (str: string) => `\u001B[90m${str}\u001B[0m`;
+      const ansiBold = (str: string) => `\u001B[1m${str}\u001B[22m`;
+      const plural = keys.length > 1;
+      console.warn(
+        ansiYellow(
+          ansiBold('Warning: ') +
+            `Root-level ${ansiBold(`"expo"`)} object found. Ignoring extra key${plural ? 's' : ''} in Expo config: ${keys
+              .map((key) => `"${key}"`)
+              .join(', ')}\n` +
+            ansiGray(`Learn more: https://expo.fyi/root-expo-object`)
+        )
+      );
+    }
+  }
 
   const { mods, ...expo } = config.expo ?? config;
 
@@ -97,7 +119,11 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
 
-  function fillAndReturnConfig(config: SplitConfigs, dynamicConfigObjectType: string | null) {
+  function fillAndReturnConfig(
+    config: SplitConfigs,
+    dynamicConfigObjectType: string | null,
+    mayHaveUnusedStaticConfig: boolean = false
+  ) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
@@ -112,6 +138,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
       staticConfigPath: paths.staticConfigPath,
+      hasUnusedStaticConfig:
+        !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
 
     if (options.isModdedConfig) {
@@ -136,7 +164,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
 
-      if (configWithDefaultValues.exp.hooks) {
+      // hooks no longer exists in the typescript type but should still be removed
+      if ('hooks' in configWithDefaultValues.exp) {
         delete configWithDefaultValues.exp.hooks;
       }
       if (configWithDefaultValues.exp.ios?.config) {
@@ -167,19 +196,20 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
 
   if (paths.dynamicConfigPath) {
     // No app.config.json or app.json but app.config.js
-    const { exportedObjectType, config: rawDynamicConfig } = getDynamicConfig(
-      paths.dynamicConfigPath,
-      {
-        projectRoot,
-        staticConfigPath: paths.staticConfigPath,
-        packageJsonPath,
-        config: getContextConfig(staticConfig),
-      }
-    );
+    const {
+      exportedObjectType,
+      config: rawDynamicConfig,
+      mayHaveUnusedStaticConfig,
+    } = getDynamicConfig(paths.dynamicConfigPath, {
+      projectRoot,
+      staticConfigPath: paths.staticConfigPath,
+      packageJsonPath,
+      config: getContextConfig(staticConfig),
+    });
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
     const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
-    return fillAndReturnConfig(dynamicConfig, exportedObjectType);
+    return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config

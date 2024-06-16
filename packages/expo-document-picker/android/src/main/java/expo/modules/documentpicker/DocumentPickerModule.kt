@@ -99,7 +99,7 @@ class DocumentPickerModule : Module() {
     intent?.data?.let { uri ->
       val details = readDocumentDetails(uri)
       val result = DocumentPickerResult(
-        assets = listOf(details),
+        assets = listOf(details)
       )
       pendingPromise?.resolve(result)
     } ?: throw FailedToReadDocumentException()

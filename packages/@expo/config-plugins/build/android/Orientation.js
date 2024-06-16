@@ -7,13 +7,6 @@ exports.SCREEN_ORIENTATION_ATTRIBUTE = void 0;
 exports.getOrientation = getOrientation;
 exports.setAndroidOrientation = setAndroidOrientation;
 exports.withOrientation = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Manifest() {
   const data = require("./Manifest");
   _Manifest = function () {
@@ -21,10 +14,15 @@ function _Manifest() {
   };
   return data;
 }
-const SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
-exports.SCREEN_ORIENTATION_ATTRIBUTE = SCREEN_ORIENTATION_ATTRIBUTE;
-const withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidOrientation, 'withOrientation');
-exports.withOrientation = withOrientation;
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
+    return data;
+  };
+  return data;
+}
+const SCREEN_ORIENTATION_ATTRIBUTE = exports.SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
+const withOrientation = exports.withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidOrientation, 'withOrientation');
 function getOrientation(config) {
   return typeof config.orientation === 'string' ? config.orientation : null;
 }

@@ -13,6 +13,7 @@ import {
 import * as React from 'react';
 import { useWindowDimensions } from 'react-native';
 
+import { Avatar } from './Avatar';
 import { SafeAreaTop } from '../components/SafeAreaTop';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser } from '../providers/UserContextProvider';
@@ -29,7 +30,7 @@ export function AppHeader({ navigation }) {
   };
 
   const isAuthenticated = userData != null;
-  const selectedUserImage = selectedAccount?.owner?.profilePhoto ?? null;
+  const selectedUserImage = selectedAccount?.ownerUserActor?.profilePhoto ?? null;
 
   return (
     <>
@@ -61,20 +62,24 @@ export function AppHeader({ navigation }) {
           </View>
 
           <View align="centered" style={{ justifyContent: 'flex-end' }}>
-            <Button.ScaleOnPressContainer
+            <Button.HighlightOnPressContainer
               onPress={onUserProfilePress}
-              minScale={0.85}
               accessibilityLabel="Navigate to User Profile"
               bg="ghost"
               rounded="full">
               <View>
                 {isAuthenticated ? (
                   <View rounded="full" padding="small">
-                    <View height="xl" width="xl" bg="secondary" rounded="full">
-                      {selectedUserImage && (
-                        <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
-                      )}
-                    </View>
+                    <Avatar
+                      profilePhoto={selectedUserImage}
+                      name={
+                        selectedAccount?.ownerUserActor?.fullName
+                          ? selectedAccount.ownerUserActor.fullName
+                          : selectedAccount?.name
+                      }
+                      isOrganization={selectedAccount?.ownerUserActor === null}
+                      size="xl"
+                    />
                   </View>
                 ) : (
                   <View mx="small">
@@ -84,21 +89,7 @@ export function AppHeader({ navigation }) {
                   </View>
                 )}
               </View>
-            </Button.ScaleOnPressContainer>
-            {!selectedUserImage && (
-              <Row
-                style={{
-                  height: scale[2],
-                  flexWrap: 'wrap',
-                  maxWidth: scale[16],
-                  paddingRight: scale[2],
-                  transform: [{ translateY: -scale[2] }],
-                }}>
-                <Text numberOfLines={1} size="small" align="center" weight="medium">
-                  {selectedAccount?.name}
-                </Text>
-              </Row>
-            )}
+            </Button.HighlightOnPressContainer>
           </View>
         </Row>
       </View>

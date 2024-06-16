@@ -1,13 +1,18 @@
-import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
      * - `'all'` if the user granted your app access to the whole photo library
-     * - `'limited'` if the user granted your app access only to selected photos (only available on iOS 14.0+)
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
      * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
+/**
+ * Determines the type of media that the app will ask the OS to get access to.
+ * @platform android API 33+
+ */
+export type GranularPermission = 'audio' | 'photo' | 'video';
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export type SortByValue = [SortByKey, boolean] | SortByKey;
@@ -36,7 +41,7 @@ export type Asset = {
      */
     filename: string;
     /**
-     * URI that points to the asset. `assets://*` (iOS), `file://*` (Android)
+     * URI that points to the asset. `ph://*` (iOS), `file://*` (Android)
      */
     uri: string;
     /**
@@ -106,6 +111,10 @@ export type AssetInfo = Asset & {
      */
     orientation?: number;
 };
+/**
+ * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
+ * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * */
 export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
 export type MediaLibraryAssetInfoQueryOptions = {
     /**
@@ -198,7 +207,8 @@ export type AssetsOptions = {
      */
     first?: number;
     /**
-     * Asset ID of the last item returned on the previous page.
+     * Asset ID of the last item returned on the previous page. To get the ID of the next page,
+     * pass [`endCursor`](#pagedinfo) as its value.
      */
     after?: AssetRef;
     /**
@@ -251,7 +261,7 @@ export type PagedInfo<T> = {
 };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, EventSubscription as Subscription, };
 /**
  * Possible media types.
  */
@@ -269,15 +279,19 @@ export declare function isAvailableAsync(): Promise<boolean>;
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * an effect only on Android API 33 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+export declare function getPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 /**
  * Check or request permissions to access the media library.
  * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
@@ -289,6 +303,7 @@ export declare function getPermissionsAsync(writeOnly?: boolean): Promise<Permis
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
     writeOnly?: boolean | undefined;
+    granularPermissions?: GranularPermission[] | undefined;
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.
@@ -415,8 +430,8 @@ export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<P
  * @return An [`Subscription`](#subscription) object that you can call `remove()` on when you would
  * like to unsubscribe the listener.
  */
-export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
-export declare function removeSubscription(subscription: Subscription): void;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): EventSubscription;
+export declare function removeSubscription(subscription: EventSubscription): void;
 /**
  * Removes all listeners.
  */

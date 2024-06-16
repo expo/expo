@@ -1,5 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
-import { NativeModules, Platform } from 'react-native';
-const module = Platform.OS === 'android' ? requireNativeModule('ExpoDevMenu') : NativeModules.ExpoDevMenu;
-export default module;
+import { requireOptionalNativeModule } from 'expo-modules-core';
+export default requireOptionalNativeModule('ExpoDevMenu');
 //# sourceMappingURL=ExpoDevMenu.js.map

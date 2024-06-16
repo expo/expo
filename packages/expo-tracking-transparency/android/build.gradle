@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+
+group = 'host.exp.exponent'
+version = '4.0.2'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.trackingtransparency"
+  defaultConfig {
+    versionCode 1
+    versionName "4.0.2"
+  }
+}
+
+dependencies {
+  implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
+}

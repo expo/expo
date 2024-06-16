@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoNotificationChannelGroupManager;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoNotificationChannelGroupManager');
 //# sourceMappingURL=NotificationChannelGroupManager.native.js.map

@@ -1,11 +1,10 @@
-import { IosPlist, IosPodsTools } from '@expo/xdl';
+import { IosPlist } from '@expo/xdl';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 import plist from 'plist';
 
 import * as Directories from '../Directories';
-import * as ProjectVersions from '../ProjectVersions';
 
 interface PlistObject {
   [key: string]: any;
@@ -94,64 +93,11 @@ function validateBuildConstants(config, buildConfiguration) {
     if (DEV_KERNEL_SOURCE === 'PUBLISHED' && !config.DEV_PUBLISHED_KERNEL_MANIFEST) {
       throw new Error(`Error downloading DEV published kernel manifest.\n`);
     }
-
-    if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-      if (!config.DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-        throw new Error(`Error downloading DOGFOODING published kernel manifest.\n`);
-      }
-      DEV_KERNEL_SOURCE = 'DOGFOODING';
-    }
   }
 
   config.IS_DEV_KERNEL = IS_DEV_KERNEL;
   config.DEV_KERNEL_SOURCE = DEV_KERNEL_SOURCE;
   return config;
-}
-
-async function writeTemplatesAsync(expoKitPath: string, templateFilesPath: string) {
-  if (expoKitPath) {
-    await renderExpoKitPodspecAsync(expoKitPath, templateFilesPath);
-    await renderExpoKitPodfileAsync(expoKitPath, templateFilesPath);
-  }
-}
-
-export async function renderExpoKitPodspecAsync(
-  expoKitPath: string,
-  templateFilesPath: string
-): Promise<void> {
-  const podspecPath = path.join(expoKitPath, 'ios', 'ExpoKit.podspec');
-  const podspecTemplatePath = path.join(templateFilesPath, 'ios', 'ExpoKit.podspec');
-
-  console.log(
-    'Rendering %s from template %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, podspecPath)),
-    chalk.cyan(path.relative(EXPO_DIR, podspecTemplatePath))
-  );
-
-  await IosPodsTools.renderExpoKitPodspecAsync(podspecTemplatePath, podspecPath, {
-    IOS_EXPONENT_CLIENT_VERSION: await ProjectVersions.getNewestSDKVersionAsync('ios'),
-  });
-}
-
-async function renderExpoKitPodfileAsync(
-  expoKitPath: string,
-  templateFilesPath: string
-): Promise<void> {
-  const podfilePath = path.join(expoKitPath, 'exponent-view-template', 'ios', 'Podfile');
-  const podfileTemplatePath = path.join(templateFilesPath, 'ios', 'ExpoKit-Podfile');
-
-  console.log(
-    'Rendering %s from template %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, podfilePath)),
-    chalk.cyan(path.relative(EXPO_DIR, podfileTemplatePath))
-  );
-
-  await IosPodsTools.renderPodfileAsync(podfileTemplatePath, podfilePath, {
-    TARGET_NAME: 'exponent-view-template',
-    EXPOKIT_PATH: '../..',
-    REACT_NATIVE_PATH: '../../react-native-lab/react-native',
-    UNIVERSAL_MODULES_PATH: '../../packages',
-  });
 }
 
 export default class IosMacrosGenerator {
@@ -169,8 +115,5 @@ export default class IosMacrosGenerator {
       infoPlist,
       templateSubstitutions
     );
-
-    // // Generate Podfile and ExpoKit podspec using template files.
-    await writeTemplatesAsync(options.expoKitPath, options.templateFilesPath);
   }
 }

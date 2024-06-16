@@ -23,7 +23,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class SuspendFunctionComponentTest {
   private lateinit var testScope: TestScope
-  private lateinit var moduleHolderMock: ModuleHolder
+  private lateinit var moduleHolderMock: ModuleHolder<*>
 
   @Before
   fun setUp() {
@@ -32,7 +32,7 @@ class SuspendFunctionComponentTest {
       every { mainQueue } returns testScope
       every { modulesQueue } returns testScope
     }
-    moduleHolderMock = mockk<ModuleHolder>().apply {
+    moduleHolderMock = mockk<ModuleHolder<*>>().apply {
       every { name } returns "AsyncSuspendFunctionTestModule"
       every { module } returns mockk<Module>().apply {
         every { appContext } returns mockedAppContext

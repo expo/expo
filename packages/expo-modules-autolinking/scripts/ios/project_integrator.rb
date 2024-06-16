@@ -45,7 +45,7 @@ module Expo
           modules_provider_path = autolinking_manager.modules_provider_path(target)
 
           # Run `expo-modules-autolinking` command to generate the file
-          autolinking_manager.generate_package_list(target_name, modules_provider_path)
+          autolinking_manager.generate_modules_provider(target_name, modules_provider_path)
 
           # PBXGroup for generated files per target
           generated_target_group = generated_group.find_subpath(target_name, true)
@@ -109,7 +109,7 @@ module Expo
     def self.set_autolinking_configuration(project)
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
-          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"          
+          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
@@ -121,11 +121,11 @@ module Expo
           if !build_settings[SWIFT_FLAGS].include?(configuration_flag)
             # Remove existing flag to make sure we don't put another one each time
             build_settings[SWIFT_FLAGS] = build_settings[SWIFT_FLAGS].gsub(/\b-D\s+#{Regexp.quote(CONFIGURATION_FLAG_PREFIX)}\w+/, '')
-  
+
             # Add the correct flag
             build_settings[SWIFT_FLAGS] << ' ' << configuration_flag
 
-            # Make sure the project will be saved as we did some changes 
+            # Make sure the project will be saved as we did some changes
             project.mark_dirty!
           end
         end
@@ -212,7 +212,9 @@ module Expo
 
     # Generates the support script that is executed by the build script phase.
     def self.generate_support_script(autolinking_manager, modules_provider_path)
-      args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }.join(' ')
+      args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
+      platform = autolinking_manager.platform_name.downcase
+      package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -258,7 +260,13 @@ module Expo
         fi
       }
 
-      with_node --no-warnings --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      with_node \\
+        --no-warnings \\
+        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        generate-modules-provider #{args.join(' ')} \\
+        --target "#{modules_provider_path}" \\
+        --platform "apple" \\
+        --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end
 

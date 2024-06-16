@@ -1,5 +1,5 @@
 import { SnackLogo } from '@expo/styleguide';
-import { ChangelogIcon, DiscordIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
+import { ChangelogIcon, DiscordIcon, Mail01Icon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
@@ -7,7 +7,11 @@ import { ArchiveIcon } from './icons/Archive';
 
 import { getPageSection } from '~/common/routes';
 
-export const SidebarFooter = () => {
+type SideBarFooterProps = {
+  isMobileMenuVisible?: boolean;
+};
+
+export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
   const router = useRouter();
   const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
@@ -29,24 +33,27 @@ export const SidebarFooter = () => {
       <SidebarSingleEntry
         secondary
         href="https://chat.expo.dev"
-        title="Discord"
+        title="Discord and Forums"
         Icon={DiscordIcon}
         isExternal
+        shouldLeakReferrer
       />
       <SidebarSingleEntry
         secondary
-        href="https://forums.expo.dev"
-        title="Forums"
-        Icon={MessageDotsSquareIcon}
+        href="https://expo.dev/mailing-list/signup"
+        title="Newsletter"
+        Icon={Mail01Icon}
         isExternal
       />
-      <SidebarSingleEntry
-        secondary
-        href="https://expo.dev/changelog"
-        title="Changelog"
-        Icon={ChangelogIcon}
-        isExternal
-      />
+      {isMobileMenuVisible && (
+        <SidebarSingleEntry
+          secondary
+          href="https://expo.dev/changelog"
+          title="Changelog"
+          Icon={ChangelogIcon}
+          isExternal
+        />
+      )}
     </div>
   );
 };

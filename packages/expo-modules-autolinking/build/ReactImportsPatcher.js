@@ -34,7 +34,7 @@ async function generateReactHeaderSetAsync(reactHeaderDir) {
 async function patchFileAsync(headerSet, file, dryRun) {
     let changed = false;
     const content = await fs_extra_1.default.readFile(file, 'utf-8');
-    let transformContent = content.replace(/^#import\s+"(.+)"$/gm, (match, headerName) => {
+    let transformContent = content.replace(/(?<=^\s*)#import\s+"(.+)"(?=\s*$)/gm, (match, headerName) => {
         // `#import "RCTBridge.h"` -> `#import <React/RCTBridge.h>`
         if (headerSet.has(headerName)) {
             changed = true;
@@ -51,7 +51,7 @@ async function patchFileAsync(headerSet, file, dryRun) {
         // Otherwise, return original import
         return match;
     });
-    transformContent = transformContent.replace(/^#(if|elif)\s+__has_include\("(.+)"\)$/gm, (match, ifPrefix, headerName) => {
+    transformContent = transformContent.replace(/(?<=^\s*)#(if|elif)\s+__has_include\("(.+)"\)(?=\s*$)/gm, (match, ifPrefix, headerName) => {
         // `#if __has_include("RCTBridge.h")` -> `#if __has_include(<React/RCTBridge.h>)`
         if (headerSet.has(headerName)) {
             changed = true;

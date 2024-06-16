@@ -116,7 +116,7 @@ describe('<Main />', () => {
       runtimeVersion: '10',
     };
 
-    const { getByText } = render(<Main />, {
+    const { getByText, getByTestId } = render(<Main />, {
       initialAppProviderProps: { appInfo: fakeAppInfo },
     });
     await waitFor(() => getByText(/go home/i));
@@ -135,7 +135,7 @@ describe('<Main />', () => {
     mockCopyToClipboardAsync.mockClear();
 
     expect(copyToClipboardAsync).toHaveBeenCalledTimes(0);
-    await act(async () => fireEvent.press(getByText(/copy link/i)));
+    await act(async () => fireEvent.press(getByTestId(/main.copyUrlButton/i)));
     expect(copyToClipboardAsync).toHaveBeenCalledTimes(1);
 
     expect(copyToClipboardAsync).toHaveBeenLastCalledWith(fakeAppInfo.hostUrl);

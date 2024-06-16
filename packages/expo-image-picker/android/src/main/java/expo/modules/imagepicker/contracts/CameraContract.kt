@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.net.toUri
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.CameraType
 import expo.modules.imagepicker.toMediaType
@@ -21,16 +22,16 @@ import java.io.Serializable
  * @see [androidx.activity.result.contract.ActivityResultContracts.TakePicture] or [androidx.activity.result.contract.ActivityResultContracts.CaptureVideo]
  */
 internal class CameraContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
-  val contentResolver: ContentResolver
+  private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {
       "React Application Context is null"
     }.contentResolver
 
   override fun createIntent(context: Context, input: CameraContractOptions): Intent =
     Intent(input.options.mediaTypes.toCameraIntentAction())
-      .putExtra(MediaStore.EXTRA_OUTPUT, input.uri)
+      .putExtra(MediaStore.EXTRA_OUTPUT, input.uri.toUri())
       .apply {
         if (input.options.mediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
           putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.options.videoMaxDuration)
@@ -48,9 +49,9 @@ internal class CameraContract(
 
   override fun parseResult(input: CameraContractOptions, resultCode: Int, intent: Intent?): ImagePickerContractResult =
     if (resultCode == Activity.RESULT_CANCELED) {
-      ImagePickerContractResult.Cancelled()
+      ImagePickerContractResult.Cancelled
     } else {
-      val uri = input.uri
+      val uri = Uri.parse(input.uri)
       val type = uri.toMediaType(contentResolver)
       ImagePickerContractResult.Success(listOf(type to uri))
     }
@@ -60,6 +61,6 @@ internal data class CameraContractOptions(
   /**
    * Destination file in a form of content-[Uri] to save results coming from camera to.
    */
-  val uri: Uri,
-  val options: ImagePickerOptions,
+  val uri: String,
+  val options: ImagePickerOptions
 ) : Serializable

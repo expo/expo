@@ -7,7 +7,7 @@
 #import <jsi/jsi.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
-#import <ExpoModulesCore/EXObjectDeallocator.h>
+#import <ExpoModulesCore/ObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -19,17 +19,6 @@ namespace expo {
 using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
 
 void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, std::shared_ptr<react::Promise> promise, PromiseInvocationBlock setupBlock);
-
-#pragma mark - Classes
-
-using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)>;
-
-std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor);
-
-/**
- Creates a new object, using the provided object as the prototype.
- */
-std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype);
 
 #pragma mark - Weak objects
 
@@ -53,17 +42,6 @@ std::shared_ptr<jsi::Object> createWeakRef(jsi::Runtime &runtime, std::shared_pt
  */
 std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object);
 
-#pragma mark - Define property
-
-void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value);
-
-#pragma mark - Deallocator
-
-/**
- Sets the deallocator block on a given object, which is called when the object is being deallocated.
- */
-void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock);
-
 #pragma mark - Errors
 
 jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
@@ -71,3 +49,18 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
 } // namespace expo
 
 #endif
+
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+
+NS_SWIFT_NAME(JSIUtils)
+@interface EXJSIUtils : NSObject
+
++ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime;
+
++ (void)emitEvent:(nonnull NSString *)eventName
+         toObject:(nonnull EXJavaScriptObject *)object
+    withArguments:(nonnull NSArray<id> *)arguments
+        inRuntime:(nonnull EXJavaScriptRuntime *)runtime;
+
+@end

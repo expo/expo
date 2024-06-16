@@ -1,16 +1,22 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package expo.modules.kotlin.jni
 
+import android.view.View
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
@@ -20,20 +26,37 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
 
+private fun defaultAppContextMock(
+  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+): AppContext {
+  val appContextMock = mockk<AppContext>()
+  val coreModule = run {
+    val module = CoreModule()
+    module._appContext = appContextMock
+    ModuleHolder(module)
+  }
+  every { appContextMock.coreModule } answers { coreModule }
+  every { appContextMock.classRegistry } answers { ClassRegistry() }
+  every { appContextMock.jniDeallocator } answers { jniDeallocator }
+  every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
+
+  return appContextMock
+}
+
 /**
  * Sets up a test jsi environment with provided modules.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit,
+  block: JSIContext.(methodQueue: TestScope) -> Unit,
   afterCleanup: (deallocator: JNIDeallocator) -> Unit
 ) {
-  val appContextMock = mockk<AppContext>()
-  val methodQueue = TestScope()
   val jniDeallocator = JNIDeallocator(
     shouldCreateDestructorThread = false
   )
+  val appContextMock = defaultAppContextMock(jniDeallocator)
+  val methodQueue = TestScope()
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
   val slot = slot<UIBlock>()
@@ -57,20 +80,25 @@ internal inline fun withJSIInterop(
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
   every { appContextMock.reactContext } answers { reactContextMock }
-  every { appContextMock.jniDeallocator } answers { jniDeallocator }
+  every { appContextMock.assertMainThread() } answers { }
+
+  val functionSlot = slot<() -> Unit>()
+  every { appContextMock.dispatchOnMainUsingUIManager(capture(functionSlot)) } answers {
+    functionSlot.captured.invoke()
+  }
 
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {
       register(it)
     }
   }
-  val sharedObjectRegistry = SharedObjectRegistry()
+  val sharedObjectRegistry = SharedObjectRegistry(appContextMock)
   every { appContextMock.registry } answers { registry }
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
-  val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests(jniDeallocator)
-  }
+  val jsiIterop = JSIContext()
+  every { appContextMock.jsiInterop } answers { jsiIterop }
+  jsiIterop.installJSIForTests(appContextMock, jniDeallocator)
 
   block(jsiIterop, methodQueue)
 
@@ -80,11 +108,90 @@ internal inline fun withJSIInterop(
   afterCleanup(jniDeallocator)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+open class TestContext(
+  val jsiInterop: JSIContext,
+  val methodQueue: TestScope
+) {
+  fun global() = jsiInterop.global()
+  fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
+  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
+  fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
+}
+
+class SingleTestContext(
+  moduleName: String,
+  jsiInterop: JSIContext,
+  methodQueue: TestScope
+) : TestContext(jsiInterop, methodQueue) {
+  val moduleRef = "expo.modules.$moduleName"
+
+  fun property(propertyName: String) =
+    jsiInterop.evaluateScript("$moduleRef.$propertyName")
+
+  fun property(propertyName: String, newValue: String) {
+    jsiInterop.evaluateScript("$moduleRef.$propertyName = $newValue")
+  }
+
+  fun call(functionName: String, args: String = "") = jsiInterop.evaluateScript(
+    "$moduleRef.$functionName($args)"
+  )
+
+  fun callClass(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
+    if (functionName == null) {
+      return jsiInterop.evaluateScript("new $moduleRef.$className()")
+    }
+
+    return jsiInterop.evaluateScript("(new $moduleRef.$className()).$functionName($args)")
+  }
+
+  fun classProperty(className: String, propertyName: String) =
+    jsiInterop.evaluateScript("(new $moduleRef.$className()).$propertyName")
+
+  fun callAsync(functionName: String, args: String = "") = jsiInterop.waitForAsyncFunction(
+    methodQueue,
+    "$moduleRef.$functionName($args)"
+  )
+
+  fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
+    if (functionName == null) {
+      return jsiInterop.evaluateScript("new $moduleRef.$className()")
+    }
+
+    return jsiInterop.waitForAsyncFunction(methodQueue, "(new $moduleRef.$className()).$functionName($args)")
+  }
+
+  fun callViewAsync(viewName: String, functionName: String, args: String = ""): JavaScriptValue {
+    return jsiInterop.waitForAsyncFunction(methodQueue, "$moduleRef.$viewName.$functionName($args)")
+  }
+}
+
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+  block: JSIContext.(methodQueue: TestScope) -> Unit
 ) = withJSIInterop(*modules, block = block, afterCleanup = {})
+
+internal inline fun withSingleModule(
+  crossinline definition: ModuleDefinitionBuilder.() -> Unit = {},
+  block: SingleTestContext.() -> Unit
+) {
+  var moduleName = "TestModule"
+  withJSIInterop(
+    object : Module() {
+      override fun definition() = ModuleDefinition {
+        Name(moduleName)
+        definition()
+
+        name?.let {
+          moduleName = it
+        }
+      }
+    },
+    block = { methodQueue ->
+      val testContext = SingleTestContext(moduleName, this, methodQueue)
+      block.invoke(testContext)
+    }
+  )
+}
 
 /**
  * A syntax sugar that creates a new module from the definition block.
@@ -98,7 +205,7 @@ internal inline fun inlineModule(
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(ExperimentalCoroutinesApi::class)
 @Throws(PromiseException::class)
-internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
+internal inline fun JSIContext.waitForAsyncFunction(
   methodQueue: TestScope,
   jsCode: String
 ): JavaScriptValue {

@@ -13,7 +13,10 @@ const debug = require('debug')('expo:doctor:externalModule') as typeof console.l
 
 /** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
-  constructor(message: string, public readonly shouldGloballyInstall: boolean) {
+  constructor(
+    message: string,
+    public readonly shouldGloballyInstall: boolean
+  ) {
     super('EXTERNAL_MODULE_VERSION', message);
   }
 }
@@ -108,10 +111,10 @@ export class ExternalModule<TModule> {
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
             log: Log.log,
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           })
         : PackageManager.createForProject(this.projectRoot, {
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           });
 
       try {

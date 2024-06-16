@@ -39,7 +39,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   let passCount = 0;
 
   for (const pkg of packages) {
-    if (await checkPackageAsync(pkg, options)) {
+    if (await checkPackageAsync(pkg, { ...options, checkPackageType: 'package' })) {
       passCount++;
     } else {
       failedPackages.push(pkg.packageName);
@@ -56,7 +56,6 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
       failedPackages.map((failedPackage) => yellow(failedPackage)).join(', ')
     );
     process.exit(1);
-    return;
   }
   logger.success('🏁 All packages passed.');
 }

@@ -5,11 +5,9 @@ import path from 'path';
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
-import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-const IOS_DIR = Directories.getIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
@@ -99,6 +97,14 @@ export class Package {
     return fs.pathExistsSync(path.join(this.path, 'plugin'));
   }
 
+  get hasCli(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'cli'));
+  }
+
+  get hasUtils(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'utils'));
+  }
+
   get packageName(): string {
     return this.packageJson.name;
   }
@@ -166,6 +172,18 @@ export class Package {
     return match?.[1] ?? null;
   }
 
+  get androidPackageNamespace(): string | null {
+    if (!this.isSupportedOnPlatform('android')) {
+      return null;
+    }
+    const buildGradle = fs.readFileSync(
+      path.join(this.path, this.androidSubdirectory, 'build.gradle'),
+      'utf8'
+    );
+    const match = buildGradle.match(/^\s+namespace\s*=?\s*['"]([\w.]+)['"]/m);
+    return match?.[1] ?? null;
+  }
+
   get changelogPath(): string {
     return path.join(this.path, 'CHANGELOG.md');
   }
@@ -224,15 +242,6 @@ export class Package {
     throw new Error(
       `'isIncludedInExpoClientOnPlatform' is not supported on '${platform}' platform yet.`
     );
-  }
-
-  isVersionableOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (platform === 'ios') {
-      return this.podspecName != null && !IosUnversionablePackages.includes(this.packageName);
-    } else if (platform === 'android') {
-      return !AndroidUnversionablePackages.includes(this.packageName);
-    }
-    throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
   }
 
   async getPackageViewAsync(): Promise<Npm.PackageViewType | null> {
@@ -367,7 +376,13 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**', '**/__tests__/**', '**/__mocks__/**'],
+      ignore: [
+        '**/example/**',
+        '**/node_modules/**',
+        '**/__tests__/**',
+        '**/__mocks__/**',
+        '**/__fixtures__/**',
+      ],
     });
     cachedPackages = paths
       .map((packageJsonPath) => {

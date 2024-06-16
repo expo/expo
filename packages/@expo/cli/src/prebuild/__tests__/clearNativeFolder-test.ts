@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
-import { clearNativeFolder, getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 import rnFixture from './fixtures/react-native-project';
+import { clearNativeFolder, getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 
 describe(clearNativeFolder, () => {
   it(`clears folders`, async () => {

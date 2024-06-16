@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoSecureStore.web.js","sourceRoot":"","sources":["../src/ExpoSecureStore.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,iBAAiB,CAAC;IAC3B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoSecureStore';\n  },\n};\n"]}
+{"version":3,"file":"ExpoSecureStore.web.js","sourceRoot":"","sources":["../src/ExpoSecureStore.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAAE,CAAC","sourcesContent":["export default {};\n"]}

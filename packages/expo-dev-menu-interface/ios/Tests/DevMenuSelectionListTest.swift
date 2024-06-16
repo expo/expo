@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevMenuInterface
 
 class DevMenuSelectionListTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("List should be serializable") {
       let list = DevMenuSelectionList()
 

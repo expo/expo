@@ -17,7 +17,6 @@ describe(updateTSConfigAsync, () => {
 
     await updateTSConfigAsync({
       tsConfigPath: '/tsconfig.json',
-      isBootstrapping: true,
     });
 
     expect(JSON.parse(await fs.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({
@@ -33,7 +32,6 @@ describe(updateTSConfigAsync, () => {
 
     await updateTSConfigAsync({
       tsConfigPath: '/tsconfig.json',
-      isBootstrapping: false,
     });
 
     expect(JSON.parse(await fs.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({

@@ -2,7 +2,7 @@ import { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 import { unmockAllProperties } from 'jest-expo';
 
-import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
+import { describeManifest, mockConstants } from './ManifestTestUtils';
 
 beforeEach(() => {
   unmockAllProperties();
@@ -11,19 +11,16 @@ beforeEach(() => {
 });
 
 describe('getStartUrl', () => {
-  describeManifestTypes(
-    { id: '@test/test', originalFullName: '@example/abc', scheme: 'my-app' },
-    {
-      extra: {
-        expoClient: {
-          name: 'wat',
-          slug: 'wat',
-          originalFullName: '@example/abc',
-          scheme: 'my-app',
-        },
+  describeManifest({
+    extra: {
+      expoClient: {
+        name: 'wat',
+        slug: 'wat',
+        originalFullName: '@example/abc',
+        scheme: 'my-app',
       },
-    }
-  )((manifestObj) => {
+    },
+  })((manifestObj) => {
     it(`returns the correct start URL from getStartUrl`, () => {
       mockConstants({}, manifestObj);
 
@@ -86,19 +83,16 @@ describe(`getRedirectUrl`, () => {
       });
       afterEach(() => (console.warn = originalWarn));
 
-      describeManifestTypes(
-        { id: '@test/test', originalFullName: '@example/abc', scheme: 'my-app' },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              originalFullName: '@example/abc',
-              scheme: 'my-app',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            originalFullName: '@example/abc',
+            scheme: 'my-app',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`checks return url`, () => {
           mockConstants({ executionEnvironment: execution }, manifestObj);
 
@@ -115,38 +109,15 @@ describe(`getRedirectUrl`, () => {
       });
 
       if (Platform.OS !== 'web') {
-        describeManifestTypes(
-          { id: undefined, originalFullName: undefined, scheme: 'my-app' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                originalFullName: undefined,
-                scheme: 'my-app',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              originalFullName: undefined,
+              scheme: 'my-app',
             },
-          }
-        )((manifestObj) => {
-          it(`throws a useful error if originalFullName and id are not defined`, () => {
-            mockConstants({ executionEnvironment: execution }, manifestObj);
-
-            const { SessionUrlProvider } = require('../SessionUrlProvider');
-            const managedSessionUrlProvider = new SessionUrlProvider();
-
-            const errorName = {
-              [ExecutionEnvironment.StoreClient]: manifestObj.manifest2
-                ? `Cannot use the AuthSession proxy because the project full name is not defined. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application. To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.`
-                : `Cannot use the AuthSession proxy because the project full name is not defined. Please report this as a bug`,
-              [ExecutionEnvironment.Bare]: manifestObj.manifest2
-                ? `Cannot use the AuthSession proxy because the project full name is not defined. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application. To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.`
-                : `Cannot use the AuthSession proxy because the project full name is not defined. Please ensure you have the latest`,
-              [ExecutionEnvironment.Standalone]: `Cannot use the AuthSession proxy because the project full name is not defined.`,
-            };
-            expect(() => managedSessionUrlProvider.getRedirectUrl({})).toThrowError(
-              errorName[execution]
-            );
-          });
+          },
         });
       }
     });
@@ -156,19 +127,16 @@ describe(`getRedirectUrl`, () => {
 if (Platform.OS !== 'web') {
   describe(`getDefaultReturnUrl`, () => {
     describe('storeClient', () => {
-      describeManifestTypes(
-        { scheme: 'my-app', hostUri: 'exp.host/@example/abc' },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'my-app',
-              hostUri: 'exp.host/@example/abc',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'my-app',
+            hostUri: 'exp.host/@example/abc',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`checks return url`, () => {
           mockConstants({ executionEnvironment: ExecutionEnvironment.StoreClient }, manifestObj);
 
@@ -181,19 +149,16 @@ if (Platform.OS !== 'web') {
         });
       });
 
-      describeManifestTypes(
-        { scheme: 'my-app', hostUri: 'exp.host/@example/abc' },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'my-app',
-              hostUri: 'exp.host/@example/abc',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'my-app',
+            hostUri: 'exp.host/@example/abc',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`checks return url with options`, () => {
           mockConstants({ executionEnvironment: ExecutionEnvironment.StoreClient }, manifestObj);
 
@@ -208,19 +173,16 @@ if (Platform.OS !== 'web') {
         });
       });
 
-      describeManifestTypes(
-        { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
-        {
-          extra: {
-            expoClient: {
-              name: 'exp.host',
-              slug: 'exp.host',
-              scheme: ['my-app-1', 'my-app-2'],
-              hostUri: 'exp.host/@test/test',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'exp.host',
+            slug: 'exp.host',
+            scheme: ['my-app-1', 'my-app-2'],
+            hostUri: 'exp.host/@test/test',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`checks return url with multiple schemes and no default provided`, () => {
           mockConstants({ executionEnvironment: ExecutionEnvironment.StoreClient }, manifestObj);
 
@@ -234,19 +196,16 @@ if (Platform.OS !== 'web') {
         });
       });
 
-      describeManifestTypes(
-        { scheme: 'my-app', hostUri: 'exp.host/@example/abc?release-channel=release-channel' },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'my-app',
-              hostUri: 'exp.host/@example/abc?release-channel=release-channel',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'my-app',
+            hostUri: 'exp.host/@example/abc?release-channel=release-channel',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`checks url with the release channel`, () => {
           mockConstants({ executionEnvironment: ExecutionEnvironment.StoreClient }, manifestObj);
 
@@ -270,19 +229,16 @@ if (Platform.OS !== 'web') {
         });
         afterEach(() => (console.warn = originalWarn));
 
-        describeManifestTypes(
-          { scheme: 'my-app', hostUri: 'exp.host/@example/abc' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                scheme: 'my-app',
-                hostUri: 'exp.host/@example/abc',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              scheme: 'my-app',
+              hostUri: 'exp.host/@example/abc',
             },
-          }
-        )((manifestObj) => {
+          },
+        })((manifestObj) => {
           it(`checks return url`, () => {
             mockConstants({ executionEnvironment: execution }, manifestObj);
 
@@ -295,19 +251,16 @@ if (Platform.OS !== 'web') {
           });
         });
 
-        describeManifestTypes(
-          { scheme: undefined, hostUri: 'exp.host/@test/test' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                scheme: undefined,
-                hostUri: 'exp.host/@test/test',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              scheme: undefined,
+              hostUri: 'exp.host/@test/test',
             },
-          }
-        )((manifestObj) => {
+          },
+        })((manifestObj) => {
           it(`throws if no scheme is defined`, () => {
             mockConstants({ executionEnvironment: execution }, manifestObj);
 
@@ -320,19 +273,16 @@ if (Platform.OS !== 'web') {
           });
         });
 
-        describeManifestTypes(
-          { scheme: 'my-app', hostUri: 'exp.host/@example/abc' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                scheme: 'my-app',
-                hostUri: 'exp.host/@example/abc',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              scheme: 'my-app',
+              hostUri: 'exp.host/@example/abc',
             },
-          }
-        )((manifestObj) => {
+          },
+        })((manifestObj) => {
           it(`checks return url with options`, () => {
             mockConstants({ executionEnvironment: execution }, manifestObj);
 
@@ -351,19 +301,16 @@ if (Platform.OS !== 'web') {
           });
         });
 
-        describeManifestTypes(
-          { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                scheme: ['my-app-1', 'my-app-2'],
-                hostUri: 'exp.host/@test/test',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              scheme: ['my-app-1', 'my-app-2'],
+              hostUri: 'exp.host/@test/test',
             },
-          }
-        )((manifestObj) => {
+          },
+        })((manifestObj) => {
           it(`checks return url with multiple schemes and no default provided`, () => {
             mockConstants({ executionEnvironment: execution }, manifestObj);
 
@@ -377,19 +324,16 @@ if (Platform.OS !== 'web') {
           });
         });
 
-        describeManifestTypes(
-          { scheme: 'my-app', hostUri: 'exp.host/@example/abc?release-channel=release-channel' },
-          {
-            extra: {
-              expoClient: {
-                name: 'wat',
-                slug: 'wat',
-                scheme: 'my-app',
-                hostUri: 'exp.host/@example/abc?release-channel=release-channel',
-              },
+        describeManifest({
+          extra: {
+            expoClient: {
+              name: 'wat',
+              slug: 'wat',
+              scheme: 'my-app',
+              hostUri: 'exp.host/@example/abc?release-channel=release-channel',
             },
-          }
-        )((manifestObj) => {
+          },
+        })((manifestObj) => {
           it(`checks url with the release channel`, () => {
             mockConstants({ executionEnvironment: execution }, manifestObj);
 

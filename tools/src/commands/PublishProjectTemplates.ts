@@ -203,7 +203,7 @@ async function action(options) {
 
   console.log('You are about to execute the following NPM commands:');
   npmCommandParams.forEach((params) => {
-    console.log(`    npm ${params.args.join(' ')}`);
+    console.log(`    npx npm@8 ${params.args.join(' ')}`);
   });
 
   const reallyPublish = await askAreYouSureAsync();
@@ -212,11 +212,17 @@ async function action(options) {
     for (const params of npmCommandParams) {
       // Safety first:
       // If options.dry, don't actually execute npm even if user says yes above
-      const cmd = options.dry ? 'echo' : 'npm';
-      await spawnAsync(cmd, params.args, {
-        stdio: 'inherit',
-        cwd: params.path,
-      });
+      if (options.dry) {
+        await spawnAsync('echo', params.args, {
+          stdio: 'inherit',
+          cwd: params.path,
+        });
+      } else {
+        await spawnAsync('npx', ['npm@8', ...params.args], {
+          stdio: 'inherit',
+          cwd: params.path,
+        });
+      }
     }
   }
 }

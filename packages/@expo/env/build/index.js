@@ -10,6 +10,12 @@ Object.defineProperty(exports, "getFiles", {
     return _env().getFiles;
   }
 });
+Object.defineProperty(exports, "isEnabled", {
+  enumerable: true,
+  get: function () {
+    return _env().isEnabled;
+  }
+});
 exports.load = void 0;
 function _env() {
   const data = require("./env");

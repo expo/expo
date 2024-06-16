@@ -1,13 +1,20 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'expo-modules-core';
-import * as Notifications from 'expo-notifications';
-import React from 'react';
+import { Platform } from 'react-native';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 if (Platform.OS !== 'web') {
-  Notifications.setNotificationHandler({
+  // Optionally require expo-notifications as we cannot assume that the module is linked.
+  // It's not available on macOS and tvOS yet and we want to avoid errors caused by the top-level import.
+  const Notifications = (() => {
+    try {
+      return require('expo-notifications');
+    } catch {
+      return null;
+    }
+  })();
+
+  Notifications?.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
@@ -22,7 +29,8 @@ const screens = [
   'Alert',
   'Appearance',
   'AppleAuthentication',
-  'Audio',
+  'Audio (expo-av)',
+  'Audio (expo-audio)',
   'AsyncStorage',
   'AuthSession',
   'BackgroundFetch',
@@ -41,7 +49,6 @@ const screens = [
   'FileSystem',
   'Font',
   'Errors',
-  'ExpoModules',
   'Geocoding',
   'Haptics',
   'ImageManipulator',
@@ -54,6 +61,7 @@ const screens = [
   'Location',
   'MailComposer',
   'MediaLibrary',
+  'ModulesCore',
   'Network',
   'NetInfo',
   'Notification',
@@ -61,7 +69,8 @@ const screens = [
   'Permissions',
   'Print',
   'Random',
-  'Recording',
+  'Recording (expo-av)',
+  'Recording (expo-audio)',
   'SMS',
   'NavigationBar',
   'SafeAreaContext',
@@ -76,13 +85,10 @@ const screens = [
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',
+  'Video Thumbnails',
   'ViewShot',
   'WebBrowser',
 ];
-
-if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
-  screens.push('InAppPurchases');
-}
 
 export const ScreenItems = screens.map((name) => ({
   name,
@@ -92,12 +98,12 @@ export const ScreenItems = screens.map((name) => ({
 }));
 
 export default function ExpoApisScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={ScreenItems}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

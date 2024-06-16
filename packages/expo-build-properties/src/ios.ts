@@ -15,17 +15,21 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propValueGetter: (config) => config.ios?.useFrameworks,
     },
     {
-      propName: 'ios.flipper',
-      propValueGetter: (config) => {
-        if (typeof config.ios?.flipper === 'string' || typeof config.ios?.flipper === 'boolean') {
-          return config.ios.flipper.toString();
-        }
-        return undefined;
-      },
+      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+      propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },
     {
-      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.ios?.unstable_networkInspector?.toString(),
+      propName: 'apple.extraPods',
+      propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
+    },
+    {
+      propName: 'apple.ccacheEnabled',
+      propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
+    },
+    {
+      propName: 'apple.privacyManifestAggregationEnabled',
+      propValueGetter: (config) =>
+        (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
   ],
   'withIosBuildProperties'

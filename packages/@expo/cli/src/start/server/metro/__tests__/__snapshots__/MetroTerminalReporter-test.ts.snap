@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`_getBundleStatusMessage should format standard progress for a React Server invocation 1`] = `"RSC(iOS) ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`;
+
+exports[`_getBundleStatusMessage should format standard progress for a server invocation 1`] = `"λ ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`;
+
+exports[`_getBundleStatusMessage should format standard progress for a web-based React Server invocation 1`] = `"RSC(Web) ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`;

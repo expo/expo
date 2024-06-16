@@ -4,18 +4,14 @@ import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
-import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.viewevent.ViewEventDelegate
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
 
-class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
+class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
 
@@ -31,9 +27,6 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   fun createView(context: Context): View {
     return definition
       .createView(context, moduleHolder.module.appContext)
-      .also {
-        configureView(it)
-      }
   }
 
   fun onViewDidUpdateProps(view: View) {
@@ -42,9 +35,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
         exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
           it.invoke(view)
         }
-      } catch (exception: CodedException) {
-        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", exception)
-        definition.handleException(view, exception)
+      } catch (exception: Throwable) {
+        // The view wasn't constructed correctly, so errors are expected.
+        // We can ignore them.
+        if (view.isErrorView()) {
+          return@let
+        }
+
+        val codedException = exception.toCodedException()
+        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", codedException)
+        definition.handleException(view, codedException)
       }
     }
   }
@@ -65,15 +65,47 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
     while (iterator.hasNextKey()) {
       val key = iterator.nextKey()
       expoProps[key]?.let { expoProp ->
-        expoProp.set(propsMap.getDynamic(key), view)
-        handledProps.add(key)
+        try {
+          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module._appContext)
+        } catch (exception: Throwable) {
+          // The view wasn't constructed correctly, so errors are expected.
+          // We can ignore them.
+          if (view.isErrorView()) {
+            return@let
+          }
+
+          val codedException = exception.toCodedException()
+          logger.error("❌ Cannot set the '$name' prop on the '$view'", codedException)
+          definition.handleException(
+            view,
+            codedException
+          )
+        } finally {
+          handledProps.add(key)
+        }
       }
     }
     return handledProps
   }
 
-  fun onDestroy(view: View) =
-    definition.onViewDestroys?.invoke(view)
+  fun onDestroy(view: View) {
+    try {
+      definition.onViewDestroys?.invoke(view)
+    } catch (exception: Throwable) {
+      // The view wasn't constructed correctly, so errors are expected.
+      // We can ignore them.
+      if (view.isErrorView()) {
+        return
+      }
+
+      val codedException = exception.toCodedException()
+      logger.error("❌ '$view' wasn't able to destroy itself", codedException)
+      definition.handleException(
+        view,
+        codedException
+      )
+    }
+  }
 
   fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
     val builder = MapBuilder.builder<String, Any>()
@@ -82,38 +114,10 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       ?.names
       ?.forEach {
         builder.put(
-          normalizeEventName(it), MapBuilder.of<String, Any>("registrationName", it)
+          normalizeEventName(it),
+          MapBuilder.of<String, Any>("registrationName", it)
         )
       }
     return builder.build()
-  }
-
-  private fun configureView(view: View) {
-    val callbacks = definition.callbacksDefinition?.names ?: return
-
-    val kClass = view.javaClass.kotlin
-    val propertiesMap = kClass
-      .declaredMemberProperties
-      .associateBy { it.name }
-
-    callbacks.forEach {
-      val property = propertiesMap[it].ifNull {
-        logger.warn("⚠️ Property `$it` does not exist in ${kClass.simpleName}")
-        return@forEach
-      }
-      property.isAccessible = true
-
-      val delegate = property.getDelegate(view).ifNull {
-        logger.warn("⚠️ Property delegate for `$it` in ${kClass.simpleName} does not exist")
-        return@forEach
-      }
-
-      val viewDelegate = (delegate as? ViewEventDelegate<*>).ifNull {
-        logger.warn("⚠️ Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`")
-        return@forEach
-      }
-
-      viewDelegate.isValidated = true
-    }
   }
 }

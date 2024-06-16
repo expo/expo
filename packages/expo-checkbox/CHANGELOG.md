@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 3.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Convert to function components and remove "use client" directives. ([#27438](https://github.com/expo/expo/pull/27438) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.7.0 — 2023-11-14
+
+### 💡 Others
+
+- Use `pointerEvent` style instead of prop for components on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.6.0 — 2023-10-17
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

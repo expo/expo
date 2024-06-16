@@ -36,7 +36,12 @@ Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
 
 ### Configure for Android
 
-No additional set up necessary.
+Add `com.google.android.gms.permission.AD_ID` permission to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
 
 ## Contributing
 

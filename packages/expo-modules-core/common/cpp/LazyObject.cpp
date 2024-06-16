@@ -17,14 +17,14 @@ jsi::Value LazyObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
       // React Native asks for this property for some reason, we can just ignore it.
       return jsi::Value::undefined();
     }
-    backedObject = initializer(runtime);
+    initializeBackedObject(runtime);
   }
   return backedObject ? backedObject->getProperty(runtime, name) : jsi::Value::undefined();
 }
 
 void LazyObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name, const jsi::Value &value) {
   if (!backedObject) {
-    backedObject = initializer(runtime);
+    initializeBackedObject(runtime);
   }
   if (backedObject) {
     backedObject->setProperty(runtime, name, value);
@@ -33,13 +33,25 @@ void LazyObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name, const j
 
 std::vector<jsi::PropNameID> LazyObject::getPropertyNames(jsi::Runtime &runtime) {
   if (!backedObject) {
-    backedObject = initializer(runtime);
+    initializeBackedObject(runtime);
   }
   if (backedObject) {
     jsi::Array propertyNames = backedObject->getPropertyNames(runtime);
-    return jsiArrayToPropNameIdsVector(runtime, propertyNames);
+    return common::jsiArrayToPropNameIdsVector(runtime, propertyNames);
   }
   return {};
+}
+
+const jsi::Object &LazyObject::unwrapObjectIfNecessary(jsi::Runtime &runtime, const jsi::Object &object) {
+  if (object.isHostObject<LazyObject>(runtime)) {
+    LazyObject::Shared lazyObject = object.getHostObject<LazyObject>(runtime);
+
+    if (!lazyObject->backedObject) {
+      lazyObject->initializeBackedObject(runtime);
+    }
+    return *lazyObject->backedObject;
+  }
+  return object;
 }
 
 } // namespace expo

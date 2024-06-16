@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoTaskManager from './ExpoTaskManager';
 
@@ -173,8 +173,9 @@ export async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promis
 /**
  * Provides information about tasks registered in the app.
  *
- * @returns A promise which fulfills with an array of tasks registered in the app. Example:
- * ```json
+ * @returns A promise which fulfills with an array of tasks registered in the app.
+ * @example
+ * ```js
  * [
  *   {
  *     taskName: 'location-updates-task-name',
@@ -235,7 +236,7 @@ export async function unregisterAllTasksAsync(): Promise<void> {
 }
 
 if (ExpoTaskManager) {
-  const eventEmitter = new EventEmitter(ExpoTaskManager);
+  const eventEmitter = new LegacyEventEmitter(ExpoTaskManager);
   eventEmitter.addListener<TaskManagerTaskBody>(
     ExpoTaskManager.EVENT_NAME,
     async ({ data, error, executionInfo }) => {

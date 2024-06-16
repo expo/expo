@@ -56,9 +56,6 @@ jest.mock('../launchApp', () => ({
   launchAppAsync: jest.fn(async () => {}),
 }));
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 const mockPlatform = (value: typeof process.platform) =>
   Object.defineProperty(process, 'platform', {
     value,
@@ -108,14 +105,15 @@ describe(resolveOptionsAsync, () => {
   });
 
   it(`runs ios on device`, async () => {
-    asMock(resolveDeviceAsync).mockResolvedValueOnce({
+    jest.mocked(resolveDeviceAsync).mockResolvedValueOnce({
       name: "Evan's phone",
       model: 'iPhone13,4',
       osVersion: '15.4.1',
       deviceType: 'device',
       udid: '00008101-001964A22629003A',
+      connectionType: 'USB',
     });
-    asMock(isSimulatorDevice).mockReturnValueOnce(false);
+    jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
     vol.fromJSON(rnFixture, '/');
 
@@ -130,6 +128,7 @@ describe(resolveOptionsAsync, () => {
         name: "Evan's phone",
         osVersion: '15.4.1',
         udid: '00008101-001964A22629003A',
+        connectionType: 'USB',
       },
       isSimulator: false,
       port: 8081,
@@ -147,6 +146,7 @@ describe(resolveOptionsAsync, () => {
         name: "Evan's phone",
         osVersion: '15.4.1',
         udid: '00008101-001964A22629003A',
+        connectionType: 'USB',
       },
       isSimulator: false,
       shouldStartBundler: true,

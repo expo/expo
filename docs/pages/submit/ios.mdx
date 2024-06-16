@@ -1,24 +1,28 @@
 ---
-title: Submitting to the Apple App Store
-sidebar_title: Submitting to Apple
+title: Submit to the Apple App Store
+sidebar_title: Submit to Apple
 description: Learn how to submit your app to the Apple App Store from your computer and CI.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 This guide outlines how to submit your app to the Apple App Store from your own computer and from CI.
 
 ## Prerequisites
 
 - A paid developer account is required to submit an app &mdash; you can create an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
-- You will also need to have EAS CLI installed and authenticated with your Expo account: `npm install -g eas-cli && eas login`.
+- You will also need to have EAS CLI installed and authenticated with your Expo account:
+  <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
-## 1. Build a standalone app
+<Step label="1">
+## Build a standalone app
 
 You'll need a native app binary signed for store submission. You can either use [EAS Build](/build/introduction.mdx) or do it on your own.
-
-## 2. Start the submission
+</Step>
+<Step label="2">
+## Start the submission
 
 To submit the binary to the App Store, run `eas submit -p ios` from inside your project directory. The command will lead you step by step through the process of submitting the app. See the [Configuration with eas.json](./eas-json.mdx) page to learn how to pre-configure your submission.
 
@@ -62,6 +66,7 @@ The command will perform the following steps:
 
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
+</Step>
 
 ## Submitting your app using CI
 
@@ -88,7 +93,7 @@ Example usage:
 
 ## Manual submissions
 
-If you ever need to submit your build without going through EAS Submit, for example if the service is temporarily unavailable for maintenance, you can upload to the Apple App Store manually from a macOS devices.
+If you ever need to submit your build without going through EAS Submit, for example, if the service is temporarily unavailable for maintenance, you can upload to the Apple App Store manually from a macOS device.
 
 <Collapsible summary="How to upload to the Apple App Store manually from a macOS device">
 
@@ -96,10 +101,10 @@ If you ever need to submit your build without going through EAS Submit, for exam
 
 Start by creating an app profile in App Store Connect, if you haven't already:
 
-1. Go to [App Store Connect][asc] and sign in. Make sure you've accepted any legal notices or terms at the top of the page.
+1. Go to [App Store Connect][asc] and sign in. Make sure you have accepted any legal notices or terms at the top of the page.
 2. Click the blue plus button by the Apps header, then click **New App**.
-3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle identifier, e.g. "com.company.my-app").
-4. Click **Create**. If this succeeds, then you've created your application record.
+3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle identifier, for example, "com.company.my-app").
+4. Click **Create**. If this succeeds, then you have created your application record.
 
 #### Uploading with Transporter
 
@@ -119,6 +124,6 @@ This process can take a few minutes, then another 10-15 minutes of processing on
 
 ## Automating submissions
 
-To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.mdx).
+To learn how to automatically submit your app after a successful build, refer to the [Automating submissions](/build/automate-submissions).
 
 [asc]: https://appstoreconnect.apple.com/apps

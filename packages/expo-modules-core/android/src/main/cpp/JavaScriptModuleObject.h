@@ -5,6 +5,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/ReadableNativeArray.h>
+#include <react/jni/ReadableNativeMap.h>
 #include <jni/JCallback.h>
 
 #include <unordered_map>
@@ -18,27 +19,24 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 class JavaScriptModuleObject;
 
 void decorateObjectWithFunctions(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithProperties(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
 
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Object *jsObject,
   JavaScriptModuleObject *objectData
 );
@@ -60,16 +58,16 @@ public:
   static void registerNatives();
 
   /**
-   * Pointer to the module registry interop.
-   */
-  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
-
-  /**
    * Returns a cached instance of jsi::Object representing this module.
    * @param runtime
    * @return Wrapped instance of JavaScriptModuleObject::HostObject
    */
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
+
+  /**
+   * Decorates the given object with properties and functions provided in the module definition.
+   */
+  void decorate(jsi::Runtime &runtime, jsi::Object *moduleObject);
 
   /**
    * Exports constants that will be assigned to the underlying HostObject.
@@ -83,7 +81,6 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -95,7 +92,6 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
-    jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
@@ -104,7 +100,7 @@ public:
     jni::alias_ref<jstring> name,
     jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
     jboolean takesOwner,
-    jint args,
+    jni::alias_ref<jclass> ownerClass,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -122,34 +118,42 @@ public:
    */
   void registerProperty(
     jni::alias_ref<jstring> name,
-    jni::alias_ref<ExpectedType> expectedArgType,
+    jboolean getterTakesOwner,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> getterExpectedArgsTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> getter,
+    jboolean setterTakesOwner,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> setterExpectedArgsTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
-private:
-  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
+  /**
+   * Emits an event using cached jsi::Object with the given name and body.
+   * @param eventName
+   * @param eventBody
+   */
+  void emitEvent(
+    jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
+    jni::alias_ref<jstring> eventName,
+    jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+  );
 
 private:
   friend HybridBase;
 
   friend void decorateObjectWithFunctions(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithProperties(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
 
   friend void decorateObjectWithConstants(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
     JavaScriptModuleObject *objectData
   );
@@ -161,12 +165,11 @@ private:
    * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
    */
   std::weak_ptr<jsi::Object> jsiObject;
-  jni::global_ref<JavaScriptModuleObject::javaobject> javaPart_;
 
   /**
    * Metadata map that stores information about all available methods on this module.
    */
-  std::unordered_map<std::string, MethodMetadata> methodsMetadata;
+  std::unordered_map<std::string, std::shared_ptr<MethodMetadata>> methodsMetadata;
 
   /**
    * A constants map.
@@ -177,11 +180,11 @@ private:
    * A registry of properties
    * The first MethodMetadata points to the getter and the second one to the setter.
    */
-  std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
+  std::map<std::string, std::pair<std::shared_ptr<MethodMetadata>, std::shared_ptr<MethodMetadata>>> properties;
 
   std::map<
     std::string,
-    std::pair<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata>
+    std::tuple<jni::global_ref<JavaScriptModuleObject::javaobject>, std::shared_ptr<MethodMetadata>, jni::global_ref<jclass>>
   > classes;
 
   jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;

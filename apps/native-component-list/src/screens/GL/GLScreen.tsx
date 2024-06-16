@@ -108,6 +108,12 @@ const screens = [
     name: 'Reanimated worklets + gesture handler',
     route: '/components/gl/reanimated',
   },
+  {
+    _name: 'GLViewOnBusyThread',
+    isAvailable: true,
+    name: 'Creating GLView when a thread is busy',
+    route: '/components/gl/busythread',
+  },
 ];
 
 export default function GLScreen() {

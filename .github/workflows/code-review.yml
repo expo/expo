@@ -7,7 +7,6 @@ on:
         description: 'Number of the pull request to review'
         required: true
   pull_request_target:
-    branches: [main, sdk-*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -15,11 +14,11 @@ concurrency:
 
 jobs:
   code_review:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -32,12 +31,12 @@ jobs:
       ### To update SwiftLint, uncomment steps below, download the artifact and update that package.
       # - name: 👷 Build and install SwiftLint
       #   run: |
-      #     git clone https://github.com/realm/SwiftLint.git --branch 0.50.1 --depth 1
+      #     git clone https://github.com/realm/SwiftLint.git --branch 0.52.2 --depth 1
       #     cd SwiftLint
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v3
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build

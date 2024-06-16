@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.withAndroidNavigationBarExpoGoManifest = exports.resolveProps = void 0;
 // @ts-ignore: uses flow
-const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
+const normalize_colors_1 = __importDefault(require("@react-native/normalize-colors"));
 // @ts-ignore
 const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
@@ -25,7 +25,7 @@ const LEGACY_BAR_STYLE_MAP = {
     'light-content': 'light',
 };
 function convertColorAndroid(input) {
-    let color = (0, normalize_color_1.default)(input);
+    let color = (0, normalize_colors_1.default)(input);
     if (!color) {
         throw new Error('Invalid color value: ' + input);
     }

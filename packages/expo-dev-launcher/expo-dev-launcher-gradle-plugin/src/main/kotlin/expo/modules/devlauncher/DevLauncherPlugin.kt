@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 package expo.modules.devlauncher
 
 import com.android.build.api.instrumentation.AsmClassVisitorFactory
@@ -21,10 +23,18 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   override fun apply(project: Project) {
     val enableNetworkInspector = project.properties["EX_DEV_CLIENT_NETWORK_INSPECTOR"]?.toString()?.toBoolean()
-    if (enableNetworkInspector != null && enableNetworkInspector) {
+    if (enableNetworkInspector == null || enableNetworkInspector) {
+      // When expo-network-addons is installed, we will let it do the bytecode manipulation
+      val networkAddonsInstalled = project.findProject(":expo-network-addons") != null
+      if (networkAddonsInstalled) {
+        logger.warn("[DevLauncherPlugin] expo-network-addons is installed and will take this plugin's responsibilities")
+        return
+      }
+
       val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
       androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
         variant.instrumentation.transformClassesWith(DevLauncherClassVisitorFactory::class.java, InstrumentationScope.ALL) {
+          it.enabled.set(true)
         }
         variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
       }
@@ -43,16 +53,16 @@ abstract class DevLauncherPlugin : Plugin<Project> {
       nextClassVisitor: ClassVisitor
     ): ClassVisitor {
       if (parameters.get().enabled.getOrElse(false)) {
-        return nextClassVisitor
+        return OkHttpClassVisitor(classContext, instrumentationContext.apiVersion.get(), nextClassVisitor)
       }
-      return OkHttpClassVisitor(classContext, instrumentationContext.apiVersion.get(), nextClassVisitor)
+      return nextClassVisitor
     }
 
     override fun isInstrumentable(classData: ClassData): Boolean {
       if (parameters.get().enabled.getOrElse(false)) {
-        return false
+        return classData.className in listOf("okhttp3.OkHttpClient\$Builder")
       }
-      return classData.className in listOf("okhttp3.OkHttpClient\$Builder")
+      return false
     }
   }
 
@@ -68,19 +78,23 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   class OkHttpClientCustomBuildMethod(api: Int, methodVisitor: MethodVisitor) : MethodVisitor(api, methodVisitor) {
     override fun visitCode() {
-      // opcodes for `this.addInterceptor(expo.modules.devlauncher.network.DevLauncherOkHttpAppInterceptor())`
+      //
+      // NOTE: The following code should be kept in sync with **packages/expo-network-addons/expo-network-addons-gradle-plugin/src/main/kotlin/expo/modules/networkaddons/NetworkAddonsPlugin.kt**
+      //
+
+      // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/devlauncher/network/DevLauncherOkHttpAppInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/devlauncher/network/DevLauncherOkHttpAppInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
-      // opcodes for `this.addNetworkInterceptor(expo.modules.devlauncher.network.DevLauncherOkHttpNetworkInterceptor())`
+      // opcodes for `this.addNetworkInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/devlauncher/network/DevLauncherOkHttpNetworkInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpNetworkInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/devlauncher/network/DevLauncherOkHttpNetworkInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpNetworkInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addNetworkInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 

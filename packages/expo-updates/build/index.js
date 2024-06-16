@@ -1,3 +1,7 @@
 export * from './Updates';
-export * from './UpdatesHooks';
+export * from './UpdatesEmitter';
+export * from './Updates.types';
+export * from './UseUpdates';
+export * from './UseUpdates.types';
+export * from './ExpoUpdatesModule.types';
 //# sourceMappingURL=index.js.map

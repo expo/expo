@@ -2,19 +2,20 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
+import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
+import { cloneTemplateAsync } from './resolveTemplate';
+import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import * as Log from '../log';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
-import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
-import { cloneTemplateAsync } from './resolveTemplate';
-import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
-import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 
 /**
  * Creates local native files from an input template file path.
  *
- * @return `true` if the project is ejecting, and `false` if it's syncing.
+ * @return `true` if the project is prebuilding, and `false` if it's syncing.
  */
 export async function updateFromTemplateAsync(
   projectRoot: string,
@@ -45,6 +46,8 @@ export async function updateFromTemplateAsync(
     hasNewProjectFiles: boolean;
     /** Indicates that the project needs to run `pod install` */
     needsPodInstall: boolean;
+    /** The template checksum used to create the native project. */
+    templateChecksum: string;
   } & DependenciesModificationResults
 > {
   if (!templateDirectory) {
@@ -52,7 +55,7 @@ export async function updateFromTemplateAsync(
     templateDirectory = temporary.directory();
   }
 
-  const copiedPaths = await profile(cloneTemplateAndCopyToProjectAsync)({
+  const { copiedPaths, templateChecksum } = await profile(cloneTemplateAndCopyToProjectAsync)({
     projectRoot,
     template,
     templateDirectory,
@@ -69,10 +72,8 @@ export async function updateFromTemplateAsync(
   return {
     hasNewProjectFiles: !!copiedPaths.length,
     // If the iOS folder changes or new packages are added, we should rerun pod install.
-    needsPodInstall:
-      copiedPaths.includes('ios') ||
-      depsResults.hasNewDependencies ||
-      depsResults.hasNewDevDependencies,
+    needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
+    templateChecksum,
     ...depsResults,
   };
 }
@@ -82,7 +83,7 @@ export async function updateFromTemplateAsync(
  *
  * @return `true` if any project files were created.
  */
-async function cloneTemplateAndCopyToProjectAsync({
+export async function cloneTemplateAndCopyToProjectAsync({
   projectRoot,
   templateDirectory,
   template,
@@ -94,35 +95,50 @@ async function cloneTemplateAndCopyToProjectAsync({
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   platforms: ModPlatform[];
-}): Promise<string[]> {
-  const ora = logNewSection(
-    'Creating native project directories (./ios and ./android) and updating .gitignore'
-  );
+}): Promise<{ copiedPaths: string[]; templateChecksum: string }> {
+  const platformDirectories = unknownPlatforms
+    .map((platform) => `./${platform}`)
+    .reverse()
+    .join(' and ');
+
+  const pluralized = unknownPlatforms.length > 1 ? 'directories' : 'directory';
+  const ora = logNewSection(`Creating native ${pluralized} (${platformDirectories})`);
 
   try {
-    await cloneTemplateAsync({ templateDirectory, template, exp, ora });
+    const templateChecksum = await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
-    const platforms = await validateTemplatePlatforms({
+    const platforms = validateTemplatePlatforms({
       templateDirectory,
       platforms: unknownPlatforms,
     });
 
-    const results = await copyTemplateFilesAsync(projectRoot, {
+    const results = copyTemplateFiles(projectRoot, {
       templateDirectory,
       platforms,
     });
 
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: exp.name,
+    });
+
+    // Says: "Created native directories"
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
 
-    return results.copiedPaths;
+    return {
+      copiedPaths: results.copiedPaths,
+      templateChecksum,
+    };
   } catch (e: any) {
     if (!(e instanceof AbortCommandError)) {
       Log.error(e.message);
     }
-    ora.fail('Failed to create the native project.');
+    ora.fail(`Failed to create the native ${pluralized}`);
     Log.log(
       chalk.yellow(
-        'You may want to delete the `./ios` and/or `./android` directories before trying again.'
+        chalk`You may want to delete the {bold ./ios} and/or {bold ./android} directories before trying again.`
       )
     );
     throw new SilentError(e);

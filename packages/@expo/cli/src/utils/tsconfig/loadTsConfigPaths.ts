@@ -1,12 +1,12 @@
 import JsonFile from '@expo/json-file';
 import path from 'path';
 
-import { fileExistsAsync } from '../dir';
 import { evaluateTsConfig, importTypeScriptFromProjectOptionally } from './evaluateTsConfig';
+import { fileExistsAsync } from '../dir';
 
 export type TsConfigPaths = {
   paths?: Record<string, string[]>;
-  baseUrl: string;
+  baseUrl?: string;
 };
 
 type ConfigReadResults = [
@@ -16,7 +16,7 @@ type ConfigReadResults = [
       baseUrl?: string;
       paths?: Record<string, string[]>;
     };
-  }
+  },
 ];
 
 const debug = require('debug')('expo:utils:tsconfig:load') as typeof console.log;
@@ -24,17 +24,12 @@ const debug = require('debug')('expo:utils:tsconfig:load') as typeof console.log
 export async function loadTsConfigPathsAsync(dir: string): Promise<TsConfigPaths | null> {
   const options = (await readTsconfigAsync(dir)) ?? (await readJsconfigAsync(dir));
   if (options) {
-    const [filepath, config] = options;
-    if (config.compilerOptions?.baseUrl) {
-      return {
-        paths: config.compilerOptions?.paths,
-        baseUrl: path.resolve(dir, config.compilerOptions.baseUrl),
-      };
-    }
-    debug(`No baseUrl found in ${filepath}`);
+    const [, config] = options;
     return {
       paths: config.compilerOptions?.paths,
-      baseUrl: dir,
+      baseUrl: config.compilerOptions?.baseUrl
+        ? path.resolve(dir, config.compilerOptions.baseUrl)
+        : undefined,
     };
   }
   return null;

@@ -1,0 +1,1 @@
+{"version":3,"file":"Location.js","sourceRoot":"","sources":["../../src/location/Location.ts"],"names":[],"mappings":";;;AAAA,SAAgB,OAAO,KAAI,CAAC;AAA5B,0BAA4B;AAE5B,SAAgB,eAAe,CAAC,IAAY,IAAG,CAAC;AAAhD,0CAAgD","sourcesContent":["export function install() {}\n\nexport function setLocationHref(href: string) {}\n"]}

@@ -6,10 +6,12 @@ import path from 'path';
 import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
+
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
 });
+
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
 });
@@ -17,12 +19,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/config').expoConfig`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/config/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
@@ -59,6 +55,8 @@ it(
     // Create a fake package.json -- this is a terminal file that cannot be overwritten.
     await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
     await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
+    // Add an environment variable file to test that it's not included in the config.
+    await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
 
     const results = await execute('config', projectName, '--json');
     // @ts-ignore
@@ -70,6 +68,30 @@ it(
     expect(exp.version).toBe('1.0.0');
     expect(exp._internal.dynamicConfigPath).toBe(null);
     expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
+  }, // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo config --json` with a warning',
+  async () => {
+    const projectName = 'basic-config';
+    const projectRoot = getRoot(projectName);
+    // Create the project root aot
+    await fs.mkdir(projectRoot, { recursive: true });
+    // Create a fake package.json -- this is a terminal file that cannot be overwritten.
+    await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+    await fs.writeFile(
+      path.join(projectRoot, 'app.json'),
+      '{ "abc": true, "expo": { "name": "foobar" } }'
+    );
+
+    const results = await execute('config', projectName, '--json');
+    // @ts-ignore
+    const exp = JSON.parse(results.stdout);
+
+    expect(exp.abc).not.toBeDefined();
+    expect(exp.name).toEqual('foobar');
   }, // Could take 45s depending on how fast npm installs
   120 * 1000
 );

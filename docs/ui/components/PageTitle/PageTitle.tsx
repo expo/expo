@@ -1,87 +1,48 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
-import { BuildIcon, GithubIcon } from '@expo/styleguide-icons';
+import { mergeClasses } from '@expo/styleguide';
 
-import { A, CALLOUT, H1 } from '~/ui/components/Text';
+import { PageTitleButtons } from './PageTitleButtons';
+
+import { H1, P } from '~/ui/components/Text';
 
 type Props = {
   title?: string;
+  description?: string;
   packageName?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
 };
 
-export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
-  <H1 crawlable={false}>
-    {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
-    {packageName && packageName.startsWith('expo-') && 'Expo '}
-    <span data-heading="true">{title}</span>
-    {packageName && (
-      <span css={linksContainerStyle}>
-        {sourceCodeUrl && (
-          <A
-            isStyled
-            openInNewTab
-            href={sourceCodeUrl}
-            css={linkStyle}
-            title={`View source code of ${packageName} on GitHub`}>
-            <GithubIcon className="text-icon-secondary" />
-            <CALLOUT theme="secondary">GitHub</CALLOUT>
-          </A>
-        )}
-        <A
-          isStyled
-          openInNewTab
-          href={`https://www.npmjs.com/package/${packageName}`}
-          css={linkStyle}
-          title="View package in npm Registry">
-          <BuildIcon className="text-icon-secondary" />
-          <CALLOUT theme="secondary">npm</CALLOUT>
-        </A>
+export const PageTitle = ({ title, description, packageName, iconUrl, sourceCodeUrl }: Props) => {
+  return (
+    <>
+      <div
+        className={mergeClasses(
+          'flex my-2 items-start justify-between gap-4',
+          'max-xl-gutters:flex-col max-xl-gutters:items-start'
+        )}>
+        <H1 className="!my-0 !font-bold">
+          {iconUrl && (
+            <img
+              src={iconUrl}
+              className="float-left mr-3.5 relative -top-0.5 size-[42px]"
+              alt={`Expo ${title} icon`}
+            />
+          )}
+          {packageName && packageName.startsWith('expo-') && 'Expo '}
+          {title}
+        </H1>
+        <span className="flex gap-1 max-xl-gutters:hidden">
+          <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+        </span>
+      </div>
+      {description && (
+        <P theme="secondary" data-description="true">
+          {description}
+        </P>
+      )}
+      <span className="hidden gap-1 mt-3 mb-1 max-xl-gutters:flex">
+        <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
       </span>
-    )}
-  </H1>
-);
-
-const titleIconStyle = css({
-  float: 'left',
-  marginRight: spacing[3.5],
-  position: 'relative',
-  top: -5,
-  width: 48,
-  height: 48,
-
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    width: 42,
-    height: 42,
-    top: -4,
-  },
-});
-
-const linksContainerStyle = css({
-  display: 'flex',
-  float: 'right',
-  gap: spacing[6],
-  marginTop: -spacing[0.5],
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    float: 'none',
-    clear: 'left',
-    paddingTop: spacing[3],
-    paddingBottom: spacing[1],
-    marginTop: 0,
-  },
-});
-
-const linkStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: spacing[0.5],
-  alignItems: 'center',
-  minWidth: 44,
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-});
+    </>
+  );
+};

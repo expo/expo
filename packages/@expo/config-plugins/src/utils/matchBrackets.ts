@@ -1,8 +1,8 @@
 const LEFT_BRACKETS = ['(', '{'] as const;
 const RIGHT_BRACKETS = [')', '}'] as const;
 
-type LeftBracket = typeof LEFT_BRACKETS[number];
-type RightBracket = typeof RIGHT_BRACKETS[number];
+type LeftBracket = (typeof LEFT_BRACKETS)[number];
+type RightBracket = (typeof RIGHT_BRACKETS)[number];
 type Bracket = LeftBracket | RightBracket;
 
 export function findMatchingBracketPosition(

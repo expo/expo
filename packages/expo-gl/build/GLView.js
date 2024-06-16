@@ -1,11 +1,16 @@
-import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from 'expo-modules-core';
+import { NativeModulesProxy, UnavailabilityError, requireNativeModule, requireNativeViewManager, CodedError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
 import { createWorkletContextManager } from './GLWorkletContextManager';
-const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
+const { ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 const workletContextManager = createWorkletContextManager();
+export function getWorkletContext(contextId) {
+    'worklet';
+    return workletContextManager.getContext(contextId);
+}
 // @needsAudit
 /**
  * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created.
@@ -15,6 +20,7 @@ export class GLView extends React.Component {
     static NativeView;
     static defaultProps = {
         msaaSamples: 4,
+        enableExperimentalWorkletSupport: false,
     };
     /**
      * Imperative API that creates headless context which is devoid of underlying view.
@@ -48,21 +54,26 @@ export class GLView extends React.Component {
         const exglCtxId = getContextId(exgl);
         return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
     }
+    /**
+     * This method doesn't work inside of the worklets with new reanimated versions.
+     * @deprecated Use `getWorkletContext` from the global scope instead.
+     */
     static getWorkletContext = workletContextManager.getContext;
     nativeRef = null;
     exglCtxId;
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
-        msaaSamples, ...viewProps } = this.props;
-        return (React.createElement(View, { ...viewProps },
-            React.createElement(NativeView, { ref: this._setNativeRef, style: {
-                    flex: 1,
-                    ...(Platform.OS === 'ios'
-                        ? {
-                            backgroundColor: 'transparent',
-                        }
-                        : {}),
-                }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
+        msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
+        return (<View {...viewProps}>
+        <NativeView ref={this._setNativeRef} style={{
+                flex: 1,
+                ...(Platform.OS === 'ios'
+                    ? {
+                        backgroundColor: 'transparent',
+                    }
+                    : {}),
+            }} onSurfaceCreate={this._onSurfaceCreate} enableExperimentalWorkletSupport={enableExperimentalWorkletSupport} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
+      </View>);
     }
     _setNativeRef = (nativeRef) => {
         if (this.props.nativeRef_EXPERIMENTAL) {
@@ -80,6 +91,11 @@ export class GLView extends React.Component {
     componentWillUnmount() {
         if (this.exglCtxId) {
             unregisterGLContext(this.exglCtxId);
+        }
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.enableExperimentalWorkletSupport !== prevProps.enableExperimentalWorkletSupport) {
+            console.warn('Updating prop enableExperimentalWorkletSupport is not supported');
         }
     }
     // @docsMissing
@@ -110,7 +126,7 @@ export class GLView extends React.Component {
         return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
     }
     /**
-     * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+     * Same as static [`takeSnapshotAsync()`](#takesnapshotasyncoptions),
      * but uses WebGL context that is associated with the view on which the method is called.
      * @param options
      */

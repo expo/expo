@@ -239,7 +239,6 @@ function insertContentsInsideSwiftFunctionBlock(srcContents, selector, insertion
   return insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, 'swift');
 }
 function insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, language) {
-  var _options$indent;
   const codeBlock = language === 'objc' ? findObjcFunctionCodeBlock(srcContents, selector) : findSwiftFunctionCodeBlock(srcContents, selector);
   if (!codeBlock) {
     return srcContents;
@@ -247,7 +246,7 @@ function insertContentsInsideFunctionBlock(srcContents, selector, insertion, opt
   const {
     position
   } = options;
-  const indent = ' '.repeat((_options$indent = options.indent) !== null && _options$indent !== void 0 ? _options$indent : 2);
+  const indent = ' '.repeat(options.indent ?? 2);
   if (position === 'head') {
     srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, `\n${indent}${insertion}`, codeBlock.start + 1);
   } else if (position === 'tail') {

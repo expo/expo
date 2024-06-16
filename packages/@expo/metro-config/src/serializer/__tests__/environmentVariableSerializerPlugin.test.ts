@@ -1,6 +1,6 @@
 import {
-  replaceEnvironmentVariables,
   getTransformEnvironment,
+  getEnvVarDevString,
 } from '../environmentVariableSerializerPlugin';
 
 describe(getTransformEnvironment, () => {
@@ -24,30 +24,29 @@ describe(getTransformEnvironment, () => {
   });
 });
 
-describe(replaceEnvironmentVariables, () => {
-  it('matches environment variables', () => {
-    const contents = replaceEnvironmentVariables(
-      `
-                const foo = process.env.JEST_WORKER_ID;
-                process.env.ABC;
-                console.log(process.env.NODE_ENV);
-                console.log(process.env.EXPO_PUBLIC_NODE_ENV);
-                process.env.EXPO_PUBLIC_FOO;
-    
-                a + b = c;
-    
-                env.EXPO_PUBLIC_URL;
-    
-                process.env['other'];
-                `,
-      { EXPO_PUBLIC_NODE_ENV: 'development', EXPO_PUBLIC_FOO: 'bar' }
+describe(getEnvVarDevString, () => {
+  it(`always formats env var code in one line`, () => {
+    expect(getEnvVarDevString({})).toMatchInlineSnapshot(
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {});"`
     );
-    expect(contents).toMatch('development');
-    expect(contents).toMatch('bar');
-    expect(contents).toMatch('process.env.NODE_ENV');
-    expect(contents).toMatch('process.env.JEST_WORKER_ID');
-    expect(contents).not.toMatch('EXPO_PUBLIC_NODE_ENV');
-    expect(contents).not.toMatch('EXPO_PUBLIC_FOO');
-    expect(contents).toMatchSnapshot();
+  });
+  it(`formats env vars with new line characters in them`, () => {
+    expect(
+      getEnvVarDevString({
+        EXPO_PUBLIC_TEST: 'test\nvalue',
+      })
+    ).toMatchInlineSnapshot(
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_TEST": { value: "test\\nvalue" }});"`
+    );
+  });
+  it(`formats multiple env vars`, () => {
+    expect(
+      getEnvVarDevString({
+        EXPO_PUBLIC_A: 'a',
+        EXPO_PUBLIC_B: 'b',
+      })
+    ).toMatchInlineSnapshot(
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_A": { value: "a" },"EXPO_PUBLIC_B": { value: "b" }});"`
+    );
   });
 });

@@ -28,10 +28,11 @@ import {
   getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
+  sdkVersion: string;
 };
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
@@ -39,18 +40,14 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
     new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
   );
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
-    return (
-      <>
-        <CODE>{uniqueTypes[0]}</CODE>
-        {' - '}
-      </>
-    );
+    return <CODE>{uniqueTypes[0]}</CODE>;
   }
   return null;
 };
 
 const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
+  sdkVersion: string,
   index?: number
 ): JSX.Element => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
@@ -59,22 +56,18 @@ const renderTypeDeclarationTable = (
     <Table>
       <ParamsTableHeadRow />
       <tbody>
-        {children?.map(renderTypePropertyRow)}
-        {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+        {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
+        {indexSignature?.parameters &&
+          indexSignature.parameters.map(d => renderTypePropertyRow(d, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
 );
 
-const renderTypePropertyRow = ({
-  name,
-  flags,
-  type,
-  comment,
-  defaultValue,
-  signatures,
-  kind,
-}: PropData): JSX.Element => {
+const renderTypePropertyRow = (
+  { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
+  sdkVersion: string
+): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -88,7 +81,9 @@ const renderTypePropertyRow = ({
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>{renderTypeOrSignatureType(type, signatures, true)}</Cell>
+      <Cell fitContent>
+        {renderTypeOrSignatureType({ type, signatures, allowBlock: true, sdkVersion })}
+      </Cell>
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
@@ -102,31 +97,29 @@ const renderTypePropertyRow = ({
   );
 };
 
-const renderType = ({
-  name,
-  comment,
-  type,
-  typeParameter,
-}: TypeGeneralData): JSX.Element | undefined => {
+const renderType = (
+  { name, comment, type, typeParameter }: TypeGeneralData,
+  sdkVersion: string
+): JSX.Element | undefined => {
   if (type.declaration) {
     // Object Types
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">
+          <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}
             {type.declaration.signatures ? '()' : ''}
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
+        {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
                 <CommentTextBlock comment={comment} />
-                {parameters && renderParams(parameters)}
+                {parameters && renderParams(parameters, sdkVersion)}
               </div>
             ))
           : null}
@@ -141,66 +134,100 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium">{name}</MONOSPACE>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
           </H3Code>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          {type.type === 'intersection' ? (
+          {type.type === 'intersection' || type.type === 'union' ? (
             <>
-              <P>
+              <CALLOUT>
+                <SPAN theme="secondary" weight="medium">
+                  Type:{' '}
+                </SPAN>
                 {type.types
-                  .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
+                  .filter(type =>
+                    ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
+                  )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>
-                      <CODE>{resolveTypeName(validType)}</CODE>{' '}
+                      <CODE className="text-default">{resolveTypeName(validType, sdkVersion)}</CODE>
+                      {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
-                extended by:
-              </P>
+                <SPAN theme="secondary">
+                  {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
+                </SPAN>
+              </CALLOUT>
               <br />
             </>
           ) : null}
           {propTypes.map(
             (propType, index) =>
-              propType.declaration && renderTypeDeclarationTable(propType.declaration, index)
+              propType.declaration &&
+              renderTypeDeclarationTable(propType.declaration, sdkVersion, index)
           )}
         </div>
       );
     } else if (literalTypes.length) {
+      const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium">{name}</MONOSPACE>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
           </H3Code>
+          <CALLOUT className="mb-3">
+            <SPAN theme="secondary" weight="medium">
+              Literal Type:{' '}
+            </SPAN>
+            {acceptedLiteralTypes ?? 'multiple types'}
+          </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          <P>
-            {defineLiteralType(literalTypes)}
-            Acceptable values are:{' '}
+          <CALLOUT>
+            <SPAN theme="secondary" weight="medium">
+              Acceptable values are:{' '}
+            </SPAN>
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
-                <CODE>{resolveTypeName(lt)}</CODE>
-                {index + 1 !== literalTypes.length ? ', ' : '.'}
+                <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
+                {index + 1 !== literalTypes.length ? (
+                  <CALLOUT tag="span" theme="quaternary">
+                    {' | '}
+                  </CALLOUT>
+                ) : (
+                  ''
+                )}
               </span>
             ))}
-          </P>
+          </CALLOUT>
         </div>
       );
     }
-  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
+  } else if (
+    (type.name === 'Record' && type.typeArguments) ||
+    ['array', 'reference'].includes(type.type)
+  ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
         </H3Code>
-        <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <BOLD>Type: </BOLD>
-          <APIDataType typeDefinition={type} />
-        </div>
+        <CALLOUT className="mb-3">
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        </CALLOUT>
         <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
@@ -208,57 +235,91 @@ const renderType = ({
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <P>
-          <BOLD>Type: </BOLD>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
           <CODE>{type.name}</CODE>
-        </P>
+        </CALLOUT>
       </div>
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium">
+          <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}&lt;{type.checkType.name}&gt;
           </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <P>
-          <BOLD>Generic: </BOLD>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Generic:{' '}
+          </SPAN>
           <CODE>
             {type.checkType.name}
-            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
-        </P>
-        <P>
-          <BOLD>Type: </BOLD>
+        </CALLOUT>
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
           <CODE>
             {type.checkType.name}
-            {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+            {typeParameter && (
+              <> extends {type.extendsType && resolveTypeName(type.extendsType, sdkVersion)}</>
+            )}
             {' ? '}
-            {type.trueType && resolveTypeName(type.trueType)}
+            {type.trueType && resolveTypeName(type.trueType, sdkVersion)}
             {' : '}
-            {type.falseType && resolveTypeName(type.falseType)}
+            {type.falseType && resolveTypeName(type.falseType, sdkVersion)}
           </CODE>
-        </P>
+        </CALLOUT>
+      </div>
+    );
+  } else if (type.type === 'templateLiteral' && type.tail) {
+    const possibleData = [type.head ?? '', ...type.tail.flat()].filter(
+      entry => typeof entry !== 'string'
+    );
+
+    if (possibleData.length === 0 || typeof possibleData[0] === 'string') {
+      return undefined;
+    }
+
+    return (
+      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <CALLOUT>
+          String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
+        </CALLOUT>
       </div>
     );
   }
   return undefined;
 };
 
-const APISectionTypes = ({ data }: APISectionTypesProps) =>
+const APISectionTypes = ({ data, sdkVersion }: APISectionTypesProps) =>
   data?.length ? (
     <>
       <H2 key="types-header">Types</H2>
-      {data.map(renderType)}
+      {data.map(d => renderType(d, sdkVersion))}
     </>
   ) : null;
 

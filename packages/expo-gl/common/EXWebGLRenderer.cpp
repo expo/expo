@@ -37,7 +37,7 @@ void installConstants(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl);
 
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContext viewport, jsi::Object&& global) {
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, glesContext viewport, jsi::Object&& global) {
   ensurePrototypes(runtime);
   jsi::Object gl = ctx->supportsWebGL2
     ? createWebGLObject(

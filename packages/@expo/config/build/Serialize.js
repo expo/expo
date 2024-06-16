@@ -54,8 +54,7 @@ function serializeAndEvaluatePlugin(val) {
   if (['undefined', 'string', 'boolean', 'number', 'bigint'].includes(typeof val)) {
     return val;
   } else if (typeof val === 'function') {
-    var _val$name;
-    return (_val$name = val.name) !== null && _val$name !== void 0 ? _val$name : 'withAnonymous';
+    return val.name || 'withAnonymous';
   } else if (Array.isArray(val)) {
     return val.map(serializeAndEvaluatePlugin);
   } else if (typeof val === 'object') {

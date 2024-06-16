@@ -29,18 +29,21 @@ const debug = require('debug')('expo:metro:transformer:postcss');
 export async function transformPostCssModule(
   projectRoot: string,
   { src, filename }: { src: string; filename: string }
-): Promise<string> {
+): Promise<{ src: string; hasPostcss: boolean }> {
   const inputConfig = resolvePostcssConfig(projectRoot);
 
   if (!inputConfig) {
-    return src;
+    return { src, hasPostcss: false };
   }
 
-  return await processWithPostcssInputConfigAsync(projectRoot, {
-    inputConfig,
-    src,
-    filename,
-  });
+  return {
+    src: await processWithPostcssInputConfigAsync(projectRoot, {
+      inputConfig,
+      src,
+      filename,
+    }),
+    hasPostcss: true,
+  };
 }
 
 async function processWithPostcssInputConfigAsync(
@@ -56,7 +59,8 @@ async function processWithPostcssInputConfigAsync(
   debug('plugins:', plugins);
 
   // TODO: Surely this can be cached...
-  const postcss = await import('postcss');
+  const postcss = require('postcss') as typeof import('postcss');
+
   const processor = postcss.default(plugins);
   const { content } = await processor.process(src, processOptions);
 

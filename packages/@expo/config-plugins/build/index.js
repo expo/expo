@@ -15,6 +15,7 @@ var _exportNames = {
   withRunOnce: true,
   createRunOncePlugin: true,
   withDangerousMod: true,
+  withFinalizedMod: true,
   withMod: true,
   withBaseMod: true,
   withAppDelegate: true,
@@ -22,6 +23,7 @@ var _exportNames = {
   withEntitlementsPlist: true,
   withExpoPlist: true,
   withXcodeProject: true,
+  withPodfile: true,
   withPodfileProperties: true,
   withAndroidManifest: true,
   withStringsXml: true,
@@ -132,6 +134,12 @@ Object.defineProperty(exports, "withExpoPlist", {
     return _iosPlugins().withExpoPlist;
   }
 });
+Object.defineProperty(exports, "withFinalizedMod", {
+  enumerable: true,
+  get: function () {
+    return _withFinalizedMod().withFinalizedMod;
+  }
+});
 Object.defineProperty(exports, "withGradleProperties", {
   enumerable: true,
   get: function () {
@@ -166,6 +174,12 @@ Object.defineProperty(exports, "withPlugins", {
   enumerable: true,
   get: function () {
     return _withPlugins().withPlugins;
+  }
+});
+Object.defineProperty(exports, "withPodfile", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withPodfile;
   }
 });
 Object.defineProperty(exports, "withPodfileProperties", {
@@ -342,6 +356,13 @@ function _withDangerousMod() {
   };
   return data;
 }
+function _withFinalizedMod() {
+  const data = require("./plugins/withFinalizedMod");
+  _withFinalizedMod = function () {
+    return data;
+  };
+  return data;
+}
 function _withMod() {
   const data = require("./plugins/withMod");
   _withMod = function () {
@@ -384,8 +405,8 @@ function _errors() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * For internal use in Expo CLI
  */
@@ -396,7 +417,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * These are the "config-plugins"
  */
 
-const BaseMods = {
+const BaseMods = exports.BaseMods = {
   withGeneratedBaseMods: _createBaseMod().withGeneratedBaseMods,
   provider: _createBaseMod().provider,
   withAndroidBaseMods: _withAndroidBaseMods().withAndroidBaseMods,
@@ -404,5 +425,4 @@ const BaseMods = {
   withIosBaseMods: _withIosBaseMods().withIosBaseMods,
   getIosModFileProviders: _withIosBaseMods().getIosModFileProviders
 };
-exports.BaseMods = BaseMods;
 //# sourceMappingURL=index.js.map

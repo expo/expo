@@ -1,11 +1,4 @@
 import {
-  ClipboardImage,
-  GetImageOptions,
-  GetStringOptions,
-  SetStringOptions,
-  StringFormat,
-} from '../Clipboard.types';
-import {
   ClipboardUnavailableException,
   CopyFailureException,
   NoPermissionException,
@@ -20,11 +13,15 @@ import {
   htmlToPlainText,
   isClipboardPermissionDeniedAsync,
 } from './Utils';
+import {
+  ClipboardImage,
+  GetImageOptions,
+  GetStringOptions,
+  SetStringOptions,
+  StringFormat,
+} from '../Clipboard.types';
 
 export default {
-  get name(): string {
-    return 'ExpoClipboard';
-  },
   async getStringAsync(options: GetStringOptions): Promise<string> {
     if (!navigator.clipboard) {
       throw new ClipboardUnavailableException();

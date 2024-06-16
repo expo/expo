@@ -23,7 +23,7 @@ mkdir $WORKING_DIR_ROOT
 - From the Expo repo root directory, execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-eas-project.js
+./packages/expo-updates/e2e/setup/create-eas-project.ts
 ```
 
 - Change to the `TEST_PROJECT_ROOT` location above.
@@ -52,8 +52,8 @@ yarn detox:ios:debug:test
   - Then run
 
 ```bash
-yarn detox:android:release:build
-yarn detox:android:release:test
+yarn detox:android:debug:build
+yarn detox:android:debug:test
 ```
 
 - Running in your own EAS space:
@@ -62,7 +62,7 @@ Edit `app.json` and remove the `extra` section with the EAS project ID, then exe
 
 ```bash
 eas init
-eas build --profile=updates_testing --platform=<android|ios>
+eas build --profile=updates_testing_debug --platform=<android|ios>
 ```
 
 - Testing the EAS build locally:
@@ -74,11 +74,10 @@ eas build --profile=updates_testing --platform=<android|ios>
 --- a/packages/expo-updates/e2e/fixtures/project_files/eas.json
 +++ b/packages/expo-updates/e2e/fixtures/project_files/eas.json
 @@ -15,7 +15,8 @@
-     "updates_testing": {
+     "updates_testing_debug": {
        "env": {
-         "EX_UPDATES_NATIVE_DEBUG": "1",
--        "NO_FLIPPER": "1"
-+        "NO_FLIPPER": "1",
+-        "EX_UPDATES_NATIVE_DEBUG": "1"
++        "EX_UPDATES_NATIVE_DEBUG": "1",
 +        "LOCAL_TESTING": "1"
        },
        "android": {
@@ -105,7 +104,7 @@ rm -rf $EAS_LOCAL_BUILD_WORKINGDIR
 
 ```bash
 eas init
-eas build --profile=updates_testing --platform=<android|ios> --local
+eas build --profile=updates_testing_debug --platform=<android|ios> --local
 ```
 
 ## Updates API test project:
@@ -133,7 +132,7 @@ mkdir $WORKING_DIR_ROOT
 - Then execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-updates-test.js
+./packages/expo-updates/e2e/setup/create-updates-test.ts
 ```
 
 - Change to the test project directory

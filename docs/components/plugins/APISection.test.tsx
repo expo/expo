@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
@@ -9,7 +10,11 @@ const require = createRequire(import.meta.url);
 
 describe('APISection', () => {
   test('no data', () => {
+    console.error = jest.fn();
+
     const { container } = render(<APISection packageName="expo-none" testRequire={require} />);
+
+    expect(console.error).toHaveBeenCalled();
 
     expect(screen.getAllByText('No API data file found, sorry!')).toHaveLength(1);
 
@@ -25,8 +30,8 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(25);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
@@ -53,8 +58,8 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(7);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
 
     expect(screen.queryByText('Components'));
     expect(screen.queryByText('Hooks'));
@@ -100,7 +105,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(17);
     expect(screen.getAllByRole('table')).toHaveLength(7);
 
     expect(screen.queryByText('Classes'));

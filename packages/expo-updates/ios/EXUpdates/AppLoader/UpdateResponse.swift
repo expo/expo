@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
+
 internal enum RemoteUpdateError: Error {
   case directiveParsingError
   case invalidDirectiveType
@@ -65,9 +67,9 @@ public final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
   }
 }
 
-internal class UpdateResponsePart {}
+public class UpdateResponsePart {}
 
-internal final class DirectiveUpdateResponsePart: UpdateResponsePart {
+public final class DirectiveUpdateResponsePart: UpdateResponsePart {
   let updateDirective: UpdateDirective
 
   required init(updateDirective: UpdateDirective) {
@@ -75,20 +77,20 @@ internal final class DirectiveUpdateResponsePart: UpdateResponsePart {
   }
 }
 
-internal final class ManifestUpdateResponsePart: UpdateResponsePart {
-  let updateManifest: Update
+public final class ManifestUpdateResponsePart: UpdateResponsePart {
+  public let updateManifest: Update
 
-  required init(updateManifest: Update) {
+  public required init(updateManifest: Update) {
     self.updateManifest = updateManifest
   }
 }
 
-internal final class UpdateResponse {
-  let responseHeaderData: ResponseHeaderData?
-  let manifestUpdateResponsePart: ManifestUpdateResponsePart?
-  let directiveUpdateResponsePart: DirectiveUpdateResponsePart?
+public final class UpdateResponse {
+  public let responseHeaderData: ResponseHeaderData?
+  public let manifestUpdateResponsePart: ManifestUpdateResponsePart?
+  public let directiveUpdateResponsePart: DirectiveUpdateResponsePart?
 
-  required init(
+  public required init(
     responseHeaderData: ResponseHeaderData?,
     manifestUpdateResponsePart: ManifestUpdateResponsePart?,
     directiveUpdateResponsePart: DirectiveUpdateResponsePart?

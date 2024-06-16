@@ -1,8 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable type_body_length
-// swiftlint:disable file_length
+// swiftlint:disable superfluous_else
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable line_length
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
 // swiftlint:disable force_unwrapping
@@ -19,7 +20,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update)
+  func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error)
   func appLoaderTask(
@@ -28,6 +29,51 @@ public protocol AppLoaderTaskDelegate: AnyObject {
     update: Update?,
     error: Error?
   )
+
+  /**
+   * This method is called after the loader task finishes doing all work. Note that it may have
+   * "succeeded" before this with a loader, yet this method may still be called after the launch
+   * to signal that all work is done (loading a remote update after the launch wait timeout has occurred).
+   */
+  func appLoaderTaskDidFinishAllLoading(_: AppLoaderTask)
+}
+
+public enum RemoteCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  case noUpdateAvailableOnServer
+  /**
+   * An update manifest was received from the update server, but the update is not
+   * launchable, or does not pass the configured selection policy.
+   */
+  case updateRejectedBySelectionPolicy
+  /**
+   * An update manifest was received from the update server, but the update has been
+   * previously launched on this device and never successfully launched.
+   */
+  case updatePreviouslyFailed
+  /**
+   * A rollback directive was received from the update server, but the directive
+   * does not pass the configured selection policy.
+   */
+  case rollbackRejectedBySelectionPolicy
+  /**
+   * A rollback directive was received from the update server, but this app has no embedded update.
+   */
+  case rollbackNoEmbedded
+}
+
+public enum RemoteCheckResult {
+  case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
+  case updateAvailable(manifest: [String: Any])
+  case rollBackToEmbedded(commitTime: Date)
+}
+
+public protocol AppLoaderTaskSwiftDelegate: AnyObject {
+  func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
+  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult)
+  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
 }
 
 @objc(EXUpdatesBackgroundUpdateStatus)
@@ -62,6 +108,7 @@ public final class AppLoaderTask: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoaderTask"
 
   public weak var delegate: AppLoaderTaskDelegate?
+  public weak var swiftDelegate: AppLoaderTaskSwiftDelegate?
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -105,40 +152,6 @@ public final class AppLoaderTask: NSObject {
   }
 
   public func start() {
-    guard config.isEnabled else {
-      // swiftlint:disable:next line_length
-      let errorMessage = "AppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling AppLoaderTask, or enable updates in the configuration."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
-      delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
-      }
-      return
-    }
-
-    guard config.updateUrl != nil else {
-      // swiftlint:disable:next line_length
-      let errorMessage = "AppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use AppLoaderTask to load updates."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
-      delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
-      }
-      return
-    }
-
     isRunning = true
 
     var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config)
@@ -181,6 +194,11 @@ public final class AppLoaderTask: NSObject {
         } else {
           self.isRunning = false
           self.runReaper()
+          self.delegate.let { it in
+            self.delegateQueue.async {
+              it.appLoaderTaskDidFinishAllLoading(self)
+            }
+          }
         }
       }
     }
@@ -266,7 +284,7 @@ public final class AppLoaderTask: NSObject {
         var manifestFiltersError: Error?
         var manifestFilters: [String: Any]?
         do {
-          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey!)
+          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey)
         } catch {
           manifestFiltersError = error
         }
@@ -325,16 +343,43 @@ public final class AppLoaderTask: NSObject {
       launchedUpdate: candidateLauncher?.launchedUpdate,
       completionQueue: loaderTaskQueue
     )
+
+    if let swiftDelegate = self.swiftDelegate {
+      self.delegateQueue.async {
+        swiftDelegate.appLoaderTaskDidStartCheckingForRemoteUpdate(self)
+      }
+    }
     remoteAppLoader!.loadUpdate(
-      fromURL: config.updateUrl!
+      fromURL: config.updateUrl
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
         switch updateDirective {
         case is NoUpdateAvailableUpdateDirective:
           self.isUpToDate = true
+          if let swiftDelegate = self.swiftDelegate {
+            self.delegateQueue.async {
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
+            }
+          }
           return false
-        case is RollBackToEmbeddedUpdateDirective:
-          self.isUpToDate = true
+        case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
+          self.isUpToDate = false
+
+          if let swiftDelegate = self.swiftDelegate {
+            self.delegateQueue.async {
+              swiftDelegate.appLoaderTask(
+                self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded(
+                  commitTime: rollBackUpdateDirective.commitTime
+                )
+              )
+            }
+          }
+
+          if let delegate = self.delegate {
+            self.delegateQueue.async {
+              delegate.appLoaderTask(self, didStartLoadingUpdate: nil)
+            }
+          }
           return true
         default:
           NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
@@ -343,7 +388,13 @@ public final class AppLoaderTask: NSObject {
       }
 
       guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        // No response, so no update available
         self.isUpToDate = true
+        if let swiftDelegate = self.swiftDelegate {
+          self.delegateQueue.async {
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
+          }
+        }
         return false
       }
 
@@ -352,7 +403,19 @@ public final class AppLoaderTask: NSObject {
         withLaunchedUpdate: self.candidateLauncher?.launchedUpdate,
         filters: updateResponse.responseHeaderData?.manifestFilters
       ) {
+        // got a response, and it is new so should be downloaded
         self.isUpToDate = false
+        if let swiftDelegate = self.swiftDelegate {
+          self.delegateQueue.async {
+            swiftDelegate.appLoaderTask(
+              self,
+              didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.updateAvailable(
+                manifest: update.manifest.rawManifestJSON()
+              )
+            )
+          }
+        }
+
         if let delegate = self.delegate {
           self.delegateQueue.async {
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
@@ -360,11 +423,27 @@ public final class AppLoaderTask: NSObject {
         }
         return true
       } else {
+        // got a response, but we already have it
         self.isUpToDate = true
+        if let swiftDelegate = self.swiftDelegate {
+          self.delegateQueue.async {
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateRejectedBySelectionPolicy))
+          }
+        }
         return false
       }
-    } asset: { _, _, _, _ in
-      // do nothing for now
+    } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
+      if let swiftDelegate = self.swiftDelegate {
+        self.delegateQueue.async {
+          swiftDelegate.appLoaderTask(
+            self,
+            didLoadAsset: asset,
+            successfulAssetCount: successfulAssetCount,
+            failedAssetCount: failedAssetCount,
+            totalAssetCount: totalAssetCount
+          )
+        }
+      }
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in
@@ -380,71 +459,19 @@ public final class AppLoaderTask: NSObject {
     loaderTaskQueue.async {
       self.stopTimer()
 
-      let updateBeingLaunched = updateResponse?.manifestUpdateResponsePart?.updateManifest
-
-      // If directive is to roll-back to the embedded update and there is an embedded update,
-      // we need to update embedded update in the DB with the newer commitTime from the message so that
-      // the selection policy will choose it. That way future updates can continue to be applied
-      // over this roll back, but older ones won't.
-      // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedAppLoader] call in this task.
-      if let rollBackDirective = updateResponse?.directiveUpdateResponsePart?.updateDirective as? RollBackToEmbeddedUpdateDirective {
-        self.processRollBackToEmbeddedDirective(rollBackDirective, manifestFilters: updateResponse?.responseHeaderData?.manifestFilters, error: error)
-      } else {
-        self.launchUpdate(updateBeingLaunched, error: error)
+      RemoteAppLoader.processSuccessLoaderResult(
+        config: self.config,
+        database: self.database,
+        selectionPolicy: self.selectionPolicy,
+        launchedUpdate: self.candidateLauncher?.launchedUpdate,
+        directory: self.directory,
+        loaderTaskQueue: self.loaderTaskQueue,
+        updateResponse: updateResponse,
+        priorError: error
+      ) { updateToLaunch, error, _ in
+        self.launchUpdate(updateToLaunch, error: error)
       }
     }
-  }
-
-  private func processRollBackToEmbeddedDirective(_ updateDirective: RollBackToEmbeddedUpdateDirective, manifestFilters: [String: Any]?, error: Error?) {
-    if !self.config.hasEmbeddedUpdate {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database) else {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    if !self.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-      updateDirective,
-      withEmbeddedUpdate: embeddedManifest,
-      launchedUpdate: self.candidateLauncher?.launchedUpdate,
-      filters: manifestFilters
-    ) {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    // update the embedded update commit time in the in-memory embedded update since it is a singleton
-    embeddedManifest.commitTime = updateDirective.commitTime
-
-    self.embeddedAppLoader = EmbeddedAppLoader(
-      config: self.config,
-      database: self.database,
-      directory: self.directory,
-      launchedUpdate: nil,
-      completionQueue: self.loaderTaskQueue
-    )
-    self.embeddedAppLoader!.loadUpdateResponseFromEmbeddedManifest(
-      withCallback: { _ in
-        return true
-      }, asset: { _, _, _, _ in
-      }, success: { updateResponse in
-        do {
-          let update = updateResponse?.manifestUpdateResponsePart?.updateManifest
-          // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
-          try self.database.databaseQueue.sync {
-            try self.database.setUpdateCommitTime(updateDirective.commitTime, onUpdate: update!)
-          }
-          self.launchUpdate(update, error: error)
-        } catch {
-          self.launchUpdate(nil, error: error)
-        }
-      }, error: { embeddedLoaderError in
-        self.launchUpdate(nil, error: embeddedLoaderError)
-      }
-    )
   }
 
   private func launchUpdate(_ updateBeingLaunched: Update?, error: Error?) {
@@ -470,11 +497,18 @@ public final class AppLoaderTask: NSObject {
           }
           self.isRunning = false
           self.runReaper()
+
+          self.delegate.let { it in
+            self.delegateQueue.async {
+              it.appLoaderTaskDidFinishAllLoading(self)
+            }
+          }
         }
       } else {
         self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: nil)
         self.isRunning = false
         self.runReaper()
+        // appLoaderTaskDidFinishAllLoading called as part of didFinishBackgroundUpdate
       }
     } else {
       // there's no update, so signal we're ready to launch
@@ -486,6 +520,7 @@ public final class AppLoaderTask: NSObject {
       }
       self.isRunning = false
       self.runReaper()
+      // appLoaderTaskDidFinishAllLoading called as part of didFinishBackgroundUpdate
     }
   }
 
@@ -493,7 +528,14 @@ public final class AppLoaderTask: NSObject {
     delegate.let { it in
       delegateQueue.async {
         it.appLoaderTask(self, didFinishBackgroundUpdateWithStatus: status, update: update, error: error)
+        it.appLoaderTaskDidFinishAllLoading(self)
       }
     }
   }
 }
+
+// swiftlint:enable closure_body_length
+// swiftlint:enable force_unwrapping
+// swiftlint:enable superfluous_else
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable line_length

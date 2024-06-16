@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevMenuInterface
 
 class DevMenuScreenTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("Screen should be serializable") {
       let screen = DevMenuScreen("screen-1")
 

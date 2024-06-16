@@ -1,6 +1,7 @@
 import {
   NativeModulesProxy,
   UnavailabilityError,
+  requireNativeModule,
   requireNativeViewManager,
   CodedError,
 } from 'expo-modules-core';
@@ -25,10 +26,16 @@ export type WebGLObject = {
 
 declare let global: any;
 
-const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
+const { ExponentGLViewManager } = NativeModulesProxy;
 
 const NativeView = requireNativeViewManager('ExponentGLView');
 const workletContextManager = createWorkletContextManager();
+
+export function getWorkletContext(contextId: number): ExpoWebGLRenderingContext | undefined {
+  'worklet';
+  return workletContextManager.getContext(contextId);
+}
 
 // @needsAudit
 /**
@@ -40,6 +47,7 @@ export class GLView extends React.Component<GLViewProps> {
 
   static defaultProps = {
     msaaSamples: 4,
+    enableExperimentalWorkletSupport: false,
   };
 
   /**
@@ -80,6 +88,10 @@ export class GLView extends React.Component<GLViewProps> {
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
+  /**
+   * This method doesn't work inside of the worklets with new reanimated versions.
+   * @deprecated Use `getWorkletContext` from the global scope instead.
+   */
   static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
     workletContextManager.getContext;
 
@@ -90,6 +102,7 @@ export class GLView extends React.Component<GLViewProps> {
     const {
       onContextCreate, // eslint-disable-line no-unused-vars
       msaaSamples,
+      enableExperimentalWorkletSupport,
       ...viewProps
     } = this.props;
 
@@ -106,6 +119,7 @@ export class GLView extends React.Component<GLViewProps> {
               : {}),
           }}
           onSurfaceCreate={this._onSurfaceCreate}
+          enableExperimentalWorkletSupport={enableExperimentalWorkletSupport}
           msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}
         />
       </View>
@@ -132,6 +146,14 @@ export class GLView extends React.Component<GLViewProps> {
   componentWillUnmount(): void {
     if (this.exglCtxId) {
       unregisterGLContext(this.exglCtxId);
+    }
+  }
+
+  componentDidUpdate(prevProps: GLViewProps): void {
+    if (
+      this.props.enableExperimentalWorkletSupport !== prevProps.enableExperimentalWorkletSupport
+    ) {
+      console.warn('Updating prop enableExperimentalWorkletSupport is not supported');
     }
   }
 
@@ -172,7 +194,7 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   /**
-   * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+   * Same as static [`takeSnapshotAsync()`](#takesnapshotasyncoptions),
    * but uses WebGL context that is associated with the view on which the method is called.
    * @param options
    */

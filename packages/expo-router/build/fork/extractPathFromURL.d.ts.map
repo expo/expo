@@ -1,0 +1,1 @@
+{"version":3,"file":"extractPathFromURL.d.ts","sourceRoot":"","sources":["../../src/fork/extractPathFromURL.ts"],"names":[],"mappings":"AAAA,wBAAgB,gCAAgC,CAAC,GAAG,EAAE,MAAM,GAAG;IAC7D,QAAQ,EAAE,MAAM,CAAC;IACjB,WAAW,EAAE,MAAM,CAAC;CACrB,CAUA;AAED,wBAAgB,uBAAuB,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,CAI3D;AA4FD,wBAAgB,sBAAsB,CAAC,GAAG,GAAE,MAAW,UAMtD"}

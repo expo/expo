@@ -10,7 +10,6 @@ export interface Options {
   assetCatalogDest?: string;
   entryFile: string;
   resetCache: boolean;
-  resetGlobalCache: boolean;
   transformer?: string;
   minify?: boolean;
   config?: string;
@@ -24,7 +23,6 @@ export interface Options {
   sourcemapUseAbsolutePath: boolean;
   verbose: boolean;
   unstableTransformProfile?: string;
-  generateStaticViewConfigs: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -40,10 +38,7 @@ export function resolveOptions(
   const dev = parsed.args['--dev'] ?? true;
   assertIsBoolean(dev);
 
-  const generateStaticViewConfigs = parsed.args['--generate-static-view-configs'] ?? true;
-  assertIsBoolean(generateStaticViewConfigs);
-
-  const minify = parsed.args['--minify'] ?? true;
+  const minify = parsed.args['--minify'] ?? !dev;
   assertIsBoolean(minify);
 
   const entryFile = args['--entry-file'];
@@ -70,11 +65,9 @@ export function resolveOptions(
     assetsDest: args['--assets-dest'],
     unstableTransformProfile: args['--unstable-transform-profile'],
     resetCache: !!parsed.args['--reset-cache'],
-    resetGlobalCache: false,
     verbose: args['--verbose'] ?? env.EXPO_DEBUG,
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
-    generateStaticViewConfigs,
     minify,
   };
 }

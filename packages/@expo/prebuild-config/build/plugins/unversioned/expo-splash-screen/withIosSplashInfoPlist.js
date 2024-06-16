@@ -29,14 +29,12 @@ const withIosSplashInfoPlist = (config, splash) => {
 };
 exports.withIosSplashInfoPlist = withIosSplashInfoPlist;
 function setSplashInfoPlist(config, infoPlist, splash) {
-  var _splash$dark, _splash$dark2, _splash$dark3, _splash$dark4;
-  const isDarkModeEnabled = !!(splash !== null && splash !== void 0 && (_splash$dark = splash.dark) !== null && _splash$dark !== void 0 && _splash$dark.image || splash !== null && splash !== void 0 && (_splash$dark2 = splash.dark) !== null && _splash$dark2 !== void 0 && _splash$dark2.tabletImage || splash !== null && splash !== void 0 && (_splash$dark3 = splash.dark) !== null && _splash$dark3 !== void 0 && _splash$dark3.backgroundColor || splash !== null && splash !== void 0 && (_splash$dark4 = splash.dark) !== null && _splash$dark4 !== void 0 && _splash$dark4.tabletBackgroundColor);
+  const isDarkModeEnabled = !!(splash?.dark?.image || splash?.dark?.tabletImage || splash?.dark?.backgroundColor || splash?.dark?.tabletBackgroundColor);
   debug(`isDarkModeEnabled: `, isDarkModeEnabled);
   if (isDarkModeEnabled) {
-    var _config$ios$userInter, _config$ios;
     // IOSConfig.UserInterfaceStyle.getUserInterfaceStyle(config);
     // Determine if the user manually defined the userInterfaceStyle incorrectly
-    const existing = (_config$ios$userInter = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.userInterfaceStyle) !== null && _config$ios$userInter !== void 0 ? _config$ios$userInter : config.userInterfaceStyle;
+    const existing = config.ios?.userInterfaceStyle ?? config.userInterfaceStyle;
     // Add a warning to prevent the dark mode splash screen from not being shown -- this was learned the hard way.
     if (existing && existing !== 'automatic') {
       _configPlugins().WarningAggregator.addWarningIOS('userInterfaceStyle', 'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Please remove it or disable dark mode splash screens.');

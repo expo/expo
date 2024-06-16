@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import stripAnsi from 'strip-ansi';
 
-import logger from '../Logger';
 import {
   AndroidProjectDependenciesUpdates,
   AndroidProjectReport,
@@ -15,6 +14,7 @@ import {
   getChangelogLink,
   SemverDiff,
 } from './utils';
+import logger from '../Logger';
 
 function generateAndroidProjectsSelectionChoice({
   projectName,

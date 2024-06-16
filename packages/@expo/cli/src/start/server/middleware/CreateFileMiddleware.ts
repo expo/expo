@@ -12,7 +12,12 @@ import { ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:createFile') as typeof console.log;
 
-export type TouchFileBody = { path: string; contents: string };
+export type TouchFileBody = {
+  /** @deprecated */
+  path: string;
+  absolutePath?: string;
+  contents: string;
+};
 
 /**
  * Middleware for creating a file given a `POST` request with
@@ -24,8 +29,12 @@ export class CreateFileMiddleware extends ExpoMiddleware {
   }
 
   protected resolvePath(inputPath: string): string {
-    let resolvedPath = path.join(this.projectRoot, inputPath);
-    const extension = path.extname(resolvedPath);
+    return this.resolveExtension(path.join(this.projectRoot, inputPath));
+  }
+
+  protected resolveExtension(inputPath: string): string {
+    let resolvedPath = inputPath;
+    const extension = path.extname(inputPath);
     if (extension === '.js') {
       // Automatically convert JS files to TS files when added to a project
       // with TypeScript.
@@ -90,7 +99,9 @@ export class CreateFileMiddleware extends ExpoMiddleware {
 
     debug(`Requested: %O`, properties);
 
-    const resolvedPath = this.resolvePath(properties.path);
+    const resolvedPath = properties.absolutePath
+      ? this.resolveExtension(path.resolve(properties.absolutePath))
+      : this.resolvePath(properties.path);
 
     if (fs.existsSync(resolvedPath)) {
       res.statusCode = 409;

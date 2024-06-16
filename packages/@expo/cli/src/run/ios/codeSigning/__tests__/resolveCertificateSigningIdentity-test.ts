@@ -11,8 +11,6 @@ import * as Settings from '../settings';
 
 jest.mock('../../../../log');
 jest.mock('../../../../utils/prompts');
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../utils/interactive', () => ({
   isInteractive: jest.fn(() => true),
@@ -70,8 +68,8 @@ describe(resolveCertificateSigningIdentityAsync, () => {
   });
 
   it(`prompts when there are more than one signing identities`, async () => {
-    asMock(Settings.getLastDeveloperCodeSigningIdAsync).mockResolvedValue('YYY');
-    asMock(Security.resolveIdentitiesAsync).mockResolvedValueOnce([
+    jest.mocked(Settings.getLastDeveloperCodeSigningIdAsync).mockResolvedValue('YYY');
+    jest.mocked(Security.resolveIdentitiesAsync).mockResolvedValueOnce([
       {
         signingCertificateId: 'XXX',
         codeSigningInfo: 'Apple Development: Evan Bacon (XXX)',
@@ -85,7 +83,7 @@ describe(resolveCertificateSigningIdentityAsync, () => {
       },
     ]);
 
-    asMock(selectAsync).mockResolvedValueOnce(0);
+    jest.mocked(selectAsync).mockResolvedValueOnce(0);
 
     await expect(resolveCertificateSigningIdentityAsync(['YYY', 'XXX'])).resolves.toEqual({
       appleTeamId: expect.any(String),
@@ -107,7 +105,7 @@ describe(resolveCertificateSigningIdentityAsync, () => {
   });
 
   it(`auto selects the first ID when there is only one`, async () => {
-    asMock(Security.resolveCertificateSigningInfoAsync).mockResolvedValue({
+    jest.mocked(Security.resolveCertificateSigningInfoAsync).mockResolvedValue({
       signingCertificateId: 'XXX',
     });
 

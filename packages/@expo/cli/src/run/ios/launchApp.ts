@@ -1,14 +1,15 @@
 import chalk from 'chalk';
 import path from 'path';
 
+import * as XcodeBuild from './XcodeBuild';
+import { BuildProps } from './XcodeBuild.types';
+import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
+import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
-import * as XcodeBuild from './XcodeBuild';
-import { BuildProps } from './XcodeBuild.types';
-import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 
 /** Install and launch the app binary on a device. */
 export async function launchAppAsync(
@@ -19,13 +20,18 @@ export async function launchAppAsync(
   const appId = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
 
   if (!props.isSimulator) {
-    await profile(installOnDeviceAsync)({
-      bundleIdentifier: appId,
-      bundle: binaryPath,
-      appDeltaDirectory: getAppDeltaDirectory(appId),
-      udid: props.device.udid,
-      deviceName: props.device.name,
-    });
+    if (props.device.osType === 'macOS') {
+      await launchBinaryOnMacAsync(appId, binaryPath);
+    } else {
+      await profile(installOnDeviceAsync)({
+        bundleIdentifier: appId,
+        bundle: binaryPath,
+        appDeltaDirectory: getAppDeltaDirectory(appId),
+        udid: props.device.udid,
+        deviceName: props.device.name,
+      });
+    }
+
     return;
   }
 

@@ -36,7 +36,7 @@ export const UserQuery = {
           `,
           /* variables */ undefined,
           {
-            additionalTypenames: ['User'],
+            additionalTypenames: ['User', 'SSOUser'],
           }
         )
         .toPromise()

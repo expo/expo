@@ -1,5 +1,5 @@
+import React
 import ExpoModulesCore
-import simd
 
 public class ExpoAppleMapsModule: Module {
   public func definition() -> ModuleDefinition {
@@ -27,7 +27,7 @@ public class ExpoAppleMapsModule: Module {
       }
     }
 
-    ViewManager {
+    View(AppleMapsView.self) {
       Events(
         "onMapPress",
         "onDoublePress",
@@ -45,10 +45,6 @@ public class ExpoAppleMapsModule: Module {
         "onLocationDotPress",
         "onLocationChange"
       )
-
-      View {
-        AppleMapsView(sendEvent: self.sendEvent)
-      }
 
       Prop("showCompass") { (view: AppleMapsView, enable: Bool) in
         view.setShowCompass(enable: enable)

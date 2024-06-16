@@ -1,5 +1,5 @@
 import { ImageResult, SaveOptions, Action } from './ImageManipulator.types';
-import { crop, flip, resize, rotate } from './actions/index.web';
+import { crop, extent, flip, resize, rotate } from './actions/index.web';
 import { getContext } from './utils/getContext.web';
 
 function getResults(canvas: HTMLCanvasElement, options?: SaveOptions): ImageResult {
@@ -43,9 +43,6 @@ function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoImageManipulator';
-  },
   async manipulateAsync(
     uri: string,
     actions: Action[] = [],
@@ -56,6 +53,8 @@ export default {
     const resultCanvas = actions.reduce((canvas, action) => {
       if ('crop' in action) {
         return crop(canvas, action.crop);
+      } else if ('extent' in action) {
+        return extent(canvas, action.extent);
       } else if ('resize' in action) {
         return resize(canvas, action.resize);
       } else if ('flip' in action) {

@@ -65,4 +65,36 @@ describe(getVersionedNativeModulesAsync, () => {
 
     await expect(getVersionedNativeModulesAsync(projectRoot, '66.0.0')).rejects.toThrowError();
   });
+
+  it('skips api versions when requested', async () => {
+    nock(getExpoApiBaseUrl())
+      .get('/v2/sdks/50.0.0/native-modules')
+      .reply(200, {
+        data: [
+          { npmPackage: 'expo-abc', versionRange: '~1.0.0' },
+          { npmPackage: 'expo-def', versionRange: '~0.1.0' },
+        ],
+      });
+
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '50.0.0-canary-20231125-d600e44',
+        }),
+        'node_modules/expo/bundledNativeModules.json': JSON.stringify({
+          'expo-abc': '~1.2.3',
+          'expo-def': '~0.1.2',
+        }),
+      },
+      projectRoot
+    );
+
+    const bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, '50.0.0', {
+      skipRemoteVersions: true,
+    });
+    expect(bundledNativeModules).toEqual({
+      'expo-abc': '~1.2.3',
+      'expo-def': '~0.1.2',
+    });
+  });
 });

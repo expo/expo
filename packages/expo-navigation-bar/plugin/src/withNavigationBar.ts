@@ -1,13 +1,7 @@
 // @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-color';
+import normalizeColor from '@react-native/normalize-colors';
 // @ts-ignore
 import Debug from 'debug';
-import {
-  NavigationBarVisibility,
-  NavigationBarBehavior,
-  NavigationBarPosition,
-  NavigationBarButtonStyle,
-} from 'expo-navigation-bar';
 import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
@@ -18,6 +12,12 @@ import {
   withAndroidColors,
   withAndroidStyles,
 } from 'expo/config-plugins';
+import {
+  NavigationBarVisibility,
+  NavigationBarBehavior,
+  NavigationBarPosition,
+  NavigationBarButtonStyle,
+} from 'expo-navigation-bar';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 

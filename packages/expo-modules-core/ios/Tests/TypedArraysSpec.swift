@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class TypedArraysSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("module") {
       let appContext = AppContext.create()
       let runtime = try! appContext.runtime

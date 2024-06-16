@@ -8,9 +8,187 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.15 - 2024-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.14 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.13 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.12 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.11 — 2024-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.9 — 2024-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.6 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.5 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.4 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 4.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 3.3.11 - 2024-03-20
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.10 - 2024-03-13
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.9 - 2024-02-27
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.8 - 2024-02-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.7 - 2024-01-24
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.6 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.5 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 3.3.4 - 2023-12-21
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.3 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.2 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 3.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.2.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.4.11 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.10 — 2023-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.9 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.7 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the Reanimated 3.4.0 on iOS. ([#23726](https://github.com/expo/expo/pull/23726) by [@piaskowyk](https://github.com/piaskowyk))
+
+## 2.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.3.0 — 2023-05-08
 

@@ -5,13 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getPrimaryColor = getPrimaryColor;
 exports.withPrimaryColorStyles = exports.withPrimaryColorColors = exports.withPrimaryColor = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Colors() {
   const data = require("./Colors");
   _Colors = function () {
@@ -22,6 +15,13 @@ function _Colors() {
 function _Styles() {
   const data = require("./Styles");
   _Styles = function () {
+    return data;
+  };
+  return data;
+}
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
     return data;
   };
   return data;
@@ -57,7 +57,6 @@ const withPrimaryColorStyles = config => {
 };
 exports.withPrimaryColorStyles = withPrimaryColorStyles;
 function getPrimaryColor(config) {
-  var _config$primaryColor;
-  return (_config$primaryColor = config.primaryColor) !== null && _config$primaryColor !== void 0 ? _config$primaryColor : DEFAULT_PRIMARY_COLOR;
+  return config.primaryColor ?? DEFAULT_PRIMARY_COLOR;
 }
 //# sourceMappingURL=PrimaryColor.js.map

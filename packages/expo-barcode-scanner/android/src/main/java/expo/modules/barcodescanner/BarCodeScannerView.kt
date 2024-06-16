@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 
 class BarCodeScannerView(
   context: Context,
-  appContext: AppContext,
+  appContext: AppContext
 ) : ExpoView(context, appContext) {
   private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
     coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
@@ -39,7 +39,7 @@ class BarCodeScannerView(
     if (canDetectOrientation()) enable() else disable()
   }
 
-  private lateinit var viewFinder: BarCodeScannerViewFinder
+  private var viewFinder: BarCodeScannerViewFinder
   private var actualDeviceOrientation = -1
   private var leftPadding = 0
   private var topPadding = 0
@@ -69,6 +69,7 @@ class BarCodeScannerView(
       BarCodeScannedEvent(
         target = id,
         data = barCode.value,
+        raw = barCode.raw,
         type = barCode.type,
         cornerPoints = cornerPoints,
         bounds = boundingBox
@@ -107,7 +108,7 @@ class BarCodeScannerView(
 
   private fun getCornerPointsAndBoundingBox(
     cornerPoints: List<Int>,
-    boundingBox: BarCodeScannerResult.BoundingBox,
+    boundingBox: BarCodeScannerResult.BoundingBox
   ): Pair<ArrayList<Bundle>, Bundle> {
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
@@ -142,18 +143,8 @@ class BarCodeScannerView(
 
   fun setCameraType(cameraType: Int) {
     type = cameraType
-    if (!::viewFinder.isInitialized) {
-      viewFinder = BarCodeScannerViewFinder(
-        context,
-        cameraType,
-        this,
-        appContext
-      )
-      addView(viewFinder)
-    } else {
-      viewFinder.setCameraType(cameraType)
-      ExpoBarCodeScanner.instance.adjustPreviewLayout(cameraType)
-    }
+    viewFinder.setCameraType(cameraType)
+    ExpoBarCodeScanner.instance.adjustPreviewLayout(cameraType)
   }
 
   fun setBarCodeScannerSettings(settings: BarCodeScannerSettings?) {
@@ -179,9 +170,6 @@ class BarCodeScannerView(
   }
 
   private fun layoutViewFinder(left: Int, top: Int, right: Int, bottom: Int) {
-    if (!::viewFinder.isInitialized) {
-      return
-    }
     val width = (right - left).toFloat()
     val height = (bottom - top).toFloat()
     val viewfinderWidth: Int
@@ -206,5 +194,12 @@ class BarCodeScannerView(
 
   init {
     ExpoBarCodeScanner.createInstance(getDeviceOrientation())
+    viewFinder = BarCodeScannerViewFinder(
+      context,
+      type,
+      this,
+      appContext
+    )
+    addView(viewFinder)
   }
 }

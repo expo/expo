@@ -17,9 +17,6 @@ function uriFromFontSource(asset) {
 function displayFromFontSource(asset) {
     return asset.display || FontDisplay.AUTO;
 }
-export function fontFamilyNeedsScoping(name) {
-    return false;
-}
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
     const display = displayFromFontSource(source);
@@ -37,13 +34,17 @@ function throwInvalidSourceError(source) {
         type = JSON.stringify(source, null, 2);
     throw new CodedError(`ERR_FONT_SOURCE`, `Expected font asset of type \`string | FontResource | Asset\` instead got: ${type}`);
 }
-export async function loadSingleFontAsync(name, input) {
+// NOTE(EvanBacon): No async keyword!
+export function loadSingleFontAsync(name, input) {
     if (typeof input !== 'object' || typeof input.uri !== 'string' || input.downloadAsync) {
         throwInvalidSourceError(input);
     }
-    await ExpoFontLoader.loadAsync(name, input);
-}
-export function getNativeFontName(name) {
-    return name;
+    try {
+        return ExpoFontLoader.loadAsync(name, input);
+    }
+    catch {
+        // No-op.
+    }
+    return Promise.resolve();
 }
 //# sourceMappingURL=FontLoader.web.js.map

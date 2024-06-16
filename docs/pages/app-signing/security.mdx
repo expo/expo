@@ -11,7 +11,7 @@ All of the data related to the information explained below can be downloaded and
 
 ## iOS Push Notification credentials
 
-There are two types of iOS push notification credentials: one modern recommended approach recommended by Apple and the legacy approach. The default behavior is to use the modern approach, but developers may opt-in to the legacy approach by providing a p12 certificate.
+There are two types of iOS push notification credentials: one modern approach recommended by Apple and the legacy approach. The default behavior is to use the modern approach, but developers may opt-in to the legacy approach by providing a p12 certificate.
 
 ### APNs auth key (p8) + key ID (string)
 
@@ -37,7 +37,7 @@ There isn't much that a malicious actor could do with this alone &mdash; they wo
 
 ### Consequences if lost
 
-None, they are available through the Apple Developer console.
+None. They are available through the Apple Developer console.
 
 ## Apple Developer account credentials
 
@@ -52,7 +52,7 @@ Your password is only ever stored locally on your computer. This feature is not 
 
 Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You can also use this to change the saved password.
 
-### Changing Apple ID Password in Keychain
+### Changing Apple ID password in Keychain
 
 To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver. [Your Apple ID]" (example: `deliver.bacon@expo.dev`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
 
@@ -64,7 +64,7 @@ For ad-hoc builds, if a user were to gain access to your session token it would 
 
 ### Consequences if lost
 
-None, they are available through the Apple Developer console.
+None. They are available through the Apple Developer console.
 
 ## Android Push Notification credentials
 
@@ -72,17 +72,17 @@ Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build
 
 ### Consequences if compromised
 
-Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens in order to send a notification.
+Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens to send a notification.
 
 You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
 
 ### Consequences if lost
 
-None, you can access it through the Firebase console.
+None. You can access it through the Firebase console.
 
 ## Android build credentials
 
-A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn’t let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
+A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn't let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
 
 ### Consequences if compromised
 
@@ -98,7 +98,7 @@ Expo tools never ask you to provide your Google account credentials.
 
 ## Device tokens for Android and iOS push notifications
 
-On top of the platform-specific credentials, a device token is necessary to send a push notification. Expo manages this for you and provides an abstraction on top of it with the Expo Push Token. The device token identifies the recipient, i.e., the device who the notification is being sent to. The device tokens are encrypted at rest and periodically cycled automatically by iOS and Android.
+On top of the platform-specific credentials, a device token is necessary to send a push notification. Expo manages this for you and provides an abstraction on top of it with the Expo Push Token. The device token identifies the recipient, that is, the device to whom the notification is being sent. The device tokens are encrypted at rest and periodically cycled automatically by Android and iOS.
 
 ### Consequences if compromised
 
@@ -110,4 +110,4 @@ You won't be able to send notifications to users until they open your app again.
 
 ## Need more control?
 
-If the above information doesn't satisfy your security requirements, you may wish to run your standalone app builds [on your own infrastructure](/build-reference/local-builds/). Note that you will still need to provide your push notification credentials in order to use the push notification service. If that is also not possible, we recommend handling push notifications on your own.
+If the above information doesn't satisfy your security requirements, you may wish to run your standalone app builds [on your infrastructure](/build-reference/local-builds/). Note that you will still need to provide your push notification credentials to use the push notification service. If that is also impossible, we recommend handling push notifications on your own.

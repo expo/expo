@@ -7,7 +7,7 @@ import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
-import { Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { green, yellow, cyan } = chalk;
 
@@ -19,7 +19,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     name: 'updateWorkspaceProjects',
     filesToStage: ['**/package.json', 'yarn.lock'],
   },
-  async (parcels: Parcel[]) => {
+  async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');
 
     const workspaceInfo = await Workspace.getInfoAsync();
@@ -75,10 +75,10 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
             }
 
             // Leave tilde and caret as they are, just replace the version.
-            const newVersionRange = currentVersionRange.replace(
-              /([\^~]?).*/,
-              `$1${state.releaseVersion}`
-            );
+            const newVersionRange = options.canary
+              ? state.releaseVersion
+              : currentVersionRange.replace(/([\^~]?).*/, `$1${state.releaseVersion}`);
+
             dependenciesObject[pkg.packageName] = newVersionRange;
 
             batch.log(

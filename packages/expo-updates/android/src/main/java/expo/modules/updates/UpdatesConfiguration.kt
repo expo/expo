@@ -6,6 +6,15 @@ import android.net.Uri
 import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
+import org.apache.commons.io.IOUtils
+import java.nio.charset.StandardCharsets
+
+enum class UpdatesConfigurationValidationResult {
+  VALID,
+  INVALID_NOT_ENABLED,
+  INVALID_MISSING_URL,
+  INVALID_MISSING_RUNTIME_VERSION
+}
 
 /**
  * Holds global, immutable configuration values for updates, as well as doing some rudimentary
@@ -19,13 +28,9 @@ import expo.modules.updates.codesigning.CodeSigningConfiguration
  * class may be created over the lifetime of the app, but only one should be active at a time.
  */
 data class UpdatesConfiguration(
-  val isEnabled: Boolean,
-  val expectsSignedManifest: Boolean,
-  val scopeKey: String?,
-  val updateUrl: Uri?,
-  val sdkVersion: String?,
-  val runtimeVersion: String?,
-  val releaseChannel: String,
+  val scopeKey: String,
+  val updateUrl: Uri,
+  val runtimeVersionRaw: String?,
   val launchWaitMs: Int,
   val checkOnLaunch: CheckAutomaticallyConfiguration,
   val hasEmbeddedUpdate: Boolean, // used only for expo-updates development
@@ -34,7 +39,7 @@ data class UpdatesConfiguration(
   val codeSigningMetadata: Map<String, String>?,
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
   private val codeSigningAllowUnsignedManifests: Boolean,
-  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER {
@@ -49,22 +54,19 @@ data class UpdatesConfiguration(
     ALWAYS {
       override fun toJSString() = "ALWAYS"
     };
+
     open fun toJSString(): String {
       throw InvalidArgumentException("Unsupported CheckAutomaticallyConfiguration value")
     }
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
-    isEnabled = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLED_KEY) ?: context?.getMetadataValue("expo.modules.updates.ENABLED") ?: true,
-    expectsSignedManifest = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST) ?: false,
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = overrideMap?.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) },
+      updateUrl = getUpdatesUrl(context, overrideMap)!!
     ),
-    updateUrl = overrideMap?.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) },
-    sdkVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SDK_VERSION_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION"),
-    runtimeVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), ""),
-    releaseChannel = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_RELEASE_CHANNEL") ?: UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
+    updateUrl = getUpdatesUrl(context, overrideMap)!!,
+    runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
       try {
@@ -97,16 +99,20 @@ data class UpdatesConfiguration(
     codeSigningAllowUnsignedManifests = overrideMap?.readValueCheckingType<Boolean>(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
-    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
+    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false
   )
-
-  val isMissingRuntimeVersion: Boolean
-    get() = (runtimeVersion == null || runtimeVersion.isEmpty()) &&
-      (sdkVersion == null || sdkVersion.isEmpty())
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
     codeSigningCertificate?.let {
       CodeSigningConfiguration(it, codeSigningMetadata, codeSigningIncludeManifestResponseCertificateChain, codeSigningAllowUnsignedManifests)
+    }
+  }
+
+  fun getRuntimeVersion(): String {
+    return if (!runtimeVersionRaw.isNullOrEmpty()) {
+      runtimeVersionRaw
+    } else {
+      throw Exception("No runtime version provided in configuration")
     }
   }
 
@@ -117,13 +123,10 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey"
     const val UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl"
     const val UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "requestHeaders"
-    const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel"
-    const val UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion"
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY = "runtimeVersion"
     const val UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch"
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
-    const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
     const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
@@ -131,8 +134,46 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN = "codeSigningIncludeManifestResponseCertificateChain"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS = "codeSigningAllowUnsignedManifests"
 
-    private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
+
+    const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
+    private const val FINGERPRINT_FILE_NAME = "fingerprint"
+
+    private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri? {
+      return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY)
+        ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")
+          ?.let { Uri.parse(it) }
+    }
+
+    private fun getIsEnabled(context: Context?, overrideMap: Map<String, Any>?): Boolean {
+      return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_ENABLED_KEY) ?: context?.getMetadataValue("expo.modules.updates.ENABLED") ?: true
+    }
+
+    private fun getRuntimeVersion(context: Context?, overrideMap: Map<String, Any>?): String? {
+      val runtimeVersion = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), "")
+
+      if (context != null && runtimeVersion == UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL) {
+        return context.assets.open(FINGERPRINT_FILE_NAME).use { stream ->
+          IOUtils.toString(stream, StandardCharsets.UTF_8)
+        }
+      }
+
+      return runtimeVersion
+    }
+
+    fun getUpdatesConfigurationValidationResult(context: Context?, overrideMap: Map<String, Any>?): UpdatesConfigurationValidationResult {
+      val isEnabledConfigSetting = getIsEnabled(context, overrideMap)
+      if (!isEnabledConfigSetting) {
+        return UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED
+      }
+      getUpdatesUrl(context, overrideMap) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
+
+      if (getRuntimeVersion(context, overrideMap).isNullOrEmpty()) {
+        return UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION
+      }
+
+      return UpdatesConfigurationValidationResult.VALID
+    }
   }
 }
 
@@ -162,14 +203,12 @@ private inline fun <reified T : Any> Map<String, Any>.readValueCheckingType(key:
 }
 
 private fun getDefaultPortForScheme(scheme: String?): Int {
-  if ("http" == scheme || "ws" == scheme) {
-    return 80
-  } else if ("https" == scheme || "wss" == scheme) {
-    return 443
-  } else if ("ftp" == scheme) {
-    return 21
+  return when (scheme) {
+    "http", "ws" -> 80
+    "https", "wss" -> 443
+    "ftp" -> 21
+    else -> -1
   }
-  return -1
 }
 
 internal fun getNormalizedUrlOrigin(url: Uri): String {
@@ -181,12 +220,7 @@ internal fun getNormalizedUrlOrigin(url: Uri): String {
   return if (port > -1) "$scheme://${url.host}:$port" else "$scheme://${url.host}"
 }
 
-private fun maybeGetDefaultScopeKey(scopeKey: String?, updateUrl: Uri?): String? {
+private fun maybeGetDefaultScopeKey(scopeKey: String?, updateUrl: Uri): String {
   // set updateUrl as the default value if none is provided
-  if (scopeKey == null) {
-    if (updateUrl != null) {
-      return getNormalizedUrlOrigin(updateUrl)
-    }
-  }
-  return scopeKey
+  return scopeKey ?: getNormalizedUrlOrigin(updateUrl)
 }

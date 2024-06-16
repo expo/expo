@@ -1,18 +1,12 @@
 import mux from '@expo/mux';
 import { setStringAsync } from 'expo-clipboard';
-import Constants from 'expo-constants';
-import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
-import { v4 as uuidV4 } from 'uuid';
 
 // A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
 global.performance = {
   now: () => 0,
 };
-
-const logUrl = Constants.manifest.logUrl;
-const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -74,7 +68,7 @@ export default class App extends React.Component {
     const moduleSpecs = await _getExpoModuleSpecsAsync();
     const code = `module.exports = ${JSON.stringify(moduleSpecs, replacer)};`;
     await setStringAsync(code);
-    this.setState({ moduleSpecs });
+    this.setState({ moduleSpecs: code });
     const message = `
 
 ------------------------------COPY THE TEXT BELOW------------------------------
@@ -86,7 +80,7 @@ ${code}
 THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 
 `;
-    await _sendRawLogAsync(message, logUrl);
+    console.log(message);
   }
 
   render() {
@@ -107,37 +101,9 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
   }
 }
 
-/**
- * Sends a log message without truncating it.
- */
-async function _sendRawLogAsync(message, logUrl) {
-  const headers = {
-    'Content-Type': 'application/json',
-    Connection: 'keep-alive',
-    'Proxy-Connection': 'keep-alive',
-    Accept: 'application/json',
-    'Device-Id': await getInstallationIdAsync(),
-    'Session-Id': sessionId,
-  };
-  if (Constants.deviceName) {
-    headers['Device-Name'] = Constants.deviceName;
-  }
-  await fetch(logUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify([
-      {
-        count: 0,
-        level: 'info',
-        body: [message],
-        includesStack: false,
-      },
-    ]),
-  });
-}
-
+const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+const blacklist = ['ExpoCrypto', 'ExpoClipboard'];
 async function _getExpoModuleSpecsAsync() {
-  const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
   const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
   const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
   const specPromises = {};
@@ -152,16 +118,17 @@ async function _getModuleSpecAsync(moduleName, module) {
     return {};
   }
 
-  const moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
-    moduleName
-  );
+  const moduleDescription =
+    await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(moduleName);
   const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'NativeUnimoduleProxy') {
-    spec.exportedMethods.mock = _sortObject(module.exportedMethods);
+    spec.exportedMethods.mock = _sortObjectAndBlacklistKeys(module.exportedMethods, blacklist);
     spec.viewManagersMetadata.mock = module.viewManagersMetadata;
     spec.modulesConstants.type = 'mock';
+
     spec.modulesConstants.mockDefinition = Object.keys(module.modulesConstants)
       .sort()
+      .filter((name) => !blacklist.includes(name))
       .reduce(
         (spec, moduleName) => ({
           ...spec,
@@ -199,9 +166,10 @@ const _addFunctionTypes = (spec, methods) =>
       spec
     );
 
-const _sortObject = (obj) =>
+const _sortObjectAndBlacklistKeys = (obj, blacklist) =>
   Object.keys(obj)
     .sort()
+    .filter((k) => !blacklist.includes(k))
     .reduce(
       (acc, el) => ({
         ...acc,

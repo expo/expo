@@ -1,4 +1,11 @@
-# expo-font
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/font/">
+    <img
+      src="../../.github/resources/expo-font.svg"
+      alt="expo-font"
+      height="64" />
+  </a>
+</p>
 
 Load fonts at runtime and use them in React Native components.
 

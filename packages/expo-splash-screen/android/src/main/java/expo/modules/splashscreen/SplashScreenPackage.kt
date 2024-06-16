@@ -1,22 +1,22 @@
 package expo.modules.splashscreen
 
 import android.content.Context
-import expo.modules.splashscreen.singletons.SplashScreen
-import expo.modules.core.BasePackage
-import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.splashscreen.singletons.SplashScreen
 
-class SplashScreenPackage : BasePackage() {
-  override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(SplashScreenModule(context))
-  }
-
+class SplashScreenPackage : Package {
   override fun createSingletonModules(context: Context?): List<SingletonModule> {
     return listOf(SplashScreen)
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
-    return listOf(SplashScreenReactActivityLifecycleListener(activityContext))
+    return listOf(SplashScreenReactActivityLifecycleListener())
+  }
+
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
+    return listOf(SplashScreenReactActivityHandler())
   }
 }

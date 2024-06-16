@@ -19,7 +19,7 @@ Feel free to add other options here!
 Configuration for iOS should be done in Expo.plist. On Android, most options can be configured in AndroidManifest.xml.
 
 - Make sure that the URL (`EXUpdatesURL`, `expo.modules.updates.EXPO_UPDATE_URL`) is properly set.
-- Make sure that one of either the SDK version (`EXUpdatesSDKVersion`, `expo.modules.updates.EXPO_SDK_VERSION`) or runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_RUNTIME_VERSION`) is also properly set.
+- Make sure that the runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_RUNTIME_VERSION`) is properly set.
 
 ### Ignore Embedded Update
 
@@ -27,13 +27,9 @@ If you are using expo-updates to test a server you're developing, you may want t
 
 You can do tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
 
-### New Manifest Format
-
-To test the new EAS update manifest format, set `EXUpdatesUsesLegacyManifest` and `expo.modules.updates.EXPO_LEGACY_MANIFEST` to false.
-
 ### Additional Headers
 
-If you want any additional headers to be sent in manifest requests, you can add these to a map under the key `EXUpdatesRequestHeaders` on iOS, or `requestHeaders` on Android (currently, this can't be configured in AndroidManifest.xml and you need to use the `UpdatesController.initialize(Context context, Map<String, Object> configuration)` method in MainApplication.java).
+If you want any additional headers to be sent in manifest requests, you can add these to a map under the key `EXUpdatesRequestHeaders` on iOS, or `requestHeaders` on Android (currently, this can't be configured in AndroidManifest.xml and you need to use the `UpdatesController.overrideConfiguration(Context context, Map<String, Object> configuration)` method in MainApplication.java).
 
 ## Making a Build
 

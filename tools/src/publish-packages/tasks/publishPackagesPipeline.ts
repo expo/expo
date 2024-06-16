@@ -1,13 +1,10 @@
 import chalk from 'chalk';
 
-import logger from '../../Logger';
-import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
-import { commentOnIssuesTask } from './commentOnIssuesTask';
+// import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
@@ -21,6 +18,9 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import logger from '../../Logger';
+import { Task } from '../../TasksRunner';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, yellow } = chalk;
 
@@ -48,7 +48,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       publishPackages,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
-      commentOnIssuesTask,
+      // commentOnIssuesTask,
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {

@@ -1,4 +1,4 @@
-export interface GetImageOptions {
+export type GetImageOptions = {
     /**
      * The format of the clipboard image to be converted to.
      */
@@ -9,15 +9,13 @@ export interface GetImageOptions {
      * @default 1
      */
     jpegQuality?: number;
-}
-export interface ClipboardImage {
+};
+export type ClipboardImage = {
     /**
-     * A Base64-encoded string of the image data.
-     * Its format is dependent on the `format` option.
+     * A Base64-encoded string of the image data. Its format is dependent on the `format` option.
+     * You can use it directly as the source of an `Image` element.
      *
      * > **NOTE:** The string is already prepended with `data:image/png;base64,` or `data:image/jpeg;base64,` prefix.
-     *
-     * You can use it directly as the source of an `Image` element.
      * @example
      * ```ts
      * <Image
@@ -34,7 +32,7 @@ export interface ClipboardImage {
         width: number;
         height: number;
     };
-}
+};
 /**
  * Type used to define what type of data is stored in the clipboard.
  */
@@ -54,15 +52,15 @@ export declare enum StringFormat {
     PLAIN_TEXT = "plainText",
     HTML = "html"
 }
-export interface GetStringOptions {
+export type GetStringOptions = {
     /**
      * The target format of the clipboard string to be converted to, if possible.
      *
      * @default StringFormat.PLAIN_TEXT
      */
     preferredFormat?: StringFormat;
-}
-export interface SetStringOptions {
+};
+export type SetStringOptions = {
     /**
      * The input format of the provided string.
      * Adjusting this option can help other applications interpret copied string properly.
@@ -70,5 +68,16 @@ export interface SetStringOptions {
      * @default StringFormat.PLAIN_TEXT
      */
     inputFormat?: StringFormat;
-}
+};
+export type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';
+export type CornerStyleType = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
+export type DisplayModeType = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
+export type PasteEventPayload = TextPasteEvent | ImagePasteEvent;
+export type TextPasteEvent = {
+    text: string;
+    type: 'text';
+};
+export type ImagePasteEvent = {
+    type: 'image';
+} & ClipboardImage;
 //# sourceMappingURL=Clipboard.types.d.ts.map

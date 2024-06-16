@@ -1,7 +1,7 @@
 import { ExpoConfig, modifyConfigAsync } from '@expo/config';
 
-import * as Log from '../log';
 import { warnAboutConfigAndThrow } from './modifyConfigAsync';
+import * as Log from '../log';
 
 export async function attemptAddingPluginsAsync(
   projectRoot: string,

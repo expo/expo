@@ -3,8 +3,6 @@
 // this uses abstract class patterns
 // swiftlint:disable unavailable_function
 
-// swiftlint:disable type_body_length
-
 import Foundation
 import UIKit
 
@@ -121,11 +119,11 @@ public class Manifest: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  func expoGoConfigRootObject() -> [String: Any]? {
+  public func expoGoConfigRootObject() -> [String: Any]? {
     preconditionFailure("Must override in concrete class")
   }
 
-  func expoClientConfigRootObject() -> [String: Any]? {
+  public func expoClientConfigRootObject() -> [String: Any]? {
     preconditionFailure("Must override in concrete class")
   }
 
@@ -148,6 +146,10 @@ public class Manifest: NSObject {
 
   public func revisionId() -> String? {
     return expoClientConfigRootObject()?.optionalValue(forKey: "revisionId")
+  }
+
+  public func getMetadata() -> [String: Any]? {
+    return rawManifestJSONInternal.optionalValue(forKey: "metadata")
   }
 
   public func slug() -> String? {
@@ -196,10 +198,6 @@ public class Manifest: NSObject {
 
   public func developer() -> [String: Any]? {
     return expoGoConfigRootObject()?.optionalValue(forKey: "developer")
-  }
-
-  public func logUrl() -> String? {
-    return expoGoConfigRootObject()?.optionalValue(forKey: "logUrl")
   }
 
   public func facebookAppId() -> String? {
@@ -303,6 +301,16 @@ public class Manifest: NSObject {
     return supportsRTL
   }
 
+  public func forcesRTL() -> Bool {
+    guard let expoClientConfigRootObject = expoClientConfigRootObject(),
+      let extra: [String: Any]? = expoClientConfigRootObject.optionalValue(forKey: "extra"),
+      let forcesRTL: Bool = extra?.optionalValue(forKey: "forcesRTL") else {
+      return false
+    }
+
+    return forcesRTL
+  }
+
   public func jsEngine() -> String {
     let jsEngine = expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPaths: [
@@ -315,11 +323,66 @@ public class Manifest: NSObject {
       let sdkMajorVersion = expoGoSDKMajorVersion()
       if sdkMajorVersion > 0 && sdkMajorVersion < 48 {
         return "jsc"
-      } else {
-        return "hermes"
       }
+      return "hermes"
     }
     return jsEngine
+  }
+
+  /**
+   Queries the dedicated package properties in `plugins`
+   */
+  public func getPluginProperties(packageName: String) -> [String: Any]? {
+    typealias PluginWithProps = (String, [String: Any])
+    typealias PluginWithoutProps = String
+    enum PluginType {
+      case withProps (PluginWithProps)
+      case withoutProps (PluginWithoutProps)
+
+      private static func fromRawValue(_ optionalValue: Any?) -> PluginType? {
+        guard let value = optionalValue else {
+          return nil
+        }
+        if let valueArray = value as? [Any],
+          let name = valueArray[0] as? String {
+          if valueArray.count > 1 {
+            guard let props = valueArray[1] as? [String: Any] else {
+              return .withoutProps((name))
+            }
+            return .withProps((name, props))
+          }
+          return .withoutProps((name))
+        }
+        if let value = value as? String {
+          return .withoutProps(value)
+        }
+        let exception = NSException(
+          name: NSExceptionName.internalInconsistencyException,
+          reason: "Value for (key = plugins) has incorrect type",
+          userInfo: ["key": "plugins"]
+        )
+        exception.raise()
+        return nil
+      }
+
+      static func fromRawArrayValue(_ value: [Any]) -> [PluginType]? {
+        return value.compactMap { fromRawValue($0) }
+      }
+    }
+
+    guard let pluginsRawValue = expoClientConfigRootObject()?.optionalValue(forKey: "plugins") as [Any]?,
+      let plugins = PluginType.fromRawArrayValue(pluginsRawValue) else {
+      return nil
+    }
+
+    let firstMatchedPlugin = plugins.compactMap { item in
+      if case .withProps(let tuple) = item, tuple.0 == packageName {
+        return tuple
+      }
+      return nil
+    }.first
+
+    return firstMatchedPlugin?.1
   }
 
   private func expoGoSDKMajorVersion() -> Int {
@@ -361,3 +424,5 @@ public class Manifest: NSObject {
     return nil
   }
 }
+
+// swiftlint:enable unavailable_function

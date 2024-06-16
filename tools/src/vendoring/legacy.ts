@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
-import once from 'lodash/once';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';
@@ -51,8 +50,8 @@ interface VendoredModuleConfig {
   warnings?: string[];
 }
 
-const IOS_DIR = Directories.getIosDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const SvgModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -176,26 +175,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   await prepareIOSNativeFiles();
   await transformGestureHandlerImports();
 };
-
-const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
-  const addResourceImportAsync = async () => {
-    const files = [
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
-    ];
-    await Promise.all(
-      files
-        .map((file) => path.resolve(file))
-        .map(async (file) => {
-          let content = await fs.readFile(file, 'utf8');
-          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
-          await fs.writeFile(file, content, 'utf8');
-        })
-    );
-  };
-
-  await addResourceImportAsync();
-});
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -498,37 +477,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-branch': {
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
-        sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath:
-          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
-        sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'io.branch.rnbranch',
-        recursive: false,
-        updatePbxproj: false,
-      },
-    ],
-  },
-  'lottie-react-native': {
-    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        iosPrefix: 'LRN',
-        sourceIosPath: 'src/ios/LottieReactNative',
-        targetIosPath: 'Api/Components/Lottie',
-        sourceAndroidPath: 'src/android/src/main/java/com/airbnb/android/react/lottie',
-        targetAndroidPath: 'modules/api/components/lottie',
-        sourceAndroidPackage: 'com.airbnb.android.react.lottie',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
-      },
-    ],
-  },
   'react-native-svg': {
     repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     installableInManagedApps: true,
@@ -545,39 +493,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-maps': {
-    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios/AirGoogleMaps',
-        targetIosPath: 'Api/Components/GoogleMaps',
-      },
-      {
-        recursive: true,
-        sourceIosPath: 'ios/AirMaps',
-        targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
-        targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.airbnb.android.react.maps',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
-      },
-    ],
-  },
-  '@react-native-community/netinfo': {
-    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/NetInfo',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
-        targetAndroidPath: 'modules/api/netinfo',
-        sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
-      },
-    ],
-  },
   'react-native-webview': {
     repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
     installableInManagedApps: true,
@@ -589,6 +504,24 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/webview',
         sourceAndroidPackage: 'com.reactnativecommunity.webview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+      },
+      {
+        sourceAndroidPath: 'android/src/oldarch/com/reactnativecommunity/webview',
+        cleanupTargetPath: false,
+        targetAndroidPath: 'modules/api/components/webview',
+        sourceAndroidPackage: 'com.reactnativecommunity.webview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'RNCWebViewPackage.java') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig;'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
     ],
   },
@@ -632,93 +565,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.facebook.react.viewmanagers',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
         cleanupTargetPath: false,
-      },
-    ],
-  },
-  '@react-native-community/datetimepicker': {
-    repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/DateTimePicker',
-        sourceAndroidPath: 'android/src/main/java/com/reactcommunity/rndatetimepicker',
-        targetAndroidPath: 'modules/api/components/datetimepicker',
-        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
-      },
-    ],
-    warnings: [
-      `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
-        'ReactAndroid'
-      )}. Please ensure that ${chalk.magenta(
-        'resourceName'
-      )}s used for grabbing style of dialogs are being resolved properly.`,
-    ],
-  },
-  '@react-native-masked-view/masked-view': {
-    repoUrl: 'https://github.com/react-native-masked-view/masked-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/MaskedView',
-        sourceAndroidPath: 'android/src/main/java/org/reactnative/maskedview',
-        targetAndroidPath: 'modules/api/components/maskedview',
-        sourceAndroidPackage: 'org.reactnative.maskedview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      },
-    ],
-  },
-  'react-native-shared-element': {
-    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SharedElement',
-        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
-        targetAndroidPath: 'modules/api/components/sharedelement',
-        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
-      },
-    ],
-  },
-  '@react-native-segmented-control/segmented-control': {
-    repoUrl: 'https://github.com/react-native-segmented-control/segmented-control',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SegmentedControl',
-      },
-    ],
-  },
-  '@react-native-picker/picker': {
-    repoUrl: 'https://github.com/react-native-picker/picker',
-    installableInManagedApps: true,
-    moduleModifier: PickerModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/Picker',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
-        targetAndroidPath: 'modules/api/components/picker',
-        sourceAndroidPackage: 'com.reactnativecommunity.picker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@stripe/stripe-react-native': {
-    repoUrl: 'https://github.com/stripe/stripe-react-native',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceAndroidPath: 'android/src/main/java/com/reactnativestripesdk',
-        targetAndroidPath: 'modules/api/components/reactnativestripesdk',
-        sourceAndroidPackage: 'com.reactnativestripesdk',
-        targetAndroidPackage:
-          'versioned.host.exp.exponent.modules.api.components.reactnativestripesdk',
       },
     ],
   },

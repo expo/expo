@@ -1,4 +1,4 @@
-import { crop, flip, resize, rotate } from './actions/index.web';
+import { crop, extent, flip, resize, rotate } from './actions/index.web';
 import { getContext } from './utils/getContext.web';
 function getResults(canvas, options) {
     let uri;
@@ -38,14 +38,14 @@ function loadImageAsync(uri) {
     });
 }
 export default {
-    get name() {
-        return 'ExpoImageManipulator';
-    },
     async manipulateAsync(uri, actions = [], options) {
         const originalCanvas = await loadImageAsync(uri);
         const resultCanvas = actions.reduce((canvas, action) => {
             if ('crop' in action) {
                 return crop(canvas, action.crop);
+            }
+            else if ('extent' in action) {
+                return extent(canvas, action.extent);
             }
             else if ('resize' in action) {
                 return resize(canvas, action.resize);

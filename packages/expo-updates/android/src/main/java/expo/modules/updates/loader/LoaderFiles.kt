@@ -1,12 +1,13 @@
 package expo.modules.updates.loader
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.manifest.EmbeddedManifest
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
+import expo.modules.updates.manifest.Update
 import java.io.File
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
@@ -19,11 +20,11 @@ open class LoaderFiles {
     return destination.exists()
   }
 
-  fun readEmbeddedManifest(
+  fun readEmbeddedUpdate(
     context: Context,
     configuration: UpdatesConfiguration
-  ): UpdateManifest? {
-    return EmbeddedManifest.get(context, configuration)
+  ): Update? {
+    return EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
@@ -52,6 +53,7 @@ open class LoaderFiles {
     }
   }
 
+  @SuppressLint("DiscouragedApi")
   @Throws(NoSuchAlgorithmException::class, IOException::class)
   internal fun copyResourceAndGetHash(
     asset: AssetEntity,

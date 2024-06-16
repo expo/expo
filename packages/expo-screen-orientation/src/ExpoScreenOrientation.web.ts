@@ -1,4 +1,5 @@
-import { SyntheticPlatformEmitter, Platform } from 'expo-modules-core';
+import { Platform } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import {
@@ -42,7 +43,7 @@ async function emitOrientationEvent() {
     getOrientationLockAsync(),
     getOrientationAsync(),
   ]);
-  SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
+  DeviceEventEmitter.emit('expoDidUpdateDimensions', {
     orientationLock,
     orientationInfo: { orientation },
   });
@@ -77,7 +78,9 @@ async function _lockAsync(webOrientationLock: WebOrientationLock): Promise<void>
       `expo-screen-orientation: WebOrientationLock.UNKNOWN is not a valid lock that can be applied to the device.`
     );
   }
+  // @ts-ignore-error: This is missing in the TypeScript definitions
   if (screen.orientation && screen.orientation.lock) {
+    // @ts-ignore-error
     await screen.orientation.lock(webOrientationLock);
   } else if (
     screen['lockOrientation'] ||
@@ -104,9 +107,6 @@ async function _lockAsync(webOrientationLock: WebOrientationLock): Promise<void>
 let _lastWebOrientationLock: WebOrientationLock = WebOrientationLock.UNKNOWN;
 
 export default {
-  get name(): string {
-    return 'ExpoScreenOrientation';
-  },
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
     return orientationLock in OrientationLockAPIToWeb;
   },

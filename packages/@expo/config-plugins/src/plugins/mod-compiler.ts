@@ -1,13 +1,13 @@
 import Debug from 'debug';
 import path from 'path';
 
+import { assertModResults, ForwardedBaseModOptions } from './createBaseMod';
+import { withAndroidBaseMods } from './withAndroidBaseMods';
+import { withIosBaseMods } from './withIosBaseMods';
 import { ExportedConfig, Mod, ModConfig, ModPlatform } from '../Plugin.types';
 import { getHackyProjectName } from '../ios/utils/Xcodeproj';
 import { PluginError } from '../utils/errors';
 import * as Warnings from '../utils/warnings';
-import { assertModResults, ForwardedBaseModOptions } from './createBaseMod';
-import { withAndroidBaseMods } from './withAndroidBaseMods';
-import { withIosBaseMods } from './withIosBaseMods';
 
 const debug = Debug('expo:config-plugins:mod-compiler');
 
@@ -72,6 +72,7 @@ export async function compileModsAsync(
     platforms?: ModPlatform[];
     introspect?: boolean;
     assertMissingModProviders?: boolean;
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   if (props.introspect === true) {
@@ -82,18 +83,22 @@ export async function compileModsAsync(
   return await evalModsAsync(config, props);
 }
 
-function sortMods(commands: [string, any][], order: string[]): [string, any][] {
-  const allKeys = commands.map(([key]) => key);
-  const completeOrder = [...new Set([...order, ...allKeys])];
-  const sorted: [string, any][] = [];
-  while (completeOrder.length) {
-    const group = completeOrder.shift()!;
-    const commandSet = commands.find(([key]) => key === group);
-    if (commandSet) {
-      sorted.push(commandSet);
-    }
-  }
-  return sorted;
+export function sortMods(
+  commands: [string, any][],
+  precedences: Record<string, number>
+): [string, any][] {
+  const seen = new Set();
+  const dedupedCommands = commands.filter(([key]) => {
+    const duplicate = seen.has(key);
+    seen.add(key);
+    return !duplicate;
+  });
+
+  return dedupedCommands.sort(([keyA], [keyB]) => {
+    const precedenceA = precedences[keyA] || 0;
+    const precedenceB = precedences[keyB] || 0;
+    return precedenceA - precedenceB;
+  });
 }
 
 function getRawClone({ mods, ...config }: ExportedConfig) {
@@ -102,13 +107,15 @@ function getRawClone({ mods, ...config }: ExportedConfig) {
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
 
-const orders: Record<string, string[]> = {
-  ios: [
+const precedences: Record<string, Record<string, number>> = {
+  ios: {
     // dangerous runs first
-    'dangerous',
+    dangerous: -2,
     // run the XcodeProject mod second because many plugins attempt to read from it.
-    'xcodeproj',
-  ],
+    xcodeproj: -1,
+    // put the finalized mod at the last
+    finalized: 1,
+  },
 };
 /**
  * A generic plugin compiler.
@@ -121,16 +128,19 @@ export async function evalModsAsync(
     projectRoot,
     introspect,
     platforms,
+    assertMissingModProviders,
+    ignoreExistingNativeFiles = false,
+  }: {
+    projectRoot: string;
+    introspect?: boolean;
+    platforms?: ModPlatform[];
     /**
      * Throw errors when mods are missing providers.
      * @default true
      */
-    assertMissingModProviders,
-  }: {
-    projectRoot: string;
-    introspect?: boolean;
     assertMissingModProviders?: boolean;
-    platforms?: ModPlatform[];
+    /** Ignore any existing native files, only use the generated prebuild results. */
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   const modRawConfig = getRawClone(config);
@@ -142,8 +152,9 @@ export async function evalModsAsync(
 
     let entries = Object.entries(platform);
     if (entries.length) {
-      // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, orders[platformName] ?? ['dangerous']);
+      // Move dangerous item to the first position and finalized item to the last position if it exists.
+      // This ensures that all dangerous code runs first and finalized applies last.
+      entries = sortMods(entries, precedences[platformName] ?? { dangerous: -1, finalized: 1 });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =
@@ -157,6 +168,7 @@ export async function evalModsAsync(
           platform: platformName as ModPlatform,
           modName,
           introspect: !!introspect,
+          ignoreExistingNativeFiles,
         };
 
         if (!(mod as Mod).isProvider) {

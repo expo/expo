@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 /**
- * Check [official Apple documentation](https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithmlowqualityzerolatency) for more information.
+ * Check [official Apple documentation](https://developer.apple.com/documentation/avfoundation/audio_settings/time_pitch_algorithm_settings) for more information.
  */
 export declare enum PitchCorrectionQuality {
     /**
@@ -24,11 +24,11 @@ export declare enum PitchCorrectionQuality {
  * - `require('path/to/file')` for a media file asset in the source code directory.
  * - An [`Asset`](./asset) object for a media file asset.
  *
- * The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html)
+ * The [iOS developer documentation](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/OSX_Technology_Overview/MediaLayer/MediaLayer.html)
  * lists the audio and video formats supported on iOS.
  *
- * There are two sets of audio and video formats supported on Android: [formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html)
- * and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table).
+ * There are two sets of audio and video formats supported on Android: [formats supported by ExoPlayer](https://exoplayer.dev/supported-formats.html)
+ * and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/topics/media/platform/supported-formats#formats-table).
  * Expo uses ExoPlayer implementation by default. To use `MediaPlayer`, add `androidImplementation: 'MediaPlayer'` to the initial status of the AV object.
  */
 export type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
@@ -79,8 +79,8 @@ export type AVPlaybackStatusError = {
     isLoaded: false;
     /**
      * Underlying implementation to use (when set to `MediaPlayer` it uses [Android's MediaPlayer](https://developer.android.com/reference/android/media/MediaPlayer.html),
-     * uses [ExoPlayer](https://google.github.io/ExoPlayer/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
-     * ([formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table)).
+     * uses [ExoPlayer](https://exoplayer.dev/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
+     * ([formats supported by ExoPlayer](https://exoplayer.dev/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/topics/media/platform/supported-formats#formats-table)).
      *
      * Note that setting this property takes effect only when the AV object is just being created (toggling its value later will do nothing).
      *
@@ -100,8 +100,8 @@ export type AVPlaybackStatusSuccess = {
     isLoaded: true;
     /**
      * Underlying implementation to use (when set to `MediaPlayer` it uses [Android's MediaPlayer](https://developer.android.com/reference/android/media/MediaPlayer.html),
-     * uses [ExoPlayer](https://google.github.io/ExoPlayer/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
-     * ([formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table)).
+     * uses [ExoPlayer](https://exoplayer.dev/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
+     * ([formats supported by ExoPlayer](https://exoplayer.dev/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/topics/media/platform/supported-formats#formats-table)).
      *
      * Note that setting this property takes effect only when the AV object is just being created (toggling its value later will do nothing).
      *
@@ -184,8 +184,8 @@ export type AVPlaybackStatusSuccess = {
 export type AVPlaybackStatusToSet = {
     /**
      * Underlying implementation to use (when set to `MediaPlayer` it uses [Android's MediaPlayer](https://developer.android.com/reference/android/media/MediaPlayer.html),
-     * uses [ExoPlayer](https://google.github.io/ExoPlayer/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
-     * ([formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table)).
+     * uses [ExoPlayer](https://exoplayer.dev/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
+     * ([formats supported by ExoPlayer](https://exoplayer.dev/supported-formats.html), [formats supported by Android's MediaPlayer](https://developer.android.com/guide/topics/media/platform/supported-formats#formats-table)).
      *
      * Note that setting this property takes effect only when the AV object is just being created (toggling its value later will do nothing).
      *

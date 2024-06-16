@@ -281,7 +281,7 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
     }
   }
 
-  return AVAudioSessionCategorySoloAmbient;
+  return AVAudioSessionCategoryAmbient;
 }
 
 - (AVAudioSessionCategoryOptions)_getCategoryOptions

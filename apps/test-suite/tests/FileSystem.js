@@ -35,9 +35,9 @@ export async function test({ describe, expect, it, ...t }) {
           await throws(() => FS.copyAsync({ from: 'c', to: p + '../a/b' }));
           await throws(() => FS.makeDirectoryAsync(p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../hello/world'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
         });
       });
     }
@@ -112,7 +112,7 @@ export async function test({ describe, expect, it, ...t }) {
       } catch (e) {
         error = e;
       }
-      expect(error.message).toMatch(/not.*found/);
+      expect(error.message).toMatch(/could not be deleted/);
     });
 
     it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
@@ -465,7 +465,7 @@ export async function test({ describe, expect, it, ...t }) {
         const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
         await FS.downloadAsync(remoteUrl, localUri);
       } catch (err) {
-        expect(err.message).toMatch(/Directory for .* doesn't exist/);
+        expect(err.message).toMatch(/(does not exist)|(doesn't exist)/);
       }
     }, 30000);
 

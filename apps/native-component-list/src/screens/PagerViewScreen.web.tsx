@@ -1,4 +1,1 @@
-import * as React from 'react';
-import { Text } from 'react-native';
-
-export default () => <Text>PagerView is not implemented on web</Text>;
+export default () => <h1>PagerView is not implemented on web</h1>;

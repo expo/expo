@@ -1,25 +1,25 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 static def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
 
 def getRNVersion() {
-  def nodeModulesVersion = [
-      "node",
-      "-e",
-      "console.log(require('react-native/package.json').version);"
-  ]
-      .execute(null, projectDir)
-      .text
-      .trim()
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
+  }.standardOutput.asText.get().trim()
 
-  def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
@@ -33,75 +33,21 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '49.0.0-alpha.3'
+version = '51.0.8'
 
 buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
   }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
-
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
-      }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
-      }
-    }
-  }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
-
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
   namespace "expo.core"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "49.0.0-alpha.3"
+    versionName "51.0.8"
     consumerProguardFiles("proguard-rules.pro")
-  }
-  lintOptions {
-    abortOnError false
   }
   testOptions {
     unitTests.includeAndroidResources = true
@@ -113,33 +59,21 @@ android {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 71, 0)) {
-          srcDirs += "src/reactNativeHostWrapper"
-        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
-          srcDirs += "src/reactNativeHostWrapper69"
-        } else if (rnVersion >= versionToNumber(0, 67, 0)) {
-          srcDirs += "src/reactNativeHostWrapper67"
-        } else {
-          srcDirs += "src/reactNativeHostWrapper64"
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/reactWrappers"
         }
       }
-    }
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
     }
   }
 }
 
 dependencies { dependencyHandler ->
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation 'io.mockk:mockk:1.12.0'
+  testImplementation 'io.mockk:mockk:1.13.5'
 
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
@@ -147,11 +81,19 @@ dependencies { dependencyHandler ->
 }
 
 // A task generating a package list of expo modules.
-task generateExpoModulesPackageList {
+task generateExpoModulesPackageListTask {
+  def modulesConfig = getModulesConfig()
+  def outputPath = getGenerateExpoModulesPackagesListPath()
+  if (modulesConfig) {
+    outputs.file(file(outputPath))
+    inputs.property("modulesConfig", modulesConfig)
+  }
+
+  // TOOD(@lukmccall): fix not working with configuration cache enabled
   doLast {
     generateExpoModulesPackageList()
   }
 }
 
 // Run that task during prebuilding phase.
-preBuild.dependsOn "generateExpoModulesPackageList"
+preBuild.dependsOn "generateExpoModulesPackageListTask"

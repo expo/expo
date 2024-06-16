@@ -32,6 +32,9 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenOrientation")
 
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events("expoDidUpdateDimensions")
+
     AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
       try {
         currentActivity.requestedOrientation = orientationLock.toPlatformInt()
@@ -44,11 +47,11 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
       currentActivity.requestedOrientation = orientationAttr.value
     }
 
-    AsyncFunction("getOrientationAsync") {
+    AsyncFunction<Int>("getOrientationAsync") {
       return@AsyncFunction getScreenOrientation(currentActivity).value
     }
 
-    AsyncFunction("getOrientationLockAsync") {
+    AsyncFunction<OrientationLock>("getOrientationLockAsync") {
       try {
         return@AsyncFunction OrientationLock.fromPlatformInt(currentActivity.requestedOrientation)
       } catch (e: Exception) {
@@ -56,7 +59,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
       }
     }
 
-    AsyncFunction("getPlatformOrientationLockAsync") {
+    AsyncFunction<Int>("getPlatformOrientationLockAsync") {
       try {
         return@AsyncFunction currentActivity.requestedOrientation
       } catch (e: Exception) {
@@ -96,6 +99,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       currentActivity.window.context.display?.rotation ?: return Orientation.UNKNOWN
     } else {
+      @Suppress("DEPRECATION")
       windowManager.defaultDisplay.rotation
     }
 
@@ -108,6 +112,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
         heightPixels = windowMetrics.bounds.height() - insets.top - insets.bottom
       }
     } else {
+      @Suppress("DEPRECATION")
       DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
     }
 

@@ -59,7 +59,6 @@ export const expoExportEmbed: Command = async (argv) => {
         `-v, --verbose                          Enables debug logging`,
 
         `--config <string>                      Path to the CLI configuration file`,
-        `--generate-static-view-configs         Generate static view configs for Fabric components. If there are no Fabric components in the bundle or Fabric is disabled, this is just no-op.`,
         // This is seemingly unused.
         `--read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.`,
 
@@ -74,10 +73,10 @@ export const expoExportEmbed: Command = async (argv) => {
     { logCmdError },
     { resolveCustomBooleanArgsAsync },
   ] = await Promise.all([
-    import('./exportEmbedAsync'),
-    import('./resolveOptions'),
-    import('../../utils/errors'),
-    import('../../utils/resolveArgs'),
+    import('./exportEmbedAsync.js'),
+    import('./resolveOptions.js'),
+    import('../../utils/errors.js'),
+    import('../../utils/resolveArgs.js'),
   ]);
 
   return (async () => {
@@ -87,7 +86,6 @@ export const expoExportEmbed: Command = async (argv) => {
       '--sourcemap-use-absolute-path': Boolean,
       '--reset-cache': Boolean,
       '--read-global-cache': Boolean,
-      '--generate-static-view-configs': Boolean,
     });
     return exportEmbedAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
   })().catch(logCmdError);

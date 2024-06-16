@@ -3,6 +3,7 @@ import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingCo
 export type WebGLObject = {
     id: number;
 };
+export declare function getWorkletContext(contextId: number): ExpoWebGLRenderingContext | undefined;
 /**
  * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created.
  * Its drawing buffer is presented as the contents of the View every frame.
@@ -11,6 +12,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static NativeView: any;
     static defaultProps: {
         msaaSamples: number;
+        enableExperimentalWorkletSupport: boolean;
     };
     /**
      * Imperative API that creates headless context which is devoid of underlying view.
@@ -34,6 +36,10 @@ export declare class GLView extends React.Component<GLViewProps> {
      * @return A promise that resolves to `GLSnapshot` object.
      */
     static takeSnapshotAsync(exgl?: ExpoWebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
+    /**
+     * This method doesn't work inside of the worklets with new reanimated versions.
+     * @deprecated Use `getWorkletContext` from the global scope instead.
+     */
     static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
@@ -41,11 +47,12 @@ export declare class GLView extends React.Component<GLViewProps> {
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
     componentWillUnmount(): void;
+    componentDidUpdate(prevProps: GLViewProps): void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     /**
-     * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+     * Same as static [`takeSnapshotAsync()`](#takesnapshotasyncoptions),
      * but uses WebGL context that is associated with the view on which the method is called.
      * @param options
      */
