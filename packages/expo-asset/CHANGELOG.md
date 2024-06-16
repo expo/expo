@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web
+
 ### 💡 Others
 
 - Removed @react-native/assets-registry dependency. ([#29541](https://github.com/expo/expo/pull/29541) by [@kudo](https://github.com/kudo))
