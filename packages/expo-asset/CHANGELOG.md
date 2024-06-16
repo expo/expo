@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web
+- Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web ([#29791](https://github.com/expo/expo/pull/29791) by [@Bram-dc](https://github.com/Bram-dc))
 
 ### 💡 Others
 
