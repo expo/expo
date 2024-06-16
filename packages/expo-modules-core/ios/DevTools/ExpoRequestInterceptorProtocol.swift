@@ -74,6 +74,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   public override func stopLoading() {
     dataTask_?.cancel()
+    urlSession.invalidateAndCancel()
   }
 
   // MARK: URLSessionDataDelegate implementations
@@ -103,6 +104,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
           requestId: requestId, task: task, responseBody: responseBody as Data, isText: isText, responseBodyExceedsLimit: responseBodyExceedsLimit)
       }
       client?.urlProtocolDidFinishLoading(self)
+      urlSession.finishTasksAndInvalidate()
     }
   }
 
