@@ -114,8 +114,8 @@ class CameraViewModule : Module() {
 
       Prop("facing") { view, facing: CameraType? ->
         facing?.let {
-          if (view.lenFacing != facing) {
-            view.lenFacing = it
+          if (view.lensFacing != facing) {
+            view.lensFacing = it
           }
         }
       }
