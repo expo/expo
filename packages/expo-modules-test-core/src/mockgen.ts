@@ -55,6 +55,18 @@ function isSwiftDictionary(type: string) {
   );
 }
 
+function isEither(type: string) {
+  return type.startsWith('Either<');
+}
+// "Either<TypeOne, TypeTwo>" -> ["TypeOne", "TypeTwo"]
+function maybeUnwrapEither(type: string): string[] {
+  if (!isEither(type)) {
+    return [type];
+  }
+  const innerType = type.substring(7, type.length - 1);
+  return innerType.split(',').map((t) => t.trim());
+}
+
 /*
 The Swift object type can have nested objects as the type of it's values (or maybe even keys).
 [String: [String: Any]]
@@ -124,6 +136,13 @@ function mapSwiftTypeToTsType(type: string): TSNode {
   if (isSwiftArray(type)) {
     return ts.factory.createArrayTypeNode(mapSwiftTypeToTsType(maybeUnwrapSwiftArray(type)));
   }
+  // Custom handling for the Either convertible
+  if (isEither(type)) {
+    return ts.factory.createUnionTypeNode(
+      maybeUnwrapEither(type).map((t) => mapSwiftTypeToTsType(t))
+    );
+  }
+
   switch (type) {
     // Our custom representation for types that we have no type hints for. Not necessairly Swift any.
     case 'unknown':
@@ -378,6 +397,16 @@ function separateWithNewlines<T>(arr: T) {
   return [arr, newlineIdentifier];
 }
 
+function omitFromSet(set: Set<string>, toOmit: (string | undefined)[]) {
+  const newSet = new Set(set);
+  toOmit.forEach((item) => {
+    if (item) {
+      newSet.delete(item);
+    }
+  });
+  return newSet;
+}
+
 function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
   return (
     [] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc | ts.ClassDeclaration)[]
@@ -387,10 +416,15 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
       newlineIdentifier,
       includeTypes
         ? getMockedTypes(
-            new Set([
-              ...getTypesToMock(module),
-              ...(module.view ? getTypesToMock(module.view) : []),
-            ])
+            omitFromSet(
+              new Set([
+                ...getTypesToMock(module),
+                ...(module.view ? getTypesToMock(module.view) : []),
+                ...(module.classes ? new Set(...module.classes.map((c) => getTypesToMock(c))) : []),
+              ]),
+              // Ignore all types that are actually native classes
+              [module.name, module.view?.name, ...module.classes?.map((c) => c.name)]
+            )
           )
         : [],
       newlineIdentifier,
