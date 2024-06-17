@@ -134,6 +134,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
+    const serverRoot = (0, getModulesPaths_1.getServerRoot)(projectRoot);
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
@@ -202,7 +203,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             port: Number(env_1.env.RCT_METRO_PORT) || 8081,
             // NOTE(EvanBacon): Moves the server root down to the monorepo root.
             // This enables proper monorepo support for web.
-            unstable_serverRoot: (0, getModulesPaths_1.getServerRoot)(projectRoot),
+            unstable_serverRoot: serverRoot,
         },
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
@@ -218,6 +219,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             sassVersion,
             // Ensure invalidation when the version changes due to the Babel plugin.
             reanimatedVersion,
+            // Ensure invalidation when using identical projects in monorepos
+            _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
