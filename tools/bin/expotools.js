@@ -138,7 +138,7 @@ function loadCommand(program, commandFile) {
 
 async function loadAllCommandsAsync(callback) {
   const program = require('@expo/commander');
-  const glob = require('glob-promise');
+  const { glob } = require('glob');
 
   const commandFiles = await glob('build/commands/*.js', {
     cwd: ROOT_PATH,

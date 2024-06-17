@@ -1,7 +1,6 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { IOptions as GlobOptions } from 'glob';
-import glob from 'glob-promise';
+import { glob, type GlobOptions } from 'glob';
 import ora from 'ora';
 
 import { EXPO_DIR } from './Constants';
@@ -126,6 +125,9 @@ export async function searchFilesAsync(
         cwd: rootPath,
         nodir: true,
         ...options,
+        // Only allow string paths to be returned
+        // See: https://github.com/isaacs/node-glob?tab=readme-ov-file#globpattern-string--string-options-globoptions--promisestring--path
+        withFileTypes: false,
       })
     )
   );
