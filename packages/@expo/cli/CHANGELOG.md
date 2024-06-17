@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add more tests for export:embed. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.18.19 — 2024-06-13
 
 _This version does not introduce any user-facing changes._

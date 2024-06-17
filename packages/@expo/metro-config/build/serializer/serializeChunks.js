@@ -230,7 +230,8 @@ class Chunk {
         if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
             return this.options.sourceMapUrl ?? null;
         }
-        const isAbsolute = this.getPlatform() !== 'web';
+        const platform = this.getPlatform();
+        const isAbsolute = platform !== 'web';
         const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options);
         const filename = this.getFilenameForConfig(serializerConfig);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
@@ -251,6 +252,10 @@ class Chunk {
             return parsed.pathname;
         }
         catch (error) {
+            // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+            if (!this.options.dev && isAbsolute) {
+                return adjustedSourceMapUrl;
+            }
             console.error(`Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`, error);
             return null;
         }

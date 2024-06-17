@@ -314,7 +314,8 @@ export class Chunk {
       return this.options.sourceMapUrl ?? null;
     }
 
-    const isAbsolute = this.getPlatform() !== 'web';
+    const platform = this.getPlatform();
+    const isAbsolute = platform !== 'web';
 
     const baseUrl = getBaseUrlOption(this.graph, this.options);
     const filename = this.getFilenameForConfig(serializerConfig);
@@ -326,6 +327,7 @@ export class Chunk {
       '.map';
 
     let adjustedSourceMapUrl = this.options.sourceMapUrl;
+
     // Metro has lots of issues...
     if (this.options.sourceMapUrl.startsWith('//localhost')) {
       adjustedSourceMapUrl = 'http:' + this.options.sourceMapUrl;
@@ -340,6 +342,10 @@ export class Chunk {
 
       return parsed.pathname;
     } catch (error) {
+      // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+      if (!this.options.dev && isAbsolute) {
+        return adjustedSourceMapUrl;
+      }
       console.error(
         `Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`,
         error
