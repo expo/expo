@@ -31,6 +31,9 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+        # TODO: revert after testing
+        with:
+          fetch-depth: 500
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -97,7 +100,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
           AWS_BUCKET: docs.expo.dev-pr-${{ github.event.pull_request.number }}
-        run: ./deploy.sh
+        run: ./scripts/deploy.sh
       - name: 🔍 Find old comment if it exists
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         uses: peter-evans/find-comment@v2
