@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- [iOS] Make appropriate references weak in `VideoPlayerObserver`. ([#29427](https://github.com/expo/expo/pull/29427) by [@behenate](https://github.com/behenate))
+
 ## 1.1.10 — 2024-05-29
 
 ### 💡 Others
