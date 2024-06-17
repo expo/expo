@@ -48,6 +48,7 @@ export function setStatusBarStyles(
   config: Pick<ExpoConfig, 'androidStatusBar'>,
   styles: ResourceXML
 ): ResourceXML {
+  const hexString = getStatusBarColor(config);
   const floatElement = getStatusBarTranslucent(config);
 
   styles = assignStylesValue(styles, {
@@ -61,9 +62,9 @@ export function setStatusBarStyles(
   styles = assignStylesValue(styles, {
     parent: getAppThemeLightNoActionBarGroup(),
     name: STATUS_BAR_COLOR,
-    value: '@android:color/transparent',
+    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
     // Remove the color if translucent is used
-    add: floatElement,
+    add: floatElement || !!hexString,
   });
 
   return styles;

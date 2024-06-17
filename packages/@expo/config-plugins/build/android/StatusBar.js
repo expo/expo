@@ -81,9 +81,9 @@ function setStatusBarStyles(config, styles) {
   styles = (0, _Styles().assignStylesValue)(styles, {
     parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
     name: STATUS_BAR_COLOR,
-    value: '@android:color/transparent',
+    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
     // Remove the color if translucent is used
-    add: floatElement
+    add: floatElement || !!hexString
   });
   return styles;
 }

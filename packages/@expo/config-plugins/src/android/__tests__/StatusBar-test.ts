@@ -37,6 +37,7 @@ describe('e2e: write statusbar color and style to files correctly', () => {
 
     const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup())!;
     expect(group['android:windowLightStatusBar']).toBe('true');
+    expect(group['android:statusBarColor']).toBe('#654321');
     expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
   });
 
