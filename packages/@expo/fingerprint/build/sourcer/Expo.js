@@ -25,7 +25,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     let loadedModules = [];
     const ignoredFile = await createTempIgnoredFileAsync(options);
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: __dirname });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
         const stdoutJson = JSON.parse(stdout);
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, options);
