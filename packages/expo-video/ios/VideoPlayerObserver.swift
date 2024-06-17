@@ -104,8 +104,7 @@ class VideoPlayerObserver {
   }
 
   deinit {
-    invalidatePlayerObservers()
-    invalidateCurrentPlayerItemObservers()
+    cleanup()
   }
 
   func registerDelegate(delegate: VideoPlayerObserverDelegate) {
@@ -115,6 +114,12 @@ class VideoPlayerObserver {
 
   func unregisterDelegate(delegate: VideoPlayerObserverDelegate) {
     delegates.remove(WeakPlayerObserverDelegate(value: delegate))
+  }
+
+  func cleanup() {
+    delegates.removeAll()
+    invalidatePlayerObservers()
+    invalidateCurrentPlayerItemObservers()
   }
 
   private func initializePlayerObservers() {
