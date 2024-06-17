@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Downgrade routerRoot warning to a debug log.
+
 ## 0.18.4 — 2024-05-16
 
 _This version does not introduce any user-facing changes._
