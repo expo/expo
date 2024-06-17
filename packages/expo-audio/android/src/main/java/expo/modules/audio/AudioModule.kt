@@ -107,16 +107,16 @@ class AudioModule : Module(), LifecycleEventListener {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource ->
+      Constructor { source: AudioSource? ->
         val builder = OkHttpClient().newBuilder()
         val factory = OkHttpDataSource.Factory(builder.build()).apply {
-          source.headers?.let {
+          source?.headers?.let {
             setDefaultRequestProperties(it)
           }
           DefaultDataSource.Factory(context, this)
         }
 
-        val mediaSource = buildMediaSourceFactory(factory, MediaItem.fromUri(source.uri))
+        val mediaSource = buildMediaSourceFactory(factory, MediaItem.fromUri(source?.uri ?: ""))
         runBlocking(appContext.mainQueue.coroutineContext) {
           val player = AudioPlayer(
             context,
