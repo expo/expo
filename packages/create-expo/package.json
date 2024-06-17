@@ -37,8 +37,8 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "9.0.2",
-    "@expo/json-file": "8.3.3",
+    "@expo/config": "^9.0.2",
+    "@expo/json-file": "^8.3.3",
     "@expo/package-manager": "^1.5.0",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
@@ -59,7 +59,7 @@
     "ora": "3.4.0",
     "picomatch": "^2.3.1",
     "prompts": "^2.4.2",
-    "tar": "6.1.13",
+    "tar": "^6.2.1",
     "update-check": "^1.5.4"
   }
 }

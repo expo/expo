@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+
 ## 3.0.0 — 2024-06-10
 
 ### 🛠 Breaking changes
