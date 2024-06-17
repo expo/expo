@@ -39,7 +39,7 @@
     "commander": "^12.1.0",
     "eslint-config-universe": "^13.0.0",
     "find-yarn-workspace-root": "^2.0.0",
-    "glob": "^7.1.7",
+    "glob": "^10.4.1",
     "jest-expo": "~51.0.0-unreleased",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",

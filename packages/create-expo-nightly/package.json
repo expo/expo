@@ -44,7 +44,7 @@
     "commander": "^11.1.0",
     "expo-module-scripts": "^3.4.0",
     "fs-extra": "^11.2.0",
-    "glob": "^10.3.10",
+    "glob": "^10.4.1",
     "zx": "^7.2.3"
   }
 }
