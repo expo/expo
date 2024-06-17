@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Downgrade routerRoot warning to a debug log.
+- Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.4 — 2024-05-16
 
