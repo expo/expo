@@ -90,7 +90,7 @@ function useGlobalSearchParams() {
 }
 exports.useGlobalSearchParams = useGlobalSearchParams;
 /**
- * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
+ * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
  * For dynamic routes, both the route parameters and the search parameters are returned.
  *
