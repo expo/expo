@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
-    "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start"
+    "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "expo": "~51.0.0",
