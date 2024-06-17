@@ -28,11 +28,11 @@ export async function getExpoConfigSourcesAsync(
   let loadedModules: string[] = [];
   const ignoredFile = await createTempIgnoredFileAsync(options);
   try {
-    const { stdout } = await spawnAsync('node', [
-      getExpoConfigLoaderPath(),
-      path.resolve(projectRoot),
-      ignoredFile,
-    ]);
+    const { stdout } = await spawnAsync(
+      'node',
+      [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
+      { cwd: projectRoot }
+    );
     const stdoutJson = JSON.parse(stdout);
     config = stdoutJson.config;
     expoConfig = normalizeExpoConfig(config.exp, options);
