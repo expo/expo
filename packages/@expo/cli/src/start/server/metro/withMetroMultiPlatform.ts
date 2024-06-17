@@ -49,33 +49,24 @@ function withWebPolyfills(
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
-    const virtualEnvVarId = `\0polyfill:environment-variables`;
-
-    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-      virtualEnvVarId,
-      (() => {
-        return `//`;
-      })()
-    );
-
     const virtualModuleId = `\0polyfill:external-require`;
 
+    const contents = (() => {
+      if (ctx.platform === 'web') {
+        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+      } else {
+        // Wrap in try/catch to support Android.
+        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+      }
+    })();
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
       virtualModuleId,
-      (() => {
-        if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
-        } else {
-          // Wrap in try/catch to support Android.
-          return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
-        }
-      })()
+      contents
     );
 
     if (ctx.platform === 'web') {
       return [
         virtualModuleId,
-        virtualEnvVarId,
         // Ensure that the error-guard polyfill is included in the web polyfills to
         // make metro-runtime work correctly.
         // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
@@ -85,7 +76,7 @@ function withWebPolyfills(
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId, virtualEnvVarId];
+    return [...polyfills, virtualModuleId];
   };
 
   return {

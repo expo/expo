@@ -115,13 +115,7 @@ describe('server', () => {
       const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
       await fs.remove(path.join(projectRoot, '.expo'));
 
-      const promise = execa('node', [bin, 'start'], {
-        cwd: projectRoot,
-        env: {
-          ...process.env,
-          EXPO_USE_FAST_RESOLVER: 'true',
-        },
-      });
+      const promise = execa('node', [bin, 'start'], { cwd: projectRoot });
 
       console.log('Starting server');
 
@@ -192,26 +186,6 @@ describe('server', () => {
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');
-
-      // Get source maps for the bundle
-      // Find source map URL
-      const sourceMapUrl = bundle.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
-      expect(sourceMapUrl).toBeTruthy();
-
-      const sourceMaps = await fetch(sourceMapUrl!).then((res) => res.json());
-      expect(sourceMaps).toMatchObject({
-        version: 3,
-        sources: expect.arrayContaining([
-          '__prelude__',
-          expect.stringContaining('metro-runtime/src/polyfills/require.js'),
-          expect.stringContaining('@react-native/js-polyfills/console.js'),
-          expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
-          '\0polyfill:external-require',
-          // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
-          '\0polyfill:environment-variables',
-        ]),
-        mappings: expect.any(String),
-      });
 
       // Kill process.
       promise.kill('SIGTERM');
