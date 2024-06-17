@@ -130,7 +130,7 @@ Pressing "Visit james" has a similar effect:
 
     - `useGlobalSearchParams` made the background screens re-render when the URL **route parameters** changed. It can cause performance issues if overused.
     - Global re-renders are executed in order of the stack, so the first screen is re-rendered first, then the **user=charlie** screen is re-rendered after.
-    - `useLocalSearchParams` remained the same, even when the global URL **router parameters** changed. You can leverage this behavior for data fetching to ensure the previous screen's data is still available when you navigate back.
+    - `useLocalSearchParams` remained the same, even when the global URL **route parameters** changed. You can leverage this behavior for data fetching to ensure the previous screen's data is still available when you navigate back.
 
 </Step>
 
