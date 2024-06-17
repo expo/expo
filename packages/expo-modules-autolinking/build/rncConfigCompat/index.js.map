@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/rncConfigCompat/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,oDAAkC;AAClC,0DAAwC","sourcesContent":["export * from './rncConfigCompat';\nexport * from './rncConfigCompat.types';\n"]}

@@ -1,15 +1,19 @@
 import commander from 'commander';
+import path from 'path';
 
 import { patchReactImportsAsync } from './ReactImportsPatcher';
 import {
   findModulesAsync,
+  generatePackageListAsync,
+  getProjectPackageJsonPathAsync,
+  mergeLinkingOptionsAsync,
   resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
+  resolveSearchPathsAsync,
   verifySearchResults,
-  generatePackageListAsync,
-  mergeLinkingOptionsAsync,
 } from './autolinking';
-import {
+import { createRncConfigCompatAsync, type RncConfigCompatOptions } from './rncConfigCompat';
+import type {
   GenerateModulesProviderOptions,
   GenerateOptions,
   ResolveOptions,
@@ -83,6 +87,41 @@ function registerPatchReactImportsCommand() {
     .action(patchReactImportsAsync);
 }
 
+/**
+ * Registry the `rnc-config-compat` command.
+ */
+function registerRncConfigCompatCommand() {
+  return commander
+    .command('rnc-config-compat [paths...]')
+    .option(
+      '-p, --platform [platform]',
+      'The platform that the resulting modules must support. Available options: "apple", "android"',
+      'apple'
+    )
+    .addOption(
+      new commander.Option(
+        '--project-root <projectRoot>',
+        'The path to the root of the project'
+      ).default(process.cwd(), 'process.cwd()')
+    )
+    .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+    .action(async (paths, options) => {
+      const projectRoot = path.dirname(await getProjectPackageJsonPathAsync(options.projectRoot));
+      const searchPaths = await resolveSearchPathsAsync(paths, projectRoot);
+      const providedOptions: RncConfigCompatOptions = {
+        platform: options.platform,
+        projectRoot,
+        searchPaths,
+      };
+      const results = await createRncConfigCompatAsync(providedOptions);
+      if (options.json) {
+        console.log(JSON.stringify(results));
+      } else {
+        console.log(require('util').inspect(results, false, null, true));
+      }
+    });
+}
+
 module.exports = async function (args: string[]) {
   // Searches for available expo modules.
   registerSearchCommand<SearchOptions & { json?: boolean }>('search', async (results, options) => {
@@ -154,6 +193,7 @@ module.exports = async function (args: string[]) {
     );
 
   registerPatchReactImportsCommand();
+  registerRncConfigCompatCommand();
 
   await commander
     .version(require('expo-modules-autolinking/package.json').version)
