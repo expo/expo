@@ -83,9 +83,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    observer.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
-    observer.unregisterDelegate(delegate: self)
     pointer.replaceCurrentItem(with: nil)
   }
 
