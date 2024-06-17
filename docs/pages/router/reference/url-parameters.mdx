@@ -147,12 +147,18 @@ export default function Route() {
 
   return <Text>User: {user}</Text>;
 }
+
+// Given the URL: `/evanbacon`
+// The following is returned: { user: "evanbacon" }
 ```
 
 Any search parameters (e.g. `?query=...`) can be typed optionally:
 
 ```tsx app/[user].tsx
 const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
+
+// Given the URL: `/evanbacon?query=hello`
+// The following is returned: { user: "evanbacon", query: "hello" }
 ```
 
 When used with the rest syntax (`...`), route parameters are returned as a string array:
