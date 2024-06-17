@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix blurhash not working and causing fetches to `blurhash:/` uri. ([#27587](https://github.com/expo/expo/pull/27587) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 1.12.12 — 2024-06-13
