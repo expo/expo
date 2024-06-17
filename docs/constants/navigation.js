@@ -153,6 +153,7 @@ const general = [
       'Bundling',
       [
         makePage('guides/customizing-metro.mdx'),
+        makePage('guides/react-compiler.mdx'),
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),

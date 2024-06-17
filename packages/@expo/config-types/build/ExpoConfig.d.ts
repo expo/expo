@@ -262,6 +262,10 @@ export interface ExpoConfig {
          * Experimentally use a vendored canary build of React for testing upcoming features.
          */
         reactCanary?: boolean;
+        /**
+         * Experimentally enable React Compiler.
+         */
+        reactCompiler?: boolean;
     };
     /**
      * Internal properties for developer tools
