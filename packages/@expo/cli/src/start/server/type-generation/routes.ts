@@ -348,11 +348,11 @@ declare module "expo-router" {
   export * from 'expo-router/build';
 
   // prettier-ignore
-  type StaticRoutes = ${'staticRoutes'};
+  export type StaticRoutes = ${'staticRoutes'};
   // prettier-ignore
-  type DynamicRoutes<T extends string> = ${'dynamicRoutes'};
+  export type DynamicRoutes<T extends string> = ${'dynamicRoutes'};
   // prettier-ignore
-  type DynamicRouteTemplate = ${'dynamicRouteParams'};
+  export type DynamicRouteTemplate = ${'dynamicRouteParams'};
 
   type RelativePathString = \`./\${string}\` | \`../\${string}\` | '..';
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
