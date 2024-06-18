@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- On `Android`, add support for setting the aspect ratio the camera.
+- On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
