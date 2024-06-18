@@ -3,6 +3,7 @@
 exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
 {
   "concurrentIoLimit": 1,
+  "enableReactImportsPatcher": true,
   "hashAlgorithm": "sha1",
   "ignorePaths": [
     ".fingerprintignore",
