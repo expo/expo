@@ -214,6 +214,7 @@ const general = [
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
@@ -576,6 +577,7 @@ const versionsReference = VERSIONS.reduce(
         'More',
         [
           makePage('more/expo-cli.mdx'),
+          makePage('more/create-expo.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/glossary-of-terms.mdx'),
         ],

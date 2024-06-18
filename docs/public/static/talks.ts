@@ -1,31 +1,55 @@
 export const TALKS = [
   {
+    title: "Keynote: flexibility & iteration speed",
+    event: 'App.js Conf 2024',
+    description: "Charlie Cheever, James Ide",
+    videoId: "StTYy9Duk3E",
+    home: true,
+  },
+  {
+    title: "Getting the most out of Expo Development Builds",
+    event: 'App.js Conf 2024',
+    description: "Kadi Kraman",
+    videoId: "7J8LRpja9_o",
+    home: true,
+  },
+  {
+    title: "Fetch Once, Render Everywhere",
+    event: 'App.js Conf 2024',
+    description: "Evan Bacon",
+    videoId: "BK2xbPW2uUU",
+    home: true,
+  },
+  {
+    title: "Launching Desktop Apps to Orbit with React Native",
+    event: 'App.js Conf 2024',
+    description: "Gabriel Donadel",
+    videoId: "K7yC3JKfWYU",
+    home: true,
+  },
+  {
     title: "Keynote: community & workflows",
     event: 'App.js Conf 2023',
     description: "Charlie Cheever, James Ide",
     videoId: "xHMu4oT6-SQ",
-    home: true,
   },
   {
     title: "EAS: Iterate with confidence",
     event: 'App.js Conf 2023',
     description: "Jon Samp",
     videoId: "LTui_5dqXyM",
-    home: true,
   },
   {
     title: "Expo Router: Write Once, Route Everywhere",
     event: 'App.js Conf 2023',
     description: "Evan Bacon",
     videoId: "608r8etX_cg",
-    home: true,
   },
   {
     title: "Debugging should be easier",
     event: 'App.js Conf 2023',
     description: "Cedric van Putten",
     videoId: "sRLunWEzwHI",
-    home: true,
   },
   {
     title: 'React Native on Linux with the New Architecture',
@@ -67,7 +91,7 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
-    title: 'Expo EAS and 100 Snakes ',
+    title: 'Expo EAS and 100 Snakes',
     event: 'Rocket Ship #038',
     description: "Jon Samp",
     videoId: "JKU9JC4nX1k",
@@ -121,13 +145,36 @@ export const PODCASTS = [
     videoId: "yK0UDiLjxNY",
     link: "https://podcast.galaxies.dev/episodes/007-expo-router-debugging-with-cedric-van-putten"
   }
-] as Talk[]
+] as Talk[];
+
+export const LIVE_STREAMS = [
+  {
+    title: 'Expo SDK 51: New Architecture, Router 3.5, expo.new and more',
+    event: 'Expo Live Stream',
+    videoId: "k1ISWPgP4S4"
+  },
+  {
+    title: 'What is Expo Orbit? Live demo of speeding up dev workflow',
+    event: 'Expo Live Stream',
+    videoId: "vUoIoYq8WNM",
+  },
+  {
+    title: 'How to build TV apps from scratch, and with Ignite stack',
+    event: 'Expo Live Stream',
+    videoId: "PUMBWeLVuiw",
+  },
+  {
+    title: 'Expo SDK 50: API Routes, Fingerprint, Dev Tools and SQLite',
+    event: 'Expo Live Stream',
+    videoId: "cKFSVUo3AnI",
+  }
+] as Talk[];
 
 export type Talk = {
   title: string;
   event: string;
-  description: string;
   videoId: string;
+  description?: string;
   home?: boolean;
   thumbnail?: string;
   link?: string;

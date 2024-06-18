@@ -5,7 +5,7 @@ description: Learn how to create a simple wrapper around two separate native lib
 
 import { CODE } from '~/ui/components/Text';
 import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
 
 To make sure your app builds successfully on both platforms, rerun the build commands from step 2. After the app is successfully built on any of the platform you'll see a pie chart with three slices:
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/modules/third-party-library/result.webp"
   alt="A PieChart module on Android and iOS"
 />

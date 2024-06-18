@@ -73,8 +73,9 @@ export async function getTaskOptionsAsync(taskName) {
 /**
  * Provides information about tasks registered in the app.
  *
- * @returns A promise which fulfills with an array of tasks registered in the app. Example:
- * ```json
+ * @returns A promise which fulfills with an array of tasks registered in the app.
+ * @example
+ * ```js
  * [
  *   {
  *     taskName: 'location-updates-task-name',

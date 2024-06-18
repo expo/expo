@@ -106,7 +106,7 @@
     "source-map-support": "~0.5.21",
     "stacktrace-parser": "^0.1.10",
     "structured-headers": "^0.4.1",
-    "tar": "^6.0.5",
+    "tar": "^6.2.1",
     "temp-dir": "^2.0.0",
     "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",

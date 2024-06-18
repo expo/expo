@@ -69,7 +69,7 @@ function SearchScreen({ route }: StackScreenProps<SearchStack, 'search'>) {
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
 }
 
 type SearchStack = {

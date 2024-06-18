@@ -42,7 +42,7 @@
     "@types/prompts": "^2.0.6",
     "@types/semver": "^6.0.0",
     "chalk": "^4.1.2",
-    "commander": "2.20.0",
+    "commander": "^12.1.0",
     "expo-module-scripts": "^3.3.0",
     "find-up": "^5.0.0",
     "glob": "7.1.6",

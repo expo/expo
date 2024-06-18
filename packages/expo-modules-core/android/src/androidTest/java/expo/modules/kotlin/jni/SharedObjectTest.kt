@@ -100,7 +100,7 @@ class SharedObjectTest {
       ?.toNativeObject(jsObject)
 
     // Send an event from the native object to JS
-    nativeObject?.sendEvent("test event", 1, 2, 3)
+    nativeObject?.emit("test event", 1, 2, 3)
 
     // Check the value that is set by the listener
     val total = evaluateScript("total")

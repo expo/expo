@@ -40,7 +40,7 @@ public final class JavaScriptFunction<ReturnType>: AnyArgument, AnyJavaScriptVal
    */
   private func call(withArguments arguments: [Any] = [], asConstructor: Bool = false, usingThis this: JavaScriptObject? = nil) throws -> ReturnType {
     guard let appContext else {
-      throw AppContextLostException()
+      throw Exceptions.AppContextLost()
     }
     let value = rawFunction.call(withArguments: arguments, thisObject: this, asConstructor: false)
     let dynamicType = ~ReturnType.self
