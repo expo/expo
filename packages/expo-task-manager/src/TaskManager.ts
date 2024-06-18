@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -91,19 +92,18 @@ const tasks: Map<string, TaskManagerTaskExecutor<any>> = new Map<
   string,
   TaskManagerTaskExecutor<any>
 >();
-
-function _isExpoGo(): boolean {
-  return typeof expo !== 'undefined' && !!globalThis.expo?.modules?.ExpoGo;
-}
-
+let warnedAboutExpoGo = false;
 function _validate(taskName: unknown) {
-  if (_isExpoGo()) {
-    const message =
-      '`TaskManager` functionality is limited in Expo Go:\n' +
-      'On Android, it is not available at all.\n' +
-      'On iOS, it is limited to foreground execution.\n' +
-      'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
-    console.warn(message);
+  if (isRunningInExpoGo()) {
+    if (!warnedAboutExpoGo) {
+      const message =
+        '`TaskManager` functionality is limited in Expo Go:\n' +
+        'On Android, it is not available at all.\n' +
+        'On iOS, it is limited to foreground execution.\n' +
+        'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+      console.warn(message);
+      warnedAboutExpoGo = true;
+    }
   }
   if (!taskName || typeof taskName !== 'string') {
     throw new TypeError('`taskName` must be a non-empty string.');
@@ -290,7 +290,7 @@ if (ExpoTaskManager) {
  */
 export async function isAvailableAsync(): Promise<boolean> {
   if (Platform.OS === 'android') {
-    return !_isExpoGo() && ExpoTaskManager.isAvailableAsync();
+    return !isRunningInExpoGo() && ExpoTaskManager.isAvailableAsync();
   }
   return ExpoTaskManager.isAvailableAsync();
 }
