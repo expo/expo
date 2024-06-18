@@ -14,7 +14,7 @@ Bundle performance varies for different platforms. For example, web browsers don
 
 The libraries used in a project influence the size of the production JavaScript bundle. Starting from **Expo SDK 51**, you can use [Expo Atlas](https://github.com/expo/expo-atlas#readme) to visualize the production bundle and identify which libraries contribute to the bundle size.
 
-### Using Atlas with `expo start`
+### Using Atlas with `npx expo start`
 
 You can use Expo Atlas with the local development server. This method allows Atlas to update whenever you change any code in your project. 
 
@@ -34,7 +34,7 @@ By default, Expo starts the local development server in [development mode](/work
   '$ EXPO_UNSTABLE_ATLAS=true npx expo start --no-dev', 
 ]} />
 
-### Using Atlas with `expo export`
+### Using Atlas with `npx expo export`
 
 You can also use Expo Atlas when generating a production bundle for your app or EAS Update. Atlas generates a **.expo/atlas.jsonl** file during export, which you can share and open without having access to the project.
 
