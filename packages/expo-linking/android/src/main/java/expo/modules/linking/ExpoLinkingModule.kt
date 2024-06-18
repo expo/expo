@@ -24,7 +24,7 @@ class ExpoLinkingModule : Module() {
     }
 
     OnStartObserving("onURLReceived") {
-			val weakModule = WeakReference(this@ExpoLinkingModule)
+      val weakModule = WeakReference(this@ExpoLinkingModule)
       val observer: (Uri?) -> Unit = { uri: Uri? ->
         weakModule.get()?.sendEvent("onURLReceived", bundleOf("url" to uri?.toString()))
       }
