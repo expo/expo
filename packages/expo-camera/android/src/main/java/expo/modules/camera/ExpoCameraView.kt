@@ -35,6 +35,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -56,6 +57,7 @@ import expo.modules.camera.common.PictureSavedEvent
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
@@ -153,6 +155,12 @@ class ExpoCameraView(
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var ratio: CameraRatio = CameraRatio.FOUR_THREE
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -339,6 +347,7 @@ class ExpoCameraView(
             } else {
               setResolutionSelector(
                 ResolutionSelector.Builder()
+                  .setAspectRatioStrategy(ratio.mapToStrategy())
                   .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                   .build()
               )
