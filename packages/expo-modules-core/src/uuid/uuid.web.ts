@@ -9,6 +9,10 @@ function uuidv4(): string {
     // Only use abstract imports in server environments.
     typeof window === 'undefined'
   ) {
+    // NOTE: Metro statically extracts all `require` statements to resolve them for environments
+    // that don't support `require` natively. Here we check if we're running in a server environment
+    // by using the standard `typeof window` check, then running `eval` to skip Metro's static
+    // analysis and keep the `require` statement intact for runtime evaluation.
     // eslint-disable-next-line no-eval
     return eval('require')('node:crypto').randomUUID();
   }
