@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Mock files from the `src` folder instead of `build`. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+
 ## 51.0.2 — 2024-05-16
 
 _This version does not introduce any user-facing changes._
