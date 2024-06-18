@@ -17,6 +17,7 @@
     "build",
     "ios",
     "scripts",
+    "src",
     "AppEntry.js",
     "Expo.podspec",
     "bundledNativeModules.json",
