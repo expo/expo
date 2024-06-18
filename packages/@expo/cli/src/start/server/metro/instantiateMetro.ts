@@ -168,7 +168,8 @@ export async function instantiateMetroAsync(
     exp = getConfig(metroBundler.projectRoot, {
       skipSDKVersionRequirement: true,
     }).exp,
-  }: { isExporting: boolean; exp?: ExpoConfig }
+    enableAtlas = false,
+  }: { isExporting: boolean; exp?: ExpoConfig; enableAtlas?: boolean }
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;
@@ -232,15 +233,17 @@ export async function instantiateMetroAsync(
   }
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({
-    isExporting,
-    exp,
-    projectRoot,
-    middleware,
-    metroConfig,
-    // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
-    resetAtlasFile: isExporting,
-  });
+  const atlas = !enableAtlas
+    ? null
+    : await attachAtlasAsync({
+        isExporting,
+        exp,
+        projectRoot,
+        middleware,
+        metroConfig,
+        // NOTE(cedric): reset the Atlas file once, and reuse it for static exports
+        resetAtlasFile: isExporting,
+      });
 
   const { server, metro } = await runServer(
     metroBundler,

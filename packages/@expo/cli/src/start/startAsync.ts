@@ -34,6 +34,7 @@ async function getMultiBundlerStartOptions(
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,
     minify: options.minify,
+    enableAtlas: options.atlas,
     location: {
       hostType: options.host,
       scheme: options.scheme,

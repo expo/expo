@@ -1,4 +1,5 @@
 import { boolish, int, string } from 'getenv';
+import { Log } from '../log';
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 
@@ -195,7 +196,10 @@ class Env {
     return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
   }
 
-  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
+  /**
+   * Enable unstable/experimental Atlas to gather bundle information during development or export
+   * @deprecated This has been replaced by `npx expo start --atlas` and `npx expo export --atlas`
+   */
   get EXPO_UNSTABLE_ATLAS() {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
   }

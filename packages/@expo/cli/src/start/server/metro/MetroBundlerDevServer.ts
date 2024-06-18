@@ -630,6 +630,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions,
       {
         isExporting: !!options.isExporting,
+        enableAtlas: options.enableAtlas,
         exp,
       }
     );

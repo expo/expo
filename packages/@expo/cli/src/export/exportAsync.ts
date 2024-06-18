@@ -20,9 +20,12 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   // Stop any file watchers to prevent the CLI from hanging.
   FileNotifier.stopAll();
-  // Wait until Atlas is ready, when enabled
-  // NOTE(cedric): this is a workaround, remove when `process.exit` is removed
-  await waitUntilAtlasExportIsReadyAsync(projectRoot);
+
+  if (options.atlas) {
+    // Wait until Atlas is ready, when enabled
+    // NOTE(cedric): this is a workaround, remove when `process.exit` is removed
+    await waitUntilAtlasExportIsReadyAsync(projectRoot);
+  }
 
   // Final notes
   Log.log(`App exported to: ${options.outputDir}`);

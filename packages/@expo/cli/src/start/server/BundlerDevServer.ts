@@ -70,6 +70,9 @@ export interface BundlerStartOptions {
   /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
   isExporting?: boolean;
 
+  /** Enable Atlas to gather information about Metro's dependency graph */
+  enableAtlas?: boolean;
+
   // Webpack options
   /** Should modify and create PWA icons. */
   isImageEditingEnabled?: boolean;

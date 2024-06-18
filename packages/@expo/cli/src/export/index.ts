@@ -19,6 +19,7 @@ export const expoExport: Command = async (argv) => {
       '--platform': [String],
       '--no-minify': Boolean,
       '--no-bytecode': Boolean,
+      '--atlas': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -54,6 +55,7 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Emit an asset map for further processing`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
         `-s, --source-maps          Emit JavaScript source maps`,
+        `--atlas                    Gather information about the exported bundles and emit an Atlas file`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')

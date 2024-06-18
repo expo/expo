@@ -23,6 +23,8 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
+  /** Gather information about the exported bundles */
+  atlas: boolean;
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -70,6 +72,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     port: args['--port'],
     minify: !!args['--minify'],
+    atlas: !!args['--atlas'],
 
     devClient: isDevClient,
 
