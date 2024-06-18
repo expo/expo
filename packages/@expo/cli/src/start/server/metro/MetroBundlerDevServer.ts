@@ -704,7 +704,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               routerRoot,
               config,
               ...config.exp.extra?.router,
-              bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
+              bundleApiRoute: (functionFilePath) =>
+                this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
               getStaticPageAsync: (pathname) => {
                 return this.getStaticPageAsync(pathname);
               },
