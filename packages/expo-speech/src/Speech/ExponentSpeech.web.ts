@@ -23,7 +23,14 @@ async function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
-class ExpoSpeech extends NativeModule {
+type ExpoSpeechEvents = {
+  'Exponent.speakingStarted': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingDone': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingStopped': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingError': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+};
+
+class ExpoSpeech extends NativeModule<ExpoSpeechEvents> {
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     if (text.length > MAX_SPEECH_INPUT_LENGTH) {
       throw new CodedError(
@@ -71,16 +78,16 @@ class ExpoSpeech extends NativeModule {
     }
 
     message.onstart = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingStarted', { id, nativeEvent });
+      this.emit('Exponent.speakingStarted', { id, nativeEvent });
     };
     message.onend = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingDone', { id, nativeEvent });
+      this.emit('Exponent.speakingDone', { id, nativeEvent });
     };
     message.onpause = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingStopped', { id, nativeEvent });
+      this.emit('Exponent.speakingStopped', { id, nativeEvent });
     };
     message.onerror = (nativeEvent: SpeechSynthesisErrorEvent) => {
-      (this as any).emit('Exponent.speakingError', { id, nativeEvent });
+      this.emit('Exponent.speakingError', { id, nativeEvent });
     };
 
     message.text = text;
