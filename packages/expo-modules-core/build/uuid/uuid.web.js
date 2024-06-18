@@ -2,14 +2,15 @@ import sha1 from './lib/sha1';
 import v35 from './lib/v35';
 import { Uuidv5Namespace } from './uuid.types';
 function uuidv4() {
-    // Crypto needs to be required when run in Node.js environment.
-    const cryptoObject = typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
-        ? require('crypto')
-        : crypto;
-    if (!cryptoObject?.randomUUID) {
-        throw Error("The browser doesn't support `crypto.randomUUID` function");
+    if (
+    // Node.js has supported global crypto since v15.
+    typeof crypto === 'undefined' &&
+        // Only use abstract imports in server environments.
+        typeof window === 'undefined') {
+        // eslint-disable-next-line no-eval
+        return eval('require')('node:crypto').randomUUID();
     }
-    return cryptoObject.randomUUID();
+    return crypto.randomUUID();
 }
 const uuid = {
     v4: uuidv4,
