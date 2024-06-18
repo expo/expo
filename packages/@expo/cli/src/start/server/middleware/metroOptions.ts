@@ -170,7 +170,7 @@ export function getMetroDirectBundleOptions(
     dev,
     minify: minify ?? !dev,
     inlineSourceMap: inlineSourceMap ?? false,
-    lazy,
+    lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
@@ -186,7 +186,7 @@ export function getMetroDirectBundleOptions(
     customResolverOptions: {
       __proto__: null,
       environment,
-      exporting: isExporting,
+      exporting: isExporting || undefined,
     },
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
