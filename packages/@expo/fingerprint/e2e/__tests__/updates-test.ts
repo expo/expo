@@ -39,14 +39,6 @@ describe('updates managed support', () => {
     appConfig.expo.android.package = 'dev.expo.fingerprint';
     appConfig.expo.ios.bundleIdentifier = 'dev.expo.fingerprint';
     await fs.writeFile(appConfigPath, JSON.stringify(appConfig, null, 2));
-
-    // Update package.json scripts
-    // Temporary workaround because prebuild will change scripts
-    const packageConfigPath = path.join(projectRoot, 'package.json');
-    const packageConfig = JSON.parse(await fs.readFile(packageConfigPath, 'utf8'));
-    packageConfig.scripts.android = 'expo run:ios';
-    packageConfig.scripts.ios = 'expo run:ios';
-    await fs.writeFile(packageConfigPath, JSON.stringify(packageConfig, null, 2));
   });
 
   afterAll(async () => {
