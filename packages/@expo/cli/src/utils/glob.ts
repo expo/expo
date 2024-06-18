@@ -1,7 +1,7 @@
 import { glob, globStream, type GlobOptions } from 'glob';
 
 /** Finds all matching files. */
-export function everyMatchAsync(pattern: string, options: Omit<GlobOptions, 'withFileTypes'>) {
+export function everyMatchAsync(pattern: string, options: Omit<GlobOptions, 'withFileTypes'> = {}) {
   return glob(pattern, options);
 }
 
@@ -11,7 +11,7 @@ export function everyMatchAsync(pattern: string, options: Omit<GlobOptions, 'wit
  */
 export function anyMatchAsync(
   pattern: string,
-  options: Omit<GlobOptions, 'withFileTypes' | 'signal'>
+  options: Omit<GlobOptions, 'withFileTypes' | 'signal'> = {}
 ) {
   return new Promise<string[]>((resolve, reject) => {
     const controller = new AbortController();
@@ -22,8 +22,9 @@ export function anyMatchAsync(
           reject(error);
         }
       })
-      .once('data', (matches: string[]) => {
-        resolve(matches);
+      .once('end', () => resolve([]))
+      .once('data', (match: string) => {
+        resolve([match]);
         controller.abort();
       });
   });
