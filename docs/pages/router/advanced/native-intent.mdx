@@ -36,7 +36,7 @@ The `redirectSystemPath` is a special method used to process URLs in native apps
 - **path**: Represents the URL or path undergoing processing.
 - **initial**: A boolean flag indicating whether this is the app's initial URL.
 
-This function's return value should be either a `string` or a `Promise<string>`. Do note that throwing errors within this function may result in app crashes. It's highly recommended to wrap your code inside a `try/catch` block and utilize `.catch()` statements when appropriate.
+This method's return value should be either a `string` or a `Promise<string>`. Do note that throwing errors within this method may result in app crashes. It's highly recommended to wrap your code inside a `try/catch` block and utilize `.catch()` statements when appropriate.
 
 By following these best practices, you can ensure the stability and reliability of your app's URL processing functionality and mitigate the risk of unexpected errors and crashes.
 
