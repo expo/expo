@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -20,8 +20,9 @@
 
 ### 💡 Others
 
-- Remove unused `serve.json` file from `expo customize`. ([#29571](https://github.com/expo/expo/pull/29571) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove webpack dependency in repo. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
 - Add "more tools" to terminal UI all the time. ([#29837](https://github.com/expo/expo/pull/29837) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused `serve.json` file from `expo customize`. ([#29571](https://github.com/expo/expo/pull/29571) by [@EvanBacon](https://github.com/EvanBacon))
 - Add more tests for export:embed. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))

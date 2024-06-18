@@ -16,6 +16,8 @@ function addBuiltinSymbol(obj) {
 function install(name, getValue) {
     installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
+// https://encoding.spec.whatwg.org/#textdecoder
+install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 // https://url.spec.whatwg.org/#url
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
