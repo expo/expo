@@ -198,12 +198,22 @@ export function withExtendedResolver(
     },
   };
 
-  const universalAliases: [RegExp, string][] = [];
+  let _universalAliases: [RegExp, string][] | null;
 
-  // This package is currently always installed as it is included in the `expo` package.
-  if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
-    debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
-    universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+  function getUniversalAliases() {
+    if (_universalAliases) {
+      return _universalAliases;
+    }
+
+    _universalAliases = [];
+
+    // This package is currently always installed as it is included in the `expo` package.
+    if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+      debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
+      _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+    }
+
+    return _universalAliases;
   }
 
   const preferredMainFields: { [key: string]: string[] } = {
@@ -448,7 +458,7 @@ export function withExtendedResolver(
         return getStrictResolver(context, platform)(redirectedModuleName);
       }
 
-      for (const [matcher, alias] of universalAliases) {
+      for (const [matcher, alias] of getUniversalAliases()) {
         const match = moduleName.match(matcher);
         if (match) {
           const aliasedModule = alias.replace(
