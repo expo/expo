@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `export 'IS_ENV_WITH_LOCAL_ASSETS' (imported as 'IS_ENV_WITH_LOCAL_ASSETS') was not found in './PlatformUtils'` ([#29839](https://github.com/expo/expo/pull/29839) by [@d4rky-pl](https://github.com/d4rky-pl))
+
 ### 💡 Others
 
 - Removed @react-native/assets-registry dependency. ([#29541](https://github.com/expo/expo/pull/29541) by [@kudo](https://github.com/kudo))
