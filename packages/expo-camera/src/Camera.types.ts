@@ -372,7 +372,7 @@ export type CameraProps = ViewProps & {
    */
   responsiveOrientationWhenOrientationLocked?: boolean;
   /**
-   * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`.
+   * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
    * @default 4:3
    * @platform android
    */
@@ -382,14 +382,14 @@ export type CameraProps = ViewProps & {
    */
   onCameraReady?: () => void;
   /**
-   * Callback invoked when camera preview could not been started.
+   * Callback invoked when camera preview could not start.
    * @param event Error object that contains a `message`.
    */
   onMountError?: (event: CameraMountError) => void;
   /**
    * Callback that is invoked when a barcode has been successfully scanned. The callback is provided with
    * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
-   * refers to the barcode type that was scanned and the `data` is the information encoded in the barcode
+   * refers to the barcode type that was scanned, and the `data` is the information encoded in the barcode
    * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
    * for supported values.
    * @param scanningResult
