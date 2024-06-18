@@ -263,18 +263,20 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource> ->
-        val videoSource = if (source.`is`(VideoSource::class)) {
-          source.get(VideoSource::class)
-        } else {
-          VideoSource(source.get(String::class))
+      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource>? ->
+        val videoSource = source?.let {
+          if (it.`is`(VideoSource::class)) {
+            it.get(VideoSource::class)
+          } else {
+            VideoSource(it.get(String::class))
+          }
         }
-        val mediaItem = videoSource.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
-          ref.videoSource = videoSource
-          ref.player.setMediaItem(mediaItem)
+          ref.uncommittedSource = videoSource
+          if (VideoManager.isVideoPlayerAttachedToView(ref)) {
+            ref.prepare()
+          }
         }
       }
 

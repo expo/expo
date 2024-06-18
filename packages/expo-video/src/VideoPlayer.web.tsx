@@ -28,7 +28,7 @@ export function getSourceUri(source: VideoSource): string | null {
 }
 
 export default class VideoPlayerWeb
-  extends expo.SharedObject<VideoPlayerEvents>
+  extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
 {
   constructor(source: VideoSource) {
