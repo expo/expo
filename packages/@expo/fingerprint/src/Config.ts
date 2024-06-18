@@ -38,6 +38,7 @@ export async function loadConfigAsync(
     'hashAlgorithm',
     'extraSources',
     'sourceSkips',
+    'enableReactImportsPatcher',
     'debug',
   ];
   const config: Config = {};
