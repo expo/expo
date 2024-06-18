@@ -9,3 +9,5 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Upgrade `glob@7` to `glob@10`.
