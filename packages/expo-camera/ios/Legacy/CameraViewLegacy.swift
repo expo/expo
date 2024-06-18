@@ -544,7 +544,7 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
       guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
         return
       }
-      var updatedExif = ExpoCameraUtils.updateExif(
+      let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
@@ -581,7 +581,7 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
         } else {
-          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
+          if let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
             metadataGpsDict.addEntries(from: gpsDict)
           }
         }

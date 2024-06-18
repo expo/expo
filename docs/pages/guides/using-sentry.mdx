@@ -6,7 +6,7 @@ description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
@@ -298,7 +298,7 @@ Sentry.configureScope(scope => {
 
 Once configured, information about the associated update will show up in an error's tag section:
 
-<ImageSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
+<ContentSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
 
 </Collapsible>
 

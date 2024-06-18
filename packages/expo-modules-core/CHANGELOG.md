@@ -20,13 +20,17 @@
 - [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
 - Fixed reload crash on Android. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
 - [iOS] Fix random conversion errors when converting JavaScript floating point numbers to `Swift.Float`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
+- Fixed resource leakage from `ExpoRequestInterceptorProtocol`. ([#29798](https://github.com/expo/expo/pull/29798) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- [web] Use global `crypto` object for UUID. ([#29828](https://github.com/expo/expo/pull/29828) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
 - Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
 - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Switch to the JS thread when sending an event. ([#29753](https://github.com/expo/expo/pull/29753) by [@lukmccall](https://github.com/lukmccall))
+- Moved `process` object declaration to global declaration. ([#29745](https://github.com/expo/expo/pull/29745) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.12.13 - 2024-06-05
 

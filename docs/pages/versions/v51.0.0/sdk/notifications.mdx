@@ -10,7 +10,7 @@ platforms: ['android*', 'ios*', 'web']
 import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
@@ -556,10 +556,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
   src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -598,9 +598,9 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 

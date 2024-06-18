@@ -4,7 +4,7 @@ description: Learn how to install and share the development with your team or ru
 sidebar_title: Share with your team
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
@@ -16,7 +16,7 @@ Android and iOS both offer ways to install a build of your application directly 
 
 When a development build is ready, a shareable URL is generated for your build with instructions on how to get it up and running. You can use this URL with a teammate or send it to your test device to install the build. The URL generated is unique to the build for your project.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of shareable development build URL after the Android internal distribution build is ready."
   src="/static/images/share-dev-build/shareable-url.png"
 />
@@ -27,7 +27,7 @@ When a development build is ready, a shareable URL is generated for your build w
 
 You can also direct your teammate to the build page in the Expo dashboard. From there, they can download the build artifact directly on their device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of shareable development build URL from Expo dashboard."
   src="/static/images/share-dev-build/expo-dashboard.png"
 />

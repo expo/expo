@@ -4,9 +4,8 @@ description: In this tutorial, learn how to create a modal from React Native to 
 ---
 
 import { SnackInline } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { A } from '~/ui/components/Text';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
@@ -103,10 +102,10 @@ For now, when the value of `showAppOptions` is `true`, let's render an empty `<V
 
 Let's break down the layout of the option buttons we will implement in this chapter. The design looks like this:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of the layout of the buttons row."
   src="/static/images/tutorial/buttons-layout.jpg"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the modal and is styled differently than the other two buttons.
@@ -258,10 +257,10 @@ In the above snippet, the `onReset()` function is called when the user presses t
 
 Let's take a look at our app on Android, iOS and the web:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Button options displayed after a image is selected."
   src="/static/images/tutorial/button-options.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 </Step>
@@ -395,11 +394,11 @@ export default function App() {
 
 Here is the result after this step:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="A modal working on all platforms"
   src="/static/images/tutorial/modal-creation.jpg"
-  style={{ maxWidth: 720 }}
-  containerStyle={{ marginBottom: 0 }}
+  className="max-w-[720px]"
+
 />
 
 </Step>
@@ -502,7 +501,7 @@ The `onSelect` prop on the `<EmojiList>` component selects the emoji and the `on
 
 Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/emoji-picker.mp4" />
+<ContentSpotlight file="tutorial/emoji-picker.mp4" />
 
 </Step>
 
@@ -582,7 +581,7 @@ export default function App() {
 
 Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/select-emoji.mp4" />
+<ContentSpotlight file="tutorial/select-emoji.mp4" />
 
 </Step>
 

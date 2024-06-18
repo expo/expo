@@ -116,7 +116,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    guard let fileSize = try? getFileSize(path: documentUrl) else {
+    guard let fileSize = getFileSize(path: documentUrl) else {
       throw InvalidFileException()
     }
 

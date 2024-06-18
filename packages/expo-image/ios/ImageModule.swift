@@ -50,7 +50,11 @@ public final class ImageModule: Module {
       }
 
       Prop("blurRadius") { (view, blurRadius: Double?) in
-        view.blurRadius = blurRadius ?? .zero
+        let radius = blurRadius ?? .zero
+        // the implementation uses Apple's CIGaussianBlur internally
+        // we divide the radius to achieve more consistent cross-platform appearance
+        // the value was found experimentally
+        view.blurRadius = radius / 2.0
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in

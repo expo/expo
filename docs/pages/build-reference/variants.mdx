@@ -4,7 +4,7 @@ maxHeadingDepth: 4
 description: Learn how to install multiple variants of an app on the same device.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
@@ -254,10 +254,10 @@ end
 
 Open project in Xcode, click on the project name in the navigation panel, right click on the existing target, and click "Duplicate":
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Duplicate Xcode target"
   src="/static/images/eas-build/variants/1-ios-duplicate-target.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Rename the target to something more meaningful, for example, `myapp copy` -> `myapp-dev`.
@@ -269,10 +269,10 @@ Configure a scheme for the new target:
 - Change scheme name `myapp copy` -> `myapp-dev`.
 - By default, the new scheme should be marked as shared, but Xcode does not create `.xcscheme` files. To fix that, uncheck the "Shared" checkbox and check it again, after that new `.xcscheme` file should show up in the **ios/myapp.xcodeproj/xcshareddata/xcschemes** directory.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode scheme list"
   src="/static/images/eas-build/variants/2-scheme-list.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 By default, the newly created target has separate **Info.plist** file (in the above example, it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
@@ -284,10 +284,10 @@ By default, the newly created target has separate **Info.plist** file (in the ab
 - Change **Info.plist** value - **myapp copy-Info.plist** -> **myapp/Info.plist**.
 - Change `Product Bundle Identifier`.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode build settings"
   src="/static/images/eas-build/variants/3-target-build-settings.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 To change the display name:

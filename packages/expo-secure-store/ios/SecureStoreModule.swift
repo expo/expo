@@ -192,8 +192,6 @@ public final class SecureStoreModule: Module {
       return kSecAttrAccessibleAlwaysThisDeviceOnly
     case .whenUnlockedThisDeviceOnly:
       return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-    default:
-      return kSecAttrAccessibleWhenUnlocked
     }
   }
 

@@ -76,6 +76,7 @@ export function printUsage(
       { key: 'j', msg: 'open debugger' },
       { key: 'r', msg: 'reload app' },
       !!options.isWebSocketsEnabled && { key: 'm', msg: 'toggle menu' },
+      !!options.isWebSocketsEnabled && { key: 'shift+m', msg: 'more tools' },
       { key: 'o', msg: 'open project code in your editor' },
       {},
     ]);

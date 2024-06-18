@@ -33,18 +33,17 @@ public class ExpoPrintToFile {
       }
 
       let uri = URL(fileURLWithPath: filePath)
-      let error: Error
 
       guard let data = data else {
         promise.resolve(PdfSavingException())
         return
       }
       do {
-        let success = try data.write(to: uri)
+        try data.write(to: uri)
         let base64Data = options.base64 ? data.base64EncodedString(options: Data.Base64EncodingOptions.endLineWithLineFeed) : nil
         let result = FilePrintResult(uri: uri.absoluteString, numberOfPages: pagesNumber, base64: base64Data)
         promise.resolve(result)
-      } catch let error {
+      } catch {
         promise.reject(PdfSavingException())
       }
     }
@@ -74,7 +73,7 @@ public class ExpoPrintToFile {
     printableRect: CGRect,
     onFinished: @escaping (_: Data, _: Int, _: Error?, _: ExpoWKPDFRenderer?) -> Void
   ) {
-    let formatter = UIMarkupTextPrintFormatter(markupText: htmlString ?? "")
+    let formatter = UIMarkupTextPrintFormatter(markupText: htmlString)
     let renderer = UIPrintPageRenderer()
     renderer.addPrintFormatter(formatter, startingAtPageAt: 0)
 

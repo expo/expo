@@ -92,7 +92,7 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 <Collapsible summary="None of the files exist error">
 
-When you run `eas build`, your project's files are uploaded to Expo's build servers. However, any file or directory mentioned in the **.gitignore** is **not uploaded**. This is international to prevent sensitive information, such as API keys, from being exposed in your app's code.
+When you run `eas build`, your project's files are uploaded to Expo's build servers. However, any file or directory mentioned in the **.gitignore** is **not uploaded**. This is intentional to prevent sensitive information, such as API keys, from being exposed in your app's code.
 
 If your project imports a file listed in **.gitignore**, the build will fail with a `None of these files exist` error. There are different ways you can resolve this error:
 
