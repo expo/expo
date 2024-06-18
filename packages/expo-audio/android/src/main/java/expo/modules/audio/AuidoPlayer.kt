@@ -73,31 +73,32 @@ class AudioPlayer(
     })
   }
 
-  private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) = withContext(Dispatchers.Main) {
-    val isMuted = player.volume == 0f
-    val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
-    val isLoaded = player.playbackState == Player.STATE_READY
-    val isBuffering = player.playbackState == Player.STATE_BUFFERING
+  private suspend fun sendPlayerUpdate(map: Map<String, Any?>? = null) =
+    withContext(Dispatchers.Main) {
+      val isMuted = player.volume == 0f
+      val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
+      val isLoaded = player.playbackState == Player.STATE_READY
+      val isBuffering = player.playbackState == Player.STATE_BUFFERING
 
-    val data = mapOf(
-      "id" to id,
-      "currentTime" to player.currentPosition,
-      "status" to playbackStateToString(player.playbackState),
-      "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
-      "reasonForWaitingToPlay" to null,
-      "mute" to isMuted,
-      "duration" to player.duration,
-      "playing" to player.isPlaying,
-      "loop" to isLooping,
-      "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
-      "playbackRate" to player.playbackParameters.speed,
-      "shouldCorrectPitch" to preservesPitch,
-      "isBuffering" to isBuffering
-    )
+      val data = mapOf(
+        "id" to id,
+        "currentTime" to player.currentPosition,
+        "status" to playbackStateToString(player.playbackState),
+        "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
+        "reasonForWaitingToPlay" to null,
+        "mute" to isMuted,
+        "duration" to player.duration,
+        "playing" to player.isPlaying,
+        "loop" to isLooping,
+        "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
+        "playbackRate" to player.playbackParameters.speed,
+        "shouldCorrectPitch" to preservesPitch,
+        "isBuffering" to isBuffering
+      )
 
-    val body = map?.let { data + it } ?: data
-    emit("onPlaybackStatusUpdate", body)
-  }
+      val body = map?.let { data + it } ?: data
+      emit("onPlaybackStatusUpdate", body)
+    }
 
   private fun playbackStateToString(state: Int): String {
     return when (state) {
@@ -108,7 +109,7 @@ class AudioPlayer(
       else -> "unknown"
     }
   }
-  
+
   override fun deallocate() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()

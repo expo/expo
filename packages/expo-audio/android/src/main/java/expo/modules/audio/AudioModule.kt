@@ -48,7 +48,7 @@ class AudioModule : Module() {
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val httpClient get() = OkHttpClient().newBuilder().build()
+  private val httpClient = OkHttpClient()
 
   private val players = mutableMapOf<String, AudioPlayer>()
   private var appIsPaused = false

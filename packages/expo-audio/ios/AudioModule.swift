@@ -210,7 +210,7 @@ public class AudioModule: Module {
         recorder.uri
       }
 
-      Function("record") { recorder in
+      Function("record") { (recorder: AudioRecorder) in
         try checkPermissions()
         recorder.pointer.record()
         recorder.startTimestamp = Int(recorder.deviceCurrentTime)
