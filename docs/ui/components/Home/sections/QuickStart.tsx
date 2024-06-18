@@ -46,10 +46,16 @@ export function QuickStart() {
             Create a universal Android, iOS, and web app
           </RawH2>
           <HomeButton
-            className="hocus:bg-button-primary"
+            className="mb-12 hocus:bg-button-primary"
             href="/tutorial/introduction/"
             rightSlot={<ArrowRightIcon className="icon-md" />}>
-            Start Tutorial
+            Start Expo Tutorial
+          </HomeButton>
+          <HomeButton
+            className="hocus:bg-button-primary"
+            href="/tutorial/eas/introduction/"
+            rightSlot={<ArrowRightIcon className="icon-md" />}>
+            Start EAS Tutorial
           </HomeButton>
         </GridCell>
       </GridContainer>
