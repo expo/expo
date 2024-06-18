@@ -62,7 +62,7 @@ export const expoStart: Command = async (argv) => {
         `--max-workers <number>          Maximum number of tasks to allow Metro to spawn`,
         `--no-dev                        Bundle in production mode`,
         `--minify                        Minify JavaScript`,
-        `--atlas                         Gather information about the exported bundles and emit an Atlas file`,
+        `--atlas                         Enable JavaScript bundle exploration (shift+m)`,
         ``,
         chalk`-m, --host <string>             Dev server hosting type. {dim Default: lan}`,
         chalk`                                {bold lan}: Use the local network`,
