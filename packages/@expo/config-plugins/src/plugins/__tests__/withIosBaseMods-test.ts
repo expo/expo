@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-import glob from 'glob';
+import { glob } from 'glob';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -47,7 +47,7 @@ describe('entitlements', () => {
     // @ts-ignore: mods are untyped
     expect(config.mods.ios.entitlements).toBeDefined();
 
-    expect(config._internal.modResults.ios.entitlements).toBeDefined();
+    expect(config._internal?.modResults.ios.entitlements).toBeDefined();
 
     // Ensure no files were written
     expect(vol.toJSON()).toStrictEqual({});
