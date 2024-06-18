@@ -29,6 +29,7 @@ import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutation
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import MetroHmrServer from 'metro/src/HmrServer';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -171,6 +172,7 @@ export async function instantiateMetroAsync(
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
   metro: Metro.Server;
+  hmrServer: MetroHmrServer | null;
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
@@ -242,7 +244,7 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, metro } = await runServer(
+  const { server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
@@ -278,6 +280,7 @@ export async function instantiateMetroAsync(
 
   return {
     metro,
+    hmrServer,
     server,
     middleware,
     messageSocket: messageSocketEndpoint,

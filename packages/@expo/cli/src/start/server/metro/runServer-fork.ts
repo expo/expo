@@ -36,7 +36,11 @@ export const runServer = async (
     // Use a mock server object instead of creating a real server, this is used in export cases where we want to reuse codepaths but not actually start a server.
     mockServer: boolean;
   }
-): Promise<{ server: http.Server | https.Server; metro: Server }> => {
+): Promise<{
+  server: http.Server | https.Server;
+  hmrServer: MetroHmrServer | null;
+  metro: Server;
+}> => {
   // await earlyPortCheck(host, config.server.port);
 
   // if (secure != null || secureCert != null || secureKey != null) {
@@ -96,10 +100,14 @@ export const runServer = async (
   });
 
   if (mockServer) {
-    return { server: httpServer, metro: metroServer };
+    return { server: httpServer, hmrServer: null, metro: metroServer };
   }
 
-  return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
+  return new Promise<{
+    server: http.Server | https.Server;
+    hmrServer: MetroHmrServer;
+    metro: Server;
+  }>((resolve, reject) => {
     httpServer.on('error', (error) => {
       reject(error);
     });
@@ -109,14 +117,16 @@ export const runServer = async (
         onReady(httpServer);
       }
 
+      const hmrServer = new MetroHmrServer(
+        metroServer.getBundler(),
+        metroServer.getCreateModuleId(),
+        config
+      );
+
       Object.assign(websocketEndpoints, {
         // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
-          websocketServer: new MetroHmrServer(
-            metroServer.getBundler(),
-            metroServer.getCreateModuleId(),
-            config
-          ),
+          websocketServer: hmrServer,
         }),
       });
 
@@ -131,7 +141,7 @@ export const runServer = async (
         }
       });
 
-      resolve({ server: httpServer, metro: metroServer });
+      resolve({ server: httpServer, hmrServer, metro: metroServer });
     });
   });
 };

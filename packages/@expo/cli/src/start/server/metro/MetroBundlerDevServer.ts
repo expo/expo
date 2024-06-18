@@ -71,6 +71,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import MetroHmrServer from 'metro/src/HmrServer';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -101,6 +102,7 @@ const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
+  private hmrServer: MetroHmrServer | null = null;
 
   get name(): string {
     return 'metro';
@@ -625,7 +627,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // Required for symbolication:
     process.env.EXPO_DEV_SERVER_ORIGIN = `http://localhost:${options.port}`;
 
-    const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
+    const { metro, hmrServer, server, middleware, messageSocket } = await instantiateMetroAsync(
       this,
       parsedOptions,
       {
@@ -741,12 +743,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return originalClose((err?: Error) => {
         this.instance = null;
         this.metro = null;
+        this.hmrServer = null;
+        this.ssrHmrClients = new Map();
         callback?.(err);
       });
     };
 
     assertMetroPrivateServer(metro);
     this.metro = metro;
+    this.hmrServer = hmrServer;
+
     return {
       server,
       location: {
@@ -762,6 +768,29 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       messageSocket,
     };
   }
+
+  private async registerSsrHmr(url: string) {
+    if (!this.hmrServer) {
+      return;
+    }
+
+    if (this.ssrHmrClients.has(url)) {
+      return;
+    }
+
+    const sendFn = () => {
+      // TODO ...
+    };
+
+    const client = await this.hmrServer!.onClientConnect(url, sendFn);
+    this.ssrHmrClients.set(url, client);
+    // Opt in...
+    client.optedIntoHMR = true;
+
+    await this.hmrServer!._registerEntryPoint(client, url, sendFn);
+  }
+
+  private ssrHmrClients: Map<string, import('metro/src/HmrServer').Client> = new Map();
 
   public async waitForTypeScriptAsync(): Promise<boolean> {
     if (!this.instance) {
