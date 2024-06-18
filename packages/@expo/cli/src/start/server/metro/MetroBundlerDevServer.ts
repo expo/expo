@@ -152,7 +152,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
       if (contents) {
         let src = contents.src;
-        if (includeSourceMaps && contents.map?.sources) {
+
+        if (includeSourceMaps && contents.map) {
           // TODO(kitten): Merge the source map transformer in the future
           // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
           // Alternatively, check whether `sourcesRoot` helps here
@@ -162,7 +163,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             `//# sourceMappingURL=${artifactBasename}`
           );
 
-          const parsedMap = JSON.parse(contents.map);
+          const parsedMap =
+            typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
           files.set(artifactFilename + '.map', {
             contents: JSON.stringify({
               version: parsedMap.version,
