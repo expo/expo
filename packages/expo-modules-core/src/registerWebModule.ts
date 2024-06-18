@@ -1,5 +1,3 @@
-// It is a no-op function that returns the module implementation.
-
 import type { NativeModule } from './ts-declarations/NativeModule';
 
 export function registerWebModule<ModuleType extends typeof NativeModule>(
