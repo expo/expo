@@ -10,7 +10,7 @@ public final class PedometerModule: Module {
       return false
     }
 
-    AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
+    AsyncFunction("getStepCountAsync") { (_: Double, _: Double, promise: Promise) in
       promise.reject(PedometerDisabledException())
     }
 
