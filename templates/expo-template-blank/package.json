@@ -1,6 +1,7 @@
 {
   "name": "expo-template-blank",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
+  "license": "MIT",
   "version": "51.0.27",
   "main": "expo/AppEntry.js",
   "scripts": {
