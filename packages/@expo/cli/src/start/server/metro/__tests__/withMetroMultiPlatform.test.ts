@@ -1,8 +1,8 @@
 import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
-import assert from 'node:assert';
 import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
+import assert from 'node:assert';
 
 import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
