@@ -1,5 +1,6 @@
+import { NativeModule } from 'expo-modules-core';
 import { SpeechOptions, WebVoice } from './Speech.types';
-declare const _default: {
+declare class ExpoSpeech extends NativeModule {
     speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance>;
     getVoices(): Promise<WebVoice[]>;
     isSpeaking(): Promise<boolean>;
@@ -7,6 +8,7 @@ declare const _default: {
     pause(): Promise<void>;
     resume(): Promise<void>;
     maxSpeechInputLength: number;
-};
+}
+declare const _default: typeof ExpoSpeech;
 export default _default;
 //# sourceMappingURL=ExponentSpeech.web.d.ts.map

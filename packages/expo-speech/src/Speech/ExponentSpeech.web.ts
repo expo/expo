@@ -1,4 +1,4 @@
-import { CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, NativeModule, registerWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -23,7 +23,7 @@ async function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
-export default createWebModule({
+class ExpoSpeech extends NativeModule {
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     if (text.length > MAX_SPEECH_INPUT_LENGTH) {
       throw new CodedError(
@@ -88,7 +88,7 @@ export default createWebModule({
     window.speechSynthesis.speak(message);
 
     return message;
-  },
+  }
   async getVoices(): Promise<WebVoice[]> {
     const voices = await getVoices();
     return voices.map((voice) => ({
@@ -100,18 +100,20 @@ export default createWebModule({
       name: voice.name,
       voiceURI: voice.voiceURI,
     }));
-  },
+  }
   async isSpeaking(): Promise<boolean> {
     return window.speechSynthesis.speaking;
-  },
+  }
   async stop(): Promise<void> {
     return window.speechSynthesis.cancel();
-  },
+  }
   async pause(): Promise<void> {
     return window.speechSynthesis.pause();
-  },
+  }
   async resume(): Promise<void> {
     return window.speechSynthesis.resume();
-  },
-  maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-});
+  }
+  maxSpeechInputLength = MAX_SPEECH_INPUT_LENGTH;
+}
+
+export default registerWebModule('ExpoSpeech', ExpoSpeech);
