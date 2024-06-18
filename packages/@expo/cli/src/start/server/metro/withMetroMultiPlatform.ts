@@ -160,12 +160,14 @@ export function withExtendedResolver(
     // Get the `transformer.assetRegistryPath`
     // this needs to be unified since you can't dynamically
     // swap out the transformer based on platform.
-    const userDefinedPath =
-      config.transformer.assetRegistryPath ?? '@react-native/assets-registry/registry.js';
-    if (path.isAbsolute(userDefinedPath)) {
-      _assetRegistryPath = fs.realpathSync(userDefinedPath);
+    if (
+      config.transformer.assetRegistryPath &&
+      path.isAbsolute(config.transformer.assetRegistryPath)
+    ) {
+      _assetRegistryPath = fs.realpathSync(config.transformer.assetRegistryPath);
       return _assetRegistryPath;
     }
+
     const assetRegistryPath = fs.realpathSync(
       path.resolve(
         resolveFrom(
