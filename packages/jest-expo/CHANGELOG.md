@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid adding typescript wildcard paths as jest module mapping. ([#29836](https://github.com/expo/expo/pull/29836) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 51.0.1 — 2024-04-24
