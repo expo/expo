@@ -98,7 +98,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let asset = AVURLAsset(url: url)
+    let asset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": videoSource.headers])
     let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
 
     if let drm = videoSource.drm {

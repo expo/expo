@@ -151,6 +151,13 @@ export type VideoSource = string | {
      * When undefined the player will display information contained in the video metadata.
      */
     metadata?: VideoMetadata;
+    /**
+     * Specifies headers sent with the video request.
+     * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+     * @platform android
+     * @platform ios
+     */
+    headers?: Record<string, string>;
 } | null;
 /**
  * Contains information about any errors that the player encountered during the playback

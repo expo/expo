@@ -8,6 +8,7 @@
 
 - Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add base64 certificate support for FairPlay DRM. ([#28990](https://github.com/expo/expo/pull/28990) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add support for request headers to in the video source. ([#29539](https://github.com/expo/expo/pull/29539) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
