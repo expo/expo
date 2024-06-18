@@ -53,7 +53,7 @@ import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -513,6 +513,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug('No SSR source map found for:', filename);
     }
 
+    if (opts.environment === 'node' || opts.environment === 'react-server') {
+      // Register SSR HMR
+      const serverRoot = getMetroServerRoot(this.projectRoot);
+      const relativePath = path.relative(serverRoot, filename);
+      const url = new URL(relativePath, this.getDevServerUrl()!);
+
+      this.registerSsrHmrAsync(url.toString(), () => {
+        console.log('HMR triggered for:', url.href);
+      });
+    }
+
     return {
       ...rest,
       src: scriptContents,
@@ -769,24 +780,58 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  private async registerSsrHmrAsync(url: string) {
-    if (!this.hmrServer) {
+  private async registerSsrHmrAsync(url: string, onReload: () => void) {
+    if (!this.hmrServer || this.ssrHmrClients.has(url)) {
       return;
     }
 
-    if (this.ssrHmrClients.has(url)) {
-      return;
-    }
+    debug('Register SSR HMR:', url);
 
-    const sendFn = () => {
-      // TODO ...
+    const sendFn = (message: string) => {
+      const data = JSON.parse(String(message)) as { type: string; body: any };
+
+      switch (data.type) {
+        case 'bundle-registered':
+        case 'update-done':
+        case 'update-start':
+          break;
+        case 'update':
+          const update = data.body;
+          const {
+            isInitialUpdate,
+            added,
+            modified,
+            deleted,
+          }: {
+            isInitialUpdate?: boolean;
+            added: unknown[];
+            modified: unknown[];
+            deleted: unknown[];
+          } = update;
+
+          const hasUpdate = added.length || modified.length || deleted.length;
+
+          // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
+          if (!isInitialUpdate && hasUpdate) {
+            onReload();
+          }
+          break;
+        case 'error':
+          // GraphNotFound can mean that we have an issue in metroOptions where the URL doesn't match the object props.
+          console.log('DATA:', data);
+          // @ts-expect-error
+          console.log((this.metro?._bundler._revisionsByGraphId as Map).keys());
+          break;
+        default:
+          debug('Unknown HMR message:', data);
+          break;
+      }
     };
 
     const client = await this.hmrServer!.onClientConnect(url, sendFn);
     this.ssrHmrClients.set(url, client);
     // Opt in...
     client.optedIntoHMR = true;
-
     await this.hmrServer!._registerEntryPoint(client, url, sendFn);
   }
 

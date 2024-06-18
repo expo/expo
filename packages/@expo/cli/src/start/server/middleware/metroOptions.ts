@@ -175,13 +175,13 @@ export function getMetroDirectBundleOptions(
     customTransformOptions: {
       __proto__: null,
       engine,
-      preserveEnvVars,
-      asyncRoutes,
+      preserveEnvVars: preserveEnvVars || undefined,
+      asyncRoutes: asyncRoutes || undefined,
       environment,
-      baseUrl,
+      baseUrl: baseUrl || undefined,
       routerRoot,
-      bytecode,
-      reactCompiler,
+      bytecode: bytecode || undefined,
+      reactCompiler: reactCompiler || undefined,
     },
     customResolverOptions: {
       __proto__: null,
@@ -294,6 +294,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (engine === 'hermes') {
+    queryParams.append('unstable_transformProfile', 'hermes-stable');
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
