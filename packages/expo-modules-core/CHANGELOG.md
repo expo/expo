@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed resource leakage from `ExpoRequestInterceptorProtocol`. ([#29798](https://github.com/expo/expo/pull/29798) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.12.15 — 2024-06-13
