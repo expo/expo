@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
+
 ## 0.2.2 — 2024-04-24
 
 _This version does not introduce any user-facing changes._
