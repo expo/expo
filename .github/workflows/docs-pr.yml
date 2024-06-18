@@ -100,7 +100,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
           AWS_BUCKET: docs.expo.dev-pr-${{ github.event.pull_request.number }}
-        run: ./scripts/deploy.sh
+        run: ./deploy.sh
       - name: 🔍 Find old comment if it exists
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         uses: peter-evans/find-comment@v2
