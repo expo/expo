@@ -733,39 +733,92 @@ describe(withExtendedResolver, () => {
       const config = getModifiedConfig();
 
       ['ios', 'web'].forEach((platform) => {
-        it(`externs source-map-support to virtual node shim (platform: ${platform})`, () => {
-          const result = config.resolver.resolveRequest!(
-            // Context
-            getNodeResolverContext(),
-            // Module
+        describe(platform, () => {
+          ['react/123', 'expo'].forEach((name) => {
+            it(`does not extern ${name} to virtual node shim`, () => {
+              const result = config.resolver.resolveRequest!(
+                // Context
+                getNodeResolverContext(),
+                // Module
+                name,
+                // Platform
+                platform
+              );
+
+              expect(result.type).toBe('empty');
+              expect(getResolveFunc()).toBeCalledTimes(1);
+            });
+          });
+
+          [
             'source-map-support',
-            // Platform
-            platform
-          );
+            'source-map-support/register.js',
+            'react',
+            'react-native-helmet-async',
+            '@radix-ui/accordion',
+            '@babel/runtime/helpers/interopRequireDefault',
+            'react-dom/server',
+            'debug',
+            'acorn-loose',
+            'acorn',
+            'css-in-js-utils/lib/escape',
+            'hyphenate-style-name',
+            'color',
+            'color-string',
+            'color-convert',
+            'color-name',
+            'fontfaceobserver',
+            'fast-deep-equal',
+            'query-string',
+            'escape-string-regexp',
+            'invariant',
+            'postcss-value-parser',
+            'memoize-one',
+            'nullthrows',
+            'strict-uri-encode',
+            'decode-uri-component',
+            'split-on-first',
+            'filter-obj',
+            'warn-once',
+            'simple-swizzle',
+            'is-arrayish',
+            'inline-style-prefixer/index.js',
+          ].forEach((name) => {
+            it(`externs ${name} to virtual node shim`, () => {
+              const result = config.resolver.resolveRequest!(
+                // Context
+                getNodeResolverContext(),
+                // Module
+                name,
+                // Platform
+                platform
+              );
 
-          expectVirtual(
-            result,
-            // Expected path
-            '\0node:source-map-support'
-          );
+              expectVirtual(
+                result,
+                // Expected path
+                `\0node:${name}`
+              );
 
-          expect(getResolveFunc()).toBeCalledTimes(0);
-        });
+              expect(getResolveFunc()).toBeCalledTimes(0);
+            });
+          });
 
-        it(`externs @babel/runtime/xxx subpaths (platform: ${platform})`, () => {
-          const result = config.resolver.resolveRequest!(
-            getNodeResolverContext(),
-            '@babel/runtime/xxx/foo.js',
-            platform
-          );
+          it(`externs @babel/runtime/xxx subpaths `, () => {
+            const result = config.resolver.resolveRequest!(
+              getNodeResolverContext(),
+              '@babel/runtime/xxx/foo.js',
+              platform
+            );
 
-          expectVirtual(
-            result,
-            // Expected path
-            '\0node:@babel/runtime/xxx/foo.js'
-          );
+            expectVirtual(
+              result,
+              // Expected path
+              '\0node:@babel/runtime/xxx/foo.js'
+            );
 
-          expect(getResolveFunc()).toBeCalledTimes(0);
+            expect(getResolveFunc()).toBeCalledTimes(0);
+          });
         });
       });
     });
