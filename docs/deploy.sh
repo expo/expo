@@ -69,7 +69,7 @@ declare -A redirects # associative array variable
 
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation
-# useful link on twitter
+# useful link on x.com
 redirects[versions/latest/guides/app-stores.html]=versions/latest/distribution/app-stores
 # Xdl caches
 redirects[versions/latest/guides/offline-support.html]=versions/latest/guides/offline-support
