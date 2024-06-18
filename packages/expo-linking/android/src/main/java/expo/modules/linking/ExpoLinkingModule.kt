@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.lang.ref.WeakReference
 
 class ExpoLinkingModule : Module() {
   companion object {
@@ -24,7 +25,7 @@ class ExpoLinkingModule : Module() {
 
     OnStartObserving("onURLReceived") {
 			val weakModule = WeakReference(this@ExpoLinkingModule)
-      val observer = { uri: Uri? ->
+      val observer: (Uri?) -> Unit = { uri: Uri? ->
         weakModule.get()?.sendEvent("onURLReceived", bundleOf("url" to uri?.toString()))
       }
       onURLReceivedObservers.add(observer)
