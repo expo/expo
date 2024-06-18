@@ -2,10 +2,13 @@
 
 import type { NativeModule } from './ts-declarations/NativeModule';
 
-// Actual implementation is located in `createWebModule.web.ts`.
 export function registerWebModule<ModuleType extends typeof NativeModule>(
-  _moduleName: string,
+  moduleName: string,
   moduleImplementation: ModuleType
 ): ModuleType {
-  return moduleImplementation;
+  if (globalThis.expo.modules[moduleName]) {
+    return globalThis.expo.modules[moduleName];
+  }
+  globalThis.expo.modules[moduleName] = new moduleImplementation();
+  return globalThis.expo.modules[moduleName];
 }
