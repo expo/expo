@@ -226,7 +226,7 @@ export function dismissAuthSession() {
  * @return Returns an object with message about why the redirect failed or succeeded:
  *
  * If `type` is set to `failed`, the reason depends on the message:
- * - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+ * - `Not supported on this platform`: If the platform doesn't support this method (Android, iOS).
  * - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR
  *   or node environment.
  * - `No auth session is currently in progress`: (the cached state wasn't found in local storage).
