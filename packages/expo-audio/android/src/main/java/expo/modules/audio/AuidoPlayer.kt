@@ -96,7 +96,7 @@ class AudioPlayer(
     )
 
     val body = map?.let { data + it } ?: data
-    sendEventOnJSThread(body)
+    sendEvent("onPlaybackStatusUpdate", body)
   }
 
   private fun playbackStateToString(state: Int): String {
@@ -108,13 +108,7 @@ class AudioPlayer(
       else -> "unknown"
     }
   }
-
-  private fun sendEventOnJSThread(vararg args: Any?) {
-    appContext?.executeOnJavaScriptThread {
-      sendEvent("onPlaybackStatusUpdate", *args)
-    }
-  }
-
+  
   override fun deallocate() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()

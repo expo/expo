@@ -30,8 +30,6 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -44,12 +42,13 @@ import okhttp3.OkHttpClient
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class AudioModule : Module(), LifecycleEventListener {
+class AudioModule : Module() {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val httpClient get() = OkHttpClient().newBuilder().build()
 
   private val players = mutableMapOf<String, AudioPlayer>()
   private var appIsPaused = false
@@ -68,8 +67,6 @@ class AudioModule : Module(), LifecycleEventListener {
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-      val uiManager = appContext.legacyModule<UIManager>()
-      uiManager?.registerLifecycleEventListener(this@AudioModule)
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
@@ -101,15 +98,47 @@ class AudioModule : Module(), LifecycleEventListener {
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    OnActivityEntersBackground {
+      if (!appIsPaused) {
+        appIsPaused = true
+        if (!staysActiveInBackground) {
+          for (player in players.values) {
+            if (player.player.isPlaying) {
+              player.isPaused = true
+              player.ref.pause()
+            }
+          }
+        }
+      }
+    }
+
+    OnActivityEntersForeground {
+      if (appIsPaused) {
+        appIsPaused = false
+        if (!staysActiveInBackground) {
+          for (player in players.values) {
+            if (player.isPaused) {
+              player.isPaused = false
+              player.ref.play()
+            }
+          }
+          if (shouldRouteThroughEarpiece) {
+            updatePlaySoundThroughEarpiece(true)
+          }
+        }
+      }
+    }
+
     OnDestroy {
-      val uiManager = appContext.legacyModule<UIManager>()
-      uiManager?.unregisterLifecycleEventListener(this@AudioModule)
+      for (player in players.values) {
+        player.player.stop()
+        player.deallocate()
+      }
     }
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource? ->
-        val builder = OkHttpClient().newBuilder()
-        val factory = OkHttpDataSource.Factory(builder.build()).apply {
+        val factory = OkHttpDataSource.Factory(httpClient).apply {
           source?.headers?.let {
             setDefaultRequestProperties(it)
           }
@@ -454,44 +483,6 @@ class AudioModule : Module(), LifecycleEventListener {
     map.putString("type", type)
     map.putString("uid", deviceInfo.id.toString())
     return map
-  }
-
-  override fun onHostResume() {
-    if (appIsPaused) {
-      appIsPaused = false
-      if (!staysActiveInBackground) {
-        for (player in players.values) {
-          if (player.isPaused) {
-            player.isPaused = false
-            player.ref.play()
-          }
-        }
-        if (shouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(true)
-        }
-      }
-    }
-  }
-
-  override fun onHostPause() {
-    if (!appIsPaused) {
-      appIsPaused = true
-      if (!staysActiveInBackground) {
-        for (player in players.values) {
-          if (player.player.isPlaying) {
-            player.isPaused = true
-            player.ref.pause()
-          }
-        }
-      }
-    }
-  }
-
-  override fun onHostDestroy() {
-    for (player in players.values) {
-      player.player.stop()
-      player.deallocate()
-    }
   }
 
   companion object {
