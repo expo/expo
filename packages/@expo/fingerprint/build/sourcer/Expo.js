@@ -26,7 +26,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
     const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: __dirname });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
         const stdoutJson = JSON.parse(stdout);
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, options);

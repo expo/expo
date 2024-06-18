@@ -5,13 +5,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.ReactHostWrapper
-import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
@@ -68,20 +65,6 @@ object DevMenuManager : DevMenuManagerInterface {
 
   override fun initializeWithReactHost(reactHost: ReactHostWrapper) = Unit
 
-  override fun dispatchCallable(actionId: String, args: ReadableMap?) {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
-  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) = Unit
-
-  override fun serializedItems(): List<Bundle> {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
-  override fun serializedScreens(): List<Bundle> {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
   override fun getSettings(): DevMenuPreferencesInterface? {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
@@ -96,10 +79,6 @@ object DevMenuManager : DevMenuManagerInterface {
 
   override fun synchronizeDelegate() = Unit
 
-  override fun setCurrentScreen(screen: String?) {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
@@ -112,14 +91,29 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
   fun loadFonts(context: Context) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
   override val coroutineScope: CoroutineScope
     get() = throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+
+  fun reload() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun togglePerformanceMonitor() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun toggleInspector() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun toggleRemoteDebug() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun openJSInspector() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun toggleFastRefresh() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
 }

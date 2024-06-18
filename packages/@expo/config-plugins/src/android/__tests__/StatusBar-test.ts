@@ -36,10 +36,22 @@ describe('e2e: write statusbar color and style to files correctly', () => {
     const colors = setStatusBarColors(config, { resources: {} });
 
     const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup())!;
-    expect(group.colorPrimaryDark).toBe('@color/colorPrimaryDark');
     expect(group['android:windowLightStatusBar']).toBe('true');
-    // Ensure the version guard is added
-    expect(styles.resources.style![0].item[0].$['tools:targetApi']).toBe('23');
+    expect(group['android:statusBarColor']).toBe('#654321');
+    expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
+  });
+
+  it(`sets the statusBarColor to '@android:color/transparent' if translucent has been set`, async () => {
+    const config: ExpoConfig = {
+      name: 'foo',
+      slug: 'bar',
+      androidStatusBar: { backgroundColor: '#654321', barStyle: 'dark-content', translucent: true },
+    };
+    const styles = setStatusBarStyles(config, { resources: {} });
+    const colors = setStatusBarColors(config, { resources: {} });
+
+    const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup())!;
+    expect(group['android:statusBarColor']).toBe('@android:color/transparent');
     expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
   });
 

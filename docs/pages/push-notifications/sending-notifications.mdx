@@ -4,14 +4,14 @@ sidebar_title: Send notifications with Expo's Push API
 description: Learn how to call Expo's Push API with the token when you want to send a notification.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { CODE } from '~/ui/components/Text';
 
 The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending these notifications off to FCM and APNs. All you need to do is send the request to the Expo's Push API with the `ExpoPushToken` you grabbed in the last step.
 
 > If you'd rather build a server that communicates with APNs and FCM directly, see [Send notifications with FCM and APNs](/push-notifications/sending-notifications-custom/). It's more complicated than using Expo's push notification service.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Diagram explaining sending a push from your server to device"
   src="/static/images/sending-notification.png"
   containerClassName="bg-palette-white"

@@ -32,7 +32,7 @@ export async function getExpoConfigSourcesAsync(
     const { stdout } = await spawnAsync(
       'node',
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
-      { cwd: __dirname }
+      { cwd: projectRoot }
     );
     const stdoutJson = JSON.parse(stdout);
     config = stdoutJson.config;

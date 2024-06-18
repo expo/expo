@@ -6,7 +6,7 @@ description: Learn how to configure a development build for a project using EAS 
 
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
@@ -47,10 +47,10 @@ Run the `npx expo start` to start the [development server](/get-started/start-de
 
 This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Running development server"
   src="/static/images/tutorial/eas/development-server.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 Let's notice the changes installing the `expo-dev-client` library:
@@ -102,7 +102,7 @@ On running, this command:
 
 - Creates EAS project and provides a link to that project which we can open in the Expo dashboard:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="New project in Expo dashboard"
   src="/static/images/tutorial/eas/new-project.png"
 />

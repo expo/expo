@@ -4,13 +4,16 @@ sidebar_title: Runtime versions
 description: Learn about different runtime version policies and how they may suit your project.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Runtime versions are a property that guarantees compatibility between a build's native code and an update. When a project is made into a build, the build will contain some native code that cannot be changed with an update. Therefore, an update must be compatible with a build's native code to run on the build.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
 
-<ImageSpotlight alt="Native and update layers diagram" src="/static/images/eas-update/layers.png" />
+<ContentSpotlight
+  alt="Native and update layers diagram"
+  src="/static/images/eas-update/layers.png"
+/>
 
 Builds can be thought of as two layers: a native layer that's built into the app's binary, and an update layer, that is swappable with other compatible updates. This separation allows us to ship bug fixes to builds as long as the update with the bug fix can run on the native layer inside the build. The `"runtimeVersion"` property allows us to guarantee that an update is compatible with a specific build's native code.
 

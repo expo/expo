@@ -91,7 +91,7 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
-    title: 'Expo EAS and 100 Snakes ',
+    title: 'Expo EAS and 100 Snakes',
     event: 'Rocket Ship #038',
     description: "Jon Samp",
     videoId: "JKU9JC4nX1k",
@@ -145,13 +145,36 @@ export const PODCASTS = [
     videoId: "yK0UDiLjxNY",
     link: "https://podcast.galaxies.dev/episodes/007-expo-router-debugging-with-cedric-van-putten"
   }
-] as Talk[]
+] as Talk[];
+
+export const LIVE_STREAMS = [
+  {
+    title: 'Expo SDK 51: New Architecture, Router 3.5, expo.new and more',
+    event: 'Expo Live Stream',
+    videoId: "k1ISWPgP4S4"
+  },
+  {
+    title: 'What is Expo Orbit? Live demo of speeding up dev workflow',
+    event: 'Expo Live Stream',
+    videoId: "vUoIoYq8WNM",
+  },
+  {
+    title: 'How to build TV apps from scratch, and with Ignite stack',
+    event: 'Expo Live Stream',
+    videoId: "PUMBWeLVuiw",
+  },
+  {
+    title: 'Expo SDK 50: API Routes, Fingerprint, Dev Tools and SQLite',
+    event: 'Expo Live Stream',
+    videoId: "cKFSVUo3AnI",
+  }
+] as Talk[];
 
 export type Talk = {
   title: string;
   event: string;
-  description: string;
   videoId: string;
+  description?: string;
   home?: boolean;
   thumbnail?: string;
   link?: string;

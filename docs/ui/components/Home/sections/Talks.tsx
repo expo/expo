@@ -82,16 +82,18 @@ export function TalkGridCell({
           }}
           className="border-b border-b-default bg-cover bg-center h-[138px] max-sm-gutters:h-[168px]"
         />
-        <div className="flex justify-between items-center bg-default min-h-[30px] px-4 py-3 gap-1">
+        <div className="flex justify-between items-start bg-default min-h-[30px] px-4 py-3 gap-1">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />
+          <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm mt-1" />
         </div>
       </div>
       <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
-        <CALLOUT theme="secondary" className="flex gap-2 items-center">
-          <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
-          {description}
-        </CALLOUT>
+        {description && (
+          <CALLOUT theme="secondary" className="flex gap-2 items-center">
+            <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
+            {description}
+          </CALLOUT>
+        )}
         <CALLOUT theme="secondary" className="flex gap-2 items-center">
           <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
           {event}
