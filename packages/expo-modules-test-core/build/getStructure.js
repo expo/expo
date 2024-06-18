@@ -178,7 +178,7 @@ function findAndParseNestedClassesOfType(moduleDefinition, file, type) {
         }
         const name = getIdentifierFromOffsetObject(df['key.substructure']?.[0], file).replace('.self', '');
         // let's drop nested view field and classes (are null anyways)
-        const { view: _, classes: _2, ...definition } = parseModuleDefinition(nestedModuleDefinition, file);
+        const { views: _, classes: _2, ...definition } = parseModuleDefinition(nestedModuleDefinition, file);
         return { ...definition, name };
     })
         .flatMap((f) => (f ? [f] : []));
@@ -208,7 +208,7 @@ function parseModuleDefinition(moduleDefinition, file) {
         events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),
         properties: findNamedDefinitionsOfType('Property', preparedModuleDefinition, file),
         props: omitParamsFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file), ['view']),
-        view: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View')[0],
+        views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
         classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
     };
     return parsedDefinition;

@@ -349,29 +349,32 @@ function generatePropTypesForDefinition(definition: OutputNestedClassDefinition)
 /*
 Generate a mock for view props and functions.
 */
-function getMockedView(definition: OutputNestedClassDefinition | null) {
-  if (!definition) {
-    return [];
-  }
-  const propsType = generatePropTypesForDefinition(definition);
-  const props = ts.factory.createParameterDeclaration(
-    undefined,
-    undefined,
-    'props',
-    undefined,
-    ts.factory.createTypeReferenceNode('ViewProps', undefined),
-    undefined
-  );
-  const viewFunction = ts.factory.createFunctionDeclaration(
-    [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
-    undefined,
-    'View',
-    undefined,
-    [props],
-    undefined,
-    ts.factory.createBlock([])
-  );
-  return [propsType, viewFunction];
+function getMockedViews(viewDefinitions: OutputNestedClassDefinition[]) {
+  return viewDefinitions.flatMap((definition) => {
+    if (!definition) {
+      return [];
+    }
+    const propsType = generatePropTypesForDefinition(definition);
+    const props = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      'props',
+      undefined,
+      ts.factory.createTypeReferenceNode('ViewProps', undefined),
+      undefined
+    );
+    const viewFunction = ts.factory.createFunctionDeclaration(
+      [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      // TODO: Handle this better once requireNativeViewManager accepts view name or a different solution for multiple views is built.
+      viewDefinitions.length === 1 ? 'View' : definition.name,
+      undefined,
+      [props],
+      undefined,
+      ts.factory.createBlock([])
+    );
+    return [propsType, viewFunction];
+  });
 }
 
 function getMockedClass(def: OutputNestedClassDefinition) {
@@ -419,11 +422,15 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
             omitFromSet(
               new Set([
                 ...getTypesToMock(module),
-                ...(module.view ? getTypesToMock(module.view) : []),
-                ...(module.classes ? new Set(...module.classes.map((c) => getTypesToMock(c))) : []),
+                ...new Set(...module.views.map((v) => getTypesToMock(v))),
+                ...new Set(...module.classes.map((c) => getTypesToMock(c))),
               ]),
               // Ignore all types that are actually native classes
-              [module.name, module.view?.name, ...module.classes?.map((c) => c.name)]
+              [
+                module.name,
+                ...module.views.map((c) => c.name),
+                ...module.classes.map((c) => c.name),
+              ]
             )
           )
         : [],
@@ -431,7 +438,7 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
       getMockedFunctions(module.functions) as ts.FunctionDeclaration[],
       getMockedFunctions(module.asyncFunctions, { async: true }) as ts.FunctionDeclaration[],
       newlineIdentifier,
-      getMockedView(module.view),
+      getMockedViews(module.views),
       getMockedClasses(module.classes)
     )
     .flatMap(separateWithNewlines);

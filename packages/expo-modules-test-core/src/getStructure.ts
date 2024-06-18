@@ -209,7 +209,7 @@ function findAndParseNestedClassesOfType(
       );
       // let's drop nested view field and classes (are null anyways)
       const {
-        view: _,
+        views: _,
         classes: _2,
         ...definition
       } = parseModuleDefinition(nestedModuleDefinition, file);
@@ -257,7 +257,7 @@ function parseModuleDefinition(
       findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file),
       ['view']
     ),
-    view: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View')[0],
+    views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
     classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
   };
   return parsedDefinition;

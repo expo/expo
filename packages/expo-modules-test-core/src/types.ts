@@ -47,7 +47,7 @@ export type Prop = {
 
 export type OutputModuleDefinition = {
   name: string;
-  view: OutputNestedClassDefinition | null;
+  views: OutputNestedClassDefinition[];
   classes: OutputNestedClassDefinition[];
   events: {
     name: string;
@@ -56,4 +56,4 @@ export type OutputModuleDefinition = {
   Record<'props', Prop[]>;
 
 // views and classes are a very similar structure, same as module but without more nesting levels
-export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'view' | 'classes'>;
+export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'views' | 'classes'>;

@@ -278,14 +278,18 @@ function generatePropTypesForDefinition(definition) {
 /*
 Generate a mock for view props and functions.
 */
-function getMockedView(definition) {
-    if (!definition) {
-        return [];
-    }
-    const propsType = generatePropTypesForDefinition(definition);
-    const props = typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'props', undefined, typescript_1.default.factory.createTypeReferenceNode('ViewProps', undefined), undefined);
-    const viewFunction = typescript_1.default.factory.createFunctionDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], undefined, 'View', undefined, [props], undefined, typescript_1.default.factory.createBlock([]));
-    return [propsType, viewFunction];
+function getMockedViews(viewDefinitions) {
+    return viewDefinitions.flatMap((definition) => {
+        if (!definition) {
+            return [];
+        }
+        const propsType = generatePropTypesForDefinition(definition);
+        const props = typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'props', undefined, typescript_1.default.factory.createTypeReferenceNode('ViewProps', undefined), undefined);
+        const viewFunction = typescript_1.default.factory.createFunctionDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], undefined, 
+        // TODO: Handle this better once requireNativeViewManager accepts view name or a different solution for multiple views is built.
+        viewDefinitions.length === 1 ? 'View' : definition.name, undefined, [props], undefined, typescript_1.default.factory.createBlock([]));
+        return [propsType, viewFunction];
+    });
 }
 function getMockedClass(def) {
     const classDecl = typescript_1.default.factory.createClassDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createIdentifier(def.name), undefined, undefined, [
@@ -315,12 +319,16 @@ function getMockForModule(module, includeTypes) {
         .concat(getPrefix(), newlineIdentifier, includeTypes
         ? getMockedTypes(omitFromSet(new Set([
             ...getTypesToMock(module),
-            ...(module.view ? getTypesToMock(module.view) : []),
-            ...(module.classes ? new Set(...module.classes.map((c) => getTypesToMock(c))) : []),
+            ...new Set(...module.views.map((v) => getTypesToMock(v))),
+            ...new Set(...module.classes.map((c) => getTypesToMock(c))),
         ]), 
         // Ignore all types that are actually native classes
-        [module.name, module.view?.name, ...module.classes?.map((c) => c.name)]))
-        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, { async: true }), newlineIdentifier, getMockedView(module.view), getMockedClasses(module.classes))
+        [
+            module.name,
+            ...module.views.map((c) => c.name),
+            ...module.classes.map((c) => c.name),
+        ]))
+        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, { async: true }), newlineIdentifier, getMockedViews(module.views), getMockedClasses(module.classes))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {
