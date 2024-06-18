@@ -9,8 +9,12 @@ platforms: ['android', 'ios', 'web']
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { AndroidPermissions } from '~/components/plugins/permissions';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { Speedometer04Icon } from '@expo/styleguide-icons';
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
@@ -18,6 +22,41 @@ import { Speedometer04Icon } from '@expo/styleguide-icons';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app.json/app.config.js
+
+You can configure `expo-sensors` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'motionPermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSMotionUsageDescription`](#permission-nsmotionusagedescription) permission message or `false` to disable motion permissions.',
+      default: '"Allow $(PRODUCT_NAME) to access your device motion"',
+    },
+  ]}
+/>
 
 ## API
 
@@ -45,6 +84,12 @@ Starting in Android 12 (API level 31), the system has a 200Hz limit for each sen
 If you need an update interval of less than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
 
 <AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={['NSMotionUsageDescription']} />
 
 <ConfigReactNative>
 
