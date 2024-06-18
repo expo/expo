@@ -86,12 +86,13 @@ export async function normalizeOptionsAsync(
     platforms: ['android', 'ios'],
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
     sourceSkips: SourceSkips.None,
     // Options from config
     ...config,
     // Explicit options
     ...options,
+    // Merge explicit ignorePaths with default ignore paths
+    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }
 
