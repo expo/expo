@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
         # TODO: revert after testing
         with:
-          fetch-depth: 500
+          fetch-depth: 0
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
