@@ -4,10 +4,12 @@ import { UUID, Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
   if (
+    // We use this code path in jest-expo.
+    process.env.NODE_ENV === 'test' ||
     // Node.js has supported global crypto since v15.
-    typeof crypto === 'undefined' &&
-    // Only use abstract imports in server environments.
-    typeof window === 'undefined'
+    (typeof crypto === 'undefined' &&
+      // Only use abstract imports in server environments.
+      typeof window === 'undefined')
   ) {
     // NOTE: Metro statically extracts all `require` statements to resolve them for environments
     // that don't support `require` natively. Here we check if we're running in a server environment

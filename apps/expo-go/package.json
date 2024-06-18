@@ -7,14 +7,13 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "report": "react-native-bundle-visualizer --entry-file index.js",
     "start": "expo start --port 80",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
   "license": "MIT",
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo/ios"
   },
   "dependencies": {
     "@apollo/client": "^3.4.10",
@@ -96,8 +95,6 @@
     "@types/react": "~18.0.14",
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "^3.0.0",
-    "jest-expo": "~51.0.0-unreleased",
-    "react-native-bundle-visualizer": "^3.0.0"
+    "expo-module-scripts": "^3.0.0"
   }
 }

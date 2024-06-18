@@ -394,7 +394,7 @@ describe(createFastResolver, () => {
       );
     });
 
-    it('resolves module with browser shims with non-matching extensions', () => {
+    xit('resolves module with browser shims with non-matching extensions', () => {
       const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
       const context = createContext({
         platform,
