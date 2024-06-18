@@ -120,7 +120,7 @@ class AudioRecorder(
       MEDIA_ERROR_SERVER_DIED -> "The media server has crashed"
       else -> "An unknown recording error occurred"
     }
-    sendEvent(
+    emit(
       "onRecordingStatusUpdate",
       mapOf(
         "isFinished" to true,
@@ -135,7 +135,7 @@ class AudioRecorder(
     when (what) {
       MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
         recorder.stop()
-        sendEvent(
+        emit(
           "onRecordingStatusUpdate",
           mapOf(
             "isFinished" to true,

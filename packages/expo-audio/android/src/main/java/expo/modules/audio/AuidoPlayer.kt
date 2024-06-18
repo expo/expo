@@ -96,7 +96,7 @@ class AudioPlayer(
     )
 
     val body = map?.let { data + it } ?: data
-    sendEvent("onPlaybackStatusUpdate", body)
+    emit("onPlaybackStatusUpdate", body)
   }
 
   private fun playbackStateToString(state: Int): String {
