@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import mapValues from 'lodash/mapValues';
 
 import * as Kernel from '../kernel/Kernel';
 import { SessionObject } from '../redux/SessionReducer';
@@ -8,14 +7,11 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 
 type Settings = Record<string, any>;
 
-const Keys = mapValues(
-  {
-    Session: 'session',
-    History: 'history',
-    Settings: 'settings',
-  },
-  (value) => `Exponent.${value}`
-);
+const Keys = {
+  Session: 'Exponent.session',
+  History: 'Exponent.history',
+  Settings: 'Exponent.settings',
+};
 
 async function getSettingsAsync(): Promise<Settings> {
   const json = await AsyncStorage.getItem(Keys.Settings);
