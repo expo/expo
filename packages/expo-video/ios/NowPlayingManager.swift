@@ -177,7 +177,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
-    if #available(iOS 15.0, *) {
+    if #available(iOS 15.0, tvOS 15.0, *) {
       return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
     }
 
