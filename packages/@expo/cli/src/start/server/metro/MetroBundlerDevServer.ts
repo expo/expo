@@ -769,7 +769,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  private async registerSsrHmr(url: string) {
+  private async registerSsrHmrAsync(url: string) {
     if (!this.hmrServer) {
       return;
     }
