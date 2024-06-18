@@ -17,7 +17,7 @@ describe(createTemplateHtmlFromExpoConfigAsync, () => {
     vol.fromJSON(
       {
         'mock/index.html': fsReal.readFileSync(
-          require.resolve('@expo/webpack-config/web-default/index.html'),
+          require.resolve('@expo/cli/static/template/index.html'),
           'utf-8'
         ),
       },
