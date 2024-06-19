@@ -44,8 +44,8 @@ import { logEventAsync } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
-  evalMetroAndWrapFunctions,
   evalMetroNoHandling,
+  evalMetroAndWrapFunctions,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -53,7 +53,7 @@ import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -124,11 +124,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps,
     outputDir,
     prerenderManifest,
+    platform,
   }: {
     includeSourceMaps?: boolean;
     outputDir: string;
     // This does not contain the API routes info.
     prerenderManifest: ExpoRouterServerManifestV1;
+    platform: string;
   }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -143,13 +145,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     for (const route of manifest.apiRoutes) {
       const filepath = path.join(appDir, route.file);
-      const contents = await this.bundleApiRoute(filepath);
+      const contents = await this.bundleApiRoute(filepath, { platform });
       const artifactFilename = path.join(
         outputDir,
         path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
       );
       if (contents) {
         let src = contents.src;
+
         if (includeSourceMaps && contents.map) {
           // TODO(kitten): Merge the source map transformer in the future
           // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
@@ -160,7 +163,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             `//# sourceMappingURL=${artifactBasename}`
           );
 
-          const parsedMap = JSON.parse(contents.map);
+          const parsedMap =
+            typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
           files.set(artifactFilename + '.map', {
             contents: JSON.stringify({
               version: parsedMap.version,
@@ -175,11 +179,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               names: parsedMap.names,
               mappings: parsedMap.mappings,
             }),
+            apiRouteId: route.page,
             targetDomain: 'server',
           });
         }
         files.set(artifactFilename, {
           contents: src,
+          apiRouteId: route.page,
           targetDomain: 'server',
         });
       }
@@ -220,7 +226,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
-    const url = this.getDevServerUrl()!;
+    const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
@@ -243,9 +249,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticResourcesAsync({
     includeSourceMaps,
     mainModuleName,
+    platform = 'web',
   }: {
     includeSourceMaps?: boolean;
     mainModuleName?: string;
+    platform?: string;
   } = {}) {
     const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
@@ -258,8 +266,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         asyncRoutes != null,
       'The server must be started before calling getStaticResourcesAsync.'
     );
-
-    const platform = 'web';
 
     const resolvedMainModuleName =
       mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
@@ -320,7 +326,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         platform,
       });
 
-      const location = new URL(pathname, this.getDevServerUrl()!);
+      const location = new URL(pathname, this.getDevServerUrlOrAssert());
       return await getStaticContent(location);
     };
 
@@ -346,9 +352,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private async ssrLoadModule<T extends Record<string, any>>(
     filePath: string,
-    specificOptions: Partial<ExpoMetroOptions> = {}
+    specificOptions: Partial<ExpoMetroOptions> = {},
+    extras: { hot?: boolean } = {}
   ): Promise<T> {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
+
+    if (extras.hot) {
+      // Register SSR HMR
+      const serverRoot = getMetroServerRoot(this.projectRoot);
+      const relativePath = path.relative(serverRoot, res.filename);
+      const url = new URL(relativePath, this.getDevServerUrlOrAssert());
+      this.setupHmr(url);
+    }
+
     return evalMetroAndWrapFunctions<T>(this.projectRoot, res.src, res.filename);
   }
 
@@ -690,7 +706,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               routerRoot,
               config,
               ...config.exp.extra?.router,
-              bundleApiRoute: (functionFilePath) => this.ssrImportApiRoute(functionFilePath),
+              bundleApiRoute: (functionFilePath) =>
+                this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
               getStaticPageAsync: (pathname) => {
                 return this.getStaticPageAsync(pathname);
               },
@@ -822,24 +839,28 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
 
+  // API Routes
+
   private pendingRouteOperations = new Map<
     string,
     Promise<{ src: string; filename: string; map: string } | null>
   >();
 
-  // API Routes
-
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
-    filePath: string
-  ): Promise<{ src: string; filename: string; map: string } | null | undefined> {
+    filePath: string,
+    { platform }: { platform: string }
+  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
     const bundleAsync = async () => {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
-        return await this.ssrLoadModuleContents(filePath);
+        return await this.ssrLoadModuleContents(filePath, {
+          isExporting: true,
+          platform,
+        });
       } catch (error: any) {
         const appDir = this.instanceMetroOptions?.routerRoot
           ? path.join(this.projectRoot, this.instanceMetroOptions!.routerRoot!)
@@ -870,11 +891,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async ssrImportApiRoute(
-    filePath: string
+    filePath: string,
+    { platform }: { platform: string }
   ): Promise<null | Record<string, Function> | Response> {
     // TODO: Cache the evaluated function.
     try {
-      const apiRoute = await this.bundleApiRoute(filePath);
+      const apiRoute = await this.bundleApiRoute(filePath, { platform });
 
       if (!apiRoute?.src) {
         return null;
@@ -908,6 +930,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+  }
+
+  // Metro HMR
+
+  private setupHmr(url: URL) {
+    debug('[CLI]: Register SSR HMR bundle URL:', url.toString());
+    // TODO: Pull in HMR SSR code.
   }
 
   // Direct Metro access
