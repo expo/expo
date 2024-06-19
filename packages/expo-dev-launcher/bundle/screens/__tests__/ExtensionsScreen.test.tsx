@@ -21,7 +21,7 @@ jest.mock('../../native-modules/DevLauncherInternal', () => {
 
 jest.mock('graphql-request', () => {
   return {
-    GraphQLClient(apiUrl: string) {
+    GraphQLClient() {
       return {
         request: jest.fn(),
       };
@@ -100,11 +100,11 @@ describe.skip('<ExtensionsScreen />', () => {
       },
     });
 
-    const { getByA11yLabel } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByLabelText } = render(<ExtensionsScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      await waitFor(() => getByA11yLabel(/log in/i));
-      await waitFor(() => getByA11yLabel(/sign up/i));
+      await waitFor(() => getByLabelText(/log in/i));
+      await waitFor(() => getByLabelText(/sign up/i));
     });
   });
 
@@ -127,14 +127,14 @@ describe.skip('<ExtensionsScreen />', () => {
       compatibleUpdates: [testUpdate],
     });
 
-    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
+    const { findByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
-      await waitFor(() => getByText(/branch: testBranch/i));
-      await waitFor(() => getByText(/Update "Hello joe"/i));
+      await findByText(/branch: testBranch/i);
+      await findByText(/Update "Hello joe"/i);
       expect(mockNavigation.navigate).not.toHaveBeenCalledTimes(1);
 
-      fireEvent.press(getByText(/hello joe/i));
+      fireEvent.press(await findByText(/hello joe/i));
 
       expect(mockNavigation.navigate).toHaveBeenCalledTimes(1);
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Updates', { branchName: 'testBranch' });
@@ -175,12 +175,12 @@ describe.skip('<ExtensionsScreen />', () => {
       },
     });
 
-    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
+    const { findByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
-      await waitFor(() => getByText(/see all branches/i));
+      await findByText(/see all branches/i);
 
-      fireEvent.press(getByText(/all branches/i));
+      fireEvent.press(await findByText(/all branches/i));
 
       expect(mockNavigation.navigate).toHaveBeenCalledTimes(1);
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Branches');
@@ -206,11 +206,9 @@ describe.skip('<ExtensionsScreen />', () => {
       compatibleUpdates: [],
     });
 
-    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
+    const { findByText } = renderAuthenticatedScreen({ mockNavigation });
 
-    await act(async () => {
-      await waitFor(() => getByText(getCompatibleBranchMessage(1)));
-    });
+    await findByText(getCompatibleBranchMessage(1));
   });
 
   test('eas updates no branches state', async () => {
@@ -226,11 +224,9 @@ describe.skip('<ExtensionsScreen />', () => {
       },
     });
 
-    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
+    const { findByText } = renderAuthenticatedScreen({ mockNavigation });
 
-    await act(async () => {
-      await waitFor(() => getByText(/no published updates yet/i));
-    });
+    await findByText(/no published updates yet/i);
   });
 
   test.todo('eas updates shows error toast');
