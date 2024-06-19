@@ -36,7 +36,7 @@ export function LearnMore() {
             className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11"
             href="/faq"
             rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
-            Read
+            Read FAQ
           </HomeButton>
         </GridCell>
         <GridCell className="bg-palette-yellow3 border-palette-yellow8">
