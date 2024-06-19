@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add basic React Server Component support.
+
 ### 🐛 Bug fixes
 
 - [Web] Fix blurhash not working and causing fetches to `blurhash:/` uri. ([#27587](https://github.com/expo/expo/pull/27587) by [@aleqsio](https://github.com/aleqsio))
