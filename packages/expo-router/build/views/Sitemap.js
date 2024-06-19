@@ -8,17 +8,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sitemap = exports.getNavOptions = void 0;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 const Link_1 = require("../link/Link");
 const matchers_1 = require("../matchers");
 const statusbar_1 = require("../utils/statusbar");
-const INDENT = 24;
+const INDENT = 20;
 function getNavOptions() {
     return {
         title: 'sitemap',
-        headerShown: false,
         presentation: 'modal',
         headerLargeTitle: false,
         headerTitleStyle: {
@@ -34,16 +34,26 @@ function getNavOptions() {
             borderBottomColor: '#323232',
         },
         animation: 'default',
+        header: () => {
+            const WrapperElement = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
+            return (<WrapperElement style={styles.header}>
+          <react_native_1.View style={styles.headerContent}>
+            <react_native_1.View style={styles.headerIcon}>
+              <SitemapIcon />
+            </react_native_1.View>
+            <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+              Sitemap
+            </react_native_1.Text>
+          </react_native_1.View>
+        </WrapperElement>);
+        },
     };
 }
 exports.getNavOptions = getNavOptions;
 function Sitemap() {
     return (<react_native_1.View style={styles.container}>
       {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <react_native_1.StatusBar barStyle="light-content"/>}
-      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-        Sitemap
-      </react_native_1.Text>
-      <react_native_1.ScrollView contentContainerStyle={[styles.scroll]}>
+      <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
         <FileSystemView />
       </react_native_1.ScrollView>
     </react_native_1.View>);
@@ -98,9 +108,9 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
                     styles.itemPressable,
                     {
                         paddingLeft: INDENT + level * INDENT,
-                        backgroundColor: hovered ? 'rgba(255,255,255,0.1)' : 'transparent',
+                        backgroundColor: hovered ? '#202425' : 'transparent',
                     },
-                    pressed && { backgroundColor: 'rgba(255,255,255,0.15)' },
+                    pressed && { backgroundColor: '#26292b' },
                     disabled && { opacity: 0.4 },
                 ]}>
                 <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -127,21 +137,50 @@ function PkgIcon() {
 function ForwardIcon() {
     return <react_native_1.Image style={styles.image} source={require('expo-router/assets/forward.png')}/>;
 }
+function SitemapIcon() {
+    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/sitemap.png')}/>;
+}
 const styles = react_native_1.StyleSheet.create({
     container: {
         backgroundColor: 'black',
         flex: 1,
         alignItems: 'stretch',
     },
+    header: {
+        backgroundColor: '#151718',
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderColor: '#313538',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.33,
+        shadowRadius: 3,
+        elevation: 8,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+        paddingHorizontal: '5%',
+        ...react_native_1.Platform.select({
+            web: {
+                width: '100%',
+                maxWidth: 960,
+                marginHorizontal: 'auto',
+            },
+        }),
+    },
     title: {
         color: 'white',
-        fontSize: 36,
-        marginVertical: 20,
-        textAlign: 'center',
+        fontSize: 28,
         fontWeight: 'bold',
     },
     scroll: {
         paddingHorizontal: '5%',
+        paddingVertical: 16,
         ...react_native_1.Platform.select({
             ios: {
                 paddingBottom: 24,
@@ -159,7 +198,8 @@ const styles = react_native_1.StyleSheet.create({
     },
     itemContainer: {
         borderWidth: 1,
-        borderColor: '#323232',
+        borderColor: '#313538',
+        backgroundColor: '#151718',
         borderRadius: 12,
         marginBottom: 12,
         overflow: 'hidden',
@@ -179,5 +219,14 @@ const styles = react_native_1.StyleSheet.create({
     filename: { color: 'white', fontSize: 20, marginLeft: 12 },
     virtual: { textAlign: 'right', color: 'white' },
     image: { width: 24, height: 24, resizeMode: 'contain', opacity: 0.6 },
+    headerIcon: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#202425',
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 //# sourceMappingURL=Sitemap.js.map
