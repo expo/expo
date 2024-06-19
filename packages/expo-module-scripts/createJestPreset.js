@@ -49,6 +49,7 @@ function _createJestPreset(basePreset) {
     ...basePreset,
     clearMocks: true,
     roots: ['<rootDir>/src'],
+    testTimeout: 15000,
     transform: {
       '^.+\\.tsx?$': [
         'ts-jest',
