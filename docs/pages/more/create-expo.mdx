@@ -117,15 +117,11 @@ Supported by default if the project directory contains **yarn.lock**.
 
 #### Local installation
 
-Yarn 2+ handles package management differently than Yarn 1. One of the core changes in Yarn 2+ is the PnP node linking model that does not work with React Native.
-
 See [Yarn documentation](https://yarnpkg.com/getting-started/install) for installation instructions.
 
-#### Additional configuration steps
+Yarn 2+ handles package management differently than Yarn 1. One of the core changes in Yarn 2+ is the [Pug'n'Play (PnP)](https://yarnpkg.com/features/pnp) node linking model that does not work with React Native.
 
-After installing Yarn Modern on your local development environment, you've to specify the type linker to install npm packages using [`nodeLinker`](https://yarnpkg.com/features/linkers#nodelinker-node-modules).
-
-Create **.yarnrc.yml** in your project's root directory with the following configuration:
+By default, a project created with `create-expo-app` and Yarn 2+ uses [`node-linker`](https://yarnpkg.com/features/node-linker) with its value set to `node-modules` to install dependencies.
 
 ```yml .yarnrc.yml
 nodeLinker: node-modules
@@ -133,7 +129,7 @@ nodeLinker: node-modules
 
 #### EAS installation
 
-Yarn Modern on EAS requires an [additional configuration step](#additional-configuration-steps) and adding [`eas-build-pre-install` hook](/build-reference/npm-hooks/) in your project's **package.json**, add the following configuration:
+Yarn Modern on EAS requires requires adding [`eas-build-pre-install` hook](/build-reference/npm-hooks/). In your project's **package.json**, add the following configuration:
 
 ```json package.json
 {
@@ -149,7 +145,7 @@ Yarn Modern on EAS requires an [additional configuration step](#additional-confi
 
 Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
 
-By default, a project created with pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
+By default, a project created with `create-expo-app` and pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
 
 ```ini .npmrc
 node-linker=hoisted
@@ -157,7 +153,7 @@ node-linker=hoisted
 
 #### EAS installation
 
-Supported by default if the project directory contains **pnpm-lock.yaml** and the [additional configuration step](#additional-configuration-steps-1) followed.
+Supported by default if the project directory contains **pnpm-lock.yaml**.
 
 ### Bun
 
