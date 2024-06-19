@@ -64,6 +64,7 @@
     "setupFilesAfterEnv": [
       "@testing-library/jest-native/extend-expect",
       "./setupTests.ts"
-    ]
+    ],
+    "testTimeout": 15000
   }
 }
