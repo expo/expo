@@ -14,7 +14,7 @@ export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 export { NativeModulesProxy, ProxyNativeModule, Platform, requireNativeViewManager, EventEmitter, SharedObject, NativeModule, CodedError, UnavailabilityError, EventSubscription, LegacyEventEmitter, };
 export * from './requireNativeModule';
-export * from './createWebModule';
+export * from './registerWebModule';
 export * from './TypedArrays.types';
 export * from './PermissionsInterface';
 export * from './PermissionsHook';

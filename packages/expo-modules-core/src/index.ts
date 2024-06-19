@@ -35,7 +35,7 @@ export {
 };
 
 export * from './requireNativeModule';
-export * from './createWebModule';
+export * from './registerWebModule';
 export * from './TypedArrays.types';
 
 export * from './PermissionsInterface';

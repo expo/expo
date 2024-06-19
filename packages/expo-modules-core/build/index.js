@@ -18,7 +18,7 @@ CodedError, UnavailabilityError,
 // Deprecated
 LegacyEventEmitter, };
 export * from './requireNativeModule';
-export * from './createWebModule';
+export * from './registerWebModule';
 export * from './TypedArrays.types';
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
