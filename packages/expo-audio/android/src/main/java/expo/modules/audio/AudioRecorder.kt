@@ -1,6 +1,8 @@
 package expo.modules.audio
 
 import android.content.Context
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.media.MediaRecorder.MEDIA_ERROR_SERVER_DIED
 import android.media.MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN
@@ -19,7 +21,7 @@ import kotlin.math.ln
 class AudioRecorder(
   val context: Context,
   appContext: AppContext,
-  private val options: RecordingOptions
+  options: RecordingOptions
 ) : SharedObject(appContext),
   MediaRecorder.OnErrorListener,
   MediaRecorder.OnInfoListener {
@@ -51,24 +53,27 @@ class AudioRecorder(
     MediaRecorder()
   }.apply {
     setAudioSource(MediaRecorder.AudioSource.DEFAULT)
-    setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+    if (options.outputFormat != null) {
+      setOutputFormat(options.outputFormat.toMediaOutputFormat())
+    } else {
+      setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+    }
     if (options.audioEncoder != null) {
       setAudioEncoder(options.audioEncoder.toMediaEncoding())
     } else {
       setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
     }
-
     options.sampleRate?.let {
-      this.setAudioSamplingRate(it.toInt())
+      setAudioSamplingRate(it.toInt())
     }
     options.numberOfChannels?.let {
-      this.setAudioChannels(it.toInt())
+      setAudioChannels(it.toInt())
     }
     options.bitRate?.let {
-      this.setAudioEncodingBitRate(it.toInt())
+      setAudioEncodingBitRate(it.toInt())
     }
     options.maxFileSize?.let {
-      this.setMaxFileSize(it.toLong())
+      setMaxFileSize(it.toLong())
     }
 
     val filename = "recording-${UUID.randomUUID()}${options.extension}"
@@ -146,11 +151,93 @@ class AudioRecorder(
       }
     }
   }
-}
 
-private fun ensureDirExists(dir: File): File {
-  if (!(dir.isDirectory() || dir.mkdirs())) {
-    throw IOException("Couldn't create directory '$dir'")
+  fun getCurrentInput(audioManager: AudioManager): Bundle {
+    var deviceInfo: AudioDeviceInfo? = null
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      throw GetAudioInputNotSupportedException()
+    }
+
+    try {
+      // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+      // only returns a valid device when actively recording, and may throw otherwise.
+      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+      deviceInfo = recorder.getRoutedDevice()
+    } catch (e: java.lang.Exception) {
+      // no-op
+    }
+
+    // If no routed device is found try preferred device
+    if (deviceInfo == null) {
+      deviceInfo = recorder.preferredDevice
+    }
+
+    if (deviceInfo == null) {
+      // If no preferred device is found, set it to the first built-in input we can find
+      val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+      for (availableDeviceInfo in audioDevices) {
+        val type = availableDeviceInfo.type
+        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+          deviceInfo = availableDeviceInfo
+          recorder.setPreferredDevice(deviceInfo)
+          break
+        }
+      }
+    }
+
+    if (deviceInfo == null) {
+      throw DeviceInfoNotFoundException()
+    }
+
+    return getMapFromDeviceInfo(deviceInfo)
   }
-  return dir
+
+  fun getAvailableInputs(audioManager: AudioManager) = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
+    val type = deviceInfo.type
+    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      getMapFromDeviceInfo(deviceInfo)
+    } else {
+      null
+    }
+  }
+
+  fun setInput(uid: String, audioManager: AudioManager) {
+    val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid, audioManager)
+
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+      throw SetAudioInputNotSupportedException()
+    }
+
+    if (deviceInfo != null && deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        audioManager.setCommunicationDevice(deviceInfo)
+      } else {
+        audioManager.startBluetoothSco()
+      }
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        audioManager.clearCommunicationDevice()
+      } else {
+        audioManager.stopBluetoothSco()
+      }
+    }
+
+    val success = recorder.setPreferredDevice(deviceInfo)
+    if (!success) {
+      throw PreferredInputNotFoundException()
+    }
+  }
+
+  private fun getDeviceInfoFromUid(uid: String, audioManager: AudioManager): AudioDeviceInfo? {
+    val id = uid.toInt()
+    val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+    for (device in audioDevices) {
+      val deviceId = device.id
+      if (deviceId == id) {
+        return device
+      }
+    }
+    return null
+  }
 }

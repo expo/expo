@@ -95,7 +95,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * Initializes a new audio recorder instance with the given source.
      * @hidden
      */
-    constructor(options: RecordingOptions);
+    constructor(options: Partial<RecordingOptions>);
     /**
      * Unique identifier for the recorder object.
      */

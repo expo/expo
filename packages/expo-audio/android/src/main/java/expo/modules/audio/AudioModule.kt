@@ -5,14 +5,13 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.media3.common.C.CONTENT_TYPE_DASH
 import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
@@ -23,7 +22,10 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.FileDataSource
+import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -39,6 +41,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import java.io.File
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -138,14 +141,20 @@ class AudioModule : Module() {
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource? ->
-        val factory = OkHttpDataSource.Factory(httpClient).apply {
-          source?.headers?.let {
-            setDefaultRequestProperties(it)
+        val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
+        val factory = if (isLocal) {
+          DefaultDataSource.Factory(context)
+        } else {
+          OkHttpDataSource.Factory(httpClient).apply {
+            source?.headers?.let {
+              setDefaultRequestProperties(it)
+            }
+            DefaultDataSource.Factory(context, this)
           }
-          DefaultDataSource.Factory(context, this)
         }
 
-        val mediaSource = buildMediaSourceFactory(factory, MediaItem.fromUri(source?.uri ?: ""))
+        val item = MediaItem.fromUri(source?.uri ?: "")
+        val mediaSource = buildMediaSourceFactory(factory, item)
         runBlocking(appContext.mainQueue.coroutineContext) {
           val player = AudioPlayer(
             context,
@@ -328,111 +337,22 @@ class AudioModule : Module() {
       }
 
       AsyncFunction("getCurrentInput") { ref: AudioRecorder ->
-        getCurrentInput(ref)
+        ref.getCurrentInput(audioManager)
       }
 
-      Function("getAvailableInputs") {
-        return@Function getAvailableInputs()
+      Function("getAvailableInputs") { ref: AudioRecorder ->
+        return@Function ref.getAvailableInputs(audioManager)
       }
 
       Function("setInput") { ref: AudioRecorder, input: String ->
-        setInput(input, ref)
+        ref.setInput(input, audioManager)
       }
-    }
-  }
-
-  private fun setInput(uid: String, ref: AudioRecorder) {
-    val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid)
-
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-      throw SetAudioInputNotSupportedException()
-    }
-
-    if (deviceInfo != null && deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        audioManager.setCommunicationDevice(deviceInfo)
-      } else {
-        audioManager.startBluetoothSco()
-      }
-    } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        audioManager.clearCommunicationDevice()
-      } else {
-        audioManager.stopBluetoothSco()
-      }
-    }
-
-    val success = ref.recorder.setPreferredDevice(deviceInfo)
-    if (!success) {
-      throw PreferredInputNotFoundException()
     }
   }
 
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
     audioManager.setMode(if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL)
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
-  }
-
-  private fun getDeviceInfoFromUid(uid: String): AudioDeviceInfo? {
-    val id = uid.toInt()
-    val audioDevices: Array<AudioDeviceInfo> = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-    for (device in audioDevices) {
-      val deviceId = device.id
-      if (deviceId == id) {
-        return device
-      }
-    }
-    return null
-  }
-
-  private fun getCurrentInput(ref: AudioRecorder): Bundle {
-    var deviceInfo: AudioDeviceInfo? = null
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-      throw GetAudioInputNotSupportedException()
-    }
-
-    try {
-      // getRoutedDevice() is the most reliable way to return the actual mic input, however it
-      // only returns a valid device when actively recording, and may throw otherwise.
-      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
-      deviceInfo = ref.recorder.getRoutedDevice()
-    } catch (e: java.lang.Exception) {
-      // no-op
-    }
-
-    // If no routed device is found try preferred device
-    if (deviceInfo == null) {
-      deviceInfo = ref.recorder.preferredDevice
-    }
-
-    if (deviceInfo == null) {
-      // If no preferred device is found, set it to the first built-in input we can find
-      val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-      for (availableDeviceInfo in audioDevices) {
-        val type = availableDeviceInfo.type
-        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
-          deviceInfo = availableDeviceInfo
-          ref.recorder.setPreferredDevice(deviceInfo)
-          break
-        }
-      }
-    }
-
-    if (deviceInfo == null) {
-      throw DeviceInfoNotFoundException()
-    }
-
-    return getMapFromDeviceInfo(deviceInfo)
-  }
-
-  private fun getAvailableInputs() = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
-    val type = deviceInfo.type
-    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-      getMapFromDeviceInfo(deviceInfo)
-    } else {
-      null
-    }
   }
 
   private fun retrieveStreamType(uri: Uri): Int = Util.inferContentType(uri)
@@ -442,24 +362,14 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    var newUri = uri
-    try {
-      if (uri?.scheme == null) {
-        val resourceId: Int = context.resources?.getIdentifier(uri.toString(), "raw", context.packageName)
-          ?: 0
-        newUri = Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).path(resourceId.toString()).build()
-      }
-    } catch (e: Exception) {
-      Log.e("AudioModule", "Error reading raw resource from ExoPlayer", e)
-    }
-    val source = when (val type = retrieveStreamType(newUri!!)) {
+    val factory = when (val type = retrieveStreamType(uri!!)) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
       else -> throw IllegalStateException("Unsupported type: $type")
     }
-    return source.createMediaSource(mediaItem)
+    return factory.createMediaSource(MediaItem.fromUri(uri))
   }
 
   private fun checkRecordingPermission() {
@@ -467,22 +377,6 @@ class AudioModule : Module() {
     if (permission != PackageManager.PERMISSION_GRANTED) {
       throw AudioPermissionsException()
     }
-  }
-
-  private fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
-    val map = Bundle()
-    val type = when (deviceInfo.type) {
-      AudioDeviceInfo.TYPE_BUILTIN_MIC -> "MicrophoneBuiltIn"
-      AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "BluetoothSCO"
-      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "BluetoothA2DP"
-      AudioDeviceInfo.TYPE_TELEPHONY -> "Telephony"
-      AudioDeviceInfo.TYPE_WIRED_HEADSET -> "MicrophoneWired"
-      else -> "Unknown device type"
-    }
-    map.putString("name", deviceInfo.getProductName().toString())
-    map.putString("type", type)
-    map.putString("uid", deviceInfo.id.toString())
-    return map
   }
 
   companion object {
