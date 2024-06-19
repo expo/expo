@@ -1,5 +1,6 @@
-import { glob } from 'fast-glob';
+import { glob, stream as globStream } from 'fast-glob';
 import { vol } from 'memfs';
+import { Readable } from 'stream';
 
 import {
   parseComponentDescriptorsAsync,
@@ -14,6 +15,7 @@ jest.mock('fs/promises');
 
 describe(resolveDependencyConfigImplAndroidAsync, () => {
   const mockGlob = glob as jest.MockedFunction<typeof glob>;
+  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -26,9 +28,10 @@ describe(resolveDependencyConfigImplAndroidAsync, () => {
     // build.gradle
     mockGlob.mockResolvedValueOnce(['build.gradle']);
     // parseNativePackageClassNameAsync()
-    mockGlob.mockResolvedValueOnce(['src/main/com/test/TestPackage.java']);
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
     // parseComponentDescriptorsAsync()
-    mockGlob.mockResolvedValueOnce([]);
+    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -126,7 +129,7 @@ android {
 });
 
 describe(parseNativePackageClassNameAsync, () => {
-  const mockGlob = glob as jest.MockedFunction<typeof glob>;
+  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -134,7 +137,7 @@ describe(parseNativePackageClassNameAsync, () => {
   });
 
   it('should parse component descriptors from java file', async () => {
-    mockGlob.mockResolvedValue(['src/main/com/test/TestPackage.java']);
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
@@ -154,7 +157,7 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should parse component descriptors from kotlin file', async () => {
-    mockGlob.mockResolvedValue(['src/main/com/test/TestPackage.kt']);
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.kt']));
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.kt': `\
 package com.test
@@ -214,7 +217,7 @@ ext {
 });
 
 describe(parseComponentDescriptorsAsync, () => {
-  const mockGlob = glob as jest.MockedFunction<typeof glob>;
+  const mockGlobStream = globStream as jest.MockedFunction<typeof globStream>;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -222,13 +225,15 @@ describe(parseComponentDescriptorsAsync, () => {
   });
 
   it('should parse component descriptors', async () => {
-    mockGlob.mockResolvedValue([
-      'Test.ts',
-      'SearchBarNativeComponent.js',
-      'ScreenNativeComponent.ts',
-      'specs/SpecComponent.ts',
-      'node_modules/ScreenNested.tsx',
-    ]);
+    mockGlobStream.mockReturnValueOnce(
+      Readable.from([
+        'Test.ts',
+        'SearchBarNativeComponent.js',
+        'ScreenNativeComponent.ts',
+        'specs/SpecComponent.ts',
+        'node_modules/ScreenNested.tsx',
+      ])
+    );
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,

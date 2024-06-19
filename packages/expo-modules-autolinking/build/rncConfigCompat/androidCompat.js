@@ -109,29 +109,23 @@ exports.parsePackageNameAsync = parsePackageNameAsync;
  * Parse the Java or Kotlin class name to for `ReactPackage` or `TurboReactPackage`.
  */
 async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
-    const srcFiles = await (0, fast_glob_1.default)('**/*Package.{java,kt}', { cwd: androidDir });
-    try {
-        const className = await Promise.any(srcFiles.map((filePath) => parseNativePackageClassNameAsyncFromFileAsync(path_1.default.join(androidDir, filePath))));
-        return className;
+    const matched = await (0, utils_1.globMatchFunctorFirstAsync)('**/*Package.{java,kt}', matchNativePackageClassName, { cwd: androidDir });
+    if (matched) {
+        return matched;
     }
-    catch { }
     // Early return if the module is an Expo module
     if (await (0, utils_1.fileExistsAsync)(path_1.default.join(packageRoot, 'expo-module.config.json'))) {
         return null;
     }
-    const allSrcFiles = await (0, fast_glob_1.default)('**/*.{java,kt}', { cwd: androidDir });
-    try {
-        const className = await Promise.any(allSrcFiles.map((filePath) => parseNativePackageClassNameAsyncFromFileAsync(path_1.default.join(androidDir, filePath))));
-        return className;
-    }
-    catch { }
-    return null;
+    return await (0, utils_1.globMatchFunctorFirstAsync)('**/*.{java,kt}', matchNativePackageClassName, {
+        cwd: androidDir,
+    });
 }
 exports.parseNativePackageClassNameAsync = parseNativePackageClassNameAsync;
 let lazyReactPackageRegex = null;
 let lazyTurboReactPackageRegex = null;
-async function parseNativePackageClassNameAsyncFromFileAsync(filePath) {
-    const fileContents = await promises_1.default.readFile(filePath, 'utf8');
+function matchNativePackageClassName(filePath, contents) {
+    const fileContents = contents.toString();
     // [0] Match ReactPackage
     if (!lazyReactPackageRegex) {
         lazyReactPackageRegex =
@@ -150,7 +144,7 @@ async function parseNativePackageClassNameAsyncFromFileAsync(filePath) {
     if (matchTurboReactPackage) {
         return matchTurboReactPackage[1];
     }
-    throw new Error(`Could not find ReactPackage or TurboReactPackage in ${filePath}`);
+    return null;
 }
 async function parseLibraryNameAsync(androidDir, packageJson) {
     // [0] `codegenConfig.name` from package.json
@@ -183,19 +177,18 @@ async function parseComponentDescriptorsAsync(packageRoot, pacakgeJson) {
     const jsRoot = pacakgeJson?.codegenConfig?.jsSrcsDir
         ? path_1.default.join(packageRoot, pacakgeJson.codegenConfig.jsSrcsDir)
         : packageRoot;
-    const srcFiles = await (0, fast_glob_1.default)('**/*.{js,jsx,ts,tsx}', {
+    const results = await (0, utils_1.globMatchFunctorAllAsync)('**/*.{js,jsx,ts,tsx}', matchComponentDescriptors, {
         cwd: jsRoot,
         ignore: ['**/node_modules/**'],
     });
-    const componentDescriptors = (await Promise.all(srcFiles.map((filePath) => parseComponentDescriptorsFromFileAsync(path_1.default.join(jsRoot, filePath))))).filter(Boolean);
     // Filter out duplicates as it happens that libraries contain multiple outputs due to package publishing.
     // TODO: consider using "codegenConfig" to avoid this.
-    return Array.from(new Set(componentDescriptors));
+    return Array.from(new Set(results));
 }
 exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
 let lazyCodegenComponentRegex = null;
-async function parseComponentDescriptorsFromFileAsync(filePath) {
-    const fileContents = await promises_1.default.readFile(filePath, 'utf8');
+function matchComponentDescriptors(filePath, contents) {
+    const fileContents = contents.toString();
     if (!lazyCodegenComponentRegex) {
         lazyCodegenComponentRegex =
             /codegenNativeComponent(<.*>)?\s*\(\s*["'`](\w+)["'`](,?[\s\S]+interfaceOnly:\s*(\w+))?/m;
