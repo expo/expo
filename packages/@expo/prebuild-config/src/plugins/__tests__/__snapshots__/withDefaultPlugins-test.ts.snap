@@ -1140,15 +1140,9 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowTranslucentStatus",
+                      "name": "android:statusBarColor",
                     },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
-                      "name": "colorPrimaryDark",
-                    },
-                    "_": "@color/colorPrimaryDark",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
@@ -2178,15 +2172,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowTranslucentStatus",
+                      "name": "android:statusBarColor",
                     },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
-                      "name": "colorPrimaryDark",
-                    },
-                    "_": "@color/colorPrimaryDark",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
