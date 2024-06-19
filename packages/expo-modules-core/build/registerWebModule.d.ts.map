@@ -1,1 +1,1 @@
-{"version":3,"file":"registerWebModule.d.ts","sourceRoot":"","sources":["../src/registerWebModule.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAEnE,wBAAgB,iBAAiB,CAAC,UAAU,SAAS,OAAO,YAAY,EACtE,UAAU,EAAE,MAAM,EAClB,oBAAoB,EAAE,UAAU,GAC/B,UAAU,CAMZ"}
+{"version":3,"file":"registerWebModule.d.ts","sourceRoot":"","sources":["../src/registerWebModule.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAEnE,wBAAgB,iBAAiB,CAAC,UAAU,SAAS,OAAO,YAAY,EACtE,UAAU,EAAE,MAAM,EAClB,oBAAoB,EAAE,UAAU,GAC/B,UAAU,CAMZ"}
