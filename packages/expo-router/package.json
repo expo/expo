@@ -91,7 +91,7 @@
     "@testing-library/react-native": "^12.5.1",
     "tsd": "^0.28.1",
     "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
-    "immer": "^8"
+    "immer": "^9"
   },
   "dependencies": {
     "@expo/metro-runtime": "3.2.1",
