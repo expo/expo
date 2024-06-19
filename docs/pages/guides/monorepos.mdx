@@ -341,7 +341,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 
 In the snippets above, you can see that we use Node's own [`require.resolve()`](https://nodejs.org/api/modules.html#requireresolverequest-options) method to find the package location. We explicitly refer to `package.json` because we want to find the root location of the package, not the location of the entry point. And with that root location, we can resolve to the expected relative path within the package. [Learn more about these references here](https://github.com/expo/expo/blob/4633ab2364e30ea87ca2da968f3adaf5cdde9d8b/packages/expo-modules-core/README.mdx#importing-native-dependencies---autolinking).
 
-All Expo SDK modules and templates, starting from SDK 43, have these dynamic references and work with monorepos. But, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [patch-package](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.
+All Expo SDK modules and templates have these dynamic references and work with monorepos. But, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [patch-package](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.
 
 ### Remove expo-yarn-workspaces
 
