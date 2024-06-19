@@ -149,11 +149,7 @@ Yarn Modern on EAS requires an [additional configuration step](#additional-confi
 
 Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
 
-#### Additional configuration steps
-
-After installing pnpm on your local development environment, you've to specify the type linker to install npm packages using [`node-linker`](https://pnpm.io/npmrc#node-linker).
-
-Create **.npmrc** in your project's root directory and add the following configuration:
+By default, a project created with pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
 
 ```ini .npmrc
 node-linker=hoisted
