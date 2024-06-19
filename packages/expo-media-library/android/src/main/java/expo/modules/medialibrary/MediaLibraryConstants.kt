@@ -4,8 +4,6 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
 
-const val GET_ASSETS_DEFAULT_LIMIT = 20.0
-
 const val ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION"
 const val ERROR_UNABLE_TO_SAVE_PERMISSION = "E_UNABLE_TO_SAVE_PERMISSION"
 const val ERROR_UNABLE_TO_DELETE = "E_UNABLE_TO_DELETE"
