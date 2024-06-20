@@ -62,7 +62,7 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
     <A
       href={link}
       className={mergeClasses(
-        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group',
+        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group shadow-xs',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className

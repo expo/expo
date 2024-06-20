@@ -65,7 +65,7 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'flex flex-col h-full min-h-[266px] overflow-hidden relative border border-default rounded-lg bg-default justify-between',
+        'flex flex-col h-full min-h-[266px] overflow-hidden relative border border-default rounded-lg bg-default justify-between transition shadow-xs',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className
