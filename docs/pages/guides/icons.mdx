@@ -42,11 +42,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> As with [any custom font](/develop/user-interface/fonts/#use-a-custom-font) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
+> As with [any custom font](/develop/user-interface/fonts/#use-a-local-font-file) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
 
 ## Custom icon fonts
 
-To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#use-a-custom-font).
+To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#handle-expovector-icons-initial-load).
 
 `@expo/vector-icons` exposes three methods to help you create an icon set:
 
@@ -173,13 +173,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+container: {
+flex: 1,
+justifyContent: 'center',
+alignItems: 'center',
+},
 });
-```
+
+````
 </SnackInline>
 
 </Tab>
@@ -208,7 +209,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-```
+````
+
 </SnackInline>
 
 </Tab>

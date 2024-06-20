@@ -10,6 +10,8 @@ import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Android and iOS come with their own set of platform fonts. To provide a consistent user experience and enhance your app's branding, you can use custom fonts.
 
@@ -38,8 +40,8 @@ Copy the file into your project's **assets/fonts** directory.
 
 Two ways to use the local font file your project:
 
-- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs)
-- Loading the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously
+- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs).
+- Loading the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
 
 ### With `expo-font` config plugin
 
@@ -194,12 +196,12 @@ Expo has first-class support for all fonts listed in [Google Fonts](https://font
 
 Two ways to use a Google Font in your project:
 
-- Embed the installed font with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs)
-- Load the installed font with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously
+- Embed the installed font with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs).
+- Load the installed font with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
 
 ### With `expo-font` config plugin
 
-> **Note:** Embedding a Google Font using `expo-font` config plugin has same benefits and limitations as embedding a custom font on your own. See [using a local font file with `expo-font` config plugin](#with-expo-font-config-plugin) section for more information.
+> **Note:** Embedding a Google Font using `expo-font` config plugin has same benefits and limitations as embedding a custom font on your own. See [using a local font file with `expo-font` config plugin](#with-expo-font-config-plugin) for more information.
 
 <Step label="1">
 
@@ -211,7 +213,7 @@ Install the font package. For example, to use Inter-Black font, install the [`@e
 
 <Step label="2">
 
-Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using `[fonts`](/versions/latest/sdk/font/#configurable-properties) property which takes an array of one or more font files. The path to the font file is defined from the font package inside the `node_modules` directory. For example, if you have a font package named `@expo-google-fonts/inter`, then the name of the file is **Inter_900Black.ttf**.
+Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using [`fonts`](/versions/latest/sdk/font/#configurable-properties) property which takes an array of one or more font files. The path to the font file is defined from the font package inside the `node_modules` directory. For example, if you have a font package named `@expo-google-fonts/inter`, then the name of the file is **Inter_900Black.ttf**.
 
 ```json app.json
 {
@@ -257,6 +259,8 @@ import { Platform } from 'react-native';
 </Step>
 
 ### With `useFonts` hook
+
+> **Note:** Loading a Google Font using `useFonts` hook has same benefits and limitations as embedding a custom font on your own. See [using a local font file with `useFonts` hook](#with-usefonts-hook) for more information.
 
 Each google Fonts package provides the `useFonts` hook to load the fonts asynchronously. This hook keeps track of the loading state and loads the font when an app is initialized. The font package also imports the font file so you don't have to explicitly import it.
 
@@ -321,6 +325,15 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 
 ## Additional information
 
+### Minimal example
+
+<BoxLink
+  title="Expo Fonts usage"
+  description="See usage section in Expo Fonts API reference for a minimal example of using a custom font."
+  href="/versions/latest/sdk/font/#usage"
+  Icon={BookOpen02Icon}
+/>
+
 ### Beyond OTF and TTF
 
 If your font is in format other than OTF or TTF, you have to [customize the Metro bundler configuration to include it as an extra asset](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) for it to work. In some cases, rendering a font format that a platform doesn't support may cause your app to crash.
@@ -369,6 +382,13 @@ Now, you can any icon from the `Ionicons` library in a React component:
 ```tsx
 <Ionicons name="checkmark-circle" size={32} color="green" />
 ```
+
+<BoxLink
+  title="Icons"
+  description="Learn how to use various types of icons in your Expo app, including vector icons, custom icon fonts, icon images, and icon buttons."
+  href="/guides/icons/"
+  Icon={BookOpen02Icon}
+/>
 
 ### Loading a remote font directly from the web
 
