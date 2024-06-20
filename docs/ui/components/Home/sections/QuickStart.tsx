@@ -65,7 +65,7 @@ export function QuickStart() {
             )}
           />
           <RawH2 className="!text-palette-pink11 relative z-10 !text-lg">
-            Get what's the best in file-based routing with Expo Router
+            Discover the benefits of file-based routing with Expo Router
           </RawH2>
           <HomeButton
             className="bg-palette-pink10 border-palette-pink10 dark:text-palette-pink2 hocus:bg-palette-pink9"
