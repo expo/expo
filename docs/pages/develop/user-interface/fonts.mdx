@@ -329,9 +329,9 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 
 ### Beyond OTF and TTF
 
-If your font is in another format, you have to [customize the Metro bundler configuration](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) to get anything other than OTF and TTF to work. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
+If your font is in format other than OTF or TTF, you have to [customize the Metro bundler configuration to include it as an extra asset](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) for it to work. In some cases, rendering a font format that a platform doesn't support may cause your app to crash.
 
-For reference, the following table provides what formats work on which platforms:
+For reference, the following table provides the list formats that work on each native platform:
 
 | Format | Web         | iOS         | Android     |
 | ------ | ----------- | ----------- | ----------- |
@@ -346,6 +346,48 @@ For reference, the following table provides what formats work on which platforms
 | ttf    | <YesIcon /> | <YesIcon /> | <YesIcon /> |
 | woff   | <YesIcon /> | <YesIcon /> | <NoIcon />  |
 | woff2  | <YesIcon /> | <YesIcon /> | <NoIcon />  |
+
+### Loading a remote font directly from the web
+
+> **warning** **If you're loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
+
+Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
+
+However, loading a font file directly from web is possible. Replace the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
+
+<SnackInline label="Using a remote font" dependencies={['expo-font']}>
+
+```tsx
+import { useFonts } from 'expo-font';
+import { Text, View, StyleSheet } from 'react-native';
+
+export default function App() {
+  const [loaded, error] = useFonts({
+    'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+  });
+
+  if (!loaded || !error) {
+    return null;
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontFamily: 'Inter-SemiBoldItalic', fontSize: 30 }}>Inter SemiBoldItalic</Text>
+      <Text style={{ fontSize: 30 }}>Platform Default</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+```
+
+</SnackInline>
 
 ---
 
@@ -454,46 +496,3 @@ useFonts([require('./assets/fonts/ComicSans.ttf', FontAwesome.font)]);
 ```
 
 ## Additional information
-
-### Loading a remote font directly from the web
-
-In general, it's best and safest to load fonts from your local assets. If you submit your app to app stores, the fonts will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
-
-However, if you to load a remote font file directly from the web rather than from your project's assets, you can do it by replacing the `require('./assets/fonts/MyFont.otf')` with the URL of your font. See the below example:
-
-<SnackInline label="Using a remote font" dependencies={['expo-font']}>
-
-```jsx
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { useFonts } from 'expo-font';
-
-export default function App() {
-  const [fontsLoaded] = useFonts({
-    'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  return (
-    <View style={styles.container}>
-      <Text style={{ fontFamily: 'Inter-SemiBoldItalic', fontSize: 30 }}>Inter SemiBoldItalic</Text>
-      <Text style={{ fontSize: 30 }}>Platform Default</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-```
-
-</SnackInline>
-
-> **warning** **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
