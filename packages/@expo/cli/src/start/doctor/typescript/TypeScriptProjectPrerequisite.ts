@@ -127,6 +127,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
   /** Return the first TypeScript file in the project. */
   async _queryFirstTypeScriptFileAsync(): Promise<null | string> {
     try {
+      // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
       const results = await everyMatchAsync('**/*.@(ts|tsx)', {
         cwd: this.projectRoot,
         signal: AbortSignal.timeout(5000),
