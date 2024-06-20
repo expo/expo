@@ -1,17 +1,9 @@
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
-import { wrapGlobWithTimeout } from '../../../../utils/glob';
 import { TypeScriptProjectPrerequisite } from '../TypeScriptProjectPrerequisite';
 
 jest.mock('../../../../log');
-jest.mock('../../../../utils/glob', () => {
-  const globUtils = jest.requireActual('../../../../utils/glob');
-  return {
-    ...globUtils,
-    wrapGlobWithTimeout: jest.fn(globUtils.wrapGlobWithTimeout),
-  };
-});
 
 describe('assertAsync', () => {
   beforeEach(() => {
@@ -75,7 +67,11 @@ describe('_getSetupRequirements', () => {
 
   it(`returns null when glob times out`, async () => {
     // Fake a glob that hit the timeout of 5s
-    jest.mocked(wrapGlobWithTimeout).mockImplementationOnce(async () => false);
+    jest.spyOn(AbortSignal, 'timeout').mockImplementationOnce(() => {
+      const controller = new AbortController();
+      controller.abort(new DOMException('Test timeout faked', 'TimeoutError'));
+      return controller.signal;
+    });
 
     const prerequisite = new TypeScriptProjectPrerequisite('/');
     expect(await prerequisite._getSetupRequirements()).toBe(null);
