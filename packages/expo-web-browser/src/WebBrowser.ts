@@ -181,7 +181,7 @@ export async function openBrowserAsync(
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not available.
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
 export function dismissBrowser(): void {
@@ -259,7 +259,7 @@ export async function openAuthSessionAsync(
 /**
  * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not available.
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
  *
  * @platform ios
  * @platform web
