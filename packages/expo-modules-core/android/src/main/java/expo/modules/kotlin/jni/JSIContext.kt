@@ -122,6 +122,8 @@ class JSIContext : Destructible {
 
   external fun setNativeStateForSharedObject(id: Int, js: JavaScriptObject)
 
+  external fun resetNativeStateForSharedObject(jsWeakObject: JavaScriptWeakObject)
+
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
    * and HostObject exported via JSI.

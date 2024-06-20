@@ -71,9 +71,12 @@ class SharedObjectRegistry(appContext: AppContext) {
   internal fun delete(id: SharedObjectId) {
     synchronized(this) {
       pairs.remove(id)
-    }?.let { (native, _) ->
+    }?.let { (native, jsWeakObject) ->
+      appContextHolder.get()
+        ?.jsiInterop
+        ?.resetNativeStateForSharedObject(jsWeakObject)
       native.sharedObjectId = SharedObjectId(0)
-      native.deallocate()
+      native.emitDeallocate()
     }
   }
 

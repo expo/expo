@@ -86,6 +86,8 @@ void JSIContext::registerNatives() {
                    makeNativeMethod("drainJSEventLoop", JSIContext::drainJSEventLoop),
                    makeNativeMethod("setNativeStateForSharedObject",
                                     JSIContext::jniSetNativeStateForSharedObject),
+                   makeNativeMethod("resetNativeStateForSharedObject",
+                                    JSIContext::jniResetNativeStateForSharedObject),
                  });
 }
 
@@ -387,6 +389,18 @@ void JSIContext::jniSetNativeStateForSharedObject(
     ->cthis()
     ->get()
     ->setNativeState(runtimeHolder->get(), std::move(nativeState));
+}
+
+void JSIContext::jniResetNativeStateForSharedObject(
+  jni::alias_ref<JavaScriptWeakObject::javaobject> jsWeakObject
+) {
+  auto jsWeak = jsWeakObject->cthis();
+  runtimeHolder->jsInvoker->invokeAsync([this, jsWeak = std::move(jsWeak)] {
+    auto jsObject = jsWeak->lock();
+    if (jsObject) {
+      jsObject->cthis()->get()->setNativeState(runtimeHolder->get(), nullptr);
+    }
+  });
 }
 
 bool JSIContext::wasDeallocated() const {

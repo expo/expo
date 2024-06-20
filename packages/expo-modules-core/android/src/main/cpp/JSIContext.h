@@ -6,6 +6,7 @@
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptWeakObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
@@ -175,6 +176,10 @@ private:
   void jniSetNativeStateForSharedObject(
     int id,
     jni::alias_ref<JavaScriptObject::javaobject> jsObject
+  );
+
+  void jniResetNativeStateForSharedObject(
+    jni::alias_ref<JavaScriptWeakObject::javaobject> jsWeakObject
   );
 };
 

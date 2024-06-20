@@ -6,10 +6,11 @@ import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
+import java.io.Closeable
 import java.lang.ref.WeakReference
 
 @DoNotStrip
-open class SharedObject(appContext: AppContext? = null) {
+open class SharedObject(appContext: AppContext? = null) : Closeable {
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
    * When the object is not linked with any JavaScript object, its value is 0.
@@ -46,7 +47,28 @@ open class SharedObject(appContext: AppContext? = null) {
   }
 
   /**
+   * Proactively close the shared object without waiting for JavaScript GC.
+   */
+  override fun close() {
+    appContext?.jsiInterop?.deleteSharedObject(sharedObjectId.value)
+  }
+
+  /**
    * Called when the shared object being deallocated.
    */
+  @Deprecated(message = "Use `onDeallocate` instead")
   open fun deallocate() {}
+
+  /**
+   * Called when the shared object being deallocated.
+   */
+  protected open fun onDeallocate() {}
+
+  /**
+   * For [SharedObjectRegistry] to call [onDeallocate] when a shared object is deallocated.
+   */
+  internal fun emitDeallocate() {
+    onDeallocate()
+    deallocate()
+  }
 }
