@@ -255,18 +255,22 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("getFreeDiskStorageAsync") { () -> Int64 in
-    // Uses required reason API based on the following reason: E174.1 85F4.1
-      var keyToQuery: URLResourceKey {
+      // Uses required reason API based on the following reason: E174.1 85F4.1
+      var capacityKey: URLResourceKey
+      var extractCapacity: (URLResourceValues?) -> Int64?
+      
 #if !os(tvOS)
-        return .volumeAvailableCapacityForImportantUsageKey
+      capacityKey = .volumeAvailableCapacityForImportantUsageKey
+      extractCapacity = { $0?.volumeAvailableCapacityForImportantUsage }
 #else
-        return .volumeAvailableCapacity
+      capacityKey = .volumeAvailableCapacityKey
+      extractCapacity = { $0?.volumeAvailableCapacity }
 #endif
-      }
+      
+      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [capacityKey])
+      let maybeCapacity = extractCapacity(resourceValues)
 
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [keyToQuery])
-
-      guard let availableCapacity = resourceValues?.volumeAvailableCapacityForImportantUsage else {
+      guard let availableCapacity = maybeCapacity else {
         throw CannotDetermineDiskCapacity()
       }
       return availableCapacity
