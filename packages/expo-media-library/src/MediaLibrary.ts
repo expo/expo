@@ -33,7 +33,7 @@ export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 /**
  * On Android 14+, when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes),
  * use this to specify the type(s) of media that the user will be granting access to.
- * By default, they will be presented with a list that shows both photos and videos.
+ * By default, this presents a list that shows both photos and videos.
  * @platform android 14+
  * */
 export type MediaTypeFilter = 'photo' | 'video';
@@ -281,7 +281,7 @@ export type AssetsOptions = {
    * the second item is a `boolean` value that means whether to use ascending order. Note that if
    * the `SortBy.default` key is used, then `ascending` argument will not matter. Earlier items have
    * higher priority when sorting out the results.
-   * If empty, this method will use the default sorting that is provided by the platform.
+   * If empty, this method uses the default sorting that is provided by the platform.
    */
   sortBy?: SortByValue[] | SortByValue;
   /**
@@ -423,8 +423,8 @@ export async function isAvailableAsync(): Promise<boolean> {
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
- * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
- * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
+ * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(
@@ -444,7 +444,7 @@ export async function requestPermissionsAsync(
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
- * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter will have
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
  * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
@@ -556,7 +556,7 @@ export async function saveToLibraryAsync(localUri: string): Promise<void> {
  * Adds array of assets to the album.
  *
  * On Android, by default it copies assets from the current album to provided one, however it's also
- * possible to move them by passing `false` as `copyAssets` argument.In case they're copied you
+ * possible to move them by passing `false` as `copyAssets` argument. In case they're copied you
  * should keep in mind that `getAssetsAsync` will return duplicated assets.
  * @param assets An array of [Asset](#asset) or their IDs.
  * @param album An [Album](#album) or its ID.
@@ -868,7 +868,7 @@ export async function getMomentsAsync() {
  *
  * The migration is possible when the album contains only compatible files types.
  * For instance, movies and pictures are compatible with each other, but music and pictures are not.
- * If automatic migration isn't possible, the function will be rejected.
+ * If automatic migration isn't possible, the function rejects.
  * In that case, you can use methods from the `expo-file-system` to migrate all your files manually.
  *
  * # Why do you need to migrate files?
