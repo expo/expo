@@ -18,6 +18,26 @@
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
 
+## 51.0.15 - 2024-06-20
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.14 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.13 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.12 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.11 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
 ## 51.0.10 — 2024-06-05
 
 _This version does not introduce any user-facing changes._

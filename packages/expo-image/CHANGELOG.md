@@ -15,7 +15,15 @@
 
 ### 💡 Others
 
+## 1.12.12 - 2024-06-13
+
+### 💡 Others
+
 - Removed @react-native/assets-registry dependency. ([#29541](https://github.com/expo/expo/pull/29541) by [@kudo](https://github.com/kudo))
+
+## 1.12.11 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 1.12.10 - 2024-06-05
 
