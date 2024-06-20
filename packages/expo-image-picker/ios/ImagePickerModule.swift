@@ -177,6 +177,18 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
 
     picker.modalPresentationStyle = context.options.presentationStyle.toPresentationStyle()
+
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      let viewFrame = currentViewController.view.frame
+      picker.popoverPresentationController?.sourceRect = CGRect(
+        x: viewFrame.midX,
+        y: viewFrame.maxY,
+        width: 0,
+        height: 0
+      )
+      picker.popoverPresentationController?.sourceView = currentViewController.view
+    }
+
     picker.setResultHandler(context.imagePickerHandler)
 
     // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
