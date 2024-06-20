@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, add back image loader to handle `ph://` and `assets-library://` schemes. ([#29747](https://github.com/expo/expo/pull/29747) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 16.0.4 — 2024-06-20
+
+### 🐛 Bug fixes
+
+- On `iOS`, add back image loader to handle `ph://` and `assets-library://` schemes. ([#29747](https://github.com/expo/expo/pull/29747) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.3 — 2024-04-23
 

@@ -119,7 +119,7 @@
     "expo-three": "7.0.1",
     "expo-tracking-transparency": "~4.0.0",
     "expo-updates": "0.25.17",
-    "expo-video": "1.1.10",
+    "expo-video": "1.2.0",
     "expo-video-thumbnails": "~8.0.0",
     "expo-web-browser": "~13.0.0",
     "fbemitter": "^2.1.1",
