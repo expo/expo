@@ -33,6 +33,7 @@
 - [Android] Switch to the JS thread when sending an event. ([#29753](https://github.com/expo/expo/pull/29753) by [@lukmccall](https://github.com/lukmccall))
 - Moved `process` object declaration to global declaration. ([#29745](https://github.com/expo/expo/pull/29745) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Added `SharedObject.close()` to release shared objects without waiting for JavaScript GC. ([#29893](https://github.com/expo/expo/pull/29893) by [@kudo](https://github.com/kudo))
 
 ## 1.12.13 - 2024-06-05
 

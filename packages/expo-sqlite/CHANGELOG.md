@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android `global reference table overflow` crash. ([#29893](https://github.com/expo/expo/pull/29893) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
