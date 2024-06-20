@@ -258,7 +258,7 @@ public final class FileSystemModule: Module {
       // Uses required reason API based on the following reason: E174.1 85F4.1
       var capacityKey: URLResourceKey
       var extractCapacity: (URLResourceValues?) -> Int64?
-      
+
 #if !os(tvOS)
       capacityKey = .volumeAvailableCapacityForImportantUsageKey
       extractCapacity = { $0?.volumeAvailableCapacityForImportantUsage }
@@ -266,7 +266,7 @@ public final class FileSystemModule: Module {
       capacityKey = .volumeAvailableCapacityKey
       extractCapacity = { $0?.volumeAvailableCapacity }
 #endif
-      
+
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [capacityKey])
       let maybeCapacity = extractCapacity(resourceValues)
 
