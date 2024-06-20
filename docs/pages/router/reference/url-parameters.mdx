@@ -152,7 +152,7 @@ export default function Route() {
 // The following is returned: { user: "evanbacon" }
 ```
 
-Any search parameters (e.g. `?query=...`) can be typed optionally:
+Any search parameters (for example, `?query=...`) can be typed optionally:
 
 ```tsx app/[user].tsx
 const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
@@ -212,7 +212,7 @@ export default function Route() {
 
 URL parameters can be updated using the **router.setParams** function from the imperative API.  Updating a URL parameter will not push anything new to the history stack.
 
-The following example uses a `<TextInput>` to update the search parameter **q**. 
+The following example uses a `<TextInput>` to update the search parameter **q**:
 
 ```tsx app/search.tsx
 import { useLocalSearchParams, router } from 'expo-router';
