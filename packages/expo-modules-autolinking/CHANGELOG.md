@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `rnc-config-compat` command to support compatible autolinking for `@react-native-community/cli`. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
+- Added `react-native-config` command to support core autolinking for react-native. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
