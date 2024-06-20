@@ -75,7 +75,7 @@ class MediaLibraryModule : Module() {
     Events(LIBRARY_DID_CHANGE_EVENT)
 
     AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-			val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -84,7 +84,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-			val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -325,15 +325,15 @@ class MediaLibraryModule : Module() {
     }
   }
 
-	private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) = moduleCoroutineScope.launch {
-		try {
-			block()
-		} catch (e: CodedException) {
-			promise.reject(e)
-		} catch (e: ModuleDestroyedException) {
-			promise.reject(TAG, "MediaLibrary module destroyed", e)
-		}
-	}
+  private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) = moduleCoroutineScope.launch {
+    try {
+      block()
+    } catch (e: CodedException) {
+      promise.reject(e)
+    } catch (e: ModuleDestroyedException) {
+      promise.reject(TAG, "MediaLibrary module destroyed", e)
+    }
+  }
 
   private val isMissingPermissions: Boolean
     get() = hasReadPermissions()
