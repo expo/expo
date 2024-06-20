@@ -95,8 +95,8 @@ function registerReactNativeConfigCommand() {
     .command('react-native-config [paths...]')
     .option(
       '-p, --platform [platform]',
-      'The platform that the resulting modules must support. Available options: "apple", "android"',
-      'apple'
+      'The platform that the resulting modules must support. Available options: "android", "ios"',
+      'ios'
     )
     .addOption(
       new commander.Option(
@@ -106,6 +106,9 @@ function registerReactNativeConfigCommand() {
     )
     .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (paths, options) => {
+      if (!['android', 'ios'].includes(options.platform)) {
+        throw new Error(`Unsupported platform: ${options.platform}`);
+      }
       const projectRoot = path.dirname(await getProjectPackageJsonPathAsync(options.projectRoot));
       const searchPaths = await resolveSearchPathsAsync(paths, projectRoot);
       const providedOptions: RNConfigCommandOptions = {
