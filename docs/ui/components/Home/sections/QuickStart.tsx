@@ -18,12 +18,12 @@ export function QuickStart() {
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'bg-subtle min-h-[250px] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'bg-element min-h-[250px] !bg-cell-quickstart-pattern bg-blend-multiply',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div className="inset-0 size-full absolute rounded-lg bg-cell-quickstart-fade" />
           <div className="flex flex-col gap-4 relative z-10">
-            <RawH2>
+            <RawH2 className="!font-bold">
               <QuickStartIcon /> Quick Start
             </RawH2>
             <div>
@@ -37,13 +37,13 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-blue4 border-palette-blue7 relative z-0 min-h-[250px] !bg-cell-tutorial-pattern bg-blend-multiply',
+            'bg-palette-blue4 border-palette-blue6 relative z-0 min-h-[250px] !bg-cell-tutorial-pattern bg-blend-multiply',
             'dark:bg-palette-blue3',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div className="inset-0 size-full absolute rounded-lg bg-cell-tutorial-fade" />
           <DevicesImage />
-          <RawH2 className="!text-palette-blue12 relative z-10">
+          <RawH2 className="!font-bold !text-palette-blue12 relative z-10">
             Create a universal Android, iOS, and web app
           </RawH2>
           <HomeButton
@@ -55,12 +55,19 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-pink3 border-palette-pink7 relative z-0 min-h-[164px] dark:bg-palette-pink3',
+            'bg-palette-pink3 border-palette-pink6 relative z-0 min-h-[164px] dark:bg-palette-pink3',
+            'selection:bg-palette-pink5',
             'max-md-gutters:min-h-[200px]'
           )}>
           <RouterLogo
             className={mergeClasses(
-              'size-20 absolute right-7 bottom-7 border-[5px] rounded-xl p-3',
+              'size-[340px] absolute rotate-[20deg] -left-24 -bottom-20 opacity-[0.12]',
+              'text-palette-pink7 stroke-[0.01rem] stroke-palette-pink7'
+            )}
+          />
+          <RouterLogo
+            className={mergeClasses(
+              'size-[72px] absolute right-6 bottom-6 border-[6px] rounded-xl p-3',
               'stroke-[0.01rem] stroke-palette-pink8 text-palette-pink8 bg-palette-pink4 border-palette-pink5'
             )}
           />
@@ -77,12 +84,19 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-purple3 border-palette-purple7 relative z-0 min-h-[172px]',
+            'bg-palette-purple3 border-palette-purple6 relative z-0 min-h-[172px]',
+            'selection:bg-palette-purple5',
             'max-md-gutters:min-h-[200px]'
           )}>
           <PlanEnterpriseIcon
             className={mergeClasses(
-              'size-20 absolute right-7 bottom-7 border-[5px] rounded-xl p-2',
+              'size-[350px] absolute rotate-[40deg] -left-20 -bottom-12 opacity-[0.12]',
+              'text-palette-purple7'
+            )}
+          />
+          <PlanEnterpriseIcon
+            className={mergeClasses(
+              'size-[72px] absolute right-6 bottom-6 border-[6px] rounded-xl p-2',
               'text-palette-purple8 bg-palette-purple4 border-palette-purple5'
             )}
           />
