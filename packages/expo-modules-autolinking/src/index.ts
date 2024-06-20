@@ -12,7 +12,7 @@ import {
   resolveSearchPathsAsync,
   verifySearchResults,
 } from './autolinking';
-import { createRncConfigCompatAsync, type RncConfigCompatOptions } from './rncConfigCompat';
+import { type RNConfigCommandOptions, createReactNativeConfigAsync } from './reactNativeConfig';
 import type {
   GenerateModulesProviderOptions,
   GenerateOptions,
@@ -88,11 +88,11 @@ function registerPatchReactImportsCommand() {
 }
 
 /**
- * Registry the `rnc-config-compat` command.
+ * Registry the `react-native-config` command.
  */
-function registerRncConfigCompatCommand() {
+function registerReactNativeConfigCommand() {
   return commander
-    .command('rnc-config-compat [paths...]')
+    .command('react-native-config [paths...]')
     .option(
       '-p, --platform [platform]',
       'The platform that the resulting modules must support. Available options: "apple", "android"',
@@ -108,12 +108,12 @@ function registerRncConfigCompatCommand() {
     .action(async (paths, options) => {
       const projectRoot = path.dirname(await getProjectPackageJsonPathAsync(options.projectRoot));
       const searchPaths = await resolveSearchPathsAsync(paths, projectRoot);
-      const providedOptions: RncConfigCompatOptions = {
+      const providedOptions: RNConfigCommandOptions = {
         platform: options.platform,
         projectRoot,
         searchPaths,
       };
-      const results = await createRncConfigCompatAsync(providedOptions);
+      const results = await createReactNativeConfigAsync(providedOptions);
       if (options.json) {
         console.log(JSON.stringify(results));
       } else {
@@ -193,7 +193,7 @@ module.exports = async function (args: string[]) {
     );
 
   registerPatchReactImportsCommand();
-  registerRncConfigCompatCommand();
+  registerReactNativeConfigCommand();
 
   await commander
     .version(require('expo-modules-autolinking/package.json').version)

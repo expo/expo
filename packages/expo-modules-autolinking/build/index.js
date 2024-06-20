@@ -7,7 +7,7 @@ const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const autolinking_1 = require("./autolinking");
-const rncConfigCompat_1 = require("./rncConfigCompat");
+const reactNativeConfig_1 = require("./reactNativeConfig");
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -45,11 +45,11 @@ function registerPatchReactImportsCommand() {
         .action(ReactImportsPatcher_1.patchReactImportsAsync);
 }
 /**
- * Registry the `rnc-config-compat` command.
+ * Registry the `react-native-config` command.
  */
-function registerRncConfigCompatCommand() {
+function registerReactNativeConfigCommand() {
     return commander_1.default
-        .command('rnc-config-compat [paths...]')
+        .command('react-native-config [paths...]')
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "apple", "android"', 'apple')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
@@ -61,7 +61,7 @@ function registerRncConfigCompatCommand() {
             projectRoot,
             searchPaths,
         };
-        const results = await (0, rncConfigCompat_1.createRncConfigCompatAsync)(providedOptions);
+        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(providedOptions);
         if (options.json) {
             console.log(JSON.stringify(results));
         }
@@ -117,7 +117,7 @@ module.exports = async function (args) {
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.');
     registerPatchReactImportsCommand();
-    registerRncConfigCompatCommand();
+    registerReactNativeConfigCommand();
     await commander_1.default
         .version(require('expo-modules-autolinking/package.json').version)
         .description('CLI command that searches for Expo modules to autolink them.')
