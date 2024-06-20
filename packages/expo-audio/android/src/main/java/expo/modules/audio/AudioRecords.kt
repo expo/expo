@@ -52,7 +52,7 @@ enum class AndroidOutputFormat(val value: String) : Enumerable {
       }
     }
 
-    return when(this) {
+    return when (this) {
       DEFAULT -> MediaRecorder.OutputFormat.DEFAULT
       THREE_GP -> MediaRecorder.OutputFormat.THREE_GPP
       MPEG_4 -> MediaRecorder.OutputFormat.MPEG_4
@@ -82,4 +82,3 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
     AAC_ELD -> MediaRecorder.AudioEncoder.AAC_ELD
   }
 }
-
