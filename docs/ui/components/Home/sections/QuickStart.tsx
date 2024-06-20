@@ -72,7 +72,7 @@ export function QuickStart() {
             href="/router/introduction/"
             size="sm"
             rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-pink2" />}>
-            Discover more
+            Learn more
           </HomeButton>
         </GridCell>
         <GridCell
