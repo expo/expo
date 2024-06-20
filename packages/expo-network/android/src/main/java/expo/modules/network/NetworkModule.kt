@@ -1,5 +1,6 @@
 package expo.modules.network
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -10,11 +11,15 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.annotation.RequiresApi
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.math.BigInteger
+import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.nio.ByteOrder
@@ -69,21 +74,6 @@ class NetworkModule : Module() {
     }
   }
 
-  enum class NetworkStateType(val value: String) {
-    NONE("NONE"),
-    UNKNOWN("UNKNOWN"),
-    CELLULAR("CELLULAR"),
-    WIFI("WIFI"),
-    BLUETOOTH("BLUETOOTH"),
-    ETHERNET("ETHERNET"),
-    WIMAX("WIMAX"),
-    VPN("VPN"),
-    OTHER("OTHER");
-
-    val isDefined: Boolean
-      get() = this.value != "NONE" && this.value != "UNKNOWN"
-  }
-
   private fun emitNetworkState() {
     val networkState = fetchNetworkState()
     sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
@@ -102,6 +92,7 @@ class NetworkModule : Module() {
           putBoolean("isInternetReachable", isInternetReachable)
           putString("type", connectionType.value)
           putBoolean("isConnected", connectionType.isDefined)
+          putBundle("details", getDetailsForNetworkType(connectionType, connectivityManager))
         }
 
         return result
@@ -120,6 +111,7 @@ class NetworkModule : Module() {
           putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
           putBoolean("isInternetReachable", isInternetReachable)
           putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+          putBundle("details", getDetailsForNetworkType(connectionType, connectivityManager))
         }
         return result
       }
@@ -183,4 +175,87 @@ class NetworkModule : Module() {
       "0.0.0.0"
     }
   }
+
+  private fun getSubnetMask(connectivityManager: ConnectivityManager): String? {
+    val network = connectivityManager.activeNetwork
+    val linkProperties = connectivityManager.getLinkProperties(network)
+
+    return linkProperties?.linkAddresses?.firstOrNull { it.address is Inet4Address }?.let { linkAddress ->
+      val prefixLength = linkAddress.prefixLength
+      val mask = -0x1 shl (32 - prefixLength)
+      return ((mask ushr 24) and 0xFF).toString() + "." +
+        ((mask ushr 16) and 0xFF) + "." +
+        ((mask ushr 8) and 0xFF) + "." +
+        (mask and 0xFF)
+    }
+  }
+
+  private fun getDetailsForNetworkType(connectionType: NetworkStateType?, connectivityManager: ConnectivityManager): Bundle {
+    val isConnectionExpensive = connectivityManager.isActiveNetworkMetered()
+
+    val details = Bundle().apply {
+      putBoolean("isConnectionExpensive", isConnectionExpensive)
+    }
+
+    if (connectionType == NetworkStateType.WIFI) {
+      details.putString("subnet", getSubnetMask(connectivityManager))
+    } else if (connectionType == NetworkStateType.CELLULAR) {
+      details.putString("cellularGeneration", getCellularGeneration(connectivityManager).value)
+    }
+
+    return details
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun getCellularGeneration(connectivityManager: ConnectivityManager): NetworkCellularGeneration {
+
+
+    val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    val networkType = if (Build.VERSION.SDK_INT > 23) {
+      telephonyManager.dataNetworkType
+    } else {
+      val networkInfo: NetworkInfo? = connectivityManager.getActiveNetworkInfo()
+      networkInfo?.subtype
+    }
+
+
+
+    return when (networkType) {
+      TelephonyManager.NETWORK_TYPE_GPRS,
+      TelephonyManager.NETWORK_TYPE_EDGE,
+      TelephonyManager.NETWORK_TYPE_CDMA,
+      TelephonyManager.NETWORK_TYPE_1xRTT,
+      TelephonyManager.NETWORK_TYPE_IDEN -> {
+        NetworkCellularGeneration.CELLULAR_GEN_2G
+      }
+
+      TelephonyManager.NETWORK_TYPE_UMTS,
+      TelephonyManager.NETWORK_TYPE_EVDO_0,
+      TelephonyManager.NETWORK_TYPE_EVDO_A,
+      TelephonyManager.NETWORK_TYPE_HSDPA,
+      TelephonyManager.NETWORK_TYPE_HSUPA,
+      TelephonyManager.NETWORK_TYPE_HSPA,
+      TelephonyManager.NETWORK_TYPE_EVDO_B,
+      TelephonyManager.NETWORK_TYPE_EHRPD,
+      TelephonyManager.NETWORK_TYPE_HSPAP -> {
+        NetworkCellularGeneration.CELLULAR_GEN_3G
+      }
+
+      TelephonyManager.NETWORK_TYPE_LTE -> {
+        NetworkCellularGeneration.CELLULAR_GEN_4G
+      }
+
+      TelephonyManager.NETWORK_TYPE_NR -> {
+        NetworkCellularGeneration.CELLULAR_GEN_5G
+      }
+
+      TelephonyManager.NETWORK_TYPE_UNKNOWN -> {
+        NetworkCellularGeneration.UNKNOWN
+      }
+
+      else -> NetworkCellularGeneration.UNKNOWN
+    }
+  }
 }
+
+
