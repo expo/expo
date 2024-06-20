@@ -26,7 +26,7 @@ export const ExpoRequest = Request;
 export const ExpoResponse = Response;
 
 export function installGlobals() {
-  installRemixGlobals();
+  installRemixGlobals({ nativeFetch: true });
 
   global.ExpoRequest = Request;
   global.ExpoResponse = Response;
