@@ -10,6 +10,7 @@
 
 - [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
 - Support removing microphone permissions through config plugin. ([#29749](https://github.com/expo/expo/pull/29749) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix an issue where the app will crash when using the popover presentation style on iPad. ([#29892](https://github.com/expo/expo/pull/29892) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
