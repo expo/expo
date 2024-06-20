@@ -69,7 +69,7 @@ describe('_getSetupRequirements', () => {
     // Fake a glob that hit the timeout of 5s
     jest.spyOn(AbortSignal, 'timeout').mockImplementationOnce(() => {
       const controller = new AbortController();
-      controller.abort(new DOMException('Test timeout faked', 'TimeoutError'));
+      controller.abort(new DOMException('Fake test timeout', 'TimeoutError'));
       return controller.signal;
     });
 
