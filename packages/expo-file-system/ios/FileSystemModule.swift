@@ -264,7 +264,12 @@ public final class FileSystemModule: Module {
       extractCapacity = { $0?.volumeAvailableCapacityForImportantUsage }
 #else
       capacityKey = .volumeAvailableCapacityKey
-      extractCapacity = { $0?.volumeAvailableCapacity }
+      extractCapacity = {
+        guard let capacityInt = $0?.volumeAvailableCapacity else {
+          return nil
+        }
+        return Int64(capacityInt)
+      }
 #endif
 
       let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [capacityKey])
