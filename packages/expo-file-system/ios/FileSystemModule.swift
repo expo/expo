@@ -263,7 +263,7 @@ public final class FileSystemModule: Module {
       }
       return availableCapacity
 #else
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityKey])
+      let resourceValues = try getResourceValues(from: cacheDirectory, forKeys: [.volumeAvailableCapacityKey])
       guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
         throw CannotDetermineDiskCapacity()
       }
