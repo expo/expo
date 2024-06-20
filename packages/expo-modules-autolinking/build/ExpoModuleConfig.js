@@ -19,14 +19,18 @@ class ExpoModuleConfig {
      * Whether the module supports given platform.
      */
     supportsPlatform(platform) {
-        const supportedPlatforms = this.rawConfig.platforms ?? [];
+        const supportedPlatforms = new Set(this.rawConfig.platforms);
+        if (supportedPlatforms.has("apple")) {
+            const appleSupportedPlatformsExtension = ["ios", "macos", "tvos"];
+            appleSupportedPlatformsExtension.forEach((platform) => supportedPlatforms.add(platform));
+        }
         if (platform === 'apple') {
             // Apple platform is supported when any of iOS, macOS and tvOS is supported.
-            return supportedPlatforms.some((supportedPlatform) => {
+            return [...supportedPlatforms].some((supportedPlatform) => {
                 return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
             });
         }
-        return supportedPlatforms.includes(platform);
+        return supportedPlatforms.has(platform);
     }
     /**
      * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.

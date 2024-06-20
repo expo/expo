@@ -22,15 +22,18 @@ export class ExpoModuleConfig {
    * Whether the module supports given platform.
    */
   supportsPlatform(platform: SupportedPlatform): boolean {
-    const supportedPlatforms = this.rawConfig.platforms ?? [];
-
+    const supportedPlatforms = new Set(this.rawConfig.platforms);
+    if (supportedPlatforms.has("apple")) {
+      const appleSupportedPlatformsExtension: SupportedPlatform[] = ["ios", "macos", "tvos"]
+      appleSupportedPlatformsExtension.forEach((platform) => supportedPlatforms.add(platform));
+    }
     if (platform === 'apple') {
       // Apple platform is supported when any of iOS, macOS and tvOS is supported.
-      return supportedPlatforms.some((supportedPlatform) => {
+      return [...supportedPlatforms].some((supportedPlatform) => {
         return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
       });
     }
-    return supportedPlatforms.includes(platform);
+    return supportedPlatforms.has(platform);
   }
 
   /**
