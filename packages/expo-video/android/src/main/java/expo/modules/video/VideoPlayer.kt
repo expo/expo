@@ -223,8 +223,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     lastLoadedSource = null
   }
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun onDeallocate() {
+    super.onDeallocate()
     close()
   }
 
