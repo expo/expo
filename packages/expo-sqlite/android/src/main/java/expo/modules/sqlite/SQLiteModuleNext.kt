@@ -337,6 +337,7 @@ class SQLiteModuleNext : Module() {
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+    statement.close()
     statement.isFinalized = true
   }
 
@@ -376,6 +377,7 @@ class SQLiteModuleNext : Module() {
     maybeThrowForClosedDatabase(database)
     maybeRemoveAllCachedStatements(database).forEach {
       it.ref.sqlite3_finalize()
+      it.close()
     }
     if (database.openOptions.enableCRSQLite) {
       database.ref.sqlite3_exec("SELECT crsql_finalize()")

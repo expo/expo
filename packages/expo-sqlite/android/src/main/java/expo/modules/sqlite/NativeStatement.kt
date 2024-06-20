@@ -7,8 +7,8 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 internal class NativeStatement : SharedRef<NativeStatementBinding>(NativeStatementBinding()) {
   var isFinalized = false
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun onDeallocate() {
+    super.onDeallocate()
     this.ref.close()
   }
 
