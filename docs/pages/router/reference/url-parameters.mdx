@@ -4,7 +4,6 @@ description: Learn how to access and modify route and search parameters in your 
 sidebar_title: URL parameters
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -12,13 +11,13 @@ import { Step } from '~/ui/components/Step';
 
 URL parameters include both **route parameters** and **search parameters**.  Expo Router provides hooks for accessing and modifying these parameters.
 
-<Collapsible summary={`What is the difference between "route parameters" and "search parameters"?`}>
+## Difference between route and search parameters
 
 Route parameters are dynamic segments defined in a URL path, such as `/profile/[user]`, where `user` is a route parameter.  They are used to match a route.
 
 Search parameters (also known as query params) are serializable fields that can be appended to a URL, such as `/profile?extra=info`, where `extra` is a search parameter. They are commonly used to pass data between pages.
 
-</Collapsible>
+## Local versus global URL parameters
 
 In nested apps, you'll often have **multiple pages mounted** at the same time. For example, a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing URL parameters:
 
@@ -27,11 +26,7 @@ In nested apps, you'll often have **multiple pages mounted** at the same time. F
 
 The hooks `useGlobalSearchParams` and `useLocalSearchParams` allow you to access these parameters within your components, enabling you to retrieve and utilize both types of URL parameters.
 
-
-Both hooks are typed and accessed the same way. However, the only difference is how frequently they update. Consider the following example:
-
-
-## Local versus global URL parameters
+Both hooks are typed and accessed the same way. However, the only difference is how frequently they update.
 
 The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 
