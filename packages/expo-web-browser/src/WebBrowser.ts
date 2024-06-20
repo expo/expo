@@ -256,7 +256,14 @@ export async function openAuthSessionAsync(
   }
 }
 
-// @docsMissing
+/**
+ * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
+ *
+ * @return The `void` on successful attempt, or throws error, if dismiss functionality is not available.
+ *
+ * @platform ios
+ * @platform web
+ */
 export function dismissAuthSession(): void {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.dismissAuthSession) {
@@ -265,7 +272,7 @@ export function dismissAuthSession(): void {
     ExponentWebBrowser.dismissAuthSession();
   } else {
     if (!ExponentWebBrowser.dismissBrowser) {
-      throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
+      throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
     }
     ExponentWebBrowser.dismissBrowser();
   }
@@ -390,7 +397,7 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string | null | undefined,
+  returnUrl?: string | null,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_redirectSubscription) {
@@ -437,9 +444,7 @@ function _stopWaitingForRedirect() {
   _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(
-  returnUrl: string | null | undefined
-): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(returnUrl?: string | null): Promise<WebBrowserRedirectResult> {
   // Note that this Promise never resolves when `returnUrl` is nullish
   return new Promise((resolve) => {
     const redirectHandler = (event: RedirectEvent) => {
