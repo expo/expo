@@ -4,7 +4,7 @@ sidebar_title: How it works
 description: A conceptual overview of how EAS Update works.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
@@ -13,7 +13,10 @@ To create a link between a build and an update, we have to make sure the update 
 
 To illustrate how builds and updates interact, take a look at the following diagram:
 
-<ImageSpotlight alt="Native and update layers diagram" src="/static/images/eas-update/layers.png" />
+<ContentSpotlight
+  alt="Native and update layers diagram"
+  src="/static/images/eas-update/layers.png"
+/>
 
 Builds can be thought of as two layers: a native layer that's built into the app's binary, and an update layer, that is swappable with other compatible updates. This separation allows us to ship bug fixes to builds as long as the update with the bug fix can run on the native layer inside the build.
 
@@ -32,7 +35,7 @@ When we're ready to create a build of our Expo project, we can run `eas build` t
 
 If we made two sets of builds with the channels named "staging" and "production", we could distribute builds to four different places:
 
-<ImageSpotlight alt="Build types diagram" src="/static/images/eas-update/builds.png" />
+<ContentSpotlight alt="Build types diagram" src="/static/images/eas-update/builds.png" />
 
 This diagram is just an example of how you could create builds and name their channels, and where you could put those builds. Ultimately it's up to you which channel names you set and where you put those builds.
 
@@ -42,7 +45,7 @@ Once we've created builds, we can change the update layer of our project by publ
 
 To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the **dist** directory in our project. Once it's created an update bundle, it will upload that bundle to EAS servers, in a database object named a _branch_. A branch has a name and contains a list of updates, where the most recent update is the active update on the branch. We can think of EAS branches just like Git branches. Just as Git branches contain a list of commits, EAS branches contain a list of updates.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Branches with its most recent update pointed out as the active one"
   src="/static/images/eas-update/branch.png"
 />
@@ -58,7 +61,7 @@ Like builds, every update on a branch includes a target runtime version and targ
 Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the branch to the linked channel.
 To simplify this linking, by default we auto-link channels to branches of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates from the branch named "production", even though we did not manually link anything.
 
-<ImageSpotlight
+<ContentSpotlight
   alt={`Channel "production" linked to branch "production" by default`}
   src="/static/images/eas-update/default-link.png"
 />
@@ -72,7 +75,7 @@ This flow makes it so that we can push to GitHub, then see our builds update wit
 While this flow works for many developers, there's another flow we can accomplish since we have the ability to change the link between channels and branches. Imagine we name our branches like "version-1.0", "version-2.0", and "version-3.0". We could link the "version-1.0" EAS Update branch to the "production" channel, to make it available to our "production" builds.
 We could also link the "version-2.0" EAS Update branch to the "staging" channel to make it available to testers. Finally, we could make a "version-3.0" EAS Update branch that is not linked to any builds yet, that only developers are testing with a development build.
 
-<ImageSpotlight
+<ContentSpotlight
   alt={`Channel "production" linked to branch "version-1.0", channel "staging" linked to branch "version-2.0"`}
   src="/static/images/eas-update/custom-link-1.png"
 />
@@ -81,7 +84,7 @@ Once testers verify that the update on the "version-2.0" EAS Update branch is re
 
 <Terminal cmd={['$ eas channel:edit production --branch version-2.0']} />
 
-<ImageSpotlight
+<ContentSpotlight
   alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-2.0"`}
   src="/static/images/eas-update/custom-link-2.png"
 />
@@ -90,7 +93,7 @@ After this state, we'd be ready to start testing the "version-3.0" EAS Update br
 
 <Terminal cmd={['$ eas channel:edit staging --branch version-3.0']} />
 
-<ImageSpotlight
+<ContentSpotlight
   alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-3.0"`}
   src="/static/images/eas-update/custom-link-3.png"
 />
@@ -108,7 +111,7 @@ Second, the library downloads the assets specified in the manifest that it has n
 
 If the library is able to download the manifest (phase 1) and all the required assets (phase 2) before the `fallbackToCacheTimeout` setting, then the new update will run immediately upon launch. If the library is not able to fetch the manifest and assets within `fallbackToCacheTimeout`, it will continue to download the new update in the background and will run it upon the next launch.
 
-<ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
+<ContentSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
 
 ## Wrap up
 

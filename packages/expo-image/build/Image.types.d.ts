@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
@@ -306,6 +306,7 @@ export interface ImageNativeProps extends ImageProps {
     transition?: ImageTransition | null;
     autoplay?: boolean;
     nativeViewRef?: React.RefObject<ExpoImage>;
+    containerViewRef?: React.RefObject<View>;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -410,6 +411,17 @@ export type ImageProgressEventData = {
 };
 export type ImageErrorEventData = {
     error: string;
+};
+export type ImagePrefetchOptions = {
+    /**
+     * The cache policy for prefetched images.
+     * @default 'memory-disk'
+     */
+    cachePolicy?: 'disk' | 'memory-disk' | 'memory';
+    /**
+     * A map of headers to use when prefetching the images.
+     */
+    headers?: Record<string, string>;
 };
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

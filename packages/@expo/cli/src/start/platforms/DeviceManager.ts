@@ -29,9 +29,11 @@ export abstract class DeviceManager<IDevice> {
     applicationId: string
   ): Promise<boolean | string>;
 
-  abstract openUrlAsync(url: string): Promise<void>;
+  abstract openUrlAsync(url: string, options?: { appId?: string }): Promise<void>;
 
   abstract activateWindowAsync(): Promise<void>;
 
   abstract ensureExpoGoAsync(sdkVersion: string): Promise<boolean>;
+
+  abstract getExpoGoAppId(): string;
 }

@@ -1,24 +1,24 @@
-import { DeviceEventEmitter } from 'react-native';
-import { EventEmitter, Subscription } from './EventEmitter';
+import EventEmitter, { type EventSubscription } from './EventEmitter';
+import { LegacyEventEmitter } from './LegacyEventEmitter';
+import NativeModule from './NativeModule';
 import NativeModulesProxy from './NativeModulesProxy';
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
+import SharedObject from './SharedObject';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
 import './web/index';
 export type * from './ts-declarations/global';
-export type * from './ts-declarations/SharedObject';
 export { default as uuid } from './uuid';
-export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, requireNativeViewManager, CodedError, UnavailabilityError, };
+export { NativeModulesProxy, ProxyNativeModule, Platform, requireNativeViewManager, EventEmitter, SharedObject, NativeModule, CodedError, UnavailabilityError, EventSubscription, LegacyEventEmitter, };
 export * from './requireNativeModule';
+export * from './createWebModule';
 export * from './TypedArrays.types';
-/**
- * @deprecated renamed to `DeviceEventEmitter`
- */
-export declare const SyntheticPlatformEmitter: import("react-native").DeviceEventEmitterStatic;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
+export * from './hooks/useReleasingSharedObject';
+export * from './reload';
 //# sourceMappingURL=index.d.ts.map

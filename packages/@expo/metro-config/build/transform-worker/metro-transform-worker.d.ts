@@ -5,7 +5,12 @@ import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transfo
 export { JsTransformOptions };
 interface TransformResponse {
     readonly dependencies: readonly TransformResultDependency[];
-    readonly output: readonly JsOutput[];
+    readonly output: readonly ExpoJsOutput[];
 }
+export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
+    readonly data: JsOutput['data'] & {
+        readonly reactClientReference?: string;
+    };
+};
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;

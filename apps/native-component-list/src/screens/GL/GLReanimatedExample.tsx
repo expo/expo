@@ -1,5 +1,5 @@
 import { Asset, useAssets } from 'expo-asset';
-import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
+import { ExpoWebGLRenderingContext, GLView, getWorkletContext } from 'expo-gl';
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -107,7 +107,7 @@ function useWorkletAwareGlContext<T>(
     if (shouldRunOnUI) {
       runOnUI((glCtxId: number) => {
         'worklet';
-        const workletGl = GLView.getWorkletContext(glCtxId)!;
+        const workletGl = getWorkletContext(glCtxId)!;
         const ctx = onInit(workletGl);
         const renderer = () => {
           'worklet';
@@ -147,7 +147,14 @@ export default function GLReanimated() {
   };
 
   const [assets] = useAssets([require('../../../assets/images/expo-icon.png')]);
-
+  const asset = useSharedValue<Asset | undefined>(undefined);
+  useEffect(() => {
+    if (assets) {
+      // Objects with a prototype are not supported in worklets.
+      // We only need values from assets; we can ignore the prototype here.
+      asset.value = { ...assets[0] } as Asset;
+    }
+  }, [assets]);
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     AnimatedGHContext
@@ -170,7 +177,7 @@ export default function GLReanimated() {
     {
       onInit: (gl: ExpoWebGLRenderingContext) => {
         'worklet';
-        return initializeContext(gl, assets?.[0]!);
+        return initializeContext(gl, asset.value!);
       },
       onRender: (
         gl: ExpoWebGLRenderingContext,
@@ -197,7 +204,11 @@ export default function GLReanimated() {
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View style={styles.flex}>
           {assets ? (
-            <GLView style={styles.flex} onContextCreate={onContextCreate} />
+            <GLView
+              style={styles.flex}
+              onContextCreate={onContextCreate}
+              enableExperimentalWorkletSupport
+            />
           ) : (
             <Text>Loading</Text>
           )}

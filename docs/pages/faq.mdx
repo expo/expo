@@ -36,7 +36,7 @@ No, the `expo` npm package and CLI work with any React Native app. [Expo Applica
 
 The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-free-as-in-and-as-in-1d6d948a60dc). This includes the libraries that make up the [Expo SDK](/versions/latest) and the [Expo CLI](/more/expo-cli/) used for development. The Expo Go app, the easiest way to get started, is also free from the app stores.
 
-[Expo Application Services (EAS)](/eas) is an optional suite of cloud services for React Native apps, from the Expo team. EAS makes it easier to build your app, submit it to the stores, keep it updated, send push notifications, and more. You can use EAS for free if the [Free tier](https://expo.dev/pricing) quotas are sufficient for your app. More information is available on the [pricing page](https://expo.dev/pricing).
+[Expo Application Services (EAS)](/eas) is an optional suite of cloud services for React Native apps, from the Expo team. EAS makes it easier to build your app, submit it to the stores, keep it updated, send push notifications, and more. You can use EAS for free if the [Free plan](https://expo.dev/pricing) quotas are sufficient for your app. More information is available on the [pricing page](https://expo.dev/pricing).
 
 ## How do I add custom native code to my Expo project?
 
@@ -56,7 +56,7 @@ You can also use [internal distribution](/build/internal-distribution) to share 
 
 ## Can I develop iOS apps on a Windows computer?
 
-Traditionally you needed a macOS to develop iOS apps, however, you can use [EAS Build](/build/introduction) to build your app in the cloud. You can also use [EAS Submit](/submit/introduction) to submit your app to the stores. Testing can be done on a physical iOS device using [Expo Go](https://expo.dev/expo-go) or a [development build](/develop/development-builds/introduction/).
+Traditionally you needed a macOS to develop iOS apps, however, you can use [EAS Build](/build/introduction) to build your app in the cloud. You can also use [EAS Submit](/submit/introduction) to submit your app to the stores. Testing can be done on a physical iOS device using [Expo Go](https://expo.dev/go) or a [development build](/develop/development-builds/introduction/).
 
 ## What versions of Android and iOS are supported by the Expo SDK?
 
@@ -86,11 +86,47 @@ Expo is an [open-source framework](https://github.com/expo/expo) for apps that r
 
 In the same way React.js frameworks help users create larger websites with ease, Expo helps users create larger apps with ease. Expo provides a suite of well-tested React Native modules that run on Android, iOS, and the web. Expo also provides a [suite of tools](/eas) for building, deploying, and updating your app.
 
-## Should I use Expo CLI or React Native CLI?
+## What are the store policies regarding interpreted code?
 
-Expo CLI can be used simultaneously with React Native CLI. Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/more/expo-cli).
+React Native uses a JavaScript interpreter (JSC, V8, or Hermes) to run your application code. Refer to the [Google Play Policy Center](https://play.google/developer-content-policy/) and [Apple Developer Program License Agreement](https://developer.apple.com/support/terms/apple-developer-program-license-agreement) directly for the most up-to-date policy information.
+
+_The following are excerpts of related policies, as of April 25, 2024._
+
+### Google Play Store
+
+```text
+...an app may not download executable code (such as dex, JAR, .so files) from a
+source other than Google Play. This restriction does not apply to code that runs
+in a virtual machine or an interpreter where either provides indirect access to
+Android APIs (such as JavaScript in a webview or browser).
+
+Apps or third-party code, like SDKs, with interpreted languages (JavaScript,
+Python, Lua, etc.) loaded at run time (for example, not packaged with the app)
+must not allow potential violations of Google Play policies.
+```
+
+Source: [Google Play Policy Center](https://support.google.com/googleplay/android-developer/answer/9888379?hl=en).
+
+### Apple App Store
+
+```text
+...Interpreted code may be downloaded to an Application but only so long as such code:
+(a) does not change the primary purpose of the Application by providing features
+    or functionality that are inconsistent with the intended and advertised purpose
+    of the Application as submitted to the App Store,
+(b) does not create a store or storefront for other code or applications, and
+(c) does not bypass signing, sandbox, or other security features of the OS.
+```
+
+Source: [3.3.1 APIs and Functionality - B. Executable Code](https://developer.apple.com/support/terms/apple-developer-program-license-agreement#b331).
+
+## Should I use Expo CLI or React Native Community CLI?
+
+Expo CLI can be used simultaneously with React Native Community CLI (also sometimes referred to as "React Native CLI"). Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/more/expo-cli).
 
 Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project.
+
+[Learn more about why you might want to use Expo CLI](/bare/using-expo-cli/).
 
 ## Is Expo Go open source?
 
@@ -120,13 +156,6 @@ For more information on what current limitations exist with EAS, see the followi
 />
 
 <BoxLink
-  title="EAS Update"
-  description="EAS Update is a hosted service that serves updates for projects using the expo-updates library. You can use it to fix small bugs and push quick fixes a snap in between app store submissions. In some situations, not be the right fit for a project. Learn more."
-  href="/eas-update/known-issues"
-  Icon={LayersTwo02Icon}
-/>
-
-<BoxLink
   title="EAS Metadata"
   description="EAS Metadata helps create or maintain an app in the stores as easily as possible by using one configuration file. In some situations, not be the right fit for a project. Learn more."
   href="/eas/metadata/faq/#anti-pitch"
@@ -148,7 +177,7 @@ EAS Build is compatible with bare workflow projects if you check in the native d
 
 ### Expo Go
 
-[Expo Go](/get-started/expo-go/) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
+[Expo Go](/get-started/set-up-your-environment/?redirected=#how-would-you-like-to-develop) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
 
 Like any other tool, it too has its limitations:
 

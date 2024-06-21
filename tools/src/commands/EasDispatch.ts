@@ -4,7 +4,7 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
@@ -212,7 +212,7 @@ async function iosBuildAndSubmitAsync() {
       path.join(projectDir, 'credentials.json'),
       JSON.stringify({
         ios: {
-          'Expo Go (versioned)': {
+          'Expo Go': {
             provisioningProfilePath: path.join(
               fastlaneMatchBucketCopyPath,
               'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.mobileprovision'

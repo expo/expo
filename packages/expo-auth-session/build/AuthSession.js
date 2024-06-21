@@ -3,9 +3,7 @@ import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
 import { dismissAuthSession } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
-import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
-import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
-import { generateHexStringAsync } from './PKCE';
+import { resolveDiscoveryAsync } from './Discovery';
 import sessionUrlProvider from './SessionUrlProvider';
 // @needsAudit
 /**
@@ -106,14 +104,4 @@ export async function loadAsync(config, issuerOrDiscovery) {
     await request.makeAuthUrlAsync(discovery);
     return request;
 }
-export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
-export { AuthError, TokenError } from './Errors';
-export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
-export { 
-// Token classes
-TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, 
-// Token methods
-revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';
-// Token types
-export * from './TokenRequest.types';
 //# sourceMappingURL=AuthSession.js.map

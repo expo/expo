@@ -10,7 +10,7 @@ platforms: ['android*', 'ios*', 'web']
 import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
@@ -41,13 +41,14 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Check out the example Snack below to see Notifications in action, make sure to use a physical device to test it. Push notifications don't work on emulators/simulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-constants', 'expo-notifications']}>
 
-```jsx
+```tsx
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -59,13 +60,19 @@ Notifications.setNotificationHandler({
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
 
+    if (Platform.OS === 'android') {
+      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+    }
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
@@ -75,8 +82,10 @@ export default function App() {
     });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
@@ -88,6 +97,11 @@ export default function App() {
         justifyContent: 'space-around',
       }}>
       <Text>Your expo push token: {expoPushToken}</Text>
+      <Text>{`Channels: ${JSON.stringify(
+        channels.map(c => c.id),
+        null,
+        2
+      )}`}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
@@ -108,7 +122,7 @@ async function schedulePushNotification() {
     content: {
       title: "You've got mail! 📬",
       body: 'Here is the notification body',
-      data: { data: 'goes here' },
+      data: { data: 'goes here', test: { test1: 'more data' } },
     },
     trigger: { seconds: 2 },
   });
@@ -139,8 +153,22 @@ async function registerForPushNotificationsAsync() {
     }
     // Learn more about projectId:
     // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
-    console.log(token);
+    // EAS projectId is used here.
+    try {
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('Project ID not found');
+      }
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(token);
+    } catch (e) {
+      token = `${e}`;
+    }
   } else {
     alert('Must use physical device for Push Notifications');
   }
@@ -338,6 +366,11 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Tint color for the push notification image when it appears in the notification tray.',
     },
     {
+      name: 'defaultChannel',
+      platform: 'android',
+      description: 'Default channel for FCMv1 notifications.',
+    },
+    {
       name: 'sounds',
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
@@ -356,6 +389,7 @@ Here is an example of using the config plugin in the app config file:
         {
           "icon": "./local/assets/notification-icon.png",
           "color": "#ffffff",
+          "defaultChannel": "default",
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
@@ -412,9 +446,11 @@ A few different listeners are exposed, so we've provided a chart below which wil
 | false                              |          Killed          | none                                                                    |
 | true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
 | true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `NotificationResponseReceivedListener`                                  |
+| true                               |          Killed          | `useLastNotificationResponse`                                           |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
+
+> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse`. 
 
 ### Background notifications
 
@@ -422,10 +458,20 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
-and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
+To handle notifications while the app is in the background or not running, you need to do the following:
 
-On Android, data-only notifications are sent using the `data` key of the push notification request payload.
+- Add `expo-task-manager` package to your project.
+- In your application code, set up a [background task](/versions/unversioned/sdk/notifications/#registertaskasynctaskname) to run when the notification is received.
+
+For Android:
+
+- Send a push notification payload containing only the `data` key.
+
+For iOS:
+
+- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
+
 
 ## Additional information
 
@@ -522,10 +568,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
   src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -564,9 +610,9 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 

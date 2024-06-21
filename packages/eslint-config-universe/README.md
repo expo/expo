@@ -10,7 +10,7 @@ yarn add --dev eslint-config-universe
 You will also need to install `eslint` and `prettier`:
 
 ```sh
-yarn add --dev eslint prettier
+yarn add --dev eslint@8 prettier
 ```
 
 ## Usage

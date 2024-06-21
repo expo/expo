@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import { isDevice } from 'expo-device';
 import * as ImagePicker from 'expo-image-picker';
 import { Platform } from 'react-native';
 
@@ -57,7 +57,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
     });
 
     describe('launchCameraAsync', () => {
-      if (Constants.isDevice) {
+      if (isDevice) {
         it('launches the camera', async () => {
           await alertAndWaitForResponse('Please take a picture for this test to pass.');
           const result = await ImagePicker.launchCameraAsync();

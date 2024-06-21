@@ -4,22 +4,19 @@ import {
   PermissionExpiration,
   PermissionHookOptions,
   createPermissionHook,
-  EventEmitter,
-  Subscription,
   UnavailabilityError,
+  EventSubscription,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';
-
-const eventEmitter = new EventEmitter(MediaLibrary);
 
 // @needsAudit
 export type PermissionResponse = EXPermissionResponse & {
   /**
    * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
    * - `'all'` if the user granted your app access to the whole photo library
-   * - `'limited'` if the user granted your app access only to selected photos (only available on iOS 14.0+)
+   * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
    * - `'none'` if user denied or hasn't yet granted the permission
    */
   accessPrivileges?: 'all' | 'limited' | 'none';
@@ -70,7 +67,7 @@ export type Asset = {
    */
   filename: string;
   /**
-   * URI that points to the asset. `assets://*` (iOS), `file://*` (Android)
+   * URI that points to the asset. `ph://*` (iOS), `file://*` (Android)
    */
   uri: string;
   /**
@@ -143,7 +140,10 @@ export type AssetInfo = Asset & {
   orientation?: number;
 };
 
-// @docsMissing
+/**
+ * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
+ * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * */
 export type MediaSubtype =
   | 'depthEffect'
   | 'hdr'
@@ -324,7 +324,7 @@ export {
   PermissionExpiration,
   EXPermissionResponse,
   PermissionHookOptions,
-  Subscription,
+  EventSubscription as Subscription,
 };
 
 function arrayize(item: any): any[] {
@@ -808,12 +808,12 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
  */
 export function addListener(
   listener: (event: MediaLibraryAssetsChangeEvent) => void
-): Subscription {
-  return eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
+): EventSubscription {
+  return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
 
 // @docsMissing
-export function removeSubscription(subscription: Subscription): void {
+export function removeSubscription(subscription: EventSubscription): void {
   subscription.remove();
 }
 
@@ -822,7 +822,7 @@ export function removeSubscription(subscription: Subscription): void {
  * Removes all listeners.
  */
 export function removeAllListeners(): void {
-  eventEmitter.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
+  MediaLibrary.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
 }
 
 // @needsAudit

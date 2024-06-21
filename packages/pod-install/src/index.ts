@@ -11,8 +11,6 @@ import { learnMore } from './utils';
 
 const packageJSON = require('../package.json');
 
-let projectRoot: string = '';
-
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('<project-directory>')
@@ -26,18 +24,18 @@ const program = new Command(packageJSON.name)
   .parse(process.argv);
 
 const info = (message: string) => {
-  if (!program.quiet) {
+  if (!program.opts().quiet) {
     console.log(message);
   }
 };
 
 async function runAsync(): Promise<void> {
-  projectRoot = resolve(projectRoot.trim());
-
   if (process.platform !== 'darwin') {
     info(chalk.red('CocoaPods is only supported on darwin machines'));
     return;
   }
+
+  let projectRoot = resolve(process.cwd());
 
   const possibleProjectRoot = CocoaPodsPackageManager.getPodProjectRoot(projectRoot);
   if (!possibleProjectRoot) {
@@ -65,7 +63,9 @@ async function runAsync(): Promise<void> {
   }
 
   if (!(await CocoaPodsPackageManager.isCLIInstalledAsync())) {
-    await CocoaPodsPackageManager.installCLIAsync({ nonInteractive: program.nonInteractive });
+    await CocoaPodsPackageManager.installCLIAsync({
+      nonInteractive: program.opts().nonInteractive,
+    });
   }
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
   try {
@@ -87,7 +87,7 @@ async function runAsync(): Promise<void> {
   info('Scanning for pods...');
   try {
     await runAsync();
-    if (!program.quiet) {
+    if (!program.opts().quiet) {
       await shouldUpdate();
     }
   } catch (reason: any) {
@@ -100,7 +100,7 @@ async function runAsync(): Promise<void> {
       console.log(reason);
     }
     console.log();
-    if (!program.quiet) {
+    if (!program.opts().quiet) {
       await shouldUpdate();
     }
     process.exit(1);

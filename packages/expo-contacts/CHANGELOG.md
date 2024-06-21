@@ -2,9 +2,42 @@
 
 ## Unpublished
 
+- Fixed an issue where the `requestPermissionsAsync` promise throws when denying access to contacts on iOS. ([#29529](https://github.com/expo/expo/pull/29529) by [@jp1987](https://github.com/jp1987))
+- Fixed an issue where the `presentFormAsync` promise doesn't resolve when the form is closed on Android. ([#29201](https://github.com/expo/expo/pull/29201) by [@jp1987](https://github.com/jp1987))
+- Fixed an issue where the `presentContactPickerAsync` promise doesn't resolve when using the Android back button. ([#29202](https://github.com/expo/expo/pull/29202) by [@jp1987](https://github.com/jp1987))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed an issue where only paths of urls were stored in contacts and social profiles were only stored when all fields were filled. ([#29199](https://github.com/expo/expo/pull/29199) by [@mlecoq](https://github.com/mlecoq))
+- Fixed an iOS issue where the Cancel button is not visible on the unknown contact form. ([#29555](https://github.com/expo/expo/pull/29555) by [@Tug](https://github.com/Tug))
+
+### 💡 Others
+
+## 13.0.4 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.2 — 2024-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- It is now possible to select contacts using OS-provided native contact pickers. ([#27541](https://github.com/expo/expo/pull/27541) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
@@ -12,9 +45,11 @@
 
 ### 💡 Others
 
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Reuse React Native `ShareOptions` type for `shareContactAsync` parameter typing. ([#26208](https://github.com/expo/expo/pull/26208) by [@Simek](https://github.com/Simek))
 - [iOS] Migrate to Expo Modules. ([#25696](https://github.com/expo/expo/pull/25696) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 12.8.2 - 2023-12-19
 

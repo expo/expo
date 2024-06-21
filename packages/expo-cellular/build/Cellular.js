@@ -5,8 +5,8 @@ export { CellularGeneration };
 // @needsAudit
 /**
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
- * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
- * to view more information.
+ * the system supports SIP-based VoIP API. See the [Android documentation](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
+ * for more information.
  *
  * On iOS, if you configure a device for a carrier and then remove the SIM card, this property
  * retains the `boolean` value indicating the carrier’s policy regarding VoIP. If you then install
@@ -18,7 +18,7 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
- * @deprecated Use [`allowsVoipAsync()`](#allowsvoipasync) instead.
+ * @deprecated Use [`allowsVoipAsync()`](#cellularallowsvoipasync) instead.
  *
  */
 export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
@@ -40,7 +40,7 @@ export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
- * @deprecated Use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
+ * @deprecated Use [`getCarrierNameAsync()`](#cellulargetcarriernameasync) instead.
  *
  */
 export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
@@ -58,7 +58,7 @@ export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
- * @deprecated Use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
+ * @deprecated Use [`getIsoCountryCodeAsync()`](#cellulargetisocountrycodeasync) instead.
  *
  */
 export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
@@ -77,7 +77,7 @@ export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
- * @deprecated Use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
+ * @deprecated Use [`getMobileCountryCodeAsync()`](#cellulargetmobilecountrycodeasync) instead.
  *
  */
 export const mobileCountryCode = ExpoCellular
@@ -97,7 +97,7 @@ export const mobileCountryCode = ExpoCellular
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
- * @deprecated Use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
+ * @deprecated Use [`getMobileNetworkCodeAsync()`](#cellulargetmobilenetworkcodeasync) instead.
  *
  */
 export const mobileNetworkCode = ExpoCellular

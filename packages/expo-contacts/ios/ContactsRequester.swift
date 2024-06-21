@@ -26,12 +26,8 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     let store = CNContactStore()
-    store.requestAccess(for: .contacts) { [weak self] _, error in
+    store.requestAccess(for: .contacts) { [weak self] _, _ in
       guard let self else {
-        return
-      }
-      if let error {
-        reject("E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error)
         return
       }
 

@@ -9,17 +9,29 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import assert from 'node:assert';
-import crypto from 'node:crypto';
-import fs from 'node:fs';
 
-import { TransformOptions } from './babel-core';
+import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
-const cacheKeyParts = [
-  fs.readFileSync(__filename),
-  require('babel-preset-fbjs/package.json').version,
-];
+export type ExpoBabelCaller = TransformOptions['caller'] & {
+  supportsReactCompiler?: boolean;
+  isReactServer?: boolean;
+  isHMREnabled?: boolean;
+  isServer?: boolean;
+  isNodeModule?: boolean;
+  preserveEnvVars?: boolean;
+  isDev?: boolean;
+  asyncRoutes?: boolean;
+  baseUrl?: string;
+  engine?: string;
+  bundler?: 'metro' | (string & object);
+  platform?: string | null;
+  routerRoot?: string;
+  projectRoot: string;
+};
+
+const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
 
 function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';
@@ -39,10 +51,13 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 }
 
 const memoizeWarning = memoize((message: string) => {
-  console.warn(message);
+  debug(message);
 });
 
-function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filename' | 'options'>) {
+function getBabelCaller({
+  filename,
+  options,
+}: Pick<BabelTransformerArgs, 'filename' | 'options'>): ExpoBabelCaller {
   const isNodeModule = filename.includes('node_modules');
   const isReactServer = options.customTransformOptions?.environment === 'react-server';
   const isGenericServer = options.customTransformOptions?.environment === 'node';
@@ -55,7 +70,7 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
 
   if (routerRoot == null) {
     memoizeWarning(
-      'Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory.'
+      'Warning: Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory. This can occur if you bundle without Expo CLI or expo/metro-config.'
     );
   }
 
@@ -90,7 +105,7 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     asyncRoutes: isCustomTruthy(options.customTransformOptions?.asyncRoutes) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
-    engine: options.customTransformOptions?.engine,
+    engine: stringOrUndefined(options.customTransformOptions?.engine),
 
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
@@ -101,7 +116,17 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
 
     // Set the standard Babel flag to disable ESM transformations.
     supportsStaticESM: options.experimentalImportSupport,
+
+    // Enable React compiler support in Babel.
+    // TODO: Remove this in the future when compiler is on by default.
+    supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
+      ? true
+      : undefined,
   };
+}
+
+function stringOrUndefined(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
 }
 
 const transform: BabelTransformer['transform'] = ({
@@ -169,15 +194,8 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
-function getCacheKey() {
-  const key = crypto.createHash('md5');
-  cacheKeyParts.forEach((part) => key.update(part));
-  return key.digest('hex');
-}
-
 const babelTransformer: BabelTransformer = {
   transform,
-  getCacheKey,
 };
 
 module.exports = babelTransformer;

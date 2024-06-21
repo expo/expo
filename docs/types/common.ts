@@ -9,6 +9,7 @@ export type PageMetadata = {
   hideFromSearch?: boolean;
   hideTOC?: boolean;
   platforms?: string[];
+  modificationDate?: string;
 };
 
 /**

@@ -2,8 +2,8 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
@@ -22,11 +22,12 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
+  expo: [['Expo.ts', 'types.ts'], 'expo'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
-  'expo-auth-session': ['AuthSession.ts'],
+  'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
@@ -37,8 +38,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
+  'expo-camera-legacy': ['legacy/index.ts', 'expo-camera'],
   'expo-camera': ['index.ts'],
-  'expo-camera-next': ['next/index.ts', 'expo-camera'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
@@ -76,7 +77,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-random': ['Random.ts'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -84,15 +84,17 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
+  'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
   'expo-sqlite': ['index.ts'],
-  'expo-sqlite-next': ['next/index.ts', 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
+  'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
   'expo-updates': ['index.ts'],
-  'expo-video': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
+  'expo-video': ['index.ts'],
+  'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
 };

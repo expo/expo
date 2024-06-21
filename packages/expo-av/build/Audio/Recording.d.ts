@@ -1,15 +1,19 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, type EventSubscription } from 'expo-modules-core';
 import { RecordingInput, RecordingObject, RecordingOptions, RecordingStatus } from './Recording.types';
 import { SoundObject } from './Sound';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 /**
  * Asks the user to grant permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 /**
@@ -48,9 +52,11 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  * ```
  *
  * @return A newly constructed instance of `Audio.Recording`.
+ * @platform android
+ * @platform ios
  */
 export declare class Recording {
-    _subscription: Subscription | null;
+    _subscription: EventSubscription | null;
     _canRecord: boolean;
     _isDoneRecording: boolean;
     _finalDurationMillis: number;

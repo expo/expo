@@ -112,7 +112,7 @@ class CalendarModule : Module() {
       }
     }
 
-    AsyncFunction("saveEventAsync") { details: ReadableArguments, options: ReadableArguments?, promise: Promise ->
+    AsyncFunction("saveEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
@@ -129,7 +129,7 @@ class CalendarModule : Module() {
       }
     }
 
-    AsyncFunction("deleteEventAsync") { details: ReadableArguments, options: ReadableArguments?, promise: Promise ->
+    AsyncFunction("deleteEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
@@ -256,12 +256,13 @@ class CalendarModule : Module() {
       selection += calendarQuery
     }
     selection += ")"
+    val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
     val cursor = contentResolver.query(
       uri,
       findEventsQueryParameters,
       selection,
       null,
-      null
+      sortOrder
     )
 
     requireNotNull(cursor) { "Cursor shouldn't be null" }

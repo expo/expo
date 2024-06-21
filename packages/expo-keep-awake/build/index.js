@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 /** Default tag, used when no tag has been specified in keep awake method calls. */
 export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
@@ -13,30 +13,32 @@ export async function isAvailableAsync() {
 /**
  * A React hook to keep the screen awake for as long as the owner component is mounted.
  * The optionally provided `tag` argument is used when activating and deactivating the keep-awake
- * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwakeAsync`
- * below to learn more about the `tag` argument.
+ * feature. If unspecified, an ID unique to the owner component is used. See the documentation for
+ * `activateKeepAwakeAsync` below to learn more about the `tag` argument.
  *
- * @param tag Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param tag Tag to lock screen sleep prevention. If not provided, an ID unique to the owner component is used.
  * @param options Additional options for the keep awake hook.
  */
-export function useKeepAwake(tag = ExpoKeepAwakeTag, options) {
+export function useKeepAwake(tag, options) {
+    const defaultTag = useId();
+    const tagOrDefault = tag ?? defaultTag;
     useEffect(() => {
         let isMounted = true;
-        activateKeepAwakeAsync(tag).then(() => {
+        activateKeepAwakeAsync(tagOrDefault).then(() => {
             if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
-                addListener(tag, options.listener);
+                addListener(tagOrDefault, options.listener);
             }
         });
         return () => {
             isMounted = false;
             if (options?.suppressDeactivateWarnings) {
-                deactivateKeepAwake(tag).catch(() => { });
+                deactivateKeepAwake(tagOrDefault).catch(() => { });
             }
             else {
-                deactivateKeepAwake(tag);
+                deactivateKeepAwake(tagOrDefault);
             }
         };
-    }, [tag]);
+    }, [tagOrDefault]);
 }
 // @needsAudit
 /**

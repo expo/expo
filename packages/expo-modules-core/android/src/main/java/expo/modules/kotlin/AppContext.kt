@@ -27,7 +27,6 @@ import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
@@ -262,12 +261,6 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the sensor manager from the legacy module registry
-   */
-  val sensor: SensorServiceInterface?
-    get() = legacyModule()
-
-  /**
    * Provides access to the task manager from the legacy module registry
    */
   val taskManager: TaskManagerInterface?
@@ -324,9 +317,6 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    if (::jsiInterop.isInitialized) {
-      jsiInterop.wasDeallocated()
-    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
@@ -366,7 +356,7 @@ class AppContext(
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
+    activityResultsManager.onActivityResult(requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
@@ -420,6 +410,7 @@ class AppContext(
   override val currentActivity: Activity?
     get() {
       return activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
     }
 
 // endregion

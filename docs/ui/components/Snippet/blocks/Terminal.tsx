@@ -16,7 +16,7 @@ type TerminalProps = {
 };
 
 export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet className="[li_&]:mt-4">
+  <Snippet className="terminal-snippet [li_&]:mt-4">
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -62,7 +62,7 @@ function cmdMapper(line: string, index: number) {
     return (
       <CODE
         key={key}
-        className="whitespace-pre !bg-[transparent] !border-none select-none !text-palette-gray10">
+        className="whitespace-pre !bg-transparent !border-none select-none !text-palette-gray10">
         {line}
       </CODE>
     );
@@ -71,11 +71,11 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
+        <CODE className="whitespace-pre !bg-transparent !border-none select-none !text-secondary">
           -&nbsp;
         </CODE>
         <CODE
-          className="whitespace-pre !bg-[transparent] !border-none text-default"
+          className="whitespace-pre !bg-transparent !border-none text-default"
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
               line.substring(1).trim(),
@@ -89,7 +89,7 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <CODE key={key} className="whitespace-pre !bg-[transparent] !border-none text-default">
+    <CODE key={key} className="whitespace-pre !bg-transparent !border-none text-default">
       {line}
     </CODE>
   );

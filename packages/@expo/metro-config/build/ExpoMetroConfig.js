@@ -92,19 +92,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
     if (isExotic && !hasWarnedAboutExotic) {
         hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} is no longer supported.`));
+        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
     }
     const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
-    try {
-        // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
-        // This hack is used because there doesn't appear to be anyway to resolve
-        // `babel-preset-fbjs` relative to the project root later (in `metro-expo-babel-transformer`).
-        const babelPresetFbjsPath = (0, resolve_from_1.default)(projectRoot, 'babel-preset-fbjs/package.json');
-        process.env.EXPO_METRO_CACHE_KEY_VERSION = String(require(babelPresetFbjsPath).version);
-    }
-    catch {
-        // noop -- falls back to a hardcoded value.
-    }
     const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
@@ -144,6 +134,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
+    const serverRoot = (0, getModulesPaths_1.getServerRoot)(projectRoot);
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
@@ -161,7 +152,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(
             // Add default support for `expo-image` file types.
-            ['heic', 'avif'])
+            ['heic', 'avif'], 
+            // Add default support for `expo-sqlite` file types.
+            ['db'])
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
@@ -177,7 +170,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
-                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/build/winter');
+                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter');
                 if (stdRuntime) {
                     preModules.push(stdRuntime);
                 }
@@ -189,14 +182,28 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return preModules;
             },
-            getPolyfills: () => require('@react-native/js-polyfills')(),
+            getPolyfills: ({ platform }) => {
+                // Do nothing for nullish platforms.
+                if (!platform) {
+                    return [];
+                }
+                if (platform === 'web') {
+                    return [
+                        // Ensure that the error-guard polyfill is included in the web polyfills to
+                        // make metro-runtime work correctly.
+                        require.resolve('@react-native/js-polyfills/error-guard'),
+                    ];
+                }
+                // Native behavior.
+                return require('@react-native/js-polyfills')();
+            },
         },
         server: {
             rewriteRequestUrl: (0, rewriteRequestUrl_1.getRewriteRequestUrl)(projectRoot),
             port: Number(env_1.env.RCT_METRO_PORT) || 8081,
             // NOTE(EvanBacon): Moves the server root down to the monorepo root.
             // This enables proper monorepo support for web.
-            unstable_serverRoot: (0, getModulesPaths_1.getServerRoot)(projectRoot),
+            unstable_serverRoot: serverRoot,
         },
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
@@ -205,6 +212,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             // @ts-expect-error: not on type.
+            unstable_renameRequire: false,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')
@@ -212,6 +220,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             sassVersion,
             // Ensure invalidation when the version changes due to the Babel plugin.
             reanimatedVersion,
+            // Ensure invalidation when using identical projects in monorepos
+            _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,

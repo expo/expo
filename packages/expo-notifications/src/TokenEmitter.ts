@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, Platform } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';
@@ -11,7 +11,7 @@ import { DevicePushToken } from './Tokens.types';
 export type PushTokenListener = (token: DevicePushToken) => void;
 
 // Web uses SyntheticEventEmitter
-const tokenEmitter = new EventEmitter(PushTokenManager);
+const tokenEmitter = new LegacyEventEmitter(PushTokenManager);
 const newTokenEventName = 'onDevicePushToken';
 
 /**
@@ -40,7 +40,7 @@ const newTokenEventName = 'onDevicePushToken';
  * }
  * ```
  */
-export function addPushTokenListener(listener: PushTokenListener): Subscription {
+export function addPushTokenListener(listener: PushTokenListener): EventSubscription {
   const wrappingListener = ({ devicePushToken }) =>
     listener({ data: devicePushToken, type: Platform.OS });
   return tokenEmitter.addListener(newTokenEventName, wrappingListener);
@@ -51,6 +51,6 @@ export function addPushTokenListener(listener: PushTokenListener): Subscription 
  * @param subscription A subscription returned by `addPushTokenListener` method.
  * @header fetch
  */
-export function removePushTokenSubscription(subscription: Subscription) {
-  tokenEmitter.removeSubscription(subscription);
+export function removePushTokenSubscription(subscription: EventSubscription) {
+  subscription.remove();
 }

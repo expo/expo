@@ -69,7 +69,7 @@ internal struct ManipulateOptions: Record {
 /**
  Possible options for flip action.
  */
-internal enum FlipType: String, EnumArgument {
+internal enum FlipType: String, Enumerable {
   case vertical
   case horizontal
 }
@@ -77,10 +77,11 @@ internal enum FlipType: String, EnumArgument {
 /**
  Enum with supported image formats.
  */
-internal enum ImageFormat: String, EnumArgument {
+internal enum ImageFormat: String, Enumerable {
   case jpeg
   case jpg
   case png
+  case webp
 
   var fileExtension: String {
     switch self {
@@ -88,6 +89,8 @@ internal enum ImageFormat: String, EnumArgument {
       return ".jpg"
     case .png:
       return ".png"
+    case .webp:
+      return ".webp"
     }
   }
 }

@@ -13,7 +13,6 @@
 		0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
-		142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		2066A861E6445B5BCEAB281C /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6713E5AC1CD25EAB11686B87 /* libPods-Expo Go.a */; };
 		2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
@@ -21,7 +20,6 @@
 		28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */; };
 		2D27CAA71656C7458DE5E8BA /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */; };
 		2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5265EA294998B5001BB2BB /* EXDevelopmentHomeLoader.m */; };
-		2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A60CC11587F645D0BF1C832F /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */; };
 		31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A592260B2F600662769 /* EXScopedSecureStore.m */; };
 		31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A602261C65A00662769 /* EXPermissionsManager.m */; };
@@ -33,74 +31,16 @@
 		3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */; };
 		318102BA20C15E460061726F /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74121FF6DADB001C764B /* EXLinkingManager.m */; };
 		319AC474255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 319AC473255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m */; };
-		31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AC2285B50D00F19090 /* AIRGoogleMapPolygon.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99DD2285B51100F19090 /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AD2285B50D00F19090 /* AIRGoogleMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99DE2285B51100F19090 /* AIRGoogleMapPolygonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99B42285B50D00F19090 /* AIRGoogleMapPolygonManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99DF2285B51100F19090 /* AIRGoogleMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99B92285B50E00F19090 /* AIRGoogleMapCalloutSubview.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E02285B51100F19090 /* AIRGoogleMapURLTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BC2285B50E00F19090 /* AIRGoogleMapURLTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E12285B51100F19090 /* AIRGoogleMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BE2285B50E00F19090 /* AIRGoogleMapUrlTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C02285B50E00F19090 /* AIRGoogleMapCallout.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E32285B51100F19090 /* AIRGoogleMapMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C12285B50E00F19090 /* AIRGoogleMapMarkerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E42285B51100F19090 /* AIRGoogleMapPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C32285B50F00F19090 /* AIRGoogleMapPolyline.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E52285B51100F19090 /* AIRGoogleMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C42285B50F00F19090 /* AIRGoogleMapOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E62285B51100F19090 /* AIRGoogleMapWMSTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C52285B50F00F19090 /* AIRGoogleMapWMSTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E72285B51100F19090 /* AIRGoogleMapCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C62285B50F00F19090 /* AIRGoogleMapCircle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E82285B51100F19090 /* AIRGoogleMapCalloutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C82285B50F00F19090 /* AIRGoogleMapCalloutManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99E92285B51100F19090 /* AIRGMSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99C92285B50F00F19090 /* AIRGMSMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CA2285B51000F19090 /* AIRGoogleMapCircleManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99EB2285B51100F19090 /* AIRGoogleMapMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CB2285B51000F19090 /* AIRGoogleMapMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99EC2285B51100F19090 /* RCTConvert+GMSMapViewType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CC2285B51000F19090 /* RCTConvert+GMSMapViewType.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99ED2285B51100F19090 /* AIRGoogleMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CE2285B51000F19090 /* AIRGoogleMapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99EE2285B51100F19090 /* AIRGoogleMapWMSTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D12285B51000F19090 /* AIRGoogleMapWMSTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99EF2285B51100F19090 /* AIRGMSPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D32285B51000F19090 /* AIRGMSPolygon.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99F02285B51100F19090 /* AIRGoogleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D42285B51000F19090 /* AIRGoogleMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99F12285B51100F19090 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D52285B51100F19090 /* AIRGoogleMapPolylineManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99F22285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D72285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99F32285B51100F19090 /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D82285B51100F19090 /* AIRDummyView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD99F42285B51100F19090 /* AIRGMSPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99DA2285B51100F19090 /* AIRGMSPolyline.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A332285B53100F19090 /* AIRMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F62285B52B00F19090 /* AIRMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A342285B53100F19090 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F72285B52C00F19090 /* AIRMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A352285B53100F19090 /* AIRMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F82285B52C00F19090 /* AIRMapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A362285B53100F19090 /* AIRMapLocalTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99FA2285B52C00F19090 /* AIRMapLocalTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A372285B53100F19090 /* AIRMapMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99FB2285B52C00F19090 /* AIRMapMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A382285B53100F19090 /* AIRMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99FF2285B52C00F19090 /* AIRMapPolygon.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A392285B53100F19090 /* AIRMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A002285B52C00F19090 /* AIRMapOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3A2285B53100F19090 /* AIRMapPolygonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A012285B52C00F19090 /* AIRMapPolygonManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3B2285B53100F19090 /* AIRMapCalloutSubviewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A062285B52D00F19090 /* AIRMapCalloutSubviewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3C2285B53100F19090 /* AIRMapCircleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A072285B52D00F19090 /* AIRMapCircleManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3D2285B53100F19090 /* AIRMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A092285B52D00F19090 /* AIRMapPolylineManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A0A2285B52D00F19090 /* AIRMapCoordinate.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A3F2285B53100F19090 /* AIRMapPolylineRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A0C2285B52D00F19090 /* AIRMapPolylineRenderer.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A402285B53100F19090 /* AIRMapCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A0D2285B52D00F19090 /* AIRMapCircle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A412285B53100F19090 /* AIRMapMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A132285B52E00F19090 /* AIRMapMarkerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A152285B52E00F19090 /* AIRMapLocalTileOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A432285B53100F19090 /* AIRMapOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A1C2285B52F00F19090 /* AIRMapOverlayRenderer.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A442285B53100F19090 /* AIRMapCalloutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A1D2285B52F00F19090 /* AIRMapCalloutManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A452285B53100F19090 /* AIRMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A1E2285B52F00F19090 /* AIRMapUrlTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A462285B53100F19090 /* AIRMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A1F2285B52F00F19090 /* AIRMapCalloutSubview.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A472285B53100F19090 /* AIRMapWMSTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A202285B52F00F19090 /* AIRMapWMSTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A482285B53100F19090 /* AIRMapUrlTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A222285B53000F19090 /* AIRMapUrlTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A492285B53100F19090 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A242285B53000F19090 /* SMCalloutView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4A2285B53100F19090 /* AIRWeakTimerReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A292285B53000F19090 /* AIRWeakTimerReference.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4B2285B53100F19090 /* AIRMapWMSTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A2C2285B53000F19090 /* AIRMapWMSTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4C2285B53100F19090 /* AIRWeakMapReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A2D2285B53000F19090 /* AIRWeakMapReference.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4D2285B53100F19090 /* RCTConvert+AirMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A2E2285B53100F19090 /* RCTConvert+AirMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4E2285B53100F19090 /* AIRMapPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A302285B53100F19090 /* AIRMapPolyline.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A4F2285B53100F19090 /* AIRMapCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A312285B53100F19090 /* AIRMapCallout.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		31AD9A502285B53100F19090 /* AIRMapLocalTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A322285B53100F19090 /* AIRMapLocalTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E44FBE20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m */; };
 		31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
-		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
-		8704B111C11841D78D77E3E7 /* RNDateTimePickerShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76E808C4949F497592E26673 /* RNDateTimePickerShadowView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
 		8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */; };
@@ -108,7 +48,6 @@
 		8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */; };
 		87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
-		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
@@ -194,10 +133,7 @@
 		BAF227C84082AD4EF8643DE2 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
-		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */; };
 		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
@@ -213,7 +149,6 @@
 		F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F7433D24ABECD500EA5023 /* AppDelegate.swift */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */; };
-		FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B3AC83321C444B879BD737 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
 		FCB4079725C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */; };
@@ -274,8 +209,6 @@
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
 		0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
-		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
 		1A7952F30F72271C821848D7 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -429,25 +362,19 @@
 		31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDeviceInstallationUUIDService.m; sourceTree = "<group>"; };
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedView.m; sourceTree = "<group>"; };
-		36B3AC83321C444B879BD737 /* RNCPickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerManager.m; sourceTree = "<group>"; };
 		36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRMapUrlTileCachedOverlay.m; sourceTree = "<group>"; };
-		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedViewManager.h; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
 		6713E5AC1CD25EAB11686B87 /* libPods-Expo Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C7BA917106C42AEA7813785 /* RNDateTimePickerShadowView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerShadowView.h; sourceTree = "<group>"; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		76E808C4949F497592E26673 /* RNDateTimePickerShadowView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePickerShadowView.m; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Expo Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expo Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78D82525204E8F9C00CBD9D9 /* EXApiV2Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Client.h; sourceTree = "<group>"; };
 		78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Client.m; sourceTree = "<group>"; };
 		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
 		78D82529204F826700CBD9D9 /* EXApiV2Result.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Result.m; sourceTree = "<group>"; };
-		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedViewManager.m; sourceTree = "<group>"; };
 		837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionedNetworkInterceptor.h; sourceTree = "<group>"; };
 		837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXVersionedNetworkInterceptor.m; sourceTree = "<group>"; };
 		83BF8C0E87795C6808128A31 /* Pods-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
@@ -473,7 +400,6 @@
 		A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenHUDButton.h; sourceTree = "<group>"; };
 		A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
-		A60CC11587F645D0BF1C832F /* RNCPicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPicker.m; sourceTree = "<group>"; };
 		A6EAF60D92D03B190DFCD5D2 /* Pods-Expo Go-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.release.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
 		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
@@ -634,13 +560,7 @@
 		BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFontLoader.h; sourceTree = "<group>"; };
 		BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFontLoader.m; sourceTree = "<group>"; };
 		C279B31A23EF096F3969DAD5 /* Pods-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
-		C81E8BFA54234873A380A1F9 /* RNCPickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPickerManager.h; sourceTree = "<group>"; };
-		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePicker.m; sourceTree = "<group>"; };
-		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePickerManager.m; sourceTree = "<group>"; };
-		DC399A3FAB604717AA140A63 /* RNCPickerLabel.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPickerLabel.h; sourceTree = "<group>"; };
-		DF1B991D1D1D4B59AEFEAB9E /* RNCPicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPicker.h; sourceTree = "<group>"; };
-		E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerLabel.m; sourceTree = "<group>"; };
-		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
+		CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
 		F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureInterceptor.h; sourceTree = "<group>"; };
@@ -712,19 +632,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		07CB4DC626045AF50057443E /* Picker */ = {
-			isa = PBXGroup;
-			children = (
-				DF1B991D1D1D4B59AEFEAB9E /* RNCPicker.h */,
-				A60CC11587F645D0BF1C832F /* RNCPicker.m */,
-				DC399A3FAB604717AA140A63 /* RNCPickerLabel.h */,
-				E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */,
-				C81E8BFA54234873A380A1F9 /* RNCPickerManager.h */,
-				36B3AC83321C444B879BD737 /* RNCPickerManager.m */,
-			);
-			path = Picker;
-			sourceTree = "<group>";
-		};
 		07CB4DCD26045B010057443E /* SegmentedControl */ = {
 			isa = PBXGroup;
 			children = (
@@ -823,17 +730,6 @@
 			path = ViewShot;
 			sourceTree = "<group>";
 		};
-		6999211AF26A46738FB9E106 /* MaskedView */ = {
-			isa = PBXGroup;
-			children = (
-				EE5757442E5343FAAC728C45 /* RNCMaskedView.h */,
-				35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */,
-				476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */,
-				78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */,
-			);
-			path = MaskedView;
-			sourceTree = "<group>";
-		};
 		78B070920855541A4D469D4D /* ExponentIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -882,6 +778,7 @@
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
 				8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */,
+				CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -1312,11 +1209,8 @@
 			isa = PBXGroup;
 			children = (
 				07CB4DCD26045B010057443E /* SegmentedControl */,
-				07CB4DC626045AF50057443E /* Picker */,
 				B5FB72BC1FF6DADB001C764B /* GoogleMaps */,
 				B5FB72E61FF6DADB001C764B /* Maps */,
-				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
-				6999211AF26A46738FB9E106 /* MaskedView */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1525,19 +1419,6 @@
 			name = "Expo Go";
 			sourceTree = "<group>";
 		};
-		E3BD4F6E1BF543B697AFB794 /* DateTimePicker */ = {
-			isa = PBXGroup;
-			children = (
-				10B9AA823F57466698858869 /* RNDateTimePicker.h */,
-				D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */,
-				12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */,
-				D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */,
-				6C7BA917106C42AEA7813785 /* RNDateTimePickerShadowView.h */,
-				76E808C4949F497592E26673 /* RNDateTimePickerShadowView.m */,
-			);
-			path = DateTimePicker;
-			sourceTree = "<group>";
-		};
 		F12A1AB722ABD461008542C6 /* Build-Phases */ = {
 			isa = PBXGroup;
 			children = (
@@ -1738,6 +1619,7 @@
 				B287BB2427DD909C008DA282 /* expo-root.pem in Resources */,
 				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
+				CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */,
@@ -1857,32 +1739,58 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/ExpoTaskManager_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64_x86_64-simulator/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnections.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentSheet/StripePaymentSheet.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/StripePayments.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/StripeBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCoreBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnectionsBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentSheet/StripePaymentSheetBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/StripePaymentsBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/Stripe3DS2.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentsUI/StripePaymentsUI.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICore.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentsUI/StripePaymentsUIBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICoreBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoTaskManager_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnections.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentSheet.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePayments.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCoreBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnectionsBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentSheetBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe3DS2.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsUI.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICore.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsUIBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICoreBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1995,32 +1903,58 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/ExpoTaskManager_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64_x86_64-simulator/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnections.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentSheet/StripePaymentSheet.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/StripePayments.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/StripeBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCoreBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeFinancialConnections/StripeFinancialConnectionsBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentSheet/StripePaymentSheetBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/StripePaymentsBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripePayments/Stripe3DS2.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentsUI/StripePaymentsUI.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICore.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripePaymentsUI/StripePaymentsUIBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICoreBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoTaskManager_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnections.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentSheet.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePayments.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCoreBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeFinancialConnectionsBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentSheetBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe3DS2.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsUI.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICore.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripePaymentsUIBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICoreBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2057,63 +1991,42 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */,
-				31AD9A382285B53100F19090 /* AIRMapPolygon.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
+				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
-				31AD9A3B2285B53100F19090 /* AIRMapCalloutSubviewManager.m in Sources */,
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
-				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
-				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
 				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
-				31AD9A4A2285B53100F19090 /* AIRWeakTimerReference.m in Sources */,
-				31AD9A342285B53100F19090 /* AIRMap.m in Sources */,
-				31AD99E02285B51100F19090 /* AIRGoogleMapURLTileManager.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
-				31AD99E82285B51100F19090 /* AIRGoogleMapCalloutManager.m in Sources */,
-				31AD99E32285B51100F19090 /* AIRGoogleMapMarkerManager.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
 				B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */,
-				31AD9A3F2285B53100F19090 /* AIRMapPolylineRenderer.m in Sources */,
 				07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */,
-				31AD99EF2285B51100F19090 /* AIRGMSPolygon.m in Sources */,
 				319AC474255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m in Sources */,
-				31AD99EE2285B51100F19090 /* AIRGoogleMapWMSTile.m in Sources */,
-				31AD9A4F2285B53100F19090 /* AIRMapCallout.m in Sources */,
 				B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */,
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
-				31AD9A332285B53100F19090 /* AIRMapOverlayManager.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */,
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
-				31AD99ED2285B51100F19090 /* AIRGoogleMapManager.m in Sources */,
-				31AD9A352285B53100F19090 /* AIRMapManager.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
 				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
 				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,
-				31AD9A3A2285B53100F19090 /* AIRMapPolygonManager.m in Sources */,
 				318102BA20C15E460061726F /* EXLinkingManager.m in Sources */,
-				31AD99E62285B51100F19090 /* AIRGoogleMapWMSTileManager.m in Sources */,
-				31AD9A4E2285B53100F19090 /* AIRMapPolyline.m in Sources */,
 				3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */,
 				31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */,
 				FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */,
-				31AD99EC2285B51100F19090 /* RCTConvert+GMSMapViewType.m in Sources */,
-				31AD99E42285B51100F19090 /* AIRGoogleMapPolyline.m in Sources */,
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */,
-				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */,
@@ -2121,13 +2034,9 @@
 				31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
-				31AD99E52285B51100F19090 /* AIRGoogleMapOverlay.m in Sources */,
-				31AD99F42285B51100F19090 /* AIRGMSPolyline.m in Sources */,
 				B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */,
 				B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */,
 				314791F02551CF2A00A81BA1 /* EXScopedServerRegistrationModule.m in Sources */,
-				31AD9A372285B53100F19090 /* AIRMapMarker.m in Sources */,
-				31AD9A492285B53100F19090 /* SMCalloutView.m in Sources */,
 				F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */,
 				78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */,
 				F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */,
@@ -2137,81 +2046,51 @@
 				A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
-				31AD99E72285B51100F19090 /* AIRGoogleMapCircle.m in Sources */,
 				31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */,
 				A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */,
 				87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */,
 				F138E0D62A5F2090002E15BC /* ExpoGoModule.swift in Sources */,
-				31AD99DE2285B51100F19090 /* AIRGoogleMapPolygonManager.m in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
 				31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */,
 				B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */,
 				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
-				31AD99E92285B51100F19090 /* AIRGMSMarker.m in Sources */,
-				31AD9A472285B53100F19090 /* AIRMapWMSTile.m in Sources */,
-				31AD9A392285B53100F19090 /* AIRMapOverlay.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
-				31AD99F22285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
 				FCB4079725C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m in Sources */,
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
-				31AD9A442285B53100F19090 /* AIRMapCalloutManager.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
-				31AD9A502285B53100F19090 /* AIRMapLocalTile.m in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
-				31AD99F32285B51100F19090 /* AIRDummyView.m in Sources */,
-				31AD9A4C2285B53100F19090 /* AIRWeakMapReference.m in Sources */,
 				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
 				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
-				31AD9A3C2285B53100F19090 /* AIRMapCircleManager.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.m in Sources */,
-				31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
-				31AD9A3D2285B53100F19090 /* AIRMapPolylineManager.m in Sources */,
-				31AD9A432285B53100F19090 /* AIRMapOverlayRenderer.m in Sources */,
-				31AD99F02285B51100F19090 /* AIRGoogleMap.m in Sources */,
-				31AD9A412285B53100F19090 /* AIRMapMarkerManager.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
 				837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */,
-				31AD9A4D2285B53100F19090 /* RCTConvert+AirMap.m in Sources */,
 				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */,
 				2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
-				31AD99DD2285B51100F19090 /* AIRGoogleMapOverlayManager.m in Sources */,
 				F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */,
-				31AD9A482285B53100F19090 /* AIRMapUrlTileManager.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
-				31AD9A452285B53100F19090 /* AIRMapUrlTile.m in Sources */,
-				31AD9A402285B53100F19090 /* AIRMapCircle.m in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
-				31AD99E12285B51100F19090 /* AIRGoogleMapUrlTile.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
-				31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */,
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
-				31AD99EB2285B51100F19090 /* AIRGoogleMapMarker.m in Sources */,
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
 				B2E2CCD02AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */,
-				31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */,
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
-				31AD99F12285B51100F19090 /* AIRGoogleMapPolylineManager.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
-				31AD9A4B2285B53100F19090 /* AIRMapWMSTileManager.m in Sources */,
-				31AD9A362285B53100F19090 /* AIRMapLocalTileManager.m in Sources */,
 				B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */,
-				31AD9A462285B53100F19090 /* AIRMapCalloutSubview.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
-				31AD99DF2285B51100F19090 /* AIRGoogleMapCalloutSubview.m in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
@@ -2221,21 +2100,10 @@
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
-				88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */,
-				BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */,
-				78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */,
-				D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */,
-				C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */,
-				50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */,
 				8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */,
 				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */,
-				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
-				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
-				FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */,
-				142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */,
-				8704B111C11841D78D77E3E7 /* RNDateTimePickerShadowView.m in Sources */,
 				ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2470,6 +2338,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2538,6 +2407,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",

@@ -119,7 +119,10 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         projectRoot: options.projectRoot,
         publicPath,
     }));
-    return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
+    return {
+        artifacts: [...jsAssets, ...cssDeps],
+        assets: metroAssets,
+    };
 }
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
@@ -167,7 +170,7 @@ class Chunk {
                 },
                 sourceMapUrl: undefined,
                 debugId: undefined,
-            });
+            }).code;
     }
     getFilenameForConfig(serializerConfig) {
         return this.getFilename(this.getStableChunkSource(serializerConfig));
@@ -184,12 +187,12 @@ class Chunk {
             modulesOnly: this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
-            splitChunks: (0, baseJSBundle_1.getSplitChunksOption)(this.graph, this.options),
+            splitChunks: !!this.options.serializerOptions?.splitChunks,
             skipWrapping: true,
             computedAsyncModulePaths: null,
             ...options,
         });
-        return (0, bundleToString_1.default)(jsSplitBundle).code;
+        return { code: (0, bundleToString_1.default)(jsSplitBundle).code, paths: jsSplitBundle.paths };
     }
     hasAbsolutePath(absolutePath) {
         return [...this.deps].some((module) => module.path === absolutePath);
@@ -206,8 +209,14 @@ class Chunk {
                 if (dependency.data.data.asyncType) {
                     const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
-                    const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
-                    computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+                    // NOTE(kitten): We shouldn't have any async imports on non-async chunks
+                    // However, due to how chunks merge, some async imports may now be pointing
+                    // at entrypoint (or vendor) chunks. We omit the path so that the async import
+                    // helper doesn't reload and reevaluate the entrypoint.
+                    if (chunkContainingModule.isAsync) {
+                        const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+                        computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+                    }
                 }
             });
         });
@@ -224,7 +233,8 @@ class Chunk {
         if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
             return this.options.sourceMapUrl ?? null;
         }
-        const isAbsolute = this.getPlatform() !== 'web';
+        const platform = this.getPlatform();
+        const isAbsolute = platform !== 'web';
         const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options);
         const filename = this.getFilenameForConfig(serializerConfig);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
@@ -245,6 +255,10 @@ class Chunk {
             return parsed.pathname;
         }
         catch (error) {
+            // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+            if (!this.options.dev && isAbsolute) {
+                return adjustedSourceMapUrl;
+            }
             console.error(`Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`, error);
             return null;
         }
@@ -285,8 +299,22 @@ class Chunk {
                 // Provide a list of module paths that can be used for matching chunks to routes.
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
+                paths: jsCode.paths,
+                reactClientReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('reactClientReference' in output.data &&
+                                typeof output.data.reactClientReference === 'string') {
+                                return output.data.reactClientReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
-            source: jsCode,
+            source: jsCode.code,
         };
         const assets = [jsAsset];
         const mutateSourceMapWithDebugId = (sourceMap) => {
@@ -409,12 +437,11 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
         }
     }
     chunks.add(entryChunk);
-    const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
             if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
-                splitChunks) {
+                entryChunk.options.serializerOptions?.splitChunks !== false) {
                 gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);
             }
             else {

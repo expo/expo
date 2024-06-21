@@ -8,6 +8,56 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fix an issue where the app will crash when using the popover presentation style on iPad. ([#29892](https://github.com/expo/expo/pull/29892) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 15.0.6 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- Support removing microphone permissions through config plugin. ([#29749](https://github.com/expo/expo/pull/29749) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Add support for granular permissions. ([#28897](https://github.com/expo/expo/pull/28897) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.3 — 2024-04-29
+
+### 🎉 New features
+
+- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android. ([#28514](https://github.com/expo/expo/pull/28514) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
+- On Android, fixed an issue where multiple pickers could be opened, causing a crash. ([#28509](https://github.com/expo/expo/pull/28509) by [@haileyok](https://github.com/haileyok))
+
+## 15.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed an issue where cropped images were not returning file size and file name on Android. ([#28352](https://github.com/expo/expo/pull/28352) by [@fobos531](https://github.com/fobos531))
+
+## 15.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
 - On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
 
 ### 💡 Others
@@ -15,6 +65,7 @@
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Convert WEBP to PNG instead JPEG when selecting an item in the Media Library with editing enabled. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
 - Receiving a correct file extension for WEBP files instead `.jpeg` in the ImagePicker result. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 14.7.1 - 2023-12-19
 

@@ -18,7 +18,14 @@ function isSimControlDevice(item: AnyDevice): item is SimControl.Device {
 export function formatDeviceChoice(item: AnyDevice): { title: string; value: string } {
   const isConnected = isConnectedDevice(item) && item.deviceType === 'device';
   const isActive = isSimControlDevice(item) && item.state === 'Booted';
-  const symbol = isConnected ? (item.connectionType === 'Network' ? '🌐 ' : '🔌 ') : '';
+  const symbol =
+    item.osType === 'macOS'
+      ? '🖥️  '
+      : isConnected
+        ? item.connectionType === 'Network'
+          ? '🌐 '
+          : '🔌 '
+        : '';
   const format = isActive ? chalk.bold : (text: string) => text;
   return {
     title: `${symbol}${format(item.name)}${

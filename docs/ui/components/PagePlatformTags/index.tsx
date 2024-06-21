@@ -1,4 +1,4 @@
-import { Tag } from '~/ui/components/Tag';
+import { PlatformTag } from '~/ui/components/Tag';
 import { FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -14,9 +14,9 @@ export function PagePlatformTags({ platforms }: Props) {
         .map(platform => {
           if (platform.includes('*')) {
             return (
-              <Tooltip.Root>
-                <Tooltip.Trigger key={platform} className="cursor-default">
-                  <Tag name={platform} className="!rounded-full" />
+              <Tooltip.Root key={platform}>
+                <Tooltip.Trigger className="cursor-default">
+                  <PlatformTag platform={platform} className="!rounded-full !px-2.5" />
                 </Tooltip.Trigger>
                 <Tooltip.Content side="bottom">
                   {platform.startsWith('android') && (
@@ -27,7 +27,9 @@ export function PagePlatformTags({ platforms }: Props) {
               </Tooltip.Root>
             );
           }
-          return <Tag name={platform} key={platform} className="!rounded-full" />;
+          return (
+            <PlatformTag platform={platform} key={platform} className="!rounded-full !px-2.5" />
+          );
         })}
     </div>
   );

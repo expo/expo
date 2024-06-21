@@ -1,11 +1,11 @@
 ---
 title: Glossary of terms
-description: List of non-obvious terms used withing the documentation, related to Expo or cross-platform development in general.
+description: List of non-obvious terms used within the documentation, related to Expo or cross-platform development in general.
 ---
 
 ### Android
 
-The mobile operating system sponsored by Google for use with **Android** devices.
+The mobile operating system that is sponsored by Google for use with **Android** devices.
 
 ### App config
 
@@ -23,7 +23,7 @@ An [app config](#app-config) file.
 
 ### Apple capabilities
 
-Cloud services provided by Apple. These services must be enabled for an application in the [Apple Developer Portal](#apple-developer-portal).
+Cloud services that are provided by Apple. These services must be enabled for an application in the [Apple Developer Portal](#apple-developer-portal).
 
 ### Apple Developer Portal
 
@@ -56,7 +56,7 @@ A JavaScript runtime and a drop-in alternative for Node.js. For more information
 
 ### CocoaPods
 
-The iOS package manager used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** and updated when a user runs `pod install` in the **ios** directory.
+The iOS package manager that is used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** and updated when a user runs `pod install` in the **ios** directory.
 
 ### Community Autolinking
 
@@ -80,13 +80,7 @@ A process for building an Expo app where your native projects files (for example
 
 ### create-expo-app
 
-A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed.
-
-This package can be used by running any of the following commands:
-
-- `npx create-expo-app`
-- `yarn create expo-app`
-- `npm create expo-app`
+A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed. See [`create-expo-app` reference](/more/create-expo/) for more information.
 
 ### create-react-native-app
 
@@ -114,7 +108,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### EAS
 
-[Expo Application Services (EAS)](/eas) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
 
 ### EAS CLI
 
@@ -143,11 +137,11 @@ The entry point usually refers to the initial JavaScript file used to load an ap
 
 ### Experience
 
-A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
+A synonym for an app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
 ### Expo Autolinking
 
-The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
+The original [Autolinking](#autolinking) system is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
 
 ### Expo CLI
 
@@ -185,7 +179,7 @@ A collection of [npm](#npm) packages containing [native modules](#native-module)
 
 ### Expo start
 
-Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to to interact with the [Metro bundler](#metro-bundler).
+Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to interact with the [Metro bundler](#metro-bundler).
 
 ### Fabric
 
@@ -193,7 +187,7 @@ The React Native rendering system is used to create and manage native views. Thi
 
 ### Flipper
 
-A mobile app debugger. We do not enable Flipper in the default [Prebuild](#prebuild) template due to instability concerns. For more information, see [Flipper documentation](https://fbflipper.com/).
+A mobile app debugger used internally at Meta. It was previously recommended for use with React Native, but the integration is now deprecated and no longer supported by the React Native team [(RFC-0641)](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0641-decoupling-flipper-from-react-native-core.md).
 
 ### FYI
 
@@ -229,11 +223,11 @@ Linking can mean [deep linking into apps similar to how you link to websites on 
 
 ### Local Expo CLI
 
-The package `@expo/cli` is installed with the `expo` package. This is sometimes referred to as the "Versioned Expo CLI" because it is installed inside of the user's project as opposed to the now deprecated `expo-cli` which was installed globally.
+The package `@expo/cli` is installed with the `expo` package. This is sometimes referred to as the "Versioned Expo CLI" because it is installed inside the user's project as opposed to the now deprecated `expo-cli` which was installed globally.
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest). It provides information that Expo Go needs to know how to run the app and other relevant data. For more information, see [Expo Go](/get-started/expo-go/#manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest). It provides information that Expo Go needs to know how to run the app and other relevant data.
 
 ### Meta
 
@@ -273,7 +267,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Platform extensions
 
-Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **./index.js** file and a **./index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enables users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **.index.js** file and a **.index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
@@ -291,7 +285,7 @@ See [Prebuild template](#prebuild-template) and [Autolinking](#autolinking) for 
 
 ### Prebuild template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
@@ -307,7 +301,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native Web
 
-A high-performing abstraction on top of `react-dom` that enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (RNW) was developed at X (Twitter) and is currently used for their [main website](https://x.com). [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
+A high-performing abstraction on top of `react-dom` that enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (RNW) was developed at X and is currently used for their [main website](https://x.com). [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
 
 ### React Navigation
 
@@ -315,7 +309,7 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 ### Remote Debugging
 
-Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit is that you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
 
 ### Simulator
 
@@ -323,7 +317,7 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [**app.json**](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
+`slug` in the [app config]((#appjson) is a URL-friendly name for your project. It is unique across your Expo account.
 
 ### Snack
 
@@ -331,7 +325,7 @@ We use the word "slug" in [**app.json**](#appjson) to refer to the name to use f
 
 ### Software Mansion
 
-A development agency in Krakow, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is comprised of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
+A development agency in Kraków, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is composed of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
 
 ### Standalone app
 

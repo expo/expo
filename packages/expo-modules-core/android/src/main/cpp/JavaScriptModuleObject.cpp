@@ -3,10 +3,12 @@
 #include "JavaScriptModuleObject.h"
 #include "JSIContext.h"
 #include "JSIUtils.h"
+#include "EventEmitter.h"
 #include "SharedObject.h"
 #include "NativeModule.h"
 
 #include <folly/dynamic.h>
+#include <jni.h>
 #include <jsi/JSIDynamic.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <fbjni/detail/Hybrid.h>
@@ -35,7 +37,7 @@ void decorateObjectWithFunctions(
     jsObject->setProperty(
       runtime,
       jsi::String::createFromUtf8(runtime, name),
-      jsi::Value(runtime, *method.toJSFunction(runtime))
+      jsi::Value(runtime, *method->toJSFunction(runtime))
     );
   }
 }
@@ -52,12 +54,12 @@ void decorateObjectWithProperties(
     descriptor.setProperty(
       runtime,
       "get",
-      jsi::Value(runtime, *getter.toJSFunction(runtime))
+      jsi::Value(runtime, *getter->toJSFunction(runtime))
     );
     descriptor.setProperty(
       runtime,
       "set",
-      jsi::Value(runtime, *setter.toJSFunction(runtime))
+      jsi::Value(runtime, *setter->toJSFunction(runtime))
     );
     common::defineProperty(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
@@ -78,7 +80,7 @@ void decorateObjectWithConstants(
 
 jni::local_ref<jni::HybridClass<JavaScriptModuleObject>::jhybriddata>
 JavaScriptModuleObject::initHybrid(jni::alias_ref<jhybridobject> jThis) {
-  return makeCxxInstance(jThis);
+  return makeCxxInstance();
 }
 
 void JavaScriptModuleObject::registerNatives() {
@@ -141,16 +143,23 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
   for (auto &[name, classInfo]: classes) {
     auto &[classRef, constructor, ownerClass] = classInfo;
     auto classObject = classRef->cthis();
-
+    auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
     auto klass = SharedObject::createClass(
       runtime,
       name.c_str(),
-      [classObject, &constructor = constructor](
+      [classObject, weakConstructor = std::move(weakConstructor)](
         jsi::Runtime &runtime,
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
       ) -> jsi::Value {
+        // We need to check if the constructor is still alive.
+        // If not we can just ignore the call. We're destroying the module.
+        auto ctr = weakConstructor.lock();
+        if (ctr == nullptr) {
+          return jsi::Value::undefined();
+        }
+
         auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
         decorateObjectWithProperties(runtime, thisObject.get(),
                                      classObject);
@@ -162,7 +171,7 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
           * all LocalReferences are deleted.
           */
           jni::JniLocalScope scope(env, (int) count);
-          auto result = constructor.callJNISync(
+          auto result = ctr->callJNISync(
             env,
             runtime,
             thisValue,
@@ -227,6 +236,10 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
   }
 }
 
+std::weak_ptr<jsi::Object> JavaScriptModuleObject::getCachedJSIObject() {
+  return jsiObject;
+}
+
 void JavaScriptModuleObject::exportConstants(
   jni::alias_ref<react::NativeMap::javaobject> constants
 ) {
@@ -245,15 +258,14 @@ void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-
-  methodsMetadata.try_emplace(
+  auto methodMetadata = std::make_shared<MethodMetadata>(
     cName,
-    cName,
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
+  methodsMetadata.insert_or_assign(cName, std::move(methodMetadata));
 }
 
 void JavaScriptModuleObject::registerAsyncFunction(
@@ -263,15 +275,14 @@ void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-
-  methodsMetadata.try_emplace(
+  auto methodMetadata = std::make_shared<MethodMetadata>(
     cName,
-    cName,
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     true,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
+  methodsMetadata.insert_or_assign(cName, std::move(methodMetadata));
 }
 
 void JavaScriptModuleObject::registerClass(
@@ -283,9 +294,9 @@ void JavaScriptModuleObject::registerClass(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-  MethodMetadata constructor(
+  auto constructor = std::make_shared<MethodMetadata>(
     "constructor",
-    takesOwner,
+    takesOwner & 0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
@@ -320,17 +331,17 @@ void JavaScriptModuleObject::registerProperty(
 ) {
   auto cName = name->toStdString();
 
-  auto getterMetadata = MethodMetadata(
+  auto getterMetadata = make_shared<MethodMetadata>(
     cName,
-    getterTakesOwner,
+    getterTakesOwner & 0x1, // We're unsure if getterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(getterExpectedArgsTypes),
     jni::make_global(getter)
   );
 
-  auto setterMetadata = MethodMetadata(
+  auto setterMetadata = make_shared<MethodMetadata>(
     cName,
-    setterTakesOwner,
+    setterTakesOwner & 0x1, // We're unsure if setterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
     false,
     jni::make_local(setterExpectedArgsTypes),
     jni::make_global(setter)
@@ -341,10 +352,6 @@ void JavaScriptModuleObject::registerProperty(
     std::move(setterMetadata)
   );
 
-  properties.insert({cName, std::move(functions)});
-}
-
-JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
-  : javaPart_(jni::make_global(jThis)) {
+  properties.insert_or_assign(cName, std::move(functions));
 }
 } // namespace expo

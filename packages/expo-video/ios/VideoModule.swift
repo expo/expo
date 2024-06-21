@@ -6,8 +6,11 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
-    Function("isPictureInPictureSupported") {
-      return AVPictureInPictureController.isPictureInPictureSupported()
+    Function("isPictureInPictureSupported") { () -> Bool in
+      if #available(iOS 13.4, tvOS 14.0, *) {
+        return AVPictureInPictureController.isPictureInPictureSupported()
+      }
+      return false
     }
 
     View(VideoView.self) {
@@ -22,6 +25,10 @@ public final class VideoModule: Module {
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
         view.playerViewController.showsPlaybackControls = nativeControls ?? true
+        #if os(tvOS)
+        view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
+        view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
+        #endif
       }
 
       Prop("contentFit") { (view, contentFit: VideoContentFit?) in
@@ -40,11 +47,15 @@ public final class VideoModule: Module {
       }
 
       Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
       }
 
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true
+        #endif
       }
 
       Prop("requiresLinearPlayback") { (view, requiresLinearPlayback: Bool?) in
@@ -56,7 +67,9 @@ public final class VideoModule: Module {
       }
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+        #if !os(tvOS)
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+        #endif
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -77,34 +90,28 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource) -> VideoPlayer in
+      Constructor { (source: VideoSource?) -> VideoPlayer in
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
-        if let url = source.uri {
-          let asset = AVURLAsset(url: url)
-
-          if let drm = source.drm {
-            try drm.type.assertIsSupported()
-            videoPlayer.contentKeyManager.addContentKeyRequest(videoSource: source, asset: asset)
-          }
-          let playerItem = AVPlayerItem(asset: asset)
-          player.replaceCurrentItem(with: playerItem)
-        }
-
+        try videoPlayer.replaceCurrentItem(with: source)
         player.pause()
         return videoPlayer
       }
 
       Property("playing") { player -> Bool in
-        return player.pointer.timeControlStatus == .playing
+        return player.isPlaying
       }
 
       Property("muted") { player -> Bool in
-        return player.pointer.isMuted
+        return player.isMuted
       }
       .set { (player, muted: Bool) in
-        player.pointer.isMuted = muted
+        player.isMuted = muted
+      }
+
+      Property("currentTime") { player -> Double in
+        return player.pointer.currentTime().seconds
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -131,11 +138,19 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("duration") { player -> Double in
+        return player.pointer.currentItem?.duration.seconds ?? 0
+      }
+
       Property("playbackRate") { player -> Float in
         return player.playbackRate
       }
       .set { (player, playbackRate: Float) in
         player.playbackRate = playbackRate
+      }
+
+      Property("isLive") { player -> Bool in
+        return player.pointer.currentItem?.duration.isIndefinite ?? false
       }
 
       Property("preservesPitch") { player -> Bool in
@@ -145,11 +160,22 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
+      Property("showNowPlayingNotification") { player -> Bool in
+        return player.showNowPlayingNotification
+      }
+      .set {(player, showNowPlayingNotification: Bool) in
+        player.showNowPlayingNotification = showNowPlayingNotification
+      }
+
+      Property("status") { player in
+        return player.status.rawValue
+      }
+
       Property("volume") { player -> Float in
-        return player.pointer.volume
+        return player.volume
       }
       .set { (player, volume: Float) in
-        player.pointer.volume = volume
+        player.volume = volume
       }
 
       Function("play") { player in
@@ -160,11 +186,15 @@ public final class VideoModule: Module {
         player.pointer.pause()
       }
 
-      Function("replace") { (player, source: Either<String, VideoSource>) in
+      Function("replace") { (player, source: Either<String, VideoSource>?) in
+        guard let source else {
+          try player.replaceCurrentItem(with: nil)
+          return
+        }
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {
-          videoSource = VideoSource(uri: Field(wrappedValue: URL(string: url)))
+          videoSource = VideoSource(uri: URL(string: url))
         } else if source.is(VideoSource.self) {
           videoSource = source.get()
         }

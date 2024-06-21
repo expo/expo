@@ -25,7 +25,7 @@ const RESTRICTED_MANIFEST_FIELDS: (keyof ExpoConfig)[] = [
   'android',
   // Hide internal / build values
   'plugins',
-  'hooks',
+  'hooks' as any, // hooks no longer exists in the typescript type but should still be removed
   '_internal',
   // Remove metro-specific values
   'assetBundlePatterns',

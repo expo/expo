@@ -1,9 +1,9 @@
-import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
      * - `'all'` if the user granted your app access to the whole photo library
-     * - `'limited'` if the user granted your app access only to selected photos (only available on iOS 14.0+)
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
      * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
@@ -41,7 +41,7 @@ export type Asset = {
      */
     filename: string;
     /**
-     * URI that points to the asset. `assets://*` (iOS), `file://*` (Android)
+     * URI that points to the asset. `ph://*` (iOS), `file://*` (Android)
      */
     uri: string;
     /**
@@ -111,6 +111,10 @@ export type AssetInfo = Asset & {
      */
     orientation?: number;
 };
+/**
+ * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
+ * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * */
 export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
 export type MediaLibraryAssetInfoQueryOptions = {
     /**
@@ -257,7 +261,7 @@ export type PagedInfo<T> = {
 };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, EventSubscription as Subscription, };
 /**
  * Possible media types.
  */
@@ -426,8 +430,8 @@ export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<P
  * @return An [`Subscription`](#subscription) object that you can call `remove()` on when you would
  * like to unsubscribe the listener.
  */
-export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
-export declare function removeSubscription(subscription: Subscription): void;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): EventSubscription;
+export declare function removeSubscription(subscription: EventSubscription): void;
 /**
  * Removes all listeners.
  */

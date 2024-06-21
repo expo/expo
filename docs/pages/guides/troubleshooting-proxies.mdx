@@ -9,7 +9,7 @@ description: Learn about troubleshooting proxies with a set of recommended tools
 
 ### Overview
 
-To run this in the local iOS Simulator while on your corporate wi-fi network, a local proxy manager is required. This local proxy application, named [Charles](http://charlesproxy.com), is what our iOS Dev Team uses. Meet Charles, and get to know him. He is your friend.
+To run this in the local iOS Simulator while on your corporate Wi-Fi network, a local proxy manager is required. You can use a local proxy application such as [Charles](http://charlesproxy.com).
 
 #### Open macOS network preferences
 
@@ -37,7 +37,7 @@ To run this in the local iOS Simulator while on your corporate wi-fi network, a 
 7. Same for Secure Web Proxy (HTTPS). _Be sure to fill in the same proxy, username, and password address_ fields.
 8. In the text area for `Bypass external proxies for the following hosts:` enter:
 
-   ```
+   ```text
    localhost
    *.local
    ```
@@ -64,7 +64,7 @@ npm, git, Brew, Curl, and any other command line applications need proxy access 
 
 Open `~/.npmrc` and set:
 
-```ini
+```ini .npmrc
 http_proxy=http://localhost:8888
 https_proxy=http://localhost:8888
 ```
@@ -73,7 +73,7 @@ https_proxy=http://localhost:8888
 
 Open `~/.gitconfig` and set
 
-```ini
+```ini .gitconfig
 [http]
   proxy = http://localhost:8888
 [https]

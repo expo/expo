@@ -1,6 +1,6 @@
 {
   "name": "expo-test-runner",
-  "version": "0.0.18",
+  "version": "0.0.20",
   "description": "Script that enchants test experience.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -29,9 +29,9 @@
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@types/fs-extra": "^9.0.1",
-    "@types/node": "^16.18.11",
+    "@types/node": "^18.19.34",
     "@types/node-fetch": "^2.5.12",
-    "eslint-config-universe": "^12.0.0",
+    "eslint-config-universe": "^13.0.0",
     "expo-module-scripts": "^3.0.0",
     "typescript": "^5.1.3"
   },

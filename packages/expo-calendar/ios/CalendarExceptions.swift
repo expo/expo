@@ -20,7 +20,7 @@ internal class CalendarNotSavedException: GenericException<String> {
 
 internal class EntityNotSupportedException: GenericException<String?> {
   override var reason: String {
-    "Calendar entityType \(param) is not supported"
+    "Calendar entityType \(String(describing: param)) is not supported"
   }
 }
 
@@ -56,7 +56,7 @@ internal class ReminderNotFoundException: GenericException<String> {
 
 internal class InvalidCalendarEntityException: GenericException<String?> {
   override var reason: String {
-    "Calendar entityType \(param) is not supported"
+    "Calendar entityType \(String(describing: param)) is not supported"
   }
 }
 

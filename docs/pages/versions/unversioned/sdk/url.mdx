@@ -3,7 +3,7 @@ title: URL
 description: Standard URL API available on all Expo-supported platforms.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
 packageName: 'expo'
-platforms: ['android', 'ios', 'web']
+platforms: ['android', 'ios', 'web', 'tvos']
 ---
 
 The standard URL API is available on all Expo-supported platforms.
@@ -29,11 +29,10 @@ The only missing exception is that native platforms do not currently support [no
 Consider the following example:
 
 ```js
-console.log(new URL('http://🥓').toString())
+console.log(new URL('http://🥓').toString());
 ```
 
 This outputs the following:
+
 - Web, Node.js: `http://xn--pr9h/`
-- iOS, Android: `http://🥓/`
-
-
+- Android, iOS: `http://🥓/`

@@ -6,7 +6,7 @@ import { getListOfPackagesAsync, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { PackagesGraph, PackagesGraphNode } from '../../packages-graph';
-import { getMinReleaseTypeAsync, getPackageGitLogsAsync } from '../helpers';
+import { getMinReleaseType, getPackageGitLogsAsync } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { green } = chalk;
@@ -147,7 +147,7 @@ export async function createParcelAsync(packageNode: PackagesGraphNode): Promise
     dependencies: new Set<Parcel>(),
     logs,
     changelogChanges,
-    minReleaseType: await getMinReleaseTypeAsync(pkg, logs, changelogChanges),
+    minReleaseType: getMinReleaseType(changelogChanges),
     state: {},
   };
 }

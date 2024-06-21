@@ -3,9 +3,9 @@ package expo.modules.notifications.notifications;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import expo.modules.core.arguments.MapArguments;
@@ -19,16 +19,12 @@ import java.util.Set;
 
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationAction;
-import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
-import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
@@ -199,4 +195,31 @@ public class NotificationSerializer {
     }
     return null;
   }
+
+    @NotNull
+    public static Bundle toResponseBundleFromExtras(Bundle extras) {
+      Bundle serializedContent = new Bundle();
+      serializedContent.putString("title", extras.getString("title"));
+      serializedContent.putString("body", extras.getString("message"));
+      serializedContent.putString("dataString", extras.getString("body"));
+
+      Bundle serializedTrigger = new Bundle();
+      serializedTrigger.putString("type", "push");
+      serializedTrigger.putString("channelId", extras.getString("channelId"));
+
+      Bundle serializedRequest = new Bundle();
+      serializedRequest.putString("identifier", extras.getString("google.message_id"));
+      serializedRequest.putBundle("trigger", serializedTrigger);
+      serializedRequest.putBundle("content", serializedContent);
+
+      Bundle serializedNotification = new Bundle();
+      serializedNotification.putLong("date", extras.getLong("google.sent_time"));
+      serializedNotification.putBundle("request", serializedRequest);
+
+      Bundle serializedResponse = new Bundle();
+      serializedResponse.putString("actionIdentifier", "expo.modules.notifications.actions.DEFAULT");
+      serializedResponse.putBundle("notification", serializedNotification);
+
+      return serializedResponse;
+    }
 }

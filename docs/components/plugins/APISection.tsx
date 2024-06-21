@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+
+import { listMissingHashLinkTargets } from '~/common/utilities';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -10,7 +13,7 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
+  getPossibleComponentPropsNames,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -23,7 +26,6 @@ type Props = {
   packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
 
@@ -73,7 +75,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
@@ -102,7 +104,6 @@ const renderAPI = (
   {
     packageName,
     apiName,
-    strictTypes = false,
     testRequire = undefined,
     headersMapping = {},
     ...restProps
@@ -161,8 +162,7 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
@@ -196,9 +196,10 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
-    );
+    const componentsPropNames = components
+      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+      .flat();
+
     const componentsProps = filterDataByKind(
       props,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
@@ -214,16 +215,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 
@@ -311,11 +311,20 @@ const renderAPI = (
   }
 };
 
+const isDevMode = process.env.NODE_ENV === 'development';
+
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+
+  useEffect(() => {
+    if (isDevMode) {
+      listMissingHashLinkTargets(restProps.apiName);
+    }
+  }, []);
+
   return renderAPI(resolvedVersion, restProps);
 };
 

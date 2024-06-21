@@ -6,26 +6,27 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
 import android.os.Bundle
-import expo.modules.interfaces.sensors.SensorServiceInterface
-import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import java.lang.ref.WeakReference
 
-internal typealias SensorServiceFactory = () -> SensorServiceInterface
 internal typealias OnNewEvent = (event: SensorEvent) -> Unit
 
 class SensorProxy(
-  val sensorServiceFactory: SensorServiceFactory,
+  private val sensorType: Int,
+  appContext: AppContext,
   val onNewEvent: OnNewEvent
 ) : SensorEventListener2 {
+  private val appContextHolder = WeakReference(appContext)
 
-  private val sensorKernelServiceSubscription: SensorServiceSubscriptionInterface by lazy {
-    sensorServiceFactory().createSubscriptionForListener(this)
+  private val sensorKernelServiceSubscription: SensorSubscription by lazy {
+    val context = appContextHolder.get()?.reactContext ?: throw Exceptions.ReactContextLost()
+    SensorSubscription(context, sensorType, this)
   }
 
-  private var mIsObserving = false
+  private var isObserving = false
 
   override fun onSensorChanged(event: SensorEvent) {
     onNewEvent(event)
@@ -40,31 +41,34 @@ class SensorProxy(
   }
 
   fun startObserving() {
-    mIsObserving = true
-    sensorKernelServiceSubscription.start()
+    isObserving = true
+    sensorKernelServiceSubscription.startObserving()
   }
 
   fun stopObserving() {
-    if (mIsObserving) {
-      mIsObserving = false
-      sensorKernelServiceSubscription.stop()
+    if (isObserving) {
+      isObserving = false
+      sensorKernelServiceSubscription.stopObserving()
     }
   }
 
   fun onHostResume() {
-    if (mIsObserving) {
-      sensorKernelServiceSubscription.start()
+    if (isObserving) {
+      sensorKernelServiceSubscription.startObserving()
     }
   }
 
   fun onHostPause() {
-    if (mIsObserving) {
-      sensorKernelServiceSubscription.stop()
+    if (isObserving) {
+      sensorKernelServiceSubscription.stopObserving()
     }
   }
 
   fun onHostDestroy() {
-    sensorKernelServiceSubscription.release()
+    if (isObserving) {
+      sensorKernelServiceSubscription.stopObserving()
+      isObserving = false
+    }
   }
 }
 
@@ -108,26 +112,22 @@ internal fun ModuleDefinitionBuilder.UseSensorProxy(
     sensorProxyGetter().setUpdateInterval(updateInterval)
   }
 
-  AsyncFunction("isAvailableAsync") {
+  AsyncFunction<Boolean>("isAvailableAsync") {
     val sensorManager = module.appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
     sensorManager?.getDefaultSensor(sensorType) != null
   }
 }
 
-internal inline fun <reified T : SensorServiceInterface> Module.createSensorProxy(
+internal inline fun Module.createSensorProxy(
   eventName: String,
+  sensorType: Int,
+  appContext: AppContext,
   crossinline eventMapper: (sensorEvent: SensorEvent) -> Bundle
 ): SensorProxy {
   val weakModule = WeakReference(this)
-  val serviceFactory: SensorServiceFactory = {
-    weakModule.get()?.appContext.getServiceInterface<T>()
-  }
+
   val onNewEvent: OnNewEvent = { sensorEvent: SensorEvent ->
     weakModule.get()?.sendEvent(eventName, eventMapper(sensorEvent))
   }
-  return SensorProxy(serviceFactory, onNewEvent)
-}
-
-internal inline fun <reified T : SensorServiceInterface> AppContext?.getServiceInterface(): T {
-  return this?.legacyModule<T>() ?: throw ServiceNotFoundException(T::class)
+  return SensorProxy(sensorType, appContext, onNewEvent)
 }

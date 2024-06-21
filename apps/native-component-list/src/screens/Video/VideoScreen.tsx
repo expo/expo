@@ -1,16 +1,21 @@
-import { useVideoPlayer, VideoView, VideoSource } from '@expo/video';
 import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
+import { useVideoPlayer, VideoView, VideoSource, VideoPlayerEvents } from 'expo-video';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-const bigBuckBunnySource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const bigBuckBunnySource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  metadata: {
+    title: 'Big Buck Bunny',
+    artist: 'The Open Movie Project',
+  },
+};
 
 const elephantsDreamSource: VideoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
@@ -30,7 +35,14 @@ const androidDrmSource: VideoSource = {
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
 const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
-
+const eventsToListen: (keyof VideoPlayerEvents)[] = [
+  'statusChange',
+  'playingChange',
+  'playbackRateChange',
+  'volumeChange',
+  'playToEnd',
+  'sourceChange',
+];
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
   videoSources.push(androidDrmSource);
@@ -47,11 +59,20 @@ export default function VideoScreen() {
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
   const [loop, setLoop] = React.useState(false);
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
-  const [shouldCorrectPitch, setCorrectsPitch] = React.useState(true);
+  const [preservePitch, setPreservePitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
   const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
+  const [logEvents, setLogEvents] = React.useState(false);
+  const [showNowPlayingNotification, setShowNowPlayingNotification] = React.useState(true);
 
-  const player = useVideoPlayer(currentSource);
+  const player = useVideoPlayer(currentSource, (player) => {
+    player.volume = volume;
+    player.loop = loop;
+    player.preservesPitch = preservePitch;
+    player.staysActiveInBackground = staysActiveInBackground;
+    player.showNowPlayingNotification = true;
+    player.play();
+  });
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -102,17 +123,38 @@ export default function VideoScreen() {
   );
 
   const updatePreservesPitch = useCallback(
-    (correctPitch: boolean) => {
-      player.preservesPitch = correctPitch;
-      setCorrectsPitch(correctPitch);
+    (preservesPitch: boolean) => {
+      player.preservesPitch = preservesPitch;
+      setPreservePitch(preservesPitch);
+    },
+    [player]
+  );
+
+  const updateShowNowPlayingNotification = useCallback(
+    (showNowPlayingNotification: boolean) => {
+      player.showNowPlayingNotification = showNowPlayingNotification;
+      setShowNowPlayingNotification(showNowPlayingNotification);
     },
     [player]
   );
 
   useEffect(() => {
-    player.play();
-    player.preservesPitch = shouldCorrectPitch;
-  }, [player]);
+    if (logEvents) {
+      eventsToListen.forEach((eventName) => {
+        player.addListener(eventName, (newValue: any, _: any, error: any) => {
+          console.log(
+            `${eventName}: ${JSON.stringify(newValue)} ${(error && JSON.stringify(error)) ?? ''}`
+          );
+        });
+      });
+    }
+
+    return () => {
+      eventsToListen.forEach((eventName) => {
+        player.removeAllListeners(eventName);
+      });
+    };
+  }, [logEvents, player]);
 
   return (
     <View style={styles.contentContainer}>
@@ -234,8 +276,24 @@ export default function VideoScreen() {
         <View style={styles.row}>
           <TitledSwitch
             title="Should correct pitch"
-            value={shouldCorrectPitch}
+            value={preservePitch}
             setValue={updatePreservesPitch}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Log events"
+            value={logEvents}
+            setValue={setLogEvents}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Show now playing notification"
+            value={showNowPlayingNotification}
+            setValue={updateShowNowPlayingNotification}
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />

@@ -419,7 +419,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       promise.reject(MediaLibraryPermissionsException())
       return false
     }
-    let permission = permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly))
     if !permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly)) {
       promise.reject(MediaLibraryPermissionsException())
       return false

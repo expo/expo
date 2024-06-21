@@ -1,14 +1,10 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, types } from '@babel/core';
+import { template, types } from '@babel/core';
 import url from 'url';
 
-export function reactClientReferencesPlugin(
-  api: ConfigAPI & { types: typeof types }
-): babel.PluginObj {
-  const { types: t } = api;
-  const reactServerAdapter = 'react-server-dom-webpack/server';
+export function reactClientReferencesPlugin(): babel.PluginObj {
   return {
     name: 'expo-client-references',
     visitor: {
@@ -28,150 +24,115 @@ export function reactClientReferencesPlugin(
         }
 
         const filePath = state.file.opts.filename;
+
         if (!filePath) {
           // This can happen in tests or systems that use Babel standalone.
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
-        const outputKey = url.pathToFileURL(filePath).href;
 
         // File starts with "use client" directive.
-        if (!isUseClient && !isUseServer) {
+        if (!isUseClient) {
           // Do nothing for code that isn't marked as a client component.
           return;
         }
 
+        const outputKey = url.pathToFileURL(filePath).href;
+
+        // We need to add all of the exports to support `export * from './module'` which iterates the keys of the module.
+        const proxyModule = [
+          `const proxy = /*@__PURE__*/ require("react-server-dom-webpack/server").createClientModuleProxy(${JSON.stringify(
+            outputKey
+          )});`,
+          `module.exports = proxy;`,
+        ];
+
+        const getProxy = (exportName: string) => {
+          return `(/*@__PURE__*/ proxy[${JSON.stringify(exportName)}])`;
+        };
+
+        const proxyExports = new Set<string>();
+        const pushProxy = (exportName: string) => {
+          proxyExports.add(exportName);
+          if (exportName === 'default') {
+            proxyModule.push(`export default ${getProxy(exportName)};`);
+          } else {
+            proxyModule.push(`export const ${exportName} = ${getProxy(exportName)};`);
+          }
+        };
+
+        // Collect all of the exports
+        path.traverse({
+          ExportNamedDeclaration(exportPath) {
+            if (exportPath.node.declaration) {
+              if (exportPath.node.declaration.type === 'VariableDeclaration') {
+                exportPath.node.declaration.declarations.forEach((declaration) => {
+                  if (declaration.id.type === 'Identifier') {
+                    const exportName = declaration.id.name;
+                    pushProxy(exportName);
+                  }
+                });
+              } else if (exportPath.node.declaration.type === 'FunctionDeclaration') {
+                const exportName = exportPath.node.declaration.id?.name;
+                if (exportName) {
+                  pushProxy(exportName);
+                }
+              } else if (exportPath.node.declaration.type === 'ClassDeclaration') {
+                const exportName = exportPath.node.declaration.id?.name;
+                if (exportName) {
+                  pushProxy(exportName);
+                }
+              } else if (
+                !['InterfaceDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)
+              ) {
+                // TODO: What is this type?
+                console.warn(
+                  '[babel-preset-expo] Unsupported export specifier for "use client":',
+                  exportPath.node.declaration.type
+                );
+              }
+            } else {
+              exportPath.node.specifiers.forEach((specifier) => {
+                if (types.isIdentifier(specifier.exported)) {
+                  const exportName = specifier.exported.name;
+                  pushProxy(exportName);
+                } else {
+                  // TODO: What is this type?
+                  console.warn(
+                    '[babel-preset-expo] Unsupported export specifier for "use client":',
+                    specifier
+                  );
+                }
+              });
+            }
+          },
+          ExportDefaultDeclaration() {
+            pushProxy('default');
+          },
+        });
+
         // Clear the body
-        if (isUseClient) {
-          path.node.body = [];
-          path.node.directives = [];
+        path.node.body = [];
+        path.node.directives = [];
 
-          // Inject the following:
-          //
-          // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${filePath}`)
-          // TODO: Use `require.resolveWeak` instead of `filePath` to avoid leaking the file path.
-          // module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(`${outputKey}#${require.resolveWeak(filePath)}`)
-          path.pushContainer(
-            'body',
-            t.expressionStatement(
-              t.assignmentExpression(
-                '=',
-                t.memberExpression(t.identifier('module'), t.identifier('exports')),
-                t.callExpression(
-                  t.memberExpression(
-                    t.callExpression(t.identifier('require'), [
-                      t.stringLiteral(reactServerAdapter),
-                    ]),
-                    t.identifier('createClientModuleProxy')
-                  ),
-                  // `${outputKey}#${require.resolveWeak(filePath)}`
-                  [t.stringLiteral(outputKey)]
-                )
-              )
-            )
-          );
-        } else {
-          // Inject the following:
-          //
-          // ;(() => {
-          //  const { registerServerReference } = require('react-server-dom-webpack/server');
-          //  if (typeof module.exports === 'function') registerServerReference(module.exports, moduleId, null);
-          //  else {
-          //    for (const key in module.exports) {
-          //      if (typeof module.exports[key] === 'function') {
-          //        registerServerReference(module.exports[key], moduleId, key);
-          //       }
-          //     }
-          //   }
-          // })()
+        path.pushContainer('body', template.ast(proxyModule.join('\n')));
 
-          const mmexp = t.memberExpression(
-            t.callExpression(t.identifier('require'), [t.stringLiteral(reactServerAdapter)]),
-            t.identifier('registerServerReference')
-          );
+        assertExpoMetadata(state.file.metadata);
 
-          // Create the loop body
-          const loopBody = t.blockStatement([
-            t.ifStatement(
-              t.binaryExpression(
-                '===',
-                t.unaryExpression(
-                  'typeof',
-                  t.memberExpression(
-                    t.memberExpression(t.identifier('module'), t.identifier('exports')),
-                    t.identifier('key'),
-                    true
-                  )
-                ),
-                t.stringLiteral('function')
-              ),
-              t.expressionStatement(
-                t.callExpression(mmexp, [
-                  t.memberExpression(
-                    t.memberExpression(t.identifier('module'), t.identifier('exports')),
-                    t.identifier('key'),
-                    true
-                  ),
-                  t.stringLiteral(outputKey),
-                  t.identifier('key'),
-                ])
-              )
-            ),
-          ]);
+        // Save the client reference in the metadata.
+        state.file.metadata.reactClientReference = outputKey;
 
-          // Create the for-in loop
-          const forInStatement = t.forInStatement(
-            t.variableDeclaration('const', [t.variableDeclarator(t.identifier('key'))]),
-            t.memberExpression(t.identifier('module'), t.identifier('exports')),
-            loopBody
-          );
-
-          path.pushContainer(
-            'body',
-            t.expressionStatement(
-              t.callExpression(
-                t.arrowFunctionExpression(
-                  [],
-
-                  t.blockStatement([
-                    t.ifStatement(
-                      t.binaryExpression(
-                        '===',
-                        t.unaryExpression(
-                          'typeof',
-                          t.memberExpression(t.identifier('module'), t.identifier('exports'))
-                        ),
-                        t.stringLiteral('function')
-                      ),
-                      // registerServerReference(module.exports, moduleId, null);
-                      t.blockStatement([
-                        t.expressionStatement(
-                          t.callExpression(mmexp, [
-                            t.memberExpression(t.identifier('module'), t.identifier('exports')),
-                            t.stringLiteral(outputKey),
-                            t.nullLiteral(),
-                          ])
-                        ),
-                      ]),
-                      // Else
-                      t.blockStatement([
-                        // for (const key in module.exports) {
-                        //   if (typeof module.exports[key] === 'function') {
-                        //     registerServerReference(module.exports[key], moduleId, key);
-                        //   }
-                        // }
-                        forInStatement,
-                      ])
-                    ),
-                  ])
-                ),
-                []
-              )
-            )
-          );
-
-          //
-        }
+        // Store the proxy export names for testing purposes.
+        state.file.metadata.proxyExports = [...proxyExports];
       },
     },
   };
+}
+
+function assertExpoMetadata(
+  metadata: any
+): asserts metadata is { reactClientReference?: string; proxyExports?: string[] } {
+  if (metadata && typeof metadata === 'object') {
+    return;
+  }
+  throw new Error('Expected Babel state.file.metadata to be an object');
 }

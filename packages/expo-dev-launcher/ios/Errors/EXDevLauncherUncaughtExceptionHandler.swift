@@ -25,7 +25,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
     NSSetUncaughtExceptionHandler { exception in
       NSLog("DevLauncher tries to handle uncaught exception: %@", exception)
       NSLog("Stack Trace: %@", exception.callStackSymbols)
-      
+
       EXDevLauncherUncaughtExceptionHandler.tryToSaveException(exception)
       EXDevLauncherUncaughtExceptionHandler.tryToSendExceptionToBundler(exception)
       EXDevLauncherUncaughtExceptionHandler.defaultHandler?(exception)
@@ -35,15 +35,14 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   static func uninstallHandler() {
     NSSetUncaughtExceptionHandler(defaultHandler)
   }
-  
-  
+
   static func tryToSendExceptionToBundler(_ exception: NSException) {
     let controller = EXDevLauncherController.sharedInstance()
-    if (controller.isAppRunning()) {
+    if controller.isAppRunning() {
       guard let url = getWebSocketUrl(controller) else {
         return
       }
-      
+
       let logsManager = EXDevLauncherRemoteLogsManager(withUrl: url)
       logsManager.deferError(message: "Your app just crashed. See the error below.")
       logsManager.deferError(exception: exception)
@@ -67,7 +66,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
     components.scheme = "ws"
     return components.url
   }
-  
+
   static func tryToSaveException(_ exception: NSException) {
     let registry = EXDevLauncherErrorRegistry()
     registry.storeException(exception)

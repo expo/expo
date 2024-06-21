@@ -116,11 +116,3 @@ To use the local image asset, you can continue referencing the source of the ima
 ```
 
 See the complete working example in [Expo's tabs template project](https://github.com/expo/expo/blob/main/templates/expo-template-tabs/App.tsx). You can also run `npx create-expo-app --template tabs` to set up a local project with the same template.
-
-### Publishing assets
-
-When you publish your project, it will upload your assets to the CDN so that they may be fetched when users run your app. However, in order for assets to be uploaded to the CDN they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
-
-### Optimizing assets
-
-You can manually optimize your assets by running the command `npx expo-optimize` which will use the [sharp](https://sharp.pixelplumbing.com/en/stable/) library to compress your assets. You can set the quality of the compression by passing the `--quality [number]` option to the command. For example, to compress to `90%` you would run `npx expo-optimize --quality 90`.

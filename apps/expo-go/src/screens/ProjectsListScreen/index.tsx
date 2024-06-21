@@ -1,8 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
+import { Platform } from 'react-native';
 
 import { ProjectList } from './ProjectList';
-import { useHome_AccountAppsQuery } from '../../graphql/types';
+import { AppPlatform, useHome_AccountAppsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
@@ -11,6 +12,7 @@ function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
       accountName,
       limit: 15,
       offset: 0,
+      platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
     },
     fetchPolicy: 'cache-and-network',
   });

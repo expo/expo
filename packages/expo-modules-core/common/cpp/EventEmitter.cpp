@@ -43,12 +43,35 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
     return;
   }
   ListenersList &listenersList = listenersMap[eventName];
+  size_t listSize = listenersList.size();
 
-  for (const jsi::Value &listener : listenersList) {
-    listener
+  if (listSize == 0) {
+    // Nothing to call.
+    return;
+  }
+  if (listSize == 1) {
+    // The most common scenario – just call the only listener.
+    listenersList
+      .front()
       .asObject(runtime)
       .asFunction(runtime)
       .callWithThis(runtime, thisObject, args, count);
+    return;
+  }
+  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  std::vector<jsi::Function> listenersVector;
+  listenersVector.reserve(listSize);
+
+  // Copy listeners to vector already as jsi::Function so we don't additionally copy jsi::Value
+  for (const jsi::Value &listener : listenersList) {
+    listenersVector.push_back(listener.asObject(runtime).asFunction(runtime));
+  }
+
+  // Call listeners from the vector. The list can be modified by the listeners but it will not affect this loop,
+  // i.e. newly added listeners will not be called and removed listeners will be called one last time.
+  // This is compliant with the EventEmitter in Node.js
+  for (const jsi::Function &listener : listenersVector) {
+    listener.callWithThis(runtime, thisObject, args, count);
   }
 }
 
@@ -130,6 +153,13 @@ void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::str
   }
 }
 
+size_t getListenerCount(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName) {
+  if (NativeState::Shared state = NativeState::get(runtime, emitter, false)) {
+    return state->listeners.listenersCount(eventName);
+  }
+  return 0;
+}
+
 jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eventName, const jsi::Object &emitter, const jsi::Function &listener) {
   jsi::Object subscription(runtime);
   jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
@@ -179,46 +209,72 @@ void installClass(jsi::Runtime &runtime) {
   jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // `this` might be an object that is representing a host object, in which case it's not possible to get the native state.
     // For native modules we need to unwrap it to get the object used under the hood by `LazyObject` host object.
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    addListener(runtime, thisObject, eventName, listener);
-    return createEventSubscription(runtime, eventName, thisObject, listener);
+    addListener(runtime, emitter, eventName, listener);
+    return createEventSubscription(runtime, eventName, emitter, listener);
   };
 
   jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeListener(runtime, thisObject, eventName, listener);
+    removeListener(runtime, emitter, eventName, listener);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType removeAllListenersHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeAllListeners(runtime, thisObject, eventName);
+    removeAllListeners(runtime, emitter, eventName);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType emit = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = thisValue.getObject(runtime);
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
     // Make a new pointer that skips the first argument which is the event name.
     const jsi::Value *eventArgs = count > 1 ? &args[1] : nullptr;
 
-    emitEvent(runtime, thisObject, eventName, eventArgs, count - 1);
+    emitEvent(runtime, emitter, eventName, eventArgs, count - 1);
+    return jsi::Value::undefined();
+  };
+
+  jsi::HostFunctionType listenerCountHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
+
+    // Unwrap `this` object if it's a lazy object (e.g. native module).
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
+
+    return jsi::Value((int)getListenerCount(runtime, emitter, eventName));
+  };
+
+  // Added for compatibility with the old EventEmitter API.
+  jsi::HostFunctionType removeSubscriptionHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    jsi::Object subscription = args[0].asObject(runtime);
+
+    subscription.getProperty(runtime, "remove")
+      .asObject(runtime)
+      .asFunction(runtime)
+      .callWithThis(runtime, subscription, {});
+
     return jsi::Value::undefined();
   };
 
@@ -226,11 +282,15 @@ void installClass(jsi::Runtime &runtime) {
   jsi::PropNameID removeListenerProp = jsi::PropNameID::forAscii(runtime, "removeListener", 14);
   jsi::PropNameID removeAllListenersProp = jsi::PropNameID::forAscii(runtime, "removeAllListeners", 18);
   jsi::PropNameID emitProp = jsi::PropNameID::forAscii(runtime, "emit", 4);
+  jsi::PropNameID listenerCountProp = jsi::PropNameID::forAscii(runtime, "listenerCount", 13);
+  jsi::PropNameID removeSubscriptionProp = jsi::PropNameID::forAscii(runtime, "removeSubscription", 18);
 
   prototype.setProperty(runtime, addListenerProp, jsi::Function::createFromHostFunction(runtime, addListenerProp, 2, addListenerHost));
   prototype.setProperty(runtime, removeListenerProp, jsi::Function::createFromHostFunction(runtime, removeListenerProp, 2, removeListenerHost));
   prototype.setProperty(runtime, removeAllListenersProp, jsi::Function::createFromHostFunction(runtime, removeAllListenersProp, 1, removeAllListenersHost));
   prototype.setProperty(runtime, emitProp, jsi::Function::createFromHostFunction(runtime, emitProp, 2, emit));
+  prototype.setProperty(runtime, listenerCountProp, jsi::Function::createFromHostFunction(runtime, listenerCountProp, 1, listenerCountHost));
+  prototype.setProperty(runtime, removeSubscriptionProp, jsi::Function::createFromHostFunction(runtime, removeSubscriptionProp, 1, removeSubscriptionHost));
 
   common::getCoreObject(runtime)
     .setProperty(runtime, "EventEmitter", eventEmitterClass);

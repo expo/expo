@@ -21,11 +21,14 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isNodeModule = api.caller(common_1.getIsNodeModule);
     const isServer = api.caller(common_1.getIsServer);
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
+    const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
+    const isServerEnv = isServer || isReactServer;
     // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
     const isProduction = api.caller(common_1.getIsProd);
@@ -56,19 +59,42 @@ function babelPresetExpo(api, options = {}) {
     // `@react-native/babel-preset` will handle it.
     const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
+    // Add compiler as soon as possible to prevent other plugins from modifying the code.
+    if (isReactCompilerEnabled &&
+        // Don't run compiler on node modules, it can only safely be run on the user's code.
+        !isNodeModule &&
+        // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
+        // NOTE: We might want to allow running it to prevent hydration errors.
+        !isServerEnv &&
+        // Give users the ability to opt-out of the feature, per-platform.
+        platformOptions['react-compiler'] !== false) {
+        extraPlugins.push([
+            require('babel-plugin-react-compiler'),
+            {
+                runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
+                // enableUseMemoCachePolyfill: true,
+                // compilationMode: 'infer',
+                environment: {
+                    enableResetCacheOnSourceFileChanges: !isProduction,
+                    ...(platformOptions['react-compiler']?.environment ?? {}),
+                },
+                panicThreshold: isDev ? undefined : 'NONE',
+                ...platformOptions['react-compiler'],
+            },
+        ]);
+    }
     if (engine !== 'hermes') {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
     }
-    else {
+    else if (!isServerEnv) {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
         // JSX is used in a function body. This is technically not required in production, but we
         // should retain the same behavior since it's hard to debug the differences.
         extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
-    const isServerEnv = isServer || isReactServer;
     const inlines = {
         'process.env.EXPO_OS': platform,
         // 'typeof document': isServerEnv ? 'undefined' : 'object',
@@ -136,6 +162,8 @@ function babelPresetExpo(api, options = {}) {
             },
         ]);
     }
+    // Use the simpler babel preset for web and server environments (both web and native SSR).
+    const isModernEngine = platform === 'web' || isServerEnv;
     return {
         presets: [
             [
@@ -143,7 +171,7 @@ function babelPresetExpo(api, options = {}) {
                 // specifically use the `@react-native/babel-preset` installed by this package (ex:
                 // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
                 // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-                require('@react-native/babel-preset'),
+                isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
                 {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,

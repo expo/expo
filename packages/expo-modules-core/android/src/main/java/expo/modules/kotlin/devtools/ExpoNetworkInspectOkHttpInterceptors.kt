@@ -6,6 +6,11 @@ import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.asResponseBody
+import okio.GzipSource
+import okio.buffer
+import java.io.IOException
 
 private const val TAG = "ExpoNetworkInspector"
 
@@ -31,7 +36,9 @@ class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
           it.priorResponse = response
         }
       } else {
-        delegate.didReceiveResponse(requestId, request, response)
+        val body = peekResponseBody(response)
+        delegate.didReceiveResponse(requestId, request, response, body)
+        body?.close()
       }
     } catch (e: Exception) {
       Log.e(TAG, "Failed to send network request CDP event", e)
@@ -62,9 +69,18 @@ class ExpoNetworkInspectOkHttpAppInterceptor : Interceptor {
  * The delegate to dispatch network request events
  */
 internal interface ExpoNetworkInspectOkHttpInterceptorsDelegate {
-  fun willSendRequest(requestId: String, request: Request, redirectResponse: Response?)
+  fun willSendRequest(
+    requestId: String,
+    request: Request,
+    redirectResponse: Response?
+  )
 
-  fun didReceiveResponse(requestId: String, request: Request, response: Response)
+  fun didReceiveResponse(
+    requestId: String,
+    request: Request,
+    response: Response,
+    body: ResponseBody?
+  )
 }
 
 /**
@@ -73,4 +89,37 @@ internal interface ExpoNetworkInspectOkHttpInterceptorsDelegate {
 internal class RedirectResponse {
   var requestId: String? = null
   var priorResponse: Response? = null
+}
+
+/**
+ * Peek response body that could send to CDP delegate.
+ * Also uncompress gzip payload if necessary since OkHttp [Interceptor] does not uncompress payload for you.
+ * @return null if the response body exceeds [byteCount]
+ */
+internal fun peekResponseBody(
+  response: Response,
+  byteCount: Long = ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE
+): ResponseBody? {
+  val body = response.body ?: return null
+  val peeked = body.source().peek()
+  try {
+    if (peeked.request(byteCount + 1)) {
+      // When the request() returns true,
+      // it means the source have more available bytes then [byteCount].
+      return null
+    }
+  } catch (_: IOException) {}
+
+  val encoding = response.header("Content-Encoding")
+  val source = when {
+    encoding.equals("gzip", ignoreCase = true) ->
+      GzipSource(peeked).buffer().apply {
+        request(byteCount)
+      }
+    else -> peeked
+  }
+
+  val buffer = okio.Buffer()
+  buffer.write(source, minOf(byteCount, source.buffer.size))
+  return buffer.asResponseBody(body.contentType(), buffer.size)
 }

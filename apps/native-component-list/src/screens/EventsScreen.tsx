@@ -84,7 +84,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       timeZone: string;
       recurrenceRule?: {
         occurrence: number;
-        frequency: string;
+        frequency: Calendar.Frequency;
       };
     } = {
       title: 'Celebrate Expo',
@@ -97,7 +97,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     if (recurring) {
       newEvent.recurrenceRule = {
         occurrence: 5,
-        frequency: 'daily',
+        frequency: Calendar.Frequency.DAILY,
       };
     }
     try {

@@ -1,0 +1,64 @@
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+
+import AndroidStudioInstructions from './_androidStudioInstructions.mdx';
+import AndroidEmulatorInstructions from './_androidEmulatorInstructions.mdx';
+
+## Set up an Android Emulator with a development build
+
+<BuildEnvironmentSwitch />
+
+<AndroidStudioInstructions />
+<AndroidEmulatorInstructions />
+
+## Create a development build
+
+<Step label="1">
+
+### Install EAS CLI
+
+To build your app, you will need to install EAS CLI. You can do this by running the following command in your terminal:
+
+<Terminal cmd={['$ npm install -g eas-cli']} />
+
+</Step>
+
+<Step label="2">
+
+### Create an Expo account and login
+
+To build your app, you will need to create an Expo account and login to the EAS CLI.
+
+1. [Sign up](https://expo.dev/signup) for an Expo account.
+2. Run the following command in your terminal to log in to the EAS CLI:
+   <Terminal cmd={['$ eas login']} />
+
+</Step>
+
+<Step label="3">
+### Configure your project
+
+Run the following command to create an EAS config in your project:
+
+<Terminal cmd={['$ eas build:configure']} />
+
+</Step>
+
+<Step label="4">
+### Create a build
+
+Run the following command to create a development build:
+
+<Terminal cmd={['$ eas build --platform android --profile development']} />
+</Step>
+
+<Step label="5">
+### Install the development build on your emulator
+
+After the build is complete, the CLI will prompt you to automatically download and install it on the Android Emulator. When prompted, press <kbd>Y</kbd> to directly install it on the emulator.
+
+If you miss this prompt, you can download the build from the link provided in the terminal and drag and drop it onto the Android Emulator to install it.
+
+</Step>

@@ -14,6 +14,9 @@ require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
+// keep the line below for replacement in generate-test-update-bundles
+// REPLACE_WITH_CRASHING_CODE
+
 function TestValue(props: { testID: string; value: string }) {
   return (
     <View>
@@ -21,7 +24,7 @@ function TestValue(props: { testID: string; value: string }) {
         <Text style={styles.labelText}>{props.testID}</Text>
         <Text style={styles.labelText}>&nbsp;</Text>
         <Text style={styles.labelText} testID={props.testID}>
-          {props.value}
+          {props.value || 'null'}
         </Text>
       </View>
     </View>
@@ -40,7 +43,6 @@ export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
-  const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
@@ -63,10 +65,6 @@ export default function App() {
   React.useEffect(() => {
     setStartTime(Date.now());
   }, []);
-
-  Updates.useUpdateEvents((event) => {
-    setLastUpdateEventType(event.type);
-  });
 
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
@@ -180,7 +178,6 @@ export default function App() {
         testID="didCheckAndDownloadHappenInParallel"
         value={`${didCheckAndDownloadHappenInParallel}`}
       />
-      <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />

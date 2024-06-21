@@ -88,14 +88,12 @@ export declare function makeDirectoryAsync(fileUri: string, options?: MakeDirect
 export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2^53^ - 1 bytes.
+ * @return Returns a Promise that resolves to the number of bytes available on the internal disk.
  */
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2^53^ - 1 bytes.
+ * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
  */
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
 /**
@@ -170,7 +168,6 @@ export declare function createUploadTask(url: string, fileUri: string, options?:
 export declare abstract class FileSystemCancellableNetworkTask<T extends DownloadProgressData | UploadProgressData> {
     private _uuid;
     protected taskWasCanceled: boolean;
-    private emitter;
     private subscription?;
     cancelAsync(): Promise<void>;
     protected isTaskCancelled(): boolean;

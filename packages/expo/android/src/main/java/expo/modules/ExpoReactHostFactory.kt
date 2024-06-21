@@ -34,13 +34,25 @@ object ExpoReactHostFactory {
     private val reactNativeHostWrapper: ReactNativeHostWrapper,
     override val bindingsInstaller: BindingsInstaller? = null,
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-    private val exceptionHandler: (Exception) -> Unit = {},
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder()
   ) : ReactHostDelegate {
+
+    // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
+    private var _jsBundleLoader: JSBundleLoader? = null
     override val jsBundleLoader: JSBundleLoader
       get() {
+        val backingJSBundleLoader = _jsBundleLoader
+        if (backingJSBundleLoader != null) {
+          return backingJSBundleLoader
+        }
         val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
+          if (jsBundleFile.startsWith("assets://")) {
+            return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
+          }
+          return JSBundleLoader.createFileLoader(jsBundleFile)
+        }
         val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
         return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
       }
@@ -60,7 +72,12 @@ object ExpoReactHostFactory {
 
     override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
 
-    override fun handleInstanceException(error: Exception) = exceptionHandler(error)
+    override fun handleInstanceException(error: Exception) {
+      val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
+      reactNativeHostWrapper.reactNativeHostHandlers.forEach { handler ->
+        handler.onReactInstanceException(useDeveloperSupport, error)
+      }
+    }
   }
 
   @OptIn(UnstableReactNativeAPI::class)
@@ -79,6 +96,10 @@ object ExpoReactHostFactory {
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
 
+      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+        handler.onWillCreateReactInstance(useDeveloperSupport)
+      }
+
       val reactHostImpl =
         ReactHostImpl(
           context,
@@ -91,6 +112,10 @@ object ExpoReactHostFactory {
           .apply {
             jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
           }
+
+      reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+        handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
+      }
 
       reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {

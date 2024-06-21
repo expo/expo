@@ -1,4 +1,7 @@
-import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
+import {
+  createReadableStreamFromReadable,
+  writeReadableStreamToWritable,
+} from '@remix-run/node/dist/stream';
 import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';

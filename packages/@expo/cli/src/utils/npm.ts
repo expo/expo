@@ -8,7 +8,7 @@ import { PassThrough, Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { createEntryResolver, createFileTransform } from './createFileTransform';
+import { createEntryResolver } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { createCachedFetch } from '../api/rest/client';
@@ -69,22 +69,26 @@ export async function npmViewAsync(...props: string[]): Promise<JSONValue> {
 
 /** Given a package name like `expo` or `expo@beta`, return the registry URL if it exists. */
 export async function getNpmUrlAsync(packageName: string): Promise<string> {
-  const results = await npmViewAsync(packageName, 'dist.tarball');
+  const results = await npmViewAsync(packageName, 'dist');
 
   assert(results, `Could not get npm url for package "${packageName}"`);
 
-  // Fully qualified url returns a string.
+  // Fully qualified url returns an object.
   // Example:
-  // 𝝠 npm view expo-template-bare-minimum@sdk-33 dist.tarball --json
-  if (typeof results === 'string') {
-    return results;
+  // 𝝠 npm view expo-template-bare-minimum@sdk-33 dist --json
+  if (typeof results === 'object' && !Array.isArray(results)) {
+    return results.tarball as string;
   }
 
-  // When the tag is arbitrary, the tarball url is an array, return the last value as it's the most recent.
+  // When the tag is arbitrary, the tarball is an array, return the last value as it's the most recent.
   // Example:
-  // 𝝠 npm view expo-template-bare-minimum@33 dist.tarball --json
+  // 𝝠 npm view expo-template-bare-minimum@33 dist --json
   if (Array.isArray(results)) {
-    return results[results.length - 1] as string;
+    const lastResult = results[results.length - 1];
+
+    if (lastResult && typeof lastResult === 'object' && !Array.isArray(lastResult)) {
+      return lastResult.tarball as string;
+    }
   }
 
   throw new CommandError(
@@ -164,7 +168,6 @@ export async function extractNpmTarballAsync(
       {
         cwd,
         filter,
-        transform: createFileTransform(name),
         onentry: createEntryResolver(name),
         strip: strip ?? 1,
       },

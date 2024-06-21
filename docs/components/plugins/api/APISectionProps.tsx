@@ -11,6 +11,7 @@ import {
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
+  BoxSectionHeader,
   CommentTextBlock,
   getCommentContent,
   getCommentOrSignatureComment,
@@ -21,7 +22,6 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
@@ -168,24 +168,22 @@ const APISectionProps = ({
   const baseProp = data.find(prop => prop.name === header);
   return data?.length > 0 ? (
     <>
-      {data?.length === 1 || header === 'Props' ? (
+      {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4 key={`${header}-props-header`}>{header}</H4>
-          </div>
+          <BoxSectionHeader
+            text={header}
+            className="!text-secondary !font-medium"
+            exposeInSidebar
+            baseNestingLevel={99}
+          />
           {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(
-          propsDefinition,
-          sdkVersion,
-          defaultProps,
-          data?.length === 1 || header === 'Props'
-        )
+        renderProps(propsDefinition, sdkVersion, defaultProps, header === 'Props')
       )}
     </>
   ) : null;

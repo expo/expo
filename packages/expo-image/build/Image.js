@@ -1,4 +1,4 @@
-import { createSnapshotFriendlyRef } from 'expo-modules-core';
+import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
@@ -7,23 +7,34 @@ import { resolveSources } from './utils/resolveSources';
 let loggedDefaultSourceDeprecationWarning = false;
 export class Image extends React.PureComponent {
     nativeViewRef;
+    containerViewRef;
     constructor(props) {
         super(props);
         this.nativeViewRef = createSnapshotFriendlyRef();
+        this.containerViewRef = createSnapshotFriendlyRef();
     }
-    /**
-     * Preloads images at the given URLs that can be later used in the image view.
-     * Preloaded images are cached to the memory and disk by default, so make sure
-     * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
-     * @param urls - A URL string or an array of URLs of images to prefetch.
-     * @param cachePolicy - The cache policy for prefetched images.
-     * @return A promise resolving to `true` as soon as all images have been
-     * successfully prefetched. If an image fails to be prefetched, the promise
-     * will immediately resolve to `false` regardless of whether other images have
-     * finished prefetching.
-     */
-    static async prefetch(urls, cachePolicy = 'memory-disk') {
-        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy);
+    // Reanimated support on web
+    getAnimatableRef = () => {
+        if (Platform.OS === 'web') {
+            return this.containerViewRef.current;
+        }
+        else {
+            return this;
+        }
+    };
+    static async prefetch(urls, options) {
+        let cachePolicy = 'memory-disk';
+        let headers;
+        switch (typeof options) {
+            case 'string':
+                cachePolicy = options;
+                break;
+            case 'object':
+                cachePolicy = options.cachePolicy ?? cachePolicy;
+                headers = options.headers;
+                break;
+        }
+        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
     }
     /**
      * Asynchronously clears all images stored in memory.
@@ -95,7 +106,7 @@ export class Image extends React.PureComponent {
             console.warn('[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead');
             loggedDefaultSourceDeprecationWarning = true;
         }
-        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef}/>);
+        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef} containerViewRef={this.containerViewRef}/>);
     }
 }
 //# sourceMappingURL=Image.js.map

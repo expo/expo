@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,UAAU,CAAC;AACzB,cAAc,gBAAgB,CAAC","sourcesContent":["export * from './SQLite';\nexport * from './SQLite.types';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,kBAAkB,CAAC;AACjC,cAAc,mBAAmB,CAAC;AAClC,cAAc,SAAS,CAAC","sourcesContent":["export * from './SQLiteDatabase';\nexport * from './SQLiteStatement';\nexport * from './hooks';\n"]}

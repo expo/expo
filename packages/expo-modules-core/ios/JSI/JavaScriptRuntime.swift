@@ -64,7 +64,7 @@ public extension JavaScriptRuntime {
   /**
    Schedules a block to be executed with granted synchronized access to the JS runtime.
    */
-  public func schedule(priority: SchedulerPriority = .normal, _ closure: @escaping () -> Void) {
+  func schedule(priority: SchedulerPriority = .normal, _ closure: @escaping () -> Void) {
     __schedule(closure, priority: priority.rawValue)
   }
 }

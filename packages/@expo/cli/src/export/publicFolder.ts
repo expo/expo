@@ -23,7 +23,7 @@ export function getUserDefinedFile(projectRoot: string, possiblePaths: string[])
 
 /**
  * Copy the contents of the public folder into the output folder.
- * This enables users to add static files like `favicon.ico` or `serve.json`.
+ * This enables users to add static files like `favicon.ico`.
  *
  * The contents of this folder are completely universal since they refer to
  * static network requests which fall outside the scope of React Native's magic

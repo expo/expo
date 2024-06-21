@@ -6,7 +6,7 @@ import {
   getPngInfo,
 } from './Image';
 import { ImageFormat, ImageOptions, ResizeMode } from './Image.types';
-import { convertFormat, jimpAsync } from './jimp';
+import { convertFormat, jimpAsync, createSquareAsync } from './jimp';
 import { findSharpInstanceAsync, isAvailableAsync, sharpAsync } from './sharp';
 import { SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 
@@ -25,6 +25,7 @@ export async function imageAsync(
 
 export {
   jimpAsync,
+  createSquareAsync,
   findSharpInstanceAsync,
   isAvailableAsync,
   sharpAsync,

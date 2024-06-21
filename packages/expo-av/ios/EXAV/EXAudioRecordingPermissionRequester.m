@@ -4,12 +4,20 @@
 #import <ExpoModulesCore/EXDefines.h>
 
 #import <AVFoundation/AVFoundation.h>
+#import <objc/message.h>
+
+static SEL recordRecordPermissionSelector;
 
 @implementation EXAudioRecordingPermissionRequester
 
 + (NSString *)permissionType
 {
   return @"audioRecording";
+}
+
++ (void)load
+{
+  recordRecordPermissionSelector = NSSelectorFromString([@"request" stringByAppendingString:@"RecordPermission:"]);
 }
 
 - (NSDictionary *)getPermissions
@@ -44,10 +52,10 @@
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   EX_WEAKIFY(self)
-  [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+  ((void (*)(id, SEL, void(^)(BOOL)))objc_msgSend)(AVAudioSession.sharedInstance, recordRecordPermissionSelector, ^(BOOL granted) {
     EX_STRONGIFY(self)
     resolve([self getPermissions]);
-  }];
+  });
 }
 
 @end

@@ -8,10 +8,11 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens = [
+export const Screens: ScreenConfig[] = [
   {
     getComponent() {
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
@@ -51,21 +52,27 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
+    },
+    name: 'Camera (legacy)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNext'));
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcode'));
     },
-    name: 'Camera (next)',
+    name: 'Camera (barcode)',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenNextBarcode'));
+      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcodeFromURL'));
     },
-    name: 'Camera (next barcode)',
+    name: 'Camera (barcode from URL)',
   },
   {
     getComponent() {

@@ -8,11 +8,22 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
 - On Android, intent number extras are converted to `double`. However, it must be `int`. ([#26164](https://github.com/expo/expo/pull/26164) by [@Alperengozum](https://github.com/Alperengozum))
 
 ### 💡 Others
 
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 10.11.0 — 2023-11-14
 

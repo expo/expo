@@ -10,7 +10,69 @@
 
 ### 💡 Others
 
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.28.9 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.8 - 2024-06-10
+
+### 🐛 Bug fixes
+
+- [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.7 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.6 — 2024-06-03
+
+### 🐛 Bug fixes
+
+- [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.5 — 2024-05-31
+
+### 🐛 Bug fixes
+
+- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.4 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.3 — 2024-05-16
+
+### 💡 Others
+
+- [iOS] Add support for `interruptionLevel`. ([#28921](https://github.com/expo/expo/pull/28921) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.28.2 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] fix response handling when app in background or not running. ([#28883](https://github.com/expo/expo/pull/28883) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix notifications events were using an incorrect event emitter. ([#28207](https://github.com/expo/expo/pull/28207) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 0.27.5 - 2024-01-25
 
@@ -345,11 +407,9 @@ _This version does not introduce any user-facing changes._
 - Changed class responsible for handling Firebase events from `FirebaseMessagingService` to `.service.NotificationsService` on Android. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override `FirebaseMessagingService` to implement some custom handling logic.
-
 - Changed how you can override ways in which a notification is reinterpreted from a [`StatusBarNotification`](https://developer.android.com/reference/android/service/notification/StatusBarNotification) and in which a [`Notification`](https://developer.android.com/reference/android/app/Notification.html?hl=en) is built from defining an `expo.modules.notifications#NotificationsScoper` meta-data value in `AndroidManifest.xml` to implementing a `BroadcastReceiver` subclassing `NotificationsService` delegating those responsibilities to your custom `PresentationDelegate` instance. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
-
 - Removed `removeAllNotificationListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addNotification…Listener`. ([#10883](https://github.com/expo/expo/pull/10883) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier being used to fetch Expo push token being backed up on Android which resulted in multiple devices having the same `deviceId` (and eventually, Expo push token). ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier used when fetching Expo push token being different than `Constants.installationId` in managed workflow apps which resulted in different Expo push tokens returned for the same experience across old and new Expo API and the device push token not being automatically updated on Expo push servers which lead to Expo push tokens corresponding to outdated Firebase tokens. ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))

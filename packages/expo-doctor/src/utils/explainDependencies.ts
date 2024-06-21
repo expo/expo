@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 
 import { RootNodePackage, VersionSpec } from './explainDependencies.types';
+import { Log } from './log';
 
 type TargetPackage = { name: string; version?: VersionSpec };
 
@@ -31,7 +32,7 @@ async function explainAsync(
     return JSON.parse(stdout);
   } catch (error: any) {
     if (isSpawnResult(error)) {
-      if (error.stderr.match(/npm ERR! No dependencies found matching/)) {
+      if (error.stderr.match(/No dependencies found matching/)) {
         return null;
       } else if (error.stdout.match(/Usage: npm <command>/)) {
         throw new Error(
@@ -40,6 +41,9 @@ async function explainAsync(
           )} failed. This validation is only available on Node 16+ / npm 8.`
         );
       }
+    }
+    if (error.stderr) {
+      Log.debug(error.stderr);
     }
     throw new Error(`Failed to find dependency tree for ${packageName}: ` + error.message);
   }

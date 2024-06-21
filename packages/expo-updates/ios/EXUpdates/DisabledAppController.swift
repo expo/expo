@@ -10,6 +10,7 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
+  public let isActiveController = false
   public private(set) var isStarted: Bool = false
   public var shouldEmitJsEvents = false
 

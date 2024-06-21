@@ -77,9 +77,7 @@ describe('global scoping', () => {
     })
     `;
 
-    expect(babel.transform(sourceCode, options)!.code!).toEqual(
-      `(function(){return console.log('web');});`
-    );
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`()=>console.log('web');`);
     // expect(babel.transform(sourceCode, options)!.code!).toEqual(
     //   `if(Platform.OS==='ios'){console.log('ios');}(function(){return console.log('web');});`
     // );
@@ -177,7 +175,7 @@ it(`supports Platform module default fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('default');});`
+    `()=>console.log('default');`
   );
 });
 
@@ -298,7 +296,7 @@ it(`removes Platform module and native fallback on web`, () => {
     })`;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('default');});`
+    `()=>console.log('default');`
   );
 });
 
@@ -323,7 +321,7 @@ it(`removes Platform module usage on web`, () => {
     `;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('web');});`
+    `()=>console.log('web');`
   );
 });
 
@@ -463,20 +461,92 @@ it(`removes Platform module usage on native`, () => {
   );
 });
 
-it(`removes __DEV__ usage`, () => {
-  const options = {
-    ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
-  };
+describe('__DEV__', () => {
+  it(`removes __DEV__ usage`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
+    };
 
-  const sourceCode = `  
+    const sourceCode = `  
     if (__DEV__) {
       require('./foobar')
     }
     `;
 
-  // No minfication needed here, the babel plugin does it to ensure the imports are removed before dependencies are collected.
-  expect(babel.transform(sourceCode, options)!.code!).toEqual(``);
+    // No minfication needed here, the babel plugin does it to ensure the imports are removed before dependencies are collected.
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(``);
+  });
+
+  it('preserves __DEV__ in export alias', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `
+      const dev = true;
+      export { dev as __DEV__ };
+    `;
+
+    // Ensure this doesn't throw
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(
+      `Object.defineProperty(exports,"__esModule",{value:true});exports.__DEV__=undefined;const dev=exports.__DEV__=true;`
+    );
+  });
+
+  it(`does not replace __DEV__ key in object`, () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `const x = { __DEV__: __DEV__ };`;
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`const x={__DEV__:false};`);
+  });
+
+  it('preserves __DEV__ in an object shorthand method name', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+
+    const sourceCode = `
+  const x = {
+    __DEV__() { return __DEV__; },
+  };
+  `;
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(
+      `const x={__DEV__(){return false;}};`
+    );
+  });
+
+  it('preserves __DEV__ as the name of an optional property access', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+    const sourceCode = `
+    x?.__DEV__;
+    x?.__DEV__();
+  `;
+
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`x?.__DEV__;x?.__DEV__();`);
+  });
+
+  it('preserves __DEV__ as a label of a block statement', () => {
+    const options = {
+      ...DEFAULT_OPTS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
+    };
+    const sourceCode = `
+    __DEV__: {
+      break __DEV__;
+    };
+  `;
+
+    expect(babel.transform(sourceCode, options)!.code!).toEqual(`__DEV__:{break __DEV__;};`);
+  });
 });
 
 describe('SSR window check', () => {

@@ -42,7 +42,7 @@ class ReactActivityDelegateWrapper(
     invokeDelegateMethod("getReactNativeHost")
   }
   private val _reactHost: ReactHost? by lazy {
-    invokeDelegateMethod("getReactHost")
+    delegate.reactHost
   }
 
   /**
@@ -59,6 +59,10 @@ class ReactActivityDelegateWrapper(
 
   override fun createRootView(): ReactRootView? {
     return invokeDelegateMethod("createRootView")
+  }
+
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -89,9 +93,10 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
-      dispatchWillCreateReactInstanceIfNeeded()
       reactDelegate.loadApp(appKey)
-      rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      val reactRootView = reactDelegate.reactRootView
+      (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
+      rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onContentChanged(activity)
@@ -106,7 +111,6 @@ class ReactActivityDelegateWrapper(
       shouldEmitPendingResume = true
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
-        dispatchWillCreateReactInstanceIfNeeded()
         invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
@@ -117,7 +121,6 @@ class ReactActivityDelegateWrapper(
       return
     }
 
-    dispatchWillCreateReactInstanceIfNeeded()
     invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onContentChanged(activity)
@@ -225,7 +228,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
@@ -239,7 +242,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyDown(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyDown(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
@@ -251,7 +258,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyLongPress(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyLongPress(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyLongPress(keyCode, event)
   }
 
   override fun onBackPressed(): Boolean {
@@ -330,15 +341,6 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
-  }
-
-  private fun dispatchWillCreateReactInstanceIfNeeded() {
-    if (_reactHost != null) {
-      val useDeveloperSupport = _reactNativeHost.useDeveloperSupport
-      (_reactNativeHost as? ReactNativeHostWrapper)?.reactNativeHostHandlers?.forEach {
-        it.onWillCreateReactInstance(useDeveloperSupport)
-      }
-    }
   }
 
   //endregion

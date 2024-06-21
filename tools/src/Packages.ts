@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
@@ -297,19 +297,6 @@ export class Package {
    */
   async hasChangelogAsync(): Promise<boolean> {
     return fs.pathExists(this.changelogPath);
-  }
-
-  /**
-   * Checks whether package has any native code (iOS, Android, C++).
-   */
-  async isNativeModuleAsync(): Promise<boolean> {
-    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
-    for (const dir of dirs) {
-      if (await fs.pathExists(dir)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**

@@ -56,11 +56,18 @@ object VideoManager {
     }
   }
 
+  fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
+    return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
+  }
+
   fun onAppForegrounded() = Unit
 
   fun onAppBackgrounded() {
     for (videoView in videoViews.values) {
-      if (videoView.videoPlayer?.staysActiveInBackground == false) {
+      if (videoView.videoPlayer?.staysActiveInBackground == false &&
+        !videoView.willEnterPiP &&
+        !videoView.isInFullscreen
+      ) {
         videoView.videoPlayer?.player?.pause()
       }
     }

@@ -5,7 +5,7 @@ description: Learn about using custom fonts, supported font formats for each pla
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 Both Android and iOS and most desktop operating systems come with their own set of platform fonts. However, if you want to inject some more brand personality into your app, a well-picked font can go a long way.
@@ -14,11 +14,11 @@ As each operating system has its own set of platform fonts, if you want to produ
 
 ## Get a font
 
-The first thing you need is a font file. For a working example, we are going to use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson. A common convention in React Native apps is to put your fonts in an **./assets/fonts** directory. However, you can put them anywhere you like.
+The first thing you need is a font file. For a working example, we are going to use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson. A common convention in React Native apps is to put your fonts in a **./assets/fonts** directory. However, you can put them anywhere you like.
 
 ### Supported font formats
 
-The two officially supported font formats that work consistently in the Expo SDK across Android, iOS and the web, are OTF and TTF. If your font is in another format, you will require to set up an [advanced configuration](#beyond-otf-and-ttf) for your project.
+The two officially supported font formats that work consistently in the Expo SDK across Android, iOS and the web, are OTF and TTF. If your font is in another format, you will be required to set up an [advanced configuration](#beyond-otf-and-ttf) for your project.
 
 If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files. Sometimes OTF files render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
@@ -148,7 +148,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,7 +155,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -165,11 +163,7 @@ Inter Black is very bold and dark and pretty distinctive so you should be able t
 
 When you load it on your device, you'll see something like this:
 
-<ImageSpotlight
-  alt="Enter a name of your new organization."
-  src="/static/images/font-example-custom-font.jpg"
-  style={{ maxWidth: 305 }}
-/>
+<ContentSpotlight src="/static/images/font-example-custom-font.jpg" className="max-w-[305px]" />
 
 To create a new project including this example, run in your terminal:
 
@@ -234,7 +228,7 @@ import { Platform } from 'react-native';
       ios: 'Inter-Thin',
     })
   }}>
-  Inter Bold
+  Inter Thin
 </Text>
 ```
 
@@ -265,7 +259,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -273,28 +266,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
 
 ## Wait for fonts to load
 
-If you [embed your fonts in your native project](#embed-the-font-in-your-native-project), they will be available immediately without any additional code outside the config plugin. However, if you load your fonts at runtime, they will not be available immediately. So, it is generally a good practice not to render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
+If you [embed your fonts in your native project](#embed-font-in-a-native-project), they will be available immediately without any additional code outside the config plugin. However, if you load your fonts at runtime, they will not be available immediately.
 
-### Load fonts on the web
+It's common to prevent rendering an app until the font is ready. You can accomplish this by displaying the Splash Screen of your app until all fonts have loaded (or an error has been returned). See the [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package for more. Additionally, see the [minimal example](#minimal-example) section on how to use it.
 
-Sometimes, particularly on the web people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called FOUT and FOIT and you can read a lot more about them on the web.
+### Handle `@expo/vector-icons` initial load
 
-In general, these strategies are not recommended for native apps. If you include your fonts in your project, the fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
+Before `@expo/vector-icons` icons load for the first time, they'll appear as invisible icons in your app. Once they load, they'll be cached for all subsequent uses of the app. To avoid showing invisible icons on your app's first load, you can preload fonts during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefontsmap). For example:
+
+```jsx App.js
+useFonts([require('./assets/fonts/ComicSans.ttf', FontAwesome.font)]);
+```
 
 ## Additional information
 
-You probably don't need to know anything beyond this point to use custom fonts effectively in your app. If you are curious or your use case has not been addressed by the above information, please continue reading.
-
 ### Loading a remote font directly from the web
 
-In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
+In general, it's best and safest to load fonts from your local assets. If you submit your app to app stores, the fonts will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
 
 However, if you to load a remote font file directly from the web rather than from your project's assets, you can do it by replacing the `require('./assets/fonts/MyFont.otf')` with the URL of your font. See the below example:
 
@@ -321,7 +315,7 @@ export default function App() {
     </View>
   );
 }
-/* @hide const styles = StyleSheet.create({ ... }); */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -329,7 +323,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -385,7 +378,6 @@ export default class App extends React.Component {
   }
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -393,7 +385,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

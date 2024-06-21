@@ -1,13 +1,15 @@
 import '@expo/server/install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-import fs from 'fs';
-import path from 'path';
-import { URL } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
-const debug = require('debug')('expo:server') as typeof console.log;
+const debug =
+  process.env.NODE_ENV === 'development'
+    ? (require('debug')('expo:server') as typeof console.log)
+    : () => {};
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   // TODO: JSON Schema for validation
@@ -48,13 +50,22 @@ export function createRequestHandler(
   {
     getRoutesManifest: getInternalRoutesManifest,
     getHtml = async (_request, route) => {
-      // serve a static file
+      // Serve a static file by exact route name
       const filePath = path.join(distFolder, route.page + '.html');
-
-      if (!fs.existsSync(filePath)) {
-        return null;
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, 'utf-8');
       }
-      return fs.readFileSync(filePath, 'utf-8');
+
+      // Serve a static file by route name with hoisted index
+      // See: https://github.com/expo/expo/pull/27935
+      const hoistedFilePath = route.page.match(/\/index$/)
+        ? path.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        : null;
+      if (hoistedFilePath && fs.existsSync(hoistedFilePath)) {
+        return fs.readFileSync(hoistedFilePath, 'utf-8');
+      }
+
+      return null;
     },
     getApiRoute = async (route) => {
       const filePath = path.join(distFolder, route.file);

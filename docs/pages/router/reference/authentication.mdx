@@ -42,7 +42,7 @@ To follow the above example, set up a [React Context provider](https://react.dev
 
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
-```jsx ctx.tsx
+```tsx ctx.tsx
 import React from 'react';
 import { useStorageState } from './useStorageState';
 
@@ -95,7 +95,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 The following code snippet is a basic hook that persists tokens securely on native with [`expo-secure-store`](/versions/latest/sdk/securestore) and in local storage on web.
 
 {/* prettier-ignore */}
-```ts useStorageState.ts
+```tsx useStorageState.ts
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -193,7 +193,7 @@ export default function Root() {
 
 Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
-```jsx app/(app)/_layout.js
+```jsx app/(app)/_layout.js|collapseHeight=400
 import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
@@ -225,7 +225,7 @@ export default function AppLayout() {
 
 Create the `/sign-in` screen. It can toggle the authentication using `signIn()`. Since this screen is outside the `(app)` group, the group's layout and authentication check do not run when rendering this screen. This lets logged-out users see this screen.
 
-```jsx app/sign-in.js
+```jsx app/sign-in.js|collapseHeight=480
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
@@ -255,7 +255,7 @@ export default function SignIn() {
 
 Implement an authenticated screen that lets users sign out.
 
-```jsx app/(app)/index.js
+```jsx app/(app)/index.js|collapseHeight=480
 import { Text, View } from 'react-native';
 
 import { useSession } from '../../ctx';
@@ -282,11 +282,11 @@ You now have an app that can present a loading state while it checks the initial
 
 ## Alternative loading states
 
-With Expo Router, something must be rendered to the screen while loading the initial auth state. In the example above, the app layout renders a loading message. Alternatively, you can make the `index` route a loading state, and move the initial route to something such as `/home`, which is similar to how Twitter works.
+With Expo Router, something must be rendered to the screen while loading the initial auth state. In the example above, the app layout renders a loading message. Alternatively, you can make the `index` route a loading state and move the initial route to something such as `/home`, which is similar to how X works.
 
 ## Modals and per-route authentication
 
-Another common pattern is to render a sign-in modal over the top of the app. This enables you to dismiss partially preserve deep links when the authentication is complete. However, this pattern requires routes to be rendered in the background as these routes require handling data loading without authentication.
+Another common pattern is to render a sign-in modal over the top of the app. This enables you to dismiss and partially preserve deep links when the authentication is complete. However, this pattern requires routes to be rendered in the background as these routes require handling data loading without authentication.
 
 <FileTree
   files={[
@@ -303,7 +303,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
   ]}
 />
 
-```jsx app/(app)/_layout.js
+```jsx app/(app)/_layout.js|collapseHeight=480
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -329,7 +329,7 @@ export default function AppLayout() {
 
 You may encounter the following error when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/advanced/root-layout).
 
-```
+```text
 Error: Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.
 ```
 

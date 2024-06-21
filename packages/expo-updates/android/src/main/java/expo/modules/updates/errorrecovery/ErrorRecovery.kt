@@ -4,12 +4,11 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.DefaultJSExceptionHandler
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -36,8 +35,9 @@ class ErrorRecovery(
   internal lateinit var handler: Handler
   internal val logger = UpdatesLogger(context)
 
-  private var weakReactContext: WeakReference<ReactContext>? = null
+  private var weakDevSupportManager: WeakReference<DevSupportManager>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null
+  private var shouldHandleReactInstanceException = false
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
     if (!::handler.isInitialized) {
@@ -46,9 +46,19 @@ class ErrorRecovery(
     }
   }
 
-  fun startMonitoring(reactContext: ReactContext) {
+  fun startMonitoring(devSupportManager: DevSupportManager) {
     registerContentAppearedListener()
-    registerErrorHandler(reactContext)
+    registerErrorHandler(devSupportManager)
+  }
+
+  /**
+   * Exception notifications sending from [expo.modules.core.interfaces.ReactNativeHostHandler]
+   * This is only used for bridgeless mode.
+   */
+  internal fun onReactInstanceException(exception: Exception) {
+    if (shouldHandleReactInstanceException) {
+      handleException(exception)
+    }
   }
 
   fun notifyNewRemoteLoadStatus(newStatus: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -89,14 +99,19 @@ class ErrorRecovery(
     ReactMarker.removeListener(contentAppearedListener)
   }
 
-  private fun getDevSupportManager(reactContext: ReactContext): DevSupportManager {
-    val reactApplication = reactContext.applicationContext as ReactApplication
-    return reactApplication.reactHost?.devSupportManager
-      ?: reactApplication.reactNativeHost.reactInstanceManager.devSupportManager
+  private fun registerErrorHandler(devSupportManager: DevSupportManager) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      registerErrorHandlerImplBridgeless()
+    } else {
+      registerErrorHandlerImplBridge(devSupportManager)
+    }
   }
 
-  private fun registerErrorHandler(reactContext: ReactContext) {
-    val devSupportManager = getDevSupportManager(reactContext)
+  private fun registerErrorHandlerImplBridgeless() {
+    shouldHandleReactInstanceException = true
+  }
+
+  private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
     if (devSupportManager !is DisabledDevSupportManager) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
@@ -114,12 +129,23 @@ class ErrorRecovery(
       field[devSupportManager] = defaultJSExceptionHandler
       return@let previousValue as DefaultJSExceptionHandler
     }
-    weakReactContext = WeakReference(reactContext)
+    weakDevSupportManager = WeakReference(devSupportManager)
   }
 
   private fun unregisterErrorHandler() {
-    weakReactContext?.get()?.let { reactContext ->
-      val devSupportManager = getDevSupportManager(reactContext)
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      unregisterErrorHandlerImplBridgeless()
+    } else {
+      unregisterErrorHandlerImplBridge()
+    }
+  }
+
+  private fun unregisterErrorHandlerImplBridgeless() {
+    shouldHandleReactInstanceException = false
+  }
+
+  private fun unregisterErrorHandlerImplBridge() {
+    weakDevSupportManager?.get()?.let { devSupportManager ->
       if (devSupportManager !is DisabledDevSupportManager) {
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
@@ -133,7 +159,7 @@ class ErrorRecovery(
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }
-      weakReactContext = null
+      weakDevSupportManager = null
     }
     // quitSafely will wait for processing messages to finish but cancel all messages scheduled for
     // a future time, so delay for a few more seconds in case there are any scheduled messages

@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.SurfaceView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -20,15 +21,21 @@ import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext) {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
-
+  val audioFocusManager = VideoPlayerAudioFocusManager(context, WeakReference(this))
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
@@ -36,17 +43,39 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
 
   // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
   var playing = false
-  var isLoading = true
+    set(value) {
+      if (field != value) {
+        emit("playingChange", value, field)
+      }
+      field = value
+    }
+
+  var uncommittedSource: VideoSource? = source
+  private var lastLoadedSource: VideoSource? = null
+    set(value) {
+      if (field != value && value != null) {
+        emit("sourceChange", value, field)
+      }
+      field = value
+    }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
+  var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
   var preservesPitch = false
     set(preservesPitch) {
-      applyPitchCorrection()
+      playbackParameters = applyPitchCorrection(playbackParameters)
       field = preservesPitch
     }
+  var showNowPlayingNotification = true
+    set(value) {
+      field = value
+      playbackServiceBinder?.service?.setShowNotification(value, this.player)
+    }
+  var duration = 0f
+  var isLive = false
 
   private var serviceConnection: ServiceConnection
   internal var playbackServiceBinder: PlaybackServiceBinder? = null
@@ -56,43 +85,83 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
     set(volume) {
       if (player.volume == volume) return
       player.volume = if (muted) 0f else volume
+      emit("volumeChange", VolumeEvent(volume, muted), VolumeEvent(field, muted))
       field = volume
     }
 
   var muted = false
     set(muted) {
+      if (field == muted) return
+      emit("volumeChange", VolumeEvent(volume, muted), VolumeEvent(volume, field))
+      player.volume = if (muted) 0f else userVolume
       field = muted
-      volume = if (muted) 0f else userVolume
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
   var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
-    set(value) {
-      if (player.playbackParameters == value) return
-      player.playbackParameters = value
-      field = value
-      applyPitchCorrection()
+    set(newPlaybackParameters) {
+      if (playbackParameters.speed != newPlaybackParameters.speed) {
+        emit("playbackRateChange", newPlaybackParameters.speed, playbackParameters.speed)
+      }
+      val pitchCorrectedPlaybackParameters = applyPitchCorrection(newPlaybackParameters)
+      field = pitchCorrectedPlaybackParameters
+
+      if (player.playbackParameters != pitchCorrectedPlaybackParameters) {
+        player.playbackParameters = pitchCorrectedPlaybackParameters
+      }
     }
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
       this@VideoPlayer.timeline = timeline
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-      this@VideoPlayer.isLoading = isLoading
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      this@VideoPlayer.duration = 0f
+      this@VideoPlayer.isLive = false
+      if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+        emit("playToEnd")
+      }
+      super.onMediaItemTransition(mediaItem, reason)
+    }
+
+    override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+      if (playbackState == Player.STATE_IDLE && player.playerError != null) {
+        return
+      }
+      if (playbackState == Player.STATE_READY) {
+        this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
+        this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
+      }
+      setStatus(playerStateToPlayerStatus(playbackState), null)
+      super.onPlaybackStateChanged(playbackState)
     }
 
     override fun onVolumeChanged(volume: Float) {
       this@VideoPlayer.volume = volume
+      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
       this@VideoPlayer.playbackParameters = playbackParameters
       super.onPlaybackParametersChanged(playbackParameters)
+    }
+
+    override fun onPlayerErrorChanged(error: PlaybackException?) {
+      error?.let {
+        setStatus(ERROR, error)
+        this@VideoPlayer.duration = 0f
+        this@VideoPlayer.isLive = false
+      } ?: run {
+        setStatus(playerStateToPlayerStatus(player.playbackState), null)
+      }
+
+      super.onPlayerErrorChanged(error)
     }
   }
 
@@ -141,6 +210,7 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   override fun close() {
+    audioFocusManager.onPlayerDestroyed()
     appContext?.reactContext?.unbindService(serviceConnection)
     playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
@@ -149,6 +219,8 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       player.removeListener(playerListener)
       player.release()
     }
+    uncommittedSource = null
+    lastLoadedSource = null
   }
 
   override fun deallocate() {
@@ -163,13 +235,53 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   fun prepare() {
-    player.setMediaItem(mediaItem)
-    player.prepare()
+    uncommittedSource?.let { videoSource ->
+      val mediaSource = videoSource.toMediaSource(context)
+      player.setMediaSource(mediaSource)
+      player.prepare()
+      lastLoadedSource = videoSource
+      uncommittedSource = null
+    } ?: run {
+      player.clearMediaItems()
+      player.prepare()
+    }
   }
 
-  private fun applyPitchCorrection() {
+  private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
     val speed = playbackParameters.speed
     val pitch = if (preservesPitch) 1f else speed
-    playbackParameters = PlaybackParameters(speed, pitch)
+    return PlaybackParameters(speed, pitch)
+  }
+
+  private fun playerStateToPlayerStatus(@Player.State state: Int): PlayerStatus {
+    return when (state) {
+      Player.STATE_IDLE -> IDLE
+      Player.STATE_BUFFERING -> LOADING
+      Player.STATE_READY -> READY_TO_PLAY
+      Player.STATE_ENDED -> {
+        // When an error occurs, the player state changes to ENDED.
+        if (player.playerError != null) {
+          ERROR
+        } else {
+          IDLE
+        }
+      }
+
+      else -> IDLE
+    }
+  }
+  private fun setStatus(status: PlayerStatus, error: PlaybackException?) {
+    val playbackError = error?.let {
+      PlaybackError(it)
+    }
+
+    if (playbackError == null && player.playbackState == Player.STATE_ENDED) {
+      emit("playToEnd")
+    }
+
+    if (this.status != status) {
+      emit("statusChange", status.value, this.status.value, playbackError)
+    }
+    this.status = status
   }
 }

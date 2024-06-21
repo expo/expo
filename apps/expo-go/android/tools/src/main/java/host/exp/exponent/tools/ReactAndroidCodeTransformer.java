@@ -45,7 +45,7 @@ import java.util.Map;
 
 public class ReactAndroidCodeTransformer {
 
-  private static final String REACT_ANDROID_DEST_ROOT = "react-native-lab/react-native/packages/react-native/ReactAndroid";
+  private static final String REACT_ANDROID_DEST_ROOT = "../../react-native-lab/react-native/packages/react-native/ReactAndroid";
   private static final String SOURCE_PATH = "src/main/java/com/facebook/react/";
 
   private static abstract class MethodVisitor {
@@ -316,14 +316,13 @@ public class ReactAndroidCodeTransformer {
       }
     });
 
-    FILES_TO_MODIFY.put("TurboReactPackage.java", new MethodVisitor() {
+    FILES_TO_MODIFY.put("BaseReactPackage.java", new MethodVisitor() {
 
         @Override
       public Node visit(String methodName, MethodDeclaration n) {
-        switch (methodName) {
-          case "getNativeModuleIterator":
-            n.setPublic(true);
-            return n;
+        if (methodName.equals("getNativeModuleIterator")) {
+          n.setPublic(true);
+          return n;
         }
 
         return n;
@@ -343,21 +342,25 @@ public class ReactAndroidCodeTransformer {
     }
 
     // Update maven publish information
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
         "def AAR_OUTPUT_URL = \"file://${projectDir}/../android\"",
         "def AAR_OUTPUT_URL = \"file:${System.env.HOME}/.m2/repository\"");
 
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
         "group = GROUP",
-        "group = 'com.facebook.react'");
+        "group = \"com.facebook.react\"");
+
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
+            "$rootDir/node_modules/@react-native/codegen",
+            "${project(\":packages:react-native:ReactAndroid\").projectDir.parent}/../react-native-codegen");
 
     // This version also gets updated in android-tasks.js
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
-        "version = VERSION_NAME",
-        "version = '" + sdkVersion + "'");
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
+        "version = project.findProperty(\"VERSION_NAME\")?.toString()!!",
+        "version = \"" + sdkVersion + "\"");
 
     // RN uses a weird directory structure for soloader to build with Buck. Change this so that Android Studio doesn't complain.
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
         "'src/main/libraries/soloader'",
         "'src/main/libraries/soloader/java'");
 

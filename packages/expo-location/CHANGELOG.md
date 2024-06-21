@@ -4,15 +4,35 @@
 
 ### 🛠 Breaking changes
 
-- [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix an issue where if the user selects "Allow Once" for location permissions, we needed to request background permissions twice because the first time had effect. ([#29272](https://github.com/expo/expo/pull/29272) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 17.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Fixed unit test errors. ([#28208](https://github.com/expo/expo/pull/28208) by [@kudo](https://github.com/kudo))
 
 ## 16.5.5 - 2024-02-29
 

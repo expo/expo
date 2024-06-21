@@ -77,9 +77,6 @@ export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop | Act
 export declare enum SaveFormat {
     JPEG = "jpeg",
     PNG = "png",
-    /**
-     * @platform web
-     */
     WEBP = "webp"
 }
 /**
