@@ -28,6 +28,7 @@
 /packages/expo-apple-authentication             @tsapeta @alanjhughes
 /packages/expo-application                      @ide
 /packages/expo-asset                            @aleqsio @wschurman
+/packages/expo-audio                            @alanjhughes @behenate  
 /packages/expo-av                               @lukmccall @kudo
 /packages/expo-background-fetch                 @tsapeta @kudo
 /packages/expo-barcode-scanner                  @lukmccall
@@ -105,12 +106,11 @@
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-web-browser                      @alanjhughes
 /packages/expo-yarn-workspaces                  @bycedric
-/packages/htmp-elements                         @EvanBacon
+/packages/html-elements                         @EvanBacon
 /packages/install-expo-modules                  @kudo
 /packages/jest-expo                             @brentvatne @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/patch-project                         @kudo
 /packages/pod-install                           @bycedric @EvanBacon
 /packages/uri-scheme                            @bycedric @EvanBacon
-/pakcages/expo-audio                            @alanjhughes @behenate  
 /tools                                          @tsapeta
