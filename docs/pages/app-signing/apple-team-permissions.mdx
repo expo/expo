@@ -37,11 +37,9 @@ As a developer on the team, when running `eas build -p ios` in the terminal wind
   ]}
 />
 
-Press <kbd>n</kbd> for not logging to the Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The prompt will only ask you to generate the app signing credentials haven't been generated yet.
+Press <kbd>n</kbd> for not logging to the Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build.
 
-The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. After pressing <kbd>n</kbd>, the CLI prompts a message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build.
-
-EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account owner in your organization's Expo account.
+The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. However, the EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account owner in your organization's Expo account.
 
 ## Important note
 
