@@ -181,10 +181,6 @@ appId: dev.expo.Payments
     visible:
       id: "test_suite_container"
     timeout: 30000
-- scrollUntilVisible:
-    element:
-      id: "test_suite_text_results"
-    direction: DOWN
 - assertVisible:
     text: "Complete: 0 tests failed."
 `);
