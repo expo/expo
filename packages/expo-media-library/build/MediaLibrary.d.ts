@@ -311,8 +311,6 @@ export declare const usePermissions: (options?: PermissionHookOptions<{
     granularPermissions?: GranularPermission[] | undefined;
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
- * @platform android 14+
- * @platform ios 14+
  * Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
  * media library, otherwise this method is a no-op.
@@ -322,6 +320,9 @@ export declare const usePermissions: (options?: PermissionHookOptions<{
  * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
  * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [addListener(listener)](#medialibraryaddlistenerlistener).
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
+ *
+ * @platform android 14+
+ * @platform ios 14+
  */
 export declare function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilter[]): Promise<void>;
 /**
