@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.12.16 — 2024-06-20
