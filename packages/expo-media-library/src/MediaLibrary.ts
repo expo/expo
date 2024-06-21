@@ -32,7 +32,6 @@ export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 
 /**
  * Represents the possible types of media that app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
- * By default, this presents a list that shows both photos and videos.
  * @platform android 14+
  * */
 export type MediaTypeFilter = 'photo' | 'video';
