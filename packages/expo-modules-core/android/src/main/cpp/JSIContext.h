@@ -9,6 +9,7 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
+#include "ThreadSafeJNIGlobalRef.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -152,6 +153,8 @@ private:
   jni::global_ref<JSIContext::javaobject> javaPart_;
 
   bool wasDeallocated_ = false;
+
+  std::shared_ptr<ThreadSafeJNIGlobalRef<JSIContext::javaobject>> threadSafeJThis;
 
   explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
