@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
+- Update `glob@7` to `glob@10`. ([#29933](https://github.com/expo/expo/pull/29933) by [@byCedric](https://github.com/byCedric))
 
 ## 0.10.1 - 2024-05-29
 
