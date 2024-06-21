@@ -30,12 +30,12 @@ type InferEventParameter<
   : Parameters<TEventListener>[0] | TInitialValue | null;
 
 /**
- * React hook that listens to events emitted by the given object. The returned value is an array of event parameters
- * that get updated whenever a new event is dispatched.
- * @param emitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * React hook that listens to events emitted by the given object. The returned value is an event parameter
+ * that gets updated whenever a new event is dispatched.
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
  * @param eventName Name of the event to listen to.
- * @param initialValue An array of event parameters to use until the event is called for the first time.
- * @returns An array of arguments passed to the event listener.
+ * @param initialValue An event parameter to use until the event is called for the first time.
+ * @returns A parameter of the event listener.
  * @example
  * ```tsx
  * import { useEvent } from 'expo';
@@ -54,7 +54,7 @@ export function useEvent<
   TEventListener extends InferEventListener<TEventsMap, TEventName>,
   TInitialValue extends Parameters<TEventListener>[0] | null,
 >(
-  emitter: EventEmitter<TEventsMap>,
+  eventEmitter: EventEmitter<TEventsMap>,
   eventName: TEventName,
   initialValue: TInitialValue | null = null
 ): InferEventParameter<TEventListener, TInitialValue> {
@@ -64,13 +64,13 @@ export function useEvent<
 
   useEffect(() => {
     const listener = (event: Parameters<TEventListener>[0]) => setEventParams(event);
-    const subscription = emitter.addListener<TEventName>(
+    const subscription = eventEmitter.addListener<TEventName>(
       eventName,
       listener as TEventsMap[TEventName]
     );
 
     return () => subscription.remove();
-  }, [emitter, eventName]);
+  }, [eventEmitter, eventName]);
 
   return eventParams as InferEventParameter<TEventListener, TInitialValue>;
 }

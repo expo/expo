@@ -13,12 +13,12 @@ type InferEventListener<TEventsMap, TEventName extends keyof TEventsMap> = TEven
  */
 type InferEventParameter<TEventListener extends AnyEventListener, TInitialValue> = TInitialValue extends Parameters<TEventListener>[0] ? Parameters<TEventListener>[0] : Parameters<TEventListener>[0] | TInitialValue | null;
 /**
- * React hook that listens to events emitted by the given object. The returned value is an array of event parameters
- * that get updated whenever a new event is dispatched.
- * @param emitter An object that emits events, e.g. a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
- * @param event Name of the event to listen to.
- * @param initialValue An array of event parameters to use until the event is called for the first time.
- * @returns An array of arguments passed to the event listener.
+ * React hook that listens to events emitted by the given object. The returned value is an event parameter
+ * that gets updated whenever a new event is dispatched.
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param eventName Name of the event to listen to.
+ * @param initialValue An event parameter to use until the event is called for the first time.
+ * @returns A parameter of the event listener.
  * @example
  * ```tsx
  * import { useEvent } from 'expo';
@@ -26,10 +26,11 @@ type InferEventParameter<TEventListener extends AnyEventListener, TInitialValue>
  *
  * export function PlayerStatus({ videoPlayer }: { videoPlayer: VideoPlayer }) {
  *   const playerStatus = useEvent(videoPlayer, 'statusChange', videoPlayer.status);
+ *
  *   return <Text>{`Player status: ${playerStatus}`}</Text>;
  * }
  * ```
  */
-export declare function useEvent<TEventsMap extends Record<string, AnyEventListener>, TEventName extends InferEventName<TEventsMap>, TEventListener extends InferEventListener<TEventsMap, TEventName>, TInitialValue extends Parameters<TEventListener>[0] | null>(emitter: EventEmitter<TEventsMap>, eventName: TEventName, initialValue?: TInitialValue | null): InferEventParameter<TEventListener, TInitialValue>;
+export declare function useEvent<TEventsMap extends Record<string, AnyEventListener>, TEventName extends InferEventName<TEventsMap>, TEventListener extends InferEventListener<TEventsMap, TEventName>, TInitialValue extends Parameters<TEventListener>[0] | null>(eventEmitter: EventEmitter<TEventsMap>, eventName: TEventName, initialValue?: TInitialValue | null): InferEventParameter<TEventListener, TInitialValue>;
 export {};
 //# sourceMappingURL=useEvent.d.ts.map
