@@ -1,7 +1,6 @@
 /.github/workflows                              @tsapeta @brentvatne @kudo
 /.github/workflows/cli.yml                      @EvanBacon @bycedric
 /docs                                           @Simek @amandeepmittal
-/pacakges/eas-client                            @wschurman
 /packages/@expo/cli                             @EvanBacon @bycedric
 /packages/@expo/config                          @EvanBacon
 /packages/@expo/config-plugins                  @EvanBacon @brentvatne
@@ -24,6 +23,7 @@
 /packages/create-expo                           @EvanBacon @bycedric
 /packages/create-expo-module                    @tsapeta
 /packages/create-expo-nightly                   @kudo
+/packages/eas-client                            @wschurman
 /packages/expo                                  @ide @tsapeta @brentvatne
 /packages/expo-apple-authentication             @tsapeta @alanjhughes
 /packages/expo-application                      @ide
