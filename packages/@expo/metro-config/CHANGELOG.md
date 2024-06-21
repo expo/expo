@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade `glob@7` to `glob@10`.
 
 ## 0.18.4 — 2024-05-16
 
