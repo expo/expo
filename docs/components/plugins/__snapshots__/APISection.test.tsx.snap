@@ -225,7 +225,7 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -1053,7 +1053,7 @@ This should come from the user field of an
     
 
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -2465,7 +2465,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3326,7 +3326,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3633,7 +3633,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3957,7 +3957,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
@@ -4942,7 +4942,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
@@ -5589,7 +5589,7 @@ for more details.
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
@@ -5631,7 +5631,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
@@ -5864,7 +5864,7 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
@@ -6164,7 +6164,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       class="css-1avgxs7-APISectionDeprecationNote"
     >
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-16xozm6-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-16xozm6-Callout"
         data-testid="callout-container"
       >
         <div
@@ -6577,7 +6577,7 @@ provided with an
         
 
         <blockquote
-          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
           data-testid="callout-container"
         >
           <div
@@ -7744,7 +7744,7 @@ the platform.
               
 
               <blockquote
-                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
                 data-testid="callout-container"
               >
                 <div
@@ -10217,7 +10217,7 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
@@ -10739,7 +10739,7 @@ provided with a single argument that is
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
