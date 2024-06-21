@@ -484,6 +484,7 @@ export const usePermissions = createPermissionHook<
  * __Available only on iOS >= 14 and Android >= 14.__ Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
  * media library, otherwise this method is a no-op.
+ * @param mediaTypes [FILL_ME_OUT]
  * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
  * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
  * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [addListener(listener)](#medialibraryaddlistenerlistener).
