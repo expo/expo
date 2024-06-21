@@ -22,9 +22,9 @@ export type DocumentPickerOptions = {
    */
   multiple?: boolean;
   /**
-   * If set to `true`, the system UI will use the `ACTION_GET_CONTENT` intent instead of
+   * If set to `true`, the system UI uses the `ACTION_GET_CONTENT` intent instead of
    * `ACTION_OPEN_DOCUMENT` to allow the user to pick a file. This is useful when you want to pick
-   * a file from other sources than the document providers, like Google Drive or Dropbox.
+   * a file from sources other than the document providers, such as Google Drive or Dropbox.
    * @platform android
    * @default false
    */
