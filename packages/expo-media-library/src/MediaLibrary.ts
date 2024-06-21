@@ -31,8 +31,7 @@ export type GranularPermission = 'audio' | 'photo' | 'video';
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 
 /**
- * On Android 14+, when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes),
- * use this to specify the type(s) of media that the user will be granting access to.
+ * Represents the possible types of media that app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
  * By default, this presents a list that shows both photos and videos.
  * @platform android 14+
  * */
