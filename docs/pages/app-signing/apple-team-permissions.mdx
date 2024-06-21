@@ -1,5 +1,5 @@
 ---
-title: Apple Developer account permissions for EAS Build
+title: Apple Developer Program roles and permissions for EAS Build
 sidebar_title: Apple Developer account permissions
 description: Learn about the Apple Developer account membership requirements for creating an EAS Build.
 ---
@@ -7,7 +7,7 @@ description: Learn about the Apple Developer account membership requirements for
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-When creating an EAS Build for iOS, an Apple Developer account is required. This account has necessary permissions to submit the app for review, manage app's distribution, and generate required [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles.
+When creating a build for and iOS device on EAS, an Apple Developer account is required. This account has necessary permissions to submit the app for review, manage app's distribution, and generate required [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles.
 
 If the Apple Developer account is an individual account, only the account owner can generate the app signing credentials. This guide provides steps that the account owner has to follow to ensure app signing credentials are generated. It also provides steps for the team developer to create an EAS Build.
 
@@ -37,9 +37,9 @@ As a developer on the team, when running `eas build -p ios` in the terminal wind
   ]}
 />
 
-Press <kbd>n</kbd> for not logging to the Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build.
+Press <kbd>n</kbd> to skip logging into Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build with existing credentials
 
-The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. However, the EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account owner in your organization's Expo account.
+The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. When you skip login, the EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account owner in your organization's Expo account.
 
 ## Important note
 
