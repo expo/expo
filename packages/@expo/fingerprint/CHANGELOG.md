@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade `glob@7` to `glob@10`.
+
 ## 0.10.0 - 2024-06-20
 
 ### 🛠 Breaking changes
