@@ -56,7 +56,7 @@ export const Callout = ({
     <blockquote
       css={[containerStyle, getCalloutColor(finalType)]}
       className={mergeClasses(
-        'flex gap-2 rounded-md shadow-xs py-3 px-4 mb-1',
+        'flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
         '[table_&]:last-of-type:mb-0',
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:!mb-0',
