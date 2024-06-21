@@ -46,9 +46,9 @@ export function ApiVersionSelect() {
   );
 }
 
-function versionToText(version: string): string {
+export function versionToText(version: string): string {
   if (version === 'unversioned') {
-    return 'Unversioned';
+    return 'Next (unversioned)';
   } else if (version === 'latest') {
     return `${formatSdkVersion(LATEST_VERSION)} (latest)`;
   } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
