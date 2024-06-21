@@ -32,7 +32,7 @@ type InferEventParameter<
 /**
  * React hook that listens to events emitted by the given object. The returned value is an array of event parameters
  * that get updated whenever a new event is dispatched.
- * @param emitter An object that emits events, e.g. a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param emitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
  * @param eventName Name of the event to listen to.
  * @param initialValue An array of event parameters to use until the event is called for the first time.
  * @returns An array of arguments passed to the event listener.
@@ -43,6 +43,7 @@ type InferEventParameter<
  *
  * export function PlayerStatus({ videoPlayer }: { videoPlayer: VideoPlayer }) {
  *   const playerStatus = useEvent(videoPlayer, 'statusChange', videoPlayer.status);
+ *
  *   return <Text>{`Player status: ${playerStatus}`}</Text>;
  * }
  * ```
