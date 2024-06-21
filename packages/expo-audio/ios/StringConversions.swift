@@ -8,6 +8,8 @@ func statusToString(status: AVPlayer.Status) -> String {
     return "failed"
   case .unknown:
     return "unknown"
+  @unknown default:
+    return "unknown"
   }
 }
 
@@ -19,6 +21,8 @@ func timeControlStatusString(status: AVPlayer.TimeControlStatus) -> String {
     return "paused"
   case .waitingToPlayAtSpecifiedRate:
     return "waitingToPlayAtSpecifiedRate"
+  @unknown default:
+    return "unknown"
   }
 }
 
