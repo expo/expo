@@ -41,6 +41,7 @@ You can configure `expo-secure-store` using its built-in [config plugin](/config
       [
         "expo-secure-store",
         {
+          "configureAndroidBackup": true,
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ]
@@ -53,6 +54,12 @@ You can configure `expo-secure-store` using its built-in [config plugin](/config
 
 <ConfigPluginProperties
   properties={[
+    {
+      name: 'configureAndroidBackup',
+      platform: 'android',
+      description: 'A boolean indicating whether to configure automatic Android backup to work correctly with `expo-secure-store`. [Learn more](#android-auto-backup).',
+      default: 'true',
+    },
     {
       name: 'faceIDPermission',
       platform: 'ios',
@@ -106,6 +113,39 @@ When using `expo-secure-store`, you can set the [`ios.config.usesNonExemptEncryp
 ```
 
 Setting this property automatically handles the compliance information prompt.
+
+## Android Auto Backup
+
+Android Auto Backup for Apps automatically backs up a user's data from apps that target and run on Android 6.0 (API level 23) or higher.
+The Auto Backup system has to be configured to exclude `expo-secure-store` data from the backup, as it's impossible to decrypt it after
+restoring the backup - the app will be using a different KeyStore.
+
+If your app doesn't have any custom backup configuration, `expo-secure-store` will automatically configure the Auto Backup system to ignore the `expo-secure-store` data.
+
+If you are using your own Auto Backup configuration you should exclude the `SecureStore` under the `sharedpref` domain and set the `configureAndroidBackup` to
+`false` in the [config plugin configuration](#example-appjson-with-config-plugin).
+
+```xml
+<!--  Auto Backup configuration for Android 12 and higher -->
+<data-extraction-rules>
+  <cloud-backup>
+    <include domain="sharedpref" path="."/>
+    <exclude domain="sharedpref" path="SecureStore"/>
+  </cloud-backup>
+  <device-transfer>
+    <include domain="sharedpref" path="."/>
+    <exclude domain="sharedpref" path="SecureStore"/>
+  </device-transfer>
+</data-extraction-rules>
+```
+
+```xml
+<!--  Auto Backup configuration for Android 11 and lower -->
+<full-backup-content>
+  <include domain="sharedpref" path="."/>
+  <exclude domain="sharedpref" path="SecureStore"/>
+</full-backup-content>
+```
 
 ## Usage
 

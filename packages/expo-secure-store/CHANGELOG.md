@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add a config plugin for configuring the Android backup system. ([#29944](https://github.com/expo/expo/pull/29944) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 - [iOS] Improve error message for unhandled errors ([#29394](https://github.com/expo/expo/pull/29394) by [@hassankhan](https://github.com/hassankhan))
