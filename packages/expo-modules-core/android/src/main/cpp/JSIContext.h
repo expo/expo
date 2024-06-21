@@ -150,11 +150,19 @@ public:
 
 private:
   friend HybridBase;
+
+  /*
+   * We stores two global references to the java part of the JSIContext.
+   * However, one is wrapped in additional abstraction to make it thread-safe,
+   * which increase the access time. For most operations, we should use the bare reference.
+   * Only for operations that are executed on different threads that aren't attached to JVM,
+   * we should use the thread-safe reference.
+   */
   jni::global_ref<JSIContext::javaobject> javaPart_;
+  std::shared_ptr<ThreadSafeJNIGlobalRef<JSIContext::javaobject>> threadSafeJThis;
 
   bool wasDeallocated_ = false;
 
-  std::shared_ptr<ThreadSafeJNIGlobalRef<JSIContext::javaobject>> threadSafeJThis;
 
   explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
