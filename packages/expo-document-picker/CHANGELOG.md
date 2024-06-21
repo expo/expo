@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `useGetContentAction` option to `getDocumentAsync` to use the intent `ACTION_GET_CONTENT` instead of `ACTION_OPEN_DOCUMENT`. ([#29925](https://github.com/expo/expo/pull/29925) by [@robertying](https://github.com/robertying))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
