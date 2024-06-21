@@ -353,7 +353,7 @@ Because Expo uses underscores in generated files, you need to disable jekyll by 
 
 <Terminal cmd={['$ mkdir public && touch public/.nojekyll']} />
 
-Files in the **public** directory will be copied to the **dist** directory when you build your project.
+Files in the **public** directory are copied to the **dist** directory when you build your web app.
 
 > You also need to run `gh-pages` with the `-t` flag to ensure files starting with `.` are included in the deployment, which is handled in the scripts added to **package.json** in the next step.
 
