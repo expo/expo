@@ -36,6 +36,16 @@ type InferEventParameter<
  * @param event Name of the event to listen to.
  * @param initialValue An array of event parameters to use until the event is called for the first time.
  * @returns An array of arguments passed to the event listener.
+ * @example
+ * ```tsx
+ * import { useEvent } from 'expo';
+ * import { VideoPlayer } from 'expo-video';
+ *
+ * export function PlayerStatus({ videoPlayer }: { videoPlayer: VideoPlayer }) {
+ *   const playerStatus = useEvent(videoPlayer, 'statusChange', videoPlayer.status);
+ *   return <Text>{`Player status: ${playerStatus}`}</Text>;
+ * }
+ * ```
  */
 export function useEvent<
   TEventsMap extends Record<string, AnyEventListener>,
