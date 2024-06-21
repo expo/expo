@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Reduce the number of global references to `NativeStatementBinding`. ([#29937](https://github.com/expo/expo/pull/29937) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 14.0.3 — 2024-04-23
