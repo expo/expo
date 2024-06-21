@@ -152,7 +152,7 @@ private:
   friend HybridBase;
 
   /*
-   * We stores two global references to the java part of the JSIContext.
+   * We store two global references to the Java part of the JSIContext.
    * However, one is wrapped in additional abstraction to make it thread-safe,
    * which increase the access time. For most operations, we should use the bare reference.
    * Only for operations that are executed on different threads that aren't attached to JVM,
