@@ -24,7 +24,6 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
     /**
      * A dummy private property with the given generic type. It is required for TypeScript to correctly infer this subtype.
      * E.g. `useEvent` would not be able to infer the events map which results in accepting any string as the event name.
-     * @hidden
      * @private
      * @deprecated
      */
