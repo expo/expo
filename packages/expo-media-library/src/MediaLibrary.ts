@@ -481,7 +481,7 @@ export const usePermissions = createPermissionHook<
 
 // @needsAudit
 /**
- * __Available only on iOS >= 14 and Android >= 14.__ Allows the user to update the assets that your app has access to.
+ * Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
  * media library, otherwise this method is a no-op.
  * @param mediaTypes [FILL_ME_OUT]
