@@ -1,0 +1,40 @@
+---
+title: Apple Developer account permissions for EAS Build
+sidebar_title: Apple Developer account permissions
+description: Learn about the Apple Developer account membership requirements for creating an EAS Build.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+When creating an EAS Build for iOS, an Apple Developer account is required. This account has necessary permissions to submit the app for review, manage app's distribution, and generate required [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles.
+
+If the Apple Developer account is an individual account, only the account owner can generate the app signing credentials. However, it is still possible to create an EAS Build by a developer within the organization who may not be the account owner of that Apple Developer account.
+
+> See [Apple's documentation on Program Roles](https://developer.apple.com/support/roles/) for details on the different roles and their permissions based on the type of Developer account.
+
+## Steps for Apple Developer account owner
+
+The owner of the individual Apple Developer account needs to generate a distribution certificate (if submitting an app to the App Store), provisioning profile, or a push key (if submitting an app to use a push notification service).
+
+Once the owner login to their [Expo account](/accounts/account-types/), they can create or update the provisioning profile by running `eas credentials` using the EAS CLI.
+
+<Terminal cmd={['$ eas login', '', '$ eas credentials']} />
+
+The CLI will prompt for selecting a [build profile](/build/eas-json/#build-profiles) to use for the EAS Build. If the owner is creating a production build, follow the the steps to [create a distribution provisioning profile](/tutorial/eas/ios-production-build/#create-a-distribution-provisioning-profile). To create a developer build, follow the steps to [create a provisioning profile](/tutorial/eas/ios-development-build-for-devices/#provisioning-profile).
+
+This ensures that the provisioning profile associated with the Expo account has necessary permissions.
+
+## Steps for the team developer
+
+As a developer on the team, when running `eas build -p ios` in the terminal window, the EAS CLI will ask you to login to an Apple Developer account. The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS.
+
+Select not to login to the Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any) when prompted by EAS CLI and continue creating the EAS Build.
+
+EAS Build will use the last provisioning profile that was updated by the Apple Developer account owner in the Expo account.
+
+## Important note
+
+### Provisioning profile expiry and updates
+
+The associated provisioning profile needs to be updated if certain [iOS capabilities](/build-reference/ios-capabilities/) (such as, entitlements) are added or removed, or at the annual expiry of the profile . This step is handled by the Apple Developer account owner.

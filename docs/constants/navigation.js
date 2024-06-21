@@ -285,6 +285,7 @@ const general = [
         makePage('app-signing/existing-credentials.mdx'),
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
+        makePage('app-signing/apple-team-permissions.mdx'),
       ],
       { expanded: false }
     ),
