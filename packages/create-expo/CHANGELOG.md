@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update create-expo-app CLI help screen and README to reflect new default template in v51. ([#28738](https://github.com/expo/expo/pull/28738) by [@zeckdude](https://github.com/zeckdude))
+
 ### 💡 Others
 
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
