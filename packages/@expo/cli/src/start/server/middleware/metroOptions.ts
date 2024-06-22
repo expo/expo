@@ -44,6 +44,10 @@ export type ExpoMetroBundleOptions = MetroBundleOptions & {
   serializerOptions?: SerializerOptions;
 };
 
+export function isServerEnvironment(environment?: any): boolean {
+  return environment === 'node' || environment === 'react-server';
+}
+
 export function shouldEnableAsyncImports(projectRoot: string): boolean {
   if (env.EXPO_NO_METRO_LAZY) {
     return false;
@@ -54,10 +58,6 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   // If it is installed, the user MUST import it somewhere in their project.
   // Expo Router automatically pulls this in, so we can check for it.
   return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
-}
-
-export function isServerEnvironment(environment?: any): boolean {
-  return environment === 'node' || environment === 'react-server';
 }
 
 function withDefaults({
@@ -170,7 +170,7 @@ export function getMetroDirectBundleOptions(
     dev,
     minify: minify ?? !dev,
     inlineSourceMap: inlineSourceMap ?? false,
-    lazy,
+    lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
@@ -186,6 +186,7 @@ export function getMetroDirectBundleOptions(
     customResolverOptions: {
       __proto__: null,
       environment,
+      exporting: isExporting || undefined,
     },
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
@@ -213,9 +214,13 @@ export function createBundleUrlPathFromExpoConfig(
 }
 
 export function createBundleUrlPath(options: ExpoMetroOptions): string {
+  const queryParams = createBundleUrlSearchParams(options);
+  return `/${encodeURI(options.mainModuleName.replace(/^\/+/, ''))}.bundle?${queryParams.toString()}`;
+}
+
+export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearchParams {
   const {
     platform,
-    mainModuleName,
     mode,
     minify,
     environment,
@@ -286,6 +291,10 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.environment', environment);
   }
 
+  if (isExporting) {
+    queryParams.append('resolver.exporting', String(isExporting));
+  }
+
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
   }
@@ -296,7 +305,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
   }
 
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+  return queryParams;
 }
 
 /**

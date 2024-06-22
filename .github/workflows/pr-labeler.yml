@@ -73,8 +73,8 @@ jobs:
           echo "isPreviousFingerprintEmpty=${{ steps.fingerprint.outputs.previous-fingerprint == '' }}"
 
       - name: 🏷️ Labeling PR
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
+        uses: actions/github-script@v7
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
         with:
           script: |
             try {
@@ -96,8 +96,8 @@ jobs:
               labels: ['bot: fingerprint compatible']
             })
       - name: 🏷️ Labeling PR
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
+        uses: actions/github-script@v7
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
         with:
           script: |
             try {
@@ -120,7 +120,7 @@ jobs:
             })
 
       - name: 🔍 Find old comment if it exists
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         if: ${{ github.event_name == 'pull_request' }}
         id: old_comment
         with:
@@ -128,8 +128,8 @@ jobs:
           comment-author: 'expo-bot'
           body-includes: <!-- pr-labeler comment -->
       - name: 💬 Add comment with fingerprint
-        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}
-        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -155,8 +155,8 @@ jobs:
               body: body,
             });
       - name: 💬 Update comment with fingerprint
-        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id != '' }}
-        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -183,8 +183,8 @@ jobs:
               body: body,
             });
       - name: 💬 Delete comment with fingerprint
-        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff == '[]' && steps.old_comment.outputs.comment-id != '' }}
-        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' && steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |

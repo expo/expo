@@ -17,6 +17,11 @@ value class SharedObjectId(val value: Int) {
     val nativeObject = toNativeObject(appContext) ?: return null
     return appContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
   }
+
+  fun toWeakJavaScriptObject(appContext: AppContext): JavaScriptWeakObject? {
+    val nativeObject = toNativeObject(appContext) ?: return null
+    return appContext.sharedObjectRegistry.toWeakJavaScriptObject(nativeObject)
+  }
 }
 
 typealias SharedObjectPair = Pair<SharedObject, JavaScriptWeakObject>
@@ -90,6 +95,12 @@ class SharedObjectRegistry(appContext: AppContext) {
   internal fun toJavaScriptObject(native: SharedObject): JavaScriptObject? {
     return synchronized(this) {
       pairs[native.sharedObjectId]?.second?.lock()
+    }
+  }
+
+  internal fun toWeakJavaScriptObject(nativeObject: SharedObject): JavaScriptWeakObject? {
+    return synchronized(this) {
+      pairs[nativeObject.sharedObjectId]?.second
     }
   }
 }

@@ -11,6 +11,7 @@ import {
 } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
 export function useAudioPlayer(
@@ -36,9 +37,11 @@ export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (status: RecordingStatus) => void
 ): [AudioRecorder, RecorderState] {
+  const platformOptions = createRecordingOptions(options);
   const recorder = useReleasingSharedObject(() => {
-    return new AudioModule.AudioRecorder(options);
-  }, [JSON.stringify(options)]);
+    return new AudioModule.AudioRecorder(platformOptions);
+  }, [JSON.stringify(platformOptions)]);
+
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {

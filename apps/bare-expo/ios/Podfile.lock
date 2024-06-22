@@ -183,9 +183,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - expo-dev-menu-interface (1.8.3)
-  - expo-dev-menu-interface/Tests (1.8.3):
-    - Nimble
-    - Quick
   - expo-dev-menu/Main (5.0.14):
     - DoubleConversion
     - EXManifests
@@ -2009,7 +2006,6 @@ DEPENDENCIES:
   - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
-  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
@@ -2531,7 +2527,7 @@ SPEC CHECKSUMS:
   expo-dev-client: 5a76dfdc64875a076212f9d3ee9a897bdd735105
   expo-dev-launcher: 752312abcf346045aac32cf1bde006f45faf4a04
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
-  expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
+  expo-dev-menu-interface: 3e97a7c7d79caff5f62acb00d053d4ec86d0ca1f
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
   ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3

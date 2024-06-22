@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { pathExists, readJSON, unlink, writeJSON } from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import ora from 'ora';
 import * as path from 'path';
 

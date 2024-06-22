@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/winter/index.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,CAAC","sourcesContent":["import './runtime';\n"]}

@@ -151,6 +151,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             }
             else {
                 video.removeAttribute('src');
+                video.load();
             }
         });
         this.playing = true;

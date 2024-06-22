@@ -9,10 +9,10 @@ import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins
 
 // https://developer.android.com/reference/android/R.attr#colorPrimaryDark
 const COLOR_PRIMARY_DARK_KEY = 'colorPrimaryDark';
-// https://developer.android.com/reference/android/R.attr#windowTranslucentStatus
-const WINDOW_TRANSLUCENT_STATUS = 'android:windowTranslucentStatus';
 // https://developer.android.com/reference/android/R.attr#windowLightStatusBar
 const WINDOW_LIGHT_STATUS_BAR = 'android:windowLightStatusBar';
+// https://developer.android.com/reference/android/R.attr#statusBarColor
+const STATUS_BAR_COLOR = 'android:statusBarColor';
 
 export const withStatusBar: ConfigPlugin = (config) => {
   config = withStatusBarColors(config);
@@ -54,7 +54,6 @@ export function setStatusBarStyles(
   styles = assignStylesValue(styles, {
     parent: getAppThemeLightNoActionBarGroup(),
     name: WINDOW_LIGHT_STATUS_BAR,
-    targetApi: '23',
     value: 'true',
     // Default is light-content, don't need to do anything to set it
     add: getStatusBarStyle(config) === 'dark-content',
@@ -62,18 +61,10 @@ export function setStatusBarStyles(
 
   styles = assignStylesValue(styles, {
     parent: getAppThemeLightNoActionBarGroup(),
-    name: WINDOW_TRANSLUCENT_STATUS,
-    value: 'true',
-    // translucent status bar set in theme
-    add: floatElement,
-  });
-
-  styles = assignStylesValue(styles, {
-    parent: getAppThemeLightNoActionBarGroup(),
-    name: COLOR_PRIMARY_DARK_KEY,
-    value: `@color/${COLOR_PRIMARY_DARK_KEY}`,
+    name: STATUS_BAR_COLOR,
+    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
     // Remove the color if translucent is used
-    add: !!hexString,
+    add: floatElement || !!hexString,
   });
 
   return styles;

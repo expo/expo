@@ -66,8 +66,8 @@ public class AudioModule: Module {
         // Gets the duration of the item on load
         player.pointer
           .publisher(for: \.currentItem?.status)
-          .sink { [weak self] status in
-            guard let self, let status else {
+          .sink { status in
+            guard let status else {
               return
             }
             if status == .readyToPlay {
@@ -98,8 +98,8 @@ public class AudioModule: Module {
         player.isLoaded
       }
 
-      Property("isPlaying") { player in
-        player.isPlaying
+      Property("playing") { player in
+        player.playing
       }
 
       Property("mute") { player in
@@ -148,7 +148,7 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if player.isPlaying {
+        if player.playing {
           player.pointer.rate = playerRate
         }
         player.currentRate = playerRate
@@ -165,7 +165,7 @@ public class AudioModule: Module {
       Function("release") { player in
         let id = player.id
         if let token = timeTokens[id] {
-          player.pointer.removeTimeObserver(token)
+          player.pointer.removeTimeObserver(token as Any)
         }
         player.pointer.pause()
         players.removeValue(forKey: player.id)
@@ -184,7 +184,7 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
-        guard var cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+        guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
           throw Exceptions.AppContextLost()
         }
         let avRecorder = AudioUtils.createRecorder(directory: directory, with: options)
@@ -210,11 +210,11 @@ public class AudioModule: Module {
         recorder.uri
       }
 
-      Function("record") { recorder in
+      Function("record") { (recorder: AudioRecorder) -> [String: Any] in
         try checkPermissions()
         recorder.pointer.record()
         recorder.startTimestamp = Int(recorder.deviceCurrentTime)
-        recorder.getRecordingStatus()
+        return recorder.getRecordingStatus()
       }
 
       Function("pause") { recorder in
@@ -340,11 +340,7 @@ public class AudioModule: Module {
       forName: .AVPlayerItemDidPlayToEndTime,
       object: player.pointer.currentItem,
       queue: nil
-    ) { [weak self] _ in
-      guard let self else {
-        return
-      }
-
+    ) { _ in
       if player.isLooping {
         player.pointer.seek(to: CMTime.zero)
         player.pointer.play()

@@ -22,7 +22,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
      * Boolean value indicating whether the player is currently playing.
      */
-    isPlaying: boolean;
+    playing: boolean;
     /**
      * Boolean value indicating whether the player is currently muted.
      */
@@ -95,7 +95,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * Initializes a new audio recorder instance with the given source.
      * @hidden
      */
-    constructor(options: RecordingOptions);
+    constructor(options: Partial<RecordingOptions>);
     /**
      * Unique identifier for the recorder object.
      */

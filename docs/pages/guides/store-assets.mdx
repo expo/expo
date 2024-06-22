@@ -6,7 +6,7 @@ sidebar_title: App store assets
 
 import { FigmaIcon } from '@expo/styleguide-icons';
 import { BoxLink } from '~/ui/components/BoxLink';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Before submitting your app to the Google Play Store and Apple App Store, you need to provide some assets for your store listing page. The goal of these images and videos is to give your prospective users an idea of what your app experience is going to be like.
 
@@ -26,11 +26,11 @@ The most straightforward option &mdash; open up your app on a real device and ta
 
 **Cons**: Need to load the app on different devices for a full range of screenshots.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the Expo Go Apple App Store Listing Page"
   caption="Screenshots of the Expo Go Apple App Store Listing Page."
   src="/static/images/guides/expo-go-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### Option 2: screenshots within a design
@@ -41,11 +41,11 @@ The majority of apps use this approach. It involves taking screenshots of the ap
 
 **Cons:** The assets need to be created using a design program.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the Brex Apple App Store Listing Page"
   caption="Screenshots of the Brex Apple App Store Listing Page."
   src="/static/images/guides/brex-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### Option 3: make it fancy
@@ -56,11 +56,11 @@ In this option, on the app store pages, you can incorporate elements of your app
 
 **Cons:** Need an experienced designer to create and maintain the assets.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the MS Office Apple Store Listing Page"
   caption="Screenshots of the MS Office Apple Store Listing Page."
   src="/static/images/guides/office-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ## Google Play Store Asset Requirements

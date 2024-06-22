@@ -9,7 +9,7 @@ import Foundation
 @objc(EXRequestCdpInterceptor)
 public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorProtocolDelegate {
   private var delegate: ExpoRequestCdpInterceptorDelegate?
-  internal var dispatchQueue = DispatchQueue(label: "expo.requestCdpInterceptor")
+  public var dispatchQueue = DispatchQueue(label: "expo.requestCdpInterceptor")
 
   override private init() {}
 

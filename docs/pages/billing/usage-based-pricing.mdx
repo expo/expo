@@ -5,7 +5,7 @@ description: Learn how Expo applies usage-based billing for customers who exceed
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CreditCard02Icon } from '@expo/styleguide-icons';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo applies usage-based billing for customers who exceed their [plan](/billing/plans/) allowances. This enables our customers to use what they need without worrying about limitations or requiring contractual obligations.
 
@@ -110,10 +110,10 @@ If the same subscriber is on a Production plan, they will pay $0 as the Producti
 
 To see the current billing period's usage summary, go to the [Billing](https://expo.dev/settings/billing) and under **Usage this month**, you will find a summary for both EAS Build and EAS Update usage.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Billing usage summary for EAS Build and EAS update in the Expo dashboard."
   src="/static/images/billing/usage-01.png"
-  style={{ maxWidth: 640 }}
+  className="max-w-[640px]"
 />
 
 ### EAS Build usage history
@@ -123,10 +123,10 @@ To see detailed EAS Build usage for a current or previous billing period:
 - Click **Usage** in the navigation menu.
 - Under the **EAS Build** section, you will find details on builds count and executed builds based on their platform and resource class.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Detailed EAS Build usage in the Expo dashboard."
   src="/static/images/billing/usage-02.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 ### EAS Update usage history
@@ -136,10 +136,10 @@ To see detailed EAS Update usage for a current or previous billing period:
 - Click **Usage** in the navigation menu.
 - Under the **EAS Update** section, you will find details on updated users and global edge bandwidth details.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Detailed EAS Update usage in the Expo dashboard."
   src="/static/images/billing/usage-03.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 ### Enable notifications for EAS Build usage
@@ -151,10 +151,10 @@ To enable EAS Build credit usage notification
 - Click **Email notifications** in the navigation menu under your account's settings:
 - Under **EAS Build notifications**, click **Subscribe** for **Plan credit usage notifications**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Enabling EAS Build plan credit usage notifications in the Expo dashboard."
   src="/static/images/billing/usage-04.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### How to optimize build usage

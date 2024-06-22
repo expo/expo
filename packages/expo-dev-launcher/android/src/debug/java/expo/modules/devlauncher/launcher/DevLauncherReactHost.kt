@@ -22,7 +22,6 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
-import expo.modules.devlauncher.helpers.findPackagesWithDevMenuExtension
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.kotlin.ModulesProvider
@@ -45,7 +44,7 @@ object DevLauncherReactHost {
       DefaultReactHostDelegate(
         jsMainModulePath = jsMainModuleName,
         jsBundleLoader = jsBundleLoader,
-        reactPackages = getPackages(application),
+        reactPackages = getPackages(),
         jsRuntimeFactory = jsRuntimeFactory,
         turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       )
@@ -70,15 +69,9 @@ object DevLauncherReactHost {
     return reactHost
   }
 
-  private fun getPackages(application: Application): List<ReactPackage> {
-    val devMenuPackage = findDevMenuPackage()
+  private fun getPackages(): List<ReactPackage> {
     val devMenuRelatedPackages: List<ReactPackage> =
-      if (devMenuPackage != null) {
-        findPackagesWithDevMenuExtension(application) + devMenuPackage
-      } else {
-        emptyList()
-      }
-
+      findDevMenuPackage()?.let { listOf(it) } ?: emptyList()
     val additionalPackages = (DevLauncherController.sAdditionalPackages ?: emptyList())
 
     return listOf(

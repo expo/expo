@@ -82,7 +82,7 @@ function CommunityGridCell({
     <A
       href={link}
       className={mergeClasses(
-        'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg',
+        'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg transition shadow-xs',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className

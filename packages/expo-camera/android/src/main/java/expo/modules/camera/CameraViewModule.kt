@@ -8,6 +8,7 @@ import expo.modules.camera.analyzers.MLKitBarCodeScanner
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
@@ -114,8 +115,8 @@ class CameraViewModule : Module() {
 
       Prop("facing") { view, facing: CameraType? ->
         facing?.let {
-          if (view.lenFacing != facing) {
-            view.lenFacing = it
+          if (view.lensFacing != facing) {
+            view.lensFacing = it
           }
         }
       }
@@ -185,6 +186,14 @@ class CameraViewModule : Module() {
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
         view.autoFocus = autoFocus ?: FocusMode.OFF
+      }
+
+      Prop("ratio") { view, ratio: CameraRatio? ->
+        ratio?.let {
+          if (view.ratio != ratio) {
+            view.ratio = it
+          }
+        }
       }
 
       OnViewDidUpdateProps { view ->

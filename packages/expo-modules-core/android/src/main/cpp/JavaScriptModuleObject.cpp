@@ -96,9 +96,7 @@ void JavaScriptModuleObject::registerNatives() {
                    makeNativeMethod("registerClass",
                                     JavaScriptModuleObject::registerClass),
                    makeNativeMethod("registerViewPrototype",
-                                    JavaScriptModuleObject::registerViewPrototype),
-                   makeNativeMethod("emitEvent",
-                                    JavaScriptModuleObject::emitEvent)
+                                    JavaScriptModuleObject::registerViewPrototype)
                  });
 }
 
@@ -238,6 +236,10 @@ void JavaScriptModuleObject::decorate(jsi::Runtime &runtime, jsi::Object *module
   }
 }
 
+std::weak_ptr<jsi::Object> JavaScriptModuleObject::getCachedJSIObject() {
+  return jsiObject;
+}
+
 void JavaScriptModuleObject::exportConstants(
   jni::alias_ref<react::NativeMap::javaobject> constants
 ) {
@@ -351,40 +353,5 @@ void JavaScriptModuleObject::registerProperty(
   );
 
   properties.insert_or_assign(cName, std::move(functions));
-}
-
-void JavaScriptModuleObject::emitEvent(
-  jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
-  jni::alias_ref<jstring> eventName,
-  jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
-) {
-  const std::string name = eventName->toStdString();
-  folly::dynamic body;
-  if (eventBody) {
-    body = eventBody->cthis()->consume();
-  }
-
-  const JSIContext *jsiContext = jsiContextRef->cthis();
-
-  jsiContext->runtimeHolder->jsInvoker->invokeAsync([
-    jsiContext,
-    name = std::move(name),
-    body = std::move(body),
-    weakThis = jsiObject
-  ]() {
-    std::shared_ptr<jsi::Object> jsThis = weakThis.lock();
-    if (!jsThis) {
-      return;
-    }
-
-    // TODO(@lukmccall): refactor when jsInvoker recieves a runtime as a parameter
-    jsi::Runtime &rt  = jsiContext->runtimeHolder->get();
-
-    jsi::Value convertedBody = jsi::valueFromDynamic(rt, body);
-    std::vector<jsi::Value> args;
-    args.emplace_back(std::move(convertedBody));
-
-    EventEmitter::emitEvent(rt, *jsThis, name, args);
-  });
 }
 } // namespace expo

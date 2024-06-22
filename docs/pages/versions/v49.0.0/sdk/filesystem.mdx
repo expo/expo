@@ -6,7 +6,7 @@ packageName: 'expo-file-system'
 iconUrl: '/static/images/packages/expo-file-system.png'
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
@@ -18,10 +18,10 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 {/* TODO: update this image so we don't have to force a white background on it */}
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
   src="/static/images/sdk/file-system/file-system-diagram.png"
-  style={{ maxWidth: 850, maxHeight: 600 }}
+  className="max-w-[850px] max-h-[600px]"
   containerClassName="bg-palette-white"
 />
 

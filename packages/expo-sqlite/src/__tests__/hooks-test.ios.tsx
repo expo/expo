@@ -34,7 +34,7 @@ describe(useSQLiteContext, () => {
       });
     });
     const firstResult = result.current;
-    await rerender({});
+    rerender({});
     expect(result.current).toBe(firstResult);
   });
 
@@ -64,7 +64,7 @@ describe(useSQLiteContext, () => {
         </View>
       );
     }
-    const wrapper = ({ children }) => (
+    const wrapper = () => (
       <React.Suspense fallback={<LoadingFallback />}>
         <SQLiteProvider databaseName=":memory:" useSuspense>
           <View />
@@ -72,11 +72,8 @@ describe(useSQLiteContext, () => {
       </React.Suspense>
     );
     const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(screen.queryByText(loadingText)).not.toBeNull();
-      });
-    });
+
+    expect(screen.queryByText(loadingText)).not.toBeNull();
 
     // Ensure that the loading fallback is removed after the database is ready
     await act(async () => {
@@ -88,16 +85,14 @@ describe(useSQLiteContext, () => {
   });
 
   it('should call onError from SQLiteProvider if failed to open database', async () => {
-    const mockErroHandler = jest.fn();
+    const mockErrorHandler = jest.fn();
     render(
-      <SQLiteProvider databaseName="/nonexistent/nonexistent.db" onError={mockErroHandler}>
+      <SQLiteProvider databaseName="/nonexistent/nonexistent.db" onError={mockErrorHandler}>
         <View />
       </SQLiteProvider>
     );
-    await act(async () => {
-      await waitFor(() => {
-        expect(mockErroHandler).toHaveBeenCalled();
-      });
+    await waitFor(() => {
+      expect(mockErrorHandler).toHaveBeenCalled();
     });
   });
 
@@ -130,24 +125,22 @@ describe(useSQLiteContext, () => {
 
   it('should throw when using `onError` and `useSuspense` together', async () => {
     const restoreConsole = suppressErrorOutput();
-    const mockErroHandler = jest.fn();
+    const mockErrorHandler = jest.fn();
     render(
-      <ErrorBoundary fallback={<View />} onError={mockErroHandler}>
+      <ErrorBoundary fallback={<View />} onError={mockErrorHandler}>
         <SQLiteProvider
           databaseName="/nonexistent/nonexistent.db"
-          onError={mockErroHandler}
+          onError={mockErrorHandler}
           useSuspense>
           <View />
         </SQLiteProvider>
       </ErrorBoundary>
     );
-    await act(async () => {
-      await waitFor(() => {
-        expect(mockErroHandler).toHaveBeenCalled();
-        expect(mockErroHandler.mock.calls[0][0].toString()).toMatch(
-          /Cannot use `onError` with `useSuspense`, use error boundaries instead./
-        );
-      });
+    await waitFor(() => {
+      expect(mockErrorHandler).toHaveBeenCalled();
+      expect(mockErrorHandler.mock.calls[0][0].toString()).toMatch(
+        /Cannot use `onError` with `useSuspense`, use error boundaries instead./
+      );
     });
     restoreConsole();
   });

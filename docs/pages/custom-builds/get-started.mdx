@@ -6,7 +6,7 @@ description: Learn how to extend EAS Build with custom build workflows.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
@@ -139,7 +139,7 @@ To test the workflow, run the following command:
 
 After the build is complete, you can verify that the `npm test` script was executed by checking the logs on the **build details** page.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a build config running tests on EAS Build."
   src="/static/images/eas-build/custom-build.png"
 />

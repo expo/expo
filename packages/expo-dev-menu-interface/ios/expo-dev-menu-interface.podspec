@@ -16,7 +16,6 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.source_files   = '**/*.{h,m,swift}'
   s.preserve_paths = '**/*.{h,m,swift}'
-  s.exclude_files  = 'Tests/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenuInterface'
 
@@ -26,11 +25,4 @@ Pod::Spec.new do |s|
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
-
-  s.test_spec 'Tests' do |test_spec|
-    test_spec.platform     = :ios, '13.4'
-    test_spec.source_files = 'Tests/**/*.{h,m,swift}'
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
-  end
 end

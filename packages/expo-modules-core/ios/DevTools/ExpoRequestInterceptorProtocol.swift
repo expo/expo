@@ -7,13 +7,13 @@ import Foundation
  */
 @objc(EXRequestInterceptorProtocol)
 public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate {
-  private static let REQUEST_ID = "ExpoRequestInterceptorProtocol.requestId"
-  private static var requestIdProvider = RequestIdProvider()
-  private lazy var urlSession = URLSession(
+  private static let sessionDelegateProxy = URLSessionSessionDelegateProxy()
+  private static let urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
-    delegate: self,
+    delegate: sessionDelegateProxy,
     delegateQueue: nil
   )
+  private var requestId: String?
   private var dataTask_: URLSessionDataTask?
   private let responseBody = NSMutableData()
   private var responseBodyExceedsLimit = false
@@ -32,11 +32,10 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if !["http", "https"].contains(scheme) {
       return false
     }
-    let isNewRequest = URLProtocol.property(
-      forKey: Self.REQUEST_ID,
+    return URLProtocol.property(
+      forKey: REQUEST_ID,
       in: request
     ) == nil
-    return isNewRequest
   }
 
   override init(
@@ -48,13 +47,16 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // swiftlint:disable force_cast
     let mutableRequest = request as! NSMutableURLRequest
     // swiftlint:enable force_cast
-    let requestId = Self.requestIdProvider.create()
+    self.requestId = Self.sessionDelegateProxy.addDelegate(delegate: self)
+    guard let requestId else {
+      fatalError("requestId should not be nil.")
+    }
     URLProtocol.setProperty(
       requestId,
-      forKey: Self.REQUEST_ID,
+      forKey: REQUEST_ID,
       in: mutableRequest
     )
-    let dataTask = urlSession.dataTask(with: mutableRequest as URLRequest)
+    let dataTask = Self.urlSession.dataTask(with: mutableRequest as URLRequest)
     Self.delegate.willSendRequest(
       requestId: requestId,
       task: dataTask,
@@ -74,6 +76,9 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   public override func stopLoading() {
     dataTask_?.cancel()
+    if let requestId {
+      Self.sessionDelegateProxy.removeDelegate(requestId: requestId)
+    }
   }
 
   // MARK: URLSessionDataDelegate implementations
@@ -91,12 +96,8 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if let error = error {
       client?.urlProtocol(self, didFailWithError: error)
     } else {
-      if let currentRequest = task.currentRequest,
-        let response = task.response as? HTTPURLResponse,
-        let requestId = URLProtocol.property(
-          forKey: Self.REQUEST_ID,
-          in: currentRequest
-        ) as? String {
+      if let response = task.response as? HTTPURLResponse,
+        let requestId {
         let contentType = response.value(forHTTPHeaderField: "Content-Type")
         let isText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
         Self.delegate.didReceiveResponse(
@@ -123,7 +124,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     newRequest request: URLRequest,
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
-    if let requestId = URLProtocol.property(forKey: Self.REQUEST_ID, in: request) as? String {
+    if let requestId {
       Self.delegate.willSendRequest(
         requestId: requestId,
         task: task,
@@ -141,6 +142,118 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     let requestId: String
     let redirectResponse: HTTPURLResponse
   }
+}
+
+/**
+ The delegate to dispatch network request events
+ */
+@objc(EXRequestInterceptorProtocolDelegate)
+protocol ExpoRequestInterceptorProtocolDelegate {
+  @objc
+  func willSendRequest(requestId: String, task: URLSessionTask, request: URLRequest, redirectResponse: HTTPURLResponse?)
+
+  @objc
+  func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
+}
+
+/**
+ Shared URLSessionDataDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
+ */
+private class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
+  private var requestIdProvider = RequestIdProvider()
+  private var delegateMap: [String: URLSessionDataDelegate] = [:]
+  private let dispatchQueue = ExpoRequestCdpInterceptor.shared.dispatchQueue
+
+  func addDelegate(delegate: URLSessionDataDelegate) -> String {
+    let requestId = self.requestIdProvider.create()
+    self.dispatchQueue.async {
+      self.delegateMap[requestId] = delegate
+    }
+    return requestId
+  }
+
+  func removeDelegate(requestId: String) {
+    self.dispatchQueue.async {
+      self.delegateMap.removeValue(forKey: requestId)
+    }
+  }
+
+  private func getRequestId(task: URLSessionTask) -> String? {
+    if let currentRequest = task.currentRequest,
+      let requestId = URLProtocol.property(
+        forKey: REQUEST_ID,
+        in: currentRequest
+      ) as? String {
+      return requestId
+    }
+    return nil
+  }
+
+  private func getDelegate(requestId: String) -> URLSessionDataDelegate? {
+    return self.dispatchQueue.sync {
+      return self.delegateMap[requestId]
+    }
+  }
+
+  private func getDelegate(task: URLSessionTask) -> URLSessionDataDelegate? {
+    guard let requestId = self.getRequestId(task: task) else {
+      return nil
+    }
+    return self.getDelegate(requestId: requestId)
+  }
+
+  // MARK: URLSessionDataDelegate implementations
+
+  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive: Data) {
+    if let delegate = getDelegate(task: dataTask) {
+      delegate.urlSession?(
+        session,
+        dataTask: dataTask,
+        didReceive: didReceive)
+    }
+  }
+
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError: Error?) {
+    if let requestId = self.getRequestId(task: task), let delegate = getDelegate(requestId: requestId) {
+      delegate.urlSession?(
+        session,
+        task: task,
+        didCompleteWithError: didCompleteWithError)
+      self.removeDelegate(requestId: requestId)
+    }
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    dataTask: URLSessionDataTask,
+    didReceive: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) {
+    if let delegate = getDelegate(task: dataTask) {
+      delegate.urlSession?(
+        session,
+        dataTask: dataTask,
+        didReceive: didReceive,
+        completionHandler: completionHandler)
+    }
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    willPerformHTTPRedirection: HTTPURLResponse,
+    newRequest: URLRequest,
+    completionHandler: @escaping (URLRequest?) -> Void
+  ) {
+    if let delegate = getDelegate(task: task) {
+      delegate.urlSession?(
+        session,
+        task: task,
+        willPerformHTTPRedirection: willPerformHTTPRedirection,
+        newRequest: newRequest,
+        completionHandler: completionHandler)
+    }
+  }
 
   /**
    A helper class to create a unique request ID
@@ -157,14 +270,4 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
   }
 }
 
-/**
- The delegate to dispatch network request events
- */
-@objc(EXRequestInterceptorProtocolDelegate)
-protocol ExpoRequestInterceptorProtocolDelegate {
-  @objc
-  func willSendRequest(requestId: String, task: URLSessionTask, request: URLRequest, redirectResponse: HTTPURLResponse?)
-
-  @objc
-  func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
-}
+private let REQUEST_ID = "ExpoRequestInterceptorProtocol.requestId"

@@ -32,9 +32,7 @@ export function importWebpackFromProject(projectRoot: string): typeof import('we
 }
 
 /** Import `@expo/webpack-config` from the project. */
-export function importExpoWebpackConfigFromProject(
-  projectRoot: string
-): typeof import('@expo/webpack-config') {
+export function importExpoWebpackConfigFromProject(projectRoot: string) {
   return importFromProject(projectRoot, '@expo/webpack-config');
 }
 

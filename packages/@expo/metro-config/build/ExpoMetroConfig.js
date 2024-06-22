@@ -170,7 +170,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
-                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/build/winter');
+                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter');
                 if (stdRuntime) {
                     preModules.push(stdRuntime);
                 }

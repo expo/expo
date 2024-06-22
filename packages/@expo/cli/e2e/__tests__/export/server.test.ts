@@ -173,10 +173,11 @@ describe('server-output', () => {
     });
 
     it(`can serve up API route in array group`, async () => {
-      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
-      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
-      expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
-      expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
+      const files = getFiles();
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
+      expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+      expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
       expect(
         await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())

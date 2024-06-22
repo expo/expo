@@ -32,13 +32,11 @@
     "expo-module-scripts": "^3.0.0"
   },
   "devDependencies": {
-    "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^8.0.0"
+    "@testing-library/react-native": "^12.5.1"
   },
   "jest": {
     "preset": "@testing-library/react-native",
     "setupFilesAfterEnv": [
-      "@testing-library/jest-native/extend-expect",
       "./setupTests.js"
     ]
   }

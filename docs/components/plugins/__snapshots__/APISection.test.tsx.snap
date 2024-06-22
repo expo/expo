@@ -225,11 +225,11 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -251,7 +251,7 @@ not appear on the screen.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -1053,11 +1053,11 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -1079,7 +1079,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         
 
@@ -2465,11 +2465,11 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -2491,7 +2491,7 @@ which contains all of the pertinent user and credential information.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3326,11 +3326,11 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3352,7 +3352,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3633,11 +3633,11 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3659,7 +3659,7 @@ None of these options are required.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3957,11 +3957,11 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3983,7 +3983,7 @@ You must include the ID string of the user to sign out.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -4942,11 +4942,11 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -4968,7 +4968,7 @@ After calling this function, the listener will no longer receive any events from
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -5589,11 +5589,11 @@ for more details.
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5615,7 +5615,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 
@@ -5631,11 +5631,11 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5657,7 +5657,7 @@ You will still need to handle null values for any fields you request.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -5864,11 +5864,11 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5890,7 +5890,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -6164,11 +6164,11 @@ exports[`APISection expo-barcode-scanner 1`] = `
       class="css-1avgxs7-APISectionDeprecationNote"
     >
       <blockquote
-        class="css-dmb9uy-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-16xozm6-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-warning"
@@ -6190,7 +6190,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -6577,11 +6577,11 @@ provided with an
         
 
         <blockquote
-          class="css-zknray-Callout"
+          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
           data-testid="callout-container"
         >
           <div
-            class="css-7jywx8-Callout"
+            class="select-none mt-[5px] [table_&]:mt-[3px]"
           >
             <svg
               class="icon-sm text-icon-default"
@@ -6603,7 +6603,7 @@ provided with an
             </svg>
           </div>
           <div
-            class="css-1ohc0ia-Callout"
+            class="text-default w-full last:mb-0 css-mt3buo-Callout"
           >
             
 
@@ -7744,11 +7744,11 @@ the platform.
               
 
               <blockquote
-                class="css-zknray-Callout"
+                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
                 data-testid="callout-container"
               >
                 <div
-                  class="css-7jywx8-Callout"
+                  class="select-none mt-[5px] [table_&]:mt-[3px]"
                 >
                   <svg
                     class="icon-sm text-icon-default"
@@ -7770,7 +7770,7 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="css-1ohc0ia-Callout"
+                  class="text-default w-full last:mb-0 css-mt3buo-Callout"
                 >
                   
 
@@ -10217,11 +10217,11 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10243,7 +10243,7 @@ exports[`APISection expo-pedometer 1`] = `
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 
@@ -10739,11 +10739,11 @@ provided with a single argument that is
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10765,7 +10765,7 @@ provided with a single argument that is
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 

@@ -4,7 +4,7 @@ sidebar_title: Payment history, invoices, and receipts
 description: Learn how to view your account's payment history, download invoices and receipts, and request a refund for a charge.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 **Receipts** in the Expo dashboard provide information about an account's payment history and access to invoices and receipts. It also provides information on payment dates, payment status, and the total amount for that payment. You can also request a refund for a charge if you believe it has been made in error.
 
@@ -16,7 +16,7 @@ To view your account's payment history, click [Receipts](https://expo.dev/settin
 
 For example, an [Organization account's](/accounts/account-types/#organizations) receipts are shown below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Receipts page in the Expo dashboard."
   src="/static/images/billing/receipts-01.png"
 />
@@ -27,10 +27,10 @@ To download and view an invoice for a billing period, go to [Receipts](https://e
 
 - Click the **Date** for the billing period corresponding to the invoice. You will be navigated to a page hosted by Stripe. As an example, the March 22, 2024 invoice below links to this page:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Download invoice shown in the Stripe dashboard."
   src="/static/images/billing/receipts-02.png"
-  style={{ maxWidth: 380 }}
+  className="max-w-[380px]"
 />
 
 - Click **Download invoice**. You will receive a PDF copy of the invoice.
@@ -41,10 +41,10 @@ To download and view a receipt for a billing period, go to [Receipts](https://ex
 
 - Click the **Date** for the billing period corresponding to the receipt. You will be navigated to the appropriate receipt hosted by Stripe. As an example, the March 22, 2024 receipt below links to this page:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Download receipt shown in the Stripe dashboard."
   src="/static/images/billing/receipts-02.png"
-  style={{ maxWidth: 380 }}
+  className="max-w-[380px]"
 />
 
 - Click on **Download receipt.** You will receive a PDF copy of the receipt.
@@ -57,17 +57,17 @@ To request a refund:
 
 - Next to a receipt, click the three-dot menu and then click **Request Refund:**
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Receipts page in the Expo dashboard."
   src="/static/images/billing/receipts-04.png"
 />
 
 - Fill the **Request a refund** form with details for the refund and click **Continue**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Download invoice shown in the Stripe dashboard."
   src="/static/images/billing/receipts-05.png"
-  style={{ maxWidth: 320 }}
+  className="max-w-[320px]"
 />
 
 - Our billing team receives and reviews refund requests. Once a refund is approved, the amount is credited to your payment method. Refunds typically take 5 to 10 business days to fully process.

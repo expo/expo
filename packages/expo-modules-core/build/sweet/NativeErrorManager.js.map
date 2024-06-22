@@ -1,1 +1,0 @@
-{"version":3,"file":"NativeErrorManager.js","sourceRoot":"","sources":["../../src/sweet/NativeErrorManager.ts"],"names":[],"mappings":"AAAA,OAAO,kBAAkB,MAAM,uBAAuB,CAAC;AACvD,eAAe,kBAAkB,CAAC,2BAA2B,CAAC","sourcesContent":["import NativeModulesProxy from '../NativeModulesProxy';\nexport default NativeModulesProxy.ExpoModulesCoreErrorManager;\n"]}

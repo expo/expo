@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import fs from 'fs';
 import Metro from 'metro';
@@ -43,6 +43,10 @@ export type ExportAssetDescriptor = {
   assetId?: string;
   /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
+  /** Expo Router API route path for formatting the server function output. */
+  apiRouteId?: string;
+  /** Expo Router route path for formatting the RSC output. */
+  rscId?: string;
   /** A key for grouping together output files by server- or client-side. */
   targetDomain?: 'server' | 'client';
 };
@@ -63,7 +67,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   // );
 
   const assetEntries: [string, ExportAssetDescriptor][] = [];
+  const apiRouteEntries: [string, ExportAssetDescriptor][] = [];
   const routeEntries: [string, ExportAssetDescriptor][] = [];
+  const rscEntries: [string, ExportAssetDescriptor][] = [];
   const remainingEntries: [string, ExportAssetDescriptor][] = [];
 
   let hasServerOutput = false;
@@ -71,6 +77,8 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     hasServerOutput = hasServerOutput || asset[1].targetDomain === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
+    else if (asset[1].apiRouteId != null) apiRouteEntries.push(asset);
+    else if (asset[1].rscId != null) rscEntries.push(asset);
     else remainingEntries.push(asset);
   }
 
@@ -88,6 +96,22 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     return size;
   };
 
+  if (rscEntries.length) {
+    const plural = rscEntries.length === 1 ? '' : 's';
+
+    Log.log('');
+    Log.log(chalk.bold`Exporting ${rscEntries.length} React Server Component${plural}:`);
+
+    for (const [filePath, assets] of rscEntries.sort((a, b) => a[0].length - b[0].length)) {
+      const id = assets.rscId!;
+      Log.log(
+        '/' + (id === '' ? chalk.gray(' (index)') : id),
+        sizeStr(assets.contents),
+        chalk.gray(filePath)
+      );
+    }
+  }
+
   if (routeEntries.length) {
     const plural = routeEntries.length === 1 ? '' : 's';
 
@@ -97,6 +121,33 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
       const id = assets.routeId!;
       Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
+    }
+  }
+
+  if (apiRouteEntries.length) {
+    const apiRoutesWithoutSourcemaps = apiRouteEntries.filter(
+      (route) => !route[0].endsWith('.map')
+    );
+    const plural = apiRoutesWithoutSourcemaps.length === 1 ? '' : 's';
+
+    Log.log('');
+    Log.log(chalk.bold`Exporting ${apiRoutesWithoutSourcemaps.length} API route${plural}:`);
+
+    for (const [apiRouteFilename, assets] of apiRoutesWithoutSourcemaps.sort(
+      (a, b) => a[0].length - b[0].length
+    )) {
+      const id = assets.apiRouteId!;
+      const hasSourceMap = apiRouteEntries.find(
+        ([filename, route]) =>
+          filename !== apiRouteFilename &&
+          route.apiRouteId === assets.apiRouteId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '' ? chalk.gray(' (index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
     }
   }
 

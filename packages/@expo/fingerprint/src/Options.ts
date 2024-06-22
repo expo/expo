@@ -76,6 +76,8 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
+
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
@@ -86,12 +88,14 @@ export async function normalizeOptionsAsync(
     platforms: ['android', 'ios'],
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
-    sourceSkips: SourceSkips.None,
+    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    enableReactImportsPatcher: true,
     // Options from config
     ...config,
     // Explicit options
     ...options,
+    // These options are computed by both default and explicit options, so we put them last.
+    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }
 

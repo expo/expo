@@ -8,7 +8,7 @@ platforms: ['android', 'ios']
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
@@ -155,7 +155,7 @@ For iOS, you can use the `Instruments` app on macOS to manually trigger backgrou
 4. Press the `Record` button in the top left corner
 5. Navigate to the `Document` Menu and select `Simulate Background Fetch - Expo Go`:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode Menu with Simulate Background Fetch option"
   src="/static/images/simulate-background-fetch-instruments.png"
 />

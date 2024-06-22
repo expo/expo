@@ -4,7 +4,7 @@ sidebar_title: Tools, workflows and extensions
 description: Learn more about different tools, workflows and extensions available when working with development builds.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 Development builds allow you to iterate quickly. However, you can extend the capabilities of your development build to provide a better developer experience when working in teams or customize the build to suit your needs.
@@ -111,20 +111,20 @@ registerDevMenuItems(devMenuItems);
 
 This will create a new section in the dev menu that includes the buttons you have registered:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of a custom menu button in expo-dev-menu"
   src="/static/images/dev-client/custom-menu-button.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 > Subsequent calls of `registerDevMenuItems` will override all previous entries.
 
 ### EAS Update
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example list of EAS Update that can be loaded in the expo-dev-client."
   src="/static/images/dev-client/eas-updates-screen.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 The EAS Update extension provides the ability to view and load published updates in your development client.

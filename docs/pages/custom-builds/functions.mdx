@@ -5,7 +5,7 @@ description: Learn how to create and use EAS Build functions in your custom buil
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
@@ -145,7 +145,7 @@ functions:
     path: ./myFunction
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using a JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function.png"
 />
@@ -248,7 +248,7 @@ async function myFunction(
 export default myFunction;
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using custom JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function-advanced.png"
 />

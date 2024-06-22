@@ -279,10 +279,10 @@ You can add images and assets to the **public/static** directory. They'll be ser
 - Put the video in the appropriate location in `public/static/videos` and use it in your docs page MDX like this:
 
 ```js
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 // Change the path to point to the relative path to your video from within the `static/videos` directory
-<Video file="guides/color-schemes.mp4" />;
+<ContentSpotlight file="guides/color-schemes.mp4" />;
 ```
 
 ### Add code block

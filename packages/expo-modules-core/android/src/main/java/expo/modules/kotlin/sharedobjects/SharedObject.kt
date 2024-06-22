@@ -2,8 +2,10 @@ package expo.modules.kotlin.sharedobjects
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.JNIUtils
+import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
+import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.ref.WeakReference
 
 @DoNotStrip
@@ -19,25 +21,25 @@ open class SharedObject(appContext: AppContext? = null) {
   val appContext: AppContext?
     get() = appContextHolder.get()
 
-  private fun getJavaScriptObject(): JavaScriptObject? {
+  private fun getJavaScriptObject(): JavaScriptWeakObject? {
     return SharedObjectId(sharedObjectId.value)
-      .toJavaScriptObject(
+      .toWeakJavaScriptObject(
         appContext ?: return null
       )
   }
 
-  fun sendEvent(eventName: String, vararg args: Any?) {
-    val jsThis = getJavaScriptObject() ?: return
-
+  fun emit(eventName: String, vararg args: Any?) {
+    val jsObject = getJavaScriptObject() ?: return
+    val jniInterop = appContextHolder.get()?.jsiInterop ?: return
     try {
-      jsThis.getProperty("emit")
-        .getFunction<Unit?>()
-        .invoke(
-          eventName,
-          *args,
-          thisValue = jsThis,
-          appContext = appContext
-        )
+      JNIUtils.emitEvent(
+        jsObject,
+        jniInterop,
+        eventName,
+        args
+          .map { JSTypeConverter.convertToJSValue(it) }
+          .toTypedArray()
+      )
     } catch (e: Throwable) {
       logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
     }

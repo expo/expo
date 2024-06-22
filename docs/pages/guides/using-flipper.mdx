@@ -4,7 +4,7 @@ description: A guide on installing and configuring Flipper for debugging an Expo
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
@@ -28,10 +28,10 @@ Before you get started, make sure you have the following installed on your compu
 
 Open the Flipper desktop app and click the **Setup Doctor** button from the bottom left menu.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Setup Doctor modal in Flipper."
   src="/static/images/using-flipper/setup-doctor.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 If any dependencies are missing, follow the instructions provided by Flipper to install them.
@@ -98,10 +98,10 @@ After installing the build, run the following command to start a development ser
 
 Once the development server is running, open the Flipper desktop app and select your device or simulator under **App Inspect**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Open a device or emulator/simulator in Flipper under App Inspect."
   src="/static/images/using-flipper/app-inspect.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 </Step>

@@ -1,4 +1,4 @@
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import * as Directories from '../../Directories';

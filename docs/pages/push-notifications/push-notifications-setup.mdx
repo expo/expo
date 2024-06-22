@@ -6,7 +6,7 @@ description: Learn how to setup push notifications, get credentials for developm
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
@@ -241,17 +241,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-   <ImageSpotlight
+   <ContentSpotlight
      alt="Expo push notifications tool overview."
      src="/static/images/notifications/push-notifications-tool-overview.png"
-     style={{ maxWidth: 1200 }}
+     className="max-w-[1200px]"
    />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
-  <ImageSpotlight
+  <ContentSpotlight
     alt="An Android device receiving a push notification."
     src="/static/images/notifications/notification-on-android.png"
-    style={{ maxWidth: 280 }}
+    className="max-w-[280px]"
   />
 </Step>

@@ -23,7 +23,7 @@ export type AudioPlayerState = {
     durationMillis: number;
     rate: number;
     volume: number;
-    isPlaying: boolean;
+    playing: boolean;
     audioPan: number;
     shouldCorrectPitch: boolean;
 };
@@ -36,7 +36,7 @@ export type AudioStatus = {
     reasonForWaitingToPlay: string;
     mute: boolean;
     duration: number;
-    isPlaying: boolean;
+    playing: boolean;
     loop: boolean;
     isBuffering: boolean;
     isLoaded: boolean;
@@ -56,7 +56,9 @@ export type RecorderState = {
     mediaServicesDidReset: boolean;
     metering?: number;
 };
-export declare enum OutputFormat {
+export type AndroidOutputFormat = 'default' | '3gp' | 'mpeg4' | 'amrnb' | 'amrwb' | 'aac_adts' | 'mpeg2ts' | 'webm';
+export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
+export declare enum IOSOutputFormat {
     LINEARPCM = "lpcm",
     AC3 = "ac-3",
     '60958AC3' = "cac3",
@@ -108,14 +110,6 @@ export type RecordingOptions = {
      */
     extension: string;
     /**
-     * The desired file format. See the [`IOSOutputFormat`](#iosoutputformat) enum for all valid values.
-     */
-    outputFormat?: string | OutputFormat | number;
-    /**
-     * The desired audio quality. See the [`IOSAudioQuality`](#iosaudioquality) enum for all valid values.
-     */
-    audioQuality: AudioQuality | number;
-    /**
      * The desired sample rate.
      *
      * @example `44100`
@@ -134,19 +128,39 @@ export type RecordingOptions = {
      */
     bitRate: number;
     /**
+     * Recording options for the Android platform.
+     */
+    android: RecordingOptionsAndroid;
+    /**
+     * Recording options for the iOS platform.
+     */
+    ios: RecordingOptionsIos;
+};
+export type RecordingOptionsIos = {
+    /**
+     * The desired file format. See the [`IOSOutputFormat`](#iosoutputformat) enum for all valid values.
+     */
+    outputFormat?: string | IOSOutputFormat | number;
+    /**
+     * The desired audio quality. See the [`IOSAudioQuality`](#iosaudioquality) enum for all valid values.
+     */
+    audioQuality: AudioQuality | number;
+    /**
      * The desired bit rate strategy. See the next section for an enumeration of all valid values of `bitRateStrategy`.
      */
-    bitRateStrategy?: BitRateStrategy;
+    bitRateStrategy?: number;
     /**
      * The desired bit depth hint.
      *
-     * @example `16`
+     * @example
+     * `16`
      */
     bitDepthHint?: number;
     /**
      * The desired PCM bit depth.
      *
-     * @example `16`
+     * @example
+     * `16`
      */
     linearPCMBitDepth?: number;
     /**
@@ -157,6 +171,24 @@ export type RecordingOptions = {
      * A boolean describing if the PCM data should be encoded in floating point or integral values.
      */
     linearPCMIsFloat?: boolean;
+};
+export type RecordingOptionsAndroid = {
+    /**
+     * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
+     */
+    outputFormat: AndroidOutputFormat;
+    /**
+     * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) enum for all valid values.
+     */
+    audioEncoder: AndroidAudioEncoder;
+    /**
+     * The desired maximum file size in bytes, after which the recording will stop (but `stopAndUnloadAsync()` must still
+     * be called after this point).
+     *
+     * @example
+     * `65536`
+     */
+    maxFileSize?: number;
 };
 export type AudioMode = {
     playsInSilentMode: boolean;

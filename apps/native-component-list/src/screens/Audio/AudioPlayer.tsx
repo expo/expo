@@ -31,7 +31,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     durationMillis: isNaN(player.duration) ? 0 : player.duration,
     rate: player.playbackRate,
     volume: player.volume,
-    isPlaying: player.isPlaying,
+    playing: player.playing,
     audioPan: 0,
     shouldCorrectPitch: player.shouldCorrectPitch,
   });

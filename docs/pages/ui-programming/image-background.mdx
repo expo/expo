@@ -3,7 +3,7 @@ title: Set a component's background image
 description: Learn how to use ImageBackground component to set a component's background image.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
 The [`ImageBackground` component](https://reactnative.dev/docs/imagebackground) lets you display an image as the background of another component in Expo and React Native apps. For example, you can set the background image of a screen in your app with `ImageBackground` inside the screen's container view.
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
 
 The example above renders a screen as following:
 
-<ImageSpotlight
-  style={{ maxWidth: 276 }}
+<ContentSpotlight
+  className="max-w-[276px]"
   src="/static/images/imagebackground-example.png"
   alt="Text rendered on top of an image background"
 />

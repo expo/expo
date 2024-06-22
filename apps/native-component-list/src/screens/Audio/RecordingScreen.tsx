@@ -1,41 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import AudioModeSelector from './AudioModeSelector.ios';
+import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 import Recorder from './Recorder';
 import HeadingText from '../../components/HeadingText';
 
-interface State {
-  recordingUri?: string;
-}
-
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
 // eslint-disable-next-line @typescript-eslint/ban-types
-export default class RecordingScreen extends React.Component<{}, State> {
-  readonly state: State = {};
 
-  _handleRecordingFinished = (recordingUri: string) => this.setState({ recordingUri });
+export default function RecordingScreen() {
+  const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
 
-  _maybeRenderLastRecording = () =>
-    this.state.recordingUri ? (
+  const onRecordingFinished = (recordingUri: string) => setRecordingUri(recordingUri);
+
+  const maybeRenderLastRecording = () => {
+    return recordingUri ? (
       <>
         <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri: this.state.recordingUri }} />
+        <Player source={{ uri: recordingUri }} />
       </>
     ) : null;
+  };
 
-  render() {
-    return (
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <HeadingText>Audio mode</HeadingText>
-        <AudioModeSelector />
-        <HeadingText>Recorder</HeadingText>
-        <Recorder onDone={this._handleRecordingFinished} />
-        {this._maybeRenderLastRecording()}
-      </ScrollView>
-    );
-  }
+  return (
+    <ScrollView contentContainerStyle={styles.contentContainer}>
+      <HeadingText>Audio mode</HeadingText>
+      <AudioModeSelector />
+      <HeadingText>Recorder</HeadingText>
+      <Recorder onDone={onRecordingFinished} />
+      {maybeRenderLastRecording()}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

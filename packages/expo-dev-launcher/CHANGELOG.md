@@ -6,11 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Automatically detect dev servers running on localhost with adb reverse. ([#29625](https://github.com/expo/expo/pull/29625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
-
-- Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -19,6 +15,28 @@
 ### 🐛 Bug fixes
 
 - [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.20 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.19 - 2024-06-12
+
+### 🎉 New features
+
+- [Android] Automatically detect dev servers running on localhost with adb reverse. ([#29625](https://github.com/expo/expo/pull/29625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
+
+## 4.0.18 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.17 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.15 — 2024-05-15
 

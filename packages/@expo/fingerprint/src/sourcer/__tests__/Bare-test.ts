@@ -7,8 +7,10 @@ import { normalizeOptionsAsync } from '../../Options';
 import {
   getBareAndroidSourcesAsync,
   getBareIosSourcesAsync,
+  getPackageJsonScriptSourcesAsync,
   getRncliAutolinkingSourcesAsync,
 } from '../Bare';
+import { SourceSkips } from '../SourceSkips';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');
@@ -26,6 +28,95 @@ describe('getBareSourcesAsync', () => {
 
     sources = await getBareIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(expect.objectContaining({ filePath: 'ios', type: 'dir' }));
+  });
+});
+
+describe(getPackageJsonScriptSourcesAsync, () => {
+  it('by default, should skip package.json scripts if items does not contain "run"', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const scripts = {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+        web: 'expo start --web',
+      };
+      jest.doMock(
+        '/app/package.json',
+        () => ({
+          scripts: { ...scripts },
+        }),
+        {
+          virtual: true,
+        }
+      );
+      const sources = await getPackageJsonScriptSourcesAsync(
+        '/app',
+        await normalizeOptionsAsync('/app')
+      );
+      expect(sources).toContainEqual(
+        expect.objectContaining({
+          id: 'packageJson:scripts',
+          contents: JSON.stringify({ web: 'expo start --web' }),
+        })
+      );
+    });
+  });
+
+  it('by default, should not touch pacakge.json scripts if items contain "run"', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const scripts = {
+        android: 'expo run:android',
+        ios: 'expo run:ios',
+        web: 'expo start --web',
+      };
+      jest.doMock(
+        '/app/package.json',
+        () => ({
+          scripts: { ...scripts },
+        }),
+        {
+          virtual: true,
+        }
+      );
+      const sources = await getPackageJsonScriptSourcesAsync(
+        '/app',
+        await normalizeOptionsAsync('/app')
+      );
+      expect(sources).toContainEqual(
+        expect.objectContaining({
+          id: 'packageJson:scripts',
+          contents: JSON.stringify(scripts),
+        })
+      );
+    });
+  });
+
+  it('when sourceSkips=None, should not touch pacakge.json scripts if items contain "run"', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const scripts = {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+        web: 'expo start --web',
+      };
+      jest.doMock(
+        '/app/package.json',
+        () => ({
+          scripts: { ...scripts },
+        }),
+        {
+          virtual: true,
+        }
+      );
+      const options = await normalizeOptionsAsync('/app', {
+        sourceSkips: SourceSkips.None,
+      });
+      const sources = await getPackageJsonScriptSourcesAsync('/app', options);
+      expect(sources).toContainEqual(
+        expect.objectContaining({
+          id: 'packageJson:scripts',
+          contents: JSON.stringify(scripts),
+        })
+      );
+    });
   });
 });
 

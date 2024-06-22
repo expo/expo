@@ -29,8 +29,8 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   // Used for testing
-  _getElapsedTime(startTime: number): number {
-    return Date.now() - startTime;
+  _getElapsedTime(startTime: bigint): bigint {
+    return process.hrtime.bigint() - startTime;
   }
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
@@ -52,7 +52,22 @@ export class MetroTerminalReporter extends TerminalReporter {
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
-      const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
+      let time: string = '';
+
+      if (startTime != null) {
+        const elapsed: bigint = this._getElapsedTime(startTime);
+        const micro = Number(elapsed) / 1000;
+        const converted = Number(elapsed) / 1e6;
+        // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
+        if (converted <= 0.5) {
+          const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
+          // Format as microseconds to nearest tenth
+          time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
+        } else {
+          time = chalk.dim(converted.toFixed(0) + 'ms');
+        }
+      }
+
       // iOS Bundled 150ms
       const plural = progress.totalFileCount === 1 ? '' : 's';
       return (

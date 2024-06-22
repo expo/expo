@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add NULL check before releasing `textureRef` in `EXGLCameraObject`. ([#29092](https://github.com/expo/expo/pull/29092) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
 
 ## 14.0.2 — 2024-04-24

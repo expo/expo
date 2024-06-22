@@ -65,10 +65,11 @@ describe('<DeepLinkModal />', () => {
 
     await act(async () => {
       expect(loadApp).not.toHaveBeenCalled();
+    });
 
+    await act(async () => {
       const [button] = await waitFor(() => getAllByText(fakeLocalDevSession.description));
       fireEvent.press(button);
-
       expect(loadApp).toHaveBeenCalled();
     });
   });

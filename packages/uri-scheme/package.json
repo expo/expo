@@ -42,9 +42,9 @@
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "chalk": "^4.0.0",
-    "commander": "2.20.0",
+    "commander": "^12.1.0",
     "expo-module-scripts": "^3.3.0",
-    "glob": "7.1.6",
+    "glob": "^7.1.6",
     "prompts": "^2.3.2",
     "update-check": "^1.5.4"
   }

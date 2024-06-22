@@ -48,14 +48,15 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import expo.modules.camera.analyzers.BarcodeAnalyzer
+import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
 import expo.modules.camera.common.CameraMountErrorEvent
 import expo.modules.camera.common.PictureSavedEvent
-import expo.modules.camera.analyzers.BarcodeAnalyzer
-import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
@@ -128,7 +129,7 @@ class ExpoCameraView(
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
 
-  var lenFacing = CameraType.BACK
+  var lensFacing = CameraType.BACK
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -153,6 +154,12 @@ class ExpoCameraView(
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var ratio: CameraRatio = CameraRatio.FOUR_THREE
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -324,11 +331,11 @@ class ExpoCameraView(
         val preview = Preview.Builder()
           .build()
           .also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
+            it.surfaceProvider = previewView.surfaceProvider
           }
 
         val cameraSelector = CameraSelector.Builder()
-          .requireLensFacing(lenFacing.mapToCharacteristic())
+          .requireLensFacing(lensFacing.mapToCharacteristic())
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
@@ -339,6 +346,7 @@ class ExpoCameraView(
             } else {
               setResolutionSelector(
                 ResolutionSelector.Builder()
+                  .setAspectRatioStrategy(ratio.mapToStrategy())
                   .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                   .build()
               )
@@ -393,7 +401,7 @@ class ExpoCameraView(
         if (shouldScanBarcodes) {
           analyzer.setAnalyzer(
             ContextCompat.getMainExecutor(context),
-            BarcodeAnalyzer(lenFacing, barcodeFormats) {
+            BarcodeAnalyzer(lensFacing, barcodeFormats) {
               onBarcodeScanned(it)
             }
           )
@@ -476,7 +484,7 @@ class ExpoCameraView(
     val previewWidth = previewView.width
     val previewHeight = previewView.height
 
-    val facingFront = lenFacing == CameraType.FRONT
+    val facingFront = lensFacing == CameraType.FRONT
     val portrait = getDeviceOrientation() % 2 == 0
     val landscape = getDeviceOrientation() % 2 != 0
 

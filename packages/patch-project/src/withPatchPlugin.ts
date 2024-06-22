@@ -5,14 +5,11 @@ import {
   type ConfigPlugin,
   type ModPlatform,
 } from 'expo/config-plugins';
-import glob from 'glob';
+import { glob as globAsync } from 'glob';
 import path from 'path';
-import { promisify } from 'util';
 
 import * as env from './env';
 import { applyPatchAsync, getPatchChangedLinesAsync } from './gitPatch';
-
-const globAsync = promisify(glob);
 
 const DEFAULT_PATCH_ROOT = 'cng-patches';
 const DEFAULT_CHANGED_LINES_LIMIT = 300;

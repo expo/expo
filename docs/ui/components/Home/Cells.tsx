@@ -27,7 +27,7 @@ type GridCellProps = PropsWithChildren<{
 export const GridCell = ({ children, className }: GridCellProps) => (
   <div
     className={mergeClasses(
-      'p-8 min-h-[200px] overflow-hidden relative border border-default rounded-lg',
+      'p-8 min-h-[200px] overflow-hidden relative border border-default rounded-lg shadow-xs',
       '[&_h2]:!my-0 [&_h3]:!mt-0',
       className
     )}>

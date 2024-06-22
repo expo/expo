@@ -3,20 +3,19 @@ title: Build a screen
 description: In this tutorial, learn how to use React Native components such as Image, Pressable, and Vector icons to build a screen.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import { A } from '~/ui/components/Text';
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this chapter, we will create the first screen of the StickerSmash app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Initial layout."
   src="/static/images/tutorial/initial-layout.jpg"
-  style={{ maxWidth: 300 }}
+  className="max-w-[300px]"
 />
 
 The screen above displays an image and two buttons. The app user can select an image using one of the two buttons. The first button allows the user to select an image from their device. The second button allows the user to continue with a default image provided by the app.
@@ -29,10 +28,10 @@ Once the user selects an image, they'll be able to select and add a sticker to t
 
 Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of initial layout."
   src="/static/images/tutorial/breakdown-of-layout.jpg"
-  style={{ maxWidth: 300 }}
+  className="max-w-[300px]"
 />
 
 There are three essential elements:
@@ -43,10 +42,10 @@ There are three essential elements:
 
 The first button is composed of multiple components. The parent element provides a yellow border and contains an icon and text components inside a row.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of the button component with row."
   src="/static/images/tutorial/breakdown-of-buttons.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 In React Native, styling (such as the yellow border) is done using JavaScript as compared to the web, where CSS is used. Most of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
@@ -139,10 +138,10 @@ const styles = StyleSheet.create({
 
 We can use React Native's `<Image>` component to display the image in the app. The `<Image>` component requires a source of an image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
   src="/static/images/tutorial/background-image.png"
-  style={{ maxWidth: 250 }}
+  className="max-w-[250px]"
 />
 
 Next, import and use the `<Image>` component from React Native and `background-image.png` in the **App.js**. Let's also add styles to display the image.
@@ -374,10 +373,10 @@ const styles = StyleSheet.create({
 
 Let's take a look at our app on Android, iOS and the web:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Initial layout."
   src="/static/images/tutorial/buttons-created.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
@@ -482,7 +481,7 @@ export default function App() {
 
 Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/02-complete-layout.mp4" />
+<ContentSpotlight file="tutorial/02-complete-layout.mp4" />
 
 </Step>
 

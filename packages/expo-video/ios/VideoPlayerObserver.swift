@@ -58,14 +58,13 @@ final class WeakPlayerObserverDelegate: Hashable {
 }
 
 class VideoPlayerObserver {
-  let player: AVPlayer
+  weak var player: AVPlayer?
   var delegates = Set<WeakPlayerObserverDelegate>()
-  weak var delegate: VideoPlayerObserverDelegate?
   private var currentItem: VideoPlayerItem?
 
   private var isPlaying: Bool = false {
     didSet {
-      if oldValue != isPlaying {
+      if let player, oldValue != isPlaying {
         delegates.forEach { delegate in
           delegate.value?.onIsPlayingChanged(player: player, oldIsPlaying: oldValue, newIsPlaying: isPlaying)
         }
@@ -75,7 +74,7 @@ class VideoPlayerObserver {
   private var error: Exception?
   private var status: PlayerStatus = .idle {
     didSet {
-      if oldValue != status {
+      if let player, oldValue != status {
         delegates.forEach { delegate in
           delegate.value?.onStatusChanged(player: player, oldStatus: oldValue, newStatus: status, error: error)
         }
@@ -104,8 +103,7 @@ class VideoPlayerObserver {
   }
 
   deinit {
-    invalidatePlayerObservers()
-    invalidateCurrentPlayerItemObservers()
+    cleanup()
   }
 
   func registerDelegate(delegate: VideoPlayerObserverDelegate) {
@@ -117,13 +115,34 @@ class VideoPlayerObserver {
     delegates.remove(WeakPlayerObserverDelegate(value: delegate))
   }
 
+  func cleanup() {
+    delegates.removeAll()
+    invalidatePlayerObservers()
+    invalidateCurrentPlayerItemObservers()
+  }
+
   private func initializePlayerObservers() {
-    playerRateObserver = player.observe(\.rate, options: [.initial, .new, .old], changeHandler: onPlayerRateChanged)
-    playerStatusObserver = player.observe(\.status, options: [.initial, .new, .old], changeHandler: onPlayerStatusChanged)
-    playerTimeControlStatusObserver = player.observe(\.timeControlStatus, options: [.new, .old], changeHandler: onTimeControlStatusChanged)
-    playerVolumeObserver = player.observe(\.volume, options: [.initial, .new, .old], changeHandler: onPlayerVolumeChanged)
-    playerIsMutedObserver = player.observe(\.isMuted, options: [.initial, .new, .old], changeHandler: onPlayerIsMutedChanged)
-    playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new], changeHandler: onPlayerCurrentItemChanged)
+    guard let player else {
+      return
+    }
+    playerRateObserver = player.observe(\.rate, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerRateChanged(player, change)
+    }
+    playerStatusObserver = player.observe(\.status, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerStatusChanged(player, change)
+    }
+    playerTimeControlStatusObserver = player.observe(\.timeControlStatus, options: [.new, .old]) { [weak self] player, change in
+      self?.onTimeControlStatusChanged(player, change)
+    }
+    playerVolumeObserver = player.observe(\.volume, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerVolumeChanged(player, change)
+    }
+    playerIsMutedObserver = player.observe(\.isMuted, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerIsMutedChanged(player, change)
+    }
+    playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new]) { [weak self] player, change in
+      self?.onPlayerCurrentItemChanged(player, change)
+    }
   }
 
   private func invalidatePlayerObservers() {
@@ -136,9 +155,17 @@ class VideoPlayerObserver {
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
-    playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty, changeHandler: onIsBufferEmptyChanged)
-    playbackLikelyToKeepUpObserver = playerItem.observe(\.isPlaybackLikelyToKeepUp, changeHandler: onPlayerLikelyToKeepUpChanged)
-    playerItemStatusObserver = playerItem.observe(\.status, options: [.initial, .new], changeHandler: onItemStatusChanged)
+    playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty) { [weak self] item, change in
+      self?.onIsBufferEmptyChanged(item, change)
+    }
+
+    playbackLikelyToKeepUpObserver = playerItem.observe(\.isPlaybackLikelyToKeepUp) { [weak self] item, change in
+      self?.onPlayerLikelyToKeepUpChanged(item, change)
+    }
+
+    playerItemStatusObserver = playerItem.observe(\.status, options: [.initial, .new]) { [weak self] item, change in
+      self?.onItemStatusChanged(item, change)
+    }
 
     playerItemObserver = NotificationCenter.default.addObserver(
       forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
@@ -191,7 +218,7 @@ class VideoPlayerObserver {
   }
 
   private func onItemStatusChanged(_ playerItem: AVPlayerItem, _ change: NSKeyValueObservedChange<AVPlayerItem.Status>) {
-    if player.status != .failed {
+    if player?.status != .failed {
       error = nil
     }
 
@@ -210,7 +237,9 @@ class VideoPlayerObserver {
     }
 
     delegates.forEach { delegate in
-      delegate.value?.onPlayerItemStatusChanged(player: player, oldStatus: change.oldValue, newStatus: playerItem.status)
+      if let player {
+        delegate.value?.onPlayerItemStatusChanged(player: player, oldStatus: change.oldValue, newStatus: playerItem.status)
+      }
     }
   }
 

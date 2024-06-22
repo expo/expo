@@ -90,7 +90,7 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource) -> VideoPlayer in
+      Constructor { (source: VideoSource?) -> VideoPlayer in
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
@@ -186,7 +186,11 @@ public final class VideoModule: Module {
         player.pointer.pause()
       }
 
-      Function("replace") { (player, source: Either<String, VideoSource>) in
+      Function("replace") { (player, source: Either<String, VideoSource>?) in
+        guard let source else {
+          try player.replaceCurrentItem(with: nil)
+          return
+        }
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {

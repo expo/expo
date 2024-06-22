@@ -35,6 +35,7 @@ async function loadConfigAsync(projectRoot, silent = false) {
         'hashAlgorithm',
         'extraSources',
         'sourceSkips',
+        'enableReactImportsPatcher',
         'debug',
     ];
     const config = {};

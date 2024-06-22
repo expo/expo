@@ -198,6 +198,7 @@ export default class VideoPlayerWeb
         video.play();
       } else {
         video.removeAttribute('src');
+        video.load();
       }
     });
     this.playing = true;

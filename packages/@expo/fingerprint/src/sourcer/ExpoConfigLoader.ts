@@ -69,10 +69,6 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
     }
   } catch {}
 
-  try {
-    await fs.rm(ignoredFile);
-  } catch {}
-
   return ignorePaths;
 }
 

@@ -36,7 +36,7 @@
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-preset-expo": "~11.0.0",
-    "commander": "^2.19.0",
+    "commander": "^12.1.0",
     "eslint-config-universe": "^13.0.0",
     "find-yarn-workspace-root": "^2.0.0",
     "glob": "^7.1.7",

@@ -143,13 +143,18 @@ it(
     // Ensure output.js is a utf8 encoded file
     const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
     expect(outputJS.slice(0, 5)).toBe('var _');
+
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).not.toContain('//# sourceMappingURL=');
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000
 );
 
 it(
-  'runs `npx expo export:embed` with source maps',
+  'runs `npx expo export:embed --platform ios` with source maps',
   async () => {
     const projectRoot = ensureTesterReady('static-rendering');
     const output = 'dist-export-embed-source-maps';
@@ -183,6 +188,7 @@ it(
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
         },
       }
     );
@@ -200,6 +206,14 @@ it(
       })
       .filter(Boolean);
 
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
       'assets/__e2e__/static-rendering/sweet.ttf',
@@ -210,6 +224,109 @@ it(
       'assets/assets/icon.png',
       'output.js',
       'output.js.map',
+    ]);
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export:embed --platform android` with source maps',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-source-maps-android';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    console.log(
+      [
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ].join(' ')
+    );
+
+    const res = await execa(
+      'node',
+
+      // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
+      // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+        },
+      }
+    );
+
+    // Ensure no unexpected errors/warnings are thrown.
+    expect(res.stderr).toBe('Experimental bundling features are enabled.');
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'drawable-mdpi/__packages_exporouter_assets_error.png',
+      'drawable-mdpi/__packages_exporouter_assets_file.png',
+      'drawable-mdpi/__packages_exporouter_assets_forward.png',
+      'drawable-mdpi/__packages_exporouter_assets_pkg.png',
+      'drawable-mdpi/assets_icon.png',
+      'output.js',
+      'output.js.map',
+      'raw/__e2e___staticrendering_sweet.ttf',
     ]);
   },
   // Could take 45s depending on how fast npm installs

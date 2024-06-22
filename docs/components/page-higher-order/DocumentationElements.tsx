@@ -38,6 +38,7 @@ export default function DocumentationElements(props: DocumentationElementsProps)
               hideFromSearch={props.meta.hideFromSearch}
               packageName={props.meta.packageName}
               iconUrl={props.meta.iconUrl}
+              modificationDate={props.meta.modificationDate}
               platforms={props.meta.platforms}>
               {props.children}
             </DocumentationPage>

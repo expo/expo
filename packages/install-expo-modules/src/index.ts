@@ -25,8 +25,6 @@ import { normalizeProjectRootAsync } from './utils/projectRoot';
 
 const packageJSON = require('../package.json');
 
-let inputProjectRoot: string = '';
-
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('<project-directory>')
@@ -34,11 +32,10 @@ const program = new Command(packageJSON.name)
   .description('Install expo-modules into your project')
   .option('-s, --sdk-version <version>', 'Install specified expo-modules sdk version')
   .option('--non-interactive', 'Disable interactive prompts')
-  .action((_inputProjectRoot: string) => (inputProjectRoot = _inputProjectRoot))
   .parse(process.argv);
 
 function getSdkVersionInfo(projectRoot: string): VersionInfo {
-  const { sdkVersion } = program;
+  const { sdkVersion } = program.opts();
   if (sdkVersion) {
     const versionInfo = getVersionInfo(sdkVersion);
     if (!versionInfo) {
@@ -60,7 +57,7 @@ async function promptUpgradeAgpVersionAsync(projectRoot: string, agpVersion: str
   }
 
   const deploymentTargetMessage = `The minimum Android Gradle Plugin version for Expo modules is ${agpVersion}. This tool will change your AGP version to ${agpVersion}.`;
-  if (program.nonInteractive) {
+  if (program.opts().nonInteractive) {
     console.log(chalk.yellow(`⚠️  ${deploymentTargetMessage}`));
     return true;
   } else {
@@ -85,7 +82,7 @@ async function promptUpgradeIosDeployTargetAsync(projectRoot: string, iosDeploym
   }
 
   const deploymentTargetMessage = `Expo modules minimum iOS requirement is ${iosDeploymentTarget}. This tool will change your iOS deployment target to ${iosDeploymentTarget}.`;
-  if (program.nonInteractive) {
+  if (program.opts().nonInteractive) {
     console.log(chalk.yellow(`⚠️  ${deploymentTargetMessage}`));
     return true;
   } else {
@@ -112,7 +109,7 @@ Using Expo CLI has some benefits over the the default CLI in bare React Native p
 ${learnMore('https://docs.expo.dev/bare/using-expo-cli/')}
 Do you want to install the Expo CLI integration?`;
 
-  if (program.nonInteractive) {
+  if (program.opts().nonInteractive) {
     return true;
   }
   const { value } = await prompts({
@@ -124,9 +121,10 @@ Do you want to install the Expo CLI integration?`;
   return !!value;
 }
 
-async function runAsync(programName: string) {
-  const { projectRoot, platformAndroid, platformIos } =
-    await normalizeProjectRootAsync(inputProjectRoot);
+async function runAsync() {
+  const { projectRoot, platformAndroid, platformIos } = await normalizeProjectRootAsync(
+    process.cwd()
+  );
 
   const {
     expoSdkVersion: sdkVersion,
@@ -200,7 +198,7 @@ async function runAsync(programName: string) {
 (async () => {
   program.parse(process.argv);
   try {
-    await runAsync(packageJSON.name);
+    await runAsync();
   } catch (e) {
     console.error('Uncaught Error', e);
     process.exit(1);
