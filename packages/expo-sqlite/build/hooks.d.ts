@@ -88,5 +88,11 @@ export declare function SQLiteProvider({ children, onError, useSuspense, ...prop
  * ```
  */
 export declare function useSQLiteContext(): SQLiteDatabase;
+/**
+ * Import an asset database into the SQLite database directory.
+ *
+ * Expose for testing.
+ * @hidden
+ */
 export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource): Promise<void>;
 //# sourceMappingURL=hooks.d.ts.map

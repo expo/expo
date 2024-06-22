@@ -141,7 +141,12 @@ async function openDatabaseWithInitAsync({ databaseName, options, assetSource, o
     }
     return database;
 }
-// Expose for testing
+/**
+ * Import an asset database into the SQLite database directory.
+ *
+ * Expose for testing.
+ * @hidden
+ */
 export async function importDatabaseFromAssetAsync(databaseName, assetSource) {
     const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
     if (!asset.localUri) {
