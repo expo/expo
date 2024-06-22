@@ -1,6 +1,12 @@
 import { PermissionResponse } from 'expo-modules-core';
 import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationGeocodingOptions } from './Location.types';
 /**
+ * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
+ * enabled, otherwise your geocoding requests will be denied.
+ */
+export declare function setGoogleApiKey(_apiKey: string): void;
+/**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [LocationProviderStatus](#locationproviderstatus).
  */
