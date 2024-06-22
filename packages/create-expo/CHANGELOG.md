@@ -10,7 +10,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- Update list of available templates ([#29955](https://github.com/expo/expo/pull/29955] by [@kadikraman](https://github.com/kadikraman))
+- Update list of available templates ([#29955](https://github.com/expo/expo/pull/29955) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
