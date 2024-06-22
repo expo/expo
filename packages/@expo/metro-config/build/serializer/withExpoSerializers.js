@@ -18,12 +18,20 @@ const environmentVariableSerializerPlugin_1 = require("./environmentVariableSeri
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const serializeChunks_1 = require("./serializeChunks");
 const env_1 = require("../env");
+const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
+const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // First mark which modules have side-effects according to the `package.json`s.
+    processors.push(sideEffectsSerializerPlugin_1.sideEffectsSerializerPlugin);
+    // Then tree-shake the modules.
+    processors.push((0, treeShakeSerializerPlugin_1.treeShakeSerializerPlugin)(config));
+    // Then finish transforming the modules from AST to JS.
+    processors.push((0, treeShakeSerializerPlugin_1.createPostTreeShakeTransformSerializerPlugin)(config));
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;
@@ -191,10 +199,10 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return (...props) => {
+    return async (...props) => {
         for (const processor of processors) {
             if (processor) {
-                props = processor(...props);
+                props = await processor(...props);
             }
         }
         return finalSerializer(...props);

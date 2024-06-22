@@ -73,6 +73,7 @@ export function microBundle({
     inlineSourceMaps?: boolean;
     hot?: boolean;
     splitChunks?: boolean;
+    treeshake?: boolean;
   };
   preModulesFs?: Record<string, string>;
 }): [
@@ -104,7 +105,7 @@ export function microBundle({
     bundler: 'metro',
     platform: options.platform ?? 'web',
     baseUrl: options.baseUrl,
-
+    treeshake: options.treeshake,
     // Empower the babel preset to know the env it's bundling for.
     // Metro automatically updates the cache to account for the custom transform options.
     isServer: options.isServer,
@@ -157,7 +158,7 @@ export function microBundle({
     // entryPoint: string,
     absEntry,
     // preModules: readonly Module<MixedOutput>[],
-    Object.entries(preModulesFs).map(([id, code]) => parseModule(id, code)),
+    Object.entries(preModulesFs).map(([id, code]) => parseModule(id, code, caller)),
     // graph: ReadOnlyGraph<MixedOutput>,
     {
       dependencies: modules,
@@ -258,8 +259,9 @@ export function parseModule(
     filename,
     plugins: [
       require('babel-preset-expo/build/client-module-proxy-plugin').reactClientReferencesPlugin,
-      [metroTransformPlugins.importExportPlugin, babelPluginOpts],
-    ],
+      // TODO: We can probably just keep reference to the import/export names.
+      caller.treeshake !== true && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
+    ].filter(Boolean),
     caller: {
       name: 'metro',
       serverRoot: projectRoot,
@@ -281,8 +283,7 @@ export function parseModule(
 
   let dependencyMapName = null;
   let dependencies: Dependency[] | null = null;
-  // @ts-expect-error
-  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
+  const options = {
     unstable_allowRequireContext: true,
     allowOptionalDependencies: true,
     asyncRequireModulePath: 'expo-mock/async-require',
@@ -291,11 +292,17 @@ export function parseModule(
     keepRequireNames: true,
     dependencyTransformer: null,
     dependencyMapName: 'dependencyMap',
-  }));
+  };
+
+  // @ts-expect-error
+  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, options));
 
   if (!dependencies) throw new Error('dependencies not found');
 
-  ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
+  if (caller.treeshake) {
+  } else {
+    ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
+  }
 
   const output = babel.transformFromAstSync(ast!, code, {
     code: true,
@@ -340,3 +347,4 @@ function mockAbsolutePath(name: string) {
   }
   return path.join(projectRoot, 'node_modules', name, 'index.js');
 }
+import * as types from '@babel/types';

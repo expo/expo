@@ -79,11 +79,13 @@ function findUnusedExports(ast: Ast) {
   traverse(ast, {
     Identifier(path) {
       if (path.isReferencedIdentifier()) {
+        console.log('referenced:', path.node.name);
         usedIdentifiers.add(path.node.name);
       }
     },
   });
 
+  console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
   // Determine which exports are unused
   exportedIdentifiers.forEach((exported) => {
     if (!usedIdentifiers.has(exported)) {
@@ -103,11 +105,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     graph: ReadOnlyGraph,
     options: SerializerOptions
   ): Promise<SerializerParameters> {
-    // console.log('treeshake:', graph.transformOptions);
     if (!isShakingEnabled(graph, options)) {
       return [entryPoint, preModules, graph, options];
     }
 
+    // console.log('treeshake:', graph.transformOptions);
     // Generate AST for all modules.
     graph.dependencies.forEach((value) => {
       value.output.forEach((output) => {
@@ -119,7 +121,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           return;
         }
 
-        console.log('has ast:', !!output.data.ast);
+        console.log('has ast:', !!output.data.ast, output.data.code);
         output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
         output.data.modules = {
           imports: [],
@@ -128,7 +130,8 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       });
     });
 
-    return [entryPoint, preModules, graph, options];
+    // console.log('imports:', outputItem);
+    // return [entryPoint, preModules, graph, options];
 
     function collectImportExports(value: Module<MixedOutput>) {
       function getGraphId(moduleId: string) {
@@ -593,7 +596,7 @@ function accessAst(output: MixedOutput): Ast | undefined {
 }
 
 export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
-  return graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
+  return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
 }
 
 export function createPostTreeShakeTransformSerializerPlugin(config: InputConfigT) {

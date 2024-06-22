@@ -8,6 +8,11 @@ import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+import { sideEffectsSerializerPlugin } from '../sideEffectsSerializerPlugin';
+import {
+  createPostTreeShakeTransformSerializerPlugin,
+  treeShakeSerializerPlugin,
+} from '../treeShakeSerializerPlugin';
 
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {
@@ -46,7 +51,7 @@ jest.mock('../exportHermes', () => {
 
 describe('serializes', () => {
   // General helper to reduce boilerplate
-  async function serializeTo(
+  async function serializeToWithGraph(
     options: Partial<Parameters<typeof microBundle>[0]>,
     processors: SerializerPlugin[] = [],
     configOptions: SerializerConfigOptions = {}
@@ -65,18 +70,29 @@ describe('serializes', () => {
         console.log("hello");
       `,
     };
-    const output = (await serializer(
-      ...microBundle({
-        fs,
-        ...options,
-      })
-    )) as any;
+
+    const serial = microBundle({
+      fs,
+      ...options,
+    });
+
+    const output = (await serializer(...serial)) as any;
     if (options.options?.output === 'static') {
       assert('artifacts' in output && Array.isArray(output.artifacts));
-      return output.artifacts as SerialAsset[];
+      return [serial, output.artifacts as SerialAsset[]];
     } else {
-      return output;
+      return [serial, output];
     }
+  }
+
+  // General helper to reduce boilerplate
+  async function serializeTo(
+    options: Partial<Parameters<typeof microBundle>[0]>,
+    processors: SerializerPlugin[] = [],
+    configOptions: SerializerConfigOptions = {}
+  ) {
+    const [, output] = await serializeToWithGraph(options, processors, configOptions);
+    return output;
   }
 
   describe('plugin callbacks', () => {
@@ -586,12 +602,36 @@ describe('serializes', () => {
   // Serialize to a split bundle
   async function serializeSplitAsync(
     fs: Record<string, string>,
-    options: { isReactServer?: boolean } = {}
+    options: { isReactServer?: boolean; treeshake?: boolean } = {}
   ) {
     return await serializeTo({
       fs,
       options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
     });
+  }
+  // Serialize to a split bundle
+  async function serializeShakingAsync(
+    fs: Record<string, string>,
+    options: { isReactServer?: boolean; treeshake?: boolean } = {}
+  ) {
+    return await serializeToWithGraph(
+      {
+        fs,
+        options: {
+          platform: 'web',
+          dev: false,
+          output: 'static',
+          treeshake: true,
+          splitChunks: true,
+          ...options,
+        },
+      },
+      [
+        sideEffectsSerializerPlugin,
+        treeShakeSerializerPlugin({}),
+        createPostTreeShakeTransformSerializerPlugin({}),
+      ]
+    );
   }
 
   it(`bundle splits a weak import`, async () => {
@@ -1006,7 +1046,7 @@ describe('serializes', () => {
 
   describe('graph pruning', () => {
     it(`prune`, async () => {
-      const artifacts = await serializeSplitAsync({
+      const [[, , graph], artifacts] = await serializeShakingAsync({
         'index.js': `
           import { add } from './math';
 
@@ -1023,12 +1063,23 @@ describe('serializes', () => {
         `,
       });
 
+      expect(graph.dependencies.get('/app/index.js').output[0].data.modules).toEqual({
+        exports: [],
+        imports: [expect.objectContaining({ key: '/app/math.js' })],
+      });
+      // expect(graph.dependencies.get('/app/math.js').output[0].data.modules).toEqual({
+      //   exports: [expect.objectContaining({ key: '/app/math.js' })],
+      //   imports: [],
+      // });
+      // console.log(graph.dependencies.get('/app/index.js').output[0].data.modules);
+      // console.log(graph.dependencies.get('/app/math.js').output[0].data.modules);
+
       expect(artifacts[0].source).not.toMatch('subtract');
 
       expect(artifacts).toMatchInlineSnapshot(`
         [
           {
-            "filename": "_expo/static/js/web/index-19e45e2654d05145b5bb32f18223fe08.js",
+            "filename": "_expo/static/js/web/index-6a51b31054d25ef8ae15ba7e83660d07.js",
             "metadata": {
               "isAsync": false,
               "modulePaths": [
@@ -1040,38 +1091,24 @@ describe('serializes', () => {
               "requires": [],
             },
             "originFilename": "index.js",
-            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-          var add = _$$_REQUIRE(dependencyMap[0], "./math").add;
+            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          var add = _$$_REQUIRE(_dependencyMap[0]).add;
           console.log('add', add(1, 2));
         },"/app/index.js",["/app/math.js"]);
-        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
           Object.defineProperty(exports, '__esModule', {
             value: true
           });
           function add(a, b) {
             return a + b;
           }
-          function subtract(a, b) {
-            return a - b;
-          }
           exports.add = add;
-          exports.subtract = subtract;
         },"/app/math.js",[]);
         TEST_RUN_MODULE("/app/index.js");",
             "type": "js",
           },
         ]
       `);
-
-      // Split bundle
-      // expect(artifacts.length).toBe(2);
-      // expect(artifacts[1].metadata).toEqual({
-      //   isAsync: true,
-      //   modulePaths: ['/app/foo.js'],
-      //   requires: [],
-      //   paths: {},
-      //   reactClientReferences: [],
-      // });
     });
   });
 
