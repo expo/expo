@@ -1,13 +1,5 @@
-import { PermissionStatus, PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
-import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
-import { LocationEventEmitter } from './LocationEventEmitter';
-import { _getCurrentWatchId } from './LocationSubscribers';
-/**
- * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
- * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
- * enabled, otherwise your geocoding requests will be denied.
- */
-declare function setGoogleApiKey(_apiKey: string): void;
+import { PermissionResponse } from 'expo-modules-core';
+import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationGeocodingOptions } from './Location.types';
 /**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [LocationProviderStatus](#locationproviderstatus).
@@ -110,12 +102,12 @@ export declare function getPermissionsAsync(): Promise<LocationPermissionRespons
 export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
  * Checks user's permissions for accessing location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export declare function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
  * Asks the user to grant permissions for location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export declare function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
@@ -127,7 +119,7 @@ export declare function requestForegroundPermissionsAsync(): Promise<LocationPer
  * const [status, requestPermission] = Location.useForegroundPermissions();
  * ```
  */
-export declare const useForegroundPermissions: (options?: PermissionHookOptions<object> | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse>, () => Promise<LocationPermissionResponse>];
+export declare const useForegroundPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse>, () => Promise<LocationPermissionResponse>];
 /**
  * Checks user's permissions for accessing location while the app is in the background.
  * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
@@ -153,7 +145,7 @@ export declare function requestBackgroundPermissionsAsync(): Promise<PermissionR
  * const [status, requestPermission] = Location.useBackgroundPermissions();
  * ```
  */
-export declare const useBackgroundPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useBackgroundPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Checks whether location services are enabled by the user.
  * @return A promise which fulfills to `true` if location services are enabled on the device,
@@ -249,8 +241,4 @@ export declare function stopGeofencingAsync(taskName: string): Promise<void>;
  * started or not.
  */
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, PermissionHookOptions, setGoogleApiKey, };
-export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
-export * from './Location.types';
 //# sourceMappingURL=Location.d.ts.map

@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Rework package exports and remove deprecated `setGoogleApiKey` method.
 
 ## 17.0.1 — 2024-04-23
 

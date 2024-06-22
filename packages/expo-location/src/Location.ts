@@ -1,10 +1,4 @@
-import {
-  PermissionStatus,
-  PermissionResponse,
-  PermissionHookOptions,
-  createPermissionHook,
-  Platform,
-} from 'expo-modules-core';
+import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import {
@@ -22,21 +16,9 @@ import {
   LocationRegion,
   LocationSubscription,
   LocationTaskOptions,
-  LocationActivityType,
-  LocationGeofencingEventType,
-  LocationGeofencingRegionState,
   LocationGeocodingOptions,
 } from './Location.types';
-import { LocationEventEmitter } from './LocationEventEmitter';
-import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
-
-// @needsAudit
-/**
- * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
- * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
- * enabled, otherwise your geocoding requests will be denied.
- */
-function setGoogleApiKey(_apiKey: string) {}
+import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
 
 // @needsAudit
 /**
@@ -269,7 +251,7 @@ export async function requestPermissionsAsync(): Promise<LocationPermissionRespo
 // @needsAudit
 /**
  * Checks user's permissions for accessing location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export async function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.getForegroundPermissionsAsync();
@@ -278,7 +260,7 @@ export async function getForegroundPermissionsAsync(): Promise<LocationPermissio
 // @needsAudit
 /**
  * Asks the user to grant permissions for location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export async function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.requestForegroundPermissionsAsync();
@@ -511,18 +493,3 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
-
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
-
-export {
-  LocationAccuracy as Accuracy,
-  LocationActivityType as ActivityType,
-  LocationGeofencingEventType as GeofencingEventType,
-  LocationGeofencingRegionState as GeofencingRegionState,
-  PermissionStatus,
-  PermissionHookOptions,
-  setGoogleApiKey,
-};
-
-export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
-export * from './Location.types';
