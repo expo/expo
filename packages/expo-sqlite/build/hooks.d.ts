@@ -88,4 +88,5 @@ export declare function SQLiteProvider({ children, onError, useSuspense, ...prop
  * ```
  */
 export declare function useSQLiteContext(): SQLiteDatabase;
+export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource): Promise<void>;
 //# sourceMappingURL=hooks.d.ts.map

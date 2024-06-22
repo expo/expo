@@ -271,7 +271,8 @@ async function openDatabaseWithInitAsync({
   return database;
 }
 
-async function importDatabaseFromAssetAsync(
+// Expose for testing
+export async function importDatabaseFromAssetAsync(
   databaseName: string,
   assetSource: SQLiteProviderAssetSource
 ) {

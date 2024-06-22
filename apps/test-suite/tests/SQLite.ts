@@ -117,14 +117,16 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
 
   describe('File system tests', () => {
     beforeAll(async () => {
-      if (!(await FS.getInfoAsync(FS.documentDirectory + 'SQLite')).exists) {
-        await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite');
-      }
+      await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
+      await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
     });
 
     it('should work with a downloaded .db file', async () => {
       const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
-      await FS.downloadAsync(asset.localUri, `${FS.documentDirectory}SQLite/downloaded.db`);
+      await FS.copyAsync({
+        from: asset.localUri,
+        to: `${FS.documentDirectory}SQLite/downloaded.db`,
+      });
 
       const db = await SQLite.openDatabaseAsync('downloaded.db');
       const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
@@ -179,6 +181,17 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 
       await db.closeAsync();
     });
+
+    it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
+      await SQLite.importDatabaseFromAssetAsync('downloaded2.db', {
+        assetId: require('../assets/asset-db.db'),
+      });
+      const db = await SQLite.openDatabaseAsync('downloaded2.db');
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toEqual(3);
+      expect(results[0].j).toBeCloseTo(23.4);
+      await db.closeAsync();
+    }, 30000);
   });
 
   describe('Statements', () => {
