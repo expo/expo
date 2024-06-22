@@ -1004,6 +1004,77 @@ describe('serializes', () => {
     // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
   });
 
+  describe('graph pruning', () => {
+    it(`prune`, async () => {
+      const artifacts = await serializeSplitAsync({
+        'index.js': `
+          import { add } from './math';
+
+          console.log('add', add(1, 2));
+        `,
+        'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+      });
+
+      expect(artifacts[0].source).not.toMatch('subtract');
+
+      expect(artifacts).toMatchInlineSnapshot(`
+        [
+          {
+            "filename": "_expo/static/js/web/index-19e45e2654d05145b5bb32f18223fe08.js",
+            "metadata": {
+              "isAsync": false,
+              "modulePaths": [
+                "/app/index.js",
+                "/app/math.js",
+              ],
+              "paths": {},
+              "reactClientReferences": [],
+              "requires": [],
+            },
+            "originFilename": "index.js",
+            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          var add = _$$_REQUIRE(dependencyMap[0], "./math").add;
+          console.log('add', add(1, 2));
+        },"/app/index.js",["/app/math.js"]);
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          Object.defineProperty(exports, '__esModule', {
+            value: true
+          });
+          function add(a, b) {
+            return a + b;
+          }
+          function subtract(a, b) {
+            return a - b;
+          }
+          exports.add = add;
+          exports.subtract = subtract;
+        },"/app/math.js",[]);
+        TEST_RUN_MODULE("/app/index.js");",
+            "type": "js",
+          },
+        ]
+      `);
+
+      // Split bundle
+      // expect(artifacts.length).toBe(2);
+      // expect(artifacts[1].metadata).toEqual({
+      //   isAsync: true,
+      //   modulePaths: ['/app/foo.js'],
+      //   requires: [],
+      //   paths: {},
+      //   reactClientReferences: [],
+      // });
+    });
+  });
+
   describe('client references', () => {
     it(`bundles with client references`, async () => {
       const artifacts = await serializeSplitAsync(

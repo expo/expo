@@ -19,6 +19,11 @@ import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import { sideEffectsSerializerPlugin } from './sideEffectsSerializerPlugin';
+import {
+  createPostTreeShakeTransformSerializerPlugin,
+  treeShakeSerializerPlugin,
+} from './treeShakeSerializerPlugin';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -39,7 +44,9 @@ export type SerializerConfigOptions = {
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
-export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
+export type SerializerPlugin = (
+  ...props: SerializerParameters
+) => SerializerParameters | Promise<SerializerParameters>;
 
 export function withExpoSerializers(
   config: InputConfigT,
@@ -50,6 +57,13 @@ export function withExpoSerializers(
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
+
+  // First mark which modules have side-effects according to the `package.json`s.
+  processors.push(sideEffectsSerializerPlugin);
+  // Then tree-shake the modules.
+  processors.push(treeShakeSerializerPlugin(config));
+  // Then finish transforming the modules from AST to JS.
+  processors.push(createPostTreeShakeTransformSerializerPlugin(config));
 
   return withSerializerPlugins(config, processors, options);
 }
@@ -286,10 +300,10 @@ export function createSerializerFromSerialProcessors(
   options: SerializerConfigOptions = {}
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-  return (...props: SerializerParameters): ReturnType<Serializer> => {
+  return async (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
-        props = processor(...props);
+        props = await processor(...props);
       }
     }
 
