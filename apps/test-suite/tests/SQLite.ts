@@ -123,10 +123,8 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
     });
 
     it('should work with a downloaded .db file', async () => {
-      await FS.downloadAsync(
-        Asset.fromModule(require('../assets/asset-db.db')).uri,
-        `${FS.documentDirectory}SQLite/downloaded.db`
-      );
+      const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
+      await FS.downloadAsync(asset.localUri, `${FS.documentDirectory}SQLite/downloaded.db`);
 
       const db = await SQLite.openDatabaseAsync('downloaded.db');
       const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
