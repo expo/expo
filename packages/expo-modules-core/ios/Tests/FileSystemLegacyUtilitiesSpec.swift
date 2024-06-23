@@ -10,16 +10,16 @@ final class FileSystemLegacyUtilitiesSpec: ExpoSpec {
 
     describe("getPathPermissions") {
       it("should return read/write permissions for filePath with `file:` scheme") {
-        let docRootUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileUrl = docRootUrl.appendingPathComponent("test.txt")
+        let dirUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let fileUrl = dirUrl.appendingPathComponent("dir/test.txt")
         let filePath = fileUrl.absoluteString
         expect(filePath.starts(with: "file:")) == true
         expect(fsUtils.getPathPermissions(filePath)) == [.read, .write]
       }
 
       it("should return read/write permissions for filePath without `file:` scheme") {
-        let docRootUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileUrl = docRootUrl.appendingPathComponent("test.txt")
+        let dirUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let fileUrl = dirUrl.appendingPathComponent("dir/test.txt")
         let filePath = fileUrl.path
         expect(filePath.starts(with: "file:")) == false
         expect(fsUtils.getPathPermissions(filePath)) == [.read, .write]
