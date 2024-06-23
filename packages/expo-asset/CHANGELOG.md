@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Remove unused `pathJoin` function.
+- Remove unused `pathJoin` function. ([#29963](https://github.com/expo/expo/pull/29963) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.0.10 - 2024-06-20
 
