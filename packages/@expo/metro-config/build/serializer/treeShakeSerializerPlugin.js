@@ -324,7 +324,7 @@ function treeShakeSerializerPlugin(config) {
             for (const index in value.output) {
                 const outputItem = value.output[index];
                 const ast = outputItem.data.ast;
-                function markUnused(path, node) {
+                const markUnused = (path, node) => {
                     if (annotate) {
                         node.leadingComments = node.leadingComments ?? [];
                         if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
@@ -337,7 +337,7 @@ function treeShakeSerializerPlugin(config) {
                     else {
                         path.remove();
                     }
-                }
+                };
                 // Collect a list of exports that are not used within the module.
                 const unusedExports = findUnusedExports(ast);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.

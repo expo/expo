@@ -246,6 +246,11 @@ export function parseModule(
     code: false,
   });
 
+  // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
+
+  // caller.treeshake = caller.treeshake ?? sourceType === 'module';
+  // Deterimine if the module is a CommonJS module or an ES module.
+
   const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
   const { importDefault, importAll } = generateImportNames(ast);
   const metroTransformPlugins = require('metro-transform-plugins');
