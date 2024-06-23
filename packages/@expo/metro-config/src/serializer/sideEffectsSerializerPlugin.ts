@@ -37,6 +37,39 @@ export function hasSideEffect(
   return false;
 }
 
+export function hasSideEffectWithDebugTrace(
+  graph: ReadOnlyGraph,
+  value: Module<MixedOutput>,
+  parentTrace: string[] = [value.path],
+  checked: Set<string> = new Set()
+): [boolean, string[]] {
+  // @ts-expect-error: Not on type.
+  if (value?.sideEffects) {
+    // if (value.sideEffects !== true) {
+    //   console.log('WUT:', value.path, value.sideEffects, parentTrace);
+    // }
+    return [true, parentTrace];
+  }
+  // Recursively check if any of the dependencies have side effects.
+  for (const depReference of value.dependencies.values()) {
+    if (checked.has(depReference.absolutePath)) {
+      continue;
+    }
+    checked.add(depReference.absolutePath);
+    const dep = graph.dependencies.get(depReference.absolutePath)!;
+    const [hasSideEffect, trace] = hasSideEffectWithDebugTrace(
+      graph,
+      dep,
+      [...parentTrace, depReference.absolutePath],
+      checked
+    );
+    if (hasSideEffect) {
+      return [true, trace];
+    }
+  }
+  return [false, []];
+}
+
 // Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
 export function sideEffectsSerializerPlugin(
   entryPoint: string,
@@ -77,6 +110,25 @@ export function sideEffectsSerializerPlugin(
     const isSideEffect = (fp: string): boolean => {
       // Default is that everything is a side-effect unless explicitly marked as not.
       if (packageJson.sideEffects == null) {
+        // TODO: How to avoid needing this hardcoded list?
+        if (
+          [
+            'react',
+            '@babel/runtime',
+            'invariant',
+            'react-dom',
+            'scheduler',
+            'inline-style-prefixer',
+            'metro-runtime',
+            'fbjs',
+            '@react-native/normalize-color',
+            'postcss-value-parser',
+          ].includes(packageJson.name)
+        ) {
+          console.log('Skipping FX for:', packageJson.name);
+          return false;
+        }
+
         return true;
       }
 
@@ -104,12 +156,17 @@ export function sideEffectsSerializerPlugin(
   // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
   for (const value of graph.dependencies.values()) {
     const isSideEffect = getPackageJsonMatcher(value.path);
-    if (!isSideEffect) {
+    if (isSideEffect === false) {
+      value.sideEffects = false;
+    } else if (isSideEffect == null) {
       continue;
+    } else {
+      // @ts-expect-error: Not on type.
+      value.sideEffects = isSideEffect(value.path);
     }
-
-    // @ts-expect-error: Not on type.
-    value.sideEffects = isSideEffect(value.path);
+  }
+  for (const value of graph.dependencies.values()) {
+    console.log('FX:', value.path, value.sideEffects);
   }
 
   // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
@@ -117,10 +174,20 @@ export function sideEffectsSerializerPlugin(
   // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
   // All modules will be marked as side-effect-ful.
   for (const value of graph.dependencies.values()) {
-    if (hasSideEffect(graph, value)) {
+    // if (hasSideEffect(graph, value)) {
+    const [fx, trace] = hasSideEffectWithDebugTrace(graph, value);
+    if (fx) {
       // @ts-expect-error: Not on type.
       value.sideEffects = true;
+
+      if (value.path.includes('react')) {
+        console.log('DEEP TRACE:', value.path, trace);
+      }
     }
+  }
+
+  for (const value of graph.dependencies.values()) {
+    console.log('Deep FX:', value.path, value.sideEffects);
   }
 
   return [entryPoint, preModules, graph, options];

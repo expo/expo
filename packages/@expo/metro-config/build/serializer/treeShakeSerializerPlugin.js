@@ -343,8 +343,8 @@ function treeShakeSerializerPlugin(config) {
                 };
                 // Collect a list of exports that are not used within the module.
                 const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
-                console.log('unusedExports', possibleUnusedExports, value.path);
-                const shouldPrintDebug = value.path === '/app/lucide.js';
+                const shouldPrintDebug = value.path.endsWith('/lucide-react.js');
+                shouldPrintDebug && console.log('unusedExports', possibleUnusedExports, value.path);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
                 (0, core_1.traverse)(ast, {
                     ExportDefaultDeclaration(path) {
@@ -365,45 +365,38 @@ function treeShakeSerializerPlugin(config) {
                                 possibleUnusedExports.includes(path.node.exported.name) &&
                                 !isExportUsed(path.node.exported.name)) {
                                 shouldPrintDebug && console.log('check:', path.node.exported.name, internalName);
-                                // if (path.parent.source) {
-                                //   const importModuleId = path.parent.source.value;
-                                //   // TODO: Traverse multiple exports in the same statement before removing the `from "..."`
-                                //   // if (disconnectGraphNode(importModuleId, value)) {
-                                //   // dirtyImports = true;
-                                //   // console.log('IMPORT:', importModuleId);
-                                //   markUnused(path, path.node);
-                                //   // }
-                                //   return;
-                                // } else {
                                 markUnused(path, path.node);
-                                // }
-                                // disconnectGraphNode
                             }
                         }
                     },
                     ExportNamedDeclaration(path) {
                         const declaration = path.node.declaration;
-                        shouldPrintDebug && console.log('BOYUUU', path.node);
+                        // shouldPrintDebug && console.log('BOYUUU', path.node);
                         // If empty, e.g. `export {} from '...'` then remove the whole statement.
                         if (!declaration) {
                             const importModuleId = path.node.source?.value;
                             if (importModuleId && path.node.specifiers.length === 0) {
-                                if (disconnectGraphNode(importModuleId, value)) {
+                                if (disconnectGraphNode(value, importModuleId)) {
+                                    console.log('ExportNamedDeclaration: Disconnected:', importModuleId, 'in:', value.path);
                                     // dirtyImports = true;
-                                    console.log('IMPORT:', importModuleId);
                                     // markUnused(path, path.node);
                                     path.remove();
+                                }
+                                else {
+                                    console.log('ExportNamedDeclaration: Cannot remove graph node for: ', importModuleId, 'in:', value.path);
                                 }
                             }
                             return;
                         }
                         if (declaration) {
+                            // console.log('ExportNamedDeclaration: has dec: ', value.path);
                             if (declaration.type === 'VariableDeclaration') {
                                 declaration.declarations.forEach((decl) => {
                                     if (decl.id.type === 'Identifier') {
                                         if (possibleUnusedExports.includes(decl.id.name) &&
                                             !isExportUsed(decl.id.name)) {
                                             markUnused(path, decl);
+                                            console.log('mark remove.2:', decl.id.name, 'from:', value.path);
                                         }
                                     }
                                 });
@@ -419,6 +412,7 @@ function treeShakeSerializerPlugin(config) {
                                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                                 if (possibleUnusedExports.includes(declaration.id.name) &&
                                     !isExportUsed(declaration.id.name)) {
+                                    console.log('mark remove:', declaration.id.name, 'from:', value.path);
                                     markUnused(path, declaration);
                                 }
                             }
@@ -428,8 +422,9 @@ function treeShakeSerializerPlugin(config) {
             }
             return dirtyImports;
         }
-        function disconnectGraphNode(importModuleId, graphModule) {
+        function disconnectGraphNode(graphModule, importModuleId) {
             // Unlink the module in the graph
+            // The hash key for the dependency instance in the module.
             const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
                 return dep.data.name === importModuleId;
             })?.[0];
@@ -443,13 +438,14 @@ function treeShakeSerializerPlugin(config) {
             // }
             // If the dependency was already removed, then we don't need to do anything.
             if (depId) {
-                const dep = graphModule.dependencies.get(depId);
-                console.log('Unlink:', importModuleId, dep);
-                const graphDep = graph.dependencies.get(dep.absolutePath);
+                const importInstance = graphModule.dependencies.get(depId);
+                // console.log('Try unlink:', importModuleId, dep);
+                const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
                 // Should never happen but we're playing with fire here.
-                if (!graphDep) {
+                if (!graphEntryForTargetImport) {
                     throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
                 }
+                const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(graph, graphEntryForTargetImport);
                 // console.log('Drop', {
                 //   depId,
                 //   path: dep.absolutePath,
@@ -458,31 +454,46 @@ function treeShakeSerializerPlugin(config) {
                 // });
                 if (
                 // Don't remove the module if it has side effects.
-                !(0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep) ||
+                !isFx ||
                     // Unless it's an empty module.
-                    isEmptyModule(graphDep)) {
+                    isEmptyModule(graphEntryForTargetImport)) {
                     console.log('Drop', {
                         depId,
-                        path: dep.absolutePath,
-                        fx: (0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep),
-                        empty: isEmptyModule(graphDep),
+                        path: importInstance.absolutePath,
+                        fx: (0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphEntryForTargetImport),
+                        empty: isEmptyModule(graphEntryForTargetImport),
                     });
                     // console.log('Drop module:', value.path);
                     // Remove inverse link to this dependency
-                    graphDep.inverseDependencies.delete(graphModule.path);
-                    if (graphDep.inverseDependencies.size === 0) {
+                    graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
+                    if (graphEntryForTargetImport.inverseDependencies.size === 0) {
                         // Remove the dependency from the graph as no other modules are using it anymore.
-                        graph.dependencies.delete(dep.absolutePath);
+                        graph.dependencies.delete(importInstance.absolutePath);
                     }
                     // Remove a random instance of the dep count to track if there are multiple imports.
-                    dep.data.data.locs.pop();
-                    if (!dep.data.data.locs.length) {
-                        // Remove dependency from this module in the graph
+                    // TODO: Get the exact instance of the import.
+                    importInstance.data.data.locs.pop();
+                    if (!importInstance.data.data.locs.length) {
+                        // Remove dependency from this module so it doesn't appear in the dependency map.
                         graphModule.dependencies.delete(depId);
                     }
                     // Mark the module as removed so we know to traverse again.
                     return true;
                 }
+                else {
+                    if (isFx) {
+                        console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
+                    }
+                    else {
+                        console.log('Skip graph unlinking:', {
+                            depId,
+                            isFx,
+                        });
+                    }
+                }
+            }
+            else {
+                console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
             }
             return false;
         }
@@ -679,6 +690,35 @@ function treeShakeSerializerPlugin(config) {
         }
         // Tree shake the graph.
         treeShakeAll();
+        // Debug pass: Print all orphaned modules.
+        for (const [depId, value] of graph.dependencies.entries()) {
+            if (value.inverseDependencies.size === 0) {
+                console.log('Orphan:', value.path);
+            }
+            else {
+                let hasNormalNode = false;
+                for (const dep of value.inverseDependencies) {
+                    if (!graph.dependencies.has(dep)) {
+                        console.log(`ISSUE: Dependency: ${value.path}, has inverse relation to missing node: ${dep}`);
+                    }
+                    else {
+                        hasNormalNode = true;
+                    }
+                }
+                if (!hasNormalNode) {
+                    console.log(`ERROR: All inverse dependencies are missing for: ${value.path}`);
+                    // TODO: Make this not happen ever
+                    graph.dependencies.delete(depId);
+                }
+                // // Find if a dep still depends on a file containing "esm/icons/zoom-in.js"
+                // if (
+                //   value.path.includes('esm/icons/zoom-in.js') ||
+                //   value.path.includes('/esm/icons/index.js')
+                // ) {
+                //   console.log('Depends on zoom-in:', [...value.inverseDependencies.values()]);
+                // }
+            }
+        }
         return [entryPoint, preModules, graph, options];
     };
 }
@@ -754,7 +794,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 if (!ast) {
                     continue;
                 }
-                console.log(require('@babel/generator').default(ast).code);
+                // console.log('AST:', value.path);
+                // console.log(require('@babel/generator').default(ast).code);
                 // NOTE: ^^ Only modules are being parsed to ast right now.
                 delete outputItem.data.ast;
                 // console.log('treeshake!!:', value.path, outputItem.data.collectDependenciesOptions);
