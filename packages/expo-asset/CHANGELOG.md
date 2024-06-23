@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused `pathJoin` function.
+
 ## 10.0.10 - 2024-06-20
 
 ### 🐛 Bug fixes

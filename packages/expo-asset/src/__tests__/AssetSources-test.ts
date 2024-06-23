@@ -148,19 +148,6 @@ describe('selectAssetSource', () => {
   }
 });
 
-describe('pathJoin', () => {
-  it('joins paths', () => {
-    const { pathJoin } = require('../AssetSources') as typeof import('../AssetSources');
-    expect(pathJoin('/foo/', '/bar/', '/baz')).toBe('/foo/bar/baz');
-    expect(pathJoin('foo', 'bar')).toBe('foo/bar');
-    expect(pathJoin('/foo/', 'bar')).toBe('/foo/bar');
-    expect(pathJoin('/foo/')).toBe('/foo');
-    expect(pathJoin('/foo/', '..', 'bar')).toBe('/bar');
-    expect(pathJoin('/foo/', '.', 'bar')).toBe('/foo/bar');
-    expect(pathJoin('/foo/bar/', '..', '..', 'baz')).toBe('/baz');
-  });
-});
-
 if (Platform.OS !== 'web') {
   describe('resolveUri', () => {
     beforeAll(() => {
