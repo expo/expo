@@ -20,7 +20,7 @@ export function hasSideEffect(
   checked: Set<string> = new Set()
 ): boolean {
   // @ts-expect-error: Not on type.
-  if (value.sideEffects) {
+  if (value?.sideEffects) {
     return true;
   }
   // Recursively check if any of the dependencies have side effects.

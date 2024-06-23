@@ -237,9 +237,6 @@ async function transformJS(file, { config, options, projectRoot }) {
         try {
             collectDependenciesOptions = {
                 asyncRequireModulePath: config.asyncRequireModulePath,
-                dependencyTransformer: config.unstable_disableModuleWrapping === true
-                    ? disabledDependencyTransformer
-                    : undefined,
                 dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
                 inlineableCalls: [importDefault, importAll],
                 keepRequireNames: options.dev,
@@ -250,7 +247,13 @@ async function transformJS(file, { config, options, projectRoot }) {
                 // This requires a patch to Metro collectDeps.
                 // allowArbitraryImport: isServerEnv,
             };
-            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, collectDependenciesOptions));
+            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
+                ...collectDependenciesOptions,
+                // This setting shouldn't be shared with the tree shaking transformer.
+                dependencyTransformer: config.unstable_disableModuleWrapping === true
+                    ? disabledDependencyTransformer
+                    : undefined,
+            }));
         }
         catch (error) {
             if (error instanceof collectDependencies_1.InvalidRequireCallError) {

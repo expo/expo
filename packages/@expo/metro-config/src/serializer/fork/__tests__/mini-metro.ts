@@ -32,7 +32,7 @@ export function microBundle({
           next = path.join(next, index);
         }
         next += ext;
-        if (fullFs[next]) {
+        if (fullFs[next] != null) {
           return next;
         }
       }
@@ -221,6 +221,13 @@ export function microBundle({
   ];
 }
 
+const disabledDependencyTransformer = {
+  transformSyncRequire: () => void 0,
+  transformImportCall: () => void 0,
+  transformPrefetch: () => void 0,
+  transformIllegalDynamicRequire: () => void 0,
+};
+
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export function parseModule(
   relativeFilePath: string,
@@ -276,6 +283,7 @@ export function parseModule(
     cloneInputAst: true,
   });
 
+  const unstable_disableModuleWrapping = caller.treeshake;
   // @ts-ignore
   ast = file?.ast!;
 
@@ -290,16 +298,20 @@ export function parseModule(
     dynamicRequires: 'throwAtRuntime',
     inlineableCalls: [importDefault, importAll],
     keepRequireNames: true,
-    dependencyTransformer: null,
     dependencyMapName: 'dependencyMap',
   };
 
   // @ts-expect-error
-  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, options));
+  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
+    ...options,
+    dependencyTransformer: unstable_disableModuleWrapping
+      ? disabledDependencyTransformer
+      : undefined,
+  }));
 
   if (!dependencies) throw new Error('dependencies not found');
 
-  if (caller.treeshake) {
+  if (unstable_disableModuleWrapping) {
   } else {
     ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
   }

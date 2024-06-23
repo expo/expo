@@ -123,7 +123,7 @@ function treeShakeSerializerPlugin(config) {
                 // This is a hack to prevent modules that are already wrapped from being included.
                 output.data.code.startsWith('__d(function ')) {
                     // TODO: This should probably assert.
-                    (0, debug_1.default)('Skipping tree-shake for wrapped module: ' + value.path);
+                    debug('Skipping tree-shake for wrapped module: ' + value.path);
                     return;
                 }
                 // console.log('has ast:', !!output.data.ast, output.data.code);
@@ -179,6 +179,35 @@ function treeShakeSerializerPlugin(config) {
                                 });
                             }
                         }
+                        // Async import calls
+                        if (path.node.callee.type === 'Import') {
+                            const arg = path.node.arguments[0];
+                            if (arg.type === 'StringLiteral') {
+                                outputItem.data.modules.imports.push({
+                                    source: arg.value,
+                                    key: getGraphId(arg.value),
+                                    specifiers: [],
+                                    async: true,
+                                });
+                            }
+                        }
+                        // require.resolveWeak calls
+                        if (path.node.callee.type === 'MemberExpression' &&
+                            path.node.callee.object.type === 'Identifier' &&
+                            path.node.callee.object.name === 'require' &&
+                            path.node.callee.property.type === 'Identifier' &&
+                            path.node.callee.property.name === 'resolveWeak') {
+                            const arg = path.node.arguments[0];
+                            if (arg.type === 'StringLiteral') {
+                                outputItem.data.modules.imports.push({
+                                    source: arg.value,
+                                    key: getGraphId(arg.value),
+                                    specifiers: [],
+                                    weak: true,
+                                });
+                            }
+                        }
+                        // TODO: Maybe also add require.context.
                     },
                     // export from
                     ExportNamedDeclaration(path) {
@@ -265,7 +294,7 @@ function treeShakeSerializerPlugin(config) {
                                         return false;
                                     }
                                     // If the import is CommonJS, then we can't tree-shake it.
-                                    if (importItem.cjs || importItem.star) {
+                                    if (importItem.cjs || importItem.star || importItem.async) {
                                         return true;
                                     }
                                     return importItem.specifiers.some((specifier) => {
@@ -539,6 +568,7 @@ function isShakingEnabled(graph, options) {
     return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
 }
 exports.isShakingEnabled = isShakingEnabled;
+const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const assert_1 = __importDefault(require("assert"));
 function assertCollectDependenciesOptions(collectDependenciesOptions) {
     if (!collectDependenciesOptions) {
@@ -588,7 +618,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             for (const index in value.output) {
                 const outputItem = value.output[index];
                 if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
-                    (0, debug_1.default)('Skipping post transform for non-js/module: ' + value.path);
+                    debug('Skipping post transform for non-js/module: ' + value.path);
                     continue;
                 }
                 // This should be cached by the transform worker for use here to ensure close to consistent
@@ -635,10 +665,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     filename: value.path,
                     plugins: [
                         // functionMapBabelPlugin,
-                        !preserveEsm && [
-                            require('metro-transform-plugins/src/import-export-plugin'),
-                            babelPluginOpts,
-                        ],
+                        !preserveEsm && [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts],
                         // TODO: Inline requires matchers
                         // dynamicTransformOptions?.transform?.inlineRequires && [
                         //   require('metro-transform-plugins/src/inline-plugin'),
@@ -677,8 +704,14 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     //   // Expo sets this to `true`.
                     //   unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
                     // };
-                    ({ ast, dependencyMapName } = collectDependencies(ast, opts));
-                    // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+                    // TODO: We should try to drop this black-box approach since we don't need the deps.
+                    // We just need the AST modifications such as `require.context`.
+                    console.log(require('@babel/generator').default(ast).code);
+                    ({ ast, dependencyMapName } = collectDependencies(ast, {
+                        ...opts,
+                        // This setting shouldn't be shared + it can't be serialized and cached anyways.
+                        dependencyTransformer: null,
+                    }));
                 }
                 catch (error) {
                     if (error instanceof collectDependencies_1.InvalidRequireCallError) {
@@ -688,7 +721,9 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 }
                 // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
                 const globalPrefix = config.transformer?.globalPrefix ?? '';
-                const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, globalPrefix);
+                const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, 
+                // TODO: Share these with transformer
+                globalPrefix, config.transformer?.unstable_renameRequire === false);
                 const source = value.getSource().toString('utf-8');
                 const reserved = [];
                 if (config.transformer?.unstable_dependencyMapReservedName != null) {
@@ -700,7 +735,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     source.length <= optimizationSizeLimit &&
                     !config.transformer?.unstable_disableNormalizePseudoGlobals) {
                     // This MUST run before `generate` as it mutates the ast out of place.
-                    reserved.push(...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+                    reserved.push(...metro_transform_plugins_1.default.normalizePseudoGlobals(wrappedAst, {
                         reservedNames: reserved,
                     }));
                 }
@@ -821,8 +856,9 @@ exports.createPostTreeShakeTransformSerializerPlugin = createPostTreeShakeTransf
 //   },
 // };
 const metro_source_map_1 = require("metro-source-map");
-const debug_1 = __importDefault(require("debug"));
+const debug = require('debug')('expo:treeshaking');
 const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
+// TODO: Rework all of this to share logic with the transformer. Also account for not minifying in hermes bundles.
 async function minifyCode(config, projectRoot, filename, code, source, map, reserved = []) {
     const sourceMap = (0, metro_source_map_1.fromRawMappings)([
         {
@@ -877,5 +913,4 @@ async function minifyCode(config, projectRoot, filename, code, source, map, rese
         throw error;
     }
 }
-const metroTransformPlugins = require('metro-transform-plugins');
 //# sourceMappingURL=treeShakeSerializerPlugin.js.map

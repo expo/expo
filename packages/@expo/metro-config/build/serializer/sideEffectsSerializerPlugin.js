@@ -17,7 +17,7 @@ const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 function hasSideEffect(graph, value, checked = new Set()) {
     // @ts-expect-error: Not on type.
-    if (value.sideEffects) {
+    if (value?.sideEffects) {
         return true;
     }
     // Recursively check if any of the dependencies have side effects.

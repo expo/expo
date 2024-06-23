@@ -316,10 +316,6 @@ async function transformJS(
     try {
       collectDependenciesOptions = {
         asyncRequireModulePath: config.asyncRequireModulePath,
-        dependencyTransformer:
-          config.unstable_disableModuleWrapping === true
-            ? disabledDependencyTransformer
-            : undefined,
         dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
         inlineableCalls: [importDefault, importAll],
         keepRequireNames: options.dev,
@@ -332,10 +328,14 @@ async function transformJS(
         // allowArbitraryImport: isServerEnv,
       };
 
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(
-        ast,
-        collectDependenciesOptions
-      ));
+      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
+        ...collectDependenciesOptions,
+        // This setting shouldn't be shared with the tree shaking transformer.
+        dependencyTransformer:
+          config.unstable_disableModuleWrapping === true
+            ? disabledDependencyTransformer
+            : undefined,
+      }));
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);

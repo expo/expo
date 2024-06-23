@@ -194,6 +194,37 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 });
               }
             }
+            // Async import calls
+            if (path.node.callee.type === 'Import') {
+              const arg = path.node.arguments[0];
+              if (arg.type === 'StringLiteral') {
+                outputItem.data.modules.imports.push({
+                  source: arg.value,
+                  key: getGraphId(arg.value),
+                  specifiers: [],
+                  async: true,
+                });
+              }
+            }
+            // require.resolveWeak calls
+            if (
+              path.node.callee.type === 'MemberExpression' &&
+              path.node.callee.object.type === 'Identifier' &&
+              path.node.callee.object.name === 'require' &&
+              path.node.callee.property.type === 'Identifier' &&
+              path.node.callee.property.name === 'resolveWeak'
+            ) {
+              const arg = path.node.arguments[0];
+              if (arg.type === 'StringLiteral') {
+                outputItem.data.modules.imports.push({
+                  source: arg.value,
+                  key: getGraphId(arg.value),
+                  specifiers: [],
+                  weak: true,
+                });
+              }
+            }
+            // TODO: Maybe also add require.context.
           },
           // export from
           ExportNamedDeclaration(path) {
@@ -287,7 +318,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                     return false;
                   }
                   // If the import is CommonJS, then we can't tree-shake it.
-                  if (importItem.cjs || importItem.star) {
+                  if (importItem.cjs || importItem.star || importItem.async) {
                     return true;
                   }
 
@@ -635,6 +666,7 @@ export type CollectDependenciesOptions = {
   // dependencyTransformer: null,
   // dependencyMapName: 'dependencyMap',
 };
+import metroTransformPlugins from 'metro-transform-plugins';
 
 import assert from 'assert';
 function assertCollectDependenciesOptions(
@@ -765,10 +797,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           filename: value.path,
           plugins: [
             // functionMapBabelPlugin,
-            !preserveEsm && [
-              require('metro-transform-plugins/src/import-export-plugin'),
-              babelPluginOpts,
-            ],
+            !preserveEsm && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
 
             // TODO: Inline requires matchers
             // dynamicTransformOptions?.transform?.inlineRequires && [
@@ -810,8 +839,16 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           //   unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
           // };
 
-          ({ ast, dependencyMapName } = collectDependencies(ast, opts));
-          // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+          // TODO: We should try to drop this black-box approach since we don't need the deps.
+          // We just need the AST modifications such as `require.context`.
+
+          console.log(require('@babel/generator').default(ast).code);
+
+          ({ ast, dependencyMapName } = collectDependencies(ast, {
+            ...opts,
+            // This setting shouldn't be shared + it can't be serialized and cached anyways.
+            dependencyTransformer: null,
+          }));
         } catch (error) {
           if (error instanceof InternalInvalidRequireCallError) {
             throw new InvalidRequireCallError(error, value.path);
@@ -827,7 +864,9 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           importDefault,
           importAll,
           dependencyMapName,
-          globalPrefix
+          // TODO: Share these with transformer
+          globalPrefix,
+          config.transformer?.unstable_renameRequire === false
         );
 
         const source = value.getSource().toString('utf-8');
@@ -991,10 +1030,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 // };
 
 import { toSegmentTuple, toBabelSegments, fromRawMappings } from 'metro-source-map';
-import debug from 'debug';
+const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
 
+// TODO: Rework all of this to share logic with the transformer. Also account for not minifying in hermes bundles.
 async function minifyCode(
   config: { minifierPath?: string; minifierConfig?: any },
   projectRoot: string,
@@ -1064,5 +1104,3 @@ async function minifyCode(
     throw error;
   }
 }
-
-const metroTransformPlugins = require('metro-transform-plugins');
