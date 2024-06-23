@@ -112,16 +112,26 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     // console.log('treeshake:', graph.transformOptions);
     // Generate AST for all modules.
     graph.dependencies.forEach((value) => {
+      if (
+        // No tree shaking needed for JSON files.
+        value.path.endsWith('.json')
+      ) {
+        return;
+      }
       value.output.forEach((output) => {
+        if (output.type !== 'js/module') {
+          return;
+        }
         if (
-          output.type !== 'js/module' ||
           // This is a hack to prevent modules that are already wrapped from being included.
           output.data.code.startsWith('__d(function ')
         ) {
+          // TODO: This should probably assert.
+          debug('Skipping tree-shake for wrapped module: ' + value.path);
           return;
         }
 
-        console.log('has ast:', !!output.data.ast, output.data.code);
+        // console.log('has ast:', !!output.data.ast, output.data.code);
         output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
         output.data.modules = {
           imports: [],
@@ -691,24 +701,34 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     // Convert all remaining AST and dependencies to standard output that Metro expects.
     // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
     for (const value of graph.dependencies.values()) {
-      if (value.path.includes('empty-module.js')) {
-        inspect(value);
-      }
+      // if (value.path.includes('empty-module.js')) {
+      //   inspect(value);
+      // }
       for (const index in value.output) {
         const outputItem = value.output[index];
-        let ast = accessAst(outputItem);
-        if (!ast) {
+
+        if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
+          debug('Skipping post transform for non-js/module: ' + value.path);
           continue;
         }
-        // TODO: Only transform if "type": "js/module",
-        // NOTE: ^^ Only modules are being parsed to ast right now.
-
-        delete outputItem.data.ast;
 
         // This should be cached by the transform worker for use here to ensure close to consistent
         // results between the tree-shake and the final transform.
         const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
         assertCollectDependenciesOptions(collectDependenciesOptions);
+
+        // if (!collectDependenciesOptions) {
+        //   debug('Skipping post transform for module: ' + value.path);
+        //   continue;
+        // }
+
+        let ast = accessAst(outputItem);
+        if (!ast) {
+          continue;
+        }
+        // NOTE: ^^ Only modules are being parsed to ast right now.
+
+        delete outputItem.data.ast;
 
         // console.log('treeshake!!:', value.path, outputItem.data.collectDependenciesOptions);
 
@@ -971,6 +991,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 // };
 
 import { toSegmentTuple, toBabelSegments, fromRawMappings } from 'metro-source-map';
+import debug from 'debug';
 
 const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
 

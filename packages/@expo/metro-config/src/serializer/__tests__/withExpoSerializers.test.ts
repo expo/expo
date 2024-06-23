@@ -1080,6 +1080,102 @@ describe('serializes', () => {
       expect(artifacts[0].source).not.toMatch('subtract');
     });
 
+    describe('cjs', () => {
+      it(`import from module.exports`, async () => {
+        const [[, , graph], artifacts] = await serializeShakingAsync({
+          'index.js': `
+          import { add } from './math';
+          console.log('add', add(1, 2));
+        `,
+          'math.js': `
+          module.exports.add = function add(a, b) {
+            return subtract(a, b);
+          }
+
+          module.exports.subtract = function subtract(a, b) {
+            return a - b;
+          }
+        `,
+        });
+
+        expect(getModules(graph, '/app/index.js')).toEqual({
+          exports: [],
+          imports: [expect.objectContaining({ key: '/app/math.js' })],
+        });
+        expect(artifacts[0].source).toMatch('subtract');
+      });
+
+      xit(`requires all from module.exports`, async () => {
+        const [[, , graph], artifacts] = await serializeShakingAsync({
+          'index.js': `
+          const Math = require('./math');
+          console.log('add', Math.add(1, 2));
+        `,
+          'math.js': `
+          module.exports.add = function add(a, b) {
+            return subtract(a, b);
+          }
+
+          module.exports.subtract = function subtract(a, b) {
+            return a - b;
+          }
+        `,
+        });
+
+        expect(getModules(graph, '/app/index.js')).toEqual({
+          exports: [],
+          imports: [expect.objectContaining({ key: '/app/math.js' })],
+        });
+        expect(artifacts[0].source).toMatch('subtract');
+      });
+      xit(`requires some from module.exports`, async () => {
+        const [[, , graph], artifacts] = await serializeShakingAsync({
+          'index.js': `
+          const { add } = require('./math');
+          console.log('add', add(1, 2));
+        `,
+          'math.js': `
+          module.exports.add = function add(a, b) {
+            return subtract(a, b);
+          }
+
+          module.exports.subtract = function subtract(a, b) {
+            return a - b;
+          }
+        `,
+        });
+
+        expect(getModules(graph, '/app/index.js')).toEqual({
+          exports: [],
+          imports: [expect.objectContaining({ key: '/app/math.js' })],
+        });
+        expect(artifacts[0].source).toMatch('subtract');
+      });
+      it(`requires some from exports`, async () => {
+        const [[, , graph], artifacts] = await serializeShakingAsync({
+          'index.js': `
+          const { add } = require('./math');
+          console.log('add', add(1, 2));
+        `,
+          'math.js': `
+          export function add(a, b) {
+            return subtract(a, b);
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+        });
+
+        expect(getModules(graph, '/app/index.js')).toEqual({
+          exports: [],
+          imports: [expect.objectContaining({ key: '/app/math.js' })],
+        });
+        expect(artifacts[0].source).toMatch('subtract');
+      });
+    });
+
     // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
     describe('sanity', () => {
       // These tests do not optimize the graph but they ensure that tree shaking doesn't break anything.
@@ -1129,6 +1225,31 @@ describe('serializes', () => {
     });
 
     describe('Possible optimizations', () => {
+      // TODO: Broken
+      xit(`require module`, async () => {
+        const [[, , graph], artifacts] = await serializeShakingAsync({
+          'index.js': `
+            const { add } = require('./math');
+            console.log('add', add(1, 2));
+          `,
+          'math.js': `
+            export function add(a, b) {
+              return a + b;
+            }
+  
+            export function subtract(a, b) {
+              return a - b;
+            }
+          `,
+        });
+
+        expect(getModules(graph, '/app/index.js')).toEqual({
+          exports: [],
+          imports: [expect.objectContaining({ key: '/app/math.js' })],
+        });
+        expect(artifacts[0].source).toMatch('subtract');
+      });
+
       it(`barrel multiple`, async () => {
         const [[, , graph], artifacts] = await serializeShakingAsync({
           'index.js': `
@@ -1248,6 +1369,30 @@ describe('serializes', () => {
         imports: [expect.objectContaining({ key: '/app/math.js' })],
       });
       expect(artifacts[0].source).not.toMatch('subtract');
+    });
+
+    it(`import star`, async () => {
+      const [[, , graph], artifacts] = await serializeShakingAsync({
+        'index.js': `
+          import * as Math from './math';
+          console.log('add', Math.add(1, 2));
+        `,
+        'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+      });
+
+      expect(getModules(graph, '/app/index.js')).toEqual({
+        exports: [],
+        imports: [expect.objectContaining({ key: '/app/math.js' })],
+      });
+      expect(artifacts[0].source).toMatch('subtract');
     });
 
     it(`barrel partial`, async () => {
