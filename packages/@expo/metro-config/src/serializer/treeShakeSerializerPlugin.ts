@@ -176,13 +176,13 @@ function findUnusedExports(ast: Ast) {
   traverse(ast, {
     Identifier(path) {
       if (path.isReferencedIdentifier()) {
-        console.log('referenced:', path.node.name);
+        // console.log('referenced:', path.node.name);
         usedIdentifiers.add(path.node.name);
       }
     },
   });
 
-  console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
+  // console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
   // Determine which exports are unused
   exportedIdentifiers.forEach((exported) => {
     if (!usedIdentifiers.has(exported)) {
@@ -459,6 +459,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               });
             }
           } else {
+            console.log('remove:', node.id.name, 'from:', value.path);
             path.remove();
           }
         };
@@ -602,19 +603,25 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 );
               }
 
-              // inspect(
-              //   'remove',
+              // console.log('Drop', {
               //   depId,
-              //   dep.absolutePath,
-              //   hasSideEffect(graphDep),
-              //   isEmptyModule(graphDep)
-              // );
+              //   path: dep.absolutePath,
+              //   fx: hasSideEffect(graph, graphDep),
+              //   empty: isEmptyModule(graphDep),
+              // });
               if (
                 // Don't remove the module if it has side effects.
                 !hasSideEffect(graph, graphDep) ||
                 // Unless it's an empty module.
                 isEmptyModule(graphDep)
               ) {
+                console.log('Drop', {
+                  depId,
+                  path: dep.absolutePath,
+                  fx: hasSideEffect(graph, graphDep),
+                  empty: isEmptyModule(graphDep),
+                });
+                // console.log('Drop module:', value.path);
                 // Remove inverse link to this dependency
                 graphDep.inverseDependencies.delete(value.path);
 
@@ -706,6 +713,8 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         collectImportExports(value);
       }
 
+      // TODO: Add special handling for circular dependencies.
+
       // This pass will annotate the AST with the used and unused exports.
       for (const [depId, value] of graph.dependencies.entries()) {
         treeShakeExports(depId, value);
@@ -734,7 +743,7 @@ function accessAst(output: MixedOutput): Ast | undefined {
 }
 
 export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
-  return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
+  return String(graph.transformOptions.customTransformOptions?.treeshake) === 'true'; // && !options.dev;
 }
 
 export type AllowOptionalDependenciesWithOptions = {
@@ -799,7 +808,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     graph: ReadOnlyGraph,
     options: SerializerOptions
   ): Promise<SerializerParameters> {
-    console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
+    // console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
     if (!isShakingEnabled(graph, options)) {
       return [entryPoint, preModules, graph, options];
     }
@@ -936,7 +945,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           // TODO: We should try to drop this black-box approach since we don't need the deps.
           // We just need the AST modifications such as `require.context`.
 
-          console.log(require('@babel/generator').default(ast).code);
+          // console.log(require('@babel/generator').default(ast).code);
 
           ({ ast, dependencyMapName } = collectDependencies(ast, {
             ...opts,

@@ -11,7 +11,7 @@ exports.sideEffectsSerializerPlugin = exports.hasSideEffect = void 0;
  * LICENSE file in the root directory of this source tree.
  */
 const fs_1 = __importDefault(require("fs"));
-const minimatch_1 = require("minimatch");
+const minimatch_1 = __importDefault(require("minimatch"));
 const path_1 = __importDefault(require("path"));
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
@@ -74,7 +74,7 @@ function sideEffectsSerializerPlugin(entryPoint, preModules, graph, options) {
                 const relativeName = path_1.default.relative(dirRoot, fp);
                 return packageJson.sideEffects.some((sideEffect) => {
                     if (typeof sideEffect === 'string') {
-                        return (0, minimatch_1.minimatch)(relativeName, sideEffect.replace(/^\.\//, ''), {
+                        return (0, minimatch_1.default)(relativeName, sideEffect.replace(/^\.\//, ''), {
                             matchBase: true,
                         });
                     }

@@ -32,6 +32,7 @@ export type ExpoMetroOptions = {
   isExporting: boolean;
   inlineSourceMap?: boolean;
   splitChunks?: boolean;
+  treeshake?: boolean;
 };
 
 export type SerializerOptions = {
@@ -80,6 +81,10 @@ function withDefaults({
     mode,
     minify,
     preserveEnvVars,
+    treeshake: props.environment !== 'node' && env.EXPO_UNSTABLE_TREE_SHAKING,
+    // treeshake: env.EXPO_UNSTABLE_TREE_SHAKING,
+    // treeshake: mode === 'production' && env.EXPO_UNSTABLE_TREE_SHAKING,
+
     lazy: !props.isExporting && lazy,
     ...props,
   };
@@ -140,6 +145,7 @@ export function getMetroDirectBundleOptions(
     inlineSourceMap,
     splitChunks,
     reactCompiler,
+    treeshake,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -174,6 +180,7 @@ export function getMetroDirectBundleOptions(
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
+      treeshake: treeshake ?? undefined,
       engine,
       preserveEnvVars,
       asyncRoutes,
@@ -237,6 +244,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     inlineSourceMap,
     isExporting,
     splitChunks,
+    treeshake,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -297,6 +305,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
+  if (treeshake) {
+    queryParams.append('transform.treeshake', String(treeshake));
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);

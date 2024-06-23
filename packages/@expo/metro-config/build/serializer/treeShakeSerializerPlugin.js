@@ -90,12 +90,12 @@ function findUnusedExports(ast) {
     (0, core_1.traverse)(ast, {
         Identifier(path) {
             if (path.isReferencedIdentifier()) {
-                console.log('referenced:', path.node.name);
+                // console.log('referenced:', path.node.name);
                 usedIdentifiers.add(path.node.name);
             }
         },
     });
-    console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
+    // console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
     // Determine which exports are unused
     exportedIdentifiers.forEach((exported) => {
         if (!usedIdentifiers.has(exported)) {
@@ -335,6 +335,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     }
                     else {
+                        console.log('remove:', node.id.name, 'from:', value.path);
                         path.remove();
                     }
                 };
@@ -458,18 +459,24 @@ function treeShakeSerializerPlugin(config) {
                             if (!graphDep) {
                                 throw new Error(`Failed to find graph key for import "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
                             }
-                            // inspect(
-                            //   'remove',
+                            // console.log('Drop', {
                             //   depId,
-                            //   dep.absolutePath,
-                            //   hasSideEffect(graphDep),
-                            //   isEmptyModule(graphDep)
-                            // );
+                            //   path: dep.absolutePath,
+                            //   fx: hasSideEffect(graph, graphDep),
+                            //   empty: isEmptyModule(graphDep),
+                            // });
                             if (
                             // Don't remove the module if it has side effects.
                             !(0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep) ||
                                 // Unless it's an empty module.
                                 isEmptyModule(graphDep)) {
+                                console.log('Drop', {
+                                    depId,
+                                    path: dep.absolutePath,
+                                    fx: (0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep),
+                                    empty: isEmptyModule(graphDep),
+                                });
+                                // console.log('Drop module:', value.path);
                                 // Remove inverse link to this dependency
                                 graphDep.inverseDependencies.delete(value.path);
                                 if (graphDep.inverseDependencies.size === 0) {
@@ -545,6 +552,7 @@ function treeShakeSerializerPlugin(config) {
             for (const value of graph.dependencies.values()) {
                 collectImportExports(value);
             }
+            // TODO: Add special handling for circular dependencies.
             // This pass will annotate the AST with the used and unused exports.
             for (const [depId, value] of graph.dependencies.entries()) {
                 treeShakeExports(depId, value);
@@ -568,7 +576,7 @@ function accessAst(output) {
     return output.data.ast;
 }
 function isShakingEnabled(graph, options) {
-    return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
+    return String(graph.transformOptions.customTransformOptions?.treeshake) === 'true'; // && !options.dev;
 }
 exports.isShakingEnabled = isShakingEnabled;
 function assertCollectDependenciesOptions(collectDependenciesOptions) {
@@ -588,7 +596,7 @@ function assertCollectDependenciesOptions(collectDependenciesOptions) {
 }
 function createPostTreeShakeTransformSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
-        console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
+        // console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
@@ -707,7 +715,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     // };
                     // TODO: We should try to drop this black-box approach since we don't need the deps.
                     // We just need the AST modifications such as `require.context`.
-                    console.log(require('@babel/generator').default(ast).code);
+                    // console.log(require('@babel/generator').default(ast).code);
                     ({ ast, dependencyMapName } = collectDependencies(ast, {
                         ...opts,
                         // This setting shouldn't be shared + it can't be serialized and cached anyways.

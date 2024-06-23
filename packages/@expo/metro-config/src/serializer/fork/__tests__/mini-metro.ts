@@ -177,6 +177,7 @@ export function microBundle({
           baseUrl: options.baseUrl,
           engine: options.hermes ? 'hermes' : undefined,
           environment: options.isReactServer ? 'react-server' : undefined,
+          treeshake: options.treeshake,
         },
       },
     },

@@ -118,6 +118,8 @@ class InvalidRequireCallError extends Error {
     }
 }
 async function transformJS(file, { config, options, projectRoot }) {
+    const treeshake = String(options.customTransformOptions?.treeshake) === 'true';
+    const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
     // const targetEnv = options.customTransformOptions?.environment;
     // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
@@ -142,84 +144,87 @@ async function transformJS(file, { config, options, projectRoot }) {
         importDefault,
         importAll,
     };
-    // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
-    // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
-    if (options.experimentalImportSupport === true) {
-        plugins.push([metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
-    }
-    // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
-    // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
-    if (options.inlineRequires) {
-        plugins.push([
-            metro_transform_plugins_1.default.inlineRequiresPlugin,
-            {
-                ...babelPluginOpts,
-                ignoredRequires: options.nonInlinedRequires,
-            },
-        ]);
-    }
-    // NOTE(EvanBacon): We apply this conditionally in `babel-preset-expo` with other AST transforms.
-    // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
-    // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-    if (plugins.length) {
-        ast = nullthrows(
-        // @ts-expect-error
-        (0, core_1.transformFromAstSync)(ast, '', {
-            ast: true,
-            babelrc: false,
-            code: false,
-            configFile: false,
-            comments: true,
-            filename: file.filename,
-            plugins,
-            sourceMaps: false,
-            // NOTE(kitten): This was done to wipe the paths/scope caches, which the `constantFoldingPlugin` needs to work,
-            // but has been replaced with `programPath.scope.crawl()`.
-            // Old Note from Metro:
-            // > Not-Cloning the input AST here should be safe because other code paths above this call
-            // > are mutating the AST as well and no code is depending on the original AST.
-            // > However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-            // > either because one of the plugins is doing something funky or Babel messes up some caches.
-            // > Make sure to test the above mentioned case before flipping the flag back to false.
-            cloneInputAst: false,
-        }).ast);
-    }
-    if (!options.dev) {
-        // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
-        // references, and hence the `constantFoldingPlugin` below will remove them.
-        // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
-        // Babel traversal cache (`traverse.cache.clear()`)
-        const clearProgramScopePlugin = {
-            visitor: {
-                Program: {
-                    enter(path) {
-                        path.scope.crawl();
+    // Disable all Metro single-file optimizations when full-graph optimization will be used.
+    if (!treeshake) {
+        // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
+        // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
+        if (options.experimentalImportSupport === true) {
+            plugins.push([metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
+        }
+        // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
+        // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
+        if (options.inlineRequires) {
+            plugins.push([
+                metro_transform_plugins_1.default.inlineRequiresPlugin,
+                {
+                    ...babelPluginOpts,
+                    ignoredRequires: options.nonInlinedRequires,
+                },
+            ]);
+        }
+        // NOTE(EvanBacon): We apply this conditionally in `babel-preset-expo` with other AST transforms.
+        // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
+        // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
+        if (plugins.length) {
+            ast = nullthrows(
+            // @ts-expect-error
+            (0, core_1.transformFromAstSync)(ast, '', {
+                ast: true,
+                babelrc: false,
+                code: false,
+                configFile: false,
+                comments: true,
+                filename: file.filename,
+                plugins,
+                sourceMaps: false,
+                // NOTE(kitten): This was done to wipe the paths/scope caches, which the `constantFoldingPlugin` needs to work,
+                // but has been replaced with `programPath.scope.crawl()`.
+                // Old Note from Metro:
+                // > Not-Cloning the input AST here should be safe because other code paths above this call
+                // > are mutating the AST as well and no code is depending on the original AST.
+                // > However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+                // > either because one of the plugins is doing something funky or Babel messes up some caches.
+                // > Make sure to test the above mentioned case before flipping the flag back to false.
+                cloneInputAst: false,
+            }).ast);
+        }
+        if (!options.dev) {
+            // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
+            // references, and hence the `constantFoldingPlugin` below will remove them.
+            // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
+            // Babel traversal cache (`traverse.cache.clear()`)
+            const clearProgramScopePlugin = {
+                visitor: {
+                    Program: {
+                        enter(path) {
+                            path.scope.crawl();
+                        },
                     },
                 },
-            },
-        };
-        // Run the constant folding plugin in its own pass, avoiding race conditions
-        // with other plugins that have exit() visitors on Program (e.g. the ESM
-        // transform).
-        ast = nullthrows(
-        // @ts-expect-error
-        (0, core_1.transformFromAstSync)(ast, '', {
-            ast: true,
-            babelrc: false,
-            code: false,
-            configFile: false,
-            comments: true,
-            filename: file.filename,
-            plugins: [
-                clearProgramScopePlugin,
-                [metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts],
-            ],
-            sourceMaps: false,
-            // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
-            // running with `cloneInputAst: true`.
-            // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
-            cloneInputAst: false,
-        }).ast);
+            };
+            // Run the constant folding plugin in its own pass, avoiding race conditions
+            // with other plugins that have exit() visitors on Program (e.g. the ESM
+            // transform).
+            ast = nullthrows(
+            // @ts-expect-error
+            (0, core_1.transformFromAstSync)(ast, '', {
+                ast: true,
+                babelrc: false,
+                code: false,
+                configFile: false,
+                comments: true,
+                filename: file.filename,
+                plugins: [
+                    clearProgramScopePlugin,
+                    [metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts],
+                ],
+                sourceMaps: false,
+                // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+                // running with `cloneInputAst: true`.
+                // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
+                cloneInputAst: false,
+            }).ast);
+        }
     }
     let dependencyMapName = '';
     let dependencies;
@@ -250,9 +255,7 @@ async function transformJS(file, { config, options, projectRoot }) {
             ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
                 ...collectDependenciesOptions,
                 // This setting shouldn't be shared with the tree shaking transformer.
-                dependencyTransformer: config.unstable_disableModuleWrapping === true
-                    ? disabledDependencyTransformer
-                    : undefined,
+                dependencyTransformer: unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
             }));
         }
         catch (error) {
@@ -261,7 +264,7 @@ async function transformJS(file, { config, options, projectRoot }) {
             }
             throw error;
         }
-        if (config.unstable_disableModuleWrapping === true) {
+        if (unstable_disableModuleWrapping === true) {
             wrappedAst = ast;
         }
         else {
@@ -299,7 +302,12 @@ async function transformJS(file, { config, options, projectRoot }) {
     let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
     let code = result.code;
     if (minify) {
-        ({ map, code } = await minifyCode(config, projectRoot, file.filename, result.code, file.code, map, reserved));
+        if (treeshake) {
+            // TODO: Store settings for running this later...
+        }
+        else {
+            ({ map, code } = await minifyCode(config, projectRoot, file.filename, result.code, file.code, map, reserved));
+        }
     }
     const output = [
         {
@@ -309,7 +317,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 map,
                 functionMap: file.functionMap,
                 reactClientReference: file.reactClientReference,
-                collectDependenciesOptions,
+                collectDependenciesOptions: treeshake ? collectDependenciesOptions : undefined,
             },
             type: file.type,
         },
