@@ -82,6 +82,8 @@ public final class PedometerModule: Module {
 
     OnStopObserving {
       stopUpdates()
+      watchStartDate = nil
+      watchHandler = nil
     }
 
     OnAppEntersBackground {
@@ -108,8 +110,6 @@ public final class PedometerModule: Module {
     }
 
     pedometer.stopUpdates()
-    watchStartDate = nil
-    watchHandler = nil
   }
 }
 
