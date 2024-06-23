@@ -178,7 +178,9 @@ async function transformJS(
   file: JSFile,
   { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
-  const treeshake = String(options.customTransformOptions?.treeshake) === 'true';
+  const treeshake =
+    // Ensure we don't enable tree shaking for scripts or assets.
+    file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
   const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
   // const targetEnv = options.customTransformOptions?.environment;
   // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
