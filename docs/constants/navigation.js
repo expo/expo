@@ -162,7 +162,6 @@ const general = [
       'Bundling',
       [
         makePage('guides/customizing-metro.mdx'),
-        makePage('guides/react-compiler.mdx'),
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),
@@ -517,6 +516,7 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makePage('preview/react-compiler.mdx'),
     { expanded: true },
   ]),
 ];
