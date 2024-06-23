@@ -59,7 +59,7 @@ function generateREADME() {
 
   if (isIOS) {
     const podspecs = glob.sync('{ios/**/,}*.podspec');
-    const podspecPath = podspecs[0];
+    const podspecPath = podspecs[0] ?? '';
     const podName = (() => {
       const parts = podspecPath.split('/');
       return parts[parts.length - 1].replace('.podspec', '');
