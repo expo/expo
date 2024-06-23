@@ -1,4 +1,5 @@
 import * as babel from '@babel/core';
+import * as types from '@babel/types';
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
 import CountingSet from 'metro/src/lib/CountingSet';
@@ -361,4 +362,3 @@ function mockAbsolutePath(name: string) {
   }
   return path.join(projectRoot, 'node_modules', name, 'index.js');
 }
-import * as types from '@babel/types';

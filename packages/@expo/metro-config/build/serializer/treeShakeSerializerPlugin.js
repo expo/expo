@@ -35,10 +35,13 @@ exports.createPostTreeShakeTransformSerializerPlugin = exports.isShakingEnabled 
  */
 const core_1 = require("@babel/core");
 const babylon = __importStar(require("@babel/parser"));
+const assert_1 = __importDefault(require("assert"));
+const collectDependencies_1 = require("metro/src/ModuleGraph/worker/collectDependencies");
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const metro_source_map_1 = require("metro-source-map");
+const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const generate = require('@babel/generator').default;
-const collectDependencies_1 = require("metro/src/ModuleGraph/worker/collectDependencies");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -568,8 +571,6 @@ function isShakingEnabled(graph, options) {
     return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
 }
 exports.isShakingEnabled = isShakingEnabled;
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const assert_1 = __importDefault(require("assert"));
 function assertCollectDependenciesOptions(collectDependenciesOptions) {
     if (!collectDependenciesOptions) {
         throw new Error('collectDependenciesOptions is required. Something is wrong with the metro transformer or transform cache.');
@@ -772,90 +773,6 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
     };
 }
 exports.createPostTreeShakeTransformSerializerPlugin = createPostTreeShakeTransformSerializerPlugin;
-// function getDynamicDepsBehavior(
-//   inPackages: DynamicRequiresBehavior | undefined,
-//   filename: string
-// ): DynamicRequiresBehavior {
-//   switch (inPackages) {
-//     case 'reject':
-//       return 'reject';
-//     case 'throwAtRuntime':
-//       const isPackage = /(?:^|[/\\])node_modules[/\\]/.test(filename);
-//       return isPackage ? inPackages : 'reject';
-//     default:
-//       throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
-//   }
-// }
-// TODO: Up-transform CJS to ESM
-// https://github.com/vite-plugin/vite-plugin-commonjs/tree/main#cases
-//
-// const foo = require('foo').default
-// ↓ ↓ ↓
-// import foo from 'foo'
-//
-// const foo = require('foo')
-// ↓ ↓ ↓
-// import * as foo from 'foo'
-//
-// module.exports = { foo: 'bar' }
-// ↓ ↓ ↓
-// export const foo = 'bar'
-//
-// module.exports = { get foo() { return require('./foo') } }
-// ↓ ↓ ↓
-// export * as foo from './foo'
-//
-// Move requires out of conditionals if they don't contain side effects.
-// TODO: Barrel reduction
-//
-// import { View, Image } from 'react-native';
-// ↓ ↓ ↓
-// import View from 'react-native/Libraries/Components/View/View';
-// import Image from 'react-native/Libraries/Components/Image/Image';
-//
-// 1. For each import, recursively check if the module comes from a re-export.
-// 2. Ensure each file in the re-export chain is not side-effect-ful.
-// 3. Collapse the re-export chain into a single import.
-// Check if "is re-export"
-// 1. `export { default } from './foo'`
-// 2. `export * from './foo'`
-// 3. `export { default as foo } from './foo'`
-// 4. `export { foo } from './foo'`
-//
-// Simplify:
-// - Convert static cjs usage to esm.
-// - Reduce `import { foo } from './foo'; export { foo }` to `export { foo } from './foo'`
-// Test case: react native barrel reduction
-// import warnOnce from './Libraries/Utilities/warnOnce';
-// module.exports = {
-//   get alpha() {
-//     return require('./alpha')
-//       .default;
-//   },
-//   get beta() {
-//     return require('./beta').Beta;
-//   },
-//   get omega() {
-//     return require('./omega');
-//   },
-//   get gamma() {
-//     warnOnce(
-//       'progress-bar-android-moved',
-//       'ProgressBarAndroid has been extracted from react-native core and will be removed in a future release. ' +
-//         "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
-//         'See https://github.com/react-native-progress-view/progress-bar-android',
-//     );
-//     return require('./gamma');
-//   },
-//   get delta() {
-//     return () => console.warn('this is gone');
-//   },
-//   get zeta() {
-//     console.error('do not use this');
-//     return require('zeta').zeta;
-//   },
-// };
-const metro_source_map_1 = require("metro-source-map");
 const debug = require('debug')('expo:treeshaking');
 const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
 // TODO: Rework all of this to share logic with the transformer. Also account for not minifying in hermes bundles.

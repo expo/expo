@@ -17,9 +17,9 @@ const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const serializeChunks_1 = require("./serializeChunks");
-const env_1 = require("../env");
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
+const env_1 = require("../env");
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);

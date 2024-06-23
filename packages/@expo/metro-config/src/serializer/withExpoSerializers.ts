@@ -18,12 +18,12 @@ import {
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
-import { env } from '../env';
 import { sideEffectsSerializerPlugin } from './sideEffectsSerializerPlugin';
 import {
   createPostTreeShakeTransformSerializerPlugin,
   treeShakeSerializerPlugin,
 } from './treeShakeSerializerPlugin';
+import { env } from '../env';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 

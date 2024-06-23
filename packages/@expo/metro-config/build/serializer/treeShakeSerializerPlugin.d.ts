@@ -6,7 +6,7 @@ export type SerializerParameters = Parameters<Serializer>;
 export declare function treeShakeSerializerPlugin(config: InputConfigT): (entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: SerializerOptions) => Promise<SerializerParameters>;
 export declare function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions): boolean;
 export type AllowOptionalDependenciesWithOptions = {
-    exclude: Array<string>;
+    exclude: string[];
 };
 export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
 export type CollectDependenciesOptions = {

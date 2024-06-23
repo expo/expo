@@ -1,6 +1,11 @@
 import assert from 'assert';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
+import { sideEffectsSerializerPlugin } from '../sideEffectsSerializerPlugin';
+import {
+  createPostTreeShakeTransformSerializerPlugin,
+  treeShakeSerializerPlugin,
+} from '../treeShakeSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -8,11 +13,6 @@ import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
-import { sideEffectsSerializerPlugin } from '../sideEffectsSerializerPlugin';
-import {
-  createPostTreeShakeTransformSerializerPlugin,
-  treeShakeSerializerPlugin,
-} from '../treeShakeSerializerPlugin';
 
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {
