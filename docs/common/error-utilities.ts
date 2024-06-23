@@ -469,5 +469,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
 
   // Temporary redirects
-  '/guides/react-compiler': '/preview/react-compiler',
+  '/guides/react-compiler/': '/preview/react-compiler/',
 };
