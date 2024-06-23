@@ -446,9 +446,11 @@ A few different listeners are exposed, so we've provided a chart below which wil
 | false                              |          Killed          | none                                                                    |
 | true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
 | true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `NotificationResponseReceivedListener`                                  |
+| true                               |          Killed          | `useLastNotificationResponse`                                           |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
+
+> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse`. 
 
 ### Background notifications
 
@@ -456,10 +458,20 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
-and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
+To handle notifications while the app is in the background or not running, you need to do the following:
 
-On Android, data-only notifications are sent using the `data` key of the push notification request payload.
+- Add `expo-task-manager` package to your project.
+- In your application code, set up a [background task](/versions/unversioned/sdk/notifications/#registertaskasynctaskname) to run when the notification is received.
+
+For Android:
+
+- Send a push notification payload containing only the `data` key.
+
+For iOS:
+
+- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
+
 
 ## Additional information
 

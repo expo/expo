@@ -367,6 +367,9 @@ redirects[/learn]=tutorial/introduction
 redirects[/develop/user-interface/app-icons]=develop/user-interface/splash-screen-and-app-icon
 redirects[/develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
 
+# Temporary redirects
+redirects[guides/react-compiler]=/preview/react-compiler
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

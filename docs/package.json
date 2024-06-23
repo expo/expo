@@ -35,7 +35,7 @@
     "@mdx-js/react": "^2.2.1",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@reach/tabs": "^0.18.0",
-    "@sentry/react": "^7.112.0",
+    "@sentry/react": "^8.10.0",
     "clipboard-copy": "^4.0.1",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",

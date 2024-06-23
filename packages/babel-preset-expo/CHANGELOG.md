@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
-- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
 - Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
@@ -15,6 +13,21 @@
 ### 💡 Others
 
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.10 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.9 - 2024-06-10
+
+### 🎉 New features
+
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.8 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.7 - 2024-06-05
 

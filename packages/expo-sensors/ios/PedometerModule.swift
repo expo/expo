@@ -5,6 +5,7 @@ import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
 
+// This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
   private lazy var pedometer = CMPedometer()
 

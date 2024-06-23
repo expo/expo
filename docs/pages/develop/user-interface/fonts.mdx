@@ -396,7 +396,8 @@ Now, you can any icon from the `Ionicons` library in a React component:
 
 Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
 
-However, loading a font file directly from web is possible. Replace the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
+However, loading a font file directly from web is done by replacing the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
+
 
 <SnackInline label="Using a remote font" dependencies={['expo-font']}>
 

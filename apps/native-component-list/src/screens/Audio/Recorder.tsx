@@ -1,11 +1,5 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import {
-  AudioQuality,
-  OutputFormat,
-  useAudioRecorder,
-  AudioModule,
-  RecordingStatus,
-} from 'expo-audio';
+import { AudioQuality, useAudioRecorder, AudioModule, RecordingStatus } from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
   Alert,
@@ -45,15 +39,20 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const [audioRecorder, audioState] = useAudioRecorder(
     {
-      extension: '.caf',
-      outputFormat: OutputFormat.MPEG4AAC,
-      audioQuality: AudioQuality.MAX,
+      extension: '.mp4',
+      android: {
+        outputFormat: 'mpeg4',
+        audioEncoder: 'default',
+      },
+      ios: {
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+        audioQuality: AudioQuality.MAX,
+      },
       sampleRate: 44100,
       numberOfChannels: 2,
       bitRate: 128000,
-      linearPCMBitDepth: 16,
-      linearPCMIsBigEndian: false,
-      linearPCMIsFloat: false,
     },
     (status) => {
       setState(status);

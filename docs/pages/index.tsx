@@ -2,7 +2,7 @@ import DocumentationPage from '~/components/DocumentationPage';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
-  LearnMore,
+  DiscoverMore,
   ExploreAPIs,
   Talks,
   JoinTheCommunity,
@@ -15,7 +15,7 @@ function Home() {
         <DevicesImageMasks />
       </div>
       <QuickStart />
-      <LearnMore />
+      <DiscoverMore />
       <ExploreAPIs />
       <Talks />
       <JoinTheCommunity />

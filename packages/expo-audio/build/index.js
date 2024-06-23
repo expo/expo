@@ -2,6 +2,7 @@ import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 export function useAudioPlayer(source = null, statusListener) {
     const parsedSource = resolveSource(source);
@@ -17,9 +18,10 @@ export function useAudioPlayer(source = null, statusListener) {
     return player;
 }
 export function useAudioRecorder(options, statusListener) {
+    const platformOptions = createRecordingOptions(options);
     const recorder = useReleasingSharedObject(() => {
-        return new AudioModule.AudioRecorder(options);
-    }, [JSON.stringify(options)]);
+        return new AudioModule.AudioRecorder(platformOptions);
+    }, [JSON.stringify(platformOptions)]);
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {

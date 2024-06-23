@@ -20,11 +20,11 @@ function getBlobUrlPrefix() {
 
   // Pull the blob module without importing React Native.
   const BlobModule =
-    global.RN$Bridgeless !== true
+    globalThis.RN$Bridgeless !== true
       ? // Legacy RN implementation
-        global.nativeModuleProxy['BlobModule']
+        globalThis.nativeModuleProxy['BlobModule']
       : // Newer RN implementation
-        global.__turboModuleProxy('BlobModule');
+        globalThis.__turboModuleProxy('BlobModule');
 
   const constants = 'BLOB_URI_SCHEME' in BlobModule ? BlobModule : BlobModule.getConstants();
 

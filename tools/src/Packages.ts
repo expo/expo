@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';

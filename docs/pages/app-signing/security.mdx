@@ -5,9 +5,39 @@ description: Learn how credentials and other sensitive data are handled when usi
 
 Before you enter outside credentials or provide other sensitive data to third-party software you should ask yourself whether you trust the software to use it responsibly and protect it. Due to the nature of what goes into building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivity. This document explains what those are, how we store them, and what could go wrong if they were to be compromised.
 
-Most data stored by Expo servers — credentials or otherwise — is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/kms/). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or push notification services. Credentials are always encrypted in our databases, message queues, and other less transient parts of the system.
+Most data stored by Expo servers (credentials or otherwise) is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/security/products/security-key-management). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or push notification services. Credentials are always encrypted in our databases, message queues, and other less transient parts of the system.
 
 All of the data related to the information explained below can be downloaded and removed from Expo servers (if it is stored there at all in the first place), and some of it may be available through other locations such as the Apple Developer Portal.
+
+## Android Push Notification credentials
+
+Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build a standalone app with Expo we store your FCM server key for you.
+
+### Consequences if compromised
+
+Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens to send a notification.
+
+You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
+
+### Consequences if lost
+
+None. You can access it through the Firebase console.
+
+## Android build credentials
+
+A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn't let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
+
+### Consequences if compromised
+
+Provided that your Google Play Developer account is secure, a malicious actor will not be able to update your app with your keystore and keystore password. You cannot change your keystore.
+
+### Consequences if lost
+
+You will not be able to update your app on Google Play. You may want to download and backup the keystore and keystore password in a secure location of your choosing or in Google Play with the App Signing feature.
+
+## Google Developer credentials
+
+Expo tools never ask you to provide your Google account credentials.
 
 ## iOS Push Notification credentials
 
@@ -65,36 +95,6 @@ For ad-hoc builds, if a user were to gain access to your session token it would 
 ### Consequences if lost
 
 None. They are available through the Apple Developer console.
-
-## Android Push Notification credentials
-
-Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build a standalone app with Expo we store your FCM server key for you.
-
-### Consequences if compromised
-
-Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens to send a notification.
-
-You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
-
-### Consequences if lost
-
-None. You can access it through the Firebase console.
-
-## Android build credentials
-
-A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn't let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
-
-### Consequences if compromised
-
-Provided that your Google Play Developer account is secure, a malicious actor will not be able to update your app with your keystore and keystore password. You cannot change your keystore.
-
-### Consequences if lost
-
-You will not be able to update your app on Google Play. You may want to download and backup the keystore and keystore password in a secure location of your choosing or in Google Play with the App Signing feature.
-
-## Google Developer credentials
-
-Expo tools never ask you to provide your Google account credentials.
 
 ## Device tokens for Android and iOS push notifications
 
