@@ -334,6 +334,8 @@ export function parseModule(
           lineCount: countLines(output),
           // @ts-expect-error
           reactClientReference: file?.metadata?.reactClientReference,
+
+          collectDependenciesOptions: options,
         },
         type: 'js/module',
       },

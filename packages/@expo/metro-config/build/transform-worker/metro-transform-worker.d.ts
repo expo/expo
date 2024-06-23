@@ -1,6 +1,7 @@
-/// <reference types="node" />
 /// <reference types="metro" />
+/// <reference types="node" />
 import type { TransformResultDependency } from 'metro/src/DeltaBundler';
+import type { Options as CollectDependenciesOptions } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 export { JsTransformOptions };
 interface TransformResponse {
@@ -9,6 +10,7 @@ interface TransformResponse {
 }
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
+        readonly collectDependenciesOptions?: CollectDependenciesOptions;
         readonly reactClientReference?: string;
     };
 };

@@ -228,13 +228,14 @@ async function transformJS(file, { config, options, projectRoot }) {
     // dependency graph and it code will just be prepended to the bundle modules),
     // we need to wrap it differently than a commonJS module (also, scripts do
     // not have dependencies).
+    let collectDependenciesOptions;
     if (file.type === 'js/script') {
         dependencies = [];
         wrappedAst = JsFileWrapping_1.default.wrapPolyfill(ast);
     }
     else {
         try {
-            const opts = {
+            collectDependenciesOptions = {
                 asyncRequireModulePath: config.asyncRequireModulePath,
                 dependencyTransformer: config.unstable_disableModuleWrapping === true
                     ? disabledDependencyTransformer
@@ -249,7 +250,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 // This requires a patch to Metro collectDeps.
                 // allowArbitraryImport: isServerEnv,
             };
-            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
+            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, collectDependenciesOptions));
         }
         catch (error) {
             if (error instanceof collectDependencies_1.InvalidRequireCallError) {
@@ -305,6 +306,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 map,
                 functionMap: file.functionMap,
                 reactClientReference: file.reactClientReference,
+                collectDependenciesOptions,
             },
             type: file.type,
         },

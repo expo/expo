@@ -1080,6 +1080,7 @@ describe('serializes', () => {
       expect(artifacts[0].source).not.toMatch('subtract');
     });
 
+    // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
     describe('sanity', () => {
       // These tests do not optimize the graph but they ensure that tree shaking doesn't break anything.
 
@@ -1311,7 +1312,7 @@ describe('serializes', () => {
       expect(artifacts).toMatchInlineSnapshot(`
         [
           {
-            "filename": "_expo/static/js/web/index-6a51b31054d25ef8ae15ba7e83660d07.js",
+            "filename": "_expo/static/js/web/index-d41bc81d356d9efa279c2e373b0cf654.js",
             "metadata": {
               "isAsync": false,
               "modulePaths": [
@@ -1323,11 +1324,11 @@ describe('serializes', () => {
               "requires": [],
             },
             "originFilename": "index.js",
-            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-          var add = _$$_REQUIRE(_dependencyMap[0]).add;
+            "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          var add = _$$_REQUIRE(dependencyMap[0], "./math").add;
           console.log('add', add(1, 2));
         },"/app/index.js",["/app/math.js"]);
-        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
           Object.defineProperty(exports, '__esModule', {
             value: true
           });

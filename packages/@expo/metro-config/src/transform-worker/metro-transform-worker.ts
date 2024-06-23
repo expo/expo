@@ -22,6 +22,7 @@ import collectDependencies, {
 import type {
   DependencyTransformer,
   DynamicRequiresBehavior,
+  Options as CollectDependenciesOptions,
 } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
@@ -81,6 +82,7 @@ interface TransformResponse {
 
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
+    readonly collectDependenciesOptions?: CollectDependenciesOptions;
     readonly reactClientReference?: string;
   };
 };
@@ -306,12 +308,13 @@ async function transformJS(
   // dependency graph and it code will just be prepended to the bundle modules),
   // we need to wrap it differently than a commonJS module (also, scripts do
   // not have dependencies).
+  let collectDependenciesOptions: CollectDependenciesOptions | undefined;
   if (file.type === 'js/script') {
     dependencies = [];
     wrappedAst = JsFileWrapping.wrapPolyfill(ast);
   } else {
     try {
-      const opts = {
+      collectDependenciesOptions = {
         asyncRequireModulePath: config.asyncRequireModulePath,
         dependencyTransformer:
           config.unstable_disableModuleWrapping === true
@@ -329,7 +332,10 @@ async function transformJS(
         // allowArbitraryImport: isServerEnv,
       };
 
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+      ({ ast, dependencies, dependencyMapName } = collectDependencies(
+        ast,
+        collectDependenciesOptions
+      ));
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);
@@ -412,6 +418,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         reactClientReference: file.reactClientReference,
+        collectDependenciesOptions,
       },
       type: file.type,
     },

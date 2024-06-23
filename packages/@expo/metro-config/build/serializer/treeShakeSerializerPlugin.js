@@ -529,6 +529,22 @@ function isShakingEnabled(graph, options) {
     return true; // graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
 }
 exports.isShakingEnabled = isShakingEnabled;
+const assert_1 = __importDefault(require("assert"));
+function assertCollectDependenciesOptions(collectDependenciesOptions) {
+    if (!collectDependenciesOptions) {
+        throw new Error('collectDependenciesOptions is required. Something is wrong with the metro transformer or transform cache.');
+    }
+    if (typeof collectDependenciesOptions !== 'object') {
+        throw new Error('collectDependenciesOptions must be an object.');
+    }
+    (0, assert_1.default)('unstable_allowRequireContext' in collectDependenciesOptions, 'unstable_allowRequireContext is required.');
+    (0, assert_1.default)('allowOptionalDependencies' in collectDependenciesOptions, 'allowOptionalDependencies is required.');
+    (0, assert_1.default)('asyncRequireModulePath' in collectDependenciesOptions, 'asyncRequireModulePath is required.');
+    (0, assert_1.default)('dynamicRequires' in collectDependenciesOptions, 'dynamicRequires is required.');
+    (0, assert_1.default)('inlineableCalls' in collectDependenciesOptions, 'inlineableCalls is required.');
+    (0, assert_1.default)('keepRequireNames' in collectDependenciesOptions, 'keepRequireNames is required.');
+    (0, assert_1.default)('dependencyMapName' in collectDependenciesOptions, 'dependencyMapName is required.');
+}
 function createPostTreeShakeTransformSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
@@ -536,19 +552,23 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             return [entryPoint, preModules, graph, options];
         }
         // return [entryPoint, preModules, graph, options];
-        const includeDebugInfo = false;
+        // const includeDebugInfo = false;
         const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
-        const dynamicTransformOptions = await config.transformer?.getTransformOptions?.([entryPoint], {
-            dev: options.dev,
-            hot: false,
-            platform: graph.transformOptions.platform,
-        }, async (filepath) => {
-            return [...(graph.dependencies.get(filepath)?.dependencies.keys() ?? [])];
-        });
+        // const dynamicTransformOptions = await config.transformer?.getTransformOptions?.(
+        //   [entryPoint],
+        //   {
+        //     dev: options.dev,
+        //     hot: false,
+        //     platform: graph.transformOptions.platform,
+        //   },
+        //   async (filepath) => {
+        //     return [...(graph.dependencies.get(filepath)?.dependencies.keys() ?? [])];
+        //   }
+        // );
         // Convert all remaining AST and dependencies to standard output that Metro expects.
         // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
         for (const value of graph.dependencies.values()) {
@@ -564,7 +584,14 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 // TODO: Only transform if "type": "js/module",
                 // NOTE: ^^ Only modules are being parsed to ast right now.
                 delete outputItem.data.ast;
-                const { importDefault, importAll } = generateImportNames(ast);
+                // This should be cached by the transform worker for use here to ensure close to consistent
+                // results between the tree-shake and the final transform.
+                const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
+                assertCollectDependenciesOptions(collectDependenciesOptions);
+                // console.log('treeshake!!:', value.path, outputItem.data.collectDependenciesOptions);
+                const importDefault = collectDependenciesOptions.inlineableCalls[0];
+                const importAll = collectDependenciesOptions.inlineableCalls[1];
+                // const { importDefault, importAll } = generateImportNames(ast);
                 const babelPluginOpts = {
                     // ...options,
                     ...graph.transformOptions,
@@ -609,23 +636,30 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     // // Make sure to test the above mentioned case before flipping the flag back to false.
                     // cloneInputAst: true,
                 })?.ast;
+                // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
                 let dependencyMapName = '';
                 // This pass converts the modules to use the generated import names.
                 try {
-                    const opts = {
-                        asyncRequireModulePath: config.transformer?.asyncRequireModulePath ??
-                            require.resolve('metro-runtime/src/modules/asyncRequire'),
-                        dependencyTransformer: undefined,
-                        dynamicRequires: getDynamicDepsBehavior(config.transformer?.dynamicDepsInPackages ?? 'throwAtRuntime', value.path),
-                        inlineableCalls: [importDefault, importAll],
-                        keepRequireNames: options.dev,
-                        // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L132C32-L132C37
-                        allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? false,
-                        // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L134C46-L134C46
-                        dependencyMapName: config.transformer?.unstable_dependencyMapReservedName ?? null,
-                        // Expo sets this to `true`.
-                        unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
-                    };
+                    const opts = collectDependenciesOptions;
+                    // TODO: Maybe we should try to reconcile missing props here...
+                    //  {
+                    //   asyncRequireModulePath:
+                    //     config.transformer?.asyncRequireModulePath ??
+                    //     require.resolve('metro-runtime/src/modules/asyncRequire'),
+                    //   dependencyTransformer: undefined,
+                    //   dynamicRequires: getDynamicDepsBehavior(
+                    //     config.transformer?.dynamicDepsInPackages ?? 'throwAtRuntime',
+                    //     value.path
+                    //   ),
+                    //   inlineableCalls: [importDefault, importAll],
+                    //   keepRequireNames: options.dev,
+                    //   // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L132C32-L132C37
+                    //   allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? false,
+                    //   // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L134C46-L134C46
+                    //   dependencyMapName: config.transformer?.unstable_dependencyMapReservedName ?? null,
+                    //   // Expo sets this to `true`.
+                    //   unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
+                    // };
                     ({ ast, dependencyMapName } = collectDependencies(ast, opts));
                     // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
                 }
@@ -668,36 +702,38 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     ({ map, code } = await minifyCode(config.transformer ?? {}, config.projectRoot, value.path, result.code, source, map, reserved));
                     // console.log('module', code);
                 }
-                outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
-                // @ts-expect-error
-                outputItem.data.lineCount = (0, countLines_1.default)(outputItem.data.code);
-                // @ts-expect-error
-                outputItem.data.map = map;
-                // @ts-expect-error
-                outputItem.data.functionMap =
+                outputItem.data = {
+                    ...outputItem.data,
+                    code,
+                    map,
+                    lineCount: (0, countLines_1.default)(code),
+                    functionMap: 
                     // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
                     ast.metadata?.metro?.functionMap ??
-                        // Fallback to deprecated explicitly-generated `functionMap`
+                        // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
                         ast.functionMap ??
-                        null;
-                // console.log('output code', outputItem.data.code);
+                        null,
+                };
             }
         }
         return [entryPoint, preModules, graph, options];
     };
 }
 exports.createPostTreeShakeTransformSerializerPlugin = createPostTreeShakeTransformSerializerPlugin;
-function getDynamicDepsBehavior(inPackages, filename) {
-    switch (inPackages) {
-        case 'reject':
-            return 'reject';
-        case 'throwAtRuntime':
-            const isPackage = /(?:^|[/\\])node_modules[/\\]/.test(filename);
-            return isPackage ? inPackages : 'reject';
-        default:
-            throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
-    }
-}
+// function getDynamicDepsBehavior(
+//   inPackages: DynamicRequiresBehavior | undefined,
+//   filename: string
+// ): DynamicRequiresBehavior {
+//   switch (inPackages) {
+//     case 'reject':
+//       return 'reject';
+//     case 'throwAtRuntime':
+//       const isPackage = /(?:^|[/\\])node_modules[/\\]/.test(filename);
+//       return isPackage ? inPackages : 'reject';
+//     default:
+//       throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
+//   }
+// }
 // TODO: Up-transform CJS to ESM
 // https://github.com/vite-plugin/vite-plugin-commonjs/tree/main#cases
 //
