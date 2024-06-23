@@ -140,7 +140,7 @@ const inspect = (...props) =>
 type Ast = babylon.ParseResult<types.File>;
 
 // Collect a list of exports that are not used within the module.
-function findUnusedExports(ast: Ast) {
+function getExportsThatAreNotUsedInModule(ast: Ast) {
   const exportedIdentifiers = new Set<string>();
   const usedIdentifiers = new Set<string>();
   const unusedExports: string[] = [];
@@ -400,6 +400,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     // };
 
     function treeShakeExports(depId: string, value: Module<MixedOutput>) {
+      let dirtyImports = false;
       const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
         return graph.dependencies.get(id);
       });
@@ -459,29 +460,85 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               });
             }
           } else {
-            console.log('remove:', node.id.name, 'from:', value.path);
+            console.log('remove:', node.id?.name ?? node.exported?.name, 'from:', value.path);
             path.remove();
           }
         };
 
         // Collect a list of exports that are not used within the module.
-        const unusedExports = findUnusedExports(ast);
-
+        const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
+        console.log('unusedExports', possibleUnusedExports, value.path);
+        const shouldPrintDebug = value.path === '/app/lucide.js';
         // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
         traverse(ast, {
           ExportDefaultDeclaration(path) {
-            if (unusedExports.includes('default') && !isExportUsed('default')) {
+            if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
               markUnused(path, path.node);
+            }
+          },
+
+          // Account for `export { foo as bar };`
+          ExportSpecifier(path) {
+            // Ensure the check isn't `export {} from '...'` since we handle that separately.
+            // if (path.parent.source) {
+            //   return;
+            // }
+            // Ensure the local node isn't used in the module.
+            if (types.isIdentifier(path.node.local)) {
+              const internalName = path.node.local.name;
+
+              if (
+                types.isIdentifier(path.node.exported) &&
+                possibleUnusedExports.includes(path.node.exported.name) &&
+                !isExportUsed(path.node.exported.name)
+              ) {
+                shouldPrintDebug && console.log('check:', path.node.exported.name, internalName);
+
+                // if (path.parent.source) {
+                //   const importModuleId = path.parent.source.value;
+
+                //   // TODO: Traverse multiple exports in the same statement before removing the `from "..."`
+                //   // if (disconnectGraphNode(importModuleId, value)) {
+                //   // dirtyImports = true;
+                //   // console.log('IMPORT:', importModuleId);
+                //   markUnused(path, path.node);
+                //   // }
+                //   return;
+                // } else {
+                markUnused(path, path.node);
+                // }
+
+                // disconnectGraphNode
+              }
             }
           },
 
           ExportNamedDeclaration(path) {
             const declaration = path.node.declaration;
+            shouldPrintDebug && console.log('BOYUUU', path.node);
+
+            // If empty, e.g. `export {} from '...'` then remove the whole statement.
+            if (!declaration) {
+              const importModuleId = path.node.source?.value;
+              if (importModuleId && path.node.specifiers.length === 0) {
+                if (disconnectGraphNode(importModuleId, value)) {
+                  // dirtyImports = true;
+                  console.log('IMPORT:', importModuleId);
+                  // markUnused(path, path.node);
+                  path.remove();
+                }
+              }
+              return;
+            }
+
             if (declaration) {
               if (declaration.type === 'VariableDeclaration') {
                 declaration.declarations.forEach((decl) => {
                   if (decl.id.type === 'Identifier') {
-                    if (unusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                    if (
+                      possibleUnusedExports.includes(decl.id.name) &&
+                      !isExportUsed(decl.id.name)
+                    ) {
                       markUnused(path, decl);
                     }
                   }
@@ -496,7 +553,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 // );
                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                 if (
-                  unusedExports.includes(declaration.id.name) &&
+                  possibleUnusedExports.includes(declaration.id.name) &&
                   !isExportUsed(declaration.id.name)
                 ) {
                   markUnused(path, declaration);
@@ -506,6 +563,82 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           },
         });
       }
+      return dirtyImports;
+    }
+
+    function disconnectGraphNode(
+      importModuleId: string,
+      graphModule: Module<MixedOutput>
+    ): boolean {
+      // Unlink the module in the graph
+      const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
+        return dep.data.name === importModuleId;
+      })?.[0];
+
+      // // Should never happen but we're playing with fire here.
+      // if (!depId) {
+      //   throw new Error(
+      //     `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
+      //       value.path
+      //     }. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
+      //   );
+      // }
+
+      // If the dependency was already removed, then we don't need to do anything.
+      if (depId) {
+        const dep = graphModule.dependencies.get(depId)!;
+
+        console.log('Unlink:', importModuleId, dep);
+        const graphDep = graph.dependencies.get(dep.absolutePath);
+        // Should never happen but we're playing with fire here.
+        if (!graphDep) {
+          throw new Error(
+            `Failed to find graph key for re-export "${importModuleId}" while optimizing ${
+              graphModule.path
+            }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
+          );
+        }
+
+        // console.log('Drop', {
+        //   depId,
+        //   path: dep.absolutePath,
+        //   fx: hasSideEffect(graph, graphDep),
+        //   empty: isEmptyModule(graphDep),
+        // });
+        if (
+          // Don't remove the module if it has side effects.
+          !hasSideEffect(graph, graphDep) ||
+          // Unless it's an empty module.
+          isEmptyModule(graphDep)
+        ) {
+          console.log('Drop', {
+            depId,
+            path: dep.absolutePath,
+            fx: hasSideEffect(graph, graphDep),
+            empty: isEmptyModule(graphDep),
+          });
+          // console.log('Drop module:', value.path);
+          // Remove inverse link to this dependency
+          graphDep.inverseDependencies.delete(graphModule.path);
+
+          if (graphDep.inverseDependencies.size === 0) {
+            // Remove the dependency from the graph as no other modules are using it anymore.
+            graph.dependencies.delete(dep.absolutePath);
+          }
+
+          // Remove a random instance of the dep count to track if there are multiple imports.
+          dep.data.data.locs.pop();
+
+          if (!dep.data.data.locs.length) {
+            // Remove dependency from this module in the graph
+            graphModule.dependencies.delete(depId);
+          }
+
+          // Mark the module as removed so we know to traverse again.
+          return true;
+        }
+      }
+      return false;
     }
 
     function removeUnusedImports(value: Module<MixedOutput>, ast: Parameters<typeof traverse>[0]) {
@@ -717,7 +850,12 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
       // This pass will annotate the AST with the used and unused exports.
       for (const [depId, value] of graph.dependencies.entries()) {
-        treeShakeExports(depId, value);
+        // Remove loose exports in a module
+        if (treeShakeExports(depId, value)) {
+          console.log('Re-run tree shake:', value.path);
+          // TODO: haha this is slow
+          return treeShakeAll(depth + 1);
+        }
 
         value.output.forEach((outputItem) => {
           const ast = accessAst(outputItem);
@@ -861,6 +999,8 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         if (!ast) {
           continue;
         }
+        console.log(require('@babel/generator').default(ast).code);
+
         // NOTE: ^^ Only modules are being parsed to ast right now.
 
         delete outputItem.data.ast;

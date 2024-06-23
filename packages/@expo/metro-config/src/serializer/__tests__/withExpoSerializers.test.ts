@@ -1576,6 +1576,80 @@ describe('serializes', () => {
       expect(artifacts[0].source).toMatch('subtract');
     });
 
+    // TODO: split this up to make it more sane when things break.
+    it(`lucide example`, async () => {
+      const [[, , graph], artifacts] = await serializeShakingAsync({
+        'index.js': `
+          import { AArrowDown } from './lucide.js';
+          console.log('keep', AArrowDown);
+        `,
+        'lucide.js': `
+import * as index from './icons.js';
+export { index as icons };
+export { default as AArrowDown, default as AArrowDownIcon, default as LucideAArrowDown } from './a-arrow-down.js';
+export { default as LucideWorm, default as Worm, default as WormIcon } from './worm.js';
+export { default as createLucideIcon } from './createLucideIcon.js';
+        `,
+        'icons.js': `
+        export { default as AArrowDown } from './a-arrow-down.js';
+        export { default as LucideWorm } from './worm.js';
+        `,
+        'createLucideIcon.js': `
+const createLucideIcon = (iconName, iconNode) => {};
+export { createLucideIcon as default };
+        `,
+        'a-arrow-down.js': `
+import createLucideIcon from './createLucideIcon.js';
+const AArrowDown = createLucideIcon();
+export { AArrowDown as default };
+        `,
+        'worm.js': `
+import createLucideIcon from './createLucideIcon.js';
+const Worm = createLucideIcon();
+export { Worm as default };
+        `,
+      });
+
+      expect(getModules(graph, '/app/index.js')).toEqual({
+        exports: [],
+        imports: [
+          expect.objectContaining({ key: '/app/lucide.js' }),
+          expect.objectContaining({ key: '/app/lucide.js' }),
+        ],
+      });
+      expect(artifacts[0].source).not.toMatch('icons');
+      expect(artifacts[0].source).not.toMatch('Worm');
+      expect(artifacts[0].source).toMatchInlineSnapshot(`
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          var AArrowDown = _$$_REQUIRE(dependencyMap[0], "./lucide.js").AArrowDown;
+          console.log('keep', AArrowDown);
+        },"/app/index.js",["/app/lucide.js"]);
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          Object.defineProperty(exports, '__esModule', {
+            value: true
+          });
+          var _default = _$$_IMPORT_DEFAULT(dependencyMap[0], "./a-arrow-down.js");
+          exports.AArrowDown = _default;
+        },"/app/lucide.js",["/app/a-arrow-down.js"]);
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          Object.defineProperty(exports, '__esModule', {
+            value: true
+          });
+          var createLucideIcon = _$$_IMPORT_DEFAULT(dependencyMap[0], "./createLucideIcon.js");
+          const AArrowDown = createLucideIcon();
+          exports.default = AArrowDown;
+        },"/app/a-arrow-down.js",["/app/createLucideIcon.js"]);
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+          Object.defineProperty(exports, '__esModule', {
+            value: true
+          });
+          const createLucideIcon = (iconName, iconNode) => {};
+          exports.default = createLucideIcon;
+        },"/app/createLucideIcon.js",[]);
+        TEST_RUN_MODULE("/app/index.js");"
+      `);
+    });
+
     it(`barrel partial`, async () => {
       const [[, , graph], artifacts] = await serializeShakingAsync({
         'index.js': `
