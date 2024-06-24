@@ -10,8 +10,8 @@ const fs = {
   `,
 };
 
-it(`can create a micro Metro graph fixture`, () => {
-  expect(microBundle({ fs })).toMatchInlineSnapshot(`
+it(`can create a micro Metro graph fixture`, async () => {
+  expect(await microBundle({ fs })).toMatchInlineSnapshot(`
     [
       "/app/index.js",
       [],

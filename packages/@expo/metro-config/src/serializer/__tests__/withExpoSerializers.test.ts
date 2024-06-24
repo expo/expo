@@ -2,12 +2,8 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import { sideEffectsSerializerPlugin } from '../sideEffectsSerializerPlugin';
-import {
-  treeShakeSerializerPlugin,
-} from '../treeShakeSerializerPlugin';
-import { 
-  createPostTreeShakeTransformSerializerPlugin,
-} from '../reconcileTransformSerializerPlugin'
+import { treeShakeSerializerPlugin } from '../treeShakeSerializerPlugin';
+import { createPostTreeShakeTransformSerializerPlugin } from '../reconcileTransformSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -73,7 +69,7 @@ describe('serializes', () => {
       `,
     };
 
-    const serial = microBundle({
+    const serial = await microBundle({
       fs,
       ...options,
     });
@@ -170,10 +166,10 @@ describe('serializes', () => {
           /\/\/# sourceMappingURL=https:\/\/localhost:8081\/indedx\.bundle\?dev=false/
         );
         // Debug ID annotation is included at the end.
-        expect(artifacts.code).toMatch(/\/\/# debugId=6f769d4c-1534-40a6-adc8-eaeb61664424/);
+        expect(artifacts.code).toMatch(/\/\/# debugId=d582bbf1-5fdf-4ce7-afea-e784a502f5bc/);
 
         // Test that the debugId is added to the source map and matches the annotation.
-        const debugId = '6f769d4c-1534-40a6-adc8-eaeb61664424';
+        const debugId = 'd582bbf1-5fdf-4ce7-afea-e784a502f5bc';
         expect(artifacts.code).toContain(debugId);
 
         expect(JSON.parse(artifacts.map)).toEqual(
@@ -532,12 +528,16 @@ describe('serializes', () => {
       `,
     };
 
-    expect((await serializer(...microBundle({ fs }))).code).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        var foo = _$$_REQUIRE(dependencyMap[0], "./foo").foo;
+    expect((await serializer(...(await microBundle({ fs })))).code).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+
+        var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
         console.log(foo);
       },"/app/index.js",["/app/foo.js"],"index.js");
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
@@ -1762,7 +1762,7 @@ export { Worm as default };
       );
 
       expect(artifacts.map((art) => art.filename)).toEqual([
-        '_expo/static/js/web/index-052296ff29736d0de884b8998010f6a0.js',
+        '_expo/static/js/web/index-a87131638f836ca3d94bcf6817839419.js',
       ]);
 
       // Split bundle
@@ -1776,14 +1776,18 @@ export { Worm as default };
       });
 
       expect(artifacts[0].source).toMatchInlineSnapshot(`
-        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-          _$$_REQUIRE(dependencyMap[0], "./other.js");
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "use strict";
+
+          _$$_REQUIRE(_dependencyMap[0]);
         },"/app/index.js",["/app/other.js"]);
-        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "use strict";
+
           Object.defineProperty(exports, '__esModule', {
             value: true
           });
-          const proxy = _$$_REQUIRE(dependencyMap[0], "react-server-dom-webpack/server").createClientModuleProxy("file:///app/other.js");
+          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("file:///app/other.js");
           module.exports = proxy;
           const foo = proxy["foo"];
           exports.foo = foo;

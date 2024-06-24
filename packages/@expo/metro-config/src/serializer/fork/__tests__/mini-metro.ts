@@ -17,8 +17,9 @@ function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
 
   return map;
 }
+import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
-export function microBundle({
+export async function microBundle({
   fs,
   entry,
   resolve = (from, id) => {
@@ -77,12 +78,12 @@ export function microBundle({
     treeshake?: boolean;
   };
   preModulesFs?: Record<string, string>;
-}): [
+}): Promise<[
   string,
   readonly Module<MixedOutput>[],
   ReadOnlyGraph<MixedOutput>,
   SerializerOptions<MixedOutput>,
-] {
+]> {
   const fullFs = {
     'react-server-dom-webpack/server': ``,
     'expo-mock/async-require': `
@@ -101,6 +102,29 @@ export function microBundle({
     }
   }
 
+  const absEntry = path.join(projectRoot, entry);
+  const dev = options.dev ?? true;
+  const transformOptions: TransformInputOptions = {
+    hot: options.hot ?? false,
+    minify: false,
+    dev,
+    type: 'module',
+    unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
+    platform: options.platform ?? 'web',
+    customTransformOptions: {
+      __proto__: null,
+      bytecode: options.hermes,
+      baseUrl: options.baseUrl,
+      engine: options.hermes ? 'hermes' : undefined,
+      environment: options.isReactServer ? 'react-server' : undefined,
+      treeshake: options.treeshake,
+    },
+
+    // NOTE: This is non-standard but it provides a cleaner output
+    experimentalImportSupport: true,
+  };
+
+
   const caller = {
     name: 'metro',
     bundler: 'metro',
@@ -118,7 +142,9 @@ export function microBundle({
   const modules = new Map<string, Module>();
   const visited = new Set<string>();
 
-  function recurseWith(queue: string[], parent?: Module) {
+  const parsedPreModules = await Promise.all(Object.entries(preModulesFs).map(async ([id, code]) => await parseModule(id, code, transformOptions, caller)));
+
+  async function recurseWith(queue: string[], parent?: Module) {
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
@@ -134,7 +160,7 @@ export function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      const module = parseModule(id, code, {
+      const module = await parseModule(id, code, transformOptions, {
         ...caller,
         isNodeModule: !!id.match(/node_modules/),
       });
@@ -147,39 +173,25 @@ export function microBundle({
       // @ts-ignore
       for (const dep of module.dependencies.values()) {
         const resolved = resolve(id, dep.data.name);
-        recurseWith([resolved], module);
+        await recurseWith([resolved], module);
       }
     }
   }
-  recurseWith([entry]);
+  await recurseWith([entry]);
 
-  const absEntry = path.join(projectRoot, entry);
-  const dev = options.dev ?? true;
+
+
+
   return [
     // entryPoint: string,
     absEntry,
     // preModules: readonly Module<MixedOutput>[],
-    Object.entries(preModulesFs).map(([id, code]) => parseModule(id, code, caller)),
+    parsedPreModules,
     // graph: ReadOnlyGraph<MixedOutput>,
     {
       dependencies: modules,
       entryPoints: new Set([absEntry]),
-      transformOptions: {
-        hot: options.hot ?? false,
-        minify: false,
-        dev,
-        type: 'module',
-        unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
-        platform: options.platform ?? 'web',
-        customTransformOptions: {
-          __proto__: null,
-          bytecode: options.hermes,
-          baseUrl: options.baseUrl,
-          engine: options.hermes ? 'hermes' : undefined,
-          environment: options.isReactServer ? 'react-server' : undefined,
-          treeshake: options.treeshake,
-        },
-      },
+      transformOptions,
     },
     // options: SerializerOptions<MixedOutput>
     {
@@ -230,136 +242,178 @@ const disabledDependencyTransformer = {
   transformIllegalDynamicRequire: () => void 0,
 };
 
+import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+
+const METRO_CONFIG_DEFAULTS = require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
-export function parseModule(
+export async function parseModule(
   relativeFilePath: string,
   code: string,
+  transformOptions: TransformInputOptions,
   caller: Record<string, string | boolean | null | undefined> = {}
-): Module<{ type: string; data: { lineCount: number; code: string } }> {
+): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const filename = absoluteFilePath;
 
-  let ast = babel.parseSync(code, {
-    ast: true,
-    babelrc: false,
-    configFile: false,
-    filename,
-    code: false,
-  });
+  console.log('Parsing module:', filename, code);
+ 
+  const codeBuffer = Buffer.from(code);
 
   // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
 
-  // caller.treeshake = caller.treeshake ?? sourceType === 'module';
-  // Deterimine if the module is a CommonJS module or an ES module.
-
-  const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
-  const { importDefault, importAll } = generateImportNames(ast);
-  const metroTransformPlugins = require('metro-transform-plugins');
-
-  const babelPluginOpts = {
-    // ...options,
-    inlineableCalls: [importDefault, importAll],
-    importDefault,
-    importAll,
-  };
-
-  // @ts-ignore
-  const file = babel.transformFromAstSync(ast, '', {
-    ast: true,
-    babelrc: false,
-    code: false,
-    configFile: false,
-    comments: true,
-    filename,
-    plugins: [
-      require('babel-preset-expo/build/client-module-proxy-plugin').reactClientReferencesPlugin,
-      // TODO: We can probably just keep reference to the import/export names.
-      caller.treeshake !== true && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
-    ].filter(Boolean),
-    caller: {
-      name: 'metro',
-      serverRoot: projectRoot,
-      ...caller,
+  const results = await expoMetroTransformWorker.transform(
+    // config: JsTransformerConfig,
+    {
+      ...METRO_CONFIG_DEFAULTS.transformer,
+      asyncRequireModulePath: 'expo-mock/async-require',
+      unstable_allowRequireContext: true,
+      allowOptionalDependencies: true,
+      assetPlugins: [],
+      babelTransformerPath: '@expo/metro-config/build/babel-transformer',
     },
-    sourceMaps: false,
-    // Not-Cloning the input AST here should be safe because other code paths above this call
-    // are mutating the AST as well and no code is depending on the original AST.
-    // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-    // either because one of the plugins is doing something funky or Babel messes up some caches.
-    // Make sure to test the above mentioned case before flipping the flag back to false.
-    cloneInputAst: true,
-  });
-
-  const unstable_disableModuleWrapping = caller.treeshake;
-  // @ts-ignore
-  ast = file?.ast!;
-
-  const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
-
-  let dependencyMapName = null;
-  let dependencies: Dependency[] | null = null;
-  const options = {
-    unstable_allowRequireContext: true,
-    allowOptionalDependencies: true,
-    asyncRequireModulePath: 'expo-mock/async-require',
-    dynamicRequires: 'throwAtRuntime',
-    inlineableCalls: [importDefault, importAll],
-    keepRequireNames: true,
-    dependencyMapName: 'dependencyMap',
-  };
-
-  // @ts-expect-error
-  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
-    ...options,
-    dependencyTransformer: unstable_disableModuleWrapping
-      ? disabledDependencyTransformer
-      : undefined,
-  }));
-
-  if (!dependencies) throw new Error('dependencies not found');
-
-  if (unstable_disableModuleWrapping) {
-  } else {
-    ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
-  }
-
-  const output = babel.transformFromAstSync(ast!, code, {
-    code: true,
-    ast: false,
-    babelrc: false,
-    configFile: false,
-  })!.code!;
+    projectRoot,
+    filename,
+    codeBuffer,
+    // options: JsTransformOptions
+    {
+      ...transformOptions,
+       inlinePlatform: true, 
+       inlineRequires: false,
+    }
+  );
+  console.log(results);
 
   return {
+    ...results,
     getSource() {
-      return Buffer.from(code);
+      return codeBuffer;
     },
     path: absoluteFilePath,
     dependencies: toDependencyMap(
-      // @ts-expect-error
-      ...dependencies.map((dep) => ({
+      ...results.dependencies.map((dep) => ({
         absolutePath: mockAbsolutePath(
-          // @ts-expect-error
           dep.name
         ),
         data: dep,
       }))
     ),
-    inverseDependencies: new CountingSet(),
-    output: [
-      {
-        data: {
-          code: output,
-          lineCount: countLines(output),
-          // @ts-expect-error
-          reactClientReference: file?.metadata?.reactClientReference,
+    inverseDependencies: new CountingSet(),    
+  }
+  
 
-          collectDependenciesOptions: options,
-        },
-        type: 'js/module',
-      },
-    ],
-  };
+
+
+  // // caller.treeshake = caller.treeshake ?? sourceType === 'module';
+  // // Deterimine if the module is a CommonJS module or an ES module.
+
+  // const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
+  // const { importDefault, importAll } = generateImportNames(ast);
+  // const metroTransformPlugins = require('metro-transform-plugins');
+
+  // const babelPluginOpts = {
+  //   // ...options,
+  //   inlineableCalls: [importDefault, importAll],
+  //   importDefault,
+  //   importAll,
+  // };
+
+  // // @ts-ignore
+  // const file = babel.transformFromAstSync(ast, '', {
+  //   ast: true,
+  //   babelrc: false,
+  //   code: false,
+  //   configFile: false,
+  //   comments: true,
+  //   filename,
+  //   plugins: [
+  //     require('babel-preset-expo/build/client-module-proxy-plugin').reactClientReferencesPlugin,
+  //     // TODO: We can probably just keep reference to the import/export names.
+  //     caller.treeshake !== true && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
+  //   ].filter(Boolean),
+  //   caller: {
+  //     name: 'metro',
+  //     serverRoot: projectRoot,
+  //     ...caller,
+  //   },
+  //   sourceMaps: false,
+  //   // Not-Cloning the input AST here should be safe because other code paths above this call
+  //   // are mutating the AST as well and no code is depending on the original AST.
+  //   // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+  //   // either because one of the plugins is doing something funky or Babel messes up some caches.
+  //   // Make sure to test the above mentioned case before flipping the flag back to false.
+  //   cloneInputAst: true,
+  // });
+
+  // const unstable_disableModuleWrapping = caller.treeshake;
+  // // @ts-ignore
+  // ast = file?.ast!;
+
+  // const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
+
+  // let dependencyMapName = null;
+  // let dependencies: Dependency[] | null = null;
+  // const options = {
+  //   unstable_allowRequireContext: true,
+  //   allowOptionalDependencies: true,
+  //   asyncRequireModulePath: 'expo-mock/async-require',
+  //   dynamicRequires: 'throwAtRuntime',
+  //   inlineableCalls: [importDefault, importAll],
+  //   keepRequireNames: true,
+  //   dependencyMapName: 'dependencyMap',
+  // };
+
+  // // @ts-expect-error
+  // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
+  //   ...options,
+  //   dependencyTransformer: unstable_disableModuleWrapping
+  //     ? disabledDependencyTransformer
+  //     : undefined,
+  // }));
+
+  // if (!dependencies) throw new Error('dependencies not found');
+
+  // if (unstable_disableModuleWrapping) {
+  // } else {
+  //   ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
+  // }
+
+  // const output = babel.transformFromAstSync(ast!, code, {
+  //   code: true,
+  //   ast: false,
+  //   babelrc: false,
+  //   configFile: false,
+  // })!.code!;
+
+  // return {
+  //   getSource() {
+  //     return Buffer.from(code);
+  //   },
+  //   path: absoluteFilePath,
+  //   dependencies: toDependencyMap(
+  //     // @ts-expect-error
+  //     ...dependencies.map((dep) => ({
+  //       absolutePath: mockAbsolutePath(
+  //         // @ts-expect-error
+  //         dep.name
+  //       ),
+  //       data: dep,
+  //     }))
+  //   ),
+  //   inverseDependencies: new CountingSet(),
+  //   output: [
+  //     {
+  //       data: {
+  //         code: output,
+  //         lineCount: countLines(output),
+  //         // @ts-expect-error
+  //         reactClientReference: file?.metadata?.reactClientReference,
+
+  //         collectDependenciesOptions: options,
+  //       },
+  //       type: 'js/module',
+  //     },
+  //   ],
+  // };
 }
 
 function mockAbsolutePath(name: string) {
