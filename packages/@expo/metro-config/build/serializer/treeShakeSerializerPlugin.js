@@ -688,6 +688,7 @@ function treeShakeSerializerPlugin(config) {
                 });
             }
         }
+        const beforeList = [...graph.dependencies.keys()];
         // Tree shake the graph.
         treeShakeAll();
         // Debug pass: Print all orphaned modules.
@@ -719,6 +720,10 @@ function treeShakeSerializerPlugin(config) {
                 // }
             }
         }
+        const afterList = [...graph.dependencies.keys()];
+        // Print the removed modules:
+        const removedModules = beforeList.filter((value) => !afterList.includes(value));
+        console.log('Removed:', removedModules);
         return [entryPoint, preModules, graph, options];
     };
 }
@@ -746,6 +751,7 @@ function assertCollectDependenciesOptions(collectDependenciesOptions) {
     (0, assert_1.default)('keepRequireNames' in collectDependenciesOptions, 'keepRequireNames is required.');
     (0, assert_1.default)('dependencyMapName' in collectDependenciesOptions, 'dependencyMapName is required.');
 }
+// This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
 function createPostTreeShakeTransformSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         // console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
@@ -992,4 +998,48 @@ async function minifyCode(config, projectRoot, filename, code, source, map, rese
         throw error;
     }
 }
+// const minifyCode = async (
+//   config: JsTransformerConfig,
+//   projectRoot: string,
+//   filename: string,
+//   code: string,
+//   source: string,
+//   map: MetroSourceMapSegmentTuple[],
+//   reserved: string[] = []
+// ): Promise<{
+//   code: string;
+//   map: MetroSourceMapSegmentTuple[];
+// }> => {
+//   const sourceMap = fromRawMappings([
+//     {
+//       code,
+//       source,
+//       map,
+//       // functionMap is overridden by the serializer
+//       functionMap: null,
+//       path: filename,
+//       // isIgnored is overriden by the serializer
+//       isIgnored: false,
+//     },
+//   ]).toMap(undefined, {});
+//   const minify = getMinifier(config.minifierPath);
+//   try {
+//     const minified = await minify({
+//       code,
+//       map: sourceMap,
+//       filename,
+//       reserved,
+//       config: config.minifierConfig,
+//     });
+//     return {
+//       code: minified.code,
+//       map: minified.map ? toBabelSegments(minified.map).map(toSegmentTuple) : [],
+//     };
+//   } catch (error: any) {
+//     if (error.constructor.name === 'JS_Parse_Error') {
+//       throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}`);
+//     }
+//     throw error;
+//   }
+// };
 //# sourceMappingURL=treeShakeSerializerPlugin.js.map

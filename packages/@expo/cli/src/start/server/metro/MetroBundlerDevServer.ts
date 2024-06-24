@@ -1060,6 +1060,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         revision.prepend as any,
         revision.graph as any,
         {
+          _metroConfig: config,
           asyncRequireModulePath: await this.metro._resolveRelativePath(
             config.transformer.asyncRequireModulePath,
             {

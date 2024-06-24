@@ -65,6 +65,14 @@ export function withExpoSerializers(
   // Then finish transforming the modules from AST to JS.
   processors.push(createPostTreeShakeTransformSerializerPlugin(config));
 
+  processors.push((...args) => {
+    const metroConfig = args[3]._metroConfig ?? config;
+    if (typeof metroConfig.serializer?.postTreeShakingSerializer === 'function') {
+      return metroConfig.serializer.postTreeShakingSerializer(...args);
+    }
+    return args;
+  });
+
   return withSerializerPlugins(config, processors, options);
 }
 
