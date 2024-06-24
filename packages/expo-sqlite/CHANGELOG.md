@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Reduce the number of global references to `NativeStatementBinding`. ([#29937](https://github.com/expo/expo/pull/29937) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed `<SQLiteProvider assetSource={{ assetId: require(...) }}>` database always being overwrite on iOS 16 and lower. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

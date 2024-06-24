@@ -54,7 +54,7 @@ public final class SQLiteModuleNext: Module {
       if fileManager.fileExists(atPath: path.absoluteString) && !forceOverwrite {
         return
       }
-      guard let assetPath = URL(string: assetDatabasePath)?.path,
+      guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
         fileManager.fileExists(atPath: assetPath) else {
         throw DatabaseNotFoundException(assetDatabasePath)
       }

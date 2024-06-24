@@ -271,7 +271,13 @@ async function openDatabaseWithInitAsync({
   return database;
 }
 
-async function importDatabaseFromAssetAsync(
+/**
+ * Imports an asset database into the SQLite database directory.
+ *
+ * Exposed only for testing purposes.
+ * @hidden
+ */
+export async function importDatabaseFromAssetAsync(
   databaseName: string,
   assetSource: SQLiteProviderAssetSource
 ) {
