@@ -3,8 +3,8 @@ import { wrapModule } from '../js';
 
 jest.mock('fs');
 
-function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]>) {
-  return wrapModule(parseModule('index.js', src), {
+async function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]>) {
+  return wrapModule(await parseModule('index.js', src, {}), {
     computedAsyncModulePaths: null,
     createModuleId: (m) => m,
     dev: true,
@@ -19,9 +19,9 @@ function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]
 }
 
 describe(wrapModule, () => {
-  describe('lazy disabled', () => {
-    it(`wraps module with params in dev with lazy disabled`, () => {
-      const res = helpWrap(
+  describe('lazy disabled', async () => {
+    it(`wraps module with params in dev with lazy disabled`, async () => {
+      const res = await helpWrap(
         `import { View } from 'react-native';
               console.log("Hello World")`,
         {
@@ -37,8 +37,8 @@ describe(wrapModule, () => {
               },"/app/index.js",["/app/node_modules/react-native/index.js"],"index.js");"
             `);
     });
-    it(`wraps module with params in dev with lazy loading disabled`, () => {
-      const res = helpWrap(`const evan = import('bacon');`, {
+    it(`wraps module with params in dev with lazy loading disabled`, async () => {
+      const res = await helpWrap(`const evan = import('bacon');`, {
         dev: true,
         includeAsyncPaths: false,
       });
@@ -50,8 +50,8 @@ describe(wrapModule, () => {
             `);
     });
   });
-  it(`wraps module with params in dev with lazy loading enabled`, () => {
-    const res = helpWrap(`const evan = import('bacon');`, {
+  it(`wraps module with params in dev with lazy loading enabled`, async () => {
+    const res = await helpWrap(`const evan = import('bacon');`, {
       dev: true,
       includeAsyncPaths: true,
     });
@@ -71,8 +71,8 @@ describe(wrapModule, () => {
     `);
   });
 
-  it(`wraps module with params in prod with lazy loading enabled`, () => {
-    const res = helpWrap(`const evan = import('bacon');`, {
+  it(`wraps module with params in prod with lazy loading enabled`, async () => {
+    const res = await helpWrap(`const evan = import('bacon');`, {
       dev: false,
       includeAsyncPaths: false,
       splitChunks: true,
@@ -96,8 +96,8 @@ describe(wrapModule, () => {
   });
 
   // Disabled wrapping is used to calculate content hashes without knowing all the module paths ahead of time.
-  it(`disables module wrapping in dev`, () => {
-    const res = helpWrap(`const evan = import('bacon');`, {
+  it(`disables module wrapping in dev`, async () => {
+    const res = await helpWrap(`const evan = import('bacon');`, {
       skipWrapping: true,
       dev: false,
       includeAsyncPaths: true,
@@ -112,8 +112,8 @@ describe(wrapModule, () => {
       });"
     `);
   });
-  it(`disables module wrapping in prod`, () => {
-    const res = helpWrap(`const evan = import('bacon');`, {
+  it(`disables module wrapping in prod`, async () => {
+    const res = await helpWrap(`const evan = import('bacon');`, {
       dev: false,
       includeAsyncPaths: false,
       splitChunks: true,

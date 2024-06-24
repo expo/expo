@@ -116,7 +116,7 @@ export async function microBundle({
       bytecode: options.hermes,
       baseUrl: options.baseUrl,
       engine: options.hermes ? 'hermes' : undefined,
-      environment: options.isReactServer ? 'react-server' : undefined,
+      environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
       treeshake: options.treeshake,
     },
 
@@ -124,25 +124,10 @@ export async function microBundle({
     experimentalImportSupport: true,
   };
 
-
-  const caller = {
-    name: 'metro',
-    bundler: 'metro',
-    platform: options.platform ?? 'web',
-    baseUrl: options.baseUrl,
-    treeshake: options.treeshake,
-    // Empower the babel preset to know the env it's bundling for.
-    // Metro automatically updates the cache to account for the custom transform options.
-    isServer: options.isServer,
-    isReactServer: options.isReactServer,
-    routerRoot: '/',
-    isDev: options.dev,
-    projectRoot,
-  };
   const modules = new Map<string, Module>();
   const visited = new Set<string>();
 
-  const parsedPreModules = await Promise.all(Object.entries(preModulesFs).map(async ([id, code]) => await parseModule(id, code, transformOptions, caller)));
+  const parsedPreModules = await Promise.all(Object.entries(preModulesFs).map(async ([id, code]) => await parseModule(id, code, transformOptions)));
 
   async function recurseWith(queue: string[], parent?: Module) {
     while (queue.length) {
@@ -160,10 +145,7 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      const module = await parseModule(id, code, transformOptions, {
-        ...caller,
-        isNodeModule: !!id.match(/node_modules/),
-      });
+      const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
       if (parent?.path) {
@@ -250,7 +232,6 @@ export async function parseModule(
   relativeFilePath: string,
   code: string,
   transformOptions: TransformInputOptions,
-  caller: Record<string, string | boolean | null | undefined> = {}
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const filename = absoluteFilePath;
