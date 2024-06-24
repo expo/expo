@@ -97,6 +97,14 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         return this._status;
     }
     mountVideoView(video) {
+        // The video will be the first video, it should inherit the properties set in the setup() function
+        if (this._mountedVideos.size === 0) {
+            video.preservesPitch = this._preservesPitch;
+            video.loop = this._loop;
+            video.volume = this._volume;
+            video.muted = this._muted;
+            video.playbackRate = this._playbackRate;
+        }
         this._mountedVideos.add(video);
         this._addListeners(video);
         this._synchronizeWithFirstVideo(video);
