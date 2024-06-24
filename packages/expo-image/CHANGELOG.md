@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add basic React Server Component support.
+- Add basic React Server Component support. ([#29869](https://github.com/expo/expo/pull/29869) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
