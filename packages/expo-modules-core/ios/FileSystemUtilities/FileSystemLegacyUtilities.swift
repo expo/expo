@@ -82,7 +82,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func getPathPermissions(_ path: String) -> EXFileSystemPermissionFlags {
-    guard let url = URL(string: path) else {
+    guard let url = convertToUrl(string: path) else {
       return []
     }
     let permissionsForInternalDirectories = getInternalPathPermissions(url)
