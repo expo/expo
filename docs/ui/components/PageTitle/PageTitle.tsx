@@ -20,7 +20,7 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
           'flex my-2 items-start justify-between gap-4',
           'max-xl-gutters:flex-col max-xl-gutters:items-start'
         )}>
-        <H1 className="!my-0 !font-bold">
+        <H1 className="!my-0">
           {iconUrl && (
             <img
               src={iconUrl}

@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -43,10 +43,10 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -328,10 +328,10 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -343,7 +343,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 buttonStyle
@@ -405,10 +405,10 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -420,7 +420,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 buttonType
@@ -482,10 +482,10 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -497,7 +497,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 cornerRadius
@@ -567,10 +567,10 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -582,7 +582,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 onPress
@@ -663,10 +663,10 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -678,7 +678,7 @@ in here.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 style
@@ -813,7 +813,7 @@ properties.
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -877,7 +877,7 @@ properties.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -917,10 +917,10 @@ properties.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1193,10 +1193,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1337,10 +1337,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1578,10 +1578,10 @@ refresh operation.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1866,10 +1866,10 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2141,7 +2141,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -2181,10 +2181,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2333,7 +2333,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -2373,10 +2373,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2911,10 +2911,10 @@ developers.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3259,10 +3259,10 @@ may be
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3566,10 +3566,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3890,10 +3890,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -4127,10 +4127,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -4260,7 +4260,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -4300,13 +4300,13 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -4384,7 +4384,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4445,7 +4445,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4506,7 +4506,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4565,13 +4565,13 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -4649,7 +4649,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4710,7 +4710,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4814,7 +4814,7 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4873,13 +4873,13 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5010,7 +5010,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5065,7 +5065,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5120,7 +5120,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5175,7 +5175,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5228,13 +5228,13 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5294,7 +5294,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5355,7 +5355,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5410,7 +5410,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5465,7 +5465,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5518,13 +5518,13 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5699,7 +5699,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5754,7 +5754,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5807,13 +5807,13 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5932,7 +5932,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5993,7 +5993,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6054,7 +6054,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6118,7 +6118,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -6158,7 +6158,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-15gi84a"
   >
     <div
       class="css-1avgxs7-APISectionDeprecationNote"
@@ -6238,7 +6238,7 @@ for more details.
       </blockquote>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -6370,10 +6370,10 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6385,7 +6385,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 barCodeTypes
@@ -6486,10 +6486,10 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6501,7 +6501,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6640,10 +6640,10 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-145nxpa-APISectionProps"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6655,7 +6655,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 type
@@ -6778,7 +6778,7 @@ Same as
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6842,7 +6842,7 @@ Same as
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -6882,10 +6882,10 @@ Same as
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7237,7 +7237,7 @@ This uses both
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -7277,10 +7277,10 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7424,10 +7424,10 @@ This uses both
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7593,10 +7593,10 @@ This uses both
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7893,7 +7893,7 @@ code.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -7933,10 +7933,10 @@ code.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-1kmy1wa-APISectionInterfaces"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8177,7 +8177,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -8217,10 +8217,10 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8375,10 +8375,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8527,10 +8527,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8646,10 +8646,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8815,10 +8815,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8923,10 +8923,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9195,10 +9195,10 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9343,10 +9343,10 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9439,7 +9439,7 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -9479,13 +9479,13 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -9545,7 +9545,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9606,7 +9606,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9667,7 +9667,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9731,7 +9731,7 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -9771,10 +9771,10 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9896,7 +9896,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <div
       class="flex flex-row items-center mb-2"
@@ -9942,7 +9942,7 @@ exports[`APISection expo-pedometer 1`] = `
       </span>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10261,10 +10261,10 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10399,10 +10399,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10524,10 +10524,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-588n1o-APISectionMethods"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10805,7 +10805,7 @@ On iOS, the
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -10845,10 +10845,10 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-1kmy1wa-APISectionInterfaces"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11089,7 +11089,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -11129,10 +11129,10 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11244,10 +11244,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11358,10 +11358,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11460,10 +11460,10 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-1hisbec-APISectionTypes"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11593,7 +11593,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -11633,13 +11633,13 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-at3f6j-APISectionEnums"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -11699,7 +11699,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -11760,7 +11760,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -11821,7 +11821,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
