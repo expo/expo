@@ -1,26 +1,35 @@
 /* eslint-env jest */
+import { PackageJSONConfig } from '@expo/config';
+import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { copyAsync } from '../../../src/utils/dir';
-import { bin, getTemporaryPath, installAsync } from '../utils';
+import { bin, installAsync, setupTestProjectWithOptionsAsync } from '../utils';
+
+const MONOREPO_ROOT = path.join(__dirname, '../../../../../../');
 
 runExportSideEffects();
 
 describe('exports monorepos', () => {
-  let projectRoot: string;
-
-  beforeAll(async () => {
-    projectRoot = await createMonorepoFixture();
-  }, 120 * 1000);
-
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
   it(
     'exports identical projects with cache invalidation',
     async () => {
+      // Create a project from the monorepo fixture
+      const projectRoot = await setupTestProjectWithOptionsAsync(
+        'basic-export-monorepo',
+        'with-router-monorepo'
+      );
+
+      // Link `@expo/metro-config` to the test projects, and reinstall
+      await linkPackageToTestProject(projectRoot, '@expo/metro-config');
+      await configureMetroForPackageLinking(path.join(projectRoot, 'apps/app-a'));
+      await configureMetroForPackageLinking(path.join(projectRoot, 'apps/app-b'));
+      await installAsync(projectRoot);
+
       // Export both apps, in order of A then B
       const appAExportDir = await exportApp(projectRoot, 'apps/app-a');
       const appBExportDir = await exportApp(projectRoot, 'apps/app-b');
@@ -42,27 +51,14 @@ describe('exports monorepos', () => {
   );
 });
 
-async function createMonorepoFixture() {
-  const fixturePath = path.join(__dirname, '../../fixtures', 'with-router-monorepo');
-  const monorepoRoot = getTemporaryPath();
-
-  // Copy the fixture, and install the dependencies
-  await fs.promises.mkdir(monorepoRoot, { recursive: true });
-  await copyAsync(fixturePath, monorepoRoot, { recursive: true });
-  await installAsync(monorepoRoot);
-
-  return monorepoRoot;
-}
-
 async function exportApp(monorepoRoot: string, workspacePath: string) {
   await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist'], {
     cwd: path.join(monorepoRoot, workspacePath),
     env: {
       NODE_ENV: 'production',
-      EXPO_USE_STATIC: 'static',
-      E2E_ROUTER_SRC: 'monorepos',
-      E2E_ROUTER_ASYNC: 'development',
       EXPO_USE_FAST_RESOLVER: 'true',
+      // TODO: check if this can be turned on by default
+      EXPO_USE_METRO_WORKSPACE_ROOT: 'true',
     },
   });
 
@@ -78,4 +74,53 @@ function findFilesInPath(outputDir: string) {
       return path.posix.relative(outputDir, entry.path);
     })
     .filter(Boolean);
+}
+
+/**
+ * Link a package from the expo/expo monorepo to the test project.
+ * This is a temporary workaround to include fixes from packages outside of `@expo/cli`.
+ * @see https://github.com/expo/expo/pull/29733
+ */
+async function linkPackageToTestProject(projectRoot: string, linkPackageName: string) {
+  const linkPackageVersion = `file:${path.join(MONOREPO_ROOT, 'packages', linkPackageName)}`;
+
+  const packageFile = path.join(projectRoot, 'package.json');
+  const pkg = (await JsonFile.readAsync(packageFile)) as Partial<PackageJSONConfig>;
+
+  await JsonFile.writeAsync(packageFile, {
+    ...pkg,
+    dependencies: {
+      ...(pkg.dependencies || {}),
+      // NOTE(cedric): this is a fix for Bun to install the overriden package in the test project
+      [linkPackageName]: linkPackageVersion,
+    },
+    resolutions: {
+      ...(pkg.resolutions || {}),
+      [linkPackageName]: linkPackageVersion,
+    },
+    overrides: {
+      ...(pkg.overrides || {}),
+      [linkPackageName]: linkPackageVersion,
+    },
+  });
+}
+
+/**
+ * Configure Metro to watch the monorepo root to allow linking packages from expo/expo.
+ * @see linkPackageToTestProject
+ * @see https://github.com/expo/expo/pull/29733
+ */
+async function configureMetroForPackageLinking(projectRoot: string) {
+  await fs.promises.writeFile(
+    path.join(projectRoot, 'metro.config.js'),
+    `
+    const { getDefaultConfig } = require('@expo/metro-config');
+    const config = getDefaultConfig(__dirname);
+    
+    // Add the monorepo to the watch folders to allow linking \`@expo/metro-config\`
+    config.watchFolders.push('${MONOREPO_ROOT}');
+
+    module.exports = config;
+  `
+  );
 }
