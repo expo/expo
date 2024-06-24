@@ -4,13 +4,6 @@ import { LocationAccuracy, } from './Location.types';
 import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
 // @needsAudit
 /**
- * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
- * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
- * enabled, otherwise your geocoding requests will be denied.
- */
-export function setGoogleApiKey(_apiKey) { }
-// @needsAudit
-/**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [`LocationProviderStatus`](#locationproviderstatus).
  */
@@ -22,6 +15,8 @@ export async function getProviderStatusAsync() {
  * Asks the user to turn on high accuracy location mode which enables network provider that uses
  * Google Play services to improve location accuracy and location-based services.
  * @return A promise resolving as soon as the user accepts the dialog. Rejects if denied.
+ *
+ * @platform android
  */
 export async function enableNetworkProviderAsync() {
     // If network provider is disabled (user's location mode is set to "Device only"),
@@ -102,9 +97,13 @@ export async function getHeadingAsync() {
 // @needsAudit
 /**
  * Subscribe to compass updates from the device.
+ *
  * @param callback This function is called on each compass update. It receives an object of type
  * [LocationHeadingObject](#locationheadingobject) as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
+ *
+ * @platform android
+ * @platform ios
  */
 export async function watchHeadingAsync(callback) {
     const watchId = HeadingSubscriber.registerCallback(callback);
@@ -118,24 +117,27 @@ export async function watchHeadingAsync(callback) {
 // @needsAudit
 /**
  * Geocode an address string to latitude-longitude location.
- * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
+ * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
+ * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
  * > be shown to the user immediately.
  *
- * > On Android, you must request a location permission (`Permissions.LOCATION`) from the user
- * > before geocoding can be used.
  * @param address A string representing address, eg. `"Baker Street London"`.
- * @param options
- * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedLocation`](#locationgeocodedlocation) objects.
+ * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedLocation`](#locationgeocodedlocation)
+ * objects.
+ *
+ * @platform android
+ * @platform ios
  */
-export async function geocodeAsync(address, options) {
+export async function geocodeAsync(address) {
     if (typeof address !== 'string') {
         throw new TypeError(`Address to geocode must be a string. Got ${address} instead.`);
     }
-    if (options?.useGoogleMaps || Platform.OS === 'web') {
+    if (Platform.OS === 'web') {
         if (__DEV__) {
             console.warn('The Geocoding API has been removed in SDK 49, use Place Autocomplete service instead' +
                 '(https://developers.google.com/maps/documentation/places/web-service/autocomplete)');
@@ -147,24 +149,26 @@ export async function geocodeAsync(address, options) {
 // @needsAudit
 /**
  * Reverse geocode a location to postal address.
- * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
+ * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
+ * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
  * > be shown to the user immediately.
  *
- * > On Android, you must request a location permission (`Permissions.LOCATION`) from the user
- * > before geocoding can be used.
  * @param location An object representing a location.
- * @param options
  * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedAddress`](#locationgeocodedaddress) objects.
+ *
+ * @platform android
+ * @platform ios
  */
-export async function reverseGeocodeAsync(location, options) {
+export async function reverseGeocodeAsync(location) {
     if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
         throw new TypeError('Location to reverse-geocode must be an object with number properties `latitude` and `longitude`.');
     }
-    if (options?.useGoogleMaps || Platform.OS === 'web') {
+    if (Platform.OS === 'web') {
         if (__DEV__) {
             console.warn('The Geocoding API has been removed in SDK 49, use Place Autocomplete service instead' +
                 '(https://developers.google.com/maps/documentation/places/web-service/autocomplete)');
@@ -172,26 +176,6 @@ export async function reverseGeocodeAsync(location, options) {
         return [];
     }
     return await ExpoLocation.reverseGeocodeAsync(location);
-}
-// @needsAudit
-/**
- * Checks user's permissions for accessing location.
- * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
- * @deprecated Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
- */
-export async function getPermissionsAsync() {
-    console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`);
-    return await ExpoLocation.getPermissionsAsync();
-}
-// @needsAudit
-/**
- * Asks the user to grant permissions for location.
- * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
- * @deprecated Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
- */
-export async function requestPermissionsAsync() {
-    console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`);
-    return await ExpoLocation.requestPermissionsAsync();
 }
 // @needsAudit
 /**
@@ -289,6 +273,7 @@ export async function isBackgroundLocationAvailableAsync() {
  * Background location task will be receiving following data:
  * - `locations` - An array of the new locations.
  *
+ * @example
  * ```ts
  * import * as TaskManager from 'expo-task-manager';
  *
@@ -312,7 +297,7 @@ export async function startLocationUpdatesAsync(taskName, options = { accuracy: 
 }
 // @needsAudit
 /**
- * Stops geofencing for specified task.
+ * Stops location updates for specified task.
  * @param taskName Name of the background location task to stop.
  * @return A promise resolving as soon as the task is unregistered.
  */

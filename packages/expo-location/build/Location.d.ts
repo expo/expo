@@ -1,11 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationGeocodingOptions } from './Location.types';
-/**
- * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
- * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
- * enabled, otherwise your geocoding requests will be denied.
- */
-export declare function setGoogleApiKey(_apiKey: string): void;
+import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
 /**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [`LocationProviderStatus`](#locationproviderstatus).
@@ -15,6 +9,8 @@ export declare function getProviderStatusAsync(): Promise<LocationProviderStatus
  * Asks the user to turn on high accuracy location mode which enables network provider that uses
  * Google Play services to improve location accuracy and location-based services.
  * @return A promise resolving as soon as the user accepts the dialog. Rejects if denied.
+ *
+ * @platform android
  */
 export declare function enableNetworkProviderAsync(): Promise<void>;
 /**
@@ -57,55 +53,52 @@ export declare function watchPositionAsync(options: LocationOptions, callback: L
 export declare function getHeadingAsync(): Promise<LocationHeadingObject>;
 /**
  * Subscribe to compass updates from the device.
+ *
  * @param callback This function is called on each compass update. It receives an object of type
  * [LocationHeadingObject](#locationheadingobject) as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
+ *
+ * @platform android
+ * @platform ios
  */
 export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<LocationSubscription>;
 /**
  * Geocode an address string to latitude-longitude location.
- * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
+ * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
+ * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
  * > be shown to the user immediately.
  *
- * > On Android, you must request a location permission (`Permissions.LOCATION`) from the user
- * > before geocoding can be used.
  * @param address A string representing address, eg. `"Baker Street London"`.
- * @param options
- * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedLocation`](#locationgeocodedlocation) objects.
+ * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedLocation`](#locationgeocodedlocation)
+ * objects.
+ *
+ * @platform android
+ * @platform ios
  */
-export declare function geocodeAsync(address: string, options?: LocationGeocodingOptions): Promise<LocationGeocodedLocation[]>;
+export declare function geocodeAsync(address: string): Promise<LocationGeocodedLocation[]>;
 /**
  * Reverse geocode a location to postal address.
- * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
+ * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
+ * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
  * > be shown to the user immediately.
  *
- * > On Android, you must request a location permission (`Permissions.LOCATION`) from the user
- * > before geocoding can be used.
  * @param location An object representing a location.
- * @param options
  * @return A promise which fulfills with an array (in most cases its size is 1) of [`LocationGeocodedAddress`](#locationgeocodedaddress) objects.
+ *
+ * @platform android
+ * @platform ios
  */
-export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>, options?: LocationGeocodingOptions): Promise<LocationGeocodedAddress[]>;
-/**
- * Checks user's permissions for accessing location.
- * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
- * @deprecated Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
- */
-export declare function getPermissionsAsync(): Promise<LocationPermissionResponse>;
-/**
- * Asks the user to grant permissions for location.
- * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
- * @deprecated Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
- */
-export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
+export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>): Promise<LocationGeocodedAddress[]>;
 /**
  * Checks user's permissions for accessing location while the app is in the foreground.
  * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
@@ -167,6 +160,7 @@ export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
  * Background location task will be receiving following data:
  * - `locations` - An array of the new locations.
  *
+ * @example
  * ```ts
  * import * as TaskManager from 'expo-task-manager';
  *
@@ -186,7 +180,7 @@ export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
  */
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 /**
- * Stops geofencing for specified task.
+ * Stops location updates for specified task.
  * @param taskName Name of the background location task to stop.
  * @return A promise resolving as soon as the task is unregistered.
  */
