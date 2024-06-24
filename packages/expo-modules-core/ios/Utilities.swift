@@ -71,7 +71,7 @@ internal func convertToUrl(string value: String) -> URL? {
   } else {
     // URLComponents on iOS 15 and lower does not well support RFC 3986.
     // We have to fallback URL(fileURLWithPath:) first.
-    url = value.first == "/"
+    url = value.hasPrefix("/")
       ? URL(fileURLWithPath: value)
       : URLComponents(string: value)?.url ?? URL(string: value)
   }
@@ -81,4 +81,16 @@ internal func convertToUrl(string value: String) -> URL? {
   }
   // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
   return url.scheme != nil ? url : URL(fileURLWithPath: value)
+}
+
+/**
+ A collection of utility functions for various Expo Modules common tasks.
+ */
+public struct Utilities {
+  /**
+   Converts a `String` to a `URL`.
+   */
+  public static func urlFrom(string: String) -> URL? {
+    return convertToUrl(string: string)
+  }
 }
