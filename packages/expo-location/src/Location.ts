@@ -191,7 +191,7 @@ export async function geocodeAsync(address: string): Promise<LocationGeocodedLoc
 /**
  * Reverse geocode a location to postal address.
  *
- * On Android, you must request a location permission (`Permissions.LOCATION`) from the user
+ * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
  * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
