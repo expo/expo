@@ -410,12 +410,16 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   var cursorIndex: Int {
     if let cursor {
       return fetchResult.index(of: cursor)
-    } else {
-      return NSNotFound
     }
+    return NSNotFound
   }
-  
-  let resultingAssets = getAssets(fetchResult: fetchResult, cursorIndex: cursorIndex, numOfRequestedItems: options.first, sortDescriptors: fetchOptions.sortDescriptors)
+
+  let resultingAssets = getAssets(
+    fetchResult: fetchResult,
+    cursorIndex: cursorIndex,
+    numOfRequestedItems: options.first,
+    sortDescriptors: fetchOptions.sortDescriptors
+  )
 
   let lastAsset = resultingAssets.assets.last
 
@@ -428,17 +432,21 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   promise.resolve(response)
 }
 
-func getAssets(fetchResult: PHFetchResult<PHAsset>, cursorIndex: Int, numOfRequestedItems: Int, sortDescriptors: [NSSortDescriptor]? = nil) -> GetAssetsResponse {
+func getAssets(
+  fetchResult: PHFetchResult<PHAsset>,
+  cursorIndex: Int,
+  numOfRequestedItems: Int,
+  sortDescriptors: [NSSortDescriptor]? = nil
+) -> GetAssetsResponse {
   let totalCount = fetchResult.count
-  if (totalCount == 0) {
+  if totalCount == 0 {
     return GetAssetsResponse(assets: [], totalCount: totalCount, hasNextPage: false)
   }
-
 
   var assets: [[String: Any?]] = []
   assets.reserveCapacity(numOfRequestedItems)
   var hasNextPage: Bool
-  
+
   // If we don't use any sort descriptors (nil, or empty array), the assets are sorted just like in Photos app.
   // That means the most recent assets are at the start of the array.
   if sortDescriptors?.isEmpty ?? true {
@@ -446,10 +454,10 @@ func getAssets(fetchResult: PHFetchResult<PHAsset>, cursorIndex: Int, numOfReque
     let lowerIndex = max(upperIndex - numOfRequestedItems, -1)
 
     for i in stride(from: upperIndex, to: lowerIndex, by: -1) {
-        let asset = fetchResult.object(at: i)
-        if let exportedAsset = exportAsset(asset: asset) {
-            assets.append(exportedAsset)
-        }
+      let asset = fetchResult.object(at: i)
+      if let exportedAsset = exportAsset(asset: asset) {
+        assets.append(exportedAsset)
+      }
     }
 
     hasNextPage = lowerIndex >= 0

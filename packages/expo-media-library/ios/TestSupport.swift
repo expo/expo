@@ -15,7 +15,6 @@ class MockPHAsset: PHAsset {
 
 // we override exactly those methods that `getAssets()` uses, imitating Apple's implementation
 class MockFetchResult: PHFetchResult<PHAsset> {
-
   private var assets: [PHAsset]
 
   init(assets: [PHAsset]) {

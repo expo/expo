@@ -3,21 +3,21 @@ import Photos
 @testable import ExpoMediaLibrary
 
 class MediaLibrarySpec: ExpoSpec {
-  
+
   static func createTestAssets(_ numOfMockAssets: Int) -> [PHAsset] {
     return (0..<numOfMockAssets).map { index in
       return MockPHAsset(id: index)
     }
   }
-  
+
   override class func spec() {
-    
+
     describe("getAssets") {
       let cursorPositionNotProvided = NSNotFound
       let numOfMockAssets = 4
       let mockAssets = createTestAssets(numOfMockAssets)
       let sorter = [NSSortDescriptor(key: "pixelWidth", ascending: false)]
-      
+
       context("given empty fetch result") {
         it("returns no assets and indicates there is no next page") {
           let emptyFetchResult = PHFetchResult<PHAsset>()
@@ -32,7 +32,7 @@ class MediaLibrarySpec: ExpoSpec {
           }
         }
       }
-      
+
       context("given a non-empty result") {
         let fetchResult = MockFetchResult(assets: mockAssets)
 
@@ -50,7 +50,7 @@ class MediaLibrarySpec: ExpoSpec {
 
         it("asking fewer items than available in fetchResult returns assets and indicates there is a next page") {
           let requestedItems = 2
-          
+
           for config in [(sortDescriptor: nil, expectedIds: ("3", "2")), // most recent first
                          (sortDescriptor: sorter, expectedIds: ("0", "1")) // insertion order
           ] {
@@ -65,10 +65,10 @@ class MediaLibrarySpec: ExpoSpec {
             expect(response.hasNextPage).to(beTrue())
           }
         }
-        
+
         it("requesting full number of items / more items than in fetchResult, returns all assets and indicates there is NO next page") {
           let expectedItems = 4
-          
+
           for requestedItems in [numOfMockAssets, numOfMockAssets * 5] {
             for config in [(sortDescriptor: nil, expectedIds: ("3", "0")), // most recent first
                            (sortDescriptor: sorter, expectedIds: ("0", "3")) // insertion order

@@ -41,7 +41,7 @@ struct AssetWithOptions: Record {
 }
 
 struct GetAssetsResponse {
-  let assets: Array<[String: Any?]>
+  let assets: [[String: Any?]]
   let totalCount: Int
   let hasNextPage: Bool
 }
