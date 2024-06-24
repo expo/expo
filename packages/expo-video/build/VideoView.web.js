@@ -40,7 +40,9 @@ export const VideoView = forwardRef((props, ref) => {
             document.exitFullscreen();
         },
     }));
-    function mountAudioNodes() {
+    // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
+    // player only one will emit audio).
+    function attachAudioNodes() {
         const audioContext = audioContextRef.current;
         const zeroGainNode = zeroGainNodeRef.current;
         const mediaNode = mediaNodeRef.current;
@@ -51,7 +53,7 @@ export const VideoView = forwardRef((props, ref) => {
             console.warn("Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player.");
         }
     }
-    function unmountAudioNodes() {
+    function detachAudioNodes() {
         const audioContext = audioContextRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && mediaNode && videoRef.current) {
@@ -65,25 +67,25 @@ export const VideoView = forwardRef((props, ref) => {
             return;
         }
         const audioContext = createAudioContext();
-        unmountAudioNodes();
+        detachAudioNodes();
         audioContextRef.current = audioContext;
         zeroGainNodeRef.current = createZeroGainNode(audioContextRef.current);
         mediaNodeRef.current = audioContext
             ? audioContext.createMediaElementSource(videoRef.current)
             : null;
-        mountAudioNodes();
+        attachAudioNodes();
         hasToSetupAudioContext.current = false;
     }
     useEffect(() => {
         if (videoRef.current) {
             props.player?.mountVideoView(videoRef.current);
         }
-        mountAudioNodes();
+        attachAudioNodes();
         return () => {
             if (videoRef.current) {
                 props.player?.unmountVideoView(videoRef.current);
             }
-            unmountAudioNodes();
+            detachAudioNodes();
         };
     }, [props.player]);
     return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{

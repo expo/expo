@@ -50,7 +50,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     },
   }));
 
-  function mountAudioNodes() {
+  // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
+  // player only one will emit audio).
+  function attachAudioNodes() {
     const audioContext = audioContextRef.current;
     const zeroGainNode = zeroGainNodeRef.current;
     const mediaNode = mediaNodeRef.current;
@@ -64,7 +66,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     }
   }
 
-  function unmountAudioNodes() {
+  function detachAudioNodes() {
     const audioContext = audioContextRef.current;
     const mediaNode = mediaNodeRef.current;
     if (audioContext && mediaNode && videoRef.current) {
@@ -82,13 +84,13 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     }
     const audioContext = createAudioContext();
 
-    unmountAudioNodes();
+    detachAudioNodes();
     audioContextRef.current = audioContext;
     zeroGainNodeRef.current = createZeroGainNode(audioContextRef.current);
     mediaNodeRef.current = audioContext
       ? audioContext.createMediaElementSource(videoRef.current)
       : null;
-    mountAudioNodes();
+    attachAudioNodes();
     hasToSetupAudioContext.current = false;
   }
 
@@ -96,13 +98,13 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
     }
-    mountAudioNodes();
+    attachAudioNodes();
 
     return () => {
       if (videoRef.current) {
         props.player?.unmountVideoView(videoRef.current);
       }
-      unmountAudioNodes();
+      detachAudioNodes();
     };
   }, [props.player]);
 
