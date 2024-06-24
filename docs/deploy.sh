@@ -375,6 +375,7 @@ for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
     --no-progress \
+    --cache-control "max-age=86400" \
     --metadata-directive REPLACE \
     --website-redirect "/${redirects[$i]}" \
     "$target/404.html" \
@@ -385,6 +386,7 @@ do
   if [[ $i != *".html" ]] && [[ $i != *"/" ]]; then
     aws s3 cp \
       --no-progress \
+      --cache-control "max-age=86400" \
       --metadata-directive REPLACE \
       --website-redirect "/${redirects[$i]}" \
       "$target/404.html" \
