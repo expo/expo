@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
   files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
+
 ```jsx
 import { Image, View, StyleSheet } from 'react-native';
 
@@ -205,14 +206,13 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-container: {
-flex: 1,
-justifyContent: 'center',
-alignItems: 'center',
-},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
-
-````
+```
 
 </SnackInline>
 
@@ -272,4 +272,3 @@ Any [`Text`](http://reactnative.dev/docs/text), [`TouchableHighlight`](http://re
 | **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`           |
 | **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                 |
 | **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_              |
-````

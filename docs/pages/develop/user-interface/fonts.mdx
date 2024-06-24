@@ -68,7 +68,7 @@ After adding a custom font file in your project, install the `expo-font` library
 
 <Step label="2">
 
-Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using [`fonts`](/versions/latest/sdk/font/#configurable-properties) property which takes an array of one or more font files. The path to each font file is relative to the project's root. For example, in the following configuration, `Inter-Black.otf` font file's path is defined.
+Add the config plugin to your [app config](/versions/latest/config/app/#plugins) file. The configuration must contain the path to the font file using [`fonts`](/versions/latest/sdk/font/#configurable-properties) property which takes an array of one or more font files. The path to each font file is relative to the project's root. For example, in the following configuration, **Inter-Black.otf** font file's path is defined.
 
 ```json app.json
 {
@@ -145,7 +145,7 @@ The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides
 Map the font file using the `useFonts` hook in a top level component such as the root layout (**app/layout.tsx**) file in your project:
 
 ```tsx app/_layout.tsx
-/* @info Import <CODE>useFonts</CODE> hook from <CODEexpo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Import <CODE>useFonts</CODE> hook from <CODE>expo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
 /* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 import {useEffect} from 'react';
 
@@ -205,7 +205,7 @@ Two ways to use a Google Font in your project:
 
 <Step label="1">
 
-Install the font package. For example, to use Inter-Black font, install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
+Install the font package. For example, to use Inter Black font, install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
 <Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
 
@@ -266,7 +266,7 @@ Each google Fonts package provides the `useFonts` hook to load the fonts asynchr
 
 <Step label="1">
 
-Instal the Google Fonts package, `expo-font` and `expo-splash-screen` libraries.
+Install the Google Fonts package, `expo-font` and `expo-splash-screen` libraries.
 
 <Terminal cmd={['$ npm expo install @expo-google-fonts/inter expo-font expo-splash-screen']} />
 
@@ -280,7 +280,7 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>useFonts</CODE> hook from <CODEexpo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Import <CODE>useFonts</CODE> hook from <CODE>expo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
 /* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 import {useEffect} from 'react';
 
@@ -340,19 +340,19 @@ If your font is in format other than OTF or TTF, you have to [customize the Metr
 
 For reference, the following table provides the list formats that work on each native platform:
 
-| Format | Web         | iOS         | Android     |
+| Format | Android     | iOS         | Web         |
 | ------ | ----------- | ----------- | ----------- |
 | bdf    | <NoIcon />  | <NoIcon />  | <NoIcon />  |
-| dfont  | <NoIcon />  | <NoIcon />  | <YesIcon /> |
-| eot    | <YesIcon /> | <NoIcon />  | <NoIcon />  |
+| dfont  | <YesIcon /> | <NoIcon />  | <NoIcon />  |
+| eot    | <NoIcon />  | <NoIcon />  | <YesIcon /> |
 | fon    | <NoIcon />  | <NoIcon />  | <NoIcon />  |
 | otf    | <YesIcon /> | <YesIcon /> | <YesIcon /> |
 | ps     | <NoIcon />  | <NoIcon />  | <NoIcon />  |
-| svg    | <YesIcon /> | <NoIcon />  | <NoIcon />  |
+| svg    | <NoIcon />  | <NoIcon />  | <YesIcon /> |
 | ttc    | <NoIcon />  | <NoIcon />  | <NoIcon />  |
 | ttf    | <YesIcon /> | <YesIcon /> | <YesIcon /> |
-| woff   | <YesIcon /> | <YesIcon /> | <NoIcon />  |
-| woff2  | <YesIcon /> | <YesIcon /> | <NoIcon />  |
+| woff   | <NoIcon />  | <YesIcon /> | <YesIcon /> |
+| woff2  | <NoIcon />  | <YesIcon /> | <YesIcon /> |
 
 ### Platform built-in fonts
 
@@ -397,7 +397,6 @@ Now, you can any icon from the `Ionicons` library in a React component:
 Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
 
 However, loading a font file directly from web is done by replacing the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
-
 
 <SnackInline label="Using a remote font" dependencies={['expo-font']}>
 
