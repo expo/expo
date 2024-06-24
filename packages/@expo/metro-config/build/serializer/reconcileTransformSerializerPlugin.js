@@ -154,32 +154,14 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 })?.ast;
                 // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
                 let dependencyMapName = '';
+                let dependencies;
                 // This pass converts the modules to use the generated import names.
                 try {
                     const opts = collectDependenciesOptions;
-                    // TODO: Maybe we should try to reconcile missing props here...
-                    //  {
-                    //   asyncRequireModulePath:
-                    //     config.transformer?.asyncRequireModulePath ??
-                    //     require.resolve('metro-runtime/src/modules/asyncRequire'),
-                    //   dependencyTransformer: undefined,
-                    //   dynamicRequires: getDynamicDepsBehavior(
-                    //     config.transformer?.dynamicDepsInPackages ?? 'throwAtRuntime',
-                    //     value.path
-                    //   ),
-                    //   inlineableCalls: [importDefault, importAll],
-                    //   keepRequireNames: options.dev,
-                    //   // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L132C32-L132C37
-                    //   allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? false,
-                    //   // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L134C46-L134C46
-                    //   dependencyMapName: config.transformer?.unstable_dependencyMapReservedName ?? null,
-                    //   // Expo sets this to `true`.
-                    //   unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
-                    // };
                     // TODO: We should try to drop this black-box approach since we don't need the deps.
                     // We just need the AST modifications such as `require.context`.
                     // console.log(require('@babel/generator').default(ast).code);
-                    ({ ast, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
+                    ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
                         ...opts,
                         // This setting shouldn't be shared + it can't be serialized and cached anyways.
                         dependencyTransformer: null,
@@ -191,6 +173,18 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     }
                     throw error;
                 }
+                // Some imports may change order during the transform, so we need to resort them.
+                // Resort the dependencies to match the current order of the AST.
+                const nextDependencies = new Map();
+                // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+                dependencies.forEach(dep => {
+                    nextDependencies.set(dep.data.key, {
+                        ...(value.dependencies.get(dep.data.key) || {}),
+                        data: dep
+                    });
+                });
+                // @ts-expect-error: Mutating the value in place.
+                value.dependencies = nextDependencies;
                 // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
                 const globalPrefix = config.transformer?.globalPrefix ?? '';
                 const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 

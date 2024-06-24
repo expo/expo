@@ -88,51 +88,55 @@ function getExportsThatAreNotUsedInModule(ast) {
 }
 const annotate = false;
 const optimizeAll = true;
+function ensureConstantModuleOrder(graph, options) {
+    const modules = [...graph.dependencies.values()];
+    // Assign IDs to modules in a consistent order before changing anything.
+    // This is because Metro defaults to a non-deterministic order.
+    // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
+    for (const module of modules) {
+        options.createModuleId(module.path);
+    }
+}
+function populateGraphWithAst(graph) {
+    // Generate AST for all modules.
+    graph.dependencies.forEach((value) => {
+        if (
+        // No tree shaking needed for JSON files.
+        value.path.endsWith('.json')) {
+            return;
+        }
+        value.output.forEach((output) => {
+            if (output.type !== 'js/module') {
+                return;
+            }
+            if (
+            // This is a hack to prevent modules that are already wrapped from being included.
+            output.data.code.startsWith('__d(function ')) {
+                // TODO: This should probably assert.
+                debug('Skipping tree-shake for wrapped module: ' + value.path);
+                return;
+            }
+            // console.log('has ast:', !!output.data.ast, output.data.code);
+            output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+            output.data.modules = {
+                imports: [],
+                exports: [],
+            };
+        });
+    });
+}
 function treeShakeSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
-        const modules = [...graph.dependencies.values()];
-        // Assign IDs to modules in a consistent order before changing anything.
-        // This is because Metro defaults to a non-deterministic order.
-        // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
-        for (const module of modules) {
-            options.createModuleId(module.path);
-        }
-        // console.log('treeshake:', graph.transformOptions);
+        // ensureConstantModuleOrder(graph, options);
         // Generate AST for all modules.
-        graph.dependencies.forEach((value) => {
-            if (
-            // No tree shaking needed for JSON files.
-            value.path.endsWith('.json')) {
-                return;
-            }
-            value.output.forEach((output) => {
-                if (output.type !== 'js/module') {
-                    return;
-                }
-                if (
-                // This is a hack to prevent modules that are already wrapped from being included.
-                output.data.code.startsWith('__d(function ')) {
-                    // TODO: This should probably assert.
-                    debug('Skipping tree-shake for wrapped module: ' + value.path);
-                    return;
-                }
-                // console.log('has ast:', !!output.data.ast, output.data.code);
-                output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
-                output.data.modules = {
-                    imports: [],
-                    exports: [],
-                };
-            });
-        });
-        // Useful for testing the transform reconciler...
+        populateGraphWithAst(graph);
         if (!optimizeAll) {
+            // Useful for testing the transform reconciler...
             return [entryPoint, preModules, graph, options];
         }
-        // console.log('imports:', outputItem);
-        // return [entryPoint, preModules, graph, options];
         function collectImportExports(value) {
             function getGraphId(moduleId) {
                 const key = [...value.dependencies.values()].find((dep) => {
@@ -240,42 +244,6 @@ function treeShakeSerializerPlugin(config) {
                 // inspect('imports', outputItem.data.modules.imports);
             }
         }
-        // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
-        //   let usesCommonJsExports = false;
-        //   traverse(ast, {
-        //     MemberExpression(path) {
-        //       if (
-        //         (path.node.object.name === 'module' && path.node.property.name === 'exports') ||
-        //         path.node.object.name === 'exports'
-        //       ) {
-        //         usesCommonJsExports = true;
-        //         console.log(`Found usage of ${path.node.object.name}.${path.node.property.name}`);
-        //       }
-        //     },
-        //     CallExpression(path) {
-        //       // Check for Object.assign or Object.defineProperties
-        //       if (
-        //         path.node.callee.type === 'MemberExpression' &&
-        //         path.node.callee.object.name === 'Object' &&
-        //         (path.node.callee.property.name === 'assign' ||
-        //           path.node.callee.property.name === 'defineProperties')
-        //       ) {
-        //         // Check if the first argument is module.exports
-        //         const firstArg = path.node.arguments[0];
-        //         if (
-        //           firstArg.type === 'MemberExpression' &&
-        //           firstArg.object.name === 'module' &&
-        //           firstArg.property.name === 'exports'
-        //         ) {
-        //           usesCommonJsExports = true;
-        //         } else if (firstArg.type === 'Identifier' && firstArg.name === 'exports') {
-        //           usesCommonJsExports = true;
-        //         }
-        //       }
-        //     },
-        //   });
-        //   return usesCommonJsExports;
-        // };
         function treeShakeExports(depId, value) {
             let dirtyImports = false;
             const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
@@ -336,8 +304,6 @@ function treeShakeSerializerPlugin(config) {
                 };
                 // Collect a list of exports that are not used within the module.
                 const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
-                const shouldPrintDebug = value.path.endsWith('/lucide-react.js');
-                shouldPrintDebug && console.log('unusedExports', possibleUnusedExports, value.path);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
                 (0, core_1.traverse)(ast, {
                     ExportDefaultDeclaration(path) {
@@ -357,14 +323,12 @@ function treeShakeSerializerPlugin(config) {
                             if (types.isIdentifier(path.node.exported) &&
                                 possibleUnusedExports.includes(path.node.exported.name) &&
                                 !isExportUsed(path.node.exported.name)) {
-                                shouldPrintDebug && console.log('check:', path.node.exported.name, internalName);
                                 markUnused(path, path.node);
                             }
                         }
                     },
                     ExportNamedDeclaration(path) {
                         const declaration = path.node.declaration;
-                        // shouldPrintDebug && console.log('BOYUUU', path.node);
                         // If empty, e.g. `export {} from '...'` then remove the whole statement.
                         if (!declaration) {
                             const importModuleId = path.node.source?.value;
@@ -372,8 +336,7 @@ function treeShakeSerializerPlugin(config) {
                                 if (disconnectGraphNode(value, importModuleId)) {
                                     console.log('ExportNamedDeclaration: Disconnected:', importModuleId, 'in:', value.path);
                                     // dirtyImports = true;
-                                    // markUnused(path, path.node);
-                                    path.remove();
+                                    markUnused(path, path.node.source);
                                 }
                                 else {
                                     console.log('ExportNamedDeclaration: Cannot remove graph node for: ', importModuleId, 'in:', value.path);
@@ -394,15 +357,7 @@ function treeShakeSerializerPlugin(config) {
                                     }
                                 });
                             }
-                            else {
-                                // console.log(
-                                //   'check:',
-                                //   declaration.type,
-                                //   declaration.id?.name,
-                                //   isExportUsed(declaration.id.name),
-                                //   unusedExports
-                                // );
-                                // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
+                            else if ('id' in declaration && declaration.id && 'name' in declaration.id) {
                                 if (possibleUnusedExports.includes(declaration.id.name) &&
                                     !isExportUsed(declaration.id.name)) {
                                     console.log('mark remove:', declaration.id.name, 'from:', value.path);
@@ -523,7 +478,7 @@ function treeShakeSerializerPlugin(config) {
             // Determine unused identifiers by subtracting the used from the imported
             const unusedImports = [...importedIdentifiers].filter((identifier) => !usedIdentifiers.has(identifier));
             // inspect(ast);
-            let removed = false; //unusedImports.length > 0;
+            let removed = false;
             // Remove the unused imports from the AST
             (0, core_1.traverse)(ast, {
                 ImportDeclaration(path) {
@@ -550,68 +505,10 @@ function treeShakeSerializerPlugin(config) {
                     if (path.node.specifiers.length === 0) {
                         // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
                         const importModuleId = path.node.source.value;
-                        // Unlink the module in the graph
-                        const depId = [...value.dependencies.entries()].find(([key, dep]) => {
-                            return dep.data.name === importModuleId;
-                        })?.[0];
-                        // // Should never happen but we're playing with fire here.
-                        // if (!depId) {
-                        //   throw new Error(
-                        //     `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
-                        //       value.path
-                        //     }. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
-                        //   );
-                        // }
-                        // If the dependency was already removed, then we don't need to do anything.
-                        if (depId) {
-                            const dep = value.dependencies.get(depId);
-                            const graphDep = graph.dependencies.get(dep.absolutePath);
-                            // Should never happen but we're playing with fire here.
-                            if (!graphDep) {
-                                throw new Error(`Failed to find graph key for import "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
-                            }
-                            // console.log('Drop', {
-                            //   depId,
-                            //   path: dep.absolutePath,
-                            //   fx: hasSideEffect(graph, graphDep),
-                            //   empty: isEmptyModule(graphDep),
-                            // });
-                            if (
-                            // Don't remove the module if it has side effects.
-                            !(0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep) ||
-                                // Unless it's an empty module.
-                                isEmptyModule(graphDep)) {
-                                console.log('Drop', {
-                                    depId,
-                                    path: dep.absolutePath,
-                                    fx: (0, sideEffectsSerializerPlugin_1.hasSideEffect)(graph, graphDep),
-                                    empty: isEmptyModule(graphDep),
-                                });
-                                // console.log('Drop module:', value.path);
-                                // Remove inverse link to this dependency
-                                graphDep.inverseDependencies.delete(value.path);
-                                if (graphDep.inverseDependencies.size === 0) {
-                                    // Remove the dependency from the graph as no other modules are using it anymore.
-                                    graph.dependencies.delete(dep.absolutePath);
-                                }
-                                // Remove a random instance of the dep count to track if there are multiple imports.
-                                dep.data.data.locs.pop();
-                                if (!dep.data.data.locs.length) {
-                                    // Remove dependency from this module in the graph
-                                    value.dependencies.delete(depId);
-                                }
-                                // Delete the AST
-                                path.remove();
-                                // Mark the module as removed so we know to traverse again.
-                                removed = true;
-                            }
-                        }
-                        else {
-                            // TODO: I'm not sure what to do here?
-                            // Delete the AST
-                            // path.remove();
-                            // // Mark the module as removed so we know to traverse again.
-                            // removed = true;
+                        if (disconnectGraphNode(value, importModuleId)) {
+                            // Delete the import AST
+                            path.remove();
+                            removed = true;
                         }
                     }
                 },
