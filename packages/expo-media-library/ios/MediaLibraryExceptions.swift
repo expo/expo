@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 internal class MethodUnavailableException: Exception {
   override var reason: String {
-    "presentLimitedLibraryPickerAsync is only available on iOS >= 15"
+    "presentLimitedLibraryPickerAsync is only available on iOS >= 14"
   }
 }
 
