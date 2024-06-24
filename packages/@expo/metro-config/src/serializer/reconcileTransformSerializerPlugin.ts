@@ -183,7 +183,8 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         })?.ast!;
 
         // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
-        let dependencyMapName = '';
+        let dependencyMapName = '';        
+
         // This pass converts the modules to use the generated import names.
         try {
           const opts = collectDependenciesOptions;

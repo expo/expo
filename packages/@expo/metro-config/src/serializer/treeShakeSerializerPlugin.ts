@@ -171,6 +171,8 @@ function getExportsThatAreNotUsedInModule(ast: Ast) {
 
 const annotate = false;
 
+const optimizeAll = true;
+
 export function treeShakeSerializerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
@@ -180,6 +182,14 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
   ): Promise<SerializerParameters> {
     if (!isShakingEnabled(graph, options)) {
       return [entryPoint, preModules, graph, options];
+    }
+
+    const modules = [...graph.dependencies.values()];
+    // Assign IDs to modules in a consistent order before changing anything.
+    // This is because Metro defaults to a non-deterministic order.
+    // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
+    for (const module of modules) {
+      options.createModuleId(module.path);
     }
 
     // console.log('treeshake:', graph.transformOptions);
@@ -212,6 +222,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         };
       });
     });
+
+    // Useful for testing the transform reconciler...
+    if (!optimizeAll) {
+    return [entryPoint, preModules, graph, options];
+    }
 
     // console.log('imports:', outputItem);
     // return [entryPoint, preModules, graph, options];
