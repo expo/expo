@@ -19,6 +19,7 @@
 - [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix random conversion errors when converting JavaScript floating point numbers to `Swift.Float`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
 - [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
