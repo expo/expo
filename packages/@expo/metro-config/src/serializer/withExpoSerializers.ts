@@ -20,10 +20,10 @@ import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { sideEffectsSerializerPlugin } from './sideEffectsSerializerPlugin';
 import {
-  createPostTreeShakeTransformSerializerPlugin,
   treeShakeSerializerPlugin,
 } from './treeShakeSerializerPlugin';
 import { env } from '../env';
+import { createPostTreeShakeTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -66,6 +66,7 @@ export function withExpoSerializers(
   processors.push(createPostTreeShakeTransformSerializerPlugin(config));
 
   processors.push((...args) => {
+    // @ts-expect-error: This is injected by Expo's MetroBundlerDevServer so it isn't available in development server requests.
     const metroConfig = args[3]._metroConfig ?? config;
     if (typeof metroConfig.serializer?.postTreeShakingSerializer === 'function') {
       return metroConfig.serializer.postTreeShakingSerializer(...args);

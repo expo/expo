@@ -3,9 +3,11 @@ import assert from 'assert';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import { sideEffectsSerializerPlugin } from '../sideEffectsSerializerPlugin';
 import {
-  createPostTreeShakeTransformSerializerPlugin,
   treeShakeSerializerPlugin,
 } from '../treeShakeSerializerPlugin';
+import { 
+  createPostTreeShakeTransformSerializerPlugin,
+} from '../reconcileTransformSerializerPlugin'
 import {
   SerialAsset,
   SerializerConfigOptions,
