@@ -223,7 +223,6 @@ public final class SQLiteModuleNext: Module {
     return url.scheme != nil ? url : URL(fileURLWithPath: value)
   }
 
-
   private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
     var db: OpaquePointer?
     if sqlite3_open(MEMORY_DB_NAME, &db) != SQLITE_OK {
