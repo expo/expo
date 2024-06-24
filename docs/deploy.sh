@@ -313,7 +313,7 @@ redirects[push-notifications]=push-notifications/overview
 redirects[eas/submit]=submit/introduction
 redirects[development/tools/expo-dev-client]=develop/development-builds/introduction
 redirects[develop/user-interface/custom-fonts]=develop/user-interface/fonts
-redirects[workflow/snack]=/more/glossary-of-terms
+redirects[workflow/snack]=more/glossary-of-terms
 redirects[accounts/teams-and-accounts]=accounts/account-types
 redirects[push-notifications/fcm]=push-notifications/sending-notifications-custom
 redirects[troubleshooting/clear-cache-mac]=troubleshooting/clear-cache-macos-linux
@@ -356,16 +356,16 @@ redirects[guides/customizing-webpack]=archive/customizing-webpack
 redirects[bare/using-expo-client]=archive/using-expo-client
 
 # May 2024 home / get started section
-redirects[/overview]=get-started/introduction
-redirects[/get-started/installation]=get-started/create-a-project
-redirects[/get-started/expo-go]=get-started/set-up-your-environment
+redirects[overview]=get-started/introduction
+redirects[get-started/installation]=get-started/create-a-project
+redirects[get-started/expo-go]=get-started/set-up-your-environment
 
 # Redirect for /learn URL
-redirects[/learn]=tutorial/introduction
+redirects[learn]=tutorial/introduction
 
 # May 2024 home / develop section
-redirects[/develop/user-interface/app-icons]=develop/user-interface/splash-screen-and-app-icon
-redirects[/develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
+redirects[develop/user-interface/app-icons]=develop/user-interface/splash-screen-and-app-icon
+redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
 
 # Temporary redirects
 redirects[guides/react-compiler]=preview/react-compiler
