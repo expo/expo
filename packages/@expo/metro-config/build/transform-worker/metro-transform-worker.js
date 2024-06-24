@@ -362,6 +362,7 @@ async function transformJSWithBabel(file, context) {
             context.options.experimentalImportSupport = true;
         }
     }
+    // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));

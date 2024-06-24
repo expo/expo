@@ -19,7 +19,7 @@ async function helpWrap(src: string, options: Partial<Parameters<typeof wrapModu
 }
 
 describe(wrapModule, () => {
-  describe('lazy disabled', async () => {
+  describe('lazy disabled', () => {
     it(`wraps module with params in dev with lazy disabled`, async () => {
       const res = await helpWrap(
         `import { View } from 'react-native';
@@ -31,11 +31,11 @@ describe(wrapModule, () => {
       );
       expect(res.paths).toEqual({});
       expect(res.src).toMatchInlineSnapshot(`
-              "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-                var View = _$$_REQUIRE(dependencyMap[0], "react-native").View;
-                console.log("Hello World");
-              },"/app/index.js",["/app/node_modules/react-native/index.js"],"index.js");"
-            `);
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          var _reactNative = _$$_REQUIRE(_dependencyMap[0]);
+          console.log("Hello World");
+        },"/app/index.js",["/app/node_modules/react-native/index.js"],"index.js");"
+      `);
     });
     it(`wraps module with params in dev with lazy loading disabled`, async () => {
       const res = await helpWrap(`const evan = import('bacon');`, {
@@ -44,10 +44,10 @@ describe(wrapModule, () => {
       });
       expect(res.paths).toEqual({});
       expect(res.src).toMatchInlineSnapshot(`
-              "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-                const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
-              },"/app/index.js",["/app/node_modules/bacon/index.js","/app/node_modules/expo-mock/async-require/index.js"],"index.js");"
-            `);
+        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          var evan = _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
+        },"/app/index.js",["/app/node_modules/bacon/index.js","/app/node_modules/expo-mock/async-require/index.js"],"index.js");"
+      `);
     });
   });
   it(`wraps module with params in dev with lazy loading enabled`, async () => {
@@ -65,8 +65,8 @@ describe(wrapModule, () => {
       /node_modules\/bacon\/index\.bundle\?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false/
     );
     expect(res.src).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        var evan = _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
       },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false"}},"index.js");"
     `);
   });
@@ -89,8 +89,8 @@ describe(wrapModule, () => {
       /\?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false/
     );
     expect(res.src).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        var evan = _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
       },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/_expo/static/js/web/0.chunk.js"}});"
     `);
   });
@@ -107,8 +107,8 @@ describe(wrapModule, () => {
         '/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false',
     });
     expect(res.src).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        var evan = _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
       });"
     `);
   });
@@ -126,8 +126,8 @@ describe(wrapModule, () => {
       '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
     });
     expect(res.src).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
-        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        var evan = _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
       });"
     `);
   });
