@@ -515,7 +515,6 @@ const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makePage('preview/support.mdx'),
     makePage('preview/react-compiler.mdx'),
     { expanded: true },
   ]),
