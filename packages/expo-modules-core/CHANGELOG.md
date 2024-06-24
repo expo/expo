@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
+
 ## 1.12.16 — 2024-06-20
 
 ### 🐛 Bug fixes
