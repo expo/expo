@@ -10,6 +10,7 @@ interface TransformResponse {
 }
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
+        readonly minify?: boolean;
         readonly collectDependenciesOptions?: CollectDependenciesOptions;
         readonly reactClientReference?: string;
     };

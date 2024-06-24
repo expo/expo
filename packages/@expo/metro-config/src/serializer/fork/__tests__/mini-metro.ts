@@ -261,7 +261,8 @@ export async function microBundle({
 export async function parseModule(
   relativeFilePath: string,
   code: string,
-  transformOptions: TransformInputOptions
+  transformOptions: TransformInputOptions,
+  transformConfig: any = {}
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const codeBuffer = Buffer.from(code);
@@ -275,6 +276,7 @@ export async function parseModule(
       allowOptionalDependencies: true,
       assetPlugins: [],
       babelTransformerPath: '@expo/metro-config/build/babel-transformer',
+      ...transformConfig,
     },
     projectRoot,
     absoluteFilePath,

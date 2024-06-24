@@ -124,6 +124,8 @@ export function sideEffectsSerializerPlugin(
             '@react-native/asset-registry',
             'postcss-value-parser',
             'css-in-js-utils',
+            'nullthrows',
+            'nanoid',
           ].includes(packageJson.name)
         ) {
           console.log('Skipping FX for:', packageJson.name);
@@ -156,6 +158,12 @@ export function sideEffectsSerializerPlugin(
   // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
   // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
   for (const value of graph.dependencies.values()) {
+    // Don't perform lookup on virtual modules.
+    if (value.path.startsWith('\0')) {
+      value.sideEffects = false;
+      continue;
+    }
+
     const isSideEffect = getPackageJsonMatcher(value.path);
     if (isSideEffect === false) {
       value.sideEffects = false;

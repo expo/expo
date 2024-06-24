@@ -78,21 +78,6 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         // return [entryPoint, preModules, graph, options];
         // const includeDebugInfo = false;
         const preserveEsm = false;
-        // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-        const minify = graph.transformOptions.minify &&
-            graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
-            graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
-        // const dynamicTransformOptions = await config.transformer?.getTransformOptions?.(
-        //   [entryPoint],
-        //   {
-        //     dev: options.dev,
-        //     hot: false,
-        //     platform: graph.transformOptions.platform,
-        //   },
-        //   async (filepath) => {
-        //     return [...(graph.dependencies.get(filepath)?.dependencies.keys() ?? [])];
-        //   }
-        // );
         // Convert all remaining AST and dependencies to standard output that Metro expects.
         // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
         for (const value of graph.dependencies.values()) {
@@ -105,6 +90,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     debug('Skipping post transform for non-js/module: ' + value.path);
                     continue;
                 }
+                const minify = outputItem.data.minify;
                 // This should be cached by the transform worker for use here to ensure close to consistent
                 // results between the tree-shake and the final transform.
                 const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;

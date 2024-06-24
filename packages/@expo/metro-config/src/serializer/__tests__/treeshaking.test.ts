@@ -606,6 +606,33 @@ describe('Possible optimizations', () => {
     });
     expect(artifacts[0].source).toMatch('subtract');
   });
+
+  // From React Navigation
+  xit(`barrel star empty file`, async () => {
+    const [[, , graph], artifacts] = await serializeShakingAsync({
+      'index.js': `
+          import { foo } from './barrel';
+          console.log('keep', foo);
+        `,
+      'barrel.js': `
+      export const foo = 1;
+      export * from './math';
+      `,
+      'math.js': `
+          export {};
+        `,
+    });
+
+    expect(getModules(graph, '/app/index.js')).toEqual({
+      exports: [],
+      imports: [expect.objectContaining({ key: '/app/barrel.js' })],
+    });
+    expect(getModules(graph, '/app/barrel.js')).toEqual({
+      exports: [],
+      imports: [expect.objectContaining({ key: '/app/math.js' })],
+    });
+    expect(artifacts[0].source).toMatch('subtract');
+  });
 });
 
 it(`import as`, async () => {

@@ -103,7 +103,15 @@ const minifyCode = async (config, projectRoot, filename, code, source, map, rese
     }
 };
 const disabledDependencyTransformer = {
-    transformSyncRequire: () => { },
+    transformSyncRequire: (path) => {
+        // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
+        // If the path has more than 1 argument, then convert it from `require(...)` to `require.context(...)`.
+        // to essentially undo the `path.get("callee").replaceWith(types.identifier("require"));` line...
+        if (path.node.arguments.length > 1) {
+            console.log('Converting require to require.context', path.node.arguments);
+            path.node.callee = types.memberExpression(types.identifier('require'), types.identifier('context'));
+        }
+    },
     transformImportCall: () => { },
     transformPrefetch: () => { },
     transformIllegalDynamicRequire: () => { },
@@ -321,7 +329,12 @@ async function transformJS(file, { config, options, projectRoot }) {
                 map,
                 functionMap: file.functionMap,
                 reactClientReference: file.reactClientReference,
-                collectDependenciesOptions: treeshake ? collectDependenciesOptions : undefined,
+                ...(treeshake
+                    ? {
+                        collectDependenciesOptions,
+                        minify,
+                    }
+                    : {}),
             },
             type: file.type,
         },

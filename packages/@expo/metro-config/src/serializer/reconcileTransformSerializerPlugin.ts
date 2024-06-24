@@ -32,10 +32,9 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 
 import collectDependencies, {
-    InvalidRequireCallError as InternalInvalidRequireCallError,
-    type Dependency,
-  } from 'metro/src/ModuleGraph/worker/collectDependencies';
-  
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  type Dependency,
+} from 'metro/src/ModuleGraph/worker/collectDependencies';
 
 class InvalidRequireCallError extends Error {
   innerError: InternalInvalidRequireCallError;
@@ -48,7 +47,7 @@ class InvalidRequireCallError extends Error {
   }
 }
 
-import type { Options as CollectDependenciesOptions } from 'metro/src/ModuleGraph/worker/collectDependencies'
+import type { Options as CollectDependenciesOptions } from 'metro/src/ModuleGraph/worker/collectDependencies';
 
 function assertCollectDependenciesOptions(
   collectDependenciesOptions: any
@@ -95,23 +94,6 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     // const includeDebugInfo = false;
     const preserveEsm = false;
 
-    // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-    const minify =
-      graph.transformOptions.minify &&
-      graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
-      graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
-
-    // const dynamicTransformOptions = await config.transformer?.getTransformOptions?.(
-    //   [entryPoint],
-    //   {
-    //     dev: options.dev,
-    //     hot: false,
-    //     platform: graph.transformOptions.platform,
-    //   },
-    //   async (filepath) => {
-    //     return [...(graph.dependencies.get(filepath)?.dependencies.keys() ?? [])];
-    //   }
-    // );
     // Convert all remaining AST and dependencies to standard output that Metro expects.
     // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
     for (const value of graph.dependencies.values()) {
@@ -126,6 +108,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           continue;
         }
 
+        const minify = outputItem.data.minify;
         // This should be cached by the transform worker for use here to ensure close to consistent
         // results between the tree-shake and the final transform.
         const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
