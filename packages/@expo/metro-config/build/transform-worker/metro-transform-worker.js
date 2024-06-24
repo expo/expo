@@ -190,43 +190,43 @@ async function transformJS(file, { config, options, projectRoot }) {
                 cloneInputAst: false,
             }).ast);
         }
-        if (!options.dev) {
-            // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
-            // references, and hence the `constantFoldingPlugin` below will remove them.
-            // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
-            // Babel traversal cache (`traverse.cache.clear()`)
-            const clearProgramScopePlugin = {
-                visitor: {
-                    Program: {
-                        enter(path) {
-                            path.scope.crawl();
-                        },
+    }
+    if (!options.dev) {
+        // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
+        // references, and hence the `constantFoldingPlugin` below will remove them.
+        // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
+        // Babel traversal cache (`traverse.cache.clear()`)
+        const clearProgramScopePlugin = {
+            visitor: {
+                Program: {
+                    enter(path) {
+                        path.scope.crawl();
                     },
                 },
-            };
-            // Run the constant folding plugin in its own pass, avoiding race conditions
-            // with other plugins that have exit() visitors on Program (e.g. the ESM
-            // transform).
-            ast = nullthrows(
-            // @ts-expect-error
-            (0, core_1.transformFromAstSync)(ast, '', {
-                ast: true,
-                babelrc: false,
-                code: false,
-                configFile: false,
-                comments: true,
-                filename: file.filename,
-                plugins: [
-                    clearProgramScopePlugin,
-                    [metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts],
-                ],
-                sourceMaps: false,
-                // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
-                // running with `cloneInputAst: true`.
-                // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
-                cloneInputAst: false,
-            }).ast);
-        }
+            },
+        };
+        // Run the constant folding plugin in its own pass, avoiding race conditions
+        // with other plugins that have exit() visitors on Program (e.g. the ESM
+        // transform).
+        ast = nullthrows(
+        // @ts-expect-error
+        (0, core_1.transformFromAstSync)(ast, '', {
+            ast: true,
+            babelrc: false,
+            code: false,
+            configFile: false,
+            comments: true,
+            filename: file.filename,
+            plugins: [
+                clearProgramScopePlugin,
+                [metro_transform_plugins_1.default.constantFoldingPlugin, babelPluginOpts],
+            ],
+            sourceMaps: false,
+            // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+            // running with `cloneInputAst: true`.
+            // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
+            cloneInputAst: false,
+        }).ast);
     }
     let dependencyMapName = '';
     let dependencies;
@@ -286,6 +286,8 @@ async function transformJS(file, { config, options, projectRoot }) {
     const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify &&
         file.inputFileSize <= config.optimizationSizeLimit &&
+        // TODO: If the module wrapping is disabled then the normalize function needs to change to account for not being in a body.
+        !unstable_disableModuleWrapping &&
         !config.unstable_disableNormalizePseudoGlobals) {
         // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
         reserved.push(...metro_transform_plugins_1.default.normalizePseudoGlobals(wrappedAst, {
