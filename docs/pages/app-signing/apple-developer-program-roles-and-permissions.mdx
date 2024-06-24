@@ -7,7 +7,7 @@ description: Learn about the Apple Developer account membership requirements for
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-When creating a build for and iOS device on EAS, an Apple Developer account is required. This account has necessary permissions to submit the app for review, manage app's distribution, and generate required [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles.
+An Apple Developer account is required to create iOS device builds on EAS. This account allows you to generate [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles, submit the app for review, and manage app's distribution.
 
 If the Apple Developer account is an individual account, only the account owner can generate the app signing credentials. This guide provides steps that the account owner has to follow to ensure app signing credentials are generated. It also provides steps for the team developer to create an EAS Build.
 
@@ -15,15 +15,22 @@ If the Apple Developer account is an individual account, only the account owner 
 
 ## Steps for Apple Developer account owner
 
-The owner of the individual Apple Developer account needs to generate a distribution certificate (if submitting an app to the App Store), provisioning profile, or a push key (if submitting an app to use a push notification service).
+The owner of the individual Apple Developer account needs to generate the following credentials:
 
-Once the owner login to their [Expo account](/accounts/account-types/), they can create or update the provisioning profile by running `eas credentials` using the EAS CLI.
+- **Distribution certificate**: Required to sign development and release builds that are installed on an iOS device.
+- **Ad hoc provisioning profile**: Required to sign builds that are installed on a device outside of the Apple App Store.
+- **Distribution provisioning profile**: Required to sign the build that is submitted to the Apple App Store.
+- **Push key**: Required when using a push notification service.
+
+With EAS CLI, all of the above credentials can be created and synced automatically with the Apple Developer account. Once the owner login to their [Expo account](/accounts/account-types/), they can create or update the provisioning profile by running `eas credentials` using the EAS CLI.
 
 <Terminal cmd={['$ eas login', '', '$ eas credentials']} />
 
 The CLI will prompt for selecting a [build profile](/build/eas-json/#build-profiles) to use for the EAS Build. If the owner is creating a production build, follow the the steps to [create a distribution provisioning profile](/tutorial/eas/ios-production-build/#create-a-distribution-provisioning-profile). To create a developer build, follow the steps to [create a provisioning profile](/tutorial/eas/ios-development-build-for-devices/#provisioning-profile).
 
 This ensures that the provisioning profile associated with the Expo account has necessary permissions.
+
+> For projects with existing credentials, see [Using existing credentials](/app-signing/existing-credentials/) for details on how to sync these to EAS or manage them manually.
 
 ## Steps for the team developer
 
