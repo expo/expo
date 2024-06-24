@@ -1,10 +1,4 @@
-import {
-  PermissionStatus,
-  PermissionResponse,
-  PermissionHookOptions,
-  createPermissionHook,
-  Platform,
-} from 'expo-modules-core';
+import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import {
@@ -22,13 +16,9 @@ import {
   LocationRegion,
   LocationSubscription,
   LocationTaskOptions,
-  LocationActivityType,
-  LocationGeofencingEventType,
-  LocationGeofencingRegionState,
   LocationGeocodingOptions,
 } from './Location.types';
-import { LocationEventEmitter } from './LocationEventEmitter';
-import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
+import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
 
 // @needsAudit
 /**
@@ -36,12 +26,12 @@ import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './Loc
  * @param _apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
  * enabled, otherwise your geocoding requests will be denied.
  */
-function setGoogleApiKey(_apiKey: string) {}
+export function setGoogleApiKey(_apiKey: string) {}
 
 // @needsAudit
 /**
  * Check status of location providers.
- * @return A promise which fulfills with an object of type [LocationProviderStatus](#locationproviderstatus).
+ * @return A promise which fulfills with an object of type [`LocationProviderStatus`](#locationproviderstatus).
  */
 export async function getProviderStatusAsync(): Promise<LocationProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
@@ -70,7 +60,7 @@ export async function enableNetworkProviderAsync(): Promise<void> {
  * Depending on given `accuracy` option it may take some time to resolve,
  * especially when you're inside a building.
  * > __Note:__ Calling it causes the location manager to obtain a location fix which may take several
- * > seconds. Consider using [`Location.getLastKnownPositionAsync`](#locationgetlastknownpositionasyncoptions)
+ * > seconds. Consider using [`getLastKnownPositionAsync`](#locationgetlastknownpositionasyncoptions)
  * > if you expect to get a quick response and high accuracy is not required.
  * @param options
  * @return A promise which fulfills with an object of type [`LocationObject`](#locationobject).
@@ -88,7 +78,7 @@ export async function getCurrentPositionAsync(
  * It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current
  * location, but keep in mind the returned location may not be up-to-date.
  * @param options
- * @return A promise which fulfills with an object of type [LocationObject](#locationobject) or
+ * @return A promise which fulfills with an object of type [`LocationObject`](#locationobject) or
  * `null` if it's not available or doesn't match given requirements such as maximum age or required
  * accuracy.
  */
@@ -102,7 +92,7 @@ export async function getLastKnownPositionAsync(
 /**
  * Subscribe to location updates from the device. Please note that updates will only occur while the
  * application is in the foreground. To get location updates while in background you'll need to use
- * [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasynctaskname-options).
+ * [`startLocationUpdatesAsync`](#locationstartlocationupdatesasynctaskname-options).
  * @param options
  * @param callback This function is called on each location update. It receives an object of type
  * [`LocationObject`](#locationobject) as the first argument.
@@ -126,7 +116,7 @@ export async function watchPositionAsync(
 /**
  * Gets the current heading information from the device. To simplify, it calls `watchHeadingAsync`
  * and waits for a couple of updates, and then returns the one that is accurate enough.
- * @return A promise which fulfills with an object of type [LocationHeadingObject](#locationheadingobject).
+ * @return A promise which fulfills with an object of type [`LocationHeadingObject`](#locationheadingobject).
  */
 export async function getHeadingAsync(): Promise<LocationHeadingObject> {
   return new Promise(async (resolve) => {
@@ -242,7 +232,7 @@ export async function reverseGeocodeAsync(
 // @needsAudit
 /**
  * Checks user's permissions for accessing location.
- * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
+ * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
  * @deprecated Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
  */
 export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
@@ -255,7 +245,7 @@ export async function getPermissionsAsync(): Promise<LocationPermissionResponse>
 // @needsAudit
 /**
  * Asks the user to grant permissions for location.
- * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
+ * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
  * @deprecated Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
  */
 export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
@@ -269,7 +259,7 @@ export async function requestPermissionsAsync(): Promise<LocationPermissionRespo
 // @needsAudit
 /**
  * Checks user's permissions for accessing location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
  */
 export async function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.getForegroundPermissionsAsync();
@@ -278,7 +268,7 @@ export async function getForegroundPermissionsAsync(): Promise<LocationPermissio
 // @needsAudit
 /**
  * Asks the user to grant permissions for location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [`LocationPermissionResponse`](#locationpermissionresponse).
  */
 export async function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.requestForegroundPermissionsAsync();
@@ -302,7 +292,7 @@ export const useForegroundPermissions = createPermissionHook({
 // @needsAudit
 /**
  * Checks user's permissions for accessing location while the app is in the background.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
  */
 export async function getBackgroundPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoLocation.getBackgroundPermissionsAsync();
@@ -316,7 +306,7 @@ export async function getBackgroundPermissionsAsync(): Promise<PermissionRespons
  * For example, you can use `Modal` component from `react-native` to do that.
  * > __Note__: Foreground permissions should be granted before asking for the background permissions
  * (your app can't obtain background permission without foreground permission).
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
  */
 export async function requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoLocation.requestBackgroundPermissionsAsync();
@@ -454,8 +444,8 @@ function _validateRegions(regions: LocationRegion[]) {
  *
  * Geofencing task will be receiving following data:
  *  - `eventType` - Indicates the reason for calling the task, which can be triggered by entering or exiting the region.
- *    See [GeofencingEventType](#geofencingeventtype).
- *  - `region` - Object containing details about updated region. See [LocationRegion](#locationregion) for more details.
+ *    See [`GeofencingEventType`](#geofencingeventtype).
+ *  - `region` - Object containing details about updated region. See [`LocationRegion`](#locationregion) for more details.
  *
  * @param taskName Name of the task that will be called when the device enters or exits from specified regions.
  * @param regions Array of region objects to be geofenced.
@@ -511,18 +501,3 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
-
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
-
-export {
-  LocationAccuracy as Accuracy,
-  LocationActivityType as ActivityType,
-  LocationGeofencingEventType as GeofencingEventType,
-  LocationGeofencingRegionState as GeofencingRegionState,
-  PermissionStatus,
-  PermissionHookOptions,
-  setGoogleApiKey,
-};
-
-export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
-export * from './Location.types';

@@ -452,7 +452,7 @@ export type PermissionDetailsLocationAndroid = {
     accuracy: 'fine' | 'coarse' | 'none';
 };
 /**
- * `LocationPermissionResponse` extends [PermissionResponse](#permissionresponse)
+ * `LocationPermissionResponse` extends [`PermissionResponse`](#permissionresponse)
  * type exported by `expo-modules-core` and contains additional platform-specific fields.
  */
 export type LocationPermissionResponse = PermissionResponse & {
