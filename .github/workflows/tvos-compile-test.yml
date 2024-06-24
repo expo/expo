@@ -16,9 +16,19 @@ on:
       - packages/@expo/prebuild-config/**
       - packages/expo/**
       - packages/expo-av/**
+      - packages/expo-apple-authentication/**
+      - packages/expo-application/**
+      - packages/expo-asset/**
+      - packages/expo-audio/**
+      - packages/expo-blur/**
+      - packages/expo-device/**
+      - packages/expo-file-system/**
       - packages/expo-font/**
       - packages/expo-image/**
       - packages/expo-json-utils/**
+      - packages/expo-keep-awake/**
+      - packages/expo-linear-gradient/**
+      - packages/expo-linking/**
       - packages/expo-localization/**
       - packages/expo-manifests/**
       - packages/expo-modules-autolinking/**
@@ -27,6 +37,7 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
+      - packages/expo-video/**
       - templates/expo-template-bare-minimum/**
 
 concurrency:
