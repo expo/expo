@@ -11,6 +11,7 @@ import path from 'path';
 
 import { isShakingEnabled } from './treeShakeSerializerPlugin';
 import { SerializerParameters } from './withExpoSerializers';
+import { findUpPackageJsonPath } from './findUpPackageJsonPath';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
@@ -81,29 +82,27 @@ export function sideEffectsSerializerPlugin(
     return [entryPoint, preModules, graph, options];
   }
 
-  const findUpPackageJsonPath = (dir: string): string | null => {
-    if (dir === path.sep || dir.length < options.projectRoot.length) {
-      return null;
-    }
-    const packageJsonPath = path.join(dir, 'package.json');
-    if (fs.existsSync(packageJsonPath)) {
-      return packageJsonPath;
-    }
-    return findUpPackageJsonPath(path.dirname(dir));
-  };
-
   const pkgJsonCache = new Map<string, any>();
 
   const getPackageJsonMatcher = (dir: string): any => {
-    const cached = pkgJsonCache.get(dir);
-    if (cached) {
-      return cached;
+    let packageJson: any;
+    let packageJsonPath: string | null = null;
+    if (typeof options._test_getPackageJson === 'function') {
+      [packageJson, packageJsonPath] = options._test_getPackageJson(dir);
+    } else {
+      const cached = pkgJsonCache.get(dir);
+      if (cached) {
+        return cached;
+      }
+      packageJsonPath = findUpPackageJsonPath(options.projectRoot, dir);
+      if (!packageJsonPath) {
+        return null;
+      }
+      packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
     }
-    const packageJsonPath = findUpPackageJsonPath(dir);
     if (!packageJsonPath) {
       return null;
     }
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
     // TODO: Split out and unit test.
     const dirRoot = path.dirname(packageJsonPath);

@@ -7,16 +7,13 @@
 import { traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
-import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
 import { hasSideEffect, hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
 
 const debug = require('debug')('expo:treeshaking') as typeof console.log;
-
 
 // function getDynamicDepsBehavior(
 //   inPackages: DynamicRequiresBehavior | undefined,
@@ -920,4 +917,3 @@ export function accessAst(output: MixedOutput): Ast | undefined {
 export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
   return String(graph.transformOptions.customTransformOptions?.treeshake) === 'true'; // && !options.dev;
 }
-

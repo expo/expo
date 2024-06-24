@@ -14,6 +14,7 @@ const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = __importDefault(require("minimatch"));
 const path_1 = __importDefault(require("path"));
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
+const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 function hasSideEffect(graph, value, checked = new Set()) {
     // @ts-expect-error: Not on type.
@@ -62,27 +63,27 @@ function sideEffectsSerializerPlugin(entryPoint, preModules, graph, options) {
     if (!(0, treeShakeSerializerPlugin_1.isShakingEnabled)(graph, options)) {
         return [entryPoint, preModules, graph, options];
     }
-    const findUpPackageJsonPath = (dir) => {
-        if (dir === path_1.default.sep || dir.length < options.projectRoot.length) {
-            return null;
-        }
-        const packageJsonPath = path_1.default.join(dir, 'package.json');
-        if (fs_1.default.existsSync(packageJsonPath)) {
-            return packageJsonPath;
-        }
-        return findUpPackageJsonPath(path_1.default.dirname(dir));
-    };
     const pkgJsonCache = new Map();
     const getPackageJsonMatcher = (dir) => {
-        const cached = pkgJsonCache.get(dir);
-        if (cached) {
-            return cached;
+        let packageJson;
+        let packageJsonPath = null;
+        if (typeof options._test_getPackageJson === 'function') {
+            [packageJson, packageJsonPath] = options._test_getPackageJson(dir);
         }
-        const packageJsonPath = findUpPackageJsonPath(dir);
+        else {
+            const cached = pkgJsonCache.get(dir);
+            if (cached) {
+                return cached;
+            }
+            packageJsonPath = (0, findUpPackageJsonPath_1.findUpPackageJsonPath)(options.projectRoot, dir);
+            if (!packageJsonPath) {
+                return null;
+            }
+            packageJson = JSON.parse(fs_1.default.readFileSync(packageJsonPath, 'utf-8'));
+        }
         if (!packageJsonPath) {
             return null;
         }
-        const packageJson = JSON.parse(fs_1.default.readFileSync(packageJsonPath, 'utf-8'));
         // TODO: Split out and unit test.
         const dirRoot = path_1.default.dirname(packageJsonPath);
         const isSideEffect = (fp) => {

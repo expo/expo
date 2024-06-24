@@ -6,7 +6,8 @@ import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
 export const projectRoot = '/app';
 
-const METRO_CONFIG_DEFAULTS = require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
+const METRO_CONFIG_DEFAULTS =
+  require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
 
 function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
@@ -77,12 +78,14 @@ export async function microBundle({
     treeshake?: boolean;
   };
   preModulesFs?: Record<string, string>;
-}): Promise<[
-  string,
-  readonly Module<MixedOutput>[],
-  ReadOnlyGraph<MixedOutput>,
-  SerializerOptions<MixedOutput>,
-]> {
+}): Promise<
+  [
+    string,
+    readonly Module<MixedOutput>[],
+    ReadOnlyGraph<MixedOutput>,
+    SerializerOptions<MixedOutput>,
+  ]
+> {
   const fullFs = {
     'react-server-dom-webpack/server': ``,
     'expo-mock/async-require': `
@@ -126,7 +129,11 @@ export async function microBundle({
   const modules = new Map<string, Module>();
   const visited = new Set<string>();
 
-  const parsedPreModules = await Promise.all(Object.entries(preModulesFs).map(async ([id, code]) => await parseModule(id, code, transformOptions)));
+  const parsedPreModules = await Promise.all(
+    Object.entries(preModulesFs).map(
+      async ([id, code]) => await parseModule(id, code, transformOptions)
+    )
+  );
 
   async function recurseWith(queue: string[], parent?: Module) {
     while (queue.length) {
@@ -154,7 +161,7 @@ export async function microBundle({
       // @ts-ignore
       for (const dep of module.dependencies.values()) {
         if (dep.data.data.contextParams) {
-          throw new Error(`mini-metro runner doesn't support require context (yet)`)
+          throw new Error(`mini-metro runner doesn't support require context (yet)`);
         }
 
         const resolved = resolve(id, dep.data.name);
@@ -164,8 +171,28 @@ export async function microBundle({
   }
   await recurseWith([entry]);
 
+  function moduleExists(id: string) {
+    if (fullFs[id] != null) {
+      return id;
+    }
+    const p = id.replace(/^\/+/, '');
+    if (fullFs[p] != null) {
+      return p;
+    }
+    return null;
+  }
 
-
+  const findUpPackageJsonPath = (projectRoot: string, dir: string): string | null => {
+    if (dir === path.sep || dir.length < projectRoot.length) {
+      return null;
+    }
+    const packageJsonPath = path.relative(projectRoot, path.join(dir, 'package.json'));
+    const exists = moduleExists(packageJsonPath);
+    if (exists != null) {
+      return exists;
+    }
+    return findUpPackageJsonPath(projectRoot, path.dirname(dir));
+  };
 
   return [
     // entryPoint: string,
@@ -216,6 +243,16 @@ export async function microBundle({
       runBeforeMainModule: [],
       runModule: true,
       serverRoot: projectRoot,
+
+      // For testing only since we do extra FS work in the serializer
+      _test_getPackageJson(dir: string) {
+        const packageJsonPath = findUpPackageJsonPath(projectRoot, dir);
+        console.log('packageJsonPath', projectRoot, dir, packageJsonPath);
+        if (packageJsonPath) {
+          return [JSON.parse(fullFs[packageJsonPath]), packageJsonPath];
+        }
+        return [null, null];
+      },
     },
   ];
 }
@@ -224,11 +261,11 @@ export async function microBundle({
 export async function parseModule(
   relativeFilePath: string,
   code: string,
-  transformOptions: TransformInputOptions,
+  transformOptions: TransformInputOptions
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const codeBuffer = Buffer.from(code);
-  
+
   const { output, dependencies } = await expoMetroTransformWorker.transform(
     // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
     {
@@ -244,8 +281,8 @@ export async function parseModule(
     codeBuffer,
     {
       ...transformOptions,
-       inlinePlatform: true, 
-       inlineRequires: false,
+      inlinePlatform: true,
+      inlineRequires: false,
     }
   );
 
@@ -256,13 +293,11 @@ export async function parseModule(
     path: absoluteFilePath,
     dependencies: toDependencyMap(
       ...dependencies.map((dep) => ({
-        absolutePath: mockAbsolutePath(
-          dep.name
-        ),
+        absolutePath: mockAbsolutePath(dep.name),
         data: dep,
       }))
     ),
-    inverseDependencies: new CountingSet(),    
+    inverseDependencies: new CountingSet(),
 
     // @ts-expect-error
     output,
