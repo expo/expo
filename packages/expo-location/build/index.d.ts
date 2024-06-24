@@ -1,4 +1,4 @@
-export { PermissionStatus, type PermissionHookOptions } from 'expo-modules-core';
+export { PermissionStatus, type PermissionHookOptions, type PermissionExpiration, } from 'expo-modules-core';
 export { LocationEventEmitter as EventEmitter } from './LocationEventEmitter';
 export { _getCurrentWatchId } from './LocationSubscribers';
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';

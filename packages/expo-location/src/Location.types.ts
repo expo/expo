@@ -358,10 +358,17 @@ export type LocationHeadingObject = {
    */
   magHeading: number;
   /**
-   * Level of calibration of compass.
-   * - `3`: high accuracy, `2`: medium accuracy, `1`: low accuracy, `0`: none
+   * Level of calibration of compass:
+   * - `3`: high accuracy
+   * - `2`: medium accuracy
+   * - `1`: low accuracy
+   * - `0`: none
+   *
    * Reference for iOS:
-   * - `3`: < 20 degrees uncertainty, `2`: < 35 degrees, `1`: < 50 degrees, `0`: > 50 degrees
+   * - `3`: < 20 degrees uncertainty
+   * - `2`: < 35 degrees
+   * - `1`: < 50 degrees
+   * - `0`: > 50 degrees
    */
   accuracy: number;
 };
@@ -371,18 +378,6 @@ export type LocationHeadingObject = {
  * Represents `watchHeadingAsync` callback.
  */
 export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
-
-// @needsAudit
-/**
- * An object of options for forward and reverse geocoding.
- */
-export type LocationGeocodingOptions = {
-  /**
-   * Whether to force using Google Maps API instead of the native implementation.
-   * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
-   */
-  useGoogleMaps?: boolean;
-};
 
 // @needsAudit
 /**
@@ -486,10 +481,6 @@ export type PermissionDetailsLocationIOS = {
 
 // @needsAudit
 export type PermissionDetailsLocationAndroid = {
-  /**
-   * @deprecated Use `accuracy` field instead.
-   */
-  scope: 'fine' | 'coarse' | 'none';
   /**
    * Indicates the type of location provider.
    */
