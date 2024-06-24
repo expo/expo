@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, getAssets crashed when result was is empty
 - On `Android`, throw an error when deleting an asset was unsuccessful. ([#29777](https://github.com/expo/expo/pull/29777) by [@mathieupost](https://github.com/mathieupost))
 
 ### 💡 Others
