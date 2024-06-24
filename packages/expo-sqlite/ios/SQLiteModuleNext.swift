@@ -54,7 +54,7 @@ public final class SQLiteModuleNext: Module {
       if fileManager.fileExists(atPath: path.absoluteString) && !forceOverwrite {
         return
       }
-      guard let assetPath = URL(string: assetDatabasePath)?.path,
+      guard let assetPath = convertToUrl(string: assetDatabasePath)?.path,
         fileManager.fileExists(atPath: assetPath) else {
         throw DatabaseNotFoundException(assetDatabasePath)
       }
@@ -203,6 +203,26 @@ public final class SQLiteModuleNext: Module {
 
     return directory?.appendingPathComponent(name)
   }
+
+  private func convertToUrl(string value: String) -> URL? {
+    let url: URL?
+
+    if #available(iOS 17, *) {
+      // URL(string:) supports RFC 3986 as URLComponents from iOS 17
+      url = URL(string: value)
+    } else {
+      // URLComponents parses and constructs URLs according to RFC 3986.
+      // For some unusual urls URL(string:) will fail incorrectly
+      url = URLComponents(string: value)?.url ?? URL(string: value)
+    }
+
+    guard let url else {
+      return nil
+    }
+    // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
+    return url.scheme != nil ? url : URL(fileURLWithPath: value)
+  }
+
 
   private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
     var db: OpaquePointer?
