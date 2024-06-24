@@ -154,6 +154,10 @@ export async function microBundle({
 
       // @ts-ignore
       for (const dep of module.dependencies.values()) {
+        if (dep.data.data.contextParams) {
+          throw new Error(`mini-metro runner doesn't support require context (yet)`)
+        }
+
         const resolved = resolve(id, dep.data.name);
         await recurseWith([resolved], module);
       }

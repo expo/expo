@@ -1163,6 +1163,7 @@ describe('serializes', () => {
     });
 
     describe('metro require', () => {
+      // Not supported in the mini runner
       xit(`uses require.context`, async () => {
         const [[, , graph], artifacts] = await serializeShakingAsync({
           'index.js': `
