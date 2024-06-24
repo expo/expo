@@ -99,7 +99,9 @@ function sideEffectsSerializerPlugin(entryPoint, preModules, graph, options) {
                     'metro-runtime',
                     'fbjs',
                     '@react-native/normalize-color',
+                    '@react-native/asset-registry',
                     'postcss-value-parser',
+                    'css-in-js-utils',
                 ].includes(packageJson.name)) {
                     console.log('Skipping FX for:', packageJson.name);
                     return false;
