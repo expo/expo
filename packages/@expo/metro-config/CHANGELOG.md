@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Enable `experimentalImportSupport` by default.
+- Enable `experimentalImportSupport` by default. ([#30005](https://github.com/expo/expo/pull/30005) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
