@@ -16,7 +16,7 @@ export type SerializerConfigOptions = {
         debugId?: string;
     }) => Module[])[];
 };
-export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
+export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters | Promise<SerializerParameters>;
 export declare function withExpoSerializers(config: InputConfigT, options?: SerializerConfigOptions): InputConfigT;
 export declare function withSerializerPlugins(config: InputConfigT, processors: SerializerPlugin[], options?: SerializerConfigOptions): InputConfigT;
 export declare function createDefaultExportCustomSerializer(config: Partial<MetroConfig>, configOptions?: SerializerConfigOptions): Serializer;

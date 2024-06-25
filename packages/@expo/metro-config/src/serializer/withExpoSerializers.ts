@@ -39,7 +39,9 @@ export type SerializerConfigOptions = {
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
-export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
+export type SerializerPlugin = (
+  ...props: SerializerParameters
+) => SerializerParameters | Promise<SerializerParameters>;
 
 export function withExpoSerializers(
   config: InputConfigT,
@@ -286,10 +288,10 @@ export function createSerializerFromSerialProcessors(
   options: SerializerConfigOptions = {}
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-  return (...props: SerializerParameters): ReturnType<Serializer> => {
+  return async (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
-        props = processor(...props);
+        props = await processor(...props);
       }
     }
 
