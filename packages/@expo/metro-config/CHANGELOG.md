@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Enable `experimentalImportSupport` by default.
+
 ### 🎉 New features
 
 - Added support for bundling assets in React Server mode. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
