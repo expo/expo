@@ -52,6 +52,7 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/FileSystem'),
+    require('./tests/FileSystemNext'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
     optionalRequire(() => require('./tests/Image'))
