@@ -275,7 +275,7 @@ export default function useLinking(
           if (
             focusedRoute &&
             focusedRoute.name === route.name &&
-            isEqual(focusedRoute.params, route.params)
+            isEqual({ ...focusedRoute.params }, { ...route.params })
           ) {
             /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
             return appendBaseUrl(route.path);
