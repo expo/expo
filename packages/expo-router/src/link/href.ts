@@ -1,7 +1,7 @@
-import { ExpoRouter } from '../../types/expo-router';
+import { Href, RouteParamInput } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href: ExpoRouter.Href): string => {
+export const resolveHref = (href: Href<any>): string => {
   if (typeof href === 'string') {
     return resolveHref({ pathname: href });
   }
@@ -19,7 +19,7 @@ export const resolveHref = (href: ExpoRouter.Href): string => {
 function createQualifiedPathname(
   pathname: string,
   params: Record<string, any>
-): { pathname: string; params: ExpoRouter.UnknownInputParams } {
+): { pathname: string; params: RouteParamInput<string> } {
   for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;

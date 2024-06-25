@@ -41,7 +41,7 @@ export declare const testRouter: {
     /** If there's history that supports invoking the `back` function. */
     canGoBack(): boolean;
     /** Update the current route query params and assert the new pathname */
-    setParams(params?: Record<string, string>, path?: string): void;
+    setParams(params: Record<string, string>, path?: string): void;
     /** If there's history that supports invoking the `back` function. */
     dismissAll(): void;
 };

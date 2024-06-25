@@ -1,11 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTypedRoutesDeclarationFile = void 0;
-const node_fs_1 = __importDefault(require("node:fs"));
-const path_1 = __importDefault(require("path"));
 const getRoutes_1 = require("../getRoutes");
 const matchers_1 = require("../matchers");
 // /[...param1]/ - Match [...param1]
@@ -22,15 +17,21 @@ function getTypedRoutesDeclarationFile(ctx) {
         ignoreRequireErrors: true,
         importMode: 'async',
     }), staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
-    // If the user has expo-router v3+ installed, we can use the types from the package
-    return (node_fs_1.default
-        .readFileSync(path_1.default.join(__dirname, '../../types/expo-router.d.ts'), 'utf-8')
-        // Swap from being a namespace to a module
-        .replace('declare namespace ExpoRouter {', `declare module "expo-router" {`)
-        // Add the route values
-        .replace('type StaticRoutes = string;', `type StaticRoutes = ${setToUnionType(staticRoutes)};`)
-        .replace('type DynamicRoutes<T extends string> = string;', `type DynamicRoutes<T extends string> = ${setToUnionType(dynamicRoutes)};`)
-        .replace('type DynamicRouteTemplate = never;', `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`));
+    return `/* eslint-disable */
+import * as Router from 'expo-router';
+
+export * from 'expo-router';
+
+declare module 'expo-router' {
+  export namespace ExpoRouter {
+    export interface __routes<T extends string = string> extends Record<string, unknown> {
+      StaticRoutes: ${setToUnionType(staticRoutes)};
+      DynamicRoutes: ${setToUnionType(dynamicRoutes)};
+      DynamicRouteTemplate: ${setToUnionType(dynamicRouteContextKeys)};
+    }
+  }
+}
+`;
 }
 exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 /**
@@ -60,9 +61,7 @@ function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContex
     if (routeNode.dynamic) {
         for (const path of generateCombinations(routePath)) {
             dynamicRouteContextKeys.add(path);
-            dynamicRoutes.add(`${path
-                .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
-                .replaceAll(SLUG, '${SingleRoutePart<T>}')}`);
+            dynamicRoutes.add(`${path.replaceAll(CATCH_ALL, '${string}').replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`);
         }
     }
     else {
@@ -91,7 +90,7 @@ function generateCombinations(pathname) {
             return;
         }
         const group = groups[currentIndex];
-        const withoutGroup = currentPath.replace(group, '');
+        const withoutGroup = currentPath.replace(`/${group}`, '');
         generate(currentIndex + 1, withoutGroup);
         generate(currentIndex + 1, currentPath);
     }

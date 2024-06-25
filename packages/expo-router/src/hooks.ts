@@ -2,7 +2,8 @@ import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { ExpoRouter } from '../types/expo-router';
+import { Router } from './imperative-api';
+import { RouteParams, RouteSegments, Routes } from './types';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -24,7 +25,7 @@ export function useNavigationContainerRef() {
   return store.navigationRef;
 }
 
-export function useRouter(): ExpoRouter.Router {
+export function useRouter(): Router {
   return React.useMemo(
     () => ({
       push: store.push,
@@ -69,8 +70,10 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<TSegments extends string[] = string[]>(): TSegments {
-  return useStoreRouteInfo().segments as TSegments;
+export function useSegments<
+  TSegments extends RouteSegments<Routes> | Routes = RouteSegments<Routes>,
+>(): RouteSegments<TSegments> {
+  return useStoreRouteInfo().segments as RouteSegments<TSegments>;
 }
 
 /** @returns global selected pathname without query parameters. */
@@ -88,9 +91,9 @@ export function usePathname(): string {
  * @see `useLocalSearchParams`
  */
 export function useGlobalSearchParams<
-  TParams extends SearchParams = SearchParams,
->(): Partial<TParams> {
-  return useStoreRouteInfo().params as Partial<TParams>;
+  TParams extends SearchParams | Routes = SearchParams,
+>(): RouteParams<TParams> {
+  return useStoreRouteInfo().params as RouteParams<TParams>;
 }
 
 /**
@@ -100,8 +103,8 @@ export function useGlobalSearchParams<
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
 export function useLocalSearchParams<
-  TParams extends SearchParams = SearchParams,
->(): Partial<TParams> {
+  TParams extends SearchParams | Routes = SearchParams,
+>(): RouteParams<TParams> {
   const params = React.useContext(NavigationRouteContext)?.params ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
@@ -124,5 +127,5 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as Partial<TParams>;
+  ) as RouteParams<TParams>;
 }

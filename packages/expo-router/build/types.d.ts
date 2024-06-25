@@ -16,4 +16,5 @@ export type NativeIntent = {
         initial: boolean;
     }) => Promise<string> | string;
 };
+export type * from './typed-routes/types';
 //# sourceMappingURL=types.d.ts.map
