@@ -303,6 +303,25 @@ function treeShakeSerializerPlugin(config) {
             // Useful for testing the transform reconciler...
             return [entryPoint, preModules, graph, options];
         }
+        function disposeOfGraphNode(nodePath) {
+            const node = graph.dependencies.get(nodePath);
+            if (!node)
+                return;
+            // Recursively remove all dependencies.
+            for (const dep of node.dependencies.values()) {
+                const child = graph.dependencies.get(dep.absolutePath);
+                if (!child)
+                    continue;
+                // Remove inverse dependency on the node we're about to delete.
+                child.inverseDependencies.delete(nodePath);
+                // If the child has no more dependencies, then remove it from the graph too.
+                if (child.inverseDependencies.size === 0) {
+                    disposeOfGraphNode(dep.absolutePath);
+                }
+            }
+            // @ts-expect-error
+            graph.dependencies.delete(nodePath);
+        }
         function disconnectGraphNode(graphModule, importModuleId) {
             // Unlink the module in the graph
             // The hash key for the dependency instance in the module.
@@ -314,53 +333,50 @@ function treeShakeSerializerPlugin(config) {
                 throw new Error(`Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
             }
             // If the dependency was already removed, then we don't need to do anything.
-            if (depId) {
-                const importInstance = graphModule.dependencies.get(depId);
-                // console.log('Try unlink:', importModuleId, dep);
-                const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
-                // Should never happen but we're playing with fire here.
-                if (!graphEntryForTargetImport) {
-                    throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
+            const importInstance = graphModule.dependencies.get(depId);
+            // console.log('Try unlink:', importModuleId, dep);
+            const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+            // Should never happen but we're playing with fire here.
+            if (!graphEntryForTargetImport) {
+                throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
+            }
+            const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
+            if (
+            // Don't remove the module if it has side effects.
+            !isFx ||
+                // Unless it's an empty module.
+                isEmptyModule(graphEntryForTargetImport)) {
+                console.log('Drop', importInstance.absolutePath);
+                // console.log('Drop module:', [...graphEntryForTargetImport.inverseDependencies.keys()]);
+                // Remove inverse link to this dependency
+                graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
+                if (graphEntryForTargetImport.inverseDependencies.size === 0) {
+                    console.log('Unlink module from graph:', importInstance.absolutePath);
+                    // Remove the dependency from the graph as no other modules are using it anymore.
+                    disposeOfGraphNode(importInstance.absolutePath);
                 }
-                const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
-                if (
-                // Don't remove the module if it has side effects.
-                !isFx ||
-                    // Unless it's an empty module.
-                    isEmptyModule(graphEntryForTargetImport)) {
-                    console.log('Drop', importInstance.absolutePath);
-                    // console.log('Drop module:', value.path);
-                    // Remove inverse link to this dependency
-                    graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
-                    if (graphEntryForTargetImport.inverseDependencies.size === 0) {
-                        // Remove the dependency from the graph as no other modules are using it anymore.
-                        graph.dependencies.delete(importInstance.absolutePath);
-                    }
-                    // Remove a random instance of the dep count to track if there are multiple imports.
-                    // TODO: Get the exact instance of the import.
-                    // console.log('importInstance.data.data', importInstance.data.data);
-                    importInstance.data.data.locs.pop();
-                    if (!importInstance.data.data.locs.length) {
-                        // Remove dependency from this module so it doesn't appear in the dependency map.
-                        graphModule.dependencies.delete(depId);
-                    }
-                    // Mark the module as removed so we know to traverse again.
-                    return true;
+                // Remove a random instance of the dep count to track if there are multiple imports.
+                // TODO: Get the exact instance of the import.
+                // console.log('importInstance.data.data', importInstance.data.data);
+                importInstance.data.data.locs.pop();
+                if (importInstance.data.data.locs.length === 0) {
+                    console.log('Remove import instance:', depId);
+                    // Remove dependency from this module so it doesn't appear in the dependency map.
+                    graphModule.dependencies.delete(depId);
                 }
-                else {
-                    if (isFx) {
-                        console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
-                    }
-                    else {
-                        console.log('Skip graph unlinking:', {
-                            depId,
-                            isFx,
-                        });
-                    }
-                }
+                // Mark the module as removed so we know to traverse again.
+                return true;
             }
             else {
-                console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
+                if (isFx) {
+                    console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
+                }
+                else {
+                    console.log('Skip graph unlinking:', {
+                        depId,
+                        isFx,
+                    });
+                }
             }
             return false;
         }
@@ -540,6 +556,7 @@ function treeShakeSerializerPlugin(config) {
                     // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
                     const importModuleId = path.node.source.value;
                     if (disconnectGraphNode(value, importModuleId)) {
+                        console.log('Remove import:', importModuleId, 'from:', value.path);
                         // Delete the import AST
                         path.remove();
                         dirtyImports = true;
