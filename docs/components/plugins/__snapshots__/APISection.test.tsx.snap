@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -43,10 +43,10 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -331,7 +331,7 @@ for more details.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -408,7 +408,7 @@ for more details.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -485,7 +485,7 @@ for more details.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -570,7 +570,7 @@ for more details.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -666,7 +666,7 @@ in here.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -813,7 +813,7 @@ properties.
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -877,7 +877,7 @@ properties.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -920,7 +920,7 @@ properties.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1196,7 +1196,7 @@ value depending on the state of the credential.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1340,7 +1340,7 @@ value depending on the state of the credential.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1581,7 +1581,7 @@ refresh operation.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -1869,7 +1869,7 @@ sign-in operation.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2141,7 +2141,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -2184,7 +2184,7 @@ sign-out operation.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2333,7 +2333,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -2376,7 +2376,7 @@ sign-out operation.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -2914,7 +2914,7 @@ developers.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3262,7 +3262,7 @@ may be
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3569,7 +3569,7 @@ OAuth 2.0 protocol
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -3893,7 +3893,7 @@ OAuth 2.0 protocol
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -4130,7 +4130,7 @@ OAuth 2.0 protocol
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -4260,7 +4260,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -4306,7 +4306,7 @@ After calling this function, the listener will no longer receive any events from
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -4384,7 +4384,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4445,7 +4445,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4506,7 +4506,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4571,7 +4571,7 @@ After calling this function, the listener will no longer receive any events from
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -4649,7 +4649,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4710,7 +4710,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4814,7 +4814,7 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -4879,7 +4879,7 @@ After calling this function, the listener will no longer receive any events from
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5010,7 +5010,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5065,7 +5065,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5120,7 +5120,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5175,7 +5175,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5234,7 +5234,7 @@ for more details.
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5294,7 +5294,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5355,7 +5355,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5410,7 +5410,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5465,7 +5465,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5524,7 +5524,7 @@ for more details.
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5699,7 +5699,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5754,7 +5754,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5813,7 +5813,7 @@ for more details.
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -5932,7 +5932,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -5993,7 +5993,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6054,7 +6054,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6118,7 +6118,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -6158,7 +6158,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-15gi84a"
   >
     <div
       class="css-1avgxs7-APISectionDeprecationNote"
@@ -6238,7 +6238,7 @@ for more details.
       </blockquote>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -6373,7 +6373,7 @@ for more details.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6489,7 +6489,7 @@ minimize battery usage.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6643,7 +6643,7 @@ data has been retrieved.
         class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
@@ -6778,7 +6778,7 @@ Same as
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -6842,7 +6842,7 @@ Same as
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -6885,7 +6885,7 @@ Same as
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7237,7 +7237,7 @@ This uses both
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -7280,7 +7280,7 @@ This uses both
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7427,7 +7427,7 @@ This uses both
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7596,7 +7596,7 @@ This uses both
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -7893,7 +7893,7 @@ code.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -7936,7 +7936,7 @@ code.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8177,7 +8177,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -8220,7 +8220,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8378,7 +8378,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8530,7 +8530,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8649,7 +8649,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8818,7 +8818,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -8926,7 +8926,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9198,7 +9198,7 @@ you don't get this value.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9346,7 +9346,7 @@ you don't get this value.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9439,7 +9439,7 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -9485,7 +9485,7 @@ you don't get this value.
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -9545,7 +9545,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9606,7 +9606,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9667,7 +9667,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -9731,7 +9731,7 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -9774,7 +9774,7 @@ exports[`APISection expo-pedometer 1`] = `
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -9942,7 +9942,7 @@ exports[`APISection expo-pedometer 1`] = `
       </span>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10264,7 +10264,7 @@ a start date that is more than seven days in the past returns only the available
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10402,7 +10402,7 @@ available on this device.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10527,7 +10527,7 @@ available on this device.
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -10805,7 +10805,7 @@ On iOS, the
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -10848,7 +10848,7 @@ On iOS, the
     class="css-1vwg38e"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11089,7 +11089,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -11132,7 +11132,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11247,7 +11247,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11361,7 +11361,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11463,7 +11463,7 @@ in order to enable/disable the permission.
     class="css-15gi84a"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
@@ -11593,7 +11593,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
@@ -11639,7 +11639,7 @@ After calling this function, the listener will no longer receive any events from
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
@@ -11699,7 +11699,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -11760,7 +11760,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
@@ -11821,7 +11821,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
