@@ -4,7 +4,7 @@ import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'exp
  */
 export type RecurringEventOptions = {
     /**
-     * Whether or not future events in the recurring series should also be updated. If `true`, will
+     * Whether future events in the recurring series should also be updated. If `true`, will
      * apply the given changes to the recurring instance specified by `instanceStartDate` and all
      * future events in the series. If `false`, will only apply the given changes to the instance
      * specified by `instanceStartDate`.
@@ -579,6 +579,40 @@ export declare function getEventsAsync(calendarIds: string[], startDate: Date, e
  */
 export declare function getEventAsync(id: string, recurringEventOptions?: RecurringEventOptions): Promise<Event>;
 /**
+ * On Android, only `done` and `canceled` are returned.
+ * */
+export type CalendarDialogResult = {
+    action: 'done' | 'canceled' | 'deleted' | 'saved' | 'responded';
+};
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ */
+export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Event>, 'id'> & {
+    startNewActivityTask?: boolean;
+}): Promise<CalendarDialogResult>;
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @param params A map of options for the event. Event id is required.
+ * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ */
+export declare function openEventInCalendarAsync(params: {
+    id: string;
+    instanceStartDate?: Pick<RecurringEventOptions, 'instanceStartDate'>;
+    startNewActivityTask?: boolean;
+}): Promise<CalendarDialogResult>;
+/**
+ * Launches the calendar UI provided by the OS to edit an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @param params A map of options for the event. Event id is required.
+ * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ */
+export declare function editEventInCalendarAsync(params: {
+    id: string;
+    instanceStartDate?: Pick<RecurringEventOptions, 'instanceStartDate'>;
+    startNewActivityTask?: boolean;
+}): Promise<CalendarDialogResult>;
+/**
  * Creates a new event on the specified calendar.
  * @param calendarId ID of the calendar to create this event in.
  * @param eventData A map of details for the event to be created.
@@ -695,6 +729,7 @@ export declare function getSourceAsync(id: string): Promise<Source>;
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated use `openEventInCalendarAsync` instead
  */
 export declare function openEventInCalendar(id: string): void;
 /**

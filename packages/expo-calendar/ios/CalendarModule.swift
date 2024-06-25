@@ -1,10 +1,12 @@
 import ExpoModulesCore
 import CoreLocation
 import EventKit
+import EventKitUI
 
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
+  private var calendarViewDelegate: CalendarDialogDelegate? = nil
 
   // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
@@ -111,40 +113,9 @@ public class CalendarModule: Module {
     AsyncFunction("saveEventAsync") { (event: Event, options: RecurringEventOptions) -> String in
       try checkCalendarPermissions()
       let calendarEvent = try getCalendar(from: event)
+      try initializeEvent(calendarEvent: calendarEvent, event: event)
+
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-
-      if let timeZone = event.timeZone {
-        if let tz = TimeZone(identifier: timeZone) {
-          calendarEvent.timeZone = tz
-        } else {
-          throw InvalidTimeZoneException(timeZone)
-        }
-      }
-
-      calendarEvent.alarms = createCalendarEventAlarms(alarms: event.alarms)
-      if let rule = event.recurrenceRule {
-        let newRule = createRecurrenceRule(rule: rule)
-        if let newRule {
-          calendarEvent.recurrenceRules = [newRule]
-        }
-      }
-
-      if let url = maybeSetUrl(event.url) {
-        calendarEvent.url = url
-      }
-
-      if let startDate = event.startDate {
-        calendarEvent.startDate = parse(date: startDate)
-      }
-      if let endDate = event.endDate {
-        calendarEvent.endDate = parse(date: endDate)
-      }
-
-      calendarEvent.title = event.title
-      calendarEvent.location = event.location
-      calendarEvent.notes = event.notes
-      calendarEvent.isAllDay = event.allDay
-      calendarEvent.availability = getAvailability(availability: event.availability)
 
       try eventStore.save(calendarEvent, span: span, commit: true)
       return calendarEvent.calendarItemIdentifier
@@ -327,6 +298,107 @@ public class CalendarModule: Module {
         resolve: promise.resolver,
         reject: promise.legacyRejecter)
     }
+
+    AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
+      try checkCalendarPermissions()
+      let calendarEvent = EKEvent(eventStore: eventStore)
+      try initializeEvent(calendarEvent: calendarEvent, event: event)
+
+      try presentEventEditViewcontroller(event: calendarEvent, promise: promise)
+    }
+    
+    AsyncFunction("editEventInCalendarAsync") { (opts: OpenInCalendarOptions, promise: Promise) in
+      try checkCalendarPermissions()
+      let startDate = parse(date: opts.instanceStartDate)
+      let eventId = opts.id
+      guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
+        throw EventNotFoundException(eventId)
+      }
+      try presentEventEditViewcontroller(event: calendarEvent, promise: promise)
+    }
+    
+    AsyncFunction("openEventInCalendarAsync") { (opts: OpenInCalendarOptions, promise: Promise) in
+      try checkCalendarPermissions()
+      let startDate = parse(date: opts.instanceStartDate)
+      let eventId = opts.id
+      guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
+        throw EventNotFoundException(eventId)
+      }
+      
+      guard let currentVc = appContext?.utilities?.currentViewController() else {
+        throw Exception()
+      }
+      warnIfDialogInProgress()
+      
+      let controller = EKEventViewController()
+      controller.event = calendarEvent
+      self.calendarViewDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
+      controller.delegate = self.calendarViewDelegate
+      let navController = ViewEventViewController(rootViewController: controller, promise: promise, onComplete: self.unsetDelegate)
+      currentVc.present(navController, animated: true)
+    }.runOnQueue(.main)
+  }
+  
+  private func presentEventEditViewcontroller(event: EKEvent, promise: Promise) throws {
+    guard let currentVc = appContext?.utilities?.currentViewController() else {
+      throw Exception()
+    }
+    warnIfDialogInProgress()
+    
+    DispatchQueue.main.async {
+      let controller = EditEventViewController(promise: promise, onDismiss: self.unsetDelegate)
+      controller.event = event
+      controller.eventStore = self.eventStore
+      self.calendarViewDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
+      controller.editViewDelegate = self.calendarViewDelegate
+      
+      currentVc.present(controller, animated: true)
+    }
+  }
+  
+  private func warnIfDialogInProgress() {
+    if calendarViewDelegate != nil {
+      log.warn("Calendar: Different calendar dialog is already being presented. Await its result before presenting another.")
+    }
+  }
+  
+  private func unsetDelegate() {
+    self.calendarViewDelegate = nil
+  }
+  
+  private func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
+    if let timeZone = event.timeZone {
+      if let tz = TimeZone(identifier: timeZone) {
+        calendarEvent.timeZone = tz
+      } else {
+        throw InvalidTimeZoneException(timeZone)
+      }
+    }
+
+    calendarEvent.alarms = createCalendarEventAlarms(alarms: event.alarms)
+    if let rule = event.recurrenceRule {
+      let newRule = createRecurrenceRule(rule: rule)
+      if let newRule {
+        calendarEvent.recurrenceRules = [newRule]
+      }
+    }
+
+    if let url = maybeSetUrl(event.url) {
+      calendarEvent.url = url
+    }
+
+    if let startDate = event.startDate {
+      calendarEvent.startDate = parse(date: startDate)
+    }
+    if let endDate = event.endDate {
+      calendarEvent.endDate = parse(date: endDate)
+    }
+
+    calendarEvent.title = event.title
+    calendarEvent.location = event.location
+    calendarEvent.notes = event.notes
+    calendarEvent.isAllDay = event.allDay
+    calendarEvent.availability = getAvailability(availability: event.availability)
   }
 
   private func initializePermittedEntities() {

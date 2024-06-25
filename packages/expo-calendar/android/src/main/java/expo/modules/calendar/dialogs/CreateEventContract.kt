@@ -1,0 +1,67 @@
+package expo.modules.calendar.dialogs
+
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.Intent.ACTION_INSERT
+import android.provider.CalendarContract
+import android.provider.CalendarContract.EXTRA_EVENT_ALL_DAY
+import android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME
+import android.provider.CalendarContract.EXTRA_EVENT_END_TIME
+import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
+import expo.modules.calendar.EventRecurrenceUtils.dateFormat
+import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
+import expo.modules.calendar.availabilityConstantMatchingString
+import expo.modules.kotlin.activityresult.AppContextActivityResultContract
+
+internal class CreateEventContract : AppContextActivityResultContract<CreatedEventOptions, EventIntentResult> {
+
+  override fun createIntent(context: Context, input: CreatedEventOptions): Intent =
+    Intent(ACTION_INSERT)
+      .setData(CalendarContract.Events.CONTENT_URI)
+      .apply {
+        input.title?.let { putExtra(CalendarContract.Events.TITLE, it) }
+        input.allDay?.let { putExtra(EXTRA_EVENT_ALL_DAY, it) }
+        input.notes?.let { putExtra(CalendarContract.Events.DESCRIPTION, it) }
+        input.location?.let { putExtra(CalendarContract.Events.EVENT_LOCATION, it) }
+        input.startDate?.let {
+          val timestamp = getTimestamp(it)
+          putExtra(EXTRA_EVENT_BEGIN_TIME, timestamp)
+        }
+        input.endDate?.let {
+          val timestamp = getTimestamp(it)
+          putExtra(EXTRA_EVENT_END_TIME, timestamp)
+        }
+        input.timeZone?.let {
+          putExtra(CalendarContract.Events.EVENT_TIMEZONE, it)
+        }
+        input.availability?.let {
+          val value = availabilityConstantMatchingString(it)
+          putExtra(CalendarContract.Events.AVAILABILITY, value)
+        }
+        input.recurrenceRule?.let {
+          val rule = createRecurrenceRule(extractRecurrence(it))
+          putExtra(CalendarContract.Events.RRULE, rule)
+        }
+        input.startNewActivityTask?.takeIf { boolean -> boolean }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+      }
+
+
+  private fun getTimestamp(it: String): Long {
+    val maybeTimestamp = dateFormat.parse(it)?.time
+    return maybeTimestamp ?: throw IllegalArgumentException("Invalid date format")
+  }
+
+  override fun parseResult(input: CreatedEventOptions, resultCode: Int, intent: Intent?): EventIntentResult =
+    when (resultCode) {
+      Activity.RESULT_CANCELED -> {
+        EventIntentResult(action = "canceled")
+      }
+      Activity.RESULT_OK -> {
+        EventIntentResult(action = "done")
+      }
+      else -> {
+        EventIntentResult(action = "unknown")
+      }
+    }
+}

@@ -117,3 +117,14 @@ struct Reminder: Record {
   @Field
   var completionDate: Either<String, Double>?
 }
+
+struct OpenInCalendarOptions: Record {
+  @Field 
+  var id: String
+  @Field 
+  var instanceStartDate: Either<String, Double>?
+}
+
+struct CalendarResponse: Record {
+  @Field var action: String = "done"
+}
