@@ -221,7 +221,7 @@ describe('metro require', () => {
   xit(`uses require.context`, async () => {
     const [[, , graph], artifacts] = await serializeShakingAsync({
       'index.js': `
-          const foo = require.context('./foo', false, /\.js$/);
+          const foo = require.context('./foo', false, /\\.js$/);
           console.log('keep', foo);
         `,
       'foo/math.js': `
