@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `"launchMode": "launcher"` support.
+- [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
