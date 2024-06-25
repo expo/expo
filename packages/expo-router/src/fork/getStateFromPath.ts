@@ -759,7 +759,7 @@ const createNestedStateObject = (
   const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
 
   if (params) {
-    route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
+    route.params = { ...route.params } as Record<string, any>;
     for (const [name, value] of Object.entries(params)) {
       if (route.params?.[name]) {
         if (process.env.NODE_ENV !== 'production') {
@@ -781,7 +781,7 @@ const createNestedStateObject = (
   }
 
   if (hash) {
-    route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
+    route.params = { ...route.params } as Record<string, any>;
     route.params['#'] = hash;
   }
 
