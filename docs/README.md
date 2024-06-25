@@ -442,6 +442,8 @@ modificationDate: April 8th, 2024
 
 This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](https://github.com/expo/expo/edit/main/docs/pages/build-reference/infrastructure.mdx).
 
+> Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
+
 ### Prettier
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
