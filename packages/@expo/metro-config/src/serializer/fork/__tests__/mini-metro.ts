@@ -170,29 +170,6 @@ export async function microBundle({
   }
   await recurseWith([entry]);
 
-  function moduleExists(id: string) {
-    if (fullFs[id] != null) {
-      return id;
-    }
-    const p = id.replace(/^\/+/, '');
-    if (fullFs[p] != null) {
-      return p;
-    }
-    return null;
-  }
-
-  const findUpPackageJsonPath = (projectRoot: string, dir: string): string | null => {
-    if (dir === path.sep || dir.length < projectRoot.length) {
-      return null;
-    }
-    const packageJsonPath = path.relative(projectRoot, path.join(dir, 'package.json'));
-    const exists = moduleExists(packageJsonPath);
-    if (exists != null) {
-      return exists;
-    }
-    return findUpPackageJsonPath(projectRoot, path.dirname(dir));
-  };
-
   return [
     // entryPoint: string,
     absEntry,
