@@ -427,6 +427,21 @@ Four different types of callouts can be used with markdown syntax for `> ...` bl
 > **error** Callout that is used for errors and breaking changes or deprecated changes in the archive.
 ```
 
+### Add last update date manually
+
+All docs pages are automatically updated with the last update date of the file based on their Git commit history. This information is reflected in the footer of a docs page with **Last updated on ...**.
+
+If you need to add the date manually, add `modificationDate` to the frontmatter of the **.mdx** file. For example:
+
+```mdx
+---
+modificationDate: April 8th, 2024
+{/* Other frontmatter fields */}
+---
+```
+
+This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](https://github.com/expo/expo/edit/main/docs/pages/build-reference/infrastructure.mdx).
+
 ### Prettier
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
