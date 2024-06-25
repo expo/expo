@@ -28,7 +28,7 @@ describe('server-naming-conflicts', () => {
             NODE_ENV: 'production',
             EXPO_USE_STATIC: 'server',
             E2E_ROUTER_SRC: 'server-naming-conflicts',
-            E2E_ROUTER_ASYNC: 'development',
+            E2E_ROUTER_ASYNC: 'production',
             EXPO_USE_FAST_RESOLVER: 'true',
           },
         }
@@ -118,6 +118,14 @@ describe('server-naming-conflicts', () => {
       // HTML
       expect(files).toContain('server/[root].html');
       expect(files).toContain('server/_root_.html');
+
+      // JS
+      const jsFiles = files.filter((file) => file && file.endsWith('.js')).sort();
+      expect(jsFiles).toEqual(
+        ['_root_', '_root_', 'index'].map((file) =>
+          expect.stringMatching(new RegExp(`client\\/_expo\\/static\\/js\\/web\\/${file}-.*\\.js`))
+        )
+      );
     },
     5 * 1000
   );
