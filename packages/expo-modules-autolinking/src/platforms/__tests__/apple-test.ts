@@ -7,8 +7,8 @@ import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
   formatArrayOfReactDelegateHandler,
   getSwiftModuleNames,
-  resolveModuleAsync,
   resolveExtraBuildDependenciesAsync,
+  resolveModuleAsync,
 } from '../apple';
 
 jest.mock('fast-glob');
