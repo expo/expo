@@ -170,7 +170,6 @@ export async function microBundle({
       }
     }
   }
-  await recurseWith([entry]);
 
   function moduleExists(id: string) {
     if (fullFs[id] != null) {
@@ -194,6 +193,7 @@ export async function microBundle({
     }
     return findUpPackageJsonPath(projectRoot, path.dirname(dir));
   };
+  await recurseWith([entry]);
 
   return [
     // entryPoint: string,

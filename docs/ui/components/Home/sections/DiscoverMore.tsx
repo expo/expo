@@ -14,7 +14,7 @@ export function DiscoverMore() {
       <GridContainer>
         <GridCell className="bg-palette-orange3 border-palette-orange6 selection:bg-palette-orange5">
           <SnackImage />
-          <RawH3 className="!text-palette-orange11">Try Expo in your browser</RawH3>
+          <RawH3 className="!text-palette-orange11 !font-bold">Try Expo in your browser</RawH3>
           <P className="!text-palette-orange11 !text-xs max-w-[24ch]">
             Expo’s Snack lets you try Expo with zero local setup.
           </P>
@@ -28,7 +28,7 @@ export function DiscoverMore() {
         </GridCell>
         <GridCell className="bg-palette-green3 border-palette-green6 selection:bg-palette-green5">
           <WhyImage />
-          <RawH3 className="!text-palette-green11">Frequently Asked Questions</RawH3>
+          <RawH3 className="!text-palette-green11 !font-bold">Frequently Asked Questions</RawH3>
           <P className="!text-palette-green11 !text-xs max-w-[36ch]">
             Answers to common questions about Expo, EAS, and React Native.
           </P>
@@ -41,7 +41,7 @@ export function DiscoverMore() {
         </GridCell>
         <GridCell className="bg-palette-yellow3 border-palette-yellow7 dark:border-palette-yellow6 selection:bg-palette-yellow5">
           <OfficeHoursImage />
-          <RawH3 className="!text-palette-yellow11">Join us for Office Hours</RawH3>
+          <RawH3 className="!text-palette-yellow11 !font-bold">Join us for Office Hours</RawH3>
           <P className="!text-palette-yellow11 !text-xs max-w-[28ch]">
             Get answers to your questions and get advice from the Expo team.
           </P>
@@ -56,7 +56,7 @@ export function DiscoverMore() {
           <div className="absolute bottom-6 right-6 p-4 bg-palette-blue5 rounded-full">
             <DiscordIcon className="size-12 text-palette-blue9 dark:text-palette-blue9" />
           </div>
-          <RawH3 className="!text-palette-blue11">Chat with the community</RawH3>
+          <RawH3 className="!text-palette-blue11 !font-bold">Chat with the community</RawH3>
           <P className="!text-palette-blue11 !text-xs max-w-[32ch]">
             Join over 20,000 other developers
             <br />

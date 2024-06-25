@@ -171,6 +171,7 @@ redirects[develop/development-builds/parallel-installation]=build-reference/vari
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas
 redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction
 redirects[guides/assets]=develop/user-interface/assets
+redirects[router/reference/search-parameters]=router/reference/url-parameters
 
 # Redirects after Guides organization
 redirects[guides]=guides/overview

@@ -166,27 +166,29 @@ function findGroupedDefinitionsOfType(type, moduleDefinition, file) {
         return definitionParams.map((d) => ({ name: getIdentifierFromOffsetObject(d, file) }));
     });
 }
-function findAndParseView(moduleDefinition, file) {
-    const viewDefinition = moduleDefinition.find((md) => md['key.name'] === 'View');
-    if (!viewDefinition) {
-        return null;
-    }
-    // we support reading view definitions from closure only
-    const viewModuleDefinition = viewDefinition['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.['key.substructure'];
-    if (!viewModuleDefinition) {
-        console.warn('Could not parse view definition');
-        return null;
-    }
-    // let's drop nested view field (is null anyways)
-    const { view: _, ...definition } = parseModuleDefinition(viewModuleDefinition, file);
-    return definition;
+function findAndParseNestedClassesOfType(moduleDefinition, file, type) {
+    // we support reading definitions from closure only
+    const definitionsOfType = moduleDefinition.filter((md) => md['key.name'] === type);
+    return definitionsOfType
+        .map((df) => {
+        const nestedModuleDefinition = df['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.['key.substructure'];
+        if (!nestedModuleDefinition) {
+            console.warn('Could not parse definition');
+            return null;
+        }
+        const name = getIdentifierFromOffsetObject(df['key.substructure']?.[0], file).replace('.self', '');
+        // let's drop nested view field and classes (are null anyways)
+        const { views: _, classes: _2, ...definition } = parseModuleDefinition(nestedModuleDefinition, file);
+        return { ...definition, name };
+    })
+        .flatMap((f) => (f ? [f] : []));
 }
 function omitParamsFromClosureArguments(definitions, paramsToOmit) {
     return definitions.map((d) => ({
         ...d,
         types: {
             ...d.types,
-            parameters: d.types?.parameters?.filter((t, idx) => idx !== 0 && !paramsToOmit.includes(t.name)) ?? [],
+            parameters: d.types?.parameters?.filter((t, idx) => !paramsToOmit.includes(t.name)) ?? [],
         },
     }));
 }
@@ -206,7 +208,8 @@ function parseModuleDefinition(moduleDefinition, file) {
         events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),
         properties: findNamedDefinitionsOfType('Property', preparedModuleDefinition, file),
         props: omitParamsFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file), ['view']),
-        view: findAndParseView(preparedModuleDefinition, file),
+        views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
+        classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
     };
     return parsedDefinition;
 }
