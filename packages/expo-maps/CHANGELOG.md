@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Removed usage of reserved keyword `module`.
+- Removed usage of reserved keyword `module`. ([#30010](https://github.com/expo/expo/pull/30010) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
