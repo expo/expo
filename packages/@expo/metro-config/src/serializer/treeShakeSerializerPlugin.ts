@@ -221,7 +221,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       return [entryPoint, preModules, graph, options];
     }
 
-    function collectImportExports(value: Module<MixedOutput>) {
+    function updateImportsForModule(value: Module<MixedOutput>) {
       function getGraphId(moduleId: string) {
         const key = [...value.dependencies.values()].find((dep) => {
           return dep.data.name === moduleId;
@@ -238,7 +238,13 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       }
       for (const index in value.output) {
         const outputItem = value.output[index];
+        if (!outputItem.data.modules) {
+          outputItem.data.modules = {
+            imports: [],
+          };
+        }
 
+        outputItem.data.modules.imports = [];
         const ast = accessAst(outputItem);
 
         traverse(ast, {
@@ -257,6 +263,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               source,
               key: getGraphId(source),
               specifiers,
+              // path,
             });
           },
           // Track require calls
@@ -561,6 +568,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
           // Remove a random instance of the dep count to track if there are multiple imports.
           // TODO: Get the exact instance of the import.
+          // console.log('importInstance.data.data', importInstance.data.data);
           importInstance.data.data.locs.pop();
 
           if (!importInstance.data.data.locs.length) {
@@ -595,6 +603,10 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       // Keep track of all used identifiers
       const usedIdentifiers = new Set();
 
+      // const importDecs: Array<NodePath<types.ImportDeclaration>> =
+      //   value.output[0].data.modules?.imports.map((importItem) => importItem.path).filter(Boolean);
+      const importDecs: Array<NodePath<types.ImportDeclaration>> = [];
+
       traverse(ast, {
         ImportSpecifier(path) {
           importedIdentifiers.add(
@@ -619,51 +631,56 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             usedIdentifiers.add(path.node.name);
           }
         },
+        ImportDeclaration(path) {
+          importDecs.push(path);
+        },
       });
+
+      let dirtyImports = false;
+
+      if (!importDecs.length) {
+        return dirtyImports;
+      }
 
       // Determine unused identifiers by subtracting the used from the imported
       const unusedImports = [...importedIdentifiers].filter(
         (identifier) => !usedIdentifiers.has(identifier)
       );
 
-      // inspect(ast);
-      let removed = false;
       // Remove the unused imports from the AST
-      traverse(ast, {
-        ImportDeclaration(path) {
-          const originalSize = path.node.specifiers.length;
-          path.node.specifiers = path.node.specifiers.filter((specifier) => {
-            if (specifier.type === 'ImportDefaultSpecifier') {
-              return !unusedImports.includes(specifier.local.name);
-            } else if (specifier.type === 'ImportNamespaceSpecifier') {
-              return !unusedImports.includes(specifier.local.name);
-            } else {
-              return !unusedImports.includes(specifier.imported.name);
-            }
-            // if (!specifier.imported) {
-            // }
-            // return !unusedImports.includes(specifier.imported.name);
-          });
-          if (originalSize !== path.node.specifiers.length) {
-            removed = true;
+      importDecs.forEach((path, index) => {
+        const originalSize = path.node.specifiers.length;
+        path.node.specifiers = path.node.specifiers.filter((specifier) => {
+          if (specifier.type === 'ImportDefaultSpecifier') {
+            return !unusedImports.includes(specifier.local.name);
+          } else if (specifier.type === 'ImportNamespaceSpecifier') {
+            return !unusedImports.includes(specifier.local.name);
+          } else {
+            return !unusedImports.includes(specifier.imported.name);
           }
+        });
 
-          // If no specifiers are left after filtering, remove the whole import declaration
-          // e.g. `import './unused'` or `import {} from './unused'` -> remove.
-          if (path.node.specifiers.length === 0) {
-            // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
-            const importModuleId = path.node.source.value;
+        if (originalSize !== path.node.specifiers.length) {
+          dirtyImports = true;
+        }
 
-            if (disconnectGraphNode(value, importModuleId)) {
-              // Delete the import AST
-              path.remove();
-              removed = true;
-            }
+        // If no specifiers are left after filtering, remove the whole import declaration
+        // e.g. `import './unused'` or `import {} from './unused'` -> remove.
+        if (path.node.specifiers.length === 0) {
+          // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
+          const importModuleId = path.node.source.value;
+
+          if (disconnectGraphNode(value, importModuleId)) {
+            // Delete the import AST
+            path.remove();
+            dirtyImports = true;
+            // Update crazy list
+            // value.output[0].data.modules?.imports.splice(index, 1);
           }
-        },
+        }
       });
 
-      return removed;
+      return dirtyImports;
     }
 
     function isEmptyModule(value: Module<MixedOutput>): boolean {
@@ -712,13 +729,14 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       });
     }
 
+    // This pass will parse all modules back to AST and include the import/export statements.
+    for (const value of graph.dependencies.values()) {
+      updateImportsForModule(value);
+    }
+
     function treeShakeAll(depth: number = 0) {
       if (depth > 10) {
         return;
-      }
-      // This pass will parse all modules back to AST and include the import/export statements.
-      for (const value of graph.dependencies.values()) {
-        collectImportExports(value);
       }
 
       // TODO: Add special handling for circular dependencies.
@@ -736,7 +754,9 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           const ast = accessAst(outputItem);
 
           if (removeUnusedImports(value, ast)) {
+            // If the imports changed, then recurse all the dependencies again to remove unused exports.
             // TODO: haha this is slow
+            // TODO: Track the exact imports that were removed to exactly update the dependency exports.
             treeShakeAll(depth + 1);
           }
         });

@@ -121,6 +121,7 @@ it(`removes empty import`, async () => {
 
   expect(getModules(graph, '/app/index.js')).toEqual({
     exports: [],
+    // TODO: This is a bug
     imports: [expect.objectContaining({ key: '/app/side-effect.js' })],
   });
   expect(artifacts[0].source).not.toMatch('side-effect');
@@ -719,10 +720,7 @@ export { Worm as default };
 
   expect(getModules(graph, '/app/index.js')).toEqual({
     exports: [],
-    imports: [
-      expect.objectContaining({ key: '/app/lucide.js' }),
-      expect.objectContaining({ key: '/app/lucide.js' }),
-    ],
+    imports: [expect.objectContaining({ key: '/app/lucide.js' })],
   });
   expect(artifacts[0].source).not.toMatch('icons');
   expect(artifacts[0].source).not.toMatch('Worm');
