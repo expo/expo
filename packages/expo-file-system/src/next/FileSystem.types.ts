@@ -2,6 +2,7 @@ export type Path = string;
 
 export declare class Directory {
   constructor(path: Path);
+  path: string;
   validatePath(): void;
   delete();
   exists(): boolean;
@@ -10,6 +11,7 @@ export declare class Directory {
 
 export declare class File {
   constructor(path: Path);
+  path: string;
   validatePath();
   text(): string;
   write(content: string): any;

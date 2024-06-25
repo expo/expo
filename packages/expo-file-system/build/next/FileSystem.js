@@ -14,7 +14,8 @@ export class Directory extends ExpoFileSystem.FileSystemNextDirectory {
         this.validatePath();
     }
 }
+// consider module functions as API alternative
 export async function write(file, contents) {
-    return ExpoFileSystem.write(file, contents);
+    return file.write(contents);
 }
 //# sourceMappingURL=FileSystem.js.map

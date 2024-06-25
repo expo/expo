@@ -58,7 +58,6 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Creates a folder', async () => {
       const folder = new Directory(testDirectory + 'newFolder/');
-      console.log('folder', folder);
       folder.create();
       expect(folder.exists()).toBe(true);
     });

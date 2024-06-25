@@ -1,8 +1,8 @@
 import type { Directory, File } from './FileSystem.types';
-type ExpoVideoModule = {
-    Directory: typeof Directory;
-    File: typeof File;
+type ExpoFileSystemNextModule = {
+    FileSystemNextDirectory: typeof Directory;
+    FileSystemNextFile: typeof File;
 };
-declare const _default: ExpoVideoModule;
+declare const _default: ExpoFileSystemNextModule;
 export default _default;
 //# sourceMappingURL=ExpoFileSystem.d.ts.map
