@@ -58,7 +58,7 @@ In the example below, the `glyphMap` object is defined and then passed as the fi
 
 ```jsx createIconSet example
 import * as React from 'react';
-import { createIconSet } from '@expo/vector-icons';
+import createIconSet from '@expo/vector-icons/createIconSet';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };
 const CustomIcon = createIconSet(glyphMap, 'fontFamily', 'custom-icon-font.ttf');
@@ -87,7 +87,7 @@ dependencies={['@expo/vector-icons', 'expo-font']}>
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { createIconSetFromIcoMoon } from '@expo/vector-icons';
+import createIconSetFromIcoMoon from '@expo/vector-icons/createIconSetFromIcoMoon';
 
 /* @info */
 const Icon = createIconSetFromIcoMoon(
@@ -137,7 +137,7 @@ It follows a similar configuration as `createIconSetFromIcoMoon` as shown in the
 
 ```js Fontello Icons
 // Import the createIconSetFromFontello method
-import { createIconSetFromFontello } from '@expo/vector-icons';
+import createIconSetFromFontello from '@expo/vector-icons/createIconSetFromFontello';
 
 // Import the config file
 import fontelloConfig from './config.json';
