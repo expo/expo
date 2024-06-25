@@ -6,9 +6,9 @@
   "module": "src/Expo.ts",
   "types": "build/Expo.d.ts",
   "sideEffects": [
-    "*.fx.js",
-    "*.fx.web.js",
-    "./build/winter/*.js"
+    "*.fx.tsx",
+    "*.fx.web.tsx",
+    "./src/winter/*.ts"
   ],
   "bin": "bin/cli",
   "files": [
