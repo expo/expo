@@ -57,7 +57,6 @@ it(`can create a micro Metro graph fixture`, async () => {
       var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
       console.log(foo);
     });",
-                  "collectDependenciesOptions": undefined,
                   "functionMap": {
                     "mappings": "AAA",
                     "names": [
@@ -201,7 +200,6 @@ it(`can create a micro Metro graph fixture`, async () => {
       const foo = 'foo';
       exports.foo = foo;
     });",
-                  "collectDependenciesOptions": undefined,
                   "functionMap": {
                     "mappings": "AAA",
                     "names": [
@@ -316,6 +314,7 @@ it(`can create a micro Metro graph fixture`, async () => {
         },
       },
       {
+        "_test_getPackageJson": [Function],
         "asyncRequireModulePath": "expo-mock/async-require",
         "createModuleId": [Function],
         "dev": true,
