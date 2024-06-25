@@ -336,12 +336,7 @@ function treeShakeSerializerPlugin(config) {
         // Print the removed modules:
         const removedModules = beforeList.filter((value) => !afterList.includes(value));
         console.log('Fully removed:', removedModules.sort());
-        console.log('ALL:', JSON.stringify(afterList, null, 2));
-        // console.log(
-        //   [...graph.dependencies.get(
-        //     '/Users/evanbacon/Documents/GitHub/expo/node_modules/lucide-react/dist/esm/icons/wallpaper.js'
-        //   )?.inverseDependencies.values()]
-        // );
+        // console.log('ALL:', JSON.stringify(afterList, null, 2));
         return [entryPoint, preModules, graph, options];
         function disposeOfGraphNode(nodePath) {
             const node = graph.dependencies.get(nodePath);
@@ -427,13 +422,11 @@ function treeShakeSerializerPlugin(config) {
             }
             return { path: importInstance.absolutePath, removed: false };
         }
-        function removeUnusedExports(depId) {
-            const value = graph.dependencies.get(depId);
-            // console.log('D', depId);
-            const dirtyImports = [];
-            if (!value?.inverseDependencies.size) {
+        function removeUnusedExports(value) {
+            if (!value.inverseDependencies.size) {
                 return [];
             }
+            const dirtyImports = [];
             const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
                 return graph.dependencies.get(id);
             });
@@ -444,7 +437,7 @@ function treeShakeSerializerPlugin(config) {
                             const imports = outputItem.data.modules?.imports;
                             if (imports) {
                                 return imports.some((importItem) => {
-                                    if (importItem.key !== depId) {
+                                    if (importItem.key !== value.path) {
                                         return false;
                                     }
                                     // If the import is CommonJS, then we can't tree-shake it.
@@ -531,22 +524,6 @@ function treeShakeSerializerPlugin(config) {
                                     dirtyImports.push(removeRequest.path);
                                     markUnused(path, path.node.source);
                                 }
-                                else {
-                                    // console.log(
-                                    //   'ExportNamedDeclaration: Cannot remove graph node for: ',
-                                    //   importModuleId,
-                                    //   'in:',
-                                    //   value.path
-                                    // );
-                                }
-                            }
-                            else {
-                                // console.log(
-                                //   'ExportNamedDeclaration: has specifiers:',
-                                //   importModuleId,
-                                //   value.path,
-                                //   path.node.specifiers.length
-                                // );
                             }
                         }
                     },
@@ -554,7 +531,7 @@ function treeShakeSerializerPlugin(config) {
             }
             return unique(dirtyImports);
         }
-        function removeUnusedImports(value, ast) {
+        function removeUnusedImportsFromModule(value, ast) {
             // Traverse imports and remove unused imports.
             // Keep track of all the imported identifiers
             const importedIdentifiers = new Set();
@@ -636,63 +613,55 @@ function treeShakeSerializerPlugin(config) {
             });
             return unique(dirtyImports);
         }
+        function removeUnusedImports(value) {
+            if (!value.dependencies.size)
+                return [];
+            return value.output
+                .map((outputItem) => {
+                return removeUnusedImportsFromModule(value, accessAst(outputItem));
+            })
+                .flat();
+        }
         function unique(array) {
             return Array.from(new Set(array));
         }
         function optimizePaths(paths) {
             let checked = new Set();
+            function markDirty(...paths) {
+                paths.forEach((path) => {
+                    checked.delete(path);
+                    paths.push(path);
+                });
+            }
             // This pass will annotate the AST with the used and unused exports.
             while (paths.length) {
-                const depId = paths.pop();
-                if (depId == null)
+                const absolutePath = paths.pop();
+                if (absolutePath == null)
                     continue;
-                if (checked.has(depId)) {
-                    console.log('Bail:', depId);
+                if (checked.has(absolutePath)) {
+                    // console.log('Bail:', absolutePath);
                     continue;
                 }
-                const value = graph.dependencies.get(depId);
-                if (!value)
+                const dep = graph.dependencies.get(absolutePath);
+                if (!dep)
                     continue;
-                console.log('Optimize:', depId);
-                checked.add(depId);
-                // Remove loose exports in a module
-                const dirtyImports = removeUnusedExports(depId);
-                if (dirtyImports.length) {
-                    dirtyImports.map((path) => {
-                        checked.delete(path);
-                        if (!paths.includes(path)) {
-                            paths.push(path);
-                            console.log('Update:', path);
-                        }
-                    });
-                    // TODO: haha this is slow
-                    // return treeShakeAll(depth + 1);
-                }
-                value.output.forEach((outputItem) => {
-                    const ast = accessAst(outputItem);
-                    const dirtyPaths = removeUnusedImports(value, ast);
-                    if (dirtyPaths.length) {
-                        dirtyPaths.map((path) => {
-                            checked.delete(path);
-                            if (!paths.includes(path)) {
-                                paths.push(path);
-                                console.log('Update:', path);
-                            }
-                        });
-                        // If the imports changed, then recurse all the dependencies again to remove unused exports.
-                        // TODO: haha this is slow
-                        // TODO: Track the exact imports that were removed to exactly update the dependency exports.
-                        // treeShakeAll(depth + 1);
-                    }
-                });
-                value.dependencies.forEach((dep) => {
+                console.log('Optimize:', absolutePath);
+                checked.add(absolutePath);
+                markDirty(
+                // Order is important (not sure why though)
+                ...removeUnusedExports(dep), 
+                // Remove imports after exports
+                ...removeUnusedImports(dep));
+                // Optimize all deps without marking as dirty to prevent
+                // circular dependencies from creating infinite loops.
+                dep.dependencies.forEach((dep) => {
                     paths.push(dep.absolutePath);
                 });
             }
-            // Print if any dependencies weren't checked
+            // Print if any dependencies weren't checked (this shouldn't happen)
             const unchecked = [...graph.dependencies.keys()].filter((key) => !checked.has(key));
             if (unchecked.length) {
-                console.log('[ERROR:]: Unchecked:', unchecked);
+                console.log('[ERROR]: Unchecked:', unchecked);
             }
         }
     };
