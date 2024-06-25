@@ -3,7 +3,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
-import glob from 'glob';
+import { globSync } from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -126,7 +126,7 @@ async function packExpoDependency(
     dependencyComponents[0] === '@expo'
       ? `expo-${dependencyComponents[1]}`
       : `${dependencyComponents[0]}`;
-  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
+  const dependencyTarballPath = globSync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
 
   if (!dependencyTarballPath) {
     throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
@@ -605,7 +605,7 @@ export async function initAsync(
     stdio: 'ignore',
   });
 
-  const localTSTemplatePathName = glob.sync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
+  const localTSTemplatePathName = globSync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
 
   if (!localTSTemplatePathName) {
     throw new Error(`Failed to locate packed template in ${repoRoot}`);
@@ -670,7 +670,7 @@ export async function initAsync(
     stdio: 'ignore',
   });
 
-  const localTemplatePathName = glob.sync(
+  const localTemplatePathName = globSync(
     path.join(projectRoot, `${prebuildTemplateName}-*.tgz`)
   )[0];
 
