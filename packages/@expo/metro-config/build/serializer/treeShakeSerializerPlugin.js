@@ -161,7 +161,7 @@ function populateGraphWithAst(graph) {
         });
     });
 }
-function updateImportsForModule(value) {
+function populateModuleWithImportUsage(value) {
     function getGraphId(moduleId) {
         const key = [...value.dependencies.values()].find((dep) => {
             return dep.data.name === moduleId;
@@ -302,6 +302,40 @@ function treeShakeSerializerPlugin(config) {
             // Useful for testing the transform reconciler...
             return [entryPoint, preModules, graph, options];
         }
+        // This pass will parse all modules back to AST and include the import/export statements.
+        for (const value of graph.dependencies.values()) {
+            populateModuleWithImportUsage(value);
+        }
+        const beforeList = [...graph.dependencies.keys()];
+        // Tree shake the graph.
+        treeShakeAll();
+        // Debug pass: Print all orphaned modules.
+        for (const [depId, value] of graph.dependencies.entries()) {
+            if (value.inverseDependencies.size === 0) {
+                console.log('Orphan:', value.path);
+            }
+            else {
+                let hasNormalNode = false;
+                for (const dep of value.inverseDependencies) {
+                    if (!graph.dependencies.has(dep)) {
+                        console.log(`ISSUE: Dependency: ${value.path}, has inverse relation to missing node: ${dep}`);
+                    }
+                    else {
+                        hasNormalNode = true;
+                    }
+                }
+                if (!hasNormalNode) {
+                    console.log(`ERROR: All inverse dependencies are missing for: ${value.path}`);
+                    // TODO: Make this not happen ever
+                    graph.dependencies.delete(depId);
+                }
+            }
+        }
+        const afterList = [...graph.dependencies.keys()];
+        // Print the removed modules:
+        const removedModules = beforeList.filter((value) => !afterList.includes(value));
+        console.log('Fully removed:', removedModules.sort());
+        return [entryPoint, preModules, graph, options];
         function disposeOfGraphNode(nodePath) {
             const node = graph.dependencies.get(nodePath);
             if (!node)
@@ -347,7 +381,6 @@ function treeShakeSerializerPlugin(config) {
                 // Unless it's an empty module.
                 isEmptyModule(graphEntryForTargetImport)) {
                 console.log('Drop', importInstance.absolutePath);
-                // console.log('Drop module:', [...graphEntryForTargetImport.inverseDependencies.keys()]);
                 // Remove inverse link to this dependency
                 graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
                 if (graphEntryForTargetImport.inverseDependencies.size === 0) {
@@ -380,7 +413,7 @@ function treeShakeSerializerPlugin(config) {
             }
             return false;
         }
-        function treeShakeExports(depId, value) {
+        function removeUnusedExports(depId, value) {
             let dirtyImports = false;
             const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
                 return graph.dependencies.get(id);
@@ -562,10 +595,6 @@ function treeShakeSerializerPlugin(config) {
             });
             return dirtyImports;
         }
-        // This pass will parse all modules back to AST and include the import/export statements.
-        for (const value of graph.dependencies.values()) {
-            updateImportsForModule(value);
-        }
         function treeShakeAll(depth = 0) {
             if (depth > 5) {
                 return;
@@ -574,7 +603,7 @@ function treeShakeSerializerPlugin(config) {
             // This pass will annotate the AST with the used and unused exports.
             for (const [depId, value] of graph.dependencies.entries()) {
                 // Remove loose exports in a module
-                if (treeShakeExports(depId, value)) {
+                if (removeUnusedExports(depId, value)) {
                     console.log('Re-run tree shake:', value.path);
                     // TODO: haha this is slow
                     return treeShakeAll(depth + 1);
@@ -590,36 +619,6 @@ function treeShakeSerializerPlugin(config) {
                 });
             }
         }
-        const beforeList = [...graph.dependencies.keys()];
-        // Tree shake the graph.
-        treeShakeAll();
-        // Debug pass: Print all orphaned modules.
-        for (const [depId, value] of graph.dependencies.entries()) {
-            if (value.inverseDependencies.size === 0) {
-                console.log('Orphan:', value.path);
-            }
-            else {
-                let hasNormalNode = false;
-                for (const dep of value.inverseDependencies) {
-                    if (!graph.dependencies.has(dep)) {
-                        console.log(`ISSUE: Dependency: ${value.path}, has inverse relation to missing node: ${dep}`);
-                    }
-                    else {
-                        hasNormalNode = true;
-                    }
-                }
-                if (!hasNormalNode) {
-                    console.log(`ERROR: All inverse dependencies are missing for: ${value.path}`);
-                    // TODO: Make this not happen ever
-                    graph.dependencies.delete(depId);
-                }
-            }
-        }
-        const afterList = [...graph.dependencies.keys()];
-        // Print the removed modules:
-        const removedModules = beforeList.filter((value) => !afterList.includes(value));
-        console.log('Fully removed:', removedModules.sort());
-        return [entryPoint, preModules, graph, options];
     };
 }
 exports.treeShakeSerializerPlugin = treeShakeSerializerPlugin;
