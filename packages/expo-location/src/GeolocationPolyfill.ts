@@ -32,10 +32,6 @@ export function installWebGeolocationPolyfill(): void {
       getCurrentPosition,
       watchPosition,
       clearWatch,
-
-      // We don't polyfill stopObserving, this is an internal method that probably should not even exist
-      // in react-native docs
-      stopObserving: () => {},
     };
   }
 }

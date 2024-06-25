@@ -123,10 +123,10 @@ To use Geofencing methods, the following requirements apply:
 
 If you're using the Android Emulator or iOS Simulator, ensure that [Location is enabled](#enable-emulator-location).
 
-<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants', 'expo-device']}>
 
-```jsx
-import React, { useState, useEffect } from 'react';
+```tsx
+import { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
 import * as Device from 'expo-device';
@@ -134,11 +134,11 @@ import * as Device from 'expo-device';
 import * as Location from 'expo-location';
 
 export default function App() {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    async function getCurrentLocation() {
       /* @hide */
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
@@ -155,10 +155,12 @@ export default function App() {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
+    }
+
+    getCurrentLocation();
   }, []);
 
-  let text = 'Waiting..';
+  let text = 'Waiting...';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {

@@ -467,4 +467,10 @@ const RENAMED_PAGES: Record<string, string> = {
   // May 2024 home / develop section
   '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
+
+  // Preview section
+  '/preview/support/': '/preview/introduction/',
+
+  // Temporary redirects
+  '/guides/react-compiler/': '/preview/react-compiler/',
 };

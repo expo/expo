@@ -5,7 +5,6 @@
   "main": "src/index.ts",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "*.fx.js",
     "*.fx.ts"
   ],
   "scripts": {

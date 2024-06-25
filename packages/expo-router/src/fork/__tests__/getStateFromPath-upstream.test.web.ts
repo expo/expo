@@ -1,6 +1,6 @@
 import { findFocusedRoute } from '@react-navigation/native';
 import type { InitialState } from '@react-navigation/routers';
-import produce from 'immer';
+import { produce } from 'immer';
 
 import { getMockConfig } from '../../testing-library';
 import getPathFromState from '../getPathFromState';

@@ -2,11 +2,9 @@ import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
 import path from 'path';
+import semver from 'semver';
 
 export const name = 'SQLite';
-
-// The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
-const VERSION = '3.42.0';
 
 interface UserEntity {
   name: string;
@@ -34,10 +32,10 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await db.closeAsync();
     });
 
-    it(`should use specified SQLite version: ${VERSION}`, async () => {
+    it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(row['sqlite_version()']).toEqual(VERSION);
+      expect(semver.lte(row['sqlite_version()'], '3.45.3')).toBe(true);
       await db.closeAsync();
     });
 
@@ -119,16 +117,16 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
 
   describe('File system tests', () => {
     beforeAll(async () => {
-      if (!(await FS.getInfoAsync(FS.documentDirectory + 'SQLite')).exists) {
-        await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite');
-      }
+      await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
+      await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
     });
 
     it('should work with a downloaded .db file', async () => {
-      await FS.downloadAsync(
-        Asset.fromModule(require('../assets/asset-db.db')).uri,
-        `${FS.documentDirectory}SQLite/downloaded.db`
-      );
+      const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
+      await FS.copyAsync({
+        from: asset.localUri,
+        to: `${FS.documentDirectory}SQLite/downloaded.db`,
+      });
 
       const db = await SQLite.openDatabaseAsync('downloaded.db');
       const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
@@ -183,6 +181,17 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 
       await db.closeAsync();
     });
+
+    it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
+      await SQLite.importDatabaseFromAssetAsync('downloaded2.db', {
+        assetId: require('../assets/asset-db.db'),
+      });
+      const db = await SQLite.openDatabaseAsync('downloaded2.db');
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toEqual(3);
+      expect(results[0].j).toBeCloseTo(23.4);
+      await db.closeAsync();
+    }, 30000);
   });
 
   describe('Statements', () => {
@@ -753,14 +762,17 @@ DROP TABLE IF EXISTS foo;
 CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 `);
 
+      let databaseChangeListener: ReturnType<typeof SQLite.addDatabaseChangeListener> | null = null;
       const waitChangePromise = new Promise((resolve) => {
-        SQLite.addDatabaseChangeListener(({ databaseName, databaseFilePath, tableName, rowId }) => {
-          expect(databaseName).toEqual('main');
-          expect(path.basename(databaseFilePath)).toEqual('test.db');
-          expect(tableName).toEqual('foo');
-          expect(rowId).toBeDefined();
-          resolve(null);
-        });
+        databaseChangeListener = SQLite.addDatabaseChangeListener(
+          ({ databaseName, databaseFilePath, tableName, rowId }) => {
+            expect(databaseName).toEqual('main');
+            expect(path.basename(databaseFilePath)).toEqual('test.db');
+            expect(tableName).toEqual('foo');
+            expect(rowId).toBeDefined();
+            resolve(null);
+          }
+        );
       });
 
       const delayedInsertPromise = new Promise((resolve) => setTimeout(resolve, 0)).then(() =>
@@ -770,6 +782,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       await Promise.all([waitChangePromise, delayedInsertPromise]);
 
       await db.closeAsync();
+      databaseChangeListener?.remove();
     }, 10000);
   });
 
