@@ -119,11 +119,10 @@ it(`removes empty import`, async () => {
     'side-effect.js': ``,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
+  expectImports(graph, '/app/index.js').toEqual(
     // TODO: This is a bug
-    imports: [expect.objectContaining({ key: '/app/side-effect.js' })],
-  });
+    [expect.objectContaining({ key: '/app/side-effect.js' })]
+  );
   expect(artifacts[0].source).not.toMatch('side-effect');
   expect(artifacts[0].source).toMatchInlineSnapshot(`
         "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -174,18 +173,15 @@ it(`supports async import()`, async () => {
     }
   );
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
-    imports: [
-      {
-        async: true,
-        key: '/app/math.js',
-        source: './math',
-        specifiers: [],
-      },
-      // TODO: Parse these imports
-    ],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    {
+      async: true,
+      key: '/app/math.js',
+      source: './math',
+      specifiers: [],
+    },
+    // TODO: Parse these imports
+  ]);
   expect(artifacts[0].source).toMatch('add');
   expect(artifacts[0].source).toMatch('subtract');
   // expect(artifacts[0].source).not.toMatch('subtract');
@@ -211,14 +207,12 @@ it(`barrel default as`, async () => {
         `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
-    imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-  });
-  expect(getModules(graph, '/app/barrel.js')).toEqual({
-    exports: [],
-    imports: [expect.objectContaining({ key: '/app/math.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ key: '/app/barrel.js' }),
+  ]);
+  expectImports(graph, '/app/barrel.js').toEqual([
+    expect.objectContaining({ key: '/app/math.js' }),
+  ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
 
@@ -241,10 +235,9 @@ describe('metro require', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
   it(`require.resolveWeak`, async () => {
@@ -265,10 +258,7 @@ describe('metro require', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [],
-    });
+    expectImports(graph, '/app/index.js').toEqual([]);
     expect(artifacts[0].source).not.toMatch('subtract');
   });
 
@@ -294,10 +284,9 @@ describe('cjs', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 
@@ -318,10 +307,9 @@ describe('cjs', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
   it(`requires some from module.exports`, async () => {
@@ -341,10 +329,9 @@ describe('cjs', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
   it(`requires some from exports`, async () => {
@@ -364,17 +351,14 @@ describe('cjs', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [
-        {
-          cjs: true,
-          key: '/app/math.js',
-          source: './math',
-          specifiers: [],
-        },
-      ],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      {
+        cjs: true,
+        key: '/app/math.js',
+        source: './math',
+        specifiers: [],
+      },
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
     expect(artifacts[0].source).toMatch('_$$_REQUIRE(_dependencyMap[0]);');
 
@@ -445,10 +429,9 @@ describe('sanity', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 });
@@ -472,10 +455,9 @@ describe('Possible optimizations', () => {
           `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 
@@ -498,18 +480,15 @@ describe('Possible optimizations', () => {
           `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-    });
-    expect(getModules(graph, '/app/barrel.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/barrel2.js' })],
-    });
-    expect(getModules(graph, '/app/barrel2.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/barrel.js' }),
+    ]);
+    expectImports(graph, '/app/barrel.js').toEqual([
+      expect.objectContaining({ key: '/app/barrel2.js' }),
+    ]);
+    expectImports(graph, '/app/barrel2.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 
@@ -531,14 +510,12 @@ describe('Possible optimizations', () => {
           `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-    });
-    expect(getModules(graph, '/app/barrel.js')).toEqual({
-      exports: [],
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ key: '/app/barrel.js' }),
+    ]);
+    expectImports(graph, '/app/barrel.js').toEqual([
+      expect.objectContaining({ key: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 
@@ -569,11 +546,9 @@ describe('Possible optimizations', () => {
     });
 
     expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/barrel.js' })],
     });
     expect(getModules(graph, '/app/barrel.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/math.js' })],
     });
     expect(artifacts[0].source).toMatch('subtract');
@@ -598,11 +573,9 @@ describe('Possible optimizations', () => {
     });
 
     expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/barrel.js' })],
     });
     expect(getModules(graph, '/app/barrel.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/math.js' })],
     });
     expect(artifacts[0].source).toMatch('subtract');
@@ -625,11 +598,9 @@ describe('Possible optimizations', () => {
     });
 
     expect(getModules(graph, '/app/index.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/barrel.js' })],
     });
     expect(getModules(graph, '/app/barrel.js')).toEqual({
-      exports: [],
       imports: [expect.objectContaining({ key: '/app/math.js' })],
     });
     expect(artifacts[0].source).toMatch('subtract');
@@ -654,7 +625,6 @@ it(`import as`, async () => {
   });
 
   expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
     imports: [expect.objectContaining({ key: '/app/math.js' })],
   });
   expect(artifacts[0].source).not.toMatch('subtract');
@@ -678,7 +648,6 @@ it(`import star`, async () => {
   });
 
   expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
     imports: [expect.objectContaining({ key: '/app/math.js' })],
   });
   expect(artifacts[0].source).toMatch('subtract');
@@ -719,7 +688,6 @@ export { Worm as default };
   });
 
   expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
     imports: [expect.objectContaining({ key: '/app/lucide.js' })],
   });
   expect(artifacts[0].source).not.toMatch('icons');
@@ -781,14 +749,12 @@ it(`barrel partial`, async () => {
         `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
-    imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-  });
-  expect(getModules(graph, '/app/barrel.js')).toEqual({
-    exports: [],
-    imports: [expect.objectContaining({ key: '/app/math.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ key: '/app/barrel.js' }),
+  ]);
+  expectImports(graph, '/app/barrel.js').toEqual([
+    expect.objectContaining({ key: '/app/math.js' }),
+  ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
 
@@ -809,10 +775,7 @@ it(`removes unused exports`, async () => {
         `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    exports: [],
-    imports: [expect.objectContaining({ key: '/app/math.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/math.js' })]);
   // expect(graph.dependencies.get('/app/math.js').output[0].data.modules).toEqual({
   //   exports: [expect.objectContaining({ key: '/app/math.js' })],
   //   imports: [],

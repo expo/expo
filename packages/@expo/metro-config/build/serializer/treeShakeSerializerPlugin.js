@@ -157,7 +157,6 @@ function populateGraphWithAst(graph) {
             output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
             output.data.modules = {
                 imports: [],
-                exports: [],
             };
         });
     });
@@ -312,6 +311,7 @@ function treeShakeSerializerPlugin(config) {
                 const child = graph.dependencies.get(dep.absolutePath);
                 if (!child)
                     continue;
+                // TODO: Might need to clean up the multi-dep tracking, e.g. importInstance.data.data.locs.pop();
                 // Remove inverse dependency on the node we're about to delete.
                 child.inverseDependencies.delete(nodePath);
                 // If the child has no more dependencies, then remove it from the graph too.
@@ -360,7 +360,7 @@ function treeShakeSerializerPlugin(config) {
                 // console.log('importInstance.data.data', importInstance.data.data);
                 importInstance.data.data.locs.pop();
                 if (importInstance.data.data.locs.length === 0) {
-                    console.log('Remove import instance:', depId);
+                    // console.log('Remove import instance:', depId);
                     // Remove dependency from this module so it doesn't appear in the dependency map.
                     graphModule.dependencies.delete(depId);
                 }
@@ -434,13 +434,8 @@ function treeShakeSerializerPlugin(config) {
                     },
                     // Account for `export { foo as bar };`
                     ExportSpecifier(path) {
-                        // Ensure the check isn't `export {} from '...'` since we handle that separately.
-                        // if (path.parent.source) {
-                        //   return;
-                        // }
                         // Ensure the local node isn't used in the module.
                         if (types.isIdentifier(path.node.local)) {
-                            const internalName = path.node.local.name;
                             if (types.isIdentifier(path.node.exported) &&
                                 possibleUnusedExports.includes(path.node.exported.name) &&
                                 !isExportUsed(path.node.exported.name)) {
