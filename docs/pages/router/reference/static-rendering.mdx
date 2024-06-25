@@ -183,11 +183,11 @@ export async function generateStaticParams(params: {
 
 </APIBox>
 
-### Reading files: Use process.cwd()
+### Read files using `process.cwd()`
 
-Since Expo Router compiles your code into a separate directory you cannot use \_\_dirname to form a path as its value will be different than expected.
+Since Expo Router compiles your code into a separate directory you cannot use `__dirname` to form a path as its value will be different than expected.
 
-Instead you can use process.cwd() which gives you the directory where project is being compiled.
+Instead, use `process.cwd()`, which gives you the directory where the project is being compiled.
 
 ```tsx app/[id].tsx
 export async function generateStaticParams(params: {
