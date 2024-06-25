@@ -42,9 +42,11 @@ export default function Route() {
 
 <APIBox header="useGlobalSearchParams">
 
-Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
+Returns the URL parameters for the globally selected route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
 
-Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
+For dynamic routes, both the route parameters and the search parameters are returned.
+
+Refer to the [local vs global URL params](/router/reference/url-parameters/#local-versus-global-url-parameters) guide for more information.
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
@@ -67,7 +69,9 @@ export default function Route() {
 
 <APIBox header="useLocalSearchParams">
 
-Returns the URL search parameters for the contextually selected route. Refer to the [local versus global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more information.
+Returns the URL parameters for the contextually selected route. Refer to the [local versus global URL params](/router/reference/url-parameters/#local-versus-global-url-parameters) guide for more information.
+
+For dynamic routes, both the route parameters and the search parameters are returned.
 
 <FileTree files={['app/_layout.tsx', 'app/[first]/home.tsx', 'app/[second]/shop.tsx']} />
 

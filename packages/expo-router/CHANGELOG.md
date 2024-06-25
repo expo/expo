@@ -12,7 +12,9 @@
 
 ### 💡 Others
 
-## 3.5.16 — 2024-06-10
+- Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
+
+## 3.5.16 - 2024-06-10
 
 ### 💡 Others
 
