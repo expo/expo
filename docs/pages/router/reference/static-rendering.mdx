@@ -183,6 +183,26 @@ export async function generateStaticParams(params: {
 
 </APIBox>
 
+### Reading files: Use process.cwd()
+
+Since Expo Router compiles your code into a separate directory you can't use \_\_dirname to form a path as its value will be different than expected.
+
+Instead you can use process.cwd() which gives you the directory where project is being compiled.
+
+```tsx app/[id].tsx
+export async function generateStaticParams(params: {
+  id: string;
+}): Promise<Record<string, string>[]> {
+  const postPath = path.join(process.cwd(), './posts/', id, '.md');
+  const content = await fs.readFile(postPath);
+
+  return {
+    id,
+    content,
+  };
+}
+```
+
 ## Root HTML
 
 By default, every page is wrapped with some small HTML boilerplate, this is known as the **root HTML**.
