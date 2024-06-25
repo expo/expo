@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import path from 'path';
 
 import { findUpPackageJsonPath } from './findUpPackageJsonPath';
@@ -53,6 +53,9 @@ export function hasSideEffectWithDebugTrace(
     }
     checked.add(depReference.absolutePath);
     const dep = graph.dependencies.get(depReference.absolutePath)!;
+    if (!dep) {
+      continue;
+    }
 
     const [hasSideEffect, trace] = hasSideEffectWithDebugTrace(
       options,
@@ -153,7 +156,7 @@ const getPackageJsonMatcher = (
 };
 
 function getShallowSideEffect(options: SerializerOptions, value: Module<MixedOutput>) {
-  if (value.sideEffects !== undefined) {
+  if (value?.sideEffects !== undefined) {
     return value.sideEffects;
   }
   const isSideEffect = detectHasSideEffectInPackageJson(options, value);

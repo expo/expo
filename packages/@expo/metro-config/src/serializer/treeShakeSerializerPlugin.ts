@@ -14,6 +14,10 @@ import { hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
 
 const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
+const annotate = false;
+
+const OPTIMIZE_GRAPH = true;
+
 // TODO: Up-transform CJS to ESM
 // https://github.com/vite-plugin/vite-plugin-commonjs/tree/main#cases
 //
@@ -199,10 +203,6 @@ function getExportsThatAreNotUsedInModule(ast: Ast) {
   return unusedExports;
 }
 
-const annotate = false;
-
-const optimizeAll = true;
-
 // function ensureConstantModuleOrder(graph: ReadOnlyGraph, options: SerializerOptions) {
 //   const modules = [...graph.dependencies.values()];
 //   // Assign IDs to modules in a consistent order before changing anything.
@@ -251,10 +251,14 @@ function populateModuleWithImportUsage(value: Module<MixedOutput>) {
     })?.absolutePath;
 
     if (!key) {
+      // This can be nullish with optional dependencies in a try/catch that don't resolve.
+
+      return null;
+      // console.log([...value.dependencies.values()]);
       throw new Error(
         `Failed to find graph key for import "${moduleId}" in module "${
           value.path
-        }". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
+        }". Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`
       );
     }
     return key;
@@ -367,6 +371,11 @@ function populateModuleWithImportUsage(value: Module<MixedOutput>) {
         }
       },
     });
+
+    outputItem.data.modules.imports = outputItem.data.modules.imports.filter(
+      // Filter out missing optional dependencies.
+      (importItem) => importItem.key != null
+    );
     // inspect('imports', outputItem.data.modules.imports);
   }
 }
@@ -402,7 +411,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     // Generate AST for all modules.
     populateGraphWithAst(graph);
 
-    if (!optimizeAll) {
+    if (!OPTIMIZE_GRAPH) {
       // Useful for testing the transform reconciler...
       return [entryPoint, preModules, graph, options];
     }
@@ -488,7 +497,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         throw new Error(
           `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
             graphModule.path
-          }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
+          }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`
         );
       }
       return depId;
@@ -513,7 +522,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         throw new Error(
           `Failed to find graph key for re-export "${importModuleId}" while optimizing ${
             graphModule.path
-          }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
+          }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`
         );
       }
 
