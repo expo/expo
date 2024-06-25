@@ -100,6 +100,52 @@ const inspect = (...props) =>
 
 type Ast = babylon.ParseResult<types.File>;
 
+function isEmptyModule(value: Module<MixedOutput>): boolean {
+  function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast?: Ast) {
+    if (!ast?.program.body.length) {
+      return true;
+    }
+
+    let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
+
+    traverse(ast, {
+      enter(path) {
+        const { node } = path;
+
+        // If it's not a Directive, ExpressionStatement, or empty body,
+        // it means we have actual code
+        if (
+          node.type !== 'Directive' &&
+          node.type !== 'ExpressionStatement' &&
+          !(node.type === 'Program' && node.body.length === 0)
+        ) {
+          isEmptyOrCommentsAndUseStrict = false;
+          path.stop(); // No need to traverse further
+          return;
+        }
+
+        // If it's an ExpressionStatement, check if it is "use strict"
+        if (node.type === 'ExpressionStatement' && node.expression) {
+          // Check if it's a Literal with value "use strict"
+          const expression = node.expression;
+          if (expression.type !== 'Literal' || expression.value !== 'use strict') {
+            isEmptyOrCommentsAndUseStrict = false;
+            path.stop(); // No need to traverse further
+          }
+        }
+      },
+      // If we encounter any non-comment nodes, it's not empty
+      noScope: true,
+    });
+
+    return isEmptyOrCommentsAndUseStrict;
+  }
+
+  return value.output.every((outputItem) => {
+    return isASTEmptyOrContainsOnlyCommentsAndUseStrict(accessAst(outputItem));
+  });
+}
+
 // Collect a list of exports that are not used within the module.
 function getExportsThatAreNotUsedInModule(ast: Ast) {
   const exportedIdentifiers = new Set<string>();
@@ -219,6 +265,87 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     if (!optimizeAll) {
       // Useful for testing the transform reconciler...
       return [entryPoint, preModules, graph, options];
+    }
+
+    function disconnectGraphNode(
+      graphModule: Module<MixedOutput>,
+      importModuleId: string
+    ): boolean {
+      // Unlink the module in the graph
+
+      // The hash key for the dependency instance in the module.
+      const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
+        return dep.data.name === importModuleId;
+      })?.[0];
+
+      // // Should never happen but we're playing with fire here.
+      if (!depId) {
+        throw new Error(
+          `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
+            graphModule.path
+          }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
+        );
+      }
+
+      // If the dependency was already removed, then we don't need to do anything.
+      if (depId) {
+        const importInstance = graphModule.dependencies.get(depId)!;
+
+        // console.log('Try unlink:', importModuleId, dep);
+        const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+        // Should never happen but we're playing with fire here.
+        if (!graphEntryForTargetImport) {
+          throw new Error(
+            `Failed to find graph key for re-export "${importModuleId}" while optimizing ${
+              graphModule.path
+            }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
+          );
+        }
+
+        const [isFx, trace] = hasSideEffectWithDebugTrace(graph, graphEntryForTargetImport);
+        if (
+          // Don't remove the module if it has side effects.
+          !isFx ||
+          // Unless it's an empty module.
+          isEmptyModule(graphEntryForTargetImport)
+        ) {
+          console.log('Drop', importInstance.absolutePath);
+
+          // console.log('Drop module:', value.path);
+          // Remove inverse link to this dependency
+          graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
+
+          if (graphEntryForTargetImport.inverseDependencies.size === 0) {
+            // Remove the dependency from the graph as no other modules are using it anymore.
+            graph.dependencies.delete(importInstance.absolutePath);
+          }
+
+          // Remove a random instance of the dep count to track if there are multiple imports.
+          // TODO: Get the exact instance of the import.
+          // console.log('importInstance.data.data', importInstance.data.data);
+          importInstance.data.data.locs.pop();
+
+          if (!importInstance.data.data.locs.length) {
+            // Remove dependency from this module so it doesn't appear in the dependency map.
+            graphModule.dependencies.delete(depId);
+          }
+
+          // Mark the module as removed so we know to traverse again.
+          return true;
+        } else {
+          if (isFx) {
+            console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
+          } else {
+            console.log('Skip graph unlinking:', {
+              depId,
+              isFx,
+            });
+          }
+        }
+      } else {
+        console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
+      }
+      return false;
     }
 
     function updateImportsForModule(value: Module<MixedOutput>) {
@@ -502,98 +629,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       return dirtyImports;
     }
 
-    function disconnectGraphNode(
-      graphModule: Module<MixedOutput>,
-      importModuleId: string
-    ): boolean {
-      // Unlink the module in the graph
-
-      // The hash key for the dependency instance in the module.
-      const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
-        return dep.data.name === importModuleId;
-      })?.[0];
-
-      // // Should never happen but we're playing with fire here.
-      // if (!depId) {
-      //   throw new Error(
-      //     `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
-      //       value.path
-      //     }. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
-      //   );
-      // }
-
-      // If the dependency was already removed, then we don't need to do anything.
-      if (depId) {
-        const importInstance = graphModule.dependencies.get(depId)!;
-
-        // console.log('Try unlink:', importModuleId, dep);
-        const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
-        // Should never happen but we're playing with fire here.
-        if (!graphEntryForTargetImport) {
-          throw new Error(
-            `Failed to find graph key for re-export "${importModuleId}" while optimizing ${
-              graphModule.path
-            }. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`
-          );
-        }
-
-        const [isFx, trace] = hasSideEffectWithDebugTrace(graph, graphEntryForTargetImport);
-
-        // console.log('Drop', {
-        //   depId,
-        //   path: dep.absolutePath,
-        //   fx: hasSideEffect(graph, graphDep),
-        //   empty: isEmptyModule(graphDep),
-        // });
-        if (
-          // Don't remove the module if it has side effects.
-          !isFx ||
-          // Unless it's an empty module.
-          isEmptyModule(graphEntryForTargetImport)
-        ) {
-          console.log('Drop', {
-            depId,
-            path: importInstance.absolutePath,
-            fx: hasSideEffect(graph, graphEntryForTargetImport),
-            empty: isEmptyModule(graphEntryForTargetImport),
-          });
-          // console.log('Drop module:', value.path);
-          // Remove inverse link to this dependency
-          graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
-
-          if (graphEntryForTargetImport.inverseDependencies.size === 0) {
-            // Remove the dependency from the graph as no other modules are using it anymore.
-            graph.dependencies.delete(importInstance.absolutePath);
-          }
-
-          // Remove a random instance of the dep count to track if there are multiple imports.
-          // TODO: Get the exact instance of the import.
-          // console.log('importInstance.data.data', importInstance.data.data);
-          importInstance.data.data.locs.pop();
-
-          if (!importInstance.data.data.locs.length) {
-            // Remove dependency from this module so it doesn't appear in the dependency map.
-            graphModule.dependencies.delete(depId);
-          }
-
-          // Mark the module as removed so we know to traverse again.
-          return true;
-        } else {
-          if (isFx) {
-            console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
-          } else {
-            console.log('Skip graph unlinking:', {
-              depId,
-              isFx,
-            });
-          }
-        }
-      } else {
-        console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
-      }
-      return false;
-    }
-
     function removeUnusedImports(value: Module<MixedOutput>, ast: Parameters<typeof traverse>[0]) {
       // Traverse imports and remove unused imports.
 
@@ -681,52 +716,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       });
 
       return dirtyImports;
-    }
-
-    function isEmptyModule(value: Module<MixedOutput>): boolean {
-      function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast?: Ast) {
-        if (!ast?.program.body.length) {
-          return true;
-        }
-
-        let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
-
-        traverse(ast, {
-          enter(path) {
-            const { node } = path;
-
-            // If it's not a Directive, ExpressionStatement, or empty body,
-            // it means we have actual code
-            if (
-              node.type !== 'Directive' &&
-              node.type !== 'ExpressionStatement' &&
-              !(node.type === 'Program' && node.body.length === 0)
-            ) {
-              isEmptyOrCommentsAndUseStrict = false;
-              path.stop(); // No need to traverse further
-              return;
-            }
-
-            // If it's an ExpressionStatement, check if it is "use strict"
-            if (node.type === 'ExpressionStatement' && node.expression) {
-              // Check if it's a Literal with value "use strict"
-              const expression = node.expression;
-              if (expression.type !== 'Literal' || expression.value !== 'use strict') {
-                isEmptyOrCommentsAndUseStrict = false;
-                path.stop(); // No need to traverse further
-              }
-            }
-          },
-          // If we encounter any non-comment nodes, it's not empty
-          noScope: true,
-        });
-
-        return isEmptyOrCommentsAndUseStrict;
-      }
-
-      return value.output.every((outputItem) => {
-        return isASTEmptyOrContainsOnlyCommentsAndUseStrict(accessAst(outputItem));
-      });
     }
 
     // This pass will parse all modules back to AST and include the import/export statements.
