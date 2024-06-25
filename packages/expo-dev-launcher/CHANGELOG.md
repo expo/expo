@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
