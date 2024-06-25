@@ -36,7 +36,6 @@ const types = __importStar(require("@babel/types"));
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
 const generate = require('@babel/generator').default;
-const inspect = (...props) => console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 function isEmptyModule(value) {
     function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
         if (!ast?.program.body.length) {
@@ -125,15 +124,15 @@ function getExportsThatAreNotUsedInModule(ast) {
 }
 const annotate = false;
 const optimizeAll = true;
-function ensureConstantModuleOrder(graph, options) {
-    const modules = [...graph.dependencies.values()];
-    // Assign IDs to modules in a consistent order before changing anything.
-    // This is because Metro defaults to a non-deterministic order.
-    // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
-    for (const module of modules) {
-        options.createModuleId(module.path);
-    }
-}
+// function ensureConstantModuleOrder(graph: ReadOnlyGraph, options: SerializerOptions) {
+//   const modules = [...graph.dependencies.values()];
+//   // Assign IDs to modules in a consistent order before changing anything.
+//   // This is because Metro defaults to a non-deterministic order.
+//   // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
+//   for (const module of modules) {
+//     options.createModuleId(module.path);
+//   }
+// }
 function populateGraphWithAst(graph) {
     // Generate AST for all modules.
     graph.dependencies.forEach((value) => {
@@ -567,7 +566,7 @@ function treeShakeSerializerPlugin(config) {
                     importDecs.push(path);
                 },
             });
-            let dirtyImports = [];
+            const dirtyImports = [];
             if (!importDecs.length) {
                 return dirtyImports;
             }
@@ -626,7 +625,7 @@ function treeShakeSerializerPlugin(config) {
             return Array.from(new Set(array));
         }
         function optimizePaths(paths) {
-            let checked = new Set();
+            const checked = new Set();
             function markDirty(...paths) {
                 paths.forEach((path) => {
                     checked.delete(path);

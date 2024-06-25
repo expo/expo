@@ -1,8 +1,8 @@
 import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
-import { treeShakeSerializerPlugin } from '../../treeShakeSerializerPlugin';
 import { createPostTreeShakeTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
+import { treeShakeSerializerPlugin } from '../../treeShakeSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,

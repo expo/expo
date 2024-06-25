@@ -5,8 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { transformFromAstSync } from '@babel/core';
+import generate from '@babel/generator';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  type Dependency,
+  Options as CollectDependenciesOptions,
+} from 'metro/src/ModuleGraph/worker/collectDependencies';
 import countLines from 'metro/src/lib/countLines';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import {
@@ -16,25 +23,16 @@ import {
   fromRawMappings,
 } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-
 import { JsTransformerConfig } from 'metro-transform-worker';
+import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
+
 import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 type SerializerParameters = Parameters<Serializer>;
 
-import generate from '@babel/generator';
-
 const debug = require('debug')('expo:treeshaking') as typeof console.log;
-
-import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
-  type Dependency,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
 
 class InvalidRequireCallError extends Error {
   innerError: InternalInvalidRequireCallError;
@@ -46,8 +44,6 @@ class InvalidRequireCallError extends Error {
     this.filename = filename;
   }
 }
-
-import type { Options as CollectDependenciesOptions } from 'metro/src/ModuleGraph/worker/collectDependencies';
 
 function assertCollectDependenciesOptions(
   collectDependenciesOptions: any
@@ -108,9 +104,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           continue;
         }
 
+        // @ts-expect-error: TODO
         const minify = outputItem.data.minify;
         // This should be cached by the transform worker for use here to ensure close to consistent
         // results between the tree-shake and the final transform.
+        // @ts-expect-error: TODO
         const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
         assertCollectDependenciesOptions(collectDependenciesOptions);
 
@@ -128,6 +126,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
         // NOTE: ^^ Only modules are being parsed to ast right now.
 
+        // @ts-expect-error: TODO
         delete outputItem.data.ast;
 
         // console.log('treeshake!!:', value.path, outputItem.data.collectDependenciesOptions);
@@ -155,6 +154,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           importAll,
         };
 
+        // @ts-expect-error: TODO
         ast = transformFromAstSync(ast, undefined, {
           ast: true,
           babelrc: false,
@@ -185,7 +185,6 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
         let dependencyMapName = '';
         let dependencies: readonly Dependency[];
-        
 
         // This pass converts the modules to use the generated import names.
         try {
@@ -213,10 +212,10 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         const nextDependencies = new Map<string, Dependency>();
 
         // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
-        dependencies.forEach(dep => {
+        dependencies.forEach((dep) => {
           nextDependencies.set(dep.data.key, {
             ...(value.dependencies.get(dep.data.key) || {}),
-            data: dep
+            data: dep,
           });
         });
 

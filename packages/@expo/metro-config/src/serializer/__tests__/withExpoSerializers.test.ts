@@ -1,10 +1,10 @@
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
+import { serializeSplitAsync, serializeTo } from '../fork/__tests__/serializer-test-utils';
 import {
   SerialAsset,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
-import { serializeSplitAsync, serializeTo } from '../fork/__tests__/serializer-test-utils';
 
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {

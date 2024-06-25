@@ -92,7 +92,7 @@ export class Math {
 
 // TODO: Fix this...
 xit(`preserves side-effecty import`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync({
+  const [[, , graph]] = await serializeShakingAsync({
     // We need to respect the side-effecty import for now.
     'index.js': `
 import "./b"

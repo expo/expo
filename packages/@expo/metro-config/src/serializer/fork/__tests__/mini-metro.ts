@@ -1,8 +1,9 @@
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import CountingSet from 'metro/src/lib/CountingSet';
 import * as path from 'path';
+
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
-import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
 export const projectRoot = '/app';
 

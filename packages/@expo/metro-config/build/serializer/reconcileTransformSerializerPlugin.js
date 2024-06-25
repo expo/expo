@@ -34,16 +34,16 @@ exports.createPostTreeShakeTransformSerializerPlugin = void 0;
  * LICENSE file in the root directory of this source tree.
  */
 const core_1 = require("@babel/core");
+const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
+const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
+const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker/collectDependencies"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
-const generator_1 = __importDefault(require("@babel/generator"));
-const debug = require('debug')('expo:treeshaking');
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker/collectDependencies"));
+const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
+const debug = require('debug')('expo:treeshaking');
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -90,9 +90,11 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     debug('Skipping post transform for non-js/module: ' + value.path);
                     continue;
                 }
+                // @ts-expect-error: TODO
                 const minify = outputItem.data.minify;
                 // This should be cached by the transform worker for use here to ensure close to consistent
                 // results between the tree-shake and the final transform.
+                // @ts-expect-error: TODO
                 const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
                 assertCollectDependenciesOptions(collectDependenciesOptions);
                 // if (!collectDependenciesOptions) {
@@ -106,6 +108,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 // console.log('AST:', value.path);
                 // console.log(require('@babel/generator').default(ast).code);
                 // NOTE: ^^ Only modules are being parsed to ast right now.
+                // @ts-expect-error: TODO
                 delete outputItem.data.ast;
                 // console.log('treeshake!!:', value.path, outputItem.data.collectDependenciesOptions);
                 const importDefault = collectDependenciesOptions.inlineableCalls[0];
@@ -127,6 +130,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     importDefault,
                     importAll,
                 };
+                // @ts-expect-error: TODO
                 ast = (0, core_1.transformFromAstSync)(ast, undefined, {
                     ast: true,
                     babelrc: false,
@@ -177,10 +181,10 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 // Resort the dependencies to match the current order of the AST.
                 const nextDependencies = new Map();
                 // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
-                dependencies.forEach(dep => {
+                dependencies.forEach((dep) => {
                     nextDependencies.set(dep.data.key, {
                         ...(value.dependencies.get(dep.data.key) || {}),
-                        data: dep
+                        data: dep,
                     });
                 });
                 // @ts-expect-error: Mutating the value in place.

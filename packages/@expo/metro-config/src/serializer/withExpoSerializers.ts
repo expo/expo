@@ -16,11 +16,11 @@ import {
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
+import { createPostTreeShakeTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { treeShakeSerializerPlugin } from './treeShakeSerializerPlugin';
 import { env } from '../env';
-import { createPostTreeShakeTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 

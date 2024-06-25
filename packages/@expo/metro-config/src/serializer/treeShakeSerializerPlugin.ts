@@ -94,8 +94,8 @@ export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 export type SerializerParameters = Parameters<Serializer>;
 const generate = require('@babel/generator').default;
 
-const inspect = (...props) =>
-  console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
+// const inspect = (...props) =>
+//   console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 
 type Ast = babylon.ParseResult<types.File>;
 
@@ -203,15 +203,15 @@ const annotate = false;
 
 const optimizeAll = true;
 
-function ensureConstantModuleOrder(graph: ReadOnlyGraph, options: SerializerOptions) {
-  const modules = [...graph.dependencies.values()];
-  // Assign IDs to modules in a consistent order before changing anything.
-  // This is because Metro defaults to a non-deterministic order.
-  // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
-  for (const module of modules) {
-    options.createModuleId(module.path);
-  }
-}
+// function ensureConstantModuleOrder(graph: ReadOnlyGraph, options: SerializerOptions) {
+//   const modules = [...graph.dependencies.values()];
+//   // Assign IDs to modules in a consistent order before changing anything.
+//   // This is because Metro defaults to a non-deterministic order.
+//   // We need to ensure a deterministic order before changing the graph, otherwise the output bundle will be corrupt.
+//   for (const module of modules) {
+//     options.createModuleId(module.path);
+//   }
+// }
 
 function populateGraphWithAst(graph: ReadOnlyGraph) {
   // Generate AST for all modules.
@@ -705,7 +705,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
       // const importDecs: Array<NodePath<types.ImportDeclaration>> =
       //   value.output[0].data.modules?.imports.map((importItem) => importItem.path).filter(Boolean);
-      const importDecs: Array<NodePath<types.ImportDeclaration>> = [];
+      const importDecs: NodePath<types.ImportDeclaration>[] = [];
 
       traverse(ast, {
         ImportSpecifier(path) {
@@ -736,7 +736,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         },
       });
 
-      let dirtyImports: string[] = [];
+      const dirtyImports: string[] = [];
       if (!importDecs.length) {
         return dirtyImports;
       }
@@ -803,7 +803,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function optimizePaths(paths: string[]) {
-      let checked = new Set<string>();
+      const checked = new Set<string>();
 
       function markDirty(...paths: string[]) {
         paths.forEach((path) => {
