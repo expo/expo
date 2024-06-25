@@ -9,9 +9,8 @@ import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
-import path from 'path';
 
-import { hasSideEffect, hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
+import { hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
 
 const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
@@ -246,6 +245,148 @@ function populateGraphWithAst(graph: ReadOnlyGraph) {
   });
 }
 
+function updateImportsForModule(value: Module<MixedOutput>) {
+  function getGraphId(moduleId: string) {
+    const key = [...value.dependencies.values()].find((dep) => {
+      return dep.data.name === moduleId;
+    })?.absolutePath;
+
+    if (!key) {
+      throw new Error(
+        `Failed to find graph key for import "${moduleId}" in module "${
+          value.path
+        }". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
+      );
+    }
+    return key;
+  }
+  for (const index in value.output) {
+    const outputItem = value.output[index];
+    if (!outputItem.data.modules) {
+      outputItem.data.modules = {
+        imports: [],
+      };
+    }
+
+    outputItem.data.modules.imports = [];
+    const ast = accessAst(outputItem);
+
+    traverse(ast, {
+      // Traverse and collect import/export statements.
+      ImportDeclaration(path) {
+        const source = path.node.source.value;
+        const specifiers = path.node.specifiers.map((specifier) => {
+          return {
+            type: specifier.type,
+            importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
+            localName: specifier.local.name,
+          };
+        });
+
+        outputItem.data.modules.imports.push({
+          source,
+          key: getGraphId(source),
+          specifiers,
+          // path,
+        });
+      },
+      // Track require calls
+      CallExpression(path) {
+        if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
+          const arg = path.node.arguments[0];
+          if (arg.type === 'StringLiteral') {
+            outputItem.data.modules.imports.push({
+              source: arg.value,
+              key: getGraphId(arg.value),
+              specifiers: [],
+              cjs: true,
+            });
+          }
+        }
+        // Async import calls
+        if (path.node.callee.type === 'Import') {
+          const arg = path.node.arguments[0];
+          if (arg.type === 'StringLiteral') {
+            outputItem.data.modules.imports.push({
+              source: arg.value,
+              key: getGraphId(arg.value),
+              specifiers: [],
+              async: true,
+            });
+          }
+        }
+        // require.resolveWeak calls
+        if (
+          path.node.callee.type === 'MemberExpression' &&
+          path.node.callee.object.type === 'Identifier' &&
+          path.node.callee.object.name === 'require' &&
+          path.node.callee.property.type === 'Identifier' &&
+          path.node.callee.property.name === 'resolveWeak'
+        ) {
+          const arg = path.node.arguments[0];
+          if (arg.type === 'StringLiteral') {
+            outputItem.data.modules.imports.push({
+              source: arg.value,
+              key: getGraphId(arg.value),
+              specifiers: [],
+              weak: true,
+            });
+          }
+        }
+        // TODO: Maybe also add require.context.
+      },
+      // export from
+      ExportNamedDeclaration(path) {
+        if (path.node.source) {
+          const source = path.node.source.value;
+          const specifiers = path.node.specifiers.map((specifier) => {
+            return {
+              type: specifier.type,
+              exportedName: specifier.exported.name,
+              localName: specifier.local.name,
+            };
+          });
+
+          outputItem.data.modules.imports.push({
+            source,
+            key: getGraphId(source),
+            specifiers,
+          });
+        }
+      },
+      // export * from
+      ExportAllDeclaration(path) {
+        if (path.node.source) {
+          const source = path.node.source.value;
+
+          outputItem.data.modules.imports.push({
+            source,
+            key: getGraphId(source),
+            specifiers: [],
+            star: true,
+          });
+        }
+      },
+    });
+    // inspect('imports', outputItem.data.modules.imports);
+  }
+}
+
+const markUnused = (path: NodePath, node) => {
+  if (annotate) {
+    node.leadingComments = node.leadingComments ?? [];
+    if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
+      node.leadingComments.push({
+        type: 'CommentBlock',
+        value: ` unused export ${node.id.name} `,
+      });
+    }
+  } else {
+    console.log('remove:', node.id?.name ?? node.exported?.name);
+    path.remove();
+  }
+};
+
 export function treeShakeSerializerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
@@ -302,7 +443,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           );
         }
 
-        const [isFx, trace] = hasSideEffectWithDebugTrace(graph, graphEntryForTargetImport);
+        const [isFx, trace] = hasSideEffectWithDebugTrace(
+          options,
+          graph,
+          graphEntryForTargetImport
+        );
         if (
           // Don't remove the module if it has side effects.
           !isFx ||
@@ -346,133 +491,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
       }
       return false;
-    }
-
-    function updateImportsForModule(value: Module<MixedOutput>) {
-      function getGraphId(moduleId: string) {
-        const key = [...value.dependencies.values()].find((dep) => {
-          return dep.data.name === moduleId;
-        })?.absolutePath;
-
-        if (!key) {
-          throw new Error(
-            `Failed to find graph key for import "${moduleId}" in module "${
-              value.path
-            }". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
-          );
-        }
-        return key;
-      }
-      for (const index in value.output) {
-        const outputItem = value.output[index];
-        if (!outputItem.data.modules) {
-          outputItem.data.modules = {
-            imports: [],
-          };
-        }
-
-        outputItem.data.modules.imports = [];
-        const ast = accessAst(outputItem);
-
-        traverse(ast, {
-          // Traverse and collect import/export statements.
-          ImportDeclaration(path) {
-            const source = path.node.source.value;
-            const specifiers = path.node.specifiers.map((specifier) => {
-              return {
-                type: specifier.type,
-                importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
-                localName: specifier.local.name,
-              };
-            });
-
-            outputItem.data.modules.imports.push({
-              source,
-              key: getGraphId(source),
-              specifiers,
-              // path,
-            });
-          },
-          // Track require calls
-          CallExpression(path) {
-            if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
-              const arg = path.node.arguments[0];
-              if (arg.type === 'StringLiteral') {
-                outputItem.data.modules.imports.push({
-                  source: arg.value,
-                  key: getGraphId(arg.value),
-                  specifiers: [],
-                  cjs: true,
-                });
-              }
-            }
-            // Async import calls
-            if (path.node.callee.type === 'Import') {
-              const arg = path.node.arguments[0];
-              if (arg.type === 'StringLiteral') {
-                outputItem.data.modules.imports.push({
-                  source: arg.value,
-                  key: getGraphId(arg.value),
-                  specifiers: [],
-                  async: true,
-                });
-              }
-            }
-            // require.resolveWeak calls
-            if (
-              path.node.callee.type === 'MemberExpression' &&
-              path.node.callee.object.type === 'Identifier' &&
-              path.node.callee.object.name === 'require' &&
-              path.node.callee.property.type === 'Identifier' &&
-              path.node.callee.property.name === 'resolveWeak'
-            ) {
-              const arg = path.node.arguments[0];
-              if (arg.type === 'StringLiteral') {
-                outputItem.data.modules.imports.push({
-                  source: arg.value,
-                  key: getGraphId(arg.value),
-                  specifiers: [],
-                  weak: true,
-                });
-              }
-            }
-            // TODO: Maybe also add require.context.
-          },
-          // export from
-          ExportNamedDeclaration(path) {
-            if (path.node.source) {
-              const source = path.node.source.value;
-              const specifiers = path.node.specifiers.map((specifier) => {
-                return {
-                  type: specifier.type,
-                  exportedName: specifier.exported.name,
-                  localName: specifier.local.name,
-                };
-              });
-
-              outputItem.data.modules.imports.push({
-                source,
-                key: getGraphId(source),
-                specifiers,
-              });
-            }
-          },
-          // export * from
-          ExportAllDeclaration(path) {
-            if (path.node.source) {
-              const source = path.node.source.value;
-
-              outputItem.data.modules.imports.push({
-                source,
-                key: getGraphId(source),
-                specifiers: [],
-                star: true,
-              });
-            }
-          },
-        });
-        // inspect('imports', outputItem.data.modules.imports);
-      }
     }
 
     function treeShakeExports(depId: string, value: Module<MixedOutput>) {
@@ -525,21 +543,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         const outputItem = value.output[index];
 
         const ast = outputItem.data.ast;
-
-        const markUnused = (path: NodePath, node) => {
-          if (annotate) {
-            node.leadingComments = node.leadingComments ?? [];
-            if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
-              node.leadingComments.push({
-                type: 'CommentBlock',
-                value: ` unused export ${node.id.name} `,
-              });
-            }
-          } else {
-            console.log('remove:', node.id?.name ?? node.exported?.name, 'from:', value.path);
-            path.remove();
-          }
-        };
 
         // Collect a list of exports that are not used within the module.
         const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
@@ -724,7 +727,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function treeShakeAll(depth: number = 0) {
-      if (depth > 10) {
+      if (depth > 5) {
         return;
       }
 
@@ -777,21 +780,13 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           // TODO: Make this not happen ever
           graph.dependencies.delete(depId);
         }
-        // // Find if a dep still depends on a file containing "esm/icons/zoom-in.js"
-        // if (
-        //   value.path.includes('esm/icons/zoom-in.js') ||
-        //   value.path.includes('/esm/icons/index.js')
-        // ) {
-        //   console.log('Depends on zoom-in:', [...value.inverseDependencies.values()]);
-        // }
       }
     }
 
     const afterList = [...graph.dependencies.keys()];
-
     // Print the removed modules:
     const removedModules = beforeList.filter((value) => !afterList.includes(value));
-    console.log('Removed:', removedModules);
+    console.log('Fully removed:', removedModules.sort());
 
     return [entryPoint, preModules, graph, options];
   };

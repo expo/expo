@@ -1,7 +1,6 @@
 import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
-import { sideEffectsSerializerPlugin } from '../../sideEffectsSerializerPlugin';
 import { treeShakeSerializerPlugin } from '../../treeShakeSerializerPlugin';
 import { createPostTreeShakeTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import {
@@ -9,7 +8,6 @@ import {
   SerializerConfigOptions,
   SerializerPlugin,
   createSerializerFromSerialProcessors,
-  withSerializerPlugins,
 } from '../../withExpoSerializers';
 
 // General helper to reduce boilerplate
@@ -84,10 +82,6 @@ export async function serializeShakingAsync(
         ...options,
       },
     },
-    [
-      sideEffectsSerializerPlugin,
-      treeShakeSerializerPlugin({}),
-      createPostTreeShakeTransformSerializerPlugin({}),
-    ]
+    [treeShakeSerializerPlugin({}), createPostTreeShakeTransformSerializerPlugin({})]
   );
 }

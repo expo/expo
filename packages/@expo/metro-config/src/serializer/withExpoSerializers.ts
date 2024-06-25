@@ -18,10 +18,7 @@ import {
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
-import { sideEffectsSerializerPlugin } from './sideEffectsSerializerPlugin';
-import {
-  treeShakeSerializerPlugin,
-} from './treeShakeSerializerPlugin';
+import { treeShakeSerializerPlugin } from './treeShakeSerializerPlugin';
 import { env } from '../env';
 import { createPostTreeShakeTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 
@@ -58,8 +55,6 @@ export function withExpoSerializers(
     processors.push(environmentVariableSerializerPlugin);
   }
 
-  // First mark which modules have side-effects according to the `package.json`s.
-  processors.push(sideEffectsSerializerPlugin);
   // Then tree-shake the modules.
   processors.push(treeShakeSerializerPlugin(config));
   // Then finish transforming the modules from AST to JS.

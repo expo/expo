@@ -9,8 +9,6 @@ import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { isShakingEnabled } from './treeShakeSerializerPlugin';
-import { SerializerParameters } from './withExpoSerializers';
 import { findUpPackageJsonPath } from './findUpPackageJsonPath';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
@@ -39,16 +37,13 @@ export function hasSideEffect(
 }
 
 export function hasSideEffectWithDebugTrace(
+  options: SerializerOptions,
   graph: ReadOnlyGraph,
   value: Module<MixedOutput>,
   parentTrace: string[] = [value.path],
   checked: Set<string> = new Set()
 ): [boolean, string[]] {
-  // @ts-expect-error: Not on type.
-  if (value?.sideEffects) {
-    // if (value.sideEffects !== true) {
-    //   console.log('WUT:', value.path, value.sideEffects, parentTrace);
-    // }
+  if (getShallowSideEffect(options, value)) {
     return [true, parentTrace];
   }
   // Recursively check if any of the dependencies have side effects.
@@ -58,146 +53,132 @@ export function hasSideEffectWithDebugTrace(
     }
     checked.add(depReference.absolutePath);
     const dep = graph.dependencies.get(depReference.absolutePath)!;
+
     const [hasSideEffect, trace] = hasSideEffectWithDebugTrace(
+      options,
       graph,
       dep,
       [...parentTrace, depReference.absolutePath],
       checked
     );
+
     if (hasSideEffect) {
+      // Propagate the side effect to the parent.
+      value.sideEffects = true;
+
       return [true, trace];
     }
   }
   return [false, []];
 }
 
-// Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
-export function sideEffectsSerializerPlugin(
-  entryPoint: string,
-  preModules: readonly Module<MixedOutput>[],
-  graph: ReadOnlyGraph,
-  options: SerializerOptions
-): SerializerParameters {
-  if (!isShakingEnabled(graph, options)) {
-    return [entryPoint, preModules, graph, options];
-  }
+const pkgJsonCache = new Map<string, any>();
 
-  const pkgJsonCache = new Map<string, any>();
-
-  const getPackageJsonMatcher = (dir: string): any => {
-    let packageJson: any;
-    let packageJsonPath: string | null = null;
-    if (typeof options._test_getPackageJson === 'function') {
-      [packageJson, packageJsonPath] = options._test_getPackageJson(dir);
-    } else {
-      const cached = pkgJsonCache.get(dir);
-      if (cached) {
-        return cached;
-      }
-      packageJsonPath = findUpPackageJsonPath(options.projectRoot, dir);
-      if (!packageJsonPath) {
-        return null;
-      }
-      packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const getPackageJsonMatcher = (
+  options: Pick<SerializerOptions, 'projectRoot'>,
+  dir: string
+): any => {
+  let packageJson: any;
+  let packageJsonPath: string | null = null;
+  if (typeof options._test_getPackageJson === 'function') {
+    [packageJson, packageJsonPath] = options._test_getPackageJson(dir);
+  } else {
+    const cached = pkgJsonCache.get(dir);
+    if (cached) {
+      return cached;
     }
+    packageJsonPath = findUpPackageJsonPath(options.projectRoot, dir);
     if (!packageJsonPath) {
       return null;
     }
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+  }
+  if (!packageJsonPath) {
+    return null;
+  }
 
-    // TODO: Split out and unit test.
-    const dirRoot = path.dirname(packageJsonPath);
-    const isSideEffect = (fp: string): boolean => {
-      // Default is that everything is a side-effect unless explicitly marked as not.
-      if (packageJson.sideEffects == null) {
-        // TODO: How to avoid needing this hardcoded list?
-        if (
-          [
-            'react',
-            '@babel/runtime',
-            'invariant',
-            'react-dom',
-            'scheduler',
-            'inline-style-prefixer',
-            'metro-runtime',
-            'fbjs',
-            '@react-native/normalize-color',
-            '@react-native/asset-registry',
-            'postcss-value-parser',
-            'css-in-js-utils',
-            'nullthrows',
-            'nanoid',
-          ].includes(packageJson.name)
-        ) {
-          console.log('Skipping FX for:', packageJson.name);
-          return false;
+  // TODO: Split out and unit test.
+  const dirRoot = path.dirname(packageJsonPath);
+  const isSideEffect = (fp: string): boolean | null => {
+    // Default is that everything is a side-effect unless explicitly marked as not.
+    // if (packageJson.sideEffects == null) {
+    //   // TODO: How to avoid needing this hardcoded list?
+    //   if (
+    //     [
+    //       'react',
+    //       '@babel/runtime',
+    //       'invariant',
+    //       'react-dom',
+    //       'scheduler',
+    //       'inline-style-prefixer',
+    //       'metro-runtime',
+    //       'fbjs',
+    //       '@react-native/normalize-color',
+    //       '@react-native/asset-registry',
+    //       'postcss-value-parser',
+    //       'css-in-js-utils',
+    //       'nullthrows',
+    //       'nanoid',
+    //     ].includes(packageJson.name)
+    //   ) {
+    //     console.log('Skipping FX for:', packageJson.name);
+    //     return null;
+    //   }
+
+    //   return true;
+    // }
+
+    if (packageJson.sideEffects == null) {
+      return null;
+    }
+
+    if (typeof packageJson.sideEffects === 'boolean') {
+      return packageJson.sideEffects;
+    } else if (Array.isArray(packageJson.sideEffects)) {
+      const relativeName = path.relative(dirRoot, fp);
+      return packageJson.sideEffects.some((sideEffect: any) => {
+        if (typeof sideEffect === 'string') {
+          return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), {
+            matchBase: true,
+          });
         }
-
-        return true;
-      }
-
-      if (typeof packageJson.sideEffects === 'boolean') {
-        return packageJson.sideEffects;
-      } else if (Array.isArray(packageJson.sideEffects)) {
-        const relativeName = path.relative(dirRoot, fp);
-        return packageJson.sideEffects.some((sideEffect: any) => {
-          if (typeof sideEffect === 'string') {
-            return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), {
-              matchBase: true,
-            });
-          }
-          return false;
-        });
-      }
-      return false;
-    };
-
-    pkgJsonCache.set(dir, isSideEffect);
-    return isSideEffect;
+        return false;
+      });
+    }
+    return false;
   };
 
-  // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
-  // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
-  for (const value of graph.dependencies.values()) {
-    // Don't perform lookup on virtual modules.
-    if (value.path.startsWith('\0')) {
-      value.sideEffects = false;
-      continue;
-    }
+  pkgJsonCache.set(dir, isSideEffect);
+  return isSideEffect;
+};
 
-    const isSideEffect = getPackageJsonMatcher(value.path);
+function getShallowSideEffect(options: SerializerOptions, value: Module<MixedOutput>) {
+  if (value.sideEffects !== undefined) {
+    return value.sideEffects;
+  }
+  const isSideEffect = detectHasSideEffectInPackageJson(options, value);
+  value.sideEffects = isSideEffect;
+  return isSideEffect;
+}
+
+function detectHasSideEffectInPackageJson(options: SerializerOptions, value: Module<MixedOutput>) {
+  if (value.sideEffects !== undefined) {
+    return value.sideEffects;
+  }
+  // Don't perform lookup on virtual modules.
+  if (value.path.startsWith('\0')) {
+    return false;
+  }
+
+  if (value.output.some((output) => output.type === 'js/module')) {
+    const isSideEffect = getPackageJsonMatcher(options, value.path);
     if (isSideEffect === false) {
-      value.sideEffects = false;
+      return false;
     } else if (isSideEffect == null) {
-      continue;
-    } else {
-      // @ts-expect-error: Not on type.
-      value.sideEffects = isSideEffect(value.path);
+      return;
     }
-  }
-  for (const value of graph.dependencies.values()) {
-    console.log('FX:', value.path, value.sideEffects);
+    return isSideEffect(value.path);
   }
 
-  // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
-  // so we aren't redoing recursive checks later.
-  // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
-  // All modules will be marked as side-effect-ful.
-  for (const value of graph.dependencies.values()) {
-    // if (hasSideEffect(graph, value)) {
-    const [fx, trace] = hasSideEffectWithDebugTrace(graph, value);
-    if (fx) {
-      // @ts-expect-error: Not on type.
-      value.sideEffects = true;
-
-      if (value.path.includes('react')) {
-        console.log('DEEP TRACE:', value.path, trace);
-      }
-    }
-  }
-
-  for (const value of graph.dependencies.values()) {
-    console.log('Deep FX:', value.path, value.sideEffects);
-  }
-
-  return [entryPoint, preModules, graph, options];
+  return null;
 }

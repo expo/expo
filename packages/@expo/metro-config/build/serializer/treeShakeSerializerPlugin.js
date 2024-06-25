@@ -162,6 +162,135 @@ function populateGraphWithAst(graph) {
         });
     });
 }
+function updateImportsForModule(value) {
+    function getGraphId(moduleId) {
+        const key = [...value.dependencies.values()].find((dep) => {
+            return dep.data.name === moduleId;
+        })?.absolutePath;
+        if (!key) {
+            throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
+        }
+        return key;
+    }
+    for (const index in value.output) {
+        const outputItem = value.output[index];
+        if (!outputItem.data.modules) {
+            outputItem.data.modules = {
+                imports: [],
+            };
+        }
+        outputItem.data.modules.imports = [];
+        const ast = accessAst(outputItem);
+        (0, core_1.traverse)(ast, {
+            // Traverse and collect import/export statements.
+            ImportDeclaration(path) {
+                const source = path.node.source.value;
+                const specifiers = path.node.specifiers.map((specifier) => {
+                    return {
+                        type: specifier.type,
+                        importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
+                        localName: specifier.local.name,
+                    };
+                });
+                outputItem.data.modules.imports.push({
+                    source,
+                    key: getGraphId(source),
+                    specifiers,
+                    // path,
+                });
+            },
+            // Track require calls
+            CallExpression(path) {
+                if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
+                    const arg = path.node.arguments[0];
+                    if (arg.type === 'StringLiteral') {
+                        outputItem.data.modules.imports.push({
+                            source: arg.value,
+                            key: getGraphId(arg.value),
+                            specifiers: [],
+                            cjs: true,
+                        });
+                    }
+                }
+                // Async import calls
+                if (path.node.callee.type === 'Import') {
+                    const arg = path.node.arguments[0];
+                    if (arg.type === 'StringLiteral') {
+                        outputItem.data.modules.imports.push({
+                            source: arg.value,
+                            key: getGraphId(arg.value),
+                            specifiers: [],
+                            async: true,
+                        });
+                    }
+                }
+                // require.resolveWeak calls
+                if (path.node.callee.type === 'MemberExpression' &&
+                    path.node.callee.object.type === 'Identifier' &&
+                    path.node.callee.object.name === 'require' &&
+                    path.node.callee.property.type === 'Identifier' &&
+                    path.node.callee.property.name === 'resolveWeak') {
+                    const arg = path.node.arguments[0];
+                    if (arg.type === 'StringLiteral') {
+                        outputItem.data.modules.imports.push({
+                            source: arg.value,
+                            key: getGraphId(arg.value),
+                            specifiers: [],
+                            weak: true,
+                        });
+                    }
+                }
+                // TODO: Maybe also add require.context.
+            },
+            // export from
+            ExportNamedDeclaration(path) {
+                if (path.node.source) {
+                    const source = path.node.source.value;
+                    const specifiers = path.node.specifiers.map((specifier) => {
+                        return {
+                            type: specifier.type,
+                            exportedName: specifier.exported.name,
+                            localName: specifier.local.name,
+                        };
+                    });
+                    outputItem.data.modules.imports.push({
+                        source,
+                        key: getGraphId(source),
+                        specifiers,
+                    });
+                }
+            },
+            // export * from
+            ExportAllDeclaration(path) {
+                if (path.node.source) {
+                    const source = path.node.source.value;
+                    outputItem.data.modules.imports.push({
+                        source,
+                        key: getGraphId(source),
+                        specifiers: [],
+                        star: true,
+                    });
+                }
+            },
+        });
+        // inspect('imports', outputItem.data.modules.imports);
+    }
+}
+const markUnused = (path, node) => {
+    if (annotate) {
+        node.leadingComments = node.leadingComments ?? [];
+        if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
+            node.leadingComments.push({
+                type: 'CommentBlock',
+                value: ` unused export ${node.id.name} `,
+            });
+        }
+    }
+    else {
+        console.log('remove:', node.id?.name ?? node.exported?.name);
+        path.remove();
+    }
+};
 function treeShakeSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         if (!isShakingEnabled(graph, options)) {
@@ -193,7 +322,7 @@ function treeShakeSerializerPlugin(config) {
                 if (!graphEntryForTargetImport) {
                     throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
                 }
-                const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(graph, graphEntryForTargetImport);
+                const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
                 if (
                 // Don't remove the module if it has side effects.
                 !isFx ||
@@ -234,120 +363,6 @@ function treeShakeSerializerPlugin(config) {
                 console.log('WARN: No graph dep ID for:', importModuleId, 'in:', graphModule.path);
             }
             return false;
-        }
-        function updateImportsForModule(value) {
-            function getGraphId(moduleId) {
-                const key = [...value.dependencies.values()].find((dep) => {
-                    return dep.data.name === moduleId;
-                })?.absolutePath;
-                if (!key) {
-                    throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
-                }
-                return key;
-            }
-            for (const index in value.output) {
-                const outputItem = value.output[index];
-                if (!outputItem.data.modules) {
-                    outputItem.data.modules = {
-                        imports: [],
-                    };
-                }
-                outputItem.data.modules.imports = [];
-                const ast = accessAst(outputItem);
-                (0, core_1.traverse)(ast, {
-                    // Traverse and collect import/export statements.
-                    ImportDeclaration(path) {
-                        const source = path.node.source.value;
-                        const specifiers = path.node.specifiers.map((specifier) => {
-                            return {
-                                type: specifier.type,
-                                importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
-                                localName: specifier.local.name,
-                            };
-                        });
-                        outputItem.data.modules.imports.push({
-                            source,
-                            key: getGraphId(source),
-                            specifiers,
-                            // path,
-                        });
-                    },
-                    // Track require calls
-                    CallExpression(path) {
-                        if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
-                            const arg = path.node.arguments[0];
-                            if (arg.type === 'StringLiteral') {
-                                outputItem.data.modules.imports.push({
-                                    source: arg.value,
-                                    key: getGraphId(arg.value),
-                                    specifiers: [],
-                                    cjs: true,
-                                });
-                            }
-                        }
-                        // Async import calls
-                        if (path.node.callee.type === 'Import') {
-                            const arg = path.node.arguments[0];
-                            if (arg.type === 'StringLiteral') {
-                                outputItem.data.modules.imports.push({
-                                    source: arg.value,
-                                    key: getGraphId(arg.value),
-                                    specifiers: [],
-                                    async: true,
-                                });
-                            }
-                        }
-                        // require.resolveWeak calls
-                        if (path.node.callee.type === 'MemberExpression' &&
-                            path.node.callee.object.type === 'Identifier' &&
-                            path.node.callee.object.name === 'require' &&
-                            path.node.callee.property.type === 'Identifier' &&
-                            path.node.callee.property.name === 'resolveWeak') {
-                            const arg = path.node.arguments[0];
-                            if (arg.type === 'StringLiteral') {
-                                outputItem.data.modules.imports.push({
-                                    source: arg.value,
-                                    key: getGraphId(arg.value),
-                                    specifiers: [],
-                                    weak: true,
-                                });
-                            }
-                        }
-                        // TODO: Maybe also add require.context.
-                    },
-                    // export from
-                    ExportNamedDeclaration(path) {
-                        if (path.node.source) {
-                            const source = path.node.source.value;
-                            const specifiers = path.node.specifiers.map((specifier) => {
-                                return {
-                                    type: specifier.type,
-                                    exportedName: specifier.exported.name,
-                                    localName: specifier.local.name,
-                                };
-                            });
-                            outputItem.data.modules.imports.push({
-                                source,
-                                key: getGraphId(source),
-                                specifiers,
-                            });
-                        }
-                    },
-                    // export * from
-                    ExportAllDeclaration(path) {
-                        if (path.node.source) {
-                            const source = path.node.source.value;
-                            outputItem.data.modules.imports.push({
-                                source,
-                                key: getGraphId(source),
-                                specifiers: [],
-                                star: true,
-                            });
-                        }
-                    },
-                });
-                // inspect('imports', outputItem.data.modules.imports);
-            }
         }
         function treeShakeExports(depId, value) {
             let dirtyImports = false;
@@ -392,21 +407,6 @@ function treeShakeSerializerPlugin(config) {
             for (const index in value.output) {
                 const outputItem = value.output[index];
                 const ast = outputItem.data.ast;
-                const markUnused = (path, node) => {
-                    if (annotate) {
-                        node.leadingComments = node.leadingComments ?? [];
-                        if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
-                            node.leadingComments.push({
-                                type: 'CommentBlock',
-                                value: ` unused export ${node.id.name} `,
-                            });
-                        }
-                    }
-                    else {
-                        console.log('remove:', node.id?.name ?? node.exported?.name, 'from:', value.path);
-                        path.remove();
-                    }
-                };
                 // Collect a list of exports that are not used within the module.
                 const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
@@ -555,7 +555,7 @@ function treeShakeSerializerPlugin(config) {
             updateImportsForModule(value);
         }
         function treeShakeAll(depth = 0) {
-            if (depth > 10) {
+            if (depth > 5) {
                 return;
             }
             // TODO: Add special handling for circular dependencies.
@@ -601,19 +601,12 @@ function treeShakeSerializerPlugin(config) {
                     // TODO: Make this not happen ever
                     graph.dependencies.delete(depId);
                 }
-                // // Find if a dep still depends on a file containing "esm/icons/zoom-in.js"
-                // if (
-                //   value.path.includes('esm/icons/zoom-in.js') ||
-                //   value.path.includes('/esm/icons/index.js')
-                // ) {
-                //   console.log('Depends on zoom-in:', [...value.inverseDependencies.values()]);
-                // }
             }
         }
         const afterList = [...graph.dependencies.keys()];
         // Print the removed modules:
         const removedModules = beforeList.filter((value) => !afterList.includes(value));
-        console.log('Removed:', removedModules);
+        console.log('Fully removed:', removedModules.sort());
         return [entryPoint, preModules, graph, options];
     };
 }

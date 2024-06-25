@@ -17,7 +17,6 @@ const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const serializeChunks_1 = require("./serializeChunks");
-const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
@@ -27,8 +26,6 @@ function withExpoSerializers(config, options = {}) {
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
-    // First mark which modules have side-effects according to the `package.json`s.
-    processors.push(sideEffectsSerializerPlugin_1.sideEffectsSerializerPlugin);
     // Then tree-shake the modules.
     processors.push((0, treeShakeSerializerPlugin_1.treeShakeSerializerPlugin)(config));
     // Then finish transforming the modules from AST to JS.
