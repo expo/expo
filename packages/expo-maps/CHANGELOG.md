@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed usage of reserved keyword `module`.
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
