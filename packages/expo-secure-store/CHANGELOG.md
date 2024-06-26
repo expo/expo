@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] check return value of SecAccessControlCreateWithFlags ([#29983](https://github.com/expo/expo/pull/29983) by [@vonovak](https://github.com/vonovak))
+
 ## 13.0.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

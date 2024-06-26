@@ -1,5 +1,7 @@
 import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
-import { AndroidIcon, AppleIcon, AtSignIcon } from '@expo/styleguide-icons';
+import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
 
 import { PlatformName } from '~/types/common';
 

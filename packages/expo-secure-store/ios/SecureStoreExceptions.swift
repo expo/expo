@@ -12,6 +12,12 @@ internal class MissingPlistKeyException: Exception {
   }
 }
 
+internal class SecAccessControlError: GenericException<Int?> {
+  override var reason: String {
+    return "Unable to construct SecAccessControl: \(param.map { "code " + String($0) } ?? "unknown error")"
+  }
+}
+
 internal class KeyChainException: GenericException<OSStatus> {
   override var reason: String {
     switch param {

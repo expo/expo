@@ -1,4 +1,5 @@
-import { BookOpen02Icon, ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import React from 'react';
 
 import { SuccessCheckmark } from './SuccessCheckmark';
