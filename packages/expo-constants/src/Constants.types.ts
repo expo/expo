@@ -14,6 +14,7 @@ import type {
 export enum AppOwnership {
   /**
    * The experience is running inside of the Expo Go app.
+   * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
    */
   Expo = 'expo',
 }

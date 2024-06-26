@@ -3,6 +3,7 @@ import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoCo
 export declare enum AppOwnership {
     /**
      * The experience is running inside of the Expo Go app.
+     * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
      */
     Expo = "expo"
 }
