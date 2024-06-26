@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix support for 5G ([#30012](https://github.com/expo/expo/pull/30012) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 6.0.2 — 2024-05-01
