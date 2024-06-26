@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `loadAsync()` never settles for an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
+
 - Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
 
 ### 💡 Others
