@@ -9,6 +9,7 @@ import {
   validateBundleId,
   validatePackage,
   validatePackageWithWarning,
+  getSanitizedBundleIdentifier,
   getSanitizedPackage,
   assertValidPackage,
 } from '../validateApplicationId';
@@ -48,6 +49,34 @@ describe(validatePackageWithWarning, () => {
     expect(validatePackageWithWarning(',')).toEqual(
       `Package name must contain more than one segment, separated by ".", e.g. com.,`
     );
+  });
+});
+
+describe(getSanitizedBundleIdentifier, () => {
+  [
+    // Sanity
+    ['bacon.com.hey', 'bacon.com.hey'],
+    // Most likely outcome
+    ['com.my-expo-username.june-34', 'com.my-expo-username.june-34'],
+    // Also possible
+    [
+      // Dropped this string in Xcode (accounting for escape characters) and got the output string...
+      '1234567890-=qwertyuiop[]\\asdfghjkl;\'zxcvbnm,./!@#$%^&*()_+`~QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?',
+      '-234567890--qwertyuiop---asdfghjkl--zxcvbnm-.---------------QWERTYUIOP---ASDFGHJKL--ZXCVBNM---',
+    ],
+    ['7', '-'],
+    ['#', '-'],
+    ['P', 'P'],
+    ['...', '...'],
+    ['native.ios', 'native.ios'],
+    ['com.native', 'com.native'],
+    ['a.b', 'a.b'],
+  ].forEach(([input, output]) => {
+    it(`sanitizes ${input} to valid "${output}"`, () => {
+      const sanitized = getSanitizedBundleIdentifier(input);
+      expect(sanitized).toBe(output);
+      expect(validateBundleId(sanitized)).toBe(true);
+    });
   });
 });
 

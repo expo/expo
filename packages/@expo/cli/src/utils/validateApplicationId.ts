@@ -10,6 +10,7 @@ import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 
+// TODO: Adjust to indicate that the bundle identifier must start with a letter, period, or hyphen.
 const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
 const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
@@ -77,6 +78,14 @@ export function getSanitizedPackage(value: string) {
     .join('.');
 
   return output;
+}
+
+export function getSanitizedBundleIdentifier(value: string) {
+  // According to the behavior observed when using the UI in Xcode.
+  // Must start with a letter, period, or hyphen (not number).
+  // Can only contain alphanumeric characters, periods, and hyphens.
+  // Can have empty segments (e.g. com.example..app).
+  return value.replace(/(^[^a-zA-Z.-]|[^a-zA-Z0-9-.])/g, '-');
 }
 
 // https://en.wikipedia.org/wiki/List_of_Java_keywords

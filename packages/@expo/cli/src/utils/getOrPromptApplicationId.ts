@@ -10,6 +10,7 @@ import {
   assertValidPackage,
   getBundleIdWarningAsync,
   getPackageNameWarningAsync,
+  getSanitizedBundleIdentifier,
   getSanitizedPackage,
   validateBundleId,
   validatePackage,
@@ -116,13 +117,15 @@ async function warnAndConfirmAsync(warning: string): Promise<boolean> {
 
 // Recommend a bundle identifier based on the username and project slug.
 function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
+  const possibleIdFromAndroid = exp.android?.package
+    ? getSanitizedBundleIdentifier(exp.android.package)
+    : undefined;
   // Attempt to use the android package name first since it's convenient to have them aligned.
-  if (exp.android?.package && validateBundleId(exp.android?.package)) {
-    return exp.android?.package;
+  if (possibleIdFromAndroid && validateBundleId(possibleIdFromAndroid)) {
+    return possibleIdFromAndroid;
   } else {
     const username = getExpoUsername(exp);
-    // TODO: Maybe sanitize this value too?
-    const possibleId = `com.${username}.${exp.slug}`;
+    const possibleId = getSanitizedBundleIdentifier(`com.${username}.${exp.slug}`);
     if (validateBundleId(possibleId)) {
       return possibleId;
     }
@@ -133,9 +136,13 @@ function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
 
 // Recommend a package name based on the username and project slug.
 function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
+  const possibleIdFromApple = exp.ios?.bundleIdentifier
+    ? getSanitizedPackage(exp.ios.bundleIdentifier)
+    : undefined;
+
   // Attempt to use the ios bundle id first since it's convenient to have them aligned.
-  if (exp.ios?.bundleIdentifier && validatePackage(exp.ios.bundleIdentifier)) {
-    return exp.ios.bundleIdentifier;
+  if (possibleIdFromApple && validatePackage(possibleIdFromApple)) {
+    return possibleIdFromApple;
   } else {
     const username = getExpoUsername(exp);
     const possibleId = getSanitizedPackage(`com.${username}.${exp.slug}`);
