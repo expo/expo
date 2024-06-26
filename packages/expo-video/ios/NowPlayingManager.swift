@@ -13,7 +13,6 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   static var shared = NowPlayingManager()
 
   private let skipTimeInterval = 10.0
-  private let fetchMetadataQueue = DispatchQueue(label: "com.expo.fetchMetadataQueue")
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private var players = NSHashTable<VideoPlayer>.weakObjects()
@@ -148,17 +147,18 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     let userMetadata = videoPlayerItem?.videoSource.metadata
 
     Task {
-      let assetMetadata = await try loadMetadata(for: currentItem)
+      // Metadata fetched with the video
+      let assetMetadata = try? await loadMetadata(for: currentItem)
 
-      let title = assetMetadata.first(where: {
+      let title = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyTitle
       })
 
-      let artist = assetMetadata.first(where: {
+      let artist = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtist
       })
 
-      let artwork = assetMetadata.first(where: {
+      let artwork = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtwork
       })
 
@@ -182,9 +182,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     }
 
     return await withCheckedContinuation { continuation in
-      fetchMetadataQueue.async {
-        continuation.resume(returning: mediaItem.asset.metadata)
-      }
+      return continuation.resume(returning: mediaItem.asset.metadata)
     }
   }
 
