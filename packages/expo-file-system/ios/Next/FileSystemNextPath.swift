@@ -5,7 +5,7 @@ internal class FileSystemNextPath: SharedObject {
   var url: URL
 
   init(url: URL) {
-      self.url = url
+    self.url = url
   }
 
   func delete() throws {
