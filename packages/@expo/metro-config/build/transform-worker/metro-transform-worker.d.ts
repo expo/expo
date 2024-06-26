@@ -15,5 +15,10 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
         readonly reactClientReference?: string;
     };
 };
+export declare function renameTopLevelModuleVariables(): {
+    visitor: {
+        Program(path: any): void;
+    };
+};
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;

@@ -27,6 +27,7 @@ import { JsTransformerConfig } from 'metro-transform-worker';
 import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 
 import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
+import { renameTopLevelModuleVariables } from '../transform-worker/metro-transform-worker';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -44,6 +45,7 @@ class InvalidRequireCallError extends Error {
     this.filename = filename;
   }
 }
+
 
 function assertCollectDependenciesOptions(
   collectDependenciesOptions: any
@@ -165,6 +167,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           filename: value.path,
           plugins: [
             // functionMapBabelPlugin,
+            renameTopLevelModuleVariables,
             !preserveEsm && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
 
             // TODO: Inline requires matchers
@@ -225,15 +228,25 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
         const globalPrefix = config.transformer?.globalPrefix ?? '';
 
-        const { ast: wrappedAst } = JsFileWrapping.wrapModule(
-          ast,
-          importDefault,
-          importAll,
-          dependencyMapName,
-          // TODO: Share these with transformer
-          globalPrefix,
-          config.transformer?.unstable_renameRequire === false
-        );
+        let wrappedAst;
+        try {
+          const results = JsFileWrapping.wrapModule(
+            ast,
+            importDefault,
+            importAll,
+            dependencyMapName,
+            // TODO: Share these with transformer
+            globalPrefix,
+            config.transformer?.unstable_renameRequire === false
+          );
+          wrappedAst = results.ast;
+        } catch (error) {
+          // This can throw if there's a top-level declaration of a variable named "module".
+          // If the error is a SyntaxError then parse and throw a proper babel error.
+          // console.log('Error wrapping module:', value.path);
+          // console.log(generate(ast).code);
+          throw error;
+        }
 
         const source = value.getSource().toString('utf-8');
 

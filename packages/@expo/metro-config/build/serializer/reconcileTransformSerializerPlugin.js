@@ -43,6 +43,7 @@ const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
+const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const debug = require('debug')('expo:treeshaking');
 class InvalidRequireCallError extends Error {
     innerError;
@@ -141,6 +142,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     filename: value.path,
                     plugins: [
                         // functionMapBabelPlugin,
+                        metro_transform_worker_1.renameTopLevelModuleVariables,
                         !preserveEsm && [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts],
                         // TODO: Inline requires matchers
                         // dynamicTransformOptions?.transform?.inlineRequires && [
@@ -191,9 +193,20 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 value.dependencies = nextDependencies;
                 // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
                 const globalPrefix = config.transformer?.globalPrefix ?? '';
-                const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
-                // TODO: Share these with transformer
-                globalPrefix, config.transformer?.unstable_renameRequire === false);
+                let wrappedAst;
+                try {
+                    const results = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
+                    // TODO: Share these with transformer
+                    globalPrefix, config.transformer?.unstable_renameRequire === false);
+                    wrappedAst = results.ast;
+                }
+                catch (error) {
+                    // This can throw if there's a top-level declaration of a variable named "module".
+                    // If the error is a SyntaxError then parse and throw a proper babel error.
+                    // console.log('Error wrapping module:', value.path);
+                    // console.log(generate(ast).code);
+                    throw error;
+                }
                 const source = value.getSource().toString('utf-8');
                 const reserved = [];
                 if (config.transformer?.unstable_dependencyMapReservedName != null) {

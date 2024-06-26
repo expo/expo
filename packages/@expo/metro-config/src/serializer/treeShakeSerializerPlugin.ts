@@ -477,6 +477,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           disposeOfGraphNode(dep.absolutePath);
         }
       }
+
       // @ts-expect-error
       graph.dependencies.delete(nodePath);
     }
@@ -535,14 +536,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         isEmptyModule(graphEntryForTargetImport)
       ) {
         console.log('Drop', importInstance.absolutePath);
-        // Remove inverse link to this dependency
-        graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
-
-        if (graphEntryForTargetImport.inverseDependencies.size === 0) {
-          console.log('Unlink module from graph:', importInstance.absolutePath);
-          // Remove the dependency from the graph as no other modules are using it anymore.
-          disposeOfGraphNode(importInstance.absolutePath);
-        }
 
         // Remove a random instance of the dep count to track if there are multiple imports.
         // TODO: Get the exact instance of the import.
@@ -553,6 +546,15 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           // console.log('Remove import instance:', depId);
           // Remove dependency from this module so it doesn't appear in the dependency map.
           graphModule.dependencies.delete(targetHashId);
+
+          // Remove inverse link to this dependency
+          graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
+
+          if (graphEntryForTargetImport.inverseDependencies.size === 0) {
+            console.log('Unlink module from graph:', importInstance.absolutePath);
+            // Remove the dependency from the graph as no other modules are using it anymore.
+            disposeOfGraphNode(importInstance.absolutePath);
+          }
         }
 
         // Mark the module as removed so we know to traverse again.
@@ -576,6 +578,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         return [];
       }
       const dirtyImports: string[] = [];
+      let needsImportReindex = false;
 
       const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
         return graph.dependencies.get(id);
@@ -648,6 +651,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   possibleUnusedExports.includes(specifier.exported.name) &&
                   !isExportUsed(specifier.exported.name)
                 ) {
+                  needsImportReindex = true;
                   // Remove specifier
                   path.node.specifiers.splice(i, 1);
                   i--;
@@ -689,6 +693,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               if (path.node.specifiers.length === 0) {
                 const removeRequest = disconnectGraphNode(value, importModuleId);
                 if (removeRequest.removed) {
+                  needsImportReindex = true;
                   dirtyImports.push(removeRequest.path);
                   markUnused(path, path.node.source);
                 }
@@ -697,6 +702,12 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           },
         });
       }
+
+      if (needsImportReindex) {
+        // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+        populateModuleWithImportUsage(value);
+      }
+
       return unique(dirtyImports);
     }
 
@@ -800,11 +811,17 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
     function removeUnusedImports(value: Module<MixedOutput>): string[] {
       if (!value.dependencies.size) return [];
-      return value.output
+      const dirtyImports = value.output
         .map((outputItem) => {
           return removeUnusedImportsFromModule(value, accessAst(outputItem));
         })
         .flat();
+
+      if (dirtyImports.length) {
+        // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+        populateModuleWithImportUsage(value);
+      }
+      return dirtyImports;
     }
 
     function unique<T extends any[]>(array: T): T {

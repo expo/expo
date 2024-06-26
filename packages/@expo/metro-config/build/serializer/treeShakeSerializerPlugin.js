@@ -35,6 +35,8 @@ const babylon = __importStar(require("@babel/parser"));
 const types = __importStar(require("@babel/types"));
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
+const annotate = false;
+const OPTIMIZE_GRAPH = true;
 const generate = require('@babel/generator').default;
 function isEmptyModule(value) {
     function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
@@ -122,8 +124,6 @@ function getExportsThatAreNotUsedInModule(ast) {
     });
     return unusedExports;
 }
-const annotate = false;
-const optimizeAll = true;
 // function ensureConstantModuleOrder(graph: ReadOnlyGraph, options: SerializerOptions) {
 //   const modules = [...graph.dependencies.values()];
 //   // Assign IDs to modules in a consistent order before changing anything.
@@ -166,7 +166,10 @@ function populateModuleWithImportUsage(value) {
             return dep.data.name === moduleId;
         })?.absolutePath;
         if (!key) {
-            throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
+            // This can be nullish with optional dependencies in a try/catch that don't resolve.
+            return null;
+            // console.log([...value.dependencies.values()]);
+            throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}". Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`);
         }
         return key;
     }
@@ -271,6 +274,9 @@ function populateModuleWithImportUsage(value) {
                 }
             },
         });
+        outputItem.data.modules.imports = outputItem.data.modules.imports.filter(
+        // Filter out missing optional dependencies.
+        (importItem) => importItem.key != null);
         // inspect('imports', outputItem.data.modules.imports);
     }
 }
@@ -297,7 +303,7 @@ function treeShakeSerializerPlugin(config) {
         // ensureConstantModuleOrder(graph, options);
         // Generate AST for all modules.
         populateGraphWithAst(graph);
-        if (!optimizeAll) {
+        if (!OPTIMIZE_GRAPH) {
             // Useful for testing the transform reconciler...
             return [entryPoint, preModules, graph, options];
         }
@@ -365,7 +371,7 @@ function treeShakeSerializerPlugin(config) {
             })?.[0];
             // // Should never happen but we're playing with fire here.
             if (!depId) {
-                throw new Error(`Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
+                throw new Error(`Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
             }
             return depId;
         }
@@ -380,7 +386,7 @@ function treeShakeSerializerPlugin(config) {
             const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
             // Should never happen but we're playing with fire here.
             if (!graphEntryForTargetImport) {
-                throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name)}`);
+                throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
             }
             const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
             if (
@@ -389,13 +395,6 @@ function treeShakeSerializerPlugin(config) {
                 // Unless it's an empty module.
                 isEmptyModule(graphEntryForTargetImport)) {
                 console.log('Drop', importInstance.absolutePath);
-                // Remove inverse link to this dependency
-                graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
-                if (graphEntryForTargetImport.inverseDependencies.size === 0) {
-                    console.log('Unlink module from graph:', importInstance.absolutePath);
-                    // Remove the dependency from the graph as no other modules are using it anymore.
-                    disposeOfGraphNode(importInstance.absolutePath);
-                }
                 // Remove a random instance of the dep count to track if there are multiple imports.
                 // TODO: Get the exact instance of the import.
                 // console.log('importInstance.data.data', importInstance.data.data);
@@ -404,6 +403,13 @@ function treeShakeSerializerPlugin(config) {
                     // console.log('Remove import instance:', depId);
                     // Remove dependency from this module so it doesn't appear in the dependency map.
                     graphModule.dependencies.delete(targetHashId);
+                    // Remove inverse link to this dependency
+                    graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
+                    if (graphEntryForTargetImport.inverseDependencies.size === 0) {
+                        console.log('Unlink module from graph:', importInstance.absolutePath);
+                        // Remove the dependency from the graph as no other modules are using it anymore.
+                        disposeOfGraphNode(importInstance.absolutePath);
+                    }
                 }
                 // Mark the module as removed so we know to traverse again.
                 return { path: importInstance.absolutePath, removed: true };
@@ -426,6 +432,7 @@ function treeShakeSerializerPlugin(config) {
                 return [];
             }
             const dirtyImports = [];
+            let needsImportReindex = false;
             const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
                 return graph.dependencies.get(id);
             });
@@ -486,6 +493,7 @@ function treeShakeSerializerPlugin(config) {
                                     types.isIdentifier(specifier.exported) &&
                                     possibleUnusedExports.includes(specifier.exported.name) &&
                                     !isExportUsed(specifier.exported.name)) {
+                                    needsImportReindex = true;
                                     // Remove specifier
                                     path.node.specifiers.splice(i, 1);
                                     i--;
@@ -520,6 +528,7 @@ function treeShakeSerializerPlugin(config) {
                             if (path.node.specifiers.length === 0) {
                                 const removeRequest = disconnectGraphNode(value, importModuleId);
                                 if (removeRequest.removed) {
+                                    needsImportReindex = true;
                                     dirtyImports.push(removeRequest.path);
                                     markUnused(path, path.node.source);
                                 }
@@ -527,6 +536,10 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
+            }
+            if (needsImportReindex) {
+                // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+                populateModuleWithImportUsage(value);
             }
             return unique(dirtyImports);
         }
@@ -615,11 +628,16 @@ function treeShakeSerializerPlugin(config) {
         function removeUnusedImports(value) {
             if (!value.dependencies.size)
                 return [];
-            return value.output
+            const dirtyImports = value.output
                 .map((outputItem) => {
                 return removeUnusedImportsFromModule(value, accessAst(outputItem));
             })
                 .flat();
+            if (dirtyImports.length) {
+                // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+                populateModuleWithImportUsage(value);
+            }
+            return dirtyImports;
         }
         function unique(array) {
             return Array.from(new Set(array));

@@ -187,6 +187,17 @@ class InvalidRequireCallError extends Error {
   }
 }
 
+export function renameTopLevelModuleVariables() {
+  // A babel plugin which renames variables in the top-level scope that are named "module".
+  return {
+    visitor: {
+      Program(path: any) {
+        path.scope.rename('module', path.scope.generateUidIdentifier('_module').name);
+      },
+    },
+  };
+}
+
 async function transformJS(
   file: JSFile,
   { config, options, projectRoot }: TransformationContext
@@ -234,7 +245,7 @@ async function transformJS(
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
-      plugins.push([metroTransformPlugins.importExportPlugin, babelPluginOpts]);
+      plugins.push(renameTopLevelModuleVariables, [metroTransformPlugins.importExportPlugin, babelPluginOpts]);
     }
 
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and

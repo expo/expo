@@ -11,7 +11,7 @@ exports.hasSideEffectWithDebugTrace = exports.hasSideEffect = void 0;
  * LICENSE file in the root directory of this source tree.
  */
 const fs_1 = __importDefault(require("fs"));
-const minimatch_1 = __importDefault(require("minimatch"));
+const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
@@ -45,6 +45,9 @@ function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value
         }
         checked.add(depReference.absolutePath);
         const dep = graph.dependencies.get(depReference.absolutePath);
+        if (!dep) {
+            continue;
+        }
         const [hasSideEffect, trace] = hasSideEffectWithDebugTrace(options, graph, dep, [...parentTrace, depReference.absolutePath], checked);
         if (hasSideEffect) {
             // Propagate the side effect to the parent.
@@ -115,7 +118,7 @@ const getPackageJsonMatcher = (options, dir) => {
             const relativeName = path_1.default.relative(dirRoot, fp);
             return packageJson.sideEffects.some((sideEffect) => {
                 if (typeof sideEffect === 'string') {
-                    return (0, minimatch_1.default)(relativeName, sideEffect.replace(/^\.\//, ''), {
+                    return (0, minimatch_1.minimatch)(relativeName, sideEffect.replace(/^\.\//, ''), {
                         matchBase: true,
                     });
                 }
@@ -128,7 +131,7 @@ const getPackageJsonMatcher = (options, dir) => {
     return isSideEffect;
 };
 function getShallowSideEffect(options, value) {
-    if (value.sideEffects !== undefined) {
+    if (value?.sideEffects !== undefined) {
         return value.sideEffects;
     }
     const isSideEffect = detectHasSideEffectInPackageJson(options, value);

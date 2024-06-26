@@ -25,6 +25,61 @@ function expectImports(graph, name: string) {
   return expect(getModules(graph, name).imports);
 }
 
+it(`doesn't unlink if a single import chain is removed`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+import {run} from "./b";
+console.log(run);
+            `,
+    // When we remove the import for `DEFAULT_ICON_COLOR` we need to ensure that we don't delete
+    // the `c` module because it still has another link in the same module.
+    'b.js': `
+import createIconButtonComponent from './c';
+export { DEFAULT_ICON_COLOR, } from './c';
+
+export function run() {
+  console.log(createIconButtonComponent)
+}
+`,
+    'c.js': `
+export const DEFAULT_ICON_COLOR = "bar";
+export default function createIconButtonComponent() {
+console.log("MARK")
+}
+`,
+  });
+
+  expectImports(graph, '/app/b.js').toEqual([expect.objectContaining({ key: '/app/c.js' })]);
+  expect(artifacts[0].source).not.toMatch('DEFAULT_ICON_COLOR');
+  expect(artifacts[0].source).toMatch('MARK');
+});
+
+it(`does unlink if a multiple import chains are removed`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+import {run} from "./b";
+console.log(run);
+            `,
+    'b.js': `
+import createIconButtonComponent from './c';
+export { DEFAULT_ICON_COLOR, } from './c';
+
+export function run() {
+}
+`,
+    'c.js': `
+export const DEFAULT_ICON_COLOR = "bar";
+export default function createIconButtonComponent() {
+console.log("MARK")
+}
+`,
+  });
+
+  expectImports(graph, '/app/b.js').toEqual([]);
+  expect(artifacts[0].source).not.toMatch('DEFAULT_ICON_COLOR');
+  expect(artifacts[0].source).not.toMatch('MARK');
+});
+
 it(`circular`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
@@ -120,8 +175,8 @@ it(`removes empty import`, async () => {
   });
 
   expectImports(graph, '/app/index.js').toEqual(
-    // TODO: This is a bug
-    [expect.objectContaining({ key: '/app/side-effect.js' })]
+    []
+    // [expect.objectContaining({ key: '/app/side-effect.js' })]
   );
   expect(artifacts[0].source).not.toMatch('side-effect');
   expect(artifacts[0].source).toMatchInlineSnapshot(`
@@ -217,6 +272,16 @@ it(`barrel default as`, async () => {
 });
 
 describe('metro require', () => {
+  xit(`uses missing optional require`, async () => {
+    const [[, , graph], artifacts] = await serializeShakingAsync({
+      'index.js': `
+          try {
+            require('@dotlottie/react-player').DotLottiePlayer;
+          } catch (e) {}
+        `,
+    });
+  });
+
   // Not supported in the mini runner
   xit(`uses require.context`, async () => {
     const [[, , graph], artifacts] = await serializeShakingAsync({
@@ -389,6 +454,37 @@ describe('cjs', () => {
   });
 });
 
+it(`double barrel`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { add } from './barrel';
+          console.log('keep', add(1, 2));
+        `,
+    'barrel.js': `export { add, subtract } from './barrel2';`,
+    'barrel2.js': `export { add, subtract } from './math';`,
+    'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ key: '/app/barrel.js' }),
+  ]);
+  expectImports(graph, '/app/barrel.js').toEqual([
+    expect.objectContaining({ key: '/app/barrel2.js' }),
+  ]);
+  expectImports(graph, '/app/barrel2.js').toEqual([
+    expect.objectContaining({ key: '/app/math.js' }),
+  ]);
+  expect(artifacts[0].source).not.toMatch('subtract');
+});
+
 // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
 describe('sanity', () => {
   // These tests do not optimize the graph but they ensure that tree shaking doesn't break anything.
@@ -436,6 +532,33 @@ describe('sanity', () => {
   });
 });
 
+it(`barrel multiple`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { add } from './barrel';
+          console.log('keep', add(1, 2));
+        `,
+    'barrel.js': `export { add, subtract } from './math';`,
+    'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ key: '/app/barrel.js' }),
+  ]);
+  expectImports(graph, '/app/barrel.js').toEqual([
+    expect.objectContaining({ key: '/app/math.js' }),
+  ]);
+  expect(artifacts[0].source).not.toMatch('subtract');
+});
+
 describe('Possible optimizations', () => {
   // TODO: Broken
   it(`require module`, async () => {
@@ -456,64 +579,6 @@ describe('Possible optimizations', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
-    ]);
-    expect(artifacts[0].source).toMatch('subtract');
-  });
-
-  it(`double barrel`, async () => {
-    const [[, , graph], artifacts] = await serializeShakingAsync({
-      'index.js': `
-            import { add } from './barrel';
-            console.log('keep', add(1, 2));
-          `,
-      'barrel.js': `export { add, subtract } from './barrel2';`,
-      'barrel2.js': `export { add, subtract } from './math';`,
-      'math.js': `
-            export function add(a, b) {
-              return a + b;
-            }
-  
-            export function subtract(a, b) {
-              return a - b;
-            }
-          `,
-    });
-
-    expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/barrel.js' }),
-    ]);
-    expectImports(graph, '/app/barrel.js').toEqual([
-      expect.objectContaining({ key: '/app/barrel2.js' }),
-    ]);
-    expectImports(graph, '/app/barrel2.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
-    ]);
-    expect(artifacts[0].source).toMatch('subtract');
-  });
-
-  it(`barrel multiple`, async () => {
-    const [[, , graph], artifacts] = await serializeShakingAsync({
-      'index.js': `
-            import { add } from './barrel';
-            console.log('keep', add(1, 2));
-          `,
-      'barrel.js': `export { add, subtract } from './math';`,
-      'math.js': `
-            export function add(a, b) {
-              return a + b;
-            }
-  
-            export function subtract(a, b) {
-              return a - b;
-            }
-          `,
-    });
-
-    expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/barrel.js' }),
-    ]);
-    expectImports(graph, '/app/barrel.js').toEqual([
       expect.objectContaining({ key: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');

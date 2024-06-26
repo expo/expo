@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCacheKey = exports.transform = void 0;
+exports.getCacheKey = exports.transform = exports.renameTopLevelModuleVariables = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -125,6 +125,17 @@ class InvalidRequireCallError extends Error {
         this.filename = filename;
     }
 }
+function renameTopLevelModuleVariables() {
+    // A babel plugin which renames variables in the top-level scope that are named "module".
+    return {
+        visitor: {
+            Program(path) {
+                path.scope.rename('module', path.scope.generateUidIdentifier('_module').name);
+            },
+        },
+    };
+}
+exports.renameTopLevelModuleVariables = renameTopLevelModuleVariables;
 async function transformJS(file, { config, options, projectRoot }) {
     const treeshake = 
     // Ensure we don't enable tree shaking for scripts or assets.
@@ -159,7 +170,7 @@ async function transformJS(file, { config, options, projectRoot }) {
         // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
         // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
         if (options.experimentalImportSupport === true) {
-            plugins.push([metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
+            plugins.push(renameTopLevelModuleVariables, [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
         }
         // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
         // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
