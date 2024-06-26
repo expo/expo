@@ -13,9 +13,7 @@ export async function attemptModification(
   const modification = await modifyConfigAsync(projectRoot, edits, {
     skipSDKVersionRequirement: true,
   });
-  if (modification.type === 'success') {
-    Log.log();
-  } else {
+  if (modification.type !== 'success') {
     warnAboutConfigAndThrow(modification.type, modification.message!, exactEdits);
   }
 }
