@@ -771,8 +771,13 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             case AVPlayerStatusUnknown:
               break;
             case AVPlayerStatusReadyToPlay:
-              if (!strongSelf.isLoaded && strongSelf.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
-                [strongSelf _finishLoadingNewPlayer];
+              if (!strongSelf.isLoaded) {
+                if (strongSelf.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
+                  [strongSelf _finishLoadingNewPlayer];
+                } else if (strongSelf.player.currentItem.status == AVPlayerItemStatusFailed) {
+                  NSString* errorMessage = strongSelf.player.currentItem.error.localizedDescription;
+                  [strongSelf _finishLoadWithError:errorMessage];
+                }
               }
               break;
             case AVPlayerStatusFailed: {
@@ -782,12 +787,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
                 NSString *reasonMessage = [strongSelf.player.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
               }
-              if (strongSelf.loadFinishBlock) {
-                strongSelf.loadFinishBlock(NO, nil, errorMessage);
-                strongSelf.loadFinishBlock = nil;
-              } else if (strongSelf.errorCallback) {
-                strongSelf.errorCallback(errorMessage);
-              }
+              [strongSelf _finishLoadWithError:errorMessage];
               break;
             }
           }
@@ -847,8 +847,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             [self installTap];
           }
         }
-      } else if (object == strongSelf.player.currentItem ||
-                 ([object isKindOfClass:AVPlayerItem.class] && ((AVPlayerItem*) object).asset == strongSelf.player.currentItem.asset)) {
+      } else if (object == strongSelf.player.currentItem) {
         if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
           switch (strongSelf.player.currentItem.status) {
             case AVPlayerItemStatusUnknown:
@@ -864,12 +863,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
                 NSString *reasonMessage = [strongSelf.player.currentItem.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
               }
-              if (strongSelf.loadFinishBlock) {
-                strongSelf.loadFinishBlock(NO, nil, errorMessage);
-                strongSelf.loadFinishBlock = nil;
-              } else if (strongSelf.errorCallback) {
-                strongSelf.errorCallback(errorMessage);
-              }
+              [strongSelf _finishLoadWithError:errorMessage];
               strongSelf.isLoaded = NO;
               break;
             }
