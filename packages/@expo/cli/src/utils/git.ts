@@ -52,7 +52,7 @@ export async function validateGitStatusAsync(): Promise<boolean> {
     return true;
   } else if (workingTreeStatus === 'dirty') {
     logWarning(
-      'Current git branch has uncommited file changes',
+      'Git branch has uncommited file changes',
       `It's recommended to commit all changes before proceeding in case you want to revert generated changes.`
     );
   } else {
