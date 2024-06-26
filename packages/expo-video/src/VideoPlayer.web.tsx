@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import type {
+  PlayerError,
   VideoPlayer,
   VideoPlayerEvents,
   VideoPlayerStatus,
@@ -47,6 +48,7 @@ export default class VideoPlayerWeb
   _playbackRate: number = 1.0;
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
+  _error: PlayerError | null = null;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
 
@@ -126,6 +128,18 @@ export default class VideoPlayerWeb
 
   get status(): VideoPlayerStatus {
     return this._status;
+  }
+
+  private set status(value: VideoPlayerStatus) {
+    if (this._status === value) return;
+
+    if (value === 'error' && this._error) {
+      this.emit('statusChange', value, this._status, this._error);
+    } else {
+      this.emit('statusChange', value, this._status);
+      this._error = null;
+    }
+    this._status = value;
   }
 
   mountVideoView(video: HTMLVideoElement) {
@@ -240,9 +254,24 @@ export default class VideoPlayerWeb
     video.playbackRate = firstVideo.playbackRate;
   }
 
+  /**
+   * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.
+   * We want to avoid this, so we only emit the event if it came from the first video.
+   */
+  _emitOnce<EventName extends keyof VideoPlayerEvents>(
+    eventSource: HTMLVideoElement,
+    eventName: EventName,
+    ...args: Parameters<VideoPlayerEvents[EventName]>
+  ): void {
+    const mountedVideos = [...this._mountedVideos];
+    if (mountedVideos[0] === eventSource) {
+      this.emit(eventName, ...args);
+    }
+  }
+
   _addListeners(video: HTMLVideoElement): void {
     video.onplay = () => {
-      this.emit('playingChange', true, this.playing);
+      this._emitOnce(video, 'playingChange', true, this.playing);
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
@@ -250,7 +279,7 @@ export default class VideoPlayerWeb
     };
 
     video.onpause = () => {
-      this.emit('playingChange', false, this.playing);
+      this._emitOnce(video, 'playingChange', false, this.playing);
       this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
@@ -258,7 +287,8 @@ export default class VideoPlayerWeb
     };
 
     video.onvolumechange = () => {
-      this.emit(
+      this._emitOnce(
+        video,
         'volumeChange',
         { volume: video.volume, isMuted: video.muted },
         { volume: this.volume, isMuted: this.muted }
@@ -282,7 +312,7 @@ export default class VideoPlayerWeb
     };
 
     video.onratechange = () => {
-      this.emit('playbackRateChange', video.playbackRate, this.playbackRate);
+      this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo.playbackRate === video.playbackRate) return;
         this._playbackRate = video.playbackRate;
@@ -292,33 +322,32 @@ export default class VideoPlayerWeb
     };
 
     video.onerror = () => {
-      const errorMessage = video.error?.message ?? 'Unknown player error';
-
-      this.emit('statusChange', 'error', this._status, {
-        message: errorMessage,
-      });
-      this._status = 'error';
+      this._error = {
+        message: video.error?.message ?? 'Unknown player error',
+      };
+      this.status = 'error';
     };
 
     video.oncanplay = () => {
-      this.emit('statusChange', 'readyToPlay', this._status);
-      this._status = 'readyToPlay';
-      if (this.playing && video.paused) {
-        video.play();
-      }
+      const allCanPlay = [...this._mountedVideos].reduce((previousValue, video) => {
+        return previousValue && video.readyState >= 3;
+      }, true);
+      if (!allCanPlay) return;
+
+      this.status = 'readyToPlay';
     };
 
     video.onwaiting = () => {
-      this.emit('statusChange', 'loading', this._status);
-      this._status = 'loading';
+      if (this._status === 'loading') return;
+      this.status = 'loading';
     };
 
     video.onended = () => {
-      this.emit('playToEnd');
+      this._emitOnce(video, 'playToEnd');
     };
 
     video.onloadstart = () => {
-      this.emit('sourceChange', this.src, this.previousSrc);
+      this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
     };
   }
 }

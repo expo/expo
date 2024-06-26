@@ -1,4 +1,4 @@
-import type { VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
+import type { PlayerError, VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
@@ -14,6 +14,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _playbackRate: number;
     _preservesPitch: boolean;
     _status: VideoPlayerStatus;
+    _error: PlayerError | null;
     staysActiveInBackground: boolean;
     showNowPlayingNotification: boolean;
     set muted(value: boolean);
@@ -31,6 +32,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get preservesPitch(): boolean;
     set preservesPitch(value: boolean);
     get status(): VideoPlayerStatus;
+    private set status(value);
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
     mountAudioNode(audioContext: AudioContext, zeroGainNode: GainNode, audioSourceNode: MediaElementAudioSourceNode): void;
@@ -41,6 +43,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     seekBy(seconds: number): void;
     replay(): void;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
+    /**
+     * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.
+     * We want to avoid this, so we only emit the event if it came from the first video.
+     */
+    _emitOnce<EventName extends keyof VideoPlayerEvents>(eventSource: HTMLVideoElement, eventName: EventName, ...args: Parameters<VideoPlayerEvents[EventName]>): void;
     _addListeners(video: HTMLVideoElement): void;
 }
 //# sourceMappingURL=VideoPlayer.web.d.ts.map

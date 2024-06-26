@@ -29,6 +29,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     _playbackRate = 1.0;
     _preservesPitch = true;
     _status = 'idle';
+    _error = null;
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
     set muted(value) {
@@ -93,6 +94,18 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     }
     get status() {
         return this._status;
+    }
+    set status(value) {
+        if (this._status === value)
+            return;
+        if (value === 'error' && this._error) {
+            this.emit('statusChange', value, this._status, this._error);
+        }
+        else {
+            this.emit('statusChange', value, this._status);
+            this._error = null;
+        }
+        this._status = value;
     }
     mountVideoView(video) {
         // The video will be the first video, it should inherit the properties set in the setup() function
@@ -190,23 +203,33 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         video.muted = firstVideo.muted;
         video.playbackRate = firstVideo.playbackRate;
     }
+    /**
+     * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.
+     * We want to avoid this, so we only emit the event if it came from the first video.
+     */
+    _emitOnce(eventSource, eventName, ...args) {
+        const mountedVideos = [...this._mountedVideos];
+        if (mountedVideos[0] === eventSource) {
+            this.emit(eventName, ...args);
+        }
+    }
     _addListeners(video) {
         video.onplay = () => {
-            this.emit('playingChange', true, this.playing);
+            this._emitOnce(video, 'playingChange', true, this.playing);
             this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
-            this.emit('playingChange', false, this.playing);
+            this._emitOnce(video, 'playingChange', false, this.playing);
             this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
-            this.emit('volumeChange', { volume: video.volume, isMuted: video.muted }, { volume: this.volume, isMuted: this.muted });
+            this._emitOnce(video, 'volumeChange', { volume: video.volume, isMuted: video.muted }, { volume: this.volume, isMuted: this.muted });
             this.volume = video.volume;
             this.muted = video.muted;
         };
@@ -225,7 +248,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             });
         };
         video.onratechange = () => {
-            this.emit('playbackRateChange', video.playbackRate, this.playbackRate);
+            this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo.playbackRate === video.playbackRate)
                     return;
@@ -235,28 +258,29 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             this._playbackRate = video.playbackRate;
         };
         video.onerror = () => {
-            const errorMessage = video.error?.message ?? 'Unknown player error';
-            this.emit('statusChange', 'error', this._status, {
-                message: errorMessage,
-            });
-            this._status = 'error';
+            this._error = {
+                message: video.error?.message ?? 'Unknown player error',
+            };
+            this.status = 'error';
         };
         video.oncanplay = () => {
-            this.emit('statusChange', 'readyToPlay', this._status);
-            this._status = 'readyToPlay';
-            if (this.playing && video.paused) {
-                video.play();
-            }
+            const allCanPlay = [...this._mountedVideos].reduce((previousValue, video) => {
+                return previousValue && video.readyState >= 3;
+            }, true);
+            if (!allCanPlay)
+                return;
+            this.status = 'readyToPlay';
         };
         video.onwaiting = () => {
-            this.emit('statusChange', 'loading', this._status);
-            this._status = 'loading';
+            if (this._status === 'loading')
+                return;
+            this.status = 'loading';
         };
         video.onended = () => {
-            this.emit('playToEnd');
+            this._emitOnce(video, 'playToEnd');
         };
         video.onloadstart = () => {
-            this.emit('sourceChange', this.src, this.previousSrc);
+            this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
         };
     }
 }
