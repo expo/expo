@@ -1,5 +1,8 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowRightIcon, ArrowUpRightIcon, Users02Icon, AtSignIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
+import { Users02Icon } from '@expo/styleguide-icons/outline/Users02Icon';
 import { type PropsWithChildren } from 'react';
 
 import { TALKS, Talk } from '~/public/static/talks';

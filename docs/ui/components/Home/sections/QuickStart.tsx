@@ -1,5 +1,6 @@
 import { RouterLogo, mergeClasses } from '@expo/styleguide';
-import { ArrowRightIcon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 
 import { GridContainer, GridCell, HeaderDescription, HomeButton } from '~/ui/components/Home';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';

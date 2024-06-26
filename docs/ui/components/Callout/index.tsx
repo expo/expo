@@ -1,10 +1,8 @@
 import { css } from '@emotion/react';
 import { mergeClasses, theme, typography } from '@expo/styleguide';
-import {
-  XSquareSolidIcon,
-  InfoCircleSolidIcon,
-  AlertTriangleSolidIcon,
-} from '@expo/styleguide-icons';
+import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
+import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
+import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
 import {
   Children,
   HTMLAttributes,

@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { isBefore } from 'date-fns/isBefore';
 import { useRouter } from 'next/compat/router';
 
