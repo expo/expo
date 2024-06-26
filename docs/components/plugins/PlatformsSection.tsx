@@ -1,4 +1,4 @@
-import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { StatusWaitingIcon } from '@expo/styleguide-icons/custom/StatusWaitingIcon';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';

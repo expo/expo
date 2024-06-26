@@ -1,10 +1,8 @@
 import { useTheme, mergeClasses } from '@expo/styleguide';
-import {
-  ChevronDownIcon,
-  Moon01SolidIcon,
-  SunSolidIcon,
-  Contrast02SolidIcon,
-} from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
+import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
+import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
 import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {

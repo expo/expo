@@ -1,4 +1,4 @@
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
 import {

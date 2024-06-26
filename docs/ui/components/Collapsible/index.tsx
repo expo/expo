@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { TriangleDownIcon } from '@expo/styleguide-icons';
+import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { useRouter } from 'next/compat/router';
 import {
   type ComponentType,

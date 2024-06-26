@@ -1,5 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { BuildIcon, Edit05Icon, GithubIcon } from '@expo/styleguide-icons';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
