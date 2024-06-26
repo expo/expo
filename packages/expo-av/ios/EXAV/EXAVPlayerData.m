@@ -124,10 +124,23 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   return self;
 }
 
+- (void) warnIfNonExistingFile:(NSURL *)url {
+  if ([url.scheme isEqualToString:@"file"]) {
+    NSString *filePath = [url path];
+    BOOL isDirectory;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL fileExists = [fileManager fileExistsAtPath:filePath isDirectory:&isDirectory];
+    if (!fileExists || isDirectory) {
+      EXLogWarn(@"Expo-av: attempted to load an asset that doesn't exist: %@. This can happen when you persist an absolute path and then try to load from it. Make sure the provided path is relative to the application sandbox, e.g. `${FileSystem.documentDirectory}/some_file.m4a`.", url.path);
+    }
+  }
+}
+
 - (void)_loadNewPlayer
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
   NSURL *assetUrl = _url;
+  [self warnIfNonExistingFile:assetUrl];
 
   // Ideally we would load the _url directly into the [AVURLAsset URLAssetWithURL:...], but iOS 17 introduced changes/bug, which breaks creating
   // an AVURLAsset from data uris. As a workaround we save the data into a file and play the audio from that file.
@@ -834,7 +847,8 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             [self installTap];
           }
         }
-      } else if (object == strongSelf.player.currentItem) {
+      } else if (object == strongSelf.player.currentItem ||
+                 ([object isKindOfClass:AVPlayerItem.class] && ((AVPlayerItem*) object).asset == strongSelf.player.currentItem.asset)) {
         if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
           switch (strongSelf.player.currentItem.status) {
             case AVPlayerItemStatusUnknown:
