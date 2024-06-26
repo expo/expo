@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.12.17 — 2024-06-27
