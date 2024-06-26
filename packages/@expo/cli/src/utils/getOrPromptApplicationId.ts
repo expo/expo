@@ -14,11 +14,11 @@ import {
   validatePackageWithWarning,
 } from './validateApplicationId';
 import * as Log from '../log';
+import { memoize } from './fn';
 
-function getUsernameAsync(exp: ExpoConfig) {
-  // TODO: Use XDL's UserManager
-  // import { UserManager } from 'xdl';
-  return getAccountUsername(exp);
+function getExpoUsername(exp: ExpoConfig) {
+  // Account for if the environment variable was an empty string.
+  return getAccountUsername(exp) || 'anonymous';
 }
 
 const NO_BUNDLE_ID_MESSAGE = `Project must have a \`ios.bundleIdentifier\` set in the Expo config (app.json or app.config.js).`;
@@ -40,39 +40,48 @@ export async function getOrPromptForBundleIdentifier(
     return current;
   }
 
-  Log.log(
-    chalk`\n{bold 📝  iOS Bundle Identifier} {dim ${learnMore(
-      'https://expo.fyi/bundle-identifier'
-    )}}\n`
-  );
-
-  return await promptForBundleIdAsync(projectRoot, exp);
+  return promptForBundleIdWithInitialAsync(projectRoot, exp, getRecommendedBundleId(exp));
 }
 
-async function promptForBundleIdAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
-  // Prompt the user for the bundle ID.
-  // Even if the project is using a dynamic config we can still
-  // prompt a better error message, recommend a default value, and help the user
-  // validate their custom bundle ID upfront.
-  const { bundleIdentifier } = await prompt(
-    {
-      type: 'text',
-      name: 'bundleIdentifier',
-      initial: (await getRecommendedBundleIdAsync(exp)) ?? undefined,
-      // The Apple helps people know this isn't an EAS feature.
-      message: `What would you like your iOS bundle identifier to be?`,
-      validate: validateBundleId,
-    },
-    {
-      nonInteractiveHelp: NO_BUNDLE_ID_MESSAGE,
-    }
-  );
+const memoLog = memoize(Log.log);
+
+async function promptForBundleIdWithInitialAsync(
+  projectRoot: string,
+  exp: ExpoConfig,
+  bundleIdentifier?: string
+): Promise<string> {
+  if (!bundleIdentifier) {
+    memoLog(
+      chalk`\n{bold 📝  iOS Bundle Identifier} {dim ${learnMore(
+        'https://expo.fyi/bundle-identifier'
+      )}}\n`
+    );
+
+    // Prompt the user for the bundle ID.
+    // Even if the project is using a dynamic config we can still
+    // prompt a better error message, recommend a default value, and help the user
+    // validate their custom bundle ID upfront.
+    const { input } = await prompt(
+      {
+        type: 'text',
+        name: 'input',
+        // The Apple helps people know this isn't an EAS feature.
+        message: `What would you like your iOS bundle identifier to be?`,
+        validate: validateBundleId,
+      },
+      {
+        nonInteractiveHelp: NO_BUNDLE_ID_MESSAGE,
+      }
+    );
+    bundleIdentifier = input as string;
+  }
 
   // Warn the user if the bundle ID is already in use.
   const warning = await getBundleIdWarningAsync(bundleIdentifier);
+
   if (warning && !(await warnAndConfirmAsync(warning))) {
     // Cycle the Bundle ID prompt to try again.
-    return await promptForBundleIdAsync(projectRoot, exp);
+    return await promptForBundleIdWithInitialAsync(projectRoot, exp);
   }
 
   // Apply the changes to the config.
@@ -103,35 +112,35 @@ async function warnAndConfirmAsync(warning: string): Promise<boolean> {
 }
 
 // Recommend a bundle identifier based on the username and project slug.
-async function getRecommendedBundleIdAsync(exp: ExpoConfig): Promise<string | null> {
+function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
   // Attempt to use the android package name first since it's convenient to have them aligned.
   if (exp.android?.package && validateBundleId(exp.android?.package)) {
     return exp.android?.package;
   } else {
-    const username = await getUsernameAsync(exp);
+    const username = getExpoUsername(exp);
     const possibleId = `com.${username}.${exp.slug}`;
-    if (username && validateBundleId(possibleId)) {
+    if (validateBundleId(possibleId)) {
       return possibleId;
     }
   }
 
-  return null;
+  return undefined;
 }
 
 // Recommend a package name based on the username and project slug.
-async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string | null> {
+function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
   // Attempt to use the ios bundle id first since it's convenient to have them aligned.
   if (exp.ios?.bundleIdentifier && validatePackage(exp.ios.bundleIdentifier)) {
     return exp.ios.bundleIdentifier;
   } else {
-    const username = await getUsernameAsync(exp);
+    const username = getExpoUsername(exp);
     // It's common to use dashes in your node project name, strip them from the suggested package name.
     const possibleId = `com.${username}.${exp.slug}`.split('-').join('');
-    if (username && validatePackage(possibleId)) {
+    if (validatePackage(possibleId)) {
       return possibleId;
     }
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -149,36 +158,46 @@ export async function getOrPromptForPackage(
     return current;
   }
 
-  Log.log(
-    chalk`\n{bold 📝  Android package} {dim ${learnMore('https://expo.fyi/android-package')}}\n`
-  );
-
   return await promptForPackageAsync(projectRoot, exp);
 }
 
-async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
-  // Prompt the user for the android package.
-  // Even if the project is using a dynamic config we can still
-  // prompt a better error message, recommend a default value, and help the user
-  // validate their custom android package upfront.
-  const { packageName } = await prompt(
-    {
-      type: 'text',
-      name: 'packageName',
-      initial: (await getRecommendedPackageNameAsync(exp)) ?? undefined,
-      message: `What would you like your Android package name to be?`,
-      validate: validatePackageWithWarning,
-    },
-    {
-      nonInteractiveHelp: NO_PACKAGE_MESSAGE,
-    }
-  );
+function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
+  return promptForPackageWithInitialAsync(projectRoot, exp, getRecommendedPackageName(exp));
+}
+
+async function promptForPackageWithInitialAsync(
+  projectRoot: string,
+  exp: ExpoConfig,
+  packageName?: string
+): Promise<string> {
+  if (!packageName) {
+    memoLog(
+      chalk`\n{bold 📝  Android package} {dim ${learnMore('https://expo.fyi/android-package')}}\n`
+    );
+
+    // Prompt the user for the android package.
+    // Even if the project is using a dynamic config we can still
+    // prompt a better error message, recommend a default value, and help the user
+    // validate their custom android package upfront.
+    const { input } = await prompt(
+      {
+        type: 'text',
+        name: 'input',
+        message: `What would you like your Android package name to be?`,
+        validate: validatePackageWithWarning,
+      },
+      {
+        nonInteractiveHelp: NO_PACKAGE_MESSAGE,
+      }
+    );
+    packageName = input as string;
+  }
 
   // Warn the user if the package name is already in use.
   const warning = await getPackageNameWarningAsync(packageName);
   if (warning && !(await warnAndConfirmAsync(warning))) {
     // Cycle the Package name prompt to try again.
-    return await promptForPackageAsync(projectRoot, exp);
+    return promptForPackageWithInitialAsync(projectRoot, exp);
   }
 
   // Apply the changes to the config.
