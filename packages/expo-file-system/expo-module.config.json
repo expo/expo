@@ -14,7 +14,8 @@
   },
   "android": {
     "modules": [
-      "expo.modules.filesystem.FileSystemModule"
+      "expo.modules.filesystem.FileSystemModule",
+      "expo.modules.filesystem.next.FileSystemNextModule"
     ]
   }
 }

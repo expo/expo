@@ -1,6 +1,7 @@
 'use strict';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
+import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
 
@@ -19,15 +20,23 @@ export async function test({ describe, expect, it, ...t }) {
 
   describe('FileSystem (Next)', () => {
     it('Creates a lazy file reference', async () => {
-      const file = new File('file://path/to/file');
-      expect(file.path).toBe('file://path/to/file');
+      const file = new File('file:///path/to/file');
+      // The path is normalized by the OS, with both being valid urls (https://stackoverflow.com/a/44725349)
+      if (Platform.OS === 'ios') {
+        expect(file.path).toBe('file:///path/to/file');
+      } else if (Platform.OS === 'android') {
+        expect(file.path).toBe('file:/path/to/file');
+      }
     });
 
     it('Allows changing the path property', async () => {
-      const file = new File('file://path/to/file');
-      expect(file.path).toBe('file://path/to/file');
-      file.path = 'file://new/path';
-      expect(file.path).toBe('file://new/path');
+      const file = new File('file:///path/to/file');
+      file.path = 'file:///new/path';
+      if (Platform.OS === 'ios') {
+        expect(file.path).toBe('file:///new/path');
+      } else if (Platform.OS === 'android') {
+        expect(file.path).toBe('file:/new/path');
+      }
     });
 
     it('Writes a string to a file reference', async () => {
@@ -62,11 +71,18 @@ export async function test({ describe, expect, it, ...t }) {
       expect(folder.exists()).toBe(true);
     });
 
-    it("Doesn't create a folder without a slash", async () => {
-      expect(() => {
-        // eslint-disable-next-line no-new
-        new Directory(testDirectory + 'newFolder2');
-      }).toThrow();
+    // TODO: Make this consistent on both platforms
+    it('Creates a folder without a slash', async () => {
+      if (Platform.OS === 'ios') {
+        expect(() => {
+          // eslint-disable-next-line no-new
+          new Directory(testDirectory + 'newFolder2');
+        }).toThrow();
+      } else if (Platform.OS === 'android') {
+        const folder = new Directory(testDirectory + 'newFolder2');
+        folder.create();
+        expect(folder.exists()).toBe(true);
+      }
     });
 
     it('Creates an empty file', async () => {

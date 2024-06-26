@@ -12,22 +12,17 @@ public final class FileSystemNextModule: Module {
       }
 
       // we can't throw in a constructor, so this is a workaround
-      Function("validatePath") { directory in
-        guard directory.url.isFileURL && !directory.url.hasDirectoryPath else {
-          throw Exception(name: "wrong type", description: "tried to create a file with a directory path")
-        }
+      Function("validatePath") { file in
+        try file.validatePath()
       }
 
       // maybe asString, readAsString, readAsText, readText, ect.
       Function("text") { file in
-        return try String(contentsOf: file.url)
+        return try file.text()
       }
 
       Function("write") { (file, content: Either<String, TypedArray>) in
-        if let content: String = content.get() {
-          try content.write(to: file.url, atomically: false, encoding: .utf8) // error handling
-        }
-        // typedarray, blobs, others support
+        try file.write(content)
       }
 
       Function("delete") { file in
@@ -56,10 +51,9 @@ public final class FileSystemNextModule: Module {
         return FileSystemNextDirectory(url: url)
       }
 
+      // we can't throw in a constructor, so this is a workaround
       Function("validatePath") { directory in
-        guard directory.url.isFileURL && directory.url.hasDirectoryPath else {
-          throw Exception(name: "wrong type", description: "tried to create a directory with a file path")
-        }
+        try directory.validatePath()
       }
 
       Function("delete") { directory in
