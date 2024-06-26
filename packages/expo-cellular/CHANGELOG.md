@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix support for 5G ([#30012](https://github.com/expo/expo/pull/30012) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 - Update cellular generation comments to specify HSPAP as 3G instead of 4G. ([#30008](https://github.com/expo/expo/pull/30008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
