@@ -15,10 +15,9 @@ class FileSystemNextModule : Module() {
     Name("FileSystemNext")
 
     Class(FileSystemNextFile::class) {
-        Constructor { path: String ->
-          FileSystemNextFile(File(URI(path).path))
-        }
-
+      Constructor { path: String ->
+        FileSystemNextFile(File(URI(path).path))
+      }
 
       Function("delete") { file: FileSystemNextFile ->
         file.delete()
@@ -51,9 +50,9 @@ class FileSystemNextModule : Module() {
     }
 
     Class(FileSystemNextDirectory::class) {
-        Constructor { path: String ->
-            FileSystemNextDirectory(File(URI(path).path))
-        }
+      Constructor { path: String ->
+        FileSystemNextDirectory(File(URI(path).path))
+      }
 
       Function("delete") { directory: FileSystemNextDirectory ->
         directory.delete()

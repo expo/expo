@@ -1,8 +1,5 @@
 package expo.modules.filesystem.next
 
-import android.content.ContentResolver
-import android.os.Environment
-import androidx.core.net.toUri
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
@@ -16,11 +13,11 @@ class FileSystemNextFile(file: File) : FileSystemNextPath(file) {
   }
 
   fun create() {
-      path.createNewFile()
+    path.createNewFile()
   }
 
   fun write(content: Either<String, TypedArray>) {
-    if(!exists()) {
+    if (!exists()) {
       create()
     }
     content.get(String::class).let { text ->
