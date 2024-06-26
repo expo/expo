@@ -120,6 +120,7 @@ export interface NativeConstants {
   name: 'ExponentConstants';
   /**
    * Returns `expo` when running in Expo Go, otherwise `null`.
+   * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
    */
   appOwnership: AppOwnership | null;
   debugMode: boolean;
