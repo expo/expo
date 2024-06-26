@@ -44,6 +44,7 @@ const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugi
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
+const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
 class InvalidRequireCallError extends Error {
     innerError;
@@ -115,6 +116,13 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 const importDefault = collectDependenciesOptions.inlineableCalls[0];
                 const importAll = collectDependenciesOptions.inlineableCalls[1];
                 // const { importDefault, importAll } = generateImportNames(ast);
+                const sideEffectReferences = [...value.dependencies.values()]
+                    .filter((dep) => {
+                    const fullDep = graph.dependencies.get(dep.absolutePath);
+                    return fullDep && (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, fullDep)[0];
+                })
+                    .map((dep) => dep.data.name);
+                console.log('treeshake:', sideEffectReferences);
                 const babelPluginOpts = {
                     // ...options,
                     ...graph.transformOptions,
@@ -130,6 +138,10 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     inlineableCalls: [importDefault, importAll],
                     importDefault,
                     importAll,
+                    // Add side-effects to the ignore list.
+                    nonInlinedRequires: graph.transformOptions.nonInlinedRequires
+                        ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
+                        : sideEffectReferences,
                 };
                 // @ts-expect-error: TODO
                 ast = (0, core_1.transformFromAstSync)(ast, undefined, {
@@ -144,11 +156,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                         // functionMapBabelPlugin,
                         metro_transform_worker_1.renameTopLevelModuleVariables,
                         !preserveEsm && [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts],
-                        // TODO: Inline requires matchers
-                        // dynamicTransformOptions?.transform?.inlineRequires && [
-                        //   require('metro-transform-plugins/src/inline-plugin'),
-                        //   babelPluginOpts,
-                        // ],
+                        // TODO: Add support for disabling safe inline requires.
+                        [metro_transform_plugins_1.default.inlineRequiresPlugin, babelPluginOpts],
                     ].filter(Boolean),
                     sourceMaps: false,
                     // // Not-Cloning the input AST here should be safe because other code paths above this call

@@ -13,29 +13,6 @@ import { findUpPackageJsonPath } from './findUpPackageJsonPath';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
-export function hasSideEffect(
-  graph: ReadOnlyGraph,
-  value: Module<MixedOutput>,
-  checked: Set<string> = new Set()
-): boolean {
-  // @ts-expect-error: Not on type.
-  if (value?.sideEffects) {
-    return true;
-  }
-  // Recursively check if any of the dependencies have side effects.
-  for (const depReference of value.dependencies.values()) {
-    if (checked.has(depReference.absolutePath)) {
-      continue;
-    }
-    checked.add(depReference.absolutePath);
-    const dep = graph.dependencies.get(depReference.absolutePath)!;
-    if (hasSideEffect(graph, dep, checked)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export function hasSideEffectWithDebugTrace(
   options: SerializerOptions,
   graph: ReadOnlyGraph,

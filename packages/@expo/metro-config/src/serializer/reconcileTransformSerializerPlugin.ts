@@ -28,6 +28,7 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 
 import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
 import { renameTopLevelModuleVariables } from '../transform-worker/metro-transform-worker';
+import { hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -45,7 +46,6 @@ class InvalidRequireCallError extends Error {
     this.filename = filename;
   }
 }
-
 
 function assertCollectDependenciesOptions(
   collectDependenciesOptions: any
@@ -137,6 +137,15 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         const importAll = collectDependenciesOptions.inlineableCalls[1];
         // const { importDefault, importAll } = generateImportNames(ast);
 
+        const sideEffectReferences = [...value.dependencies.values()]
+          .filter((dep) => {
+            const fullDep = graph.dependencies.get(dep.absolutePath);
+            return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
+          })
+          .map((dep) => dep.data.name);
+
+        console.log('treeshake:', sideEffectReferences);
+
         const babelPluginOpts = {
           // ...options,
           ...graph.transformOptions,
@@ -154,6 +163,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           inlineableCalls: [importDefault, importAll],
           importDefault,
           importAll,
+
+          // Add side-effects to the ignore list.
+          nonInlinedRequires: graph.transformOptions.nonInlinedRequires
+            ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
+            : sideEffectReferences,
         };
 
         // @ts-expect-error: TODO
@@ -170,11 +184,8 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
             renameTopLevelModuleVariables,
             !preserveEsm && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
 
-            // TODO: Inline requires matchers
-            // dynamicTransformOptions?.transform?.inlineRequires && [
-            //   require('metro-transform-plugins/src/inline-plugin'),
-            //   babelPluginOpts,
-            // ],
+            // TODO: Add support for disabling safe inline requires.
+            [metroTransformPlugins.inlineRequiresPlugin, babelPluginOpts],
           ].filter(Boolean),
           sourceMaps: false,
           // // Not-Cloning the input AST here should be safe because other code paths above this call
