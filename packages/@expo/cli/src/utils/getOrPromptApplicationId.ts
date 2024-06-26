@@ -1,6 +1,7 @@
 import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { memoize } from './fn';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
 import prompt, { confirmAsync } from './prompts';
@@ -9,12 +10,14 @@ import {
   assertValidPackage,
   getBundleIdWarningAsync,
   getPackageNameWarningAsync,
+  getSanitizedPackage,
   validateBundleId,
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
 import * as Log from '../log';
-import { memoize } from './fn';
+
+const debug = require('debug')('expo:app-id') as typeof console.log;
 
 function getExpoUsername(exp: ExpoConfig) {
   // Account for if the environment variable was an empty string.
@@ -118,6 +121,7 @@ function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
     return exp.android?.package;
   } else {
     const username = getExpoUsername(exp);
+    // TODO: Maybe sanitize this value too?
     const possibleId = `com.${username}.${exp.slug}`;
     if (validateBundleId(possibleId)) {
       return possibleId;
@@ -134,10 +138,13 @@ function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
     return exp.ios.bundleIdentifier;
   } else {
     const username = getExpoUsername(exp);
-    // It's common to use dashes in your node project name, strip them from the suggested package name.
-    const possibleId = `com.${username}.${exp.slug}`.split('-').join('');
+    const possibleId = getSanitizedPackage(`com.${username}.${exp.slug}`);
     if (validatePackage(possibleId)) {
       return possibleId;
+    } else {
+      debug(
+        `Recommended package name is invalid: "${possibleId}" (username: ${username}, slug: ${exp.slug})`
+      );
     }
   }
   return undefined;
