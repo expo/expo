@@ -55,6 +55,8 @@ public final class VideoViewModule: Module {
       if let view = view as? ExpoVideoView {
         block(view)
       }
-    }, forView: tag, of: ExpoVideoView.self)
+    },
+    forView: tag,
+    of: ExpoVideoView.self)
   }
 }
