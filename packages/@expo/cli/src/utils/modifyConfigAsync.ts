@@ -18,23 +18,12 @@ export async function attemptModification(
   }
 }
 
-function logNoConfig() {
-  Log.log(
-    chalk.yellow(
-      `No Expo config was found. Please create an Expo config (${chalk.bold`app.json`} or ${chalk.bold`app.config.js`}) in your project root.`
-    )
-  );
-}
-
 export function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<ExpoConfig>) {
   Log.log();
   if (type === 'warn') {
     // The project is using a dynamic config, give the user a helpful log and bail out.
     Log.log(chalk.yellow(message));
-  } else {
-    logNoConfig();
   }
-
   notifyAboutManualConfigEdits(edits);
   throw new SilentError();
 }
