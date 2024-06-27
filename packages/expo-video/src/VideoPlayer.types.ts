@@ -129,7 +129,7 @@ export type VideoPlayerEvents = {
   statusChange(
     newStatus: VideoPlayerStatus,
     oldStatus: VideoPlayerStatus,
-    error: PlayerError
+    error?: PlayerError
   ): void;
   /**
    * Handler for an event emitted when the player starts or stops playback.

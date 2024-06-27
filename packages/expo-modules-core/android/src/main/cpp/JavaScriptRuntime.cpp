@@ -150,7 +150,9 @@ void JavaScriptRuntime::installMainObject() {
   mainObject = std::make_shared<jsi::Object>(*runtime);
 
   // Decorate the core object based on the module definition.
-  coreModule->cthis()->decorate(*runtime, mainObject.get());
+  for (const auto &decorator : coreModule->cthis()->decorators) {
+    decorator->decorate(*runtime, *mainObject);
+  }
 
   auto global = runtime->global();
 
