@@ -41,7 +41,7 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-test-renderer": "18.2.0",
+    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614",
     "stacktrace-js": "^2.0.2"
   },
   "bugs": {
