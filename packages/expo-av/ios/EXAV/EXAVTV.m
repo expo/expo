@@ -14,6 +14,11 @@
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAV+AudioSampleCallback.h>
+#if __has_include(<EXAV/EXAV-Swift.h>)
+#import <EXAV/EXAV-Swift.h>
+#else
+#import "EXAV-Swift.h"
+#endif
 
 NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
@@ -413,10 +418,12 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
+    } else if ([[[view subviews] firstObject] isKindOfClass:[EXVideoView class]]) {
+      block([[view subviews] firstObject]);
     } else {
       reject(@"E_VIDEO_TAGINCORRECT", [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view], nil);
     }
-  } forView:reactTag ofClass:[EXVideoView class]];
+  } forView:reactTag ofClass:[ExpoVideoView class]];
 }
 
 #pragma mark - Internal audio recording helper methods

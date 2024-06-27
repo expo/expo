@@ -73,15 +73,15 @@ describe(modifyConfigAsync, () => {
     expect(type).toBe('warn');
     expect(config).toBe(null);
   });
-  it(`cannot write to a project without a config`, async () => {
+  it(`writes a default config to a project without any config`, async () => {
     const { type, config } = await modifyConfigAsync(
       'no-config',
       {},
       { skipSDKVersionRequirement: true },
       { dryRun: true }
     );
-    expect(type).toBe('fail');
-    expect(config).toBe(null);
+    expect(type).toBe('success');
+    expect(config).toEqual({});
   });
 });
 

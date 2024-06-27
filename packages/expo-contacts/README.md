@@ -11,8 +11,8 @@ Provides access to the phone's system contacts.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/contacts.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/contacts/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/contacts/)
 
 # Installation in managed Expo projects
 
@@ -28,6 +28,15 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-contacts
 ```
 
+### Configure for Android
+
+Add `android.permission.READ_CONTACTS` and optionally `android.permission.WRITE_CONTACTS` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+```
+
 ### Configure for iOS
 
 Add `NSContactsUsageDescription` key to your `Info.plist`:
@@ -38,15 +47,6 @@ Add `NSContactsUsageDescription` key to your `Info.plist`:
 ```
 
 Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-Add `android.permission.READ_CONTACTS` and optionally `android.permission.WRITE_CONTACTS` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
-
-```xml
-<uses-permission android:name="android.permission.READ_CONTACTS" />
-<uses-permission android:name="android.permission.WRITE_CONTACTS" />
-```
 
 # Contributing
 
