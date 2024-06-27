@@ -230,10 +230,15 @@ export class DevServerManager {
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
       this.notifier?.stopObserving(),
-      // Stop all dev servers
-      ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
       AndroidDebugBridge.getServer().stopAsync(),
+      // Stop all dev servers
+      ...devServers.map((server) =>
+        server.stopAsync().catch((error) => {
+          debug(`Failed to stop server: ${server.name}`, error);
+          throw error;
+        })
+      ),
     ]);
   }
 }
