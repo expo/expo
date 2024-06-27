@@ -1,13 +1,11 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import {
-  ArrowLeftIcon,
-  GraduationHat02DuotoneIcon,
-  Stars02DuotoneIcon,
-  Home02DuotoneIcon,
-  BookOpen02DuotoneIcon,
-} from '@expo/styleguide-icons';
+import { BookOpen02DuotoneIcon } from '@expo/styleguide-icons/duotone/BookOpen02DuotoneIcon';
+import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
+import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
+import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 
 import { ApiVersionSelect } from './ApiVersionSelect';
 

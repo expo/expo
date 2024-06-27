@@ -1,11 +1,9 @@
 import { mergeClasses } from '@expo/styleguide';
-import {
-  GithubIcon,
-  DiscordIcon,
-  RedditIcon,
-  XLogoIcon,
-  ArrowUpRightIcon,
-} from '@expo/styleguide-icons';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
+import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';

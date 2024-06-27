@@ -1,5 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { GithubIcon, Menu01Icon, Star01Icon } from '@expo/styleguide-icons';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
+import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
 
 import { Logo } from './Logo';

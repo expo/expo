@@ -10,7 +10,7 @@ import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -47,9 +47,8 @@ class SuspendFunctionComponent(
     }
   }
 
-  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+  override fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String) {
     val appContextHolder = appContext.jsiInterop.appContextHolder
-    val moduleName = jsObject.name
     jsObject.registerAsyncFunction(
       name,
       takesOwner,

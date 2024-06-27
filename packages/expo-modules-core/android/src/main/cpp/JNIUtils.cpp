@@ -4,6 +4,7 @@
 #include "EventEmitter.h"
 #include "JSIUtils.h"
 #include "types/JNIToJSIConverter.h"
+#include <jsi/JSIDynamic.h>
 
 namespace expo {
 

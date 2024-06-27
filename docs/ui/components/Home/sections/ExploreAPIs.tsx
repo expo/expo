@@ -1,10 +1,8 @@
 import { mergeClasses, DocsLogo } from '@expo/styleguide';
-import {
-  Image03DuotoneIcon,
-  CameraPlusDuotoneIcon,
-  NotificationMessageDuotoneIcon,
-  ArrowRightIcon,
-} from '@expo/styleguide-icons';
+import { CameraPlusDuotoneIcon } from '@expo/styleguide-icons/duotone/CameraPlusDuotoneIcon';
+import { Image03DuotoneIcon } from '@expo/styleguide-icons/duotone/Image03DuotoneIcon';
+import { NotificationMessageDuotoneIcon } from '@expo/styleguide-icons/duotone/NotificationMessageDuotoneIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';

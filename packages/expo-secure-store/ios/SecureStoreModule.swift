@@ -96,7 +96,12 @@ public final class SecureStoreModule: Module {
       guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
         throw MissingPlistKeyException()
       }
-      let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, SecAccessControlCreateFlags.biometryCurrentSet, nil)
+
+      var error: Unmanaged<CFError>? = nil
+      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, .biometryCurrentSet, &error) else {
+        let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
+        throw SecAccessControlError(errorCode)
+      }
       setItemQuery[kSecAttrAccessControl as String] = accessOptions
     }
 

@@ -7,12 +7,12 @@
   </a>
 </p>
 
-Provides an API for iOS (AirPrint) and Android printing functionality.
+Provides an API for Android and iOS (AirPrint) printing functionality.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/print.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/print/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/print/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-print
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

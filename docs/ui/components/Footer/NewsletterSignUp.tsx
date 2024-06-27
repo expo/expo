@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Mail01Icon } from '@expo/styleguide-icons';
+import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useState } from 'react';
 
 import { Input } from '~/ui/components/Form';

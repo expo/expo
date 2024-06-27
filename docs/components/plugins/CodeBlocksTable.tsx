@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { breakpoints, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
 import { cleanCopyValue } from '~/components/base/code';

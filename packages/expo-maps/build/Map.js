@@ -61,14 +61,14 @@ export class ExpoMap extends React.Component {
     mapView = React.createRef();
     getSearchCompletions(queryFragment) {
         const nodeHandle = findNodeHandle(this.mapView.current);
-        let module;
+        let nativeModule;
         if (Platform.OS === 'ios' && this.props.provider === 'apple') {
-            module = NativeExpoAppleMapsModule;
+            nativeModule = NativeExpoAppleMapsModule;
         }
         else {
-            module = NativeExpoGoogleMapsModule;
+            nativeModule = NativeExpoGoogleMapsModule;
         }
-        module
+        nativeModule
             .getSearchCompletions(nodeHandle, queryFragment)
             .then((response) => {
             console.log(response);
@@ -79,14 +79,14 @@ export class ExpoMap extends React.Component {
     }
     async moveCamera(cameraMove) {
         const nodeHandle = findNodeHandle(this.mapView.current);
-        let module;
+        let nativeModule;
         if (Platform.OS === 'ios' && this.props.provider === 'apple') {
-            module = requireNativeModule('ExpoAppleMaps');
+            nativeModule = requireNativeModule('ExpoAppleMaps');
         }
         else {
-            module = requireNativeModule('ExpoGoogleMaps');
+            nativeModule = requireNativeModule('ExpoGoogleMaps');
         }
-        return module.moveCamera(nodeHandle, cameraMove);
+        return nativeModule.moveCamera(nodeHandle, cameraMove);
     }
     componentDidMount() {
         this.mapChildren();

@@ -15,6 +15,7 @@ import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.types.Enumerable
@@ -537,22 +538,26 @@ inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> U
 
 inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
   val objectData = ObjectDefinitionBuilder().also(block).buildObject()
-  return JavaScriptModuleObject(appContext.jniDeallocator, "[Anonymous Object]")
-    .apply {
-      val constants = objectData.constantsProvider()
-      val convertedConstants = Arguments.makeNativeMap(constants)
-      exportConstants(convertedConstants)
+  val constants = objectData.constantsProvider()
+  val convertedConstants = Arguments.makeNativeMap(constants)
+  val moduleName = "[Anonymous Object]"
 
-      objectData
-        .functions
-        .forEach { function ->
-          function.attachToJSObject(appContext, this)
-        }
+  val decorator = JSDecoratorsBridgingObject(appContext.jniDeallocator)
+  decorator.registerConstants(convertedConstants)
 
-      objectData
-        .properties
-        .forEach { (_, prop) ->
-          prop.attachToJSObject(appContext, this)
-        }
+  objectData
+    .functions
+    .forEach { function ->
+      function.attachToJSObject(appContext, decorator, moduleName)
     }
+
+  objectData
+    .properties
+    .forEach { (_, prop) ->
+      prop.attachToJSObject(appContext, decorator)
+    }
+
+  return JavaScriptModuleObject(appContext.jniDeallocator, moduleName).apply {
+    decorate(decorator)
+  }
 }
