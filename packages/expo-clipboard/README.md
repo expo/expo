@@ -7,7 +7,7 @@
   </a>
 </p>
 
-`expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS and Web.
+`expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 
 ## API documentation
 
