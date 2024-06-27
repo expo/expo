@@ -235,8 +235,8 @@ export class DevServerManager {
       // Stop all dev servers
       ...devServers.map((server) =>
         server.stopAsync().catch((error) => {
-          debug(`Failed to stop server: ${server.name}`, error);
-          throw error;
+          Log.error(`Failed to stop dev server (bundler: ${server.name})`);
+          Log.exception(error);
         })
       ),
     ]);
