@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Add robot export e2e test.
 - Add internal externals to prevent bundling `source-map-support` in development. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove webpack dependency in repo. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
 - Add "more tools" to terminal UI all the time. ([#29837](https://github.com/expo/expo/pull/29837) by [@EvanBacon](https://github.com/EvanBacon))
