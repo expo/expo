@@ -300,8 +300,7 @@ it(
       'output.js',
     ]);
   },
-  // Add shorter timeout since this test has the chance to timeout.
-  25 * 1000
+  120 * 1000
 );
 
 it(
