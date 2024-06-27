@@ -32,6 +32,7 @@ public final class ExpoVideoView: ExpoView {
   }
 
   public override func layoutSubviews() {
+    super.layoutSubviews()
     self.contentView.frame = bounds
   }
 
