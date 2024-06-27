@@ -11,8 +11,8 @@ Provides access to a database that can be queried through a WebSQL-like API (htt
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sqlite.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sqlite/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/sqlite/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-sqlite
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

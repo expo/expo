@@ -11,8 +11,8 @@
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/storereview.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/storereview/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/storereview/)
 
 # Installation in managed Expo projects
 
