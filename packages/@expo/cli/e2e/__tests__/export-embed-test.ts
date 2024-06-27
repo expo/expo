@@ -258,8 +258,7 @@ it(
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_SRC: 'react-native-canary',
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: '1',
 
@@ -294,12 +293,10 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
-      'assets/__e2e__/static-rendering/sweet.ttf',
       'assets/__packages/expo-router/assets/error.png',
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
-      'assets/assets/icon.png',
       'output.js',
     ]);
   },
