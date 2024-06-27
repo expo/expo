@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides an API for iOS (AirPrint) and Android printing functionality.
+Provides an API for Android and iOS (AirPrint) printing functionality.
 
 # API documentation
 

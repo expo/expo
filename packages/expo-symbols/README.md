@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides access to the `SF Symbols` library on iOS.
+Provides access to the SF Symbols library on iOS for React Native and Expo apps.
 
 # API documentation
 

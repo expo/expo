@@ -7,7 +7,7 @@
   </a>
 </p>
 
-`expo-store-review` allows users rate your application inside App Store.
+`expo-store-review` allows users rate your application inside App Store and Google Play Store.
 
 # API documentation
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-store-review
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 
