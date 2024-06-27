@@ -38,6 +38,13 @@ config.serializer.getPolyfills = () => {
   return require(path.join(reactNativeRoot, 'rn-get-polyfills'))();
 };
 
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: true,
+    inlineRequires: false,
+  },
+});
+
 // Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
 // Note, omitting folders disables Metro from resolving files within these folders
 // This also happens when symlinks falls within these folders, but the real location doesn't.
