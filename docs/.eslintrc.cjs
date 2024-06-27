@@ -25,7 +25,8 @@ module.exports = {
         'react-player',
         'dark-theme',
         'dialog-.+',
-        'terminal-snippet'
+        'terminal-snippet',
+        'table-wrapper'
       ],
       cssFiles: [
         "node_modules/@expo/styleguide/dist/global.css"
