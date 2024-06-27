@@ -99,20 +99,29 @@ export class DevelopmentSession {
     this.timeout = null;
   }
 
-  public async closeAsync(): Promise<void> {
+  /** Try to close any pending development sessions, but always resolve */
+  public async closeAsync(): Promise<boolean> {
     this.stopNotifying();
 
-    const deviceIds = await this.getDeviceInstallationIdsAsync();
+    try {
+      const deviceIds = await this.getDeviceInstallationIdsAsync();
 
-    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      return;
-    }
+      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+        return false;
+      }
 
-    if (this.url) {
-      await closeDevelopmentSessionAsync({
-        url: this.url,
-        deviceIds,
-      });
+      if (this.url) {
+        await closeDevelopmentSessionAsync({
+          url: this.url,
+          deviceIds,
+        });
+      }
+
+      return true;
+    } catch (error: any) {
+      debug(`Error closing development session API: ${error}`);
+      this.onError(error);
+      return false;
     }
   }
 }
