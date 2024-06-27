@@ -46,9 +46,11 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     try {
-      if (env.EXPO_OFFLINE) {
+      if (env.CI || env.EXPO_OFFLINE) {
         debug(
-          'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
+          env.CI
+            ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
+            : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
         );
         this.stopNotifying();
         return;
@@ -102,6 +104,10 @@ export class DevelopmentSession {
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
     this.stopNotifying();
+
+    if (env.CI || env.EXPO_OFFLINE) {
+      return false;
+    }
 
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();
