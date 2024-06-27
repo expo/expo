@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Automatically write an `app.json` when attempting to modify a config and no file exists.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

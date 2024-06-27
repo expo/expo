@@ -356,7 +356,7 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
       config: null
     };
   } else if (config.staticConfigPath == null) {
-    // No config in the project.
+    // No config in the project, use a default location.
     config.staticConfigPath = _path().default.join(projectRoot, 'app.json');
   }
 
@@ -387,8 +387,6 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
     type: 'success',
     config: outputConfig
   };
-
-  // return { type: 'fail', message: 'No config exists', config: null };
 }
 function ensureConfigHasDefaultValues({
   projectRoot,
