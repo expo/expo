@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.0.11 — 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.10 — 2024-06-13
 
 _This version does not introduce any user-facing changes._

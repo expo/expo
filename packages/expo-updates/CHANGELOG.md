@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.25.18 — 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
 ## 0.25.17 — 2024-06-13
 
 ### 💡 Others

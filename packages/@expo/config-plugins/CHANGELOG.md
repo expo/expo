@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, fix setting `translucent` on the status bar. ([#29803](https://github.com/expo/expo/pull/29803) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 8.0.6 — 2024-06-27
+
+### 🐛 Bug fixes
+
+- On `Android`, fix setting `translucent` on the status bar. ([#29803](https://github.com/expo/expo/pull/29803) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 8.0.5 — 2024-06-05
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.21 — 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.20 — 2024-06-13
 
 _This version does not introduce any user-facing changes._

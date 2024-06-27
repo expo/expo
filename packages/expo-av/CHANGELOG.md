@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 14.0.6 — 2024-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
 
 ## 14.0.5 — 2024-05-15
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.0.9 — 2024-06-27
+
+### 🎉 New features
+
+- [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 13.0.8 — 2024-05-29
 
