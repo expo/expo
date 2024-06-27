@@ -89,13 +89,17 @@ async function promptForBundleIdWithInitialAsync(
   }
 
   // Apply the changes to the config.
-  await attemptModification(
-    projectRoot,
-    {
-      ios: { ...(exp.ios || {}), bundleIdentifier },
-    },
-    { ios: { bundleIdentifier } }
-  );
+  if (
+    await attemptModification(
+      projectRoot,
+      {
+        ios: { ...(exp.ios || {}), bundleIdentifier },
+      },
+      { ios: { bundleIdentifier } }
+    )
+  ) {
+    Log.log(chalk.gray`\u203A Apple bundle identifier: ${bundleIdentifier}`);
+  }
 
   return bundleIdentifier;
 }
@@ -215,15 +219,19 @@ async function promptForPackageWithInitialAsync(
   }
 
   // Apply the changes to the config.
-  await attemptModification(
-    projectRoot,
-    {
-      android: { ...(exp.android || {}), package: packageName },
-    },
-    {
-      android: { package: packageName },
-    }
-  );
+  if (
+    await attemptModification(
+      projectRoot,
+      {
+        android: { ...(exp.android || {}), package: packageName },
+      },
+      {
+        android: { package: packageName },
+      }
+    )
+  ) {
+    Log.log(chalk.gray`\u203A Android package name: ${packageName}`);
+  }
 
   return packageName;
 }
