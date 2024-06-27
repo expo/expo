@@ -82,10 +82,25 @@ interface TransformResponse {
 
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
-    readonly minify?: boolean;
-    readonly collectDependenciesOptions?: CollectDependenciesOptions;
-    readonly reactClientReference?: string;
+    // readonly minify?: boolean;
+    // readonly collectDependenciesOptions?: CollectDependenciesOptions;
+    // readonly reactClientReference?: string;
+    readonly reconcile?: ReconcileTransformSettings;
   };
+};
+
+export type ReconcileTransformSettings = {
+  minifierPath: string;
+  globalPrefix: string;
+  unstable_renameRequire?: boolean;
+  unstable_compactOutput?: boolean;
+  minifierConfig: JsTransformerConfig['minifierConfig'];
+  minify: boolean;
+  collectDependenciesOptions: CollectDependenciesOptions;
+
+  unstable_dependencyMapReservedName?: string;
+  optimizationSizeLimit?: number;
+  unstable_disableNormalizePseudoGlobals?: boolean;
 };
 
 // asserts non-null
@@ -108,8 +123,8 @@ function getDynamicDepsBehavior(
   }
 }
 
-const minifyCode = async (
-  config: JsTransformerConfig,
+export const minifyCode = async (
+  config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>,
   projectRoot: string,
   filename: string,
   code: string,
@@ -245,7 +260,10 @@ async function transformJS(
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
-      plugins.push(renameTopLevelModuleVariables, [metroTransformPlugins.importExportPlugin, babelPluginOpts]);
+      plugins.push(renameTopLevelModuleVariables, [
+        metroTransformPlugins.importExportPlugin,
+        babelPluginOpts,
+      ]);
     }
 
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -430,19 +448,19 @@ async function transformJS(
   let code = result.code;
 
   if (minify) {
-    if (treeshake) {
-      // TODO: Store settings for running this later...
-    } else {
-      ({ map, code } = await minifyCode(
-        config,
-        projectRoot,
-        file.filename,
-        result.code,
-        file.code,
-        map,
-        reserved
-      ));
-    }
+    // if (treeshake) {
+    //   // TODO: Store settings for running this later...
+    // } else {
+    ({ map, code } = await minifyCode(
+      config,
+      projectRoot,
+      file.filename,
+      result.code,
+      file.code,
+      map,
+      reserved
+    ));
+    // }
   }
 
   const output: ExpoJsOutput[] = [
@@ -455,8 +473,19 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         ...(treeshake
           ? {
-              collectDependenciesOptions,
-              minify,
+              reconcile: {
+                unstable_renameRequire: config.unstable_renameRequire,
+                globalPrefix: config.globalPrefix,
+                unstable_compactOutput: config.unstable_compactOutput,
+                collectDependenciesOptions,
+                minify,
+                minifierPath: config.minifierPath,
+                minifierConfig: config.minifierConfig,
+                unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+                optimizationSizeLimit: config.optimizationSizeLimit,
+                unstable_disableNormalizePseudoGlobals:
+                  config.unstable_disableNormalizePseudoGlobals,
+              },
             }
           : {}),
       },

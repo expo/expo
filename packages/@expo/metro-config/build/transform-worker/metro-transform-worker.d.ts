@@ -2,6 +2,7 @@
 /// <reference types="node" />
 import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 import type { Options as CollectDependenciesOptions } from 'metro/src/ModuleGraph/worker/collectDependencies';
+import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 export { JsTransformOptions };
 interface TransformResponse {
@@ -10,11 +11,25 @@ interface TransformResponse {
 }
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
-        readonly minify?: boolean;
-        readonly collectDependenciesOptions?: CollectDependenciesOptions;
-        readonly reactClientReference?: string;
+        readonly reconcile?: ReconcileTransformSettings;
     };
 };
+export type ReconcileTransformSettings = {
+    minifierPath: string;
+    globalPrefix: string;
+    unstable_renameRequire?: boolean;
+    unstable_compactOutput?: boolean;
+    minifierConfig: JsTransformerConfig['minifierConfig'];
+    minify: boolean;
+    collectDependenciesOptions: CollectDependenciesOptions;
+    unstable_dependencyMapReservedName?: string;
+    optimizationSizeLimit?: number;
+    unstable_disableNormalizePseudoGlobals?: boolean;
+};
+export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>, projectRoot: string, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
+    code: string;
+    map: MetroSourceMapSegmentTuple[];
+}>;
 export declare function renameTopLevelModuleVariables(): {
     visitor: {
         Program(path: any): void;

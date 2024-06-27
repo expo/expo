@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCacheKey = exports.transform = exports.renameTopLevelModuleVariables = void 0;
+exports.getCacheKey = exports.transform = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -102,6 +102,7 @@ const minifyCode = async (config, projectRoot, filename, code, source, map, rese
         throw error;
     }
 };
+exports.minifyCode = minifyCode;
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => {
         // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
@@ -170,7 +171,10 @@ async function transformJS(file, { config, options, projectRoot }) {
         // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
         // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
         if (options.experimentalImportSupport === true) {
-            plugins.push(renameTopLevelModuleVariables, [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
+            plugins.push(renameTopLevelModuleVariables, [
+                metro_transform_plugins_1.default.importExportPlugin,
+                babelPluginOpts,
+            ]);
         }
         // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
         // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
@@ -325,12 +329,11 @@ async function transformJS(file, { config, options, projectRoot }) {
     let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
     let code = result.code;
     if (minify) {
-        if (treeshake) {
-            // TODO: Store settings for running this later...
-        }
-        else {
-            ({ map, code } = await minifyCode(config, projectRoot, file.filename, result.code, file.code, map, reserved));
-        }
+        // if (treeshake) {
+        //   // TODO: Store settings for running this later...
+        // } else {
+        ({ map, code } = await (0, exports.minifyCode)(config, projectRoot, file.filename, result.code, file.code, map, reserved));
+        // }
     }
     const output = [
         {
@@ -342,8 +345,18 @@ async function transformJS(file, { config, options, projectRoot }) {
                 reactClientReference: file.reactClientReference,
                 ...(treeshake
                     ? {
-                        collectDependenciesOptions,
-                        minify,
+                        reconcile: {
+                            unstable_renameRequire: config.unstable_renameRequire,
+                            globalPrefix: config.globalPrefix,
+                            unstable_compactOutput: config.unstable_compactOutput,
+                            collectDependenciesOptions,
+                            minify,
+                            minifierPath: config.minifierPath,
+                            minifierConfig: config.minifierConfig,
+                            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+                            optimizationSizeLimit: config.optimizationSizeLimit,
+                            unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+                        },
                     }
                     : {}),
             },
@@ -408,7 +421,7 @@ async function transformJSON(file, { options, config, projectRoot }) {
     let map = [];
     const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {
-        ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
+        ({ map, code } = await (0, exports.minifyCode)(config, projectRoot, file.filename, code, file.code, map));
     }
     let jsType;
     if (file.type === 'asset') {

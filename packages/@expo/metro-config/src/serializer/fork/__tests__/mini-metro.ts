@@ -248,7 +248,6 @@ export async function microBundle({
       // For testing only since we do extra FS work in the serializer
       _test_getPackageJson(dir: string) {
         const packageJsonPath = findUpPackageJsonPath(projectRoot, dir);
-        console.log('packageJsonPath', projectRoot, dir, packageJsonPath);
         if (packageJsonPath) {
           return [JSON.parse(fullFs[packageJsonPath]), packageJsonPath];
         }
