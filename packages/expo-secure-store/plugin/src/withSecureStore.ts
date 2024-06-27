@@ -4,7 +4,7 @@ import {
   createRunOncePlugin,
   withAndroidManifest,
   AndroidConfig,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 const pkg = require('expo-secure-store/package.json');
 

@@ -116,14 +116,13 @@ Setting this property automatically handles the compliance information prompt.
 
 ## Android Auto Backup
 
-Android Auto Backup for Apps automatically backs up a user's data from apps that target and run on Android 6.0 (API level 23) or higher.
-The Auto Backup system has to be configured to exclude `expo-secure-store` data from the backup, as it's impossible to decrypt it after
-restoring the backup - the app will be using a different KeyStore.
+[Android Auto Backup for Apps](https://developer.android.com/identity/data/autobackup) automatically backs up a user's data from apps that target and run on Android 6.0 (API level 23) or higher.
+The Auto Backup system has to be configured to exclude `expo-secure-store` shared preferences entries, as it's impossible to decrypt them after
+restoring the backup &mdash; app's entries are deleted from the Android Key Store when the app is uninstalled.
 
 If your app doesn't have any custom backup configuration, `expo-secure-store` will automatically configure the Auto Backup system to ignore the `expo-secure-store` data.
 
-If you are using your own Auto Backup configuration you should exclude the `SecureStore` under the `sharedpref` domain and set the `configureAndroidBackup` to
-`false` in the [config plugin configuration](#example-appjson-with-config-plugin).
+If you are using your own Auto Backup configuration, you should exclude the `SecureStore` under the `sharedpref` domain and set the `configureAndroidBackup` to `false` in the [config plugin configuration](#example-appjson-with-config-plugin).
 
 ```xml
 <!--  Auto Backup configuration for Android 12 and higher -->
