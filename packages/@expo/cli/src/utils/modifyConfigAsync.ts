@@ -9,13 +9,14 @@ export async function attemptModification(
   projectRoot: string,
   edits: Partial<ExpoConfig>,
   exactEdits: Partial<ExpoConfig>
-): Promise<void> {
+): Promise<boolean> {
   const modification = await modifyConfigAsync(projectRoot, edits, {
     skipSDKVersionRequirement: true,
   });
   if (modification.type !== 'success') {
     warnAboutConfigAndThrow(modification.type, modification.message!, exactEdits);
   }
+  return modification.type === 'success';
 }
 
 function logNoConfig() {
