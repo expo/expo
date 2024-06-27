@@ -4,6 +4,7 @@ import { glob } from 'glob';
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
+export const EXPO_BOT_ACCOUNT_NAME = 'expo-bot';
 
 export type PackageViewType = null | {
   name: string;
