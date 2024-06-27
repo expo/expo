@@ -138,7 +138,7 @@ export interface NativeConstants {
    */
   deviceYearClass: number | null;
   /**
-   * Returns the current execution environment. Current values are `bare`, `standalone` and `storeClient`.
+   * Returns the current execution environment.
    */
   executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
@@ -209,7 +209,9 @@ export interface NativeConstants {
    */
   supportedExpoSdks?: string[];
   /**
-   * Returns the platform-specific manifest object.
+   * Returns the specific platform manifest object.
+   *
+   * > **Note**: This is distinct from the `manifest` and `manifest2`.
    */
   platform?: PlatformManifest;
   /**
