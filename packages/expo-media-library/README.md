@@ -11,8 +11,8 @@ Provides access to user's media library.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/media-library.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/media-library/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/media-library/)
 
 # Installation in managed Expo projects
 
@@ -27,19 +27,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 ```
 npx expo install expo-media-library
 ```
-
-### Configure for iOS
-
-Add `NSPhotoLibraryUsageDescription`, and `NSPhotoLibraryAddUsageDescription` keys to your `Info.plist`:
-
-```xml
-<key>NSPhotoLibraryUsageDescription</key>
-<string>Give $(PRODUCT_NAME) permission to access your photos</string>
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>Give $(PRODUCT_NAME) permission to save photos</string>
-```
-
-Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
@@ -67,6 +54,19 @@ Starting with Android 10, the concept of [scoped storage](https://developer.andr
   </application>
 </manifest>
 ```
+
+### Configure for iOS
+
+Add `NSPhotoLibraryUsageDescription`, and `NSPhotoLibraryAddUsageDescription` keys to your `Info.plist`:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your photos</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to save photos</string>
+```
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 
