@@ -7,6 +7,7 @@ export declare class Directory {
   delete();
   exists(): boolean;
   create();
+  copy(to: Directory | File);
 }
 
 export declare class File {
@@ -18,4 +19,5 @@ export declare class File {
   delete();
   exists(): boolean;
   create();
+  copy(to: Directory | File);
 }

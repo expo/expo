@@ -6,6 +6,7 @@ export declare class Directory {
     delete(): any;
     exists(): boolean;
     create(): any;
+    copy(to: Directory | File): any;
 }
 export declare class File {
     constructor(path: Path);
@@ -16,5 +17,6 @@ export declare class File {
     delete(): any;
     exists(): boolean;
     create(): any;
+    copy(to: Directory | File): any;
 }
 //# sourceMappingURL=FileSystem.types.d.ts.map

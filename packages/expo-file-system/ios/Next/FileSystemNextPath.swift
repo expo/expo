@@ -15,4 +15,7 @@ internal class FileSystemNextPath: SharedObject {
   func exists() -> Bool {
     return FileManager.default.fileExists(atPath: url.path)
   }
+  func copy(to: FileSystemNextPath) throws {
+    try FileManager.default.copyItem(at: url, to: to.url)
+  }
 }

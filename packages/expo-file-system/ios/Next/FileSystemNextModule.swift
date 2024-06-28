@@ -37,6 +37,14 @@ public final class FileSystemNextModule: Module {
         file.create()
       }
 
+//      we can't use FileSystemNextPath due to a NativeSharedObjectNotFound exception
+      Function("copy") { (file, to: Either<FileSystemNextFile, FileSystemNextDirectory>) in
+        guard let to = asFileSystemPath(to) else {
+          return
+        }
+        try file.copy(to: to)
+      }
+
       Property("path") { file in
         return file.url.absoluteString
       }
@@ -67,6 +75,10 @@ public final class FileSystemNextModule: Module {
       Function("create") { directory in
         try directory.create()
       }
+      
+      Function("copy") { (directory, to: FileSystemNextPath) in
+        try directory.copy(to: to)
+      }
 
       Property("path") { directory in
         return directory.url.absoluteString
@@ -77,4 +89,15 @@ public final class FileSystemNextModule: Module {
       }
     }
   }
+}
+
+func asFileSystemPath(_ either: Either<FileSystemNextFile, FileSystemNextDirectory>) -> FileSystemNextPath? {
+    if let path: FileSystemNextFile = either.get() {
+      return path
+    }
+    if let path: FileSystemNextDirectory = either.get() {
+      return path
+    }
+    //  should never happen, it's to satisfy the typechecker
+    return nil
 }

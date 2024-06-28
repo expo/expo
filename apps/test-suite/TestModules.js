@@ -42,7 +42,7 @@ const CameraTestScreen = optionalRequire(() => require('./tests/Camera'));
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
-  const modules = [
+  let modules = [
     // Sanity
     require('./tests/Basic'),
   ];
@@ -153,6 +153,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
+  modules = [require('./tests/FileSystemNext')];
   return modules
     .filter(Boolean)
     .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
