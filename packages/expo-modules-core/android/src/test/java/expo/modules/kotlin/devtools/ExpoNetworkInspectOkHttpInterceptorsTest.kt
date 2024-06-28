@@ -106,8 +106,8 @@ class ShouldParseBodyTest {
       body = plaintext.toResponseBody("text/plain".toMediaType()),
       headers = mapOf(
         "Content-Type" to "text/plain",
-        "content-length" to plaintext.length.toString(),
-      ).toHeaders(),
+        "content-length" to plaintext.length.toString()
+      ).toHeaders()
     )
     Truth.assertThat(shouldParseBody(response)).isTrue()
   }
@@ -116,7 +116,7 @@ class ShouldParseBodyTest {
   fun `should return true from JSON response`() {
     val response = createResponse(
       body = "{\"hello\":\"hello\"}".toResponseBody("application/json".toMediaType()),
-      headers = mapOf("Content-Type" to "application/json").toHeaders(),
+      headers = mapOf("Content-Type" to "application/json").toHeaders()
     )
     Truth.assertThat(shouldParseBody(response)).isTrue()
   }
@@ -125,7 +125,7 @@ class ShouldParseBodyTest {
   fun `should return false from SSE response`() {
     val response = createResponse(
       body = "0".toResponseBody("text/event-stream".toMediaType()),
-      headers = mapOf("Content-Type" to "text/event-stream").toHeaders(),
+      headers = mapOf("Content-Type" to "text/event-stream").toHeaders()
     )
     Truth.assertThat(shouldParseBody(response)).isFalse()
   }
@@ -134,7 +134,7 @@ class ShouldParseBodyTest {
   fun `should return false from chunked encoding transfer`() {
     val response = createResponse(
       body = null,
-      headers = mapOf("transfer-encoding" to "chunked").toHeaders(),
+      headers = mapOf("transfer-encoding" to "chunked").toHeaders()
     )
     Truth.assertThat(shouldParseBody(response)).isFalse()
   }
@@ -147,8 +147,8 @@ class ShouldParseBodyTest {
       body = largeString.toResponseBody("text/plain".toMediaType()),
       headers = mapOf(
         "Content-Type" to "text/plain",
-        "content-length" to length.toString(),
-      ).toHeaders(),
+        "content-length" to length.toString()
+      ).toHeaders()
     )
     Truth.assertThat(shouldParseBody(response)).isFalse()
   }

@@ -127,10 +127,10 @@ internal fun peekResponseBody(
 internal fun shouldParseBody(response: Response): Boolean {
   // Check for Content-Type
   val skipContentTypes = listOf(
-    "text/event-stream",    // Server Sent Events
-    "text/x-component",     // React Server Components
-    "audio",                // Media might be streaming and not inspectable in DevTools
-    "video"                 // Media might be streaming and not inspectable in DevTools
+    "text/event-stream", // Server Sent Events
+    "text/x-component", // React Server Components
+    "audio", // Media might be streaming and not inspectable in DevTools
+    "video" // Media might be streaming and not inspectable in DevTools
   )
   val contentType = response.header("Content-Type") ?: ""
   if (skipContentTypes.any { contentType.startsWith(it) }) {
