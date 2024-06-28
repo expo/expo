@@ -12,6 +12,8 @@ import {
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
   AVPlaybackTolerance,
+  AVPlaybackRemoteCommand,
+  AVPlaybackRemoteCommandHandlers,
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
@@ -101,6 +103,7 @@ export class Sound implements Playback {
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
   _onMetadataUpdate: ((metadata: AVMetadata) => void) | null = null;
+  _remoteCommandHandlers: AVPlaybackRemoteCommandHandlers = {};
   _onAudioSampleReceived: AudioSampleCallback = null;
 
   /** @deprecated Use `Sound.createAsync()` instead */
@@ -164,10 +167,12 @@ export class Sound implements Playback {
     source: AVPlaybackSource,
     initialStatus: AVPlaybackStatusToSet = {},
     onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null,
-    downloadFirst: boolean = true
+    downloadFirst: boolean = true,
+    remoteCommandHandlers: AVPlaybackRemoteCommandHandlers = {}
   ): Promise<SoundObject> => {
     const sound: Sound = new Sound();
     sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    sound.setRemoteCommandHandlers(remoteCommandHandlers);
     const status: AVPlaybackStatus = await sound.loadAsync(source, initialStatus, downloadFirst);
     return { sound, status };
   };
@@ -252,6 +257,33 @@ export class Sound implements Playback {
     }
   };
 
+  _internalRemoteCommandCallback = ({
+    key,
+    command,
+  }: {
+    key: AudioInstance;
+    command: AVPlaybackRemoteCommand;
+  }) => {
+    if (this._key === key) {
+      switch (command) {
+        case 'play':
+          this._remoteCommandHandlers?.onPlay?.();
+          break;
+        case 'pause':
+          this._remoteCommandHandlers?.onPause?.();
+          break;
+        case 'nextTrack':
+          this._remoteCommandHandlers?.onNextTrack?.();
+          break;
+        case 'previousTrack':
+          this._remoteCommandHandlers?.onPreviousTrack?.();
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   _internalErrorCallback = ({ key, error }: { key: AudioInstance; error: string }) => {
     if (this._key === key) {
       this._errorCallback(error);
@@ -266,7 +298,11 @@ export class Sound implements Playback {
           'didUpdatePlaybackStatus',
           this._internalStatusUpdateCallback
         ),
-        this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback)
+        this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback),
+        this._eventEmitter.addListener(
+          'didTriggerRemoteCommand',
+          this._internalRemoteCommandCallback
+        )
       );
 
       this._subscriptions.push(
@@ -318,6 +354,10 @@ export class Sound implements Playback {
   setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null) {
     this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
     this.getStatusAsync();
+  }
+
+  setRemoteCommandHandlers(remoteCommandHandlers: AVPlaybackRemoteCommandHandlers) {
+    this._remoteCommandHandlers = remoteCommandHandlers;
   }
 
   /**
