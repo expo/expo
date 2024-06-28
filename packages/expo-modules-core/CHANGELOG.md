@@ -23,6 +23,7 @@
 - Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
 - Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+- Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
