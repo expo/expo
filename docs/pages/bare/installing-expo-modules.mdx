@@ -68,9 +68,9 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   hideBareInstructions
 />
 
-### Optional: use Expo CLI for bundling
+### Configure Expo CLI for bundling on iOS and Android
 
-We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). [Learn more about Expo CLI](/bare/using-expo-cli/).
+We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). Not using Expo CLI for bundling may result in unexpected behavior. [Learn more about Expo CLI](/bare/using-expo-cli/).
 
 <Collapsible summary="Extend expo/metro-config in your metro.config.js">
   <DiffBlock source="/static/diffs/metro-config.diff" />
