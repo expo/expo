@@ -153,7 +153,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           [metroTransformPlugins.importExportPlugin, babelPluginOpts],
 
           // TODO: Add support for disabling safe inline requires.
-          [metroTransformPlugins.inlineRequiresPlugin, babelPluginOpts],
+          // [metroTransformPlugins.inlineRequiresPlugin, babelPluginOpts],
         ].filter(Boolean),
         sourceMaps: false,
         // // Not-Cloning the input AST here should be safe because other code paths above this call
@@ -179,6 +179,8 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
         ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
           ...opts,
+          // TODO: This is here for debugging purposes.
+          keepRequireNames: true,
           // This setting shouldn't be shared + it can't be serialized and cached anyways.
           dependencyTransformer: null,
         }));
@@ -189,20 +191,10 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         throw error;
       }
 
-      // Some imports may change order during the transform, so we need to resort them.
-      // Resort the dependencies to match the current order of the AST.
-      const nextDependencies = new Map<string, Dependency>();
-
-      // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
-      dependencies.forEach((dep) => {
-        nextDependencies.set(dep.data.key, {
-          ...(value.dependencies.get(dep.data.key) || {}),
-          data: dep,
-        });
-      });
-
       // @ts-expect-error: Mutating the value in place.
-      value.dependencies = nextDependencies;
+      value.dependencies =
+        //
+        sortDependencies(dependencies, value.dependencies);
 
       // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
       // const globalPrefix = config.transformer?.globalPrefix ?? '';
@@ -294,8 +286,8 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 // Some imports may change order during the transform, so we need to resort them.
 // Resort the dependencies to match the current order of the AST.
 function sortDependencies(
-  dependencies: Dependency[],
-  accordingTo: Map<string, Dependency>
+  dependencies: readonly Dependency[],
+  accordingTo: Module['dependencies']
 ): Map<string, Dependency> {
   // Some imports may change order during the transform, so we need to resort them.
   // Resort the dependencies to match the current order of the AST.

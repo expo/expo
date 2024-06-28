@@ -107,7 +107,12 @@ function stableCreateModuleIdFactory(root) {
     modulePath) => {
         let id = fileToIdMap.get(modulePath);
         if (id == null) {
-            id = path_1.default.relative(root, modulePath);
+            if (!modulePath || modulePath.startsWith('\0')) {
+                id = modulePath;
+            }
+            else {
+                id = path_1.default.relative(root, modulePath);
+            }
             fileToIdMap.set(modulePath, id);
         }
         return id;
