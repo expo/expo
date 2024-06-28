@@ -144,6 +144,8 @@ async function transformJS(file, { config, options, projectRoot }) {
     // Ensure we don't enable tree shaking for scripts or assets.
     file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
     const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
+    // const targetEnv = options.customTransformOptions?.environment;
+    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });

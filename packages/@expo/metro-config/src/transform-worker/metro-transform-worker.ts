@@ -224,6 +224,9 @@ async function transformJS(
     file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
   const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
 
+  // const targetEnv = options.customTransformOptions?.environment;
+  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
   let ast: babylon.ParseResult<types.File> =
