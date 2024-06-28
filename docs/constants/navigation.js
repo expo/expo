@@ -389,7 +389,9 @@ const general = [
     makeGroup(
       'Reference',
       [
+        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
