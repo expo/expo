@@ -68,7 +68,12 @@ export async function serializeSplitAsync(
 // Serialize to a split bundle
 export async function serializeShakingAsync(
   fs: Record<string, string>,
-  options: { isReactServer?: boolean; treeshake?: boolean; splitChunks?: boolean } = {}
+  options: {
+    isReactServer?: boolean;
+    treeshake?: boolean;
+    splitChunks?: boolean;
+    minify?: boolean;
+  } = {}
 ) {
   return await serializeToWithGraph(
     {
@@ -79,6 +84,7 @@ export async function serializeShakingAsync(
         output: 'static',
         treeshake: true,
         splitChunks: true,
+        minify: false,
         ...options,
       },
     },

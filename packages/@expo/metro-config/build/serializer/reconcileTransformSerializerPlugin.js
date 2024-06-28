@@ -42,7 +42,7 @@ const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
+const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
 class InvalidRequireCallError extends Error {
@@ -99,7 +99,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             const sideEffectReferences = [...value.dependencies.values()]
                 .filter((dep) => {
                 const fullDep = graph.dependencies.get(dep.absolutePath);
-                return fullDep && (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, fullDep)[0];
+                return fullDep && (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, fullDep)[0];
             })
                 .map((dep) => dep.data.name);
             // Add side-effects to the ignore list.

@@ -33,7 +33,7 @@ exports.isShakingEnabled = exports.accessAst = exports.printAst = exports.treeSh
 const core_1 = require("@babel/core");
 const babylon = __importStar(require("@babel/parser"));
 const types = __importStar(require("@babel/types"));
-const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
+const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const annotate = false;
 const OPTIMIZE_GRAPH = true;
@@ -85,23 +85,27 @@ function getExportsThatAreNotUsedInModule(ast) {
         ExportNamedDeclaration(path) {
             const { declaration, specifiers } = path.node;
             if (declaration) {
-                if (declaration.declarations) {
+                if ('declarations' in declaration && declaration.declarations) {
                     declaration.declarations.forEach((decl) => {
-                        exportedIdentifiers.add(decl.id.name);
+                        if (types.isIdentifier(decl.id)) {
+                            exportedIdentifiers.add(decl.id.name);
+                        }
                     });
                 }
-                else {
+                else if ('id' in declaration && types.isIdentifier(declaration.id)) {
                     exportedIdentifiers.add(declaration.id.name);
                 }
             }
             specifiers.forEach((spec) => {
-                exportedIdentifiers.add(spec.exported.name);
+                if (types.isIdentifier(spec.exported)) {
+                    exportedIdentifiers.add(spec.exported.name);
+                }
             });
         },
         ExportDefaultDeclaration(path) {
             // Default exports need to be handled separately
             // Assuming the default export is a function or class declaration:
-            if (path.node.declaration.id) {
+            if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
                 exportedIdentifiers.add(path.node.declaration.id.name);
             }
         },
@@ -388,7 +392,7 @@ function treeShakeSerializerPlugin(config) {
             if (!graphEntryForTargetImport) {
                 throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
             }
-            const [isFx, trace] = (0, sideEffectsSerializerPlugin_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
+            const [isFx, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
             if (
             // Don't remove the module if it has side effects.
             !isFx ||
@@ -554,11 +558,21 @@ function treeShakeSerializerPlugin(config) {
             const importDecs = [];
             (0, core_1.traverse)(ast, {
                 ImportSpecifier(path) {
-                    importedIdentifiers.add(
+                    if (
                     // Support `import { foo as bar } from './foo'`
-                    path.node.local.name ??
-                        // Support `import { foo } from './foo'`
-                        path.node.imported.name);
+                    path.node.local.name != null) {
+                        importedIdentifiers.add(path.node.local.name);
+                    }
+                    else if (
+                    // Support `import { foo } from './foo'`
+                    types.isIdentifier(path.node.imported) &&
+                        path.node.imported.name != null) {
+                        importedIdentifiers.add(path.node.imported.name);
+                    }
+                    else {
+                        console.log(path);
+                        throw new Error('Unknown import specifier: ' + path.node.type);
+                    }
                 },
                 ImportDefaultSpecifier(path) {
                     importedIdentifiers.add(path.node.local.name);

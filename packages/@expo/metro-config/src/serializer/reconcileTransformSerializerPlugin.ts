@@ -23,7 +23,7 @@ import {
   applyImportSupport,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
-import { hasSideEffectWithDebugTrace } from './sideEffectsSerializerPlugin';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 

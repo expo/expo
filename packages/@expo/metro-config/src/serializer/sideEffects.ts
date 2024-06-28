@@ -1,5 +1,5 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,10 +13,14 @@ import { findUpPackageJsonPath } from './findUpPackageJsonPath';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
+type AdvancedModule = Module<MixedOutput> & {
+  sideEffects?: boolean | null;
+};
+
 export function hasSideEffectWithDebugTrace(
   options: SerializerOptions,
   graph: ReadOnlyGraph,
-  value: Module<MixedOutput>,
+  value: AdvancedModule,
   parentTrace: string[] = [value.path],
   checked: Set<string> = new Set()
 ): [boolean, string[]] {
@@ -55,7 +59,9 @@ export function hasSideEffectWithDebugTrace(
 const pkgJsonCache = new Map<string, any>();
 
 const getPackageJsonMatcher = (
-  options: Pick<SerializerOptions, 'projectRoot'>,
+  options: Pick<SerializerOptions, 'projectRoot'> & {
+    _test_getPackageJson?: (dir: string) => [any, string | null];
+  },
   dir: string
 ): any => {
   let packageJson: any;
@@ -132,7 +138,7 @@ const getPackageJsonMatcher = (
   return isSideEffect;
 };
 
-function getShallowSideEffect(options: SerializerOptions, value: Module<MixedOutput>) {
+function getShallowSideEffect(options: SerializerOptions, value: AdvancedModule) {
   if (value?.sideEffects !== undefined) {
     return value.sideEffects;
   }
@@ -141,7 +147,7 @@ function getShallowSideEffect(options: SerializerOptions, value: Module<MixedOut
   return isSideEffect;
 }
 
-function detectHasSideEffectInPackageJson(options: SerializerOptions, value: Module<MixedOutput>) {
+function detectHasSideEffectInPackageJson(options: SerializerOptions, value: AdvancedModule) {
   if (value.sideEffects !== undefined) {
     return value.sideEffects;
   }

@@ -75,6 +75,7 @@ export async function microBundle({
     isReactServer?: boolean;
     inlineSourceMaps?: boolean;
     hot?: boolean;
+    minify?: boolean;
     splitChunks?: boolean;
     treeshake?: boolean;
   };
@@ -109,7 +110,7 @@ export async function microBundle({
   const dev = options.dev ?? true;
   const transformOptions: TransformInputOptions = {
     hot: options.hot ?? false,
-    minify: false,
+    minify: options.minify ?? false,
     dev,
     type: 'module',
     unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
