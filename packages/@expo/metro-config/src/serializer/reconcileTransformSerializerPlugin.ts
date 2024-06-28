@@ -74,7 +74,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
     for (const value of graph.dependencies.values()) {
       for (const index in value.output) {
-        transformDependencyOutput(value, value.output[index]);
+        value.output[index] = await transformDependencyOutput(value, value.output[index]);
       }
     }
 
@@ -83,10 +83,10 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     async function transformDependencyOutput(
       value: Module<MixedOutput>,
       outputItem: MixedOutput
-    ): Promise<Module<MixedOutput>> {
+    ): Promise<MixedOutput> {
       if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
         debug('Skipping post transform for non-js/module: ' + value.path);
-        return value;
+        return outputItem;
       }
 
       // This should be cached by the transform worker for use here to ensure close to consistent
@@ -109,7 +109,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
       let ast = accessAst(outputItem);
       if (!ast) {
-        return value;
+        throw new Error('missing AST for ' + value.path);
       }
 
       // @ts-expect-error: TODO
@@ -126,17 +126,18 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         })
         .map((dep) => dep.data.name);
 
+      // Add side-effects to the ignore list.
+      const nonInlinedRequires = graph.transformOptions.nonInlinedRequires
+        ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
+        : sideEffectReferences;
+
       const babelPluginOpts = {
         ...graph.transformOptions,
 
         inlineableCalls: [importDefault, importAll],
         importDefault,
         importAll,
-
-        // Add side-effects to the ignore list.
-        nonInlinedRequires: graph.transformOptions.nonInlinedRequires
-          ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
-          : sideEffectReferences,
+        nonInlinedRequires,
       };
 
       // @ts-expect-error: TODO
@@ -145,13 +146,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         babelrc: false,
         code: false,
         configFile: false,
-        // comments: includeDebugInfo,
-        // compact: false,
         filename: value.path,
         plugins: [
           // functionMapBabelPlugin,
           renameTopLevelModuleVariables,
-          !preserveEsm && [metroTransformPlugins.importExportPlugin, babelPluginOpts],
+          [metroTransformPlugins.importExportPlugin, babelPluginOpts],
 
           // TODO: Add support for disabling safe inline requires.
           [metroTransformPlugins.inlineRequiresPlugin, babelPluginOpts],
@@ -208,26 +207,17 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
       // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
       // const globalPrefix = config.transformer?.globalPrefix ?? '';
 
-      let wrappedAst;
-      try {
-        const results = JsFileWrapping.wrapModule(
-          ast,
-          importDefault,
-          importAll,
-          dependencyMapName,
-          // TODO: Share these with transformer
-          globalPrefix,
-          // @ts-expect-error
-          unstable_renameRequire === false
-        );
-        wrappedAst = results.ast;
-      } catch (error) {
-        // This can throw if there's a top-level declaration of a variable named "module".
-        // If the error is a SyntaxError then parse and throw a proper babel error.
-        // console.log('Error wrapping module:', value.path);
-        // console.log(generate(ast).code);
-        throw error;
-      }
+      const results = JsFileWrapping.wrapModule(
+        ast,
+        importDefault,
+        importAll,
+        dependencyMapName,
+        // TODO: Share these with transformer
+        globalPrefix,
+        // @ts-expect-error
+        unstable_renameRequire === false
+      );
+      const wrappedAst = results.ast;
 
       const source = value.getSource().toString('utf-8');
 
@@ -277,23 +267,51 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           map,
           reserved
         ));
-        // console.log('module', code);
       }
 
-      outputItem.data = {
-        ...outputItem.data,
-        code,
-        map,
-        lineCount: countLines(code),
-        functionMap:
-          // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
-          ast.metadata?.metro?.functionMap ??
-          // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
-          ast.functionMap ??
-          null,
-      };
+      // console.log(code);
+      // console.log(require('@babel/generator').default(ast).code);
 
-      return value;
+      return {
+        ...outputItem,
+        data: {
+          ...outputItem.data,
+          code,
+          map,
+          lineCount: countLines(code),
+          functionMap:
+            // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
+            ast.metadata?.metro?.functionMap ??
+            // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
+            ast.functionMap ??
+            null,
+        },
+      };
     }
   };
 }
+
+// Some imports may change order during the transform, so we need to resort them.
+// Resort the dependencies to match the current order of the AST.
+function sortDependencies(
+  dependencies: Dependency[],
+  accordingTo: Map<string, Dependency>
+): Map<string, Dependency> {
+  // Some imports may change order during the transform, so we need to resort them.
+  // Resort the dependencies to match the current order of the AST.
+  const nextDependencies = new Map<string, Dependency>();
+
+  // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+  dependencies.forEach((dep) => {
+    nextDependencies.set(dep.data.key, {
+      ...(accordingTo.get(dep.data.key) || {}),
+      data: dep,
+    });
+  });
+
+  return nextDependencies;
+}
+
+// TODO: The dep sorting seems to break on this module when it isn't sorted.
+// https://github.com/software-mansion/react-native-gesture-handler/blob/main/src/handlers/gestureHandlerCommon.ts
+// https://github.com/software-mansion/react-native-gesture-handler/blob/e95f85345dd9e9a4d4ff67fbaa0a0a2abbe3bccb/src/handlers/gestureHandlerCommon.ts#L281C5-L281C21
