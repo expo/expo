@@ -35,8 +35,8 @@ class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
           it.requestId = requestId
           it.priorResponse = response
         }
-      } else if (shouldParseBody(response)) {
-        val body = peekResponseBody(response)
+      } else {
+        val body = if (shouldParseBody(response)) peekResponseBody(response) else null
         delegate.didReceiveResponse(requestId, request, response, body)
         body?.close()
       }
