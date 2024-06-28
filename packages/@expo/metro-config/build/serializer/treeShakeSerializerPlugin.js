@@ -477,7 +477,10 @@ function treeShakeSerializerPlugin(config) {
             };
             for (const index in value.output) {
                 const outputItem = value.output[index];
-                const ast = outputItem.data.ast;
+                const ast = accessAst(outputItem);
+                if (!ast) {
+                    throw new Error('AST missing for module: ' + value.path);
+                }
                 // Collect a list of exports that are not used within the module.
                 const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
@@ -640,8 +643,9 @@ function treeShakeSerializerPlugin(config) {
             return unique(dirtyImports);
         }
         function removeUnusedImports(value) {
-            if (!value.dependencies.size)
+            if (!value.dependencies.size) {
                 return [];
+            }
             const dirtyImports = value.output
                 .map((outputItem) => {
                 return removeUnusedImportsFromModule(value, accessAst(outputItem));

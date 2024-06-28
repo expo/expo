@@ -576,7 +576,10 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       for (const index in value.output) {
         const outputItem = value.output[index];
 
-        const ast = outputItem.data.ast;
+        const ast = accessAst(outputItem);
+        if (!ast) {
+          throw new Error('AST missing for module: ' + value.path);
+        }
 
         // Collect a list of exports that are not used within the module.
         const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
@@ -768,7 +771,9 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function removeUnusedImports(value: Module<MixedOutput>): string[] {
-      if (!value.dependencies.size) return [];
+      if (!value.dependencies.size) {
+        return [];
+      }
       const dirtyImports = value.output
         .map((outputItem) => {
           return removeUnusedImportsFromModule(value, accessAst(outputItem));
