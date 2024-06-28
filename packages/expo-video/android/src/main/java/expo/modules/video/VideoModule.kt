@@ -128,7 +128,9 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.enterPictureInPicture()
+        view.runWithPiPMisconfigurationSoftHandling(true) {
+          view.enterPictureInPicture()
+        }
       }
 
       AsyncFunction("stopPictureInPicture") {

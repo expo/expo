@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -74,10 +75,12 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   var autoEnterPiP: Boolean = false
     set(value) {
-      field = value
-      if (Build.VERSION.SDK_INT >= 31) {
-        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
+      if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity) && field != value) {
+        runWithPiPMisconfigurationSoftHandling {
+          currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
+        }
       }
+      field = value
     }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
@@ -251,8 +254,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   private fun applyRectHint() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(currentActivity)) {
+      runWithPiPMisconfigurationSoftHandling(ignore = true) {
+        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
+      }
     }
   }
 
@@ -385,6 +390,21 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     if (shouldInvalided) {
       shouldInvalided = false
       invalidate()
+    }
+  }
+
+  // We can't check if AndroidManifest.xml is configured properly, so we have to handle the exceptions ourselves to prevent crashes
+  internal fun runWithPiPMisconfigurationSoftHandling(shouldThrow: Boolean = false, ignore: Boolean = false, block: () -> Any?) {
+    try {
+      block()
+    } catch (e: IllegalStateException) {
+      if (ignore) {
+        return
+      }
+      Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
+      if (shouldThrow) {
+        throw PictureInPictureUnsupportedException("Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
+      }
     }
   }
 
