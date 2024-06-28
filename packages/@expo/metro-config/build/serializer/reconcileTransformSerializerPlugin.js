@@ -33,7 +33,6 @@ exports.createPostTreeShakeTransformSerializerPlugin = void 0;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
@@ -70,11 +69,11 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         if (!(0, treeShakeSerializerPlugin_1.isShakingEnabled)(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
-        const preserveEsm = false;
         // Convert all remaining AST and dependencies to standard output that Metro expects.
         // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
         for (const value of graph.dependencies.values()) {
             for (const index in value.output) {
+                // @ts-expect-error: Typed as readonly
                 value.output[index] = await transformDependencyOutput(value, value.output[index]);
             }
         }
@@ -87,6 +86,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             // This should be cached by the transform worker for use here to ensure close to consistent
             // results between the tree-shake and the final transform.
             const reconcile = outputItem.data.reconcile;
+            (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
             // const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
             assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
             let ast = (0, treeShakeSerializerPlugin_1.accessAst)(outputItem);
@@ -95,9 +95,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }
             // @ts-expect-error: TODO
             delete outputItem.data.ast;
-            const importDefault = reconcile.collectDependenciesOptions.inlineableCalls[0];
-            const importAll = reconcile.collectDependenciesOptions.inlineableCalls[1];
-            // const { importDefault, importAll } = generateImportNames(ast);
+            const { importDefault, importAll } = reconcile;
             const sideEffectReferences = [...value.dependencies.values()]
                 .filter((dep) => {
                 const fullDep = graph.dependencies.get(dep.absolutePath);
@@ -108,35 +106,18 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             const nonInlinedRequires = graph.transformOptions.nonInlinedRequires
                 ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
                 : sideEffectReferences;
-            const babelPluginOpts = {
-                ...graph.transformOptions,
-                inlineableCalls: [importDefault, importAll],
-                importDefault,
-                importAll,
-                nonInlinedRequires,
-            };
-            // @ts-expect-error: TODO
-            ast = (0, core_1.transformFromAstSync)(ast, undefined, {
-                ast: true,
-                babelrc: false,
-                code: false,
-                configFile: false,
+            ast = (0, metro_transform_worker_1.applyImportSupport)(ast, {
                 filename: value.path,
-                plugins: [
-                    // functionMapBabelPlugin,
-                    metro_transform_worker_1.renameTopLevelModuleVariables,
-                    [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts],
-                    // TODO: Add support for disabling safe inline requires.
-                    [metro_transform_plugins_1.default.inlineRequiresPlugin, babelPluginOpts],
-                ].filter(Boolean),
-                sourceMaps: false,
-                // // Not-Cloning the input AST here should be safe because other code paths above this call
-                // // are mutating the AST as well and no code is depending on the original AST.
-                // // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-                // // either because one of the plugins is doing something funky or Babel messes up some caches.
-                // // Make sure to test the above mentioned case before flipping the flag back to false.
-                // cloneInputAst: true,
-            })?.ast;
+                importAll,
+                importDefault,
+                options: {
+                    // NOTE: This might not be needed...
+                    ...graph.transformOptions,
+                    nonInlinedRequires,
+                    inlineRequires: true,
+                    experimentalImportSupport: true,
+                },
+            });
             // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
             let dependencyMapName = '';
             let dependencies;
@@ -163,22 +144,16 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             value.dependencies =
                 //
                 sortDependencies(dependencies, value.dependencies);
-            const results = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
+            const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
             // TODO: Share these with transformer
             reconcile.globalPrefix, 
             // @ts-expect-error
             reconcile.unstable_renameRequire === false);
-            const wrappedAst = results.ast;
-            const source = value.getSource().toString('utf-8');
             const reserved = [];
             if (reconcile.unstable_dependencyMapReservedName != null) {
                 reserved.push(reconcile.unstable_dependencyMapReservedName);
             }
-            // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L128C28-L128C38
-            const optimizationSizeLimit = reconcile.optimizationSizeLimit ?? 150 * 1024;
-            if (reconcile.minify &&
-                source.length <= optimizationSizeLimit &&
-                !reconcile.unstable_disableNormalizePseudoGlobals) {
+            if (reconcile.normalizePseudoGlobals) {
                 // This MUST run before `generate` as it mutates the ast out of place.
                 reserved.push(...metro_transform_plugins_1.default.normalizePseudoGlobals(wrappedAst, {
                     reservedNames: reserved,
@@ -195,8 +170,9 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }, outputItem.data.code);
             let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
             let code = result.code;
-            if (reconcile.minify && !preserveEsm) {
-                ({ map, code } = await (0, metro_transform_worker_1.minifyCode)({ minifierPath: reconcile.minifierPath, minifierConfig: reconcile.minifierConfig }, config.projectRoot, value.path, result.code, source, map, reserved));
+            if (reconcile.minify) {
+                const source = value.getSource().toString('utf-8');
+                ({ map, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, config.projectRoot, value.path, result.code, source, map, reserved));
             }
             // console.log(code);
             // console.log(require('@babel/generator').default(ast).code);
@@ -205,6 +181,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 data: {
                     ...outputItem.data,
                     code,
+                    // @ts-expect-error: TODO: Source maps are likely completely broken.
                     map,
                     lineCount: (0, countLines_1.default)(code),
                     functionMap: 
@@ -229,6 +206,7 @@ function sortDependencies(dependencies, accordingTo) {
     dependencies.forEach((dep) => {
         nextDependencies.set(dep.data.key, {
             ...(accordingTo.get(dep.data.key) || {}),
+            // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
             data: dep,
         });
     });
