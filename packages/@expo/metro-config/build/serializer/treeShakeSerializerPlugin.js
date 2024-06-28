@@ -302,7 +302,13 @@ const markUnused = (path, node) => {
         }
     }
     else {
-        console.log('remove:', node.id?.name ?? node.exported?.name);
+        // Format path as code
+        console.log('Delete:\n' + generate(path.node).code);
+        console.log();
+        // if (types.isStringLiteral(node)) {
+        // } else {
+        //   console.log('remove:', node.id?.name ?? node.exported?.name ?? node);
+        // }
         path.remove();
     }
 };
@@ -392,7 +398,7 @@ function treeShakeSerializerPlugin(config) {
             // Unlink the module in the graph
             // The hash key for the dependency instance in the module.
             const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
-            console.log('targetModulePath', targetHashId);
+            // console.log('targetModulePath', targetHashId);
             // If the dependency was already removed, then we don't need to do anything.
             const importInstance = graphModule.dependencies.get(targetHashId);
             // console.log('Try unlink:', importModuleId, dep);
@@ -407,7 +413,6 @@ function treeShakeSerializerPlugin(config) {
             !isFx ||
                 // Unless it's an empty module.
                 isEmptyModule(graphEntryForTargetImport)) {
-                console.log('Drop', importInstance.absolutePath);
                 // Remove a random instance of the dep count to track if there are multiple imports.
                 // TODO: Get the exact instance of the import.
                 // console.log('importInstance.data.data', importInstance.data.data);
@@ -440,12 +445,17 @@ function treeShakeSerializerPlugin(config) {
             }
             return { path: importInstance.absolutePath, removed: false };
         }
-        function removeUnusedExports(value) {
+        function removeUnusedExports(value, depth = 0) {
             if (!value.inverseDependencies.size) {
+                return [];
+            }
+            if (depth > 5) {
+                debug('Max export removal depth reached for:', value.path);
                 return [];
             }
             const dirtyImports = [];
             let needsImportReindex = false;
+            let shouldRecurseUnusedExports = false;
             const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
                 return graph.dependencies.get(id);
             });
@@ -524,20 +534,28 @@ function treeShakeSerializerPlugin(config) {
                                 if (decl.id.type === 'Identifier') {
                                     if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
                                         markUnused(path, decl);
-                                        console.log('mark remove.2:', decl.id.name, 'from:', value.path);
+                                        console.log(`mark remove (type: var, depth: ${depth}):`, decl.id.name, 'from:', value.path);
+                                        // Account for variables, and classes which may contain references to other exports.
+                                        shouldRecurseUnusedExports = true;
                                     }
                                 }
                             });
                         }
-                        else if (declaration &&
-                            'id' in declaration &&
-                            declaration.id &&
-                            'name' in declaration.id) {
+                        else if (declaration && 'id' in declaration && types.isIdentifier(declaration.id)) {
                             // function, class, etc.
                             if (possibleUnusedExports.includes(declaration.id.name) &&
                                 !isExportUsed(declaration.id.name)) {
-                                console.log('mark remove:', declaration.id.name, 'from:', value.path);
+                                console.log(`mark remove (type: function, depth: ${depth}):`, declaration.id.name, 'from:', value.path);
                                 markUnused(path, declaration);
+                                // Code inside of an unused export may affect other exports in the module.
+                                // e.g.
+                                //
+                                // export const a = () => {}
+                                //
+                                // // Removed `b` -> recurse for `a`
+                                // export const b = () => { a() };
+                                //
+                                shouldRecurseUnusedExports = true;
                             }
                         }
                         if (importModuleId) {
@@ -556,6 +574,9 @@ function treeShakeSerializerPlugin(config) {
             if (needsImportReindex) {
                 // TODO: Do this better with a tracked removal of the import rather than a full reparse.
                 populateModuleWithImportUsage(value);
+            }
+            if (shouldRecurseUnusedExports) {
+                return unique(removeUnusedExports(value, depth + 1).concat(dirtyImports));
             }
             return unique(dirtyImports);
         }
@@ -640,9 +661,9 @@ function treeShakeSerializerPlugin(config) {
                     // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
                     const removeRequest = disconnectGraphNode(value, importModuleId);
                     if (removeRequest.removed) {
-                        console.log('Remove import:', importModuleId, 'from:', value.path);
+                        console.log('Disconnect import:', importModuleId, 'from:', value.path);
                         // Delete the import AST
-                        path.remove();
+                        markUnused(path, path.node);
                         dirtyImports.push(removeRequest.path);
                         // Update crazy list
                         // value.output[0].data.modules?.imports.splice(index, 1);
@@ -689,7 +710,7 @@ function treeShakeSerializerPlugin(config) {
                 const dep = graph.dependencies.get(absolutePath);
                 if (!dep)
                     continue;
-                console.log('Optimize:', absolutePath);
+                // console.log('Optimize:', absolutePath);
                 checked.add(absolutePath);
                 markDirty(
                 // Order is important (not sure why though)

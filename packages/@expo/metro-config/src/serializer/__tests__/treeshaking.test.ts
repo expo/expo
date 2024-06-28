@@ -899,7 +899,7 @@ it(`removes unused exports`, async () => {
 
 // This test accounts for removing an unused export that references another unused export.
 it(`removes deeply nested unused exports`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync(
+  const [, [artifact]] = await serializeShakingAsync(
     {
       'index.js': `
           import { add } from './math';
@@ -915,7 +915,7 @@ it(`removes deeply nested unused exports`, async () => {
             return a - b;
           }
 
-          function divide(a, b) {
+          export function divide(a, b) {
             subtract();
             return a - b;
           }
@@ -923,10 +923,118 @@ it(`removes deeply nested unused exports`, async () => {
     }
     // { minify: true }
   );
+  // 1. divide should be removed.
+  // 2. subtract, which is no longer used by divide, should also be removed.
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/math.js' })]);
+  expect(artifact.source).not.toMatch('divide');
+  expect(artifact.source).not.toMatch('subtract');
+});
 
-  expect(artifacts[0].source).not.toMatch('divide');
-  expect(artifacts[0].source).not.toMatch('subtract');
-  expect(artifacts[0].source).toMatch('subtractff');
+it(`removes deeply nested unused exports (variables)`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import { add } from './math';
+          add(1, 2);
+        `,
+      'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export const x1 = () => 0;
+          export const x2 = () => x1();
+          export const x3 = () => x2();
+        `,
+    }
+    // { minify: true }
+  );
+  // 1. divide should be removed.
+  // 2. subtract, which is no longer used by divide, should also be removed.
+
+  expect(artifact.source).not.toMatch('x1');
+  expect(artifact.source).not.toMatch('x2');
+  expect(artifact.source).not.toMatch('x3');
+});
+
+it(`removes deeply nested unused exports (classes)`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import { add } from './math';
+          add(1, 2);
+        `,
+      'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export const x1 = () => 0;
+          export class x2 {
+            constructor() {
+              x1()  
+            }
+          }
+          export class x3 {
+            constructor() {
+              new x2();
+            }
+          }
+          
+        `,
+    }
+    // { minify: true }
+  );
+  // 1. divide should be removed.
+  // 2. subtract, which is no longer used by divide, should also be removed.
+
+  expect(artifact.source).not.toMatch('x1');
+  expect(artifact.source).not.toMatch('x2');
+  expect(artifact.source).not.toMatch('x3');
+});
+
+it(`removes deeply nested unused exports until max depth`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import { add } from './math';
+          add(1, 2);
+        `,
+      'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+          export function x1() {
+            return;
+          }
+          export function x2() {
+            x1();
+          }
+          export function x3() {
+            x2();
+          }
+          export function x4() {
+            x3();
+          }
+          export function x5() {
+            x4();
+          }
+          export function x6() {
+            x5();
+          }
+          export function x7() {
+            x6();
+          }
+          
+        `,
+    }
+    // { minify: true }
+  );
+
+  // Tests that the maximum optimization limit cannot be exceeded.
+  expect(artifact.source).not.toMatch('x7');
+  expect(artifact.source).not.toMatch('x6');
+  expect(artifact.source).not.toMatch('x2');
+  // The last export that couldn't be reached should still be there.
+  expect(artifact.source).toMatch('x1');
 });
