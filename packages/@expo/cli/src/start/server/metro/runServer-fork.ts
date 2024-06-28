@@ -108,7 +108,7 @@ export const runServer = async (
       endpoint.clients.forEach((client) => client.terminate());
     }
 
-    // Ensure all connections are closed
+    // Forcibly close active connections
     this.closeAllConnections();
     return this;
   };
