@@ -110,30 +110,27 @@ async function packExpoDependency(
     )
   );
 
-  // Pack the package, and parse the output to get the tarball path
-  let dependencyTarballName = '';
   try {
-    const { stdout } = await spawnAsync(
-      'npm',
-      ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', destPath],
-      {
-        cwd: dependencyPath,
-        stdio: 'pipe',
-      }
-    );
-
-    // The `npm pack --json` output has more types, but we only need this property
-    dependencyTarballName = JSON.parse(stdout)[0]?.filename;
+    await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
+      cwd: dependencyPath,
+      stdio: 'pipe',
+    });
   } finally {
     // Restore the original package JSON
     await fs.copyFile(packageJsonCopyPath, packageJsonPath);
     await fs.rm(packageJsonCopyPath);
   }
 
+  // Define the expected tarball file name
+  const dependencyTarballName =
+    dependencyComponents[0] === '@expo'
+      ? `expo-${dependencyComponents[1]}-${e2eVersion}.tgz`
+      : `${dependencyComponents[0]}-${e2eVersion}.tgz`;
+
   // Ensure the file was created as expected
   const dependencyTarballPath = path.join(destPath, dependencyTarballName);
-  const dependencyTarballFileInfo = await fs.stat(dependencyTarballPath);
-  if (!dependencyTarballName || !dependencyTarballFileInfo.isFile()) {
+  const dependencyTarballFileInfo = await fs.stat(dependencyTarballPath).catch(() => null);
+  if (!dependencyTarballFileInfo?.isFile()) {
     throw new Error(`Failed to create tarball for ${dependencyName} in ${destPath}`);
   }
 
