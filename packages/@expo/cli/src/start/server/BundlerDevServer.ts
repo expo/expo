@@ -352,7 +352,7 @@ export abstract class BundlerDevServer {
         }),
       {
         // NOTE(Bacon): Metro dev server doesn't seem to be closing in time.
-        timeout: 1000,
+        timeout: 3000,
         errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
       }
     );

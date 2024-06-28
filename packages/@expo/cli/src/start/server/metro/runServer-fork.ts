@@ -10,12 +10,15 @@ import Metro, { RunServerOptions, Server } from 'metro';
 import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
+import { Socket } from 'net';
 import { parse } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
 import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
+
+const debug = require('debug')('expo:metro-server') as typeof console.log;
 
 export const runServer = async (
   metroBundler: MetroBundlerDevServer,
@@ -68,6 +71,18 @@ export const runServer = async (
     httpServer = http.createServer(serverApp);
   }
 
+  let connections: Socket[] = [];
+
+  httpServer.on('connection', (conn: Socket) => {
+    if (conn instanceof Socket) {
+      connections.push(conn);
+      debug('socket connected:', connections.length);
+    }
+    conn.on('close', () => {
+      connections = connections.filter((curr) => curr !== conn);
+    });
+  });
+
   httpServer.on('error', (error) => {
     if ('code' in error && error.code === 'EADDRINUSE') {
       // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
@@ -119,6 +134,16 @@ export const runServer = async (
           ),
         }),
       });
+
+      // Extend the close method to ensure that we clean up any open connections to
+      // prevent hanging when the server is closed after connecting to clients.
+      const originalClose = httpServer.close.bind(httpServer);
+
+      httpServer.close = (callback?: (err?: Error) => void) => {
+        debug('Closing connections:', connections.length);
+        connections.forEach((conn) => conn.destroy());
+        return originalClose(callback);
+      };
 
       httpServer.on('upgrade', (request, socket, head) => {
         const { pathname } = parse(request.url!);
