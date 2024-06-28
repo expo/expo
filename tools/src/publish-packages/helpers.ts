@@ -301,9 +301,10 @@ function fileLogsContainNativeChanges(fileLogs: GitFileLog[]): boolean {
 export function isParcelUnpublished(parcel: Parcel): boolean {
   const { logs, changelogChanges, dependencies } = parcel;
   const hasChangedFiles = !logs || logs.files.length > 0;
+  const hasNewCommits = !logs || logs.commits.length > 0;
   const hasChangelogChanges = changelogChanges ? changelogChanges.totalCount > 0 : false;
 
-  return hasChangedFiles || hasChangelogChanges || dependencies.size > 0;
+  return hasChangedFiles || hasNewCommits || hasChangelogChanges || dependencies.size > 0;
 }
 
 /**
