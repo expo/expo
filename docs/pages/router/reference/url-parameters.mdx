@@ -186,11 +186,11 @@ import { useLocalSearchParams } from 'expo-router';
 export default function Route() {
   const { everything } = useLocalSearchParams<{
     /* @info <b>everything</b> will be an array of path segments, even if there's only one */
-    everything: string[],
+    everything: string[];
     /* @info <b>query</b> is an optional search parameter */
-    query?: string,
+    query?: string;
     /* @info <b>query2</b> is an optional search parameter */
-    query2?: string,
+    query2?: string;
     /* @end */
   }>();
   const user = everything[0];
