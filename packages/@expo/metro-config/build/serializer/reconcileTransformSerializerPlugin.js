@@ -45,6 +45,7 @@ const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
+const FORCE_REQUIRE_NAME_HINTS = false;
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -85,19 +86,17 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }
             // This should be cached by the transform worker for use here to ensure close to consistent
             // results between the tree-shake and the final transform.
-            const { collectDependenciesOptions, globalPrefix, unstable_compactOutput, minify, minifierPath, minifierConfig, unstable_renameRequire, ...reconcile
-            // @ts-expect-error: TODO
-             } = outputItem.data.reconcile;
+            const reconcile = outputItem.data.reconcile;
             // const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
-            assertCollectDependenciesOptions(collectDependenciesOptions);
+            assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
             let ast = (0, treeShakeSerializerPlugin_1.accessAst)(outputItem);
             if (!ast) {
                 throw new Error('missing AST for ' + value.path);
             }
             // @ts-expect-error: TODO
             delete outputItem.data.ast;
-            const importDefault = collectDependenciesOptions.inlineableCalls[0];
-            const importAll = collectDependenciesOptions.inlineableCalls[1];
+            const importDefault = reconcile.collectDependenciesOptions.inlineableCalls[0];
+            const importAll = reconcile.collectDependenciesOptions.inlineableCalls[1];
             // const { importDefault, importAll } = generateImportNames(ast);
             const sideEffectReferences = [...value.dependencies.values()]
                 .filter((dep) => {
@@ -143,16 +142,15 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             let dependencies;
             // This pass converts the modules to use the generated import names.
             try {
-                const opts = collectDependenciesOptions;
-                // TODO: We should try to drop this black-box approach since we don't need the deps.
-                // We just need the AST modifications such as `require.context`.
                 // console.log(require('@babel/generator').default(ast).code);
+                // Rewrite the deps to use Metro runtime, collect the new dep positions.
+                // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
                 ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
-                    ...opts,
-                    // TODO: This is here for debugging purposes.
-                    keepRequireNames: true,
+                    ...reconcile.collectDependenciesOptions,
+                    // This is here for debugging purposes.
+                    keepRequireNames: FORCE_REQUIRE_NAME_HINTS,
                     // This setting shouldn't be shared + it can't be serialized and cached anyways.
-                    dependencyTransformer: null,
+                    dependencyTransformer: undefined,
                 }));
             }
             catch (error) {
@@ -165,13 +163,11 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             value.dependencies =
                 //
                 sortDependencies(dependencies, value.dependencies);
-            // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
-            // const globalPrefix = config.transformer?.globalPrefix ?? '';
             const results = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
             // TODO: Share these with transformer
-            globalPrefix, 
+            reconcile.globalPrefix, 
             // @ts-expect-error
-            unstable_renameRequire === false);
+            reconcile.unstable_renameRequire === false);
             const wrappedAst = results.ast;
             const source = value.getSource().toString('utf-8');
             const reserved = [];
@@ -180,7 +176,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }
             // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L128C28-L128C38
             const optimizationSizeLimit = reconcile.optimizationSizeLimit ?? 150 * 1024;
-            if (minify &&
+            if (reconcile.minify &&
                 source.length <= optimizationSizeLimit &&
                 !reconcile.unstable_disableNormalizePseudoGlobals) {
                 // This MUST run before `generate` as it mutates the ast out of place.
@@ -191,7 +187,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             const result = (0, generator_1.default)(wrappedAst, {
                 // comments: true,
                 // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L137
-                compact: unstable_compactOutput,
+                compact: reconcile.unstable_compactOutput,
                 filename: value.path,
                 retainLines: false,
                 sourceFileName: value.path,
@@ -199,8 +195,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }, outputItem.data.code);
             let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
             let code = result.code;
-            if (minify && !preserveEsm) {
-                ({ map, code } = await (0, metro_transform_worker_1.minifyCode)({ minifierPath, minifierConfig }, config.projectRoot, value.path, result.code, source, map, reserved));
+            if (reconcile.minify && !preserveEsm) {
+                ({ map, code } = await (0, metro_transform_worker_1.minifyCode)({ minifierPath: reconcile.minifierPath, minifierConfig: reconcile.minifierConfig }, config.projectRoot, value.path, result.code, source, map, reserved));
             }
             // console.log(code);
             // console.log(require('@babel/generator').default(ast).code);

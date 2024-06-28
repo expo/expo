@@ -207,7 +207,9 @@ export function renameTopLevelModuleVariables() {
   return {
     visitor: {
       Program(path: any) {
-        path.scope.rename('module', path.scope.generateUidIdentifier('_module').name);
+        ['global', 'require', 'module', 'exports'].forEach((name) => {
+          path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
+        });
       },
     },
   };
@@ -221,9 +223,6 @@ async function transformJS(
     // Ensure we don't enable tree shaking for scripts or assets.
     file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
   const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
-
-  // const targetEnv = options.customTransformOptions?.environment;
-  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
@@ -258,12 +257,14 @@ async function transformJS(
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!treeshake) {
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
-    // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
+    // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
-      plugins.push(renameTopLevelModuleVariables, [
-        metroTransformPlugins.importExportPlugin,
-        babelPluginOpts,
-      ]);
+      plugins.push(
+        // Ensure the iife "globals" don't have conflicting variables in the module.
+        renameTopLevelModuleVariables,
+        //
+        [metroTransformPlugins.importExportPlugin, babelPluginOpts]
+      );
     }
 
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -473,6 +474,8 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         ...(treeshake
           ? {
+              // Store settings for the module that will be used to finish transformation after graph-based optimizations
+              // have finished.
               reconcile: {
                 unstable_renameRequire: config.unstable_renameRequire,
                 globalPrefix: config.globalPrefix,
