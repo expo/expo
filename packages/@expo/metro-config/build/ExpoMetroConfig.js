@@ -84,7 +84,49 @@ function patchMetroGraphToSupportUncachedModules() {
         Graph.prototype.traverseDependencies.__patched = true;
     }
 }
+function fastCreateModuleIdFactory() {
+    const fileToIdMap = new Map();
+    let nextId = 0;
+    return (modulePath) => {
+        let id = fileToIdMap.get(modulePath);
+        if (typeof id !== 'number') {
+            id = nextId++;
+            fileToIdMap.set(modulePath, id);
+        }
+        return id;
+    };
+}
+// Creates module IDs that are stable across multiple builds by converting the string
+// path to a numeric hash.
+// NOTE: MUST MATCH THE IMPL IN ExpoMetroConfig.ts
+function stableCreateModuleIdFactory(root) {
+    const fileToIdMap = new Map();
+    // @ts-expect-error: expects number but we changed the require implementation to allow strings
+    return (
+    // This is an absolute file path.
+    modulePath) => {
+        let id = fileToIdMap.get(modulePath);
+        if (id == null) {
+            id = path_1.default.relative(root, modulePath);
+            fileToIdMap.set(modulePath, id);
+        }
+        return id;
+    };
+}
+function stringToHash(str) {
+    let hash = 0;
+    if (str.length === 0)
+        return hash;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
+    // Change the default metro-runtime to a custom one that supports bundle splitting.
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve('@expo/metro-config/require');
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -182,6 +224,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return preModules;
             },
+            createModuleIdFactory: stableCreateModuleIdFactory.bind(null, serverRoot),
             getPolyfills: ({ platform }) => {
                 // Do nothing for nullish platforms.
                 if (!platform) {

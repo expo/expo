@@ -101,10 +101,59 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function fastCreateModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+// Creates module IDs that are stable across multiple builds by converting the string
+// path to a numeric hash.
+// NOTE: MUST MATCH THE IMPL IN ExpoMetroConfig.ts
+function stableCreateModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+
+  // @ts-expect-error: expects number but we changed the require implementation to allow strings
+  return (
+    // This is an absolute file path.
+    modulePath: string
+  ) => {
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      id = path.relative(root, modulePath);
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function stringToHash(str: string): number {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
+  // Change the default metro-runtime to a custom one that supports bundle splitting.
+  require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+    '@expo/metro-config/require'
+  );
+
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
   if (isCSSEnabled) {
@@ -224,6 +273,7 @@ export function getDefaultConfig(
 
         return preModules;
       },
+      createModuleIdFactory: stableCreateModuleIdFactory.bind(null, serverRoot),
       getPolyfills: ({ platform }) => {
         // Do nothing for nullish platforms.
         if (!platform) {
