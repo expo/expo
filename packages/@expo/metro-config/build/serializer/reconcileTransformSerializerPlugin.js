@@ -128,7 +128,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     metro_transform_worker_1.renameTopLevelModuleVariables,
                     [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts],
                     // TODO: Add support for disabling safe inline requires.
-                    // [metroTransformPlugins.inlineRequiresPlugin, babelPluginOpts],
+                    [metro_transform_plugins_1.default.inlineRequiresPlugin, babelPluginOpts],
                 ].filter(Boolean),
                 sourceMaps: false,
                 // // Not-Cloning the input AST here should be safe because other code paths above this call
