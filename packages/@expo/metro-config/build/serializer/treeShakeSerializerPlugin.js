@@ -247,15 +247,22 @@ function populateModuleWithImportUsage(value) {
                 }
                 // TODO: Maybe also add require.context.
             },
-            // export from
+            // export { a as b } from 'a'
+            // export { c } from 'a'
+            // export { default } from 'a'
             ExportNamedDeclaration(path) {
                 if (path.node.source) {
                     const source = path.node.source.value;
                     const specifiers = path.node.specifiers.map((specifier) => {
+                        const exportedName = types.isIdentifier(specifier.exported)
+                            ? specifier.exported.name
+                            : specifier.exported.value;
+                        const localName = 'local' in specifier ? specifier.local.name : exportedName;
                         return {
                             type: specifier.type,
-                            exportedName: specifier.exported.name,
-                            localName: specifier.local.name,
+                            exportedName,
+                            importedName: localName,
+                            localName,
                         };
                     });
                     outputItem.data.modules.imports.push({
@@ -265,7 +272,8 @@ function populateModuleWithImportUsage(value) {
                     });
                 }
             },
-            // export * from
+            // export * from 'a'
+            // TODO: export * as b from 'a'
             ExportAllDeclaration(path) {
                 if (path.node.source) {
                     const source = path.node.source.value;
@@ -281,7 +289,6 @@ function populateModuleWithImportUsage(value) {
         outputItem.data.modules.imports = outputItem.data.modules.imports.filter(
         // Filter out missing optional dependencies.
         (importItem) => importItem.key != null);
-        // inspect('imports', outputItem.data.modules.imports);
     }
 }
 const markUnused = (path, node) => {
@@ -313,8 +320,10 @@ function treeShakeSerializerPlugin(config) {
         }
         // This pass will parse all modules back to AST and include the import/export statements.
         for (const value of graph.dependencies.values()) {
+            // TODO: Move this to the transformer and combine with collect dependencies.
             populateModuleWithImportUsage(value);
         }
+        // return [entryPoint, preModules, graph, options];
         const beforeList = [...graph.dependencies.keys()];
         // Tree shake the graph.
         // treeShakeAll();

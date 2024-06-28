@@ -103,20 +103,6 @@ const minifyCode = async (config, projectRoot, filename, code, source, map, rese
     }
 };
 exports.minifyCode = minifyCode;
-const disabledDependencyTransformer = {
-    transformSyncRequire: (path) => {
-        // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
-        // This doesn't work if the require.context has fewer than 2 arguments.
-        // If the path has more than 1 argument, then convert it from `require(...)` to `require.context(...)`.
-        // to essentially undo the `path.get("callee").replaceWith(types.identifier("require"));` line...
-        if (path.node.arguments.length > 1) {
-            path.node.callee = types.memberExpression(types.identifier('require'), types.identifier('context'));
-        }
-    },
-    transformImportCall: () => { },
-    transformPrefetch: () => { },
-    transformIllegalDynamicRequire: () => { },
-};
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -552,4 +538,18 @@ function getCacheKey(config) {
     ].join('$');
 }
 exports.getCacheKey = getCacheKey;
+const disabledDependencyTransformer = {
+    transformSyncRequire: (path) => {
+        // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
+        // This doesn't work if the require.context has fewer than 2 arguments.
+        // If the path has more than 1 argument, then convert it from `require(...)` to `require.context(...)`.
+        // to essentially undo the `path.get("callee").replaceWith(types.identifier("require"));` line...
+        if (path.node.arguments.length > 1) {
+            path.node.callee = types.memberExpression(types.identifier('require'), types.identifier('context'));
+        }
+    },
+    transformImportCall: () => { },
+    transformPrefetch: () => { },
+    transformIllegalDynamicRequire: () => { },
+};
 //# sourceMappingURL=metro-transform-worker.js.map

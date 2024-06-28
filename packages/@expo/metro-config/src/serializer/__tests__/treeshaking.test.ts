@@ -896,3 +896,37 @@ it(`removes unused exports`, async () => {
     ]
   `);
 });
+
+// This test accounts for removing an unused export that references another unused export.
+it(`removes deeply nested unused exports`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import { add } from './math';
+          console.log('keep', add(1, 2));
+        `,
+      'math.js': `
+          export function add(a, b) {
+          
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+
+          function divide(a, b) {
+            subtract();
+            return a - b;
+          }
+        `,
+    }
+    // { minify: true }
+  );
+
+  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/math.js' })]);
+
+  expect(artifacts[0].source).not.toMatch('divide');
+  expect(artifacts[0].source).not.toMatch('subtract');
+  expect(artifacts[0].source).toMatch('subtractff');
+});
