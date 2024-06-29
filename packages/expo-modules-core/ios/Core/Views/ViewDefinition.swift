@@ -3,7 +3,7 @@
 /**
  A definition representing the native view to export to React.
  */
-public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefinition {
+public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefinition {
   /**
    An array of view props definitions.
    */

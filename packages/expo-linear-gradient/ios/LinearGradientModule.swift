@@ -2,27 +2,45 @@
 
 import CoreGraphics
 import ExpoModulesCore
+import SwiftUI
+
+public final class LinearGradientProps: ViewProps {
+  @Field
+  var colors: [Color] = []
+
+  @Field
+  var startPoint: UnitPoint = UnitPoint(x: 0.5, y: 0.0)
+
+  @Field
+  var endPoint: UnitPoint = UnitPoint(x: 0.5, y: 1.0)
+
+  @Field
+  var locations: [Double] = []
+}
 
 public class LinearGradientModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLinearGradient")
 
-    View(LinearGradientView.self) {
-      Prop("colors") { (view: LinearGradientView, colors: [CGColor]) in
-        view.gradientLayer.setColors(colors)
-      }
+    View(LinearGradientSwiftUIView.self)
+  }
+}
 
-      Prop("startPoint") { (view: LinearGradientView, startPoint: CGPoint?) in
-        view.gradientLayer.setStartPoint(startPoint)
-      }
+struct LinearGradientSwiftUIView: ExpoSwiftUIView {
+  @EnvironmentObject var props: LinearGradientProps
 
-      Prop("endPoint") { (view: LinearGradientView, endPoint: CGPoint?) in
-        view.gradientLayer.setEndPoint(endPoint)
-      }
+  var body: some View {
+    log.debug("LinearGradientView body")
 
-      Prop("locations") { (view: LinearGradientView, locations: [CGFloat]?) in
-        view.gradientLayer.setLocations(locations)
-      }
+    return ZStack {
+      LinearGradient(
+        colors: props.colors,
+        startPoint: props.startPoint,
+        endPoint: props.endPoint
+      )
+      Text("SwiftUI in Expo 🔥")
+        .font(.system(size: 30))
+        .foregroundColor(.white)
     }
   }
 }

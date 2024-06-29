@@ -1,12 +1,14 @@
+import SwiftUI
+
 /**
  Property wrapper for `Record`'s data members that takes part in the process of serialization to and deserialization from the dictionary.
  */
 @propertyWrapper
-public final class Field<Type: AnyArgument>: AnyFieldInternal {
+public final class Field<Type: AnyArgument>: AnyFieldInternal, ObservableObject {
   /**
    The wrapped value.
    */
-  public var wrappedValue: Type
+  @Published public var wrappedValue: Type
 
   private let fieldType: AnyDynamicType = ~Type.self
 
