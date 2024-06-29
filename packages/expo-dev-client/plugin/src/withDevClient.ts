@@ -12,10 +12,14 @@ import { withGeneratedIosScheme } from './withGeneratedIosScheme';
 const pkg = require('expo-dev-client/package.json');
 
 function withDevClient(config: ExpoConfig, props: PluginConfigType) {
+  const { generatedSchemeEnabled = true } = props;
+
   config = withDevMenu(config);
   config = withDevLauncher(config, props);
-  config = withGeneratedAndroidScheme(config);
-  config = withGeneratedIosScheme(config);
+  if (generatedSchemeEnabled) {
+    config = withGeneratedAndroidScheme(config);
+    config = withGeneratedIosScheme(config);
+  }
   return config;
 }
 

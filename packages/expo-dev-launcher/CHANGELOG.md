@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add possibility to disable the generated `exp+slug` scheme. ([#24976](https://github.com/expo/expo/pull/24976) by [@sync](https://github.com/sync))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
