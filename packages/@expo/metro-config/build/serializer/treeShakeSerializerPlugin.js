@@ -450,13 +450,12 @@ function treeShakeSerializerPlugin(config) {
             if (!graphEntryForTargetImport) {
                 throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
             }
-            const [isExplicitSideEffect, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
-            let isFx = isSideEffectyImport;
+            const [authorMarkedSideEffect, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
             // If the package.json chain explicitly marks the module as side-effect-free, then we can remove imports that have no specifiers.
-            if (isExplicitSideEffect === false) {
-                isFx = false;
-                // This is for debugging modules that should be marked as side-effects but are not.
-                if (isSideEffectyImport) {
+            const isFx = authorMarkedSideEffect ?? isSideEffectyImport;
+            if (isSideEffectyImport) {
+                if (authorMarkedSideEffect == null) {
+                    // This is for debugging modules that should be marked as side-effects but are not.
                     if (!trace.length) {
                         console.log('----');
                         console.log('Found side-effecty import (no specifiers) that is not marked as a side effect in the package.json:');
@@ -465,6 +464,9 @@ function treeShakeSerializerPlugin(config) {
                         // console.log('- FX trace:', trace.join(' > '));
                         console.log('----');
                     }
+                }
+                else if (!isFx) {
+                    console.log('Removing side-effecty import (package.json indicates it is not a side-effect):', importModuleId, 'from:', graphModule.path);
                 }
             }
             // let trace: string[] = [];

@@ -551,19 +551,18 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         );
       }
 
-      const [isExplicitSideEffect, trace] = hasSideEffectWithDebugTrace(
+      const [authorMarkedSideEffect, trace] = hasSideEffectWithDebugTrace(
         options,
         graph,
         graphEntryForTargetImport
       );
-      let isFx = isSideEffectyImport;
 
       // If the package.json chain explicitly marks the module as side-effect-free, then we can remove imports that have no specifiers.
-      if (isExplicitSideEffect === false) {
-        isFx = false;
+      const isFx = authorMarkedSideEffect ?? isSideEffectyImport;
 
-        // This is for debugging modules that should be marked as side-effects but are not.
-        if (isSideEffectyImport) {
+      if (isSideEffectyImport) {
+        if (authorMarkedSideEffect == null) {
+          // This is for debugging modules that should be marked as side-effects but are not.
           if (!trace.length) {
             console.log('----');
             console.log(
@@ -574,8 +573,16 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             // console.log('- FX trace:', trace.join(' > '));
             console.log('----');
           }
+        } else if (!isFx) {
+          console.log(
+            'Removing side-effecty import (package.json indicates it is not a side-effect):',
+            importModuleId,
+            'from:',
+            graphModule.path
+          );
         }
       }
+
       // let trace: string[] = [];
 
       if (

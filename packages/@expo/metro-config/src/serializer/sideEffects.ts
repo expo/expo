@@ -163,6 +163,7 @@ function detectHasSideEffectInPackageJson(
   if (value.output.some((output) => output.type === 'js/module')) {
     const isSideEffect = getPackageJsonMatcher(options, value.path);
     if (isSideEffect == null) {
+      // console.log('no side effects matcher:', value.path);
       return null;
     }
     return isSideEffect(value.path);
