@@ -35,7 +35,7 @@ import { Button, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 export default function App() {
-  const animation = useRef(null);
+  const animation = useRef<LottieView>(null);
   useEffect(() => {
     // You can control the ref programmatically, rather than using autoPlay
     // animation.current?.play();
