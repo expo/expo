@@ -102,7 +102,7 @@ internal class DeleteAlbumFailedException: Exception {
   }
 }
 
-internal class CusrorException: Exception {
+internal class CursorException: Exception {
   override var reason: String {
     "Couldn't find cursor"
   }

@@ -119,6 +119,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
+    - Nimble (~> 13.0.0)
+    - Quick (~> 7.3.0)
+    - React-Core
+  - ExpoMediaLibrary/Tests (16.0.3):
+    - ExpoModulesCore
+    - Nimble (~> 13.0.0)
+    - Quick (~> 7.3.0)
     - React-Core
   - ExpoModulesCore (1.12.11):
     - DoubleConversion
@@ -1899,6 +1906,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
+  - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -2377,7 +2385,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: f119167649d0465a06fa7c5b44c6c70f43f477ee
   ExpoLocalization: f04eeec2e35bed01ab61c72ee1768ec04d093d01
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
-  ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
+  ExpoMediaLibrary: cf3bfe05e712329ec8436ef381f1bad6a8428ced
   ExpoModulesCore: 4eb2165cde325c8c121d495bb8beb0da9b30c92e
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
@@ -2412,7 +2420,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: c8cd6a144dc677b571369ef3ccbeeb852d4e75d4
+  hermes-engine: 56c453c4b73b7954fb38d24fdb899191dc6470ec
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -2511,4 +2519,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.14.3
