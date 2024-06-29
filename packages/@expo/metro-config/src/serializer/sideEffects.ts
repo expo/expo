@@ -23,8 +23,9 @@ export function hasSideEffectWithDebugTrace(
   value: AdvancedModule,
   parentTrace: string[] = [value.path],
   checked: Set<string> = new Set()
-): [boolean, string[]] {
-  if (getShallowSideEffect(options, value)) {
+): [boolean | null, string[]] {
+  const currentModuleHasSideEffect = getShallowSideEffect(options, value);
+  if (currentModuleHasSideEffect) {
     return [true, parentTrace];
   }
   // Recursively check if any of the dependencies have side effects.
@@ -53,7 +54,7 @@ export function hasSideEffectWithDebugTrace(
       return [true, trace];
     }
   }
-  return [false, []];
+  return [currentModuleHasSideEffect, []];
 }
 
 const pkgJsonCache = new Map<string, any>();
@@ -63,7 +64,7 @@ const getPackageJsonMatcher = (
     _test_getPackageJson?: (dir: string) => [any, string | null];
   },
   dir: string
-): any => {
+): null | ((fp: string) => boolean | null) => {
   let packageJson: any;
   let packageJsonPath: string | null = null;
   if (typeof options._test_getPackageJson === 'function') {
@@ -138,7 +139,7 @@ const getPackageJsonMatcher = (
   return isSideEffect;
 };
 
-function getShallowSideEffect(options: SerializerOptions, value: AdvancedModule) {
+function getShallowSideEffect(options: SerializerOptions, value: AdvancedModule): boolean | null {
   if (value?.sideEffects !== undefined) {
     return value.sideEffects;
   }
@@ -147,7 +148,10 @@ function getShallowSideEffect(options: SerializerOptions, value: AdvancedModule)
   return isSideEffect;
 }
 
-function detectHasSideEffectInPackageJson(options: SerializerOptions, value: AdvancedModule) {
+function detectHasSideEffectInPackageJson(
+  options: SerializerOptions,
+  value: AdvancedModule
+): boolean | null {
   if (value.sideEffects !== undefined) {
     return value.sideEffects;
   }
@@ -158,10 +162,8 @@ function detectHasSideEffectInPackageJson(options: SerializerOptions, value: Adv
 
   if (value.output.some((output) => output.type === 'js/module')) {
     const isSideEffect = getPackageJsonMatcher(options, value.path);
-    if (isSideEffect === false) {
-      return false;
-    } else if (isSideEffect == null) {
-      return;
+    if (isSideEffect == null) {
+      return null;
     }
     return isSideEffect(value.path);
   }

@@ -145,72 +145,115 @@ export class Math {
   expect(artifacts[0].source).toMatch('gravity');
 });
 
-// TODO: Fix this...
-xit(`preserves side-effecty import`, async () => {
-  const [[, , graph]] = await serializeShakingAsync({
-    // We need to respect the side-effecty import for now.
-    'index.js': `
-import "./b"
-            `,
-    // TODO: This should be removed in the future as nothing is used.
-    'b.js': `
-let inc = 1;
-function unused() {
-inc++;
-}
-`,
+// TODO: We could possibly use a special transform to convert `import "./foo"` to something like `IMPORT_SIDE_EFFECT("./foo")` but we'd need to ensure the import order is preserved.
+describe('side-effecty imports', () => {
+  // TODO: Fix this...
+  it(`preserves side-effecty import`, async () => {
+    const [[, , graph]] = await serializeShakingAsync({
+      // We need to respect the side-effecty import for now.
+      'index.js': `
+  import "./b"
+              `,
+      // TODO: This should be removed in the future as nothing is used.
+      'b.js': `
+  let inc = 1;
+  function unused() {
+  inc++;
+  }
+  `,
+    });
+
+    expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+  });
+  it(`preserves empty non-side-effecty import with no specifiers`, async () => {
+    const [[, , graph]] = await serializeShakingAsync({
+      // This type of import is not side-effecty.
+      'index.js': `
+  import {} from "./b"
+              `,
+      // TODO: This should be removed in the future as nothing is used.
+      'b.js': `
+  let inc = 1;
+  function unused() {
+  inc++;
+  }
+  `,
+    });
+
+    // TODO: This is a bug, we should (maybe) remove this import.
+    expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
   });
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
-});
+  // TODO: Add more tests for striping empty modules.
+  it(`removes empty import`, async () => {
+    // TODO: Make a test which actually marks as a side-effect.
+    const [[, , graph], artifacts] = await serializeShakingAsync({
+      'index.js': `
+            import './side-effect.js';
+          `,
+      'side-effect.js': ``,
+    });
 
-// TODO: Add more tests for striping empty modules.
-it(`removes empty import`, async () => {
-  // TODO: Make a test which actually marks as a side-effect.
-  const [[, , graph], artifacts] = await serializeShakingAsync({
-    'index.js': `
-          import './side-effect.js';
-        `,
-    'side-effect.js': ``,
+    expectImports(graph, '/app/index.js').toEqual(
+      []
+      // [expect.objectContaining({ key: '/app/side-effect.js' })]
+    );
+    expect(artifacts[0].source).not.toMatch('side-effect');
+    expect(artifacts[0].source).toMatchInlineSnapshot(`
+          "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+            "use strict";
+          },"/app/index.js",[]);
+          TEST_RUN_MODULE("/app/index.js");"
+        `);
   });
 
-  expectImports(graph, '/app/index.js').toEqual(
-    []
-    // [expect.objectContaining({ key: '/app/side-effect.js' })]
-  );
-  expect(artifacts[0].source).not.toMatch('side-effect');
-  expect(artifacts[0].source).toMatchInlineSnapshot(`
-        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-          "use strict";
-        },"/app/index.js",[]);
-        TEST_RUN_MODULE("/app/index.js");"
-      `);
-});
-
-it(`preserves modules with side effects`, async () => {
-  // TODO: Make a test which actually marks as a side-effect.
-  const [[, , graph], [artifact]] = await serializeShakingAsync({
-    'index.js': `
+  it(`preserves modules with side effects`, async () => {
+    // TODO: Make a test which actually marks as a side-effect.
+    const [[, , graph], [artifact]] = await serializeShakingAsync({
+      'index.js': `
 import './node_modules/foo/index.js';
 `,
-    'node_modules/foo/package.json': JSON.stringify({ sideEffects: true, name: 'foo' }),
-    'node_modules/foo/index.js': `
+      'node_modules/foo/package.json': JSON.stringify({ sideEffects: true, name: 'foo' }),
+      'node_modules/foo/index.js': `
 var hey = 0;
     `,
+    });
+
+    expectSideEffects(graph, '/app/node_modules/foo/index.js').toBe(true);
+    expect(artifact.source).toMatchInlineSnapshot(`
+          "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+            "use strict";
+
+            _$$_REQUIRE(_dependencyMap[0]);
+          },"/app/index.js",["/app/node_modules/foo/index.js"]);
+          __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+            var hey = 0;
+          },"/app/node_modules/foo/index.js",[]);
+          TEST_RUN_MODULE("/app/index.js");"
+      `);
   });
 
-  expectSideEffects(graph, '/app/node_modules/foo/index.js').toBe(true);
-  expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      "use strict";
+  it(`removes node modules that are explicitly marked as side-effect-free`, async () => {
+    // TODO: Make a test which actually marks as a side-effect.
+    const [[, , graph], [artifact]] = await serializeShakingAsync({
+      'index.js': `
+import {} from './node_modules/foo/index.js';
+`,
+      'node_modules/foo/package.json': JSON.stringify({ sideEffects: false, name: 'foo' }),
+      'node_modules/foo/index.js': `
+var hey = 0;
+    `,
+    });
 
-      _$$_REQUIRE(_dependencyMap[0]);
-    },"/app/index.js",["/app/node_modules/foo/index.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      var hey = 0;
-    },"/app/node_modules/foo/index.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
-  `);
+    expectImports(graph, '/app/index.js').toEqual([]);
+
+    expect(artifact.source).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+      },"/app/index.js",[]);
+      TEST_RUN_MODULE("/app/index.js");"
+    `);
+  });
 });
 
 it(`supports async import()`, async () => {
@@ -1037,4 +1080,33 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).not.toMatch('x2');
   // The last export that couldn't be reached should still be there.
   expect(artifact.source).toMatch('x1');
+});
+
+it(`recursively expands export all statements`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import { z1, DDD } from './x0';
+          console.log(z1, DDD);
+        `,
+      'x0.js': `
+         export * as DDD from './x1';
+        `,
+      'x1.js': `
+         export * from './x2';
+        `,
+      'x2.js': `
+          export const z1 = 0;
+          export const z2 = 0;
+          export const z3 = 0;
+        `,
+    }
+    // { minify: true }
+  );
+
+  expect(artifact.source).toMatch('z1');
+
+  expect(artifact.source).not.toMatch('z3');
+  expect(artifact.source).not.toMatch('z2');
+  expect(artifact.source).toMatch('FFFFFz2');
 });

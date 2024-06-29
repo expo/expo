@@ -15,7 +15,8 @@ const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value.path], checked = new Set()) {
-    if (getShallowSideEffect(options, value)) {
+    const currentModuleHasSideEffect = getShallowSideEffect(options, value);
+    if (currentModuleHasSideEffect) {
         return [true, parentTrace];
     }
     // Recursively check if any of the dependencies have side effects.
@@ -35,7 +36,7 @@ function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value
             return [true, trace];
         }
     }
-    return [false, []];
+    return [currentModuleHasSideEffect, []];
 }
 exports.hasSideEffectWithDebugTrace = hasSideEffectWithDebugTrace;
 const pkgJsonCache = new Map();
@@ -128,11 +129,8 @@ function detectHasSideEffectInPackageJson(options, value) {
     }
     if (value.output.some((output) => output.type === 'js/module')) {
         const isSideEffect = getPackageJsonMatcher(options, value.path);
-        if (isSideEffect === false) {
-            return false;
-        }
-        else if (isSideEffect == null) {
-            return;
+        if (isSideEffect == null) {
+            return null;
         }
         return isSideEffect(value.path);
     }

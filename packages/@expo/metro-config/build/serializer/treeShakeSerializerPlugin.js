@@ -324,10 +324,53 @@ function treeShakeSerializerPlugin(config) {
             // Useful for testing the transform reconciler...
             return [entryPoint, preModules, graph, options];
         }
+        for (const value of graph.dependencies.values()) {
+            // TODO: Move this to the transformer and combine with collect dependencies.
+            expandBarrelExports(value);
+        }
         // This pass will parse all modules back to AST and include the import/export statements.
         for (const value of graph.dependencies.values()) {
             // TODO: Move this to the transformer and combine with collect dependencies.
             populateModuleWithImportUsage(value);
+        }
+        function expandBarrelExports(value) {
+            function getDepForImportId(importModuleId) {
+                // The hash key for the dependency instance in the module.
+                const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
+                // console.log('targetModulePath', targetHashId);
+                // If the dependency was already removed, then we don't need to do anything.
+                const importInstance = value.dependencies.get(targetHashId);
+                // console.log('Try unlink:', importModuleId, dep);
+                const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+                // Should never happen but we're playing with fire here.
+                if (!graphEntryForTargetImport) {
+                    throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`);
+                }
+                return graphEntryForTargetImport;
+            }
+            for (const index in value.output) {
+                const outputItem = value.output[index];
+                if (!outputItem.data.modules) {
+                    outputItem.data.modules = {
+                        imports: [],
+                    };
+                }
+                outputItem.data.modules.imports = [];
+                const ast = accessAst(outputItem);
+                (0, core_1.traverse)(ast, {
+                    // export * from 'a'
+                    // NOTE: This only runs on normal `* from` syntax as `* as X from` is converted to an import.
+                    ExportAllDeclaration(path) {
+                        console.log('>>', path.node);
+                        if (path.node.source) {
+                            // Get module for import ID:
+                            const nextModule = getDepForImportId(path.node.source.value);
+                            // Collect all exports from the module.
+                            // If list of exports does not contain any CJS, then re-write the export all as named exports.
+                        }
+                    },
+                });
+            }
         }
         // return [entryPoint, preModules, graph, options];
         const beforeList = [...graph.dependencies.keys()];
@@ -394,7 +437,7 @@ function treeShakeSerializerPlugin(config) {
             }
             return depId;
         }
-        function disconnectGraphNode(graphModule, importModuleId) {
+        function disconnectGraphNode(graphModule, importModuleId, { isSideEffectyImport } = {}) {
             // Unlink the module in the graph
             // The hash key for the dependency instance in the module.
             const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
@@ -407,7 +450,24 @@ function treeShakeSerializerPlugin(config) {
             if (!graphEntryForTargetImport) {
                 throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
             }
-            const [isFx, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
+            const [isExplicitSideEffect, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
+            let isFx = isSideEffectyImport;
+            // If the package.json chain explicitly marks the module as side-effect-free, then we can remove imports that have no specifiers.
+            if (isExplicitSideEffect === false) {
+                isFx = false;
+                // This is for debugging modules that should be marked as side-effects but are not.
+                if (isSideEffectyImport) {
+                    if (!trace.length) {
+                        console.log('----');
+                        console.log('Found side-effecty import (no specifiers) that is not marked as a side effect in the package.json:');
+                        console.log('- Origin module:', graphModule.path);
+                        console.log('- Module ID (needs marking):', importModuleId);
+                        // console.log('- FX trace:', trace.join(' > '));
+                        console.log('----');
+                    }
+                }
+            }
+            // let trace: string[] = [];
             if (
             // Don't remove the module if it has side effects.
             !isFx ||
@@ -434,7 +494,7 @@ function treeShakeSerializerPlugin(config) {
             }
             else {
                 if (isFx) {
-                    console.log('Skip graph unlinking due to side-effect trace:', trace.join(' > '));
+                    console.log('Skip graph unlinking due to side-effect:', trace.join(' > '));
                 }
                 else {
                     console.log('Skip graph unlinking:', {
@@ -623,6 +683,12 @@ function treeShakeSerializerPlugin(config) {
                     }
                 },
                 ImportDeclaration(path) {
+                    // console.log(path);
+                    // Mark the path with some metadata indicating that it originally had `n` specifiers.
+                    // This is used to determine if the import was side-effecty.
+                    // NOTE: This could be a problem if the AST is re-parsed.
+                    // TODO: This doesn't account for `import {} from './foo'`
+                    path.opts.originalSpecifiers ??= path.node.specifiers.length;
                     importDecs.push(path);
                 },
             });
@@ -635,6 +701,8 @@ function treeShakeSerializerPlugin(config) {
             // Remove the unused imports from the AST
             importDecs.forEach((path, index) => {
                 const originalSize = path.node.specifiers.length;
+                // @ts-expect-error: custom property
+                const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
                 path.node.specifiers = path.node.specifiers.filter((specifier) => {
                     if (specifier.type === 'ImportDefaultSpecifier') {
                         return !unusedImports.includes(specifier.local.name);
@@ -659,7 +727,9 @@ function treeShakeSerializerPlugin(config) {
                 // e.g. `import './unused'` or `import {} from './unused'` -> remove.
                 if (path.node.specifiers.length === 0) {
                     // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
-                    const removeRequest = disconnectGraphNode(value, importModuleId);
+                    const removeRequest = disconnectGraphNode(value, importModuleId, {
+                        isSideEffectyImport: absoluteOriginalSize === 0 ? true : undefined,
+                    });
                     if (removeRequest.removed) {
                         console.log('Disconnect import:', importModuleId, 'from:', value.path);
                         // Delete the import AST
