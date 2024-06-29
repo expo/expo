@@ -326,14 +326,28 @@ function treeShakeSerializerPlugin(config) {
         }
         for (const value of graph.dependencies.values()) {
             // TODO: Move this to the transformer and combine with collect dependencies.
-            expandBarrelExports(value);
+            getExportsForModule(value);
         }
+        // getExportsForModule(graph.dependencies.get(entryPoint)!);
         // This pass will parse all modules back to AST and include the import/export statements.
         for (const value of graph.dependencies.values()) {
             // TODO: Move this to the transformer and combine with collect dependencies.
             populateModuleWithImportUsage(value);
         }
-        function expandBarrelExports(value) {
+        function getExportsForModule(value, checkedModules = new Set()) {
+            if (value.starExports) {
+                return value.starExports;
+            }
+            if (checkedModules.has(value.path)) {
+                // TODO: Handle circular dependencies.
+                throw new Error('Circular dependency detected while tree-shaking: ' + value.path);
+                // return {
+                //   exportNames: [],
+                //   isStatic: true,
+                //   hasUnresolvableStarExport: true,
+                // };
+            }
+            checkedModules.add(value.path);
             function getDepForImportId(importModuleId) {
                 // The hash key for the dependency instance in the module.
                 const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
@@ -348,29 +362,114 @@ function treeShakeSerializerPlugin(config) {
                 }
                 return graphEntryForTargetImport;
             }
+            const exportNames = [];
+            // Indicates that the module does not have any dynamic exports, e.g. `module.exports`, `Object.assign(exports)`, etc.
+            let isStatic = true;
+            let hasUnresolvableStarExport = false;
             for (const index in value.output) {
                 const outputItem = value.output[index];
-                if (!outputItem.data.modules) {
-                    outputItem.data.modules = {
-                        imports: [],
-                    };
-                }
-                outputItem.data.modules.imports = [];
                 const ast = accessAst(outputItem);
+                // Detect if the module is static...
+                (0, core_1.traverse)(ast, {
+                    AssignmentExpression(path) {
+                        if (path.node.left.type === 'MemberExpression' &&
+                            path.node.left.object.type === 'Identifier' &&
+                            path.node.left.object.name === 'module' &&
+                            path.node.left.property.type === 'Identifier' &&
+                            path.node.left.property.name === 'exports') {
+                            isStatic = false;
+                        }
+                        // Object.assign(exports, { a: 1, b: 2 })
+                        if (path.node.left.type === 'MemberExpression' &&
+                            path.node.left.object.type === 'Identifier' &&
+                            path.node.left.object.name === 'Object' &&
+                            path.node.left.property.type === 'Identifier' &&
+                            path.node.left.property.name === 'assign' &&
+                            path.node.right.type === 'CallExpression' &&
+                            path.node.right.callee.type === 'MemberExpression' &&
+                            path.node.right.callee.object.type === 'Identifier' &&
+                            path.node.right.callee.object.name === 'Object' &&
+                            path.node.right.callee.property.type === 'Identifier' &&
+                            path.node.right.callee.property.name === 'assign') {
+                            isStatic = false;
+                        }
+                        // TODO: Add a better heuristic for this...
+                    },
+                });
                 (0, core_1.traverse)(ast, {
                     // export * from 'a'
                     // NOTE: This only runs on normal `* from` syntax as `* as X from` is converted to an import.
                     ExportAllDeclaration(path) {
-                        console.log('>>', path.node);
                         if (path.node.source) {
                             // Get module for import ID:
                             const nextModule = getDepForImportId(path.node.source.value);
+                            const exportResults = getExportsForModule(nextModule, checkedModules);
+                            console.log('exportResults', exportResults);
+                            if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
+                                // Collect all exports from the module.
+                                // exportNames.push(...exportResults.exportNames);
+                                // Convert the export all to named exports.
+                                // ```
+                                // export * from 'a';
+                                // ```
+                                // becomes
+                                // ```
+                                // export { a, b, c } from 'a';
+                                // ```
+                                // NOTE: It's import we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
+                                path.replaceWithMultiple([
+                                    types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))), types.stringLiteral(path.node.source.value)),
+                                ]);
+                            }
+                            else {
+                                console.log('cannot resolve star export:', nextModule.path);
+                                hasUnresolvableStarExport = true;
+                            }
                             // Collect all exports from the module.
                             // If list of exports does not contain any CJS, then re-write the export all as named exports.
                         }
                     },
                 });
+                // Collect export names
+                (0, core_1.traverse)(ast, {
+                    ExportNamedDeclaration(path) {
+                        const { declaration, specifiers } = path.node;
+                        if (declaration) {
+                            if ('declarations' in declaration && declaration.declarations) {
+                                declaration.declarations.forEach((decl) => {
+                                    if (types.isIdentifier(decl.id)) {
+                                        exportNames.push(decl.id.name);
+                                    }
+                                });
+                            }
+                            else if ('id' in declaration && types.isIdentifier(declaration.id)) {
+                                exportNames.push(declaration.id.name);
+                            }
+                        }
+                        specifiers.forEach((spec) => {
+                            if (types.isIdentifier(spec.exported)) {
+                                exportNames.push(spec.exported.name);
+                            }
+                        });
+                    },
+                    ExportDefaultDeclaration(path) {
+                        // Default exports need to be handled separately
+                        // Assuming the default export is a function or class declaration
+                        if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
+                            exportNames.push(path.node.declaration.id.name);
+                        }
+                        // If it's an expression, then it's a static export.
+                        isStatic = true;
+                    },
+                });
+                console.log('OUTPUT:', value.path + '\n\n' + generate(ast).code);
             }
+            value.starExports = {
+                exportNames,
+                isStatic,
+                hasUnresolvableStarExport,
+            };
+            return value.starExports;
         }
         // return [entryPoint, preModules, graph, options];
         const beforeList = [...graph.dependencies.keys()];
@@ -496,7 +595,10 @@ function treeShakeSerializerPlugin(config) {
             }
             else {
                 if (isFx) {
-                    console.log('Skip graph unlinking due to side-effect:', trace.join(' > '));
+                    console.log('Skip graph unlinking due to side-effect:');
+                    console.log('- Origin module:', graphModule.path);
+                    console.log('- Module ID:', importModuleId);
+                    console.log('- FX trace:', trace.join(' > '));
                 }
                 else {
                     console.log('Skip graph unlinking:', {
@@ -508,6 +610,9 @@ function treeShakeSerializerPlugin(config) {
             return { path: importInstance.absolutePath, removed: false };
         }
         function removeUnusedExports(value, depth = 0) {
+            if (!accessAst(value.output[0])) {
+                return [];
+            }
             if (!value.inverseDependencies.size) {
                 return [];
             }
@@ -643,6 +748,10 @@ function treeShakeSerializerPlugin(config) {
             return unique(dirtyImports);
         }
         function removeUnusedImportsFromModule(value, ast) {
+            // json, asset, script, etc.
+            if (!ast) {
+                return [];
+            }
             // Traverse imports and remove unused imports.
             // Keep track of all the imported identifiers
             const importedIdentifiers = new Set();
