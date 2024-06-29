@@ -416,8 +416,7 @@ Introspection works by creating custom base mods that work like the default base
 Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
-so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 {/* TODO: Link to VS Code extension after preview feature lands */}
 
@@ -637,16 +636,16 @@ This does come with a couple of caveats:
 3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**).
    If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-  ```text
-  Cannot automatically write to dynamic config at: app.config.js
-  Please add the following to your app config
+```text
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your app config
 
-  {
-    "plugins": [
-      "expo-camera"
-    ]
-  }
-  ```
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
