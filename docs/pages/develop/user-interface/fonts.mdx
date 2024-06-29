@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 Android and iOS come with their own set of platform fonts. To provide a consistent user experience and enhance your app's branding, you can use custom fonts.
 
@@ -328,7 +328,11 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 ### Minimal example
 
 <BoxLink
-  title="Expo Fonts usage"
+  title={
+    <>
+      <CODE>expo-font</CODE> usage
+    </>
+  }
   description="See usage section in Expo Fonts API reference for a minimal example of using a custom font."
   href="/versions/latest/sdk/font/#usage"
   Icon={BookOpen02Icon}
