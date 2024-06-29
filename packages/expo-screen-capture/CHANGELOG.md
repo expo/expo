@@ -14,6 +14,8 @@
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
+- Updated hook from useScreenCapturePermissions to usePermissions in example ([#30076](https://github.com/expo/expo/pull/30076) by [@mrakesh0608](https://github.com/mrakesh0608))
+
 ## 6.0.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
