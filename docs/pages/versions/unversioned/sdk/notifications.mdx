@@ -450,7 +450,7 @@ A few different listeners are exposed, so we've provided a chart below which wil
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
-> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse`. 
+> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse`.
 
 ### Background notifications
 
@@ -471,7 +471,6 @@ For iOS:
 
 - In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
 - Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
-
 
 ## Additional information
 
