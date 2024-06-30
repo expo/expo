@@ -357,6 +357,72 @@ const markUnused = (path: NodePath, node) => {
   }
 };
 
+export function hasNonStaticCommonJSExport(ast: Ast) {
+  const t = types;
+
+  let hasCommonJsExports = false;
+
+  // Detect if the module is static...
+  traverse(ast, {
+    // Any usage of `module.exports` or `exports` will mark the module as non-static.
+
+    // module.exports.a = 1;
+    // exports.a = 1;
+
+    CallExpression(path) {
+      const callee = path.node.callee;
+
+      // Check for Object.assign(module.exports, ...), Object.assign(exports, ...)
+      if (
+        t.isMemberExpression(callee) &&
+        t.isIdentifier(callee.object, { name: 'Object' }) &&
+        t.isIdentifier(callee.property, { name: 'assign' }) &&
+        path.node.arguments.length > 0 &&
+        t.isMemberExpression(path.node.arguments[0]) &&
+        ((t.isIdentifier(path.node.arguments[0].object, { name: 'module' }) &&
+          (t.isIdentifier(path.node.arguments[0].property, { name: 'exports' }) ||
+            (t.isStringLiteral(path.node.arguments[0].property) &&
+              path.node.arguments[0].property.value === 'exports'))) ||
+          t.isIdentifier(path.node.arguments[0].object, { name: 'exports' }))
+      ) {
+        console.log(
+          'Found Object.assign to module.exports or exports at ' + path.node.loc?.start.line
+        );
+        hasCommonJsExports = true;
+        // Stop early on the first occurrence.
+        path.stop();
+      }
+    },
+
+    AssignmentExpression(path) {
+      const left = path.node.left;
+
+      if (
+        (t.isMemberExpression(left) &&
+          ((t.isIdentifier(left.object, { name: 'module' }) &&
+            (t.isIdentifier(left.property, { name: 'exports' }) ||
+              (t.isStringLiteral(left.property) && left.property.value === 'exports'))) ||
+            t.isIdentifier(left.object, { name: 'exports' }))) ||
+        ('object' in left &&
+          t.isMemberExpression(left.object) &&
+          t.isIdentifier(left.object.object, { name: 'module' }) &&
+          (t.isIdentifier(left.object.property, { name: 'exports' }) ||
+            (t.isStringLiteral(left.object.property) && left.object.property.value === 'exports')))
+      ) {
+        console.log(
+          'Found assignment to module.exports or exports at ' + path.node.loc?.start.line
+        );
+        hasCommonJsExports = true;
+        path.stop();
+      }
+
+      // TODO: Add a better heuristic for this...
+    },
+  });
+
+  return hasCommonJsExports;
+}
+
 export function treeShakeSerializerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
@@ -435,43 +501,18 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       let isStatic = true;
       let hasUnresolvableStarExport = false;
 
+      const t = types;
       for (const index in value.output) {
         const outputItem = value.output[index];
 
         const ast = accessAst(outputItem);
 
-        // Detect if the module is static...
-        traverse(ast, {
-          AssignmentExpression(path) {
-            if (
-              path.node.left.type === 'MemberExpression' &&
-              path.node.left.object.type === 'Identifier' &&
-              path.node.left.object.name === 'module' &&
-              path.node.left.property.type === 'Identifier' &&
-              path.node.left.property.name === 'exports'
-            ) {
-              isStatic = false;
-            }
-            // Object.assign(exports, { a: 1, b: 2 })
-            if (
-              path.node.left.type === 'MemberExpression' &&
-              path.node.left.object.type === 'Identifier' &&
-              path.node.left.object.name === 'Object' &&
-              path.node.left.property.type === 'Identifier' &&
-              path.node.left.property.name === 'assign' &&
-              path.node.right.type === 'CallExpression' &&
-              path.node.right.callee.type === 'MemberExpression' &&
-              path.node.right.callee.object.type === 'Identifier' &&
-              path.node.right.callee.object.name === 'Object' &&
-              path.node.right.callee.property.type === 'Identifier' &&
-              path.node.right.callee.property.name === 'assign'
-            ) {
-              isStatic = false;
-            }
+        if (!ast) continue;
 
-            // TODO: Add a better heuristic for this...
-          },
-        });
+        // Detect if the module is static...
+        if (hasNonStaticCommonJSExport(ast)) {
+          isStatic = false;
+        }
 
         traverse(ast, {
           // export * from 'a'
