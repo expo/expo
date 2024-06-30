@@ -30,5 +30,3 @@ export async function manipulateAsync(
   const { format = SaveFormat.JPEG, ...rest } = saveOptions;
   return await ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
 }
-
-export * from './ImageManipulator.types';
