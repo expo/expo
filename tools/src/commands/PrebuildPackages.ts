@@ -44,10 +44,11 @@ async function main(packageNames: string[], options: ActionOptions) {
 
     const startTime = performance.now();
     const xcodeProject = await generateXcodeProjectSpecAsync(pkg);
+    const podspec = await pkg.getPodspecAsync();
 
-    if (!options.generateSpecs) {
-      await buildFrameworksForProjectAsync(xcodeProject);
-      await cleanTemporaryFilesAsync(xcodeProject);
+    if (!options.generateSpecs && podspec) {
+      await buildFrameworksForProjectAsync(podspec, xcodeProject);
+      await cleanTemporaryFilesAsync(podspec, xcodeProject);
     }
 
     const endTime = performance.now();

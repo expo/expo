@@ -437,7 +437,7 @@ function getSafeAreaConfig() {
         - (NSDictionary *)constantsToExport
  {
    __block NSDictionary *constants;
-  
+
    dispatch_sync(dispatch_get_main_queue(), ^{
      UIWindow* window = [[UIApplication sharedApplication] keyWindow];
      if (@available(iOS 11.0, *)) {
@@ -476,7 +476,7 @@ function getSafeAreaConfig() {
        } ;
      }
    });
-  
+
   return constants;
 }
 
@@ -547,8 +547,8 @@ async function action({ configuration, platform, onlyPrebuild }: ActionOptions) 
         podspec,
         toRepoPath(output)
       );
-      await buildFrameworksForProjectAsync(xcodeProject);
-      await cleanTemporaryFilesAsync(xcodeProject);
+      await buildFrameworksForProjectAsync(podspec, xcodeProject);
+      await cleanTemporaryFilesAsync(podspec, xcodeProject);
       console.log();
     }
   }
