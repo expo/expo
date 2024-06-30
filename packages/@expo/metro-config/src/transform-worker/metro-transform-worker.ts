@@ -63,6 +63,7 @@ interface JSFile extends BaseFile {
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
   readonly reactClientReference?: string;
+  readonly hasCjsExports?: boolean;
 }
 
 interface JSONFile extends BaseFile {
@@ -82,9 +83,8 @@ interface TransformResponse {
 
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
-    // readonly minify?: boolean;
-    // readonly collectDependenciesOptions?: CollectDependenciesOptions;
-    // readonly reactClientReference?: string;
+    readonly hasCjsExports?: boolean;
+    readonly reactClientReference?: string;
     readonly reconcile?: ReconcileTransformSettings;
   };
 };
@@ -501,6 +501,7 @@ async function transformJS(
         lineCount: countLines(code),
         map,
         functionMap: file.functionMap,
+        hasCjsExports: file.hasCjsExports,
         reactClientReference: file.reactClientReference,
         ...(treeshake
           ? {
@@ -557,6 +558,7 @@ async function transformAsset(
     type: 'js/module/asset',
     ast: result.ast,
     functionMap: null,
+    hasCjsExports: true,
     reactClientReference: result.reactClientReference,
   };
 
@@ -599,6 +601,7 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
+    hasCjsExports: transformResult.metadata?.hasCjsExports,
     reactClientReference: transformResult.metadata?.reactClientReference,
   };
 

@@ -13,6 +13,8 @@ interface TransformResponse {
 }
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
+        readonly hasCjsExports?: boolean;
+        readonly reactClientReference?: string;
         readonly reconcile?: ReconcileTransformSettings;
     };
 };

@@ -346,6 +346,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 lineCount: (0, countLines_1.default)(code),
                 map,
                 functionMap: file.functionMap,
+                hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
                 ...(treeshake
                     ? {
@@ -390,6 +391,7 @@ async function transformAsset(file, context) {
         type: 'js/module/asset',
         ast: result.ast,
         functionMap: null,
+        hasCjsExports: true,
         reactClientReference: result.reactClientReference,
     };
     return transformJS(jsFile, context);
@@ -422,6 +424,7 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactClientReference: transformResult.metadata?.reactClientReference,
     };
     return await transformJS(jsFile, context);

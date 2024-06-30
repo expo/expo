@@ -5,7 +5,6 @@ import { InputConfigT, SerializerConfigT } from 'metro-config';
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 export type SerializerParameters = Parameters<Serializer>;
 type Ast = babylon.ParseResult<types.File>;
-export declare function hasNonStaticCommonJSExport(ast: Ast): boolean;
 export declare function treeShakeSerializerPlugin(config: InputConfigT): (entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: SerializerOptions) => Promise<SerializerParameters>;
 export declare function printAst(ast: Ast): void;
 export declare function accessAst(output: MixedOutput): Ast | undefined;
