@@ -636,16 +636,17 @@ This does come with a couple of caveats:
 3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**).
    If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-```text
-Cannot automatically write to dynamic config at: app.config.js
-Please add the following to your app config
+{/* prettier-ignore */}
+  ```text
+  Cannot automatically write to dynamic config at: app.config.js
+  Please add the following to your app config
 
-{
-  "plugins": [
-    "expo-camera"
-  ]
-}
-```
+  {
+    "plugins": [
+      "expo-camera"
+    ]
+  }
+  ```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
