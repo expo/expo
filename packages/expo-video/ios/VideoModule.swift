@@ -72,6 +72,12 @@ public final class VideoModule: Module {
         #endif
       }
 
+      Prop("allowsVideoFrameAnalysis") { (view, allowsVideoFrameAnalysis: Bool?) in
+        #if !os(tvOS)
+        view.allowsVideoFrameAnalsysis = allowsVideoFrameAnalysis ?? true
+        #endif
+      }
+
       AsyncFunction("enterFullscreen") { view in
         view.enterFullscreen()
       }
