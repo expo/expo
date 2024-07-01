@@ -1,5 +1,5 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,7 +59,7 @@ function assertCollectDependenciesOptions(
 }
 
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
-export function createPostTreeShakeTransformSerializerPlugin(config: InputConfigT) {
+export function createReconcileTransformerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
@@ -92,11 +92,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
       // This should be cached by the transform worker for use here to ensure close to consistent
       // results between the tree-shake and the final transform.
+      // @ts-expect-error: reconcile object is not on the type.
       const reconcile = outputItem.data.reconcile as ReconcileTransformSettings;
 
       assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
-      // const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
       assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
 
       let ast = accessAst(outputItem);
@@ -166,12 +166,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
       const { ast: wrappedAst } = JsFileWrapping.wrapModule(
         ast,
-        importDefault,
-        importAll,
+        reconcile.importDefault,
+        reconcile.importAll,
         dependencyMapName,
-        // TODO: Share these with transformer
         reconcile.globalPrefix,
-        // @ts-expect-error
+        // @ts-expect-error: not on type yet...
         reconcile.unstable_renameRequire === false
       );
 
@@ -219,9 +218,6 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         ));
       }
 
-      // console.log(code);
-      // console.log(require('@babel/generator').default(ast).code);
-
       return {
         ...outputItem,
         data: {
@@ -263,7 +259,3 @@ function sortDependencies(
 
   return nextDependencies;
 }
-
-// TODO: The dep sorting seems to break on this module when it isn't sorted.
-// https://github.com/software-mansion/react-native-gesture-handler/blob/main/src/handlers/gestureHandlerCommon.ts
-// https://github.com/software-mansion/react-native-gesture-handler/blob/e95f85345dd9e9a4d4ff67fbaa0a0a2abbe3bccb/src/handlers/gestureHandlerCommon.ts#L281C5-L281C21

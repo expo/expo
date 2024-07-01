@@ -56,10 +56,6 @@ export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): 
               'Found Object.assign to module.exports or exports at ' + path.node.loc?.start.line
             );
             state.file.metadata.hasCjsExports = true;
-
-            // TODO: Will this cause problems?
-            // Stop early on the first occurrence.
-            // path.stop();
           }
         }
       },
@@ -86,9 +82,6 @@ export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): 
           debug('Found assignment to module.exports or exports at ' + path.node.loc?.start.line);
 
           state.file.metadata.hasCjsExports = true;
-
-          // TODO: Will this cause problems?
-          //   path.stop();
         } else if (
           t.isIdentifier(left, { name: 'exports' }) &&
           path.scope.hasGlobal('exports') &&

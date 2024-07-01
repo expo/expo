@@ -26,9 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPostTreeShakeTransformSerializerPlugin = void 0;
+exports.createReconcileTransformerPlugin = void 0;
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,7 +64,7 @@ function assertCollectDependenciesOptions(collectDependenciesOptions) {
     (0, assert_1.default)('inlineableCalls' in collectDependenciesOptions, 'inlineableCalls is required.');
 }
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
-function createPostTreeShakeTransformSerializerPlugin(config) {
+function createReconcileTransformerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         if (!(0, treeShakeSerializerPlugin_1.isShakingEnabled)(graph, options)) {
             return [entryPoint, preModules, graph, options];
@@ -85,9 +85,9 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             }
             // This should be cached by the transform worker for use here to ensure close to consistent
             // results between the tree-shake and the final transform.
+            // @ts-expect-error: reconcile object is not on the type.
             const reconcile = outputItem.data.reconcile;
             (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
-            // const collectDependenciesOptions = outputItem.data.collectDependenciesOptions;
             assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
             let ast = (0, treeShakeSerializerPlugin_1.accessAst)(outputItem);
             if (!ast) {
@@ -144,10 +144,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
             value.dependencies =
                 //
                 sortDependencies(dependencies, value.dependencies);
-            const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, 
-            // TODO: Share these with transformer
-            reconcile.globalPrefix, 
-            // @ts-expect-error
+            const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, 
+            // @ts-expect-error: not on type yet...
             reconcile.unstable_renameRequire === false);
             const reserved = [];
             if (reconcile.unstable_dependencyMapReservedName != null) {
@@ -174,8 +172,6 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 const source = value.getSource().toString('utf-8');
                 ({ map, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, config.projectRoot, value.path, result.code, source, map, reserved));
             }
-            // console.log(code);
-            // console.log(require('@babel/generator').default(ast).code);
             return {
                 ...outputItem,
                 data: {
@@ -195,7 +191,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         }
     };
 }
-exports.createPostTreeShakeTransformSerializerPlugin = createPostTreeShakeTransformSerializerPlugin;
+exports.createReconcileTransformerPlugin = createReconcileTransformerPlugin;
 // Some imports may change order during the transform, so we need to resort them.
 // Resort the dependencies to match the current order of the AST.
 function sortDependencies(dependencies, accordingTo) {
@@ -212,7 +208,4 @@ function sortDependencies(dependencies, accordingTo) {
     });
     return nextDependencies;
 }
-// TODO: The dep sorting seems to break on this module when it isn't sorted.
-// https://github.com/software-mansion/react-native-gesture-handler/blob/main/src/handlers/gestureHandlerCommon.ts
-// https://github.com/software-mansion/react-native-gesture-handler/blob/e95f85345dd9e9a4d4ff67fbaa0a0a2abbe3bccb/src/handlers/gestureHandlerCommon.ts#L281C5-L281C21
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

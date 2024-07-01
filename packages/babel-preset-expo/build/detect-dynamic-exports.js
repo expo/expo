@@ -45,9 +45,6 @@ function detectDynamicExports(api) {
                         t.isIdentifier(path.node.arguments[0], { name: 'exports' })) {
                         debug('Found Object.assign to module.exports or exports at ' + path.node.loc?.start.line);
                         state.file.metadata.hasCjsExports = true;
-                        // TODO: Will this cause problems?
-                        // Stop early on the first occurrence.
-                        // path.stop();
                     }
                 }
             },
@@ -70,8 +67,6 @@ function detectDynamicExports(api) {
                                 left.object.property.value === 'exports')))) {
                     debug('Found assignment to module.exports or exports at ' + path.node.loc?.start.line);
                     state.file.metadata.hasCjsExports = true;
-                    // TODO: Will this cause problems?
-                    //   path.stop();
                 }
                 else if (t.isIdentifier(left, { name: 'exports' }) &&
                     path.scope.hasGlobal('exports') &&
