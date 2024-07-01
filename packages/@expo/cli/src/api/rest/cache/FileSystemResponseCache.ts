@@ -112,9 +112,9 @@ export class FileSystemResponseCache implements ResponseCache {
 }
 
 function getResponseBodyKey(cacheKey: string) {
-  return `${cacheKey}body`;
+  return `${cacheKey}UndiciBody`;
 }
 
 function getResponseInfoKey(cacheKey: string) {
-  return `${cacheKey}info`;
+  return `${cacheKey}UndiciInfo`;
 }

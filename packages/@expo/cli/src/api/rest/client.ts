@@ -2,8 +2,8 @@ import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import { JSONValue } from '@expo/json-file';
 import path from 'path';
 
+import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import type { FetchLike } from './client.types';
-import { wrapFetchWithCache } from './undici-cache/wrapFetchWithCache';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
@@ -135,7 +135,7 @@ export function createCachedFetch({
   }
 
   const { FileSystemResponseCache } =
-    require('./undici-cache/FileSystemResponseCache') as typeof import('./undici-cache/FileSystemResponseCache');
+    require('./cache/FileSystemResponseCache') as typeof import('./cache/FileSystemResponseCache');
 
   return wrapFetchWithCache(
     fetch,
