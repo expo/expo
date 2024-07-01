@@ -4,17 +4,13 @@ sidebar_title: Run E2E tests
 description: Learn how to set up and run E2E tests on EAS Build with Maestro.
 ---
 
-import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 > **Warning** This guide will evolve over time as support for testing workflows in EAS Build improves.
 
-In this guide, you will learn how to run E2E tests on EAS Build using one of the most popular tools for running E2E tests in mobile apps -  [Maestro](https://maestro.mobile.dev/).
+In this guide, you will learn how to run E2E tests on EAS Build using one of the most popular tools for running E2E tests in mobile apps - [Maestro](https://maestro.mobile.dev/).
 In the following steps, we will try to show you using an example how you can configure your EAS Build Maestro E2E tests workflow today:
 
 <Step label="1">
@@ -57,10 +53,7 @@ The following command creates a new project on Expo servers for your app and cre
 This is how the UI of the app created from the default Expo template looks like:
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
-  <ContentSpotlight
-    src="/static/images/eas-build/tests/01-home.png"
-    className="max-w-[400px]"
-  />
+  <ContentSpotlight src="/static/images/eas-build/tests/01-home.png" className="max-w-[400px]" />
   <ContentSpotlight src="/static/images/eas-build/tests/02-explore.png" className="max-w-[400px]" />
 </div>
 
@@ -76,7 +69,7 @@ Inside it, you can create a new flow called **home.yaml**. This flow will launch
 appId: dev.expo.eastestsexample # This is an example app id, replace it with your app id!
 ---
 - launchApp
-- assertVisible: "Welcome!"
+- assertVisible: 'Welcome!'
 ```
 
 Next, create a new flow called **expand_test.yaml**. This flow will open the "Explore" screen, click on the "File-based routing" collapsible and assert that the text "This app has two screens" is visible on the screen.
@@ -85,10 +78,9 @@ Next, create a new flow called **expand_test.yaml**. This flow will open the "Ex
 appId: dev.expo.eastestsexample # This is an example app id, replace it with your app id!
 ---
 - launchApp
-- tapOn: "Explore.*"
-- tapOn: ".*File-based routing"
-- assertVisible: "This app has two screens.*"
-
+- tapOn: 'Explore.*'
+- tapOn: '.*File-based routing'
+- assertVisible: 'This app has two screens.*'
 ```
 
 </Step>
@@ -146,6 +138,7 @@ This configuration will build the simulator/emulator version of your app and run
   ...
 }
 ```
+
 </Step>
 
 <Step label="5">
