@@ -36,7 +36,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
