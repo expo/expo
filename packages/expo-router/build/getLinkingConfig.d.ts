@@ -3,9 +3,10 @@ import { RouteNode } from './Route';
 import { getInitialURL, getPathFromState } from './link/linking';
 import { RequireContext } from './types';
 export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
-    initialRouteName: string | undefined;
-    screens: Record<string, import("./getReactNavigationConfig").Screen>;
-};
+    path?: string | undefined;
+    screens: import("@react-navigation/native").PathConfigMap<Record<string, unknown>>;
+    initialRouteName?: string | undefined;
+} | undefined;
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
     getPathFromState?: typeof getPathFromState;
 };

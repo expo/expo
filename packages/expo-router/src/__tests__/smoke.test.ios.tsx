@@ -162,7 +162,7 @@ it('layouts', async () => {
   });
 
   expect(await screen.findByText('Other')).toBeOnTheScreen();
-  expect(Layout).toHaveBeenCalledTimes(2);
+  expect(Layout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Other).toHaveBeenCalledTimes(1);
 });
@@ -189,9 +189,9 @@ it('nested layouts', async () => {
 
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
-  expect(AppLayout).toHaveBeenCalledTimes(3);
-  expect(TabsLayout).toHaveBeenCalledTimes(2);
-  expect(StackLayout).toHaveBeenCalledTimes(2);
+  expect(AppLayout).toHaveBeenCalledTimes(1);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(StackLayout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
@@ -233,7 +233,7 @@ it('deep linking nested groups', async () => {
   expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
-  expect(AppLayout).toHaveBeenCalledTimes(3);
+  expect(AppLayout).toHaveBeenCalledTimes(1);
   expect(TabsLayout).toHaveBeenCalledTimes(1);
   expect(HomeLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);

@@ -140,6 +140,7 @@ test('dismissAll nested', () => {
     ],
     index: 2,
     key: expect.any(String),
+    preloadedRouteKeys: [],
     routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
     routes: [
       {
@@ -165,12 +166,14 @@ test('dismissAll nested', () => {
         state: {
           index: 3,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['index', 'two', 'page'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
               params: {},
+              path: undefined,
             },
             {
               key: expect.any(String),
@@ -195,12 +198,14 @@ test('dismissAll nested', () => {
               state: {
                 index: 2,
                 key: expect.any(String),
+                preloadedRoutes: [],
                 routeNames: ['index', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -255,6 +260,7 @@ test('dismissAll nested', () => {
     ],
     index: 2,
     key: expect.any(String),
+    preloadedRouteKeys: [],
     routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
     routes: [
       {
@@ -280,12 +286,14 @@ test('dismissAll nested', () => {
         state: {
           index: 3,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['index', 'two', 'page'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
               params: {},
+              path: undefined,
             },
             {
               key: expect.any(String),
@@ -310,12 +318,14 @@ test('dismissAll nested', () => {
               state: {
                 index: 0,
                 key: expect.any(String),
+                preloadedRoutes: [],
                 routeNames: ['index', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: undefined,
                   },
                 ],
                 stale: false,
@@ -358,6 +368,7 @@ test('dismissAll nested', () => {
     ],
     index: 2,
     key: expect.any(String),
+    preloadedRouteKeys: [],
     routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
     routes: [
       {
@@ -383,12 +394,14 @@ test('dismissAll nested', () => {
         state: {
           index: 0,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['index', 'two', 'page'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
               params: {},
+              path: undefined,
             },
           ],
           stale: false,
@@ -435,11 +448,11 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
 
   testRouter.push('/one/b');
   expect(RootLayout).toHaveBeenCalledTimes(1);
-  expect(NestedLayout).toHaveBeenCalledTimes(2);
+  expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(0);
 
   testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
-  expect(NestedLayout).toHaveBeenCalledTimes(3);
+  expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
 });

@@ -1,28 +1,18 @@
-import { NavigationContainerRef, ParamListBase } from '@react-navigation/core';
-import * as React from 'react';
+import { type NavigationContainerRef, type ParamListBase } from '@react-navigation/core';
 import type { LinkingOptions } from '@react-navigation/native';
+import * as React from 'react';
 /**
  * Run async function in series as it's called.
  */
 export declare const series: (cb: () => Promise<void>) => () => void;
-type Options = LinkingOptions<ParamListBase> & {
-    independent?: boolean;
-};
-export default function useLinking(ref: React.RefObject<NavigationContainerRef<ParamListBase>>, { independent, enabled, config, getStateFromPath, getPathFromState, getActionFromState, }: Options): {
+type Options = LinkingOptions<ParamListBase>;
+export declare function useLinking(ref: React.RefObject<NavigationContainerRef<ParamListBase>>, { enabled, config, getStateFromPath, getPathFromState, getActionFromState, }: Options, onUnhandledLinking: (lastUnhandledLining: string | undefined) => void): {
     getInitialState: () => PromiseLike<(Partial<Omit<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/core").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/core").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
@@ -34,15 +24,7 @@ export default function useLinking(ref: React.RefObject<NavigationContainerRef<P
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/core").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/core").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
