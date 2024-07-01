@@ -39,7 +39,8 @@ class ModuleHolder<T : Module>(val module: T) {
 
     trace("$name.jsObject") {
       val appContext = module.appContext
-      val jniDeallocator = appContext.jniDeallocator
+      val runtimeContext = module.runtimeContext
+      val jniDeallocator = runtimeContext.jniDeallocator
 
       val moduleDecorator = JSDecoratorsBridgingObject(jniDeallocator)
       attachPrimitives(appContext, definition.objectDefinition, moduleDecorator, name)
