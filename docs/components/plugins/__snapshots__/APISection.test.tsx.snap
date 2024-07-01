@@ -965,7 +965,7 @@ properties.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1385,7 +1385,7 @@ value depending on the state of the credential.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1626,7 +1626,7 @@ refresh operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1914,7 +1914,7 @@ sign-in operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2229,7 +2229,7 @@ sign-out operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2518,7 +2518,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2973,7 +2973,7 @@ may be
       . Only applicable fields that the user has allowed your app to access will be nonnull.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -3379,7 +3379,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -3686,7 +3686,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -4010,7 +4010,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -4181,7 +4181,7 @@ OAuth 2.0 protocol
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -6930,7 +6930,7 @@ Same as
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -7641,7 +7641,7 @@ This uses both
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -7998,7 +7998,7 @@ code.
       </span>
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8265,7 +8265,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8455,7 +8455,7 @@ in order to enable/disable the permission.
     </p>
     <br />
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8575,7 +8575,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8701,7 +8701,7 @@ in order to enable/disable the permission.
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8865,7 +8865,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <div
-        class="css-1uyflf8-Table"
+        class="table-wrapper css-1uyflf8-Table"
       >
         <table
           class="css-e41t9x-Table"
@@ -8971,7 +8971,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -9243,7 +9243,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -9987,7 +9987,7 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -10572,7 +10572,7 @@ available on this device.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -10910,7 +10910,7 @@ On iOS, the
       </span>
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -11177,7 +11177,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -11300,7 +11300,7 @@ in order to enable/disable the permission.
     </p>
     <div>
       <div
-        class="css-1uyflf8-Table"
+        class="table-wrapper css-1uyflf8-Table"
       >
         <table
           class="css-e41t9x-Table"
@@ -11514,7 +11514,7 @@ in order to enable/disable the permission.
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
